@@ -16,8 +16,15 @@
 
 ```bash
 git clone https://github.com/roshpinacare-sys/fleet-vault
-cd fleet-vault && bash sovereign/bootstrap.sh
+cd fleet-vault && bash sovereign/bootstrap.sh      # מסילת-הצי המלאה: 22 ריפוים + כספת-שרשרות + משמורת-חיה + קבלה
+bash vault/boot-sovereign.sh                        # מסילת-המשרד: wrap-registry → מפתחות-מוח → SSH anchor → שירותים
 ```
+
+> **עדכון 2026-10-08 (sovereign-audit, R284):** v2 = wrap-registry — אין plaintext-זהות
+> ב-HEAD. ה-credential של רגע-החיבור מתגלה אוטומטית (env / upload / git-credentials /
+> gh / SSH deploy key) ופותח את ה-wrap של סיסמת-האב. הוכח חי בסבב-זה: מכונה-טרייה
+> (HOME ריק) → clone אחד → **22/22 ריפוים · משרד נפתח · כספת-שרשרות pin-match ·
+> 26 מפתחות חיים נמדדו על השרשרת · קבלה נדחפה · 9/9 ירוק ב-verify**.
 
 מה זה עושה: מתקין את זהות-הגיט של הצי (PAT מה-keyring) → משכפל/מעדכן את כל 22
 הריפוים לפי MANIFEST → פותח את מפתחות-המשרד (FleetHQ auto-unseal) → פותח את
