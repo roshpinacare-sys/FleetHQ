@@ -53,14 +53,16 @@ case "$cmd" in
     # that are empty in the vault NEVER stomp a value already living in the
     # target (e.g. the infrastructure-only GITHUB_PAT in agent-hq/.env);
     # target-only lines are preserved.
+    # NOTE: env names may contain DIGITS (OPENROUTER_API_KEY_2) — the key
+    # regex must allow them or numbered slots get silently dropped.
     merge_env() {
       src="$1"; dst="$2"
       [ -f "$src" ] || return 0
       if [ ! -f "$dst" ]; then cp "$src" "$dst"; chmod 600 "$dst"; return 0; fi
       awk -F= '
-        FNR==NR { if ($0 ~ /^[A-Za-z_]+=/ && length(substr($0, index($0,"=")+1)) > 0) want[$1]=$0; next }
+        FNR==NR { if ($0 ~ /^[A-Za-z_][A-Za-z0-9_]*=/ && length(substr($0, index($0,"=")+1)) > 0) want[$1]=$0; next }
         {
-          if ($0 ~ /^[A-Za-z_]+=/ && ($1 in want)) { print want[$1]; delete want[$1] }
+          if ($0 ~ /^[A-Za-z_][A-Za-z0-9_]*=/ && ($1 in want)) { print want[$1]; delete want[$1] }
           else print
         }
         END { for (k in want) print want[k] }
