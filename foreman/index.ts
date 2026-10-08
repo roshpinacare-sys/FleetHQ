@@ -5,7 +5,7 @@ import { excerptBook } from './src/books';
 
 // Fleet HQ foreman — the real crew service.
 //   AGENT_HQ_PORT       (default 3010)
-//   AGENT_HQ_DATA_DIR   (default ./data — point it at your own books repo clone; the bundled demo uses ./demo-data)
+//   AGENT_HQ_DATA_DIR   (default /home/z/my-project/Domain in the sandbox; set to ./demo-data for the demo)
 //   AGENT_HQ_MODE       'sim' forces the clearly-labeled demo crew
 // The socket owns the whole surface (path '/' is reserved by the gateway), so every RPC is an event.
 const PORT = Number(process.env.AGENT_HQ_PORT || 3010);
@@ -50,5 +50,5 @@ io.on('connection', (socket) => {
 });
 
 httpServer.listen(PORT, () => {
-  console.log(`[fleet-hq] foreman listening on :${PORT} (data: ${process.env.AGENT_HQ_DATA_DIR ?? './data'})`);
+  console.log(`[fleet-hq] foreman listening on :${PORT} (data: ${process.env.AGENT_HQ_DATA_DIR ?? '/home/z/my-project/Domain'})`);
 });

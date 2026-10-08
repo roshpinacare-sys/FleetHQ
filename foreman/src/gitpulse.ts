@@ -24,8 +24,8 @@ export interface GitWireSource {
 export function resolveGitSource(dataDir: string): GitWireSource {
   return {
     dir: dataDir,
-    label: 'Books · ספרי הצי',
-    repoUrl: 'https://github.com/your-org/your-books-repo',
+    label: 'Domain · ספרי הצי',
+    repoUrl: 'https://github.com/roshpinacare-sys/Domain',
     branch: 'main',
   };
 }

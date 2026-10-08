@@ -134,6 +134,20 @@ export interface ForemanStatus {
   message: { he: string; en: string };
   startedAt: number;
   opsDone: number;
+  /** The office economy — credits honestly earned per agent (approved work). */
+  economy?: Record<string, number>;
+  /** The evolving brain — how many shifts ran and how many lessons are kept. */
+  memory?: { shifts: number; lessons: number };
+}
+
+/** The office's sovereign memory — persisted into the data repo (git) so a
+ *  fresh machine resumes exactly where the fleet left off. */
+export interface OfficeMemory {
+  shifts: number;
+  lessons: string[];
+  recentGoals: string[];
+  economy: Record<string, number>;
+  updatedAt: number;
 }
 
 // ---- the git wire: the fleet's real commit stream (what actually happened) ---------------

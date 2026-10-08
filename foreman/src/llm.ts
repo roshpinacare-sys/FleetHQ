@@ -8,13 +8,14 @@
 // an individual cooldown, so one dead model never hurts the others.
 //
 //   1. xAI Grok            (XAI_API_KEY — awaits credits, breaker skips it cheaply)
-//   2. OpenRouter          (OPENROUTER_API_KEY — 6 verified models, free pool first)
-//   3. Kilo Code free auto (NO KEY — kilo-auto/free, verified live)
+//   2. OpenRouter          (OPENROUTER_API_KEY — 1 strong + 8 verified :free models, rotating)
+//   3. Kilo Code free auto (NO KEY — kilo-auto/free, verified live, 200 req/h)
 //   4. LLM7.io anonymous   (NO KEY — optional LLM7_API_KEY raises limits)
 //   5. Pollinations        (NO KEY — openai-fast / gpt-oss-20b, verified live)
-//   6. OpenAI-compatible   (OPENAI_API_KEY / OPENAI_BASE_URL / OPENAI_MODEL)
-//   7. z-ai-web-dev-sdk    (bundled deployments)
-//   8. nothing → the office falls back to the fit-routine / labeled sim path.
+//   6. OVHcloud AI         (NO KEY — EU anonymous tier, ~2 RPM/model, verified live)
+//   7. OpenAI-compatible   (OPENAI_API_KEY / OPENAI_BASE_URL / OPENAI_MODEL)
+//   8. z-ai-web-dev-sdk    (bundled deployments)
+//   9. nothing → the office falls back to the fit-routine / labeled sim path.
 //
 // Model lists live in the VAULT (.env — gitignored, chmod 600) and their
 // verified defaults are mirrored in .env.example committed to git.
@@ -66,12 +67,15 @@ function buildBrains(): Brain[] {
       key: process.env.OPENROUTER_API_KEY,
       referer: true,
       models: parseModels(process.env.OPENROUTER_MODELS, [
-        'deepseek/deepseek-chat-v3.1',
+        'deepseek/deepseek-chat-v3.1', // strong paid brain (key has credit)
         'nvidia/nemotron-3.5-lightning:free',
         'inclusionai/ling-3.0-flash-sante:free',
+        'google/gemma-4-26b-a4b-it:free',
+        'thinkingmachines/inkling:free',
         'cohere/north-mini-code:free',
         'nvidia/nemotron-3-super-120b-a12b:free',
         'nvidia/nemotron-3-ultra-550b-a55b:free',
+        'poolside/laguna-s-2.1:free',
       ]),
     });
   }
@@ -105,6 +109,15 @@ function buildBrains(): Brain[] {
     base: 'https://text.pollinations.ai/openai',
     key: process.env.POLLINATIONS_TOKEN, // optional tier token; anonymous works
     models: parseModels(process.env.POLLINATIONS_MODELS, ['openai-fast']),
+  });
+  // KEYLESS brain — OVHcloud AI Endpoints (EU anonymous tier, verified live).
+  // ~2 RPM per model per IP, so it sits last among the keyless brains and its
+  // cooldowns do the pacing. Optional OVH_API_KEY lifts the anonymous tier.
+  brains.push({
+    name: 'ovh',
+    base: 'https://oai.endpoints.kepler.ai.cloud.ovh.net/v1',
+    key: process.env.OVH_API_KEY, // optional; anonymous works
+    models: parseModels(process.env.OVH_MODELS, ['gpt-oss-120b', 'Meta-Llama-3_3-70B-Instruct']),
   });
   return brains;
 }

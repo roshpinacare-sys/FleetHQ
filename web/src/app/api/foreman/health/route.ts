@@ -19,7 +19,7 @@ export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 const PORT = 3010;
-const CWD = process.env.FOREMAN_DIR ?? new URL('../../../../foreman', import.meta.url).pathname;
+const CWD = '/home/z/my-project/mini-services/agent-hq';
 
 let lastSpawnAt = 0;
 

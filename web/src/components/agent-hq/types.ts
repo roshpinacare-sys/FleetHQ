@@ -111,6 +111,9 @@ export interface ForemanStatus {
   message: { he: string; en: string };
   startedAt: number;
   opsDone: number;
+  /** Optional foreman extras — rendered only when present, never required. */
+  economy?: Record<string, number>;
+  memory?: { shifts: number; lessons: number };
 }
 
 export interface CommitView {
@@ -146,15 +149,18 @@ export interface Snapshot {
   git?: GitPulse;
 }
 
+/* Status palette — the reference's color law, no blue/gold anywhere:
+   idle=zinc · thinking=fuchsia · reading=amber · checking=emerald ·
+   writing=violet · error/blocked=rose · done=emerald. */
 export const STATE_COLORS: Record<AgentState, string> = {
-  idle: '#71717a',
-  thinking: '#E0973F',
-  reading: '#3BA08F',
-  checking: '#C9A227',
-  writing: '#7BA05B',
-  walking: '#a1a1aa',
-  waiting_user: '#e5484d',
-  blocked: '#e5484d',
-  done: '#46a758',
-  error: '#e5484d',
+  idle: '#71717a',      // zinc-500
+  thinking: '#d946ef',  // fuchsia-500
+  reading: '#fbbf24',   // amber-400
+  checking: '#34d399',  // emerald-400
+  writing: '#a78bfa',   // violet-400
+  walking: '#a1a1aa',   // zinc-400
+  waiting_user: '#fb7185', // rose-400
+  blocked: '#fb7185',   // rose-400
+  done: '#34d399',      // emerald-400
+  error: '#fb7185',     // rose-400
 };

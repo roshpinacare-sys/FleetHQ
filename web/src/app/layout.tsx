@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono, Heebo, Anton, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
+import { Toaster } from "@/components/ui/toaster";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -67,6 +68,7 @@ export default function RootLayout({
         style={{ fontFamily: "var(--font-heebo), var(--font-geist-sans), system-ui, sans-serif" }}
       >
         {children}
+        <Toaster />
       </body>
     </html>
   );

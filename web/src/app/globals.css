@@ -123,10 +123,10 @@
 
 /* ── Fleet World (עולם-הצי) ──────────────────────────────────────────────── */
 
-/* warm sovereign scrollbar for the HUD panels */
+/* neutral violet scrollbar for the world HUD panels (token: HQ accent family) */
 .fw-scroll {
   scrollbar-width: thin;
-  scrollbar-color: rgba(240, 208, 96, 0.35) transparent;
+  scrollbar-color: rgba(167, 139, 250, 0.35) transparent;
 }
 .fw-scroll::-webkit-scrollbar {
   width: 6px;
@@ -136,61 +136,72 @@
   background: transparent;
 }
 .fw-scroll::-webkit-scrollbar-thumb {
-  background: rgba(240, 208, 96, 0.28);
+  background: rgba(167, 139, 250, 0.28);
   border-radius: 999px;
 }
 .fw-scroll::-webkit-scrollbar-thumb:hover {
-  background: rgba(240, 208, 96, 0.5);
+  background: rgba(167, 139, 250, 0.5);
 }
 
 /* the world shell carries its own dark sovereign background */
 html,
 body {
-  background: #0b0e08;
+  background: #09090b;
 }
 
 
 /* ═══════════════════════════════════════════════════════════════════
-   FLEET HQ 3.0 — זכוכית וזהב · Glass & Gold operations room
+   FLEET HQ 4.0 — "MIDNIGHT MAGENTA" operations room
    ═══════════════════════════════════════════════════════════════════
-   פחם חם #120d09 · זהב מוברש #e0b45f · שמפניה #f5e3b8 · אבן stone
-   זכוכית 80-94% + blur · פס זהב 2px בקצה המוביל (RTL: ימין) · רדיוס 14px
-   עליות מדורגות · נשימת זוהר איטית · prefers-reduced-motion מכובד.
-   Design language adapted & elevated for an operations room — original CSS. */
+   The reference (upload/Screenshot_19.jpg) design language, honored literally:
+   near-black zinc canvas · zinc-900/80 glass panels · border-white/10
+   rounded-2xl cards / rounded-3xl hero panels · ONE bold accent family
+   (fuchsia-500 → violet-600) for buttons, active states and progress ·
+   pill-shaped selectors everywhere · RTL Hebrew kept RTL with logical
+   properties (ms/me/ps/pe) · zero visual noise, no blue, no gold.
+   Status law: idle=zinc · thinking=fuchsia · reading=amber ·
+   checking=emerald · writing=violet · error=rose.
+   prefers-reduced-motion is respected across ALL animations. */
 
 :root {
-  --hq-gold: #e0b45f;
-  --hq-gold-light: #f5e3b8;
-  --hq-gold-deep: #a8823a;
-  --hq-ember: #d98d4a;
-  --hq-life: #34d399;
-  --hq-charcoal: #120d09;
-  --hq-glow-gold:
-    0 0 3px rgba(255, 250, 225, 0.5), 0 0 10px rgba(224, 180, 95, 0.55),
-    0 0 26px rgba(224, 180, 95, 0.28), 0 0 54px rgba(224, 180, 95, 0.14);
+  --hq-accent: #d946ef;        /* fuchsia-500 — the ONE data accent */
+  --hq-accent-strong: #c026d3; /* fuchsia-600 — buttons */
+  --hq-accent-deep: #7c3aed;   /* violet-600 — gradient partner */
+  --hq-accent-soft: #f0abfc;   /* fuchsia-300 — values on dark */
+  --hq-life: #34d399;          /* emerald-400 — life/checking/done */
+  --hq-amber: #fbbf24;         /* amber-400 — reading/aging only */
+  --hq-rose: #fb7185;          /* rose-400 — errors/blocked */
+  --hq-ink: #e4e4e7;           /* zinc-200 — titles on dark */
+  --hq-panel: rgba(24, 24, 27, 0.8); /* zinc-900/80 */
+  --hq-glow-accent:
+    0 0 3px rgba(240, 171, 252, 0.45), 0 0 12px rgba(217, 70, 239, 0.45),
+    0 0 30px rgba(217, 70, 239, 0.22), 0 0 60px rgba(124, 58, 237, 0.12);
   --hq-glow-soft:
     0 18px 50px -18px rgba(0, 0, 0, 0.85), 0 6px 18px -10px rgba(0, 0, 0, 0.6);
+  /* one radius scale: 12 inputs · 16 cards · 24 heroes · 999 pills */
+  --hq-r-input: 12px;
+  --hq-r-card: 16px;
+  --hq-r-hero: 24px;
 }
 
-/* the HQ carries its own warm-charcoal world background */
+/* the HQ carries its own near-black zinc world background */
 html, body {
-  background: #0d0906;
+  background: #09090b;
 }
 
-/* ── glass panel — the room's furniture sits on warm charcoal glass ── */
+/* ── glass panel — zinc-900/80 glass, white/10 hairline, hero radius ── */
 .hq-glass {
   position: relative;
-  border-radius: 14px;
-  border: 1px solid rgba(255, 255, 255, 0.055);
-  border-top-color: rgba(251, 191, 36, 0.22);
+  border-radius: var(--hq-r-hero);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   background:
-    linear-gradient(180deg, rgba(38, 28, 17, 0.5) 0%, rgba(18, 13, 9, 0.82) 34%),
-    rgba(18, 13, 9, 0.86);
+    linear-gradient(180deg, rgba(39, 39, 42, 0.55) 0%, rgba(24, 24, 27, 0.82) 34%),
+    var(--hq-panel);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
-  box-shadow: var(--hq-glow-soft), inset 0 1px 0 rgba(255, 247, 214, 0.06);
+  box-shadow: var(--hq-glow-soft), inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
-/* the gold edge on the leading side (RTL: right) — brushed 2px hairline */
+/* the accent edge on the leading side (RTL-aware via inset-inline) — fuchsia hairline */
 .hq-glass::before {
   content: '';
   position: absolute;
@@ -203,58 +214,58 @@ html, body {
   pointer-events: none;
   background: linear-gradient(
     180deg,
-    rgba(251, 191, 36, 0) 0%,
-    rgba(251, 191, 36, 0.65) 22%,
-    rgba(245, 227, 184, 0.9) 50%,
-    rgba(224, 180, 95, 0.65) 78%,
-    rgba(168, 130, 58, 0) 100%
+    rgba(217, 70, 239, 0) 0%,
+    rgba(217, 70, 239, 0.55) 22%,
+    rgba(240, 171, 252, 0.8) 50%,
+    rgba(124, 58, 237, 0.55) 78%,
+    rgba(124, 58, 237, 0) 100%
   );
 }
 
 /* ── hairline top accent (per accent family) ── */
 .hq-hairline {
   height: 3px;
-  background: linear-gradient(90deg, transparent, rgba(224, 180, 95, 0.75), transparent);
+  background: linear-gradient(90deg, transparent, rgba(217, 70, 239, 0.7), transparent);
 }
 .hq-hairline-life {
   height: 3px;
   background: linear-gradient(90deg, transparent, rgba(52, 211, 153, 0.6), transparent);
 }
 
-/* ── gold section head ── */
+/* ── section head — violet index, zinc title, hairline rule ── */
 .hq-secnum {
   font-family: var(--font-jetbrains), ui-monospace, monospace;
-  color: var(--hq-gold);
+  color: var(--hq-accent-soft);
   letter-spacing: 0.22em;
 }
 .hq-secline {
   height: 1px;
   flex: 1 1 0%;
-  background: linear-gradient(to left, rgba(224, 180, 95, 0.4), rgba(224, 180, 95, 0.04));
+  background: linear-gradient(to left, rgba(217, 70, 239, 0.35), rgba(217, 70, 239, 0.03));
 }
 
-/* ── stat chip (glass pill with gold ring) ── */
+/* ── stat chip — the pill law: rounded-full, white/10 ring, quiet fill ── */
 .hq-chip {
   display: inline-flex;
   align-items: center;
   gap: 0.375rem;
   border-radius: 999px;
-  border: 1px solid rgba(251, 191, 36, 0.24);
-  background: rgba(18, 13, 9, 0.78);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(9, 9, 11, 0.6);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  box-shadow: inset 0 1px 0 rgba(255, 247, 214, 0.08), 0 2px 8px rgba(0, 0, 0, 0.5);
-  padding: 0.3rem 0.7rem;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 2px 8px rgba(0, 0, 0, 0.5);
+  padding: 0.375rem 0.75rem;
   font-weight: 700;
   line-height: 1;
   white-space: nowrap;
 }
 .hq-chip-life {
-  border-color: rgba(52, 211, 153, 0.3);
+  border-color: rgba(251, 113, 133, 0.35);
 }
 
-/* ── the gold button — brushed gradient, charcoal text, sheen sweep ── */
-.hq-btn-gold {
+/* ── the accent button — solid fuchsia-600, white text, 44px touch ── */
+.hq-btn-accent {
   position: relative;
   overflow: hidden;
   display: inline-flex;
@@ -262,98 +273,103 @@ html, body {
   justify-content: center;
   gap: 0.5rem;
   min-height: 44px;
-  border-radius: 12px;
-  border: 1px solid rgba(245, 227, 184, 0.42);
-  background: linear-gradient(180deg, #f2d492 0%, #e0b45f 48%, #b8893c 100%);
-  color: #241a08;
+  border-radius: var(--hq-r-input);
+  border: 1px solid rgba(240, 171, 252, 0.35);
+  background: linear-gradient(180deg, #e879f9 0%, #d946ef 48%, #a21caf 100%);
+  color: #fafafa;
   font-weight: 700;
-  box-shadow: 0 8px 22px -8px rgba(224, 180, 95, 0.55), inset 0 1px 0 rgba(255, 250, 225, 0.55);
+  box-shadow: 0 8px 22px -8px rgba(217, 70, 239, 0.55), inset 0 1px 0 rgba(253, 244, 255, 0.4);
   transition: translate 150ms ease-out, filter 150ms ease-out, box-shadow 150ms ease-out, opacity 150ms ease-out;
 }
-.hq-btn-gold::after {
+.hq-btn-accent::after {
   content: '';
   position: absolute;
   inset: -40% -60%;
   pointer-events: none;
-  background: linear-gradient(105deg, transparent 38%, rgba(255, 250, 225, 0.5) 50%, transparent 62%);
+  background: linear-gradient(105deg, transparent 38%, rgba(253, 244, 255, 0.4) 50%, transparent 62%);
   transform: translateX(130%);
 }
-.hq-btn-gold:not(:disabled):hover {
+.hq-btn-accent:not(:disabled):hover {
   translate: 0 -1px;
-  filter: brightness(1.05);
-  box-shadow: 0 12px 30px -10px rgba(224, 180, 95, 0.7), inset 0 1px 0 rgba(255, 250, 225, 0.55);
+  filter: brightness(1.06);
+  box-shadow: 0 12px 30px -10px rgba(217, 70, 239, 0.7), inset 0 1px 0 rgba(253, 244, 255, 0.4);
 }
-.hq-btn-gold:not(:disabled):hover::after {
+.hq-btn-accent:not(:disabled):hover::after {
   transform: translateX(-130%);
   transition: transform 0.7s cubic-bezier(0.3, 0.6, 0.2, 1);
 }
-.hq-btn-gold:disabled {
+.hq-btn-accent:disabled {
   opacity: 0.45;
   box-shadow: none;
   cursor: not-allowed;
 }
 
-/* ghost button — glass with a gold hover ring */
+/* ghost button — zinc glass with a fuchsia hover ring */
 .hq-btn-ghost {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.375rem;
   min-height: 44px;
-  border-radius: 12px;
+  border-radius: var(--hq-r-input);
   border: 1px solid rgba(255, 255, 255, 0.1);
   background: rgba(255, 255, 255, 0.04);
   font-weight: 700;
-  color: #d6d3d1;
+  color: #d4d4d8;
   transition: translate 150ms ease-out, border-color 150ms ease-out, color 150ms ease-out, box-shadow 150ms ease-out;
 }
 .hq-btn-ghost:hover {
   translate: 0 -1px;
-  border-color: rgba(224, 180, 95, 0.6);
-  color: #f5e3b8;
-  box-shadow: 0 0 16px rgba(224, 180, 95, 0.18);
+  border-color: rgba(217, 70, 239, 0.55);
+  color: #f0abfc;
+  box-shadow: 0 0 16px rgba(217, 70, 239, 0.18);
 }
 
-/* ── gold tab bar ── */
+/* ── pill tabs — the token-selector law ── */
 .hq-tab {
   position: relative;
-  padding: 0.6rem 0.9rem;
-  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0.5rem 1rem;
+  border-radius: 999px;
   font-weight: 700;
-  color: #a8a29e;
-  transition: color 160ms ease, background 160ms ease;
+  color: #a1a1aa;
+  transition: color 160ms ease, background 160ms ease, box-shadow 160ms ease;
   white-space: nowrap;
 }
 .hq-tab:hover {
-  color: #e7e5e4;
-  background: rgba(255, 255, 255, 0.04);
+  color: #e4e4e7;
+  background: rgba(255, 255, 255, 0.05);
 }
 .hq-tab[data-active='true'] {
-  color: #f5e3b8;
-  background: rgba(224, 180, 95, 0.1);
-  box-shadow: inset 0 -2px 0 0 var(--hq-gold);
+  color: #f0abfc;
+  background: rgba(217, 70, 239, 0.13);
+  box-shadow: inset 0 0 0 1px rgba(217, 70, 239, 0.45), 0 0 18px rgba(217, 70, 239, 0.12);
 }
 
-/* ── crew chip (roster) ── */
+/* ── crew chip (roster) — pill selector, 44px touch ── */
 .hq-crewchip {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 0.625rem;
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.07);
-  background: linear-gradient(180deg, rgba(38, 28, 17, 0.4), rgba(18, 13, 9, 0.7));
-  padding: 0.6rem 0.9rem;
+  min-height: 44px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(24, 24, 27, 0.7);
+  padding: 0.5rem 1rem;
   transition: border-color 160ms ease, box-shadow 160ms ease, translate 160ms ease;
 }
 .hq-crewchip:hover {
-  border-color: rgba(224, 180, 95, 0.5);
-  box-shadow: 0 0 18px rgba(224, 180, 95, 0.15);
+  border-color: rgba(217, 70, 239, 0.5);
+  box-shadow: 0 0 18px rgba(217, 70, 239, 0.15);
   translate: 0 -1px;
 }
 .hq-crewchip[data-active='true'] {
-  border-color: rgba(224, 180, 95, 0.85);
-  background: linear-gradient(180deg, rgba(224, 180, 95, 0.14), rgba(224, 180, 95, 0.04));
-  box-shadow: 0 0 22px rgba(224, 180, 95, 0.25);
+  border-color: rgba(217, 70, 239, 0.8);
+  background: rgba(217, 70, 239, 0.12);
+  box-shadow: 0 0 22px rgba(217, 70, 239, 0.22);
 }
 
 /* ── staged rise entrance (intro cadence: 0 / .12 / .24s) ── */
@@ -365,20 +381,20 @@ html, body {
 .hq-rise-2 { animation: hq-rise-kf 0.7s cubic-bezier(0.2, 0.8, 0.3, 1) 0.12s both; }
 .hq-rise-3 { animation: hq-rise-kf 0.7s cubic-bezier(0.2, 0.8, 0.3, 1) 0.24s both; }
 
-/* ── breathing gold glow (the monogram / live marks) ── */
+/* ── breathing accent glow (the monogram / live marks) ── */
 @keyframes hq-breath-kf {
-  0%, 100% { filter: drop-shadow(0 0 10px rgba(224, 180, 95, 0.28)); }
-  50% { filter: drop-shadow(0 0 24px rgba(224, 180, 95, 0.55)); }
+  0%, 100% { filter: drop-shadow(0 0 10px rgba(217, 70, 239, 0.28)); }
+  50% { filter: drop-shadow(0 0 24px rgba(217, 70, 239, 0.55)); }
 }
 .hq-breath { animation: hq-breath-kf 4.5s ease-in-out infinite; }
 
-/* ── the gold aurora wordmark — champagne → brass pan ── */
+/* ── the aurora wordmark — fuchsia → violet pan ── */
 @keyframes hq-aurora-kf {
   0% { background-position-x: 0%; }
   100% { background-position-x: 300%; }
 }
 .hq-aurora {
-  background: linear-gradient(120deg, #f5e3b8 0%, #e0b45f 22%, #fffbe8 40%, #a8823a 60%, #f5e3b8 82%, #e0b45f 100%);
+  background: linear-gradient(120deg, #f0abfc 0%, #d946ef 22%, #fdf4ff 40%, #7c3aed 60%, #f0abfc 82%, #d946ef 100%);
   background-size: 300% 100%;
   -webkit-background-clip: text;
   background-clip: text;
@@ -452,15 +468,15 @@ html, body {
   to { opacity: 1; transform: scale(1) translateY(0); }
 }
 
-/* scrollbars — gold on warm glass */
+/* scrollbars — violet on zinc glass */
 .hq-scroll::-webkit-scrollbar { width: 7px; height: 7px; }
 .hq-scroll::-webkit-scrollbar-track { background: transparent; }
 .hq-scroll::-webkit-scrollbar-thumb {
-  background: rgba(224, 180, 95, 0.38);
+  background: rgba(167, 139, 250, 0.35);
   border-radius: 999px;
 }
-.hq-scroll::-webkit-scrollbar-thumb:hover { background: rgba(224, 180, 95, 0.6); }
-.hq-scroll { scrollbar-width: thin; scrollbar-color: rgba(224, 180, 95, 0.38) transparent; }
+.hq-scroll::-webkit-scrollbar-thumb:hover { background: rgba(167, 139, 250, 0.6); }
+.hq-scroll { scrollbar-width: thin; scrollbar-color: rgba(167, 139, 250, 0.35) transparent; }
 
 /* git wire: commits flowing along the wire */
 @keyframes hq-dash-kf { to { stroke-dashoffset: -40; } }
@@ -533,7 +549,7 @@ html, body {
   height: 680px;
   top: -240px;
   inset-inline-start: -180px;
-  background: radial-gradient(circle, rgba(224, 180, 95, 0.1) 0%, rgba(224, 180, 95, 0) 65%);
+  background: radial-gradient(circle, rgba(217, 70, 239, 0.09) 0%, rgba(217, 70, 239, 0) 65%);
   animation: hq-drift-a 26s ease-in-out infinite;
 }
 .hq-blob-b {
@@ -541,7 +557,7 @@ html, body {
   height: 540px;
   bottom: -190px;
   inset-inline-end: -130px;
-  background: radial-gradient(circle, rgba(217, 141, 74, 0.08) 0%, rgba(217, 141, 74, 0) 65%);
+  background: radial-gradient(circle, rgba(124, 58, 237, 0.08) 0%, rgba(124, 58, 237, 0) 65%);
   animation: hq-drift-b 31s ease-in-out infinite;
   animation-delay: -15.5s;
 }
@@ -550,7 +566,7 @@ html, body {
   height: 320px;
   top: 38%;
   inset-inline-start: 46%;
-  background: radial-gradient(circle, rgba(245, 227, 184, 0.05) 0%, rgba(245, 227, 184, 0) 65%);
+  background: radial-gradient(circle, rgba(240, 171, 252, 0.04) 0%, rgba(240, 171, 252, 0) 65%);
   animation: hq-drift-c 20s ease-in-out infinite;
 }
 @keyframes hq-drift-a {
@@ -589,13 +605,13 @@ html, body {
   font-family: var(--font-jetbrains), ui-monospace, SFMono-Regular, monospace;
 }
 
-/* card hover law: warm gold halo, 240ms */
+/* card hover law: violet halo, 240ms — lift is translate-only, never rotate/skew */
 .hq-card {
   transition: border-color 240ms ease, box-shadow 240ms ease, transform 240ms cubic-bezier(0.34, 1.4, 0.5, 1);
 }
 .hq-card:hover {
-  border-color: rgba(224, 180, 95, 0.42);
-  box-shadow: 0 0 24px rgba(224, 180, 95, 0.16);
+  border-color: rgba(217, 70, 239, 0.4);
+  box-shadow: 0 0 24px rgba(217, 70, 239, 0.14);
 }
 .hq-card-lift:hover { transform: translateY(-3px); }
 
@@ -646,9 +662,9 @@ html, body {
   font-size: 10px;
   font-weight: 700;
   line-height: 1.4;
-  color: #f5e3b8;
-  background: rgba(18, 13, 9, 0.95);
-  border: 1px solid rgba(224, 180, 95, 0.4);
+  color: #e4e4e7;
+  background: rgba(9, 9, 11, 0.95);
+  border: 1px solid rgba(217, 70, 239, 0.4);
   border-radius: 6px;
   white-space: nowrap;
   opacity: 0;
@@ -657,8 +673,17 @@ html, body {
 }
 .hq-tip:hover::after { opacity: 1; }
 
-/* the journey plane — a tiny gold marker on the mission rail */
+/* the journey plane — a tiny fuchsia marker on the mission rail */
 .hq-journey-plane { transition: transform 0.5s cubic-bezier(0.34, 1.4, 0.5, 1); }
+
+/* the atmosphere particle canvas — MUST fill the fixed layer (was unstyled:
+   default 300×150 inline canvas sitting in the corner = broken positions) */
+.hq-particles {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
 
 @media (prefers-reduced-motion: reduce) {
   .hq-rise, .hq-rise-2, .hq-rise-3,
@@ -671,7 +696,7 @@ html, body {
     animation: none !important;
     transition: none;
   }
-  .hq-btn-gold::after { display: none; }
+  .hq-btn-accent::after { display: none; }
 }
 
 /* turbopack recompile nudge */
