@@ -16,6 +16,30 @@
    "name": "llm7-free",
    "url": "https://api.llm7.io/v1/models",
    "expect_status": 200
+  },
+  {
+   "name": "eth-mainnet-rpc",
+   "url": "https://eth.drpc.org",
+   "method": "POST",
+   "body": {
+    "jsonrpc": "2.0",
+    "id": 1,
+    "method": "eth_blockNumber",
+    "params": []
+   },
+   "expect_status": 200
+  },
+  {
+   "name": "zero-rail-rpc",
+   "url": "https://rpc.zero.tech",
+   "method": "POST",
+   "body": {
+    "jsonrpc": "2.0",
+    "id": 1,
+    "method": "eth_blockNumber",
+    "params": []
+   },
+   "expect_status": 200
   }
  ]
 }
