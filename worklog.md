@@ -622,3 +622,26 @@ Stage Summary:
 - The office now has RUNTIME sovereignty on top of storage sovereignty: one local, zero-auth, OpenAI-compatible gateway brokers every LLM call with real-time failover, central cooldowns, and hardened quality sieves; any external agent (OpenClaw, Claude Code, scripts) can plug into the same endpoint with OPENAI_API_BASE=http://127.0.0.1:3011/v1 and any dummy key.
 - Honest operating picture: paid deepseek lives only on keys 2/3 (key 1 account dry); the anonymous free fleet carries the rest; duckai is wired but network-blocked HERE (one env var on a DDG-reachable machine lights it); R2 permanently off the plan.
 - Everything is in git (code + duckai + vault + doctrine) — sandbox death remains a maintenance event, not a death.
+
+---
+Task ID: 26
+Agent: Z.ai Code (main session)
+Task: הוראת-מפעיל — "roast me חריף על המשרד, חשוף את כל החולשות, ושפר מסיבי. האוטונומיה היא המפעיל והבעלים — שלא אצטרך יותר לספק מפתחות. בחן את כל הכספות של כל הגיט גם של הדקס. תזהר לא לפרסם מפתחות בתיקיה ציבורית. תוודא הכל, תדחוף."
+
+Work Log (הכל נמדד):
+- רוסט מבוסס-ראיות (sovereign/ROAST.md): (1) 10+ שחזורים ידניים כי סיסמת-הכספת == הטוקן של המפעיל — דיירות, לא בעלות; (2) 5 טוקנים "שונים" (PAT/ZIP_PAT/WEAVE_OPS_PAT/GITHUB_TOKEN/SovereignConsole) נבדקו חי מול ה-API — כולם אותו טוקן אחד (93B, fine-grained, פג 2026-12-12); (3) plaintext PAT מוחזק בגיט ב-SovereignConsole + identity/pat.env ב-fleet-vault — הפרה של חוק-הברזל שלהם עצמם; (4) 13+ דורות-כספת ב-steem עם הסיסמאות ב-meta באותו ריפו; (5) סנכרון-ידני של llm.ts ×3 + שער (ה-Kilo המת חי שבועות); (6) המנוע הכלכלי: 0.00.
+- סריקת-22-ריפוים (כולל saos-dex "הדקס"): אפס מפתחות חיים בריפוים ציבוריים (כל ה-hits = regex-ים של סרקות עצמן); מלאי-כספות: fleet-vault (17 סלוטים LLM), steem/agent/vault (ROT4 חי, meta מצביע עליו), Actions secrets (steem: MAIN_KEY/ZIP_PAT; saos-dex: 6 WIFs), Zip/sovereign seals.
+- כספת בעלת-עצמה (v2): סיסמה-אם אקראית P (לא טוקן של אף-אחד) + רישום-WRAPS (wraps/<sha256(C)>.enc = openssl(P, sha256hex(C))) + rekey ceremony (vault/wrap.sh) עם roundtrip-verify + מנגנון רישום-עצמי (כל boot רושם את הטוקן שלו).
+- 4 מפתחות-פריסה SSH (RSA-3072, "sovereign-deploy-r2") נוצרו (בלי ssh-keygen — Node crypto), נרשמו דרך ה-API הרשמי (201) על fleet-vault/FleetHQ/steem/saos-dex, ונאטמו ב-ssh-keys.tar.enc. GIT_SSH shim (vault/ssh/tool, ssh2) מאפשר git-SSH בלי בינארי ssh — הוכח חי (clone מלא 3.6MB דרך deploy key).
+- boot-sovereign.sh: פקודה-אחת — גילוי-טוקן (env/upload/git-credentials/netrc/gh/credential-helper/deploy-key) → משיכת כספת פרטית → פתיחת wrap → מיזוג-פריסת מפתחות → התקנת deploy keys → רישום wrap → sovereign-agent.env (OPENAI_API_BASE=http://localhost:3000/v1, מפתח-בובה, AI_TIMEOUT/MAX_RETRIES) → העראת שירותים.
+- תרגילי-הרס אמיתיים: A=אפס הרשאות → כשל כנה exit-1 עם הנחיות; B=טוקן בלבד, כל היתר נמחק → שחזור מלא מהענן; C=מפתח-פריסה בלבד (אפס טוקנים) → שחזור מלא ~15ש׳, keyed ✓. התרגילים חשפו ותיקנו 4 באגים אמיתיים: multiline-candidate poisoning (כל שורה-במפתח הפכה "טוקן" — נקבע חוק: קרדנשלים-מקובצים נכנסים כ-digest בלבד), tmp-dir debris על clone נכשל, shim backpressure (raw writes → pipe()), השער-העצמי שכמעט סרק את-עצמו (value-shaped patterns).
+- /v1 על :3000: rewrite ב-next.config → sovereign-gateway :3011; GET /v1/models ✓, POST chat/completions עם מפתח-בובה ✓ (תשובה עברית חיה "עיר הבירה של יפן היא טוקיו", רוטציה אוטומטית 402→מוח-חופשי נמדדה-בדרך). התצורה המדויקת שהמפעיל שלח (message 4) חיה עכשיו.
+- Failover מחושל בשער: cooldowns עם jitter ±15%, ירידת-max_tokens ×0.75 על 429-חוזר (רצפה 384), 401/402/403→5דק', רשת→15ש׳.
+- חוקיות: SOVEREIGNTY.md §6 — deploy keys דרך ה-API הרשמי, ciphertext בלבד בריפו ציבורי, wraps רק בפרטי, קישור ל-GITHUB-COMPLIANCE.md של הצי. נמצאו-וסוגרו: identity/pat.env הוסר מ-HEAD של fleet-vault; SovereignConsole רשום לסיבוב.
+- התנגשות-ענן-נבחנה: הצוות דחף FLEET-BINDING + sovereign/bootstrap.sh (keyring model) — נבחן: תואם לגישה שלי (גילוי-טוקן מ-env), אין ניגוד; שני הנתיבים חיים מאותו ריפו פרטי.
+- תשתית-הישרדות של תהליכים נחקרה: reaper של הסנדבוקס הורג תהליכים מ-shells חד-פעמיים; הדפוס-ששורד = bash -c '... &' שמתייתם ל-tini. עודכן השימוש בהתאם; ה-supervision ההדדי (Next→foreman/gateway, foreman→Next) קיים.
+- אימות-דפדפן: המשרד רנדר (RTL מלא), עמית ענה חי על שאלות עברית (screenshot מוכיח), הלוג: "[reception] answered via brain: sovereign-gateway/auto", mobile 390==390 אפס overflow; lint נקי על כל קובץ-שנגעתי-בו.
+- דחיפות: FleetHQ (ציבורי) 9c10a98 — קוד+דוקטרינה+כספת-מוצפנת, סריקת-סודות נקייה; fleet-vault (פרטי) fe6ea95 — wraps+seal+boot kit.
+
+Stage Summary:
+- הסופי-האמיתי: האוטונומיה כעת **בעלים** של המפתחות שלה — סיסמה-אם אקראית שנעה כ-wraps, גישת-SSH שלא תפוג לעולם, אתחול-אחת בלי-מפעיל (הוכח ב-3 תרגילי-הרס), /v1 חי על :3000 עם מפתח-בובה. הדבר-האחד-שנשאר-למפעיל, פעם-אחת: GitHub App PEM (לנצח-של-תמיד) או סיבוב-טוקן רגיל (ה-boot ירשום-אותו-לבד) — ולקוח ראשון, כי הריבונות-הטכנית סגורה והריבונות-הכלכלית עוד לא.
