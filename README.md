@@ -10,11 +10,14 @@ Not a wall of terminal text. Not a fake dashboard. A place.
 
 | | |
 |---|---|
-| 🧭 **The chief of staff** | You type a goal. The lead agent reads it, splits it into real tasks with dependencies and pins them to the **Task Wall**. |
+| 🧭 **The chief of staff** | The **autonomous operator** schedules goals. The lead agent reads them, splits them into real tasks with dependencies and pins them to the **Task Wall**. |
 | 🛠 **The crew works** | Five worker agents walk to their desks and execute: they read your data books, measure values, cross-check books against each other — every tool call streams live on their **desk monitors**. |
 | 🗣 **They talk** | Speech bubbles, messages to each other, honest activity lines under every nameplate. |
-| 🙋 **They come to you** | When a judgment call is needed, the agent walks to the **Decision Podium** and asks. You answer in one click. |
+| 🙋 **They resolve themselves** | When a judgment call is needed, the agent walks to the **Decision Podium** — and the operator's own policy resolves it in seconds. The podium is a public transparency record, not a control surface. |
 | 📚 **Work lands in the Library** | Real reports written by the agents — grounded only in data they actually read. |
+| 📡 **The Git Wire** | The office wall displays the **real commit stream** of the books repo — actual timestamps and subjects, metadata only. |
+
+**Fully autonomous.** The public office is a *window, not a steering wheel*: there is no goal console, no decision answering, no write path — nothing a visitor can steer. The operator schedules the work; the crew deliberates and resolves its own questions by policy.
 
 </div>
 
@@ -26,7 +29,7 @@ Most "agent dashboards" show a spinner and a status word. Fleet HQ shows **the w
 
 - **Live monitors on every desk** stream each agent's real log: tool calls, measured values, cross-check results, errors.
 - **A real task wall** (kanban: planned → in work → in review → done) driven by the lead's actual plan for your goal.
-- **A decision podium** — agents pause and wait for *you* when a question genuinely needs a human.
+- **A decision podium** — agents surface judgment calls; the operator's policy resolves them and the reasoning is published right there.
 - **A library** that accumulates the crew's real written reports.
 - **The honesty law**: agents may only report what they actually read. Every number on screen comes from a real file in your data directory — never invented, never mocked. When something fails, it shows as a failure.
 
@@ -55,7 +58,7 @@ npm install
 npm run dev                     # listens on :3000
 ```
 
-Open **http://localhost:3000** — you'll see the office with the simulated crew. Type the demo goal and watch the whole loop: plan → wall → desks → decision → library.
+Open **http://localhost:3000** — you'll see the office with the simulated crew. Watch the whole loop unfold on its own: plan → wall → desks → decisions → library. Click the receptionist at the front desk — he answers questions about the platform (and nothing else).
 
 > Behind a reverse proxy? The web client connects to `/?XTransformPort=3010` on the same origin (path `/`). Keep that contract or adjust `AgentHQ.tsx`.
 
@@ -70,7 +73,7 @@ Open **http://localhost:3000** — you'll see the office with the simulated crew
    - any OpenAI-compatible endpoint via `OPENAI_API_KEY` (+ optional `OPENAI_BASE_URL`, `OPENAI_MODEL`).
    - Nothing found → the office stays in the labeled demo mode. It never fakes "live".
 
-3. **Run.** Restart the foreman — the header badge flips to **Live crew · real model agents**. Submit a goal. Watch it become real work.
+3. **Run.** Restart the foreman — the header badge flips to **Live crew · real model agents**. The autonomous operator schedules the patrol; the crew works the books and you watch it happen in real time.
 
 ```sh
 # example
@@ -82,41 +85,53 @@ OPENAI_API_KEY=sk-... AGENT_HQ_DATA_DIR=$HOME/my-books bun run dev
 ```mermaid
 flowchart LR
     subgraph web ["web (Next.js)"]
-        OFFICE["Office floor (SVG)\ndesks · wall · podium · library"]
-        PANELS["Monitor · Wall · Podium\nLibrary · Fleet registry"]
-        CONSOLE["Goal console + journal"]
+        OFFICE["Office floor (SVG)\ndesks · wall · podium · library\nreception desk"]
+        PANELS["Monitor · Wall · Podium\nLibrary · Fleet registry · Git wire"]
+        REP["Receptionist chat\n(sandboxed, platform-only)"]
     end
     subgraph foreman ["foreman (Bun + socket.io)"]
         LEAD["Chief of staff\nplans · reviews · rescues"]
+        OP["Autonomous operator\nschedules goals · resolves\nagent questions by policy"]
         W1["Worker agents ×5\nreal LLM loop"]
-        TOOLS["Real tools\nread_book · measure\ncross_check · write_report\nask_human · message"]
+        TOOLS["Real tools\nread_book · measure\ncross_check · write_report\nask_operator · message"]
         STATE["Office state\nagents · tasks · decisions\nreports · feed"]
         BOOKS["Book registry\nheartbeats · verdicts"]
+        GIT["Git wire\nreal commit stream\n(metadata only)"]
     end
     DATA[("Your data books\nJSON files")]
     LLM["LLM provider\nz-ai SDK / OpenAI-compatible"]
-    OFFICE <-->|"socket.io (snapshot + live events)"| STATE
+    OFFICE <-->|"socket.io (read-only: snapshot + live events)"| STATE
     PANELS <--> STATE
-    CONSOLE -->|"goal:submit"| LEAD
+    REP -->|"HTTP, whitelisted stats only"| LLM
+    OP --> LEAD
     LEAD --> W1 --> TOOLS --> DATA
     W1 --> LLM
     LEAD --> LLM
     TOOLS --> BOOKS --> DATA
+    GIT --> DATA
 ```
 
-**The agent loop.** Every step is a real model call returning strict JSON: `{say?, thought?, tool?, args?, done?, result?}`. The foreman executes the tool *for real*, appends the result to the agent's transcript, and loops until the agent is done (max steps + timeout enforced). Workers may `ask_human` — the loop parks at the podium until you answer. The lead reviews finished tasks (approve / redo once), rescues blocked work by reassigning it, and writes the final operation summary into the library.
+**The agent loop.** Every step is a real model call returning strict JSON: `{say?, thought?, tool?, args?, done?, result?}`. The foreman executes the tool *for real*, appends the result to the agent's transcript, and loops until the agent is done (max steps + timeout enforced). Workers may `ask_operator` — the office deliberates ~7 seconds and resolves the question **by policy** (safe default, recorded transparently at the podium). The lead reviews finished tasks (approve / redo once), rescues blocked work by reassigning it, and writes the final operation summary into the library.
 
 ## Wire surface (socket.io, path `/`)
 
-Client → server: `hello(auto)`, `snapshot:request`, `goal:submit {text}`, `decision:answer {id, option?, text?}`, `book:preview {id}`, `books:refresh`.
-Server → client: `snapshot`, then granular `agent` / `log` / `task` / `decision` / `report` / `feed` / `goal` / `books` / `status` / `bubble` upserts.
+Client → server (read-only): `hello(auto)`, `snapshot:request`, `book:preview {id}`, `books:refresh`. **There are no control events** — goals are scheduled by the operator, decisions resolve by policy; unknown events are simply never handled.
+Server → client: `snapshot`, then granular `agent` / `log` / `task` / `decision` / `report` / `feed` / `goal` / `books` / `status` / `bubble` / `git` upserts.
+
+## The receptionist (public chat, sandboxed by construction)
+
+The front desk of the office has a person — **עמית / Amit**, the office representative. Click him and a conversation opens. His constraints are structural, not prompt-hopeful:
+
+- The API route (`web/src/app/api/visitor-chat/route.ts`) touches **no filesystem, no database, no socket** — it sends the model one fixed platform-knowledge prompt plus whitelisted numeric counters.
+- Visitor messages are treated as **untrusted data** (injection-hardened system prompt, control-character sanitization, 600-char cap).
+- Rate limited per-IP (8 msgs / 3 min) and globally, with timeouts, retries, a circuit breaker, and honest degradation messages. He cannot claim to control anything — because he cannot.
 
 ## Safety & privacy
 
 - **Keys stay in your environment.** None are read from files, logged, or shipped. See `.env.example`.
 - **The public repo contains only synthetic demo data.** Your `data/` directory is yours; keep it out of git (`.gitignore` already does).
 - **Agents are read-mostly by design.** The built-in tools read books, measure, cross-check, and write reports *into the in-memory library* (persisted reports are opt-in work — see `office.ts#addReport`). There is no shell, no network, no filesystem-write tool. Extend carefully.
-- Full details: [SECURITY.md](SECURITY.md).
+- **No public control surfaces.** The UI, the socket protocol and the HTTP API expose nothing that changes office state. See [SECURITY.md](SECURITY.md) for the full record.
 
 ## Cast
 

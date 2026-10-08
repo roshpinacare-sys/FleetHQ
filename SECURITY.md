@@ -12,8 +12,9 @@ this is the checklist to keep your own deployment equally safe.
   files are invented placeholders (e.g. `demo-pool-a`, `demo-verify`).
 - **No credentials of any kind.** No API keys, tokens, passwords, or private URLs exist in
   this repository. The LLM key is read from the process environment only
-  (`OPENAI_API_KEY` / `OPENAI_BASE_URL` / `OPENAI_MODEL`), and the `z-ai-web-dev-sdk`
-  integration is loaded dynamically if installed locally — it is not a declared dependency.
+  (`OPENAI_API_KEY` / `OPENAI_BASE_URL` / `OPENAI_MODEL`). The `z-ai-web-dev-sdk` is used
+  dynamically when installed locally; the receptionist route imports it lazily and fails
+  honest when no provider is configured.
 
 ## What is deliberately NOT here
 
@@ -24,8 +25,23 @@ this is the checklist to keep your own deployment equally safe.
   code or the demo data references any production system.
 - **No write access to your books.** The agent toolset is read-and-report only:
   `list_books`, `read_book`, `measure`, `cross_check`, `write_report` (into the office's
-  in-memory library), `message`, `ask_human`. There is no shell tool, no arbitrary file
+  in-memory library), `message`, `ask_operator`. There is no shell tool, no arbitrary file
   write, and no network tool.
+
+## The public office is read-only, by construction
+
+- **The socket surface has zero control events.** Earlier versions accepted
+  `goal:submit` / `decision:answer`; both handlers were **deleted**. A visitor (or a
+  script) can request snapshots and book excerpts — nothing else. Goals are scheduled by
+  the autonomous operator; agent questions resolve by policy in seconds and are published
+  as transparency records.
+- **The receptionist chat cannot leak.** Its API route has no filesystem, database, or
+  socket access. It sends the model a fixed platform prompt + whitelisted numeric counters
+  (extra fields are dropped, roles are forced server-side, history is sanitized and
+  capped). Rate limits, timeouts, retries and a circuit breaker are built in. Errors
+  return generic messages.
+- **The git wire is metadata only.** It reads `git log` (hash, timestamp, author, subject)
+  from the configured repository. No file contents, no diffs, no commit bodies.
 
 ## Demo vs live, in one table
 
@@ -43,7 +59,9 @@ this is the checklist to keep your own deployment equally safe.
 3. Put the foreman behind your own proxy/firewall. The socket surface trusts the local
    network; do not expose raw port 3010 to the internet.
 4. If you extend the toolset with write/networking tools, gate them behind the same
-   `ask_human` decision flow — that is the pattern this project is built around.
+   `ask_operator` decision flow — that is the pattern this project is built around.
+5. Keep the socket read-only. Any new client→server event that mutates state reintroduces
+   a public control surface — review it like a production security change.
 
 ## Reporting
 

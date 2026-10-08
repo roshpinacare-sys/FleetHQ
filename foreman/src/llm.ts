@@ -49,8 +49,10 @@ export async function llmAvailable(): Promise<{ ok: boolean; provider: string }>
 // ---- global concurrency gate --------------------------------------------------------------
 // One LLM call at a time with a small gap keeps the office readable (agents act in turn,
 // like a real operations room) and respects provider rate limits.
+// NOTE: the guide endpoint (/api/visitor-chat) shares this provider — keep the gaps
+// generous so a patrol never starves the public chat (measured: hard 429 saturation).
 let chain: Promise<unknown> = Promise.resolve();
-const GAP_MS = 1200;
+const GAP_MS = 2600;
 
 function enqueue<T>(fn: () => Promise<T>): Promise<T> {
   const run = chain.then(fn, fn);
@@ -67,7 +69,8 @@ async function withRetry<T>(fn: () => Promise<T>, tries = 4): Promise<T> {
       lastErr = e;
       const msg = (e as Error).message ?? '';
       if (msg.includes('NO_LLM')) throw e;
-      const wait = msg.includes('429') || msg.toLowerCase().includes('too many') ? 8000 * (i + 1) : 1500 * (i + 1) * (i + 1);
+      // 429s need LONG spacing — hammering keeps the shared quota saturated forever
+      const wait = msg.includes('429') || msg.toLowerCase().includes('too many') ? 14000 * (i + 1) : 2500 * (i + 1) * (i + 1);
       await new Promise((r) => setTimeout(r, wait));
     }
   }
@@ -75,10 +78,10 @@ async function withRetry<T>(fn: () => Promise<T>, tries = 4): Promise<T> {
 }
 
 export async function chat(messages: ChatMessage[], _maxTokens = 900): Promise<ChatResult> {
-  return enqueue(() => withRetry(() => chatRaw(messages)));
+  return enqueue(() => withRetry(() => chatRaw(messages, _maxTokens)));
 }
 
-async function chatRaw(messages: ChatMessage[]): Promise<ChatResult> {
+async function chatRaw(messages: ChatMessage[], maxTokens = 900): Promise<ChatResult> {
   const c = await detect();
   if (c.kind === 'zai') {
     const ZAI = (c.mod as any).default ?? (c.mod as any);

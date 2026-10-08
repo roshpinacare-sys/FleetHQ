@@ -1,4 +1,6 @@
 // Smoke test client for the foreman (dev tool).
+// READ-ONLY observer: the socket has no control surface anymore — goals are
+// scheduled by the autonomous operator and decisions resolve by policy.
 import { io } from 'socket.io-client';
 
 const PORT = process.argv[2] || '3011';
@@ -13,9 +15,6 @@ socket.on('connect', () => {
   console.log('connected', socket.id);
   socket.on('snapshot', (s: { status: { backend: string; message: { he: string } }; agents: unknown[]; books: unknown[] }) => {
     console.log('SNAPSHOT backend=', s.status.backend, '|', s.status.message.he, '| agents:', s.agents.length, '| books:', s.books.length);
-    socket.emit('goal:submit', { text: 'בדיקת עשן: סרוק את ספרי הצי ודווח ממצאים' }, (r: { ok: boolean }) => {
-      console.log('goal submit →', r);
-    });
   });
   socket.on('agent', (a: { id: string; state: string; activity: string }) => bump('agent'));
   socket.on('task', (t: { id: string; title: string; status: string }) => {
@@ -32,8 +31,7 @@ socket.on('connect', () => {
   });
   socket.on('decision', (d: { id: string; question: string; status: string }) => {
     bump('decision');
-    console.log('DECISION', d.id, d.status, d.question.slice(0, 60));
-    socket.emit('decision:answer', { id: d.id, option: 'כן' });
+    console.log('DECISION (operator-resolved)', d.id, d.status, d.question.slice(0, 60));
   });
   socket.on('report', (r: { title: string }) => {
     bump('report');

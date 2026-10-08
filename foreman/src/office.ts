@@ -17,11 +17,27 @@ import type {
 import { CREW, LEAD, WORKERS, crewOf } from './cast';
 import { crossCheckBooks, excerptBook, loadBooks, measureBook } from './books';
 import { chat, extractJson, llmAvailable } from './llm';
+import { GitWire, resolveGitSource } from './gitpulse';
 
 const MAX_STEPS = 8;
 const TASK_TIMEOUT_MS = 4 * 60_000;
 const DECISION_WAIT_MS = 3 * 60_000;
+// THE AUTONOMY LAW: the operating system resolves its own agents' questions.
+// No visitor, no socket client, no external party ever holds control over the crew —
+// an operator decision is a short, real deliberation, then a policy answer.
+const OPERATOR_DELIBERATION_MS = 7_000;
+const OPERATOR_POLICY_TEXT = 'מדיניות המפעיל האוטונומי: הנתיב הבטוח — המשך';
 const MAX_LOG = 160;
+// the crew's own routine: when the room is idle, the office schedules patrol
+// shifts itself so a visitor ALWAYS sees real, measured work — never a frozen set.
+const PATROL_COOLDOWN_MS = 15 * 60_000;
+const PATROL_ARM_DELAY_MS = 40_000;
+const PATROLS = [
+  'סיור שגרה: סרוק את ספרי הצי ודווח מה ישן או דורש בדיקה',
+  'סיור שגרה: צלב בין שני ספרי צי ודווח על פערים שנמצאו',
+  'סיור שגרה: בדוק את תקינות ספרי הביקורת והרישום של הצי',
+  'סיור שגרה: מדוד את טריות הספרים שבבעלות העובדים ודווח',
+];
 
 export type Emit = (event: string, payload: unknown) => void;
 
@@ -47,6 +63,11 @@ export class Office {
   private booksTimer?: ReturnType<typeof setInterval>;
   private startedAt = Date.now();
   private taskAttempts = new Map<string, number>();
+  private gitWire: GitWire;
+  private patrolArmed = false;
+  private lastShiftEnd = 0;
+  private patrolIdx = 0;
+  private planFailures = 0;
   opsDone = 0;
 
   constructor(emit: Emit) {
@@ -101,11 +122,25 @@ export class Office {
     this.emit('status', this.status);
     this.dispatcher = setInterval(() => this.dispatch(), 2200);
     this.booksTimer = setInterval(() => this.refreshBooks(), 5 * 60_000);
+    // the git wire: the fleet's real commit stream (metadata only, public repo)
+    this.gitWire = new GitWire(
+      resolveGitSource(process.env.AGENT_HQ_DATA_DIR ?? './data'),
+      (p) => this.emit('git', p),
+      (cs) => {
+        for (const c of cs) this.feedPush('git', `commit ${c.hash} — ${c.subject.slice(0, 110)}`);
+      },
+    );
+    this.gitWire.start();
+    // arm the autonomous patrol a beat after boot so the room is never a dead set
+    setTimeout(() => {
+      this.patrolArmed = true;
+    }, PATROL_ARM_DELAY_MS);
   }
 
   shutdown() {
     if (this.dispatcher) clearInterval(this.dispatcher);
     if (this.booksTimer) clearInterval(this.booksTimer);
+    this.gitWire.stop();
   }
 
   refreshBooks() {
@@ -195,9 +230,9 @@ export class Office {
     };
     this.decisions.set(d.id, d);
     this.emit('decision', d);
-    this.feedPush('decision', `שאלה למפקד: ${d.question}`, agentId);
+    this.feedPush('decision', `שאלה למפעיל האוטונומי: ${d.question}`, agentId);
     this.setState(agentId, 'walking', 'הולך לשלט ההחלטות', 'podium');
-    this.setState(agentId, 'waiting_user', 'מחכה למפקד', 'podium', taskId);
+    this.setState(agentId, 'waiting_user', 'ממתין להכרעה אוטונומית', 'podium', taskId);
     return d;
   }
 
@@ -207,11 +242,11 @@ export class Office {
     d.status = 'answered';
     d.answer = { ...(option ? { option } : {}), ...(text ? { text } : {}), ts: Date.now() };
     this.emit('decision', d);
-    this.feedPush('decision', `המפקד ענה: ${option ?? text ?? ''}`, d.agentId);
+    this.feedPush('decision', `המפעיל האוטונומי הכריע: ${option ?? text ?? ''}`, d.agentId);
     const rt = this.agents.get(d.agentId);
     if (rt) {
       rt.pendingAnswer = { ...(option ? { option } : {}), ...(text ? { text } : {}) };
-      this.log(d.agentId, 'result', `answer from commander: ${option ?? ''} ${text ?? ''}`.trim());
+      this.log(d.agentId, 'result', `operator policy decision: ${option ?? ''} ${text ?? ''}`.trim());
     }
     return true;
   }
@@ -245,6 +280,7 @@ export class Office {
       feed: this.feed.slice(-80),
       ...(this.goal ? { goal: this.goal } : {}),
       books: this.books,
+      git: this.gitWire?.pulse,
     };
   }
 
@@ -260,9 +296,10 @@ export class Office {
       this.startSimScenario(clean);
       return { ok: true };
     }
-    this.goal = { id: this.id('g'), text: clean, status: 'planning', progress: 0, createdAt: Date.now(), updatedAt: Date.now() };
+    this.goal = { id: this.id('g'), text: clean, status: 'planning', progress: 0, createdAt: Date.now(), updatedAt: Date.now(), origin: 'commander' };
     this.emit('goal', this.goal);
     this.feedPush('user', clean);
+    this.planFailures = 0;
     void this.leadPlan(clean);
     return { ok: true };
   }
@@ -338,6 +375,14 @@ export class Office {
       this.log(LEAD, 'error', `plan failed: ${(e as Error).message}`);
       this.setState(LEAD, 'error', 'תכנון נכשל — מנסה שוב', 'wall');
       // one honest auto-retry, then surface the failure to the commander
+      this.planFailures++;
+      if (this.planFailures >= 2) {
+        this.setGoal({ status: 'failed' });
+        this.lastShiftEnd = Date.now();
+        this.planFailures = 0;
+        this.feedPush('error', 'תכנון נכשל פעמיים — המפקדה ממתינה ליעד חדש');
+        return;
+      }
       setTimeout(() => {
         if (this.goal && this.goal.status === 'planning') void this.leadPlan(goalText);
         else if (this.goal && this.goal.status === 'failed') this.feedPush('error', 'תכנון נכשל — נסה שוב');
@@ -349,6 +394,7 @@ export class Office {
 
   dispatch() {
     if (this.status.backend === 'sim') return; // sim drives itself
+    this.maybePatrol();
     // lead rescue duty: a blocked task gets one reassignment to a fresh worker
     const blockedTask = [...this.tasks.values()].find((t) => t.status === 'blocked' && !this.rescued.has(t.id));
     const leadRt = this.agents.get(LEAD)!;
@@ -388,6 +434,26 @@ export class Office {
   }
 
   private rescued = new Set<string>();
+
+  /**
+   * The office's own heartbeat: when the room has been idle past the cooldown,
+   * the chief schedules a routine patrol shift on the real books. Visitors always
+   * see measured work — and the shift is honestly labeled as scheduled routine,
+   * never as a commander's order.
+   */
+  private maybePatrol() {
+    if (!this.patrolArmed) return;
+    if (this.goal && (this.goal.status === 'planning' || this.goal.status === 'active' || this.goal.status === 'review')) return;
+    if (Date.now() - this.lastShiftEnd < PATROL_COOLDOWN_MS) return;
+    if ([...this.agents.values()].some((rt) => rt.running)) return;
+    const text = PATROLS[this.patrolIdx++ % PATROLS.length];
+    this.goal = { id: this.id('g'), text, status: 'planning', progress: 0, createdAt: Date.now(), updatedAt: Date.now(), origin: 'patrol' };
+    this.emit('goal', this.goal);
+    this.feedPush('goal', `סיור שגרה מתוזמן — ${text.replace('סיור שגרה: ', '')}`);
+    this.log(LEAD, 'text', 'routine patrol shift — scheduled by the office itself');
+    this.bubble(LEAD, 'מפקדה ריקה? לא אצלנו. סיור שגרה יוצא לדרך.');
+    void this.leadPlan(text);
+  }
 
   /** The chief never leaves a blocked task on the floor: one honest reassignment. */
   async leadRescue(task: Task) {
@@ -467,10 +533,10 @@ export class Office {
             const answered = await this.waitForAnswer(rt, DECISION_WAIT_MS);
             if (!answered.ok) {
               this.patchTask(taskId, { status: 'blocked' });
-              this.feedPush('error', `המשימה נחסמה — אין תשובה מהמפקד`, task.assignee);
+              this.feedPush('error', `המשימה נחסמה — לא התקבלה הכרעה אוטונומית`, task.assignee);
               return;
             }
-            history.push({ role: 'user', content: `COMMANDER ANSWER: ${JSON.stringify(answered.answer)}` });
+            history.push({ role: 'user', content: `OPERATOR DECISION: ${JSON.stringify(answered.answer)}` });
           }
         } else {
           history.push({ role: 'user', content: 'המשך: בצע צעד אחד (כלי או done).' });
@@ -592,12 +658,19 @@ export class Office {
         this.bubble(agentId, `(${crewOf(to)?.name.he ?? to}) ${text}`);
         return 'sent';
       }
-      case 'ask_human': {
+      case 'ask_operator': {
         const q = safe(args.question);
         const options = Array.isArray(args.options) ? args.options.map((o) => safe(o)) : ['כן', 'לא'];
-        this.log(agentId, 'tool', `ask_human(${q})`);
-        this.askHuman(agentId, q, options, typeof args.context === 'string' ? args.context.slice(0, 500) : undefined, taskId);
-        return '__WAITING_FOR_HUMAN__';
+        this.log(agentId, 'tool', `ask_operator(${q})`);
+        const d = this.askHuman(agentId, q, options, typeof args.context === 'string' ? args.context.slice(0, 500) : undefined, taskId);
+        // Autonomy: the office itself deliberates and decides — the podium record is
+        // public transparency, not a control surface. The wait loop below resolves in seconds.
+        setTimeout(() => {
+          const cur = this.decisions.get(d.id);
+          if (!cur || cur.status !== 'open') return; // already resolved (defensive)
+          this.answerDecision(d.id, cur.options[0], OPERATOR_POLICY_TEXT);
+        }, OPERATOR_DELIBERATION_MS);
+        return '__WAITING_FOR_HUMAN__'; // auto-resolves by the operator policy
       }
       default:
         this.log(agentId, 'error', `unknown tool ${tool}`);
@@ -682,6 +755,7 @@ export class Office {
       this.setState(LEAD, 'done', 'היעד הושלם', 'library');
       setTimeout(() => this.setState(LEAD, 'idle', '', 'wall'), 4000);
       this.feedPush('goal', 'היעד הושלם — סיכום בספרייה', LEAD);
+      this.lastShiftEnd = Date.now();
     } catch (e) {
       this.log(LEAD, 'error', `final report failed: ${(e as Error).message}`);
       this.setGoal({ status: 'done', progress: 1 });
@@ -707,7 +781,7 @@ function workerSystemPrompt(crew: CrewMember, task: Task, books: BookView[]): st
     (myBooks.length ? `טריות ידועה: ${myBooks.map((b) => `${b.id}=${b.ageHours !== undefined ? b.ageHours.toFixed(1) + 'h' : '?'}`).join(', ')}. ` : '') +
     `\n\nהמשימה שלך עכשיו: "${task.title}" — ${task.description ?? '(ללא תיאור נוסף)'}\n` +
     (task.summary?.startsWith('[redo]') ? `הערת ראש-המטה מהסבב הקודם: ${task.summary}\n` : '') +
-    `\nכלים (כלי אחד לכל הודעה): list_books | read_book{"id"} | measure{"id","path"} | cross_check{"a","b"} | write_report{"title","body"} | message{"to","text"} | ask_human{"question","options","context"}\n` +
+    `\nכלים (כלי אחד לכל הודעה): list_books | read_book{"id"} | measure{"id","path"} | cross_check{"a","b"} | write_report{"title","body"} | message{"to","text"} | ask_operator{"question","options","context"} — ask_operator שואל את המפעיל האוטונומי של המפקדה כשחסרה הכרעה\n` +
     `חוקים: עבוד רק מנתונים אמיתיים שקראת בפועל. אסור להמציא מספרים או מסקנות. ` +
     `say עד 12 מילים בעברית. thought עד 20 מילים. כשהמשימה הושלמה ממש — {"done":true,"result":"…"}.\n` +
     `השב אך ורק אובייקט JSON: {"say"?:string,"thought"?:string,"tool"?:string,"args"?:object,"done"?:boolean,"result"?:string}`

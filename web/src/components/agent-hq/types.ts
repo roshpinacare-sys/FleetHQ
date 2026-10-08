@@ -66,7 +66,7 @@ export interface Report {
   ts: number;
 }
 
-export type FeedKind = 'goal' | 'plan' | 'task' | 'message' | 'decision' | 'report' | 'system' | 'error' | 'user';
+export type FeedKind = 'goal' | 'plan' | 'task' | 'message' | 'decision' | 'report' | 'system' | 'error' | 'user' | 'git';
 
 export interface FeedItem {
   id: string;
@@ -85,6 +85,7 @@ export interface Goal {
   progress: number;
   createdAt: number;
   updatedAt: number;
+  origin?: 'commander' | 'patrol';
 }
 
 export interface BookView {
@@ -108,6 +109,24 @@ export interface ForemanStatus {
   opsDone: number;
 }
 
+export interface CommitView {
+  hash: string;
+  subject: string;
+  author: string;
+  ts: number;
+  repo: string;
+  branch?: string;
+}
+
+export interface GitPulse {
+  available: boolean;
+  repoUrl?: string;
+  repoLabel?: string;
+  branch?: string;
+  commits: CommitView[];
+  lastFetch: number;
+}
+
 export interface Snapshot {
   v: 1;
   status: ForemanStatus;
@@ -120,6 +139,7 @@ export interface Snapshot {
   feed: FeedItem[];
   goal?: Goal;
   books: BookView[];
+  git?: GitPulse;
 }
 
 export const STATE_COLORS: Record<AgentState, string> = {

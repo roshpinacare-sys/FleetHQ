@@ -5,7 +5,7 @@ import { excerptBook } from './src/books';
 
 // Fleet HQ foreman — the real crew service.
 //   AGENT_HQ_PORT       (default 3010)
-//   AGENT_HQ_DATA_DIR   (default ./data — create it or point it at your own books; the bundled demo uses ./demo-data)
+//   AGENT_HQ_DATA_DIR   (default ./data — point it at your own books repo clone; the bundled demo uses ./demo-data)
 //   AGENT_HQ_MODE       'sim' forces the clearly-labeled demo crew
 // The socket owns the whole surface (path '/' is reserved by the gateway), so every RPC is an event.
 const PORT = Number(process.env.AGENT_HQ_PORT || 3010);
@@ -34,15 +34,11 @@ io.on('connection', (socket) => {
 
   socket.on('snapshot:request', () => socket.emit('snapshot', office.snapshot()));
 
-  socket.on('goal:submit', ({ text }: { text?: string }, ack?: (r: unknown) => void) => {
-    const r = office.submitGoal(String(text ?? ''));
-    if (ack) ack(r);
-    if (!r.ok) socket.emit('goal:rejected', r);
-  });
-
-  socket.on('decision:answer', ({ id, option, text }: { id?: string; option?: string; text?: string }) => {
-    if (id) office.answerDecision(id, option, text);
-  });
+  // SECURITY / AUTONOMY LAW — the socket is READ-ONLY for the public.
+  // There is deliberately NO 'goal:submit' and NO 'decision:answer' handler:
+  // goals are scheduled by the autonomous operator (patrol shifts) and every
+  // agent question is resolved by the operator's own policy. A stranger with
+  // a socket client gets a window, not a steering wheel.
 
   socket.on('book:preview', ({ id }: { id?: string }, ack?: (r: unknown) => void) => {
     if (!id || !ack) return;

@@ -85,7 +85,8 @@ export type FeedKind =
   | 'report'
   | 'system'
   | 'error'
-  | 'user';
+  | 'user'
+  | 'git';
 
 export interface FeedItem {
   id: string;
@@ -104,6 +105,8 @@ export interface Goal {
   progress: number; // 0..1
   createdAt: number;
   updatedAt: number;
+  /** 'commander' = a visitor typed it; 'patrol' = the crew's own scheduled routine shift. */
+  origin?: 'commander' | 'patrol';
 }
 
 // ---- real fleet registry -------------------------------------------------------------
@@ -129,6 +132,25 @@ export interface ForemanStatus {
   opsDone: number;
 }
 
+// ---- the git wire: the fleet's real commit stream (what actually happened) ---------------
+
+export interface CommitView {
+  hash: string; // short hash
+  subject: string; // ≤ 120 chars
+  author: string;
+  ts: number; // epoch ms
+  repo: string; // human repo label, public
+}
+
+export interface GitPulse {
+  available: boolean;
+  repoUrl?: string; // public repo the commits live in
+  repoLabel?: string;
+  branch?: string;
+  commits: CommitView[]; // newest first, capped
+  lastFetch: number;
+}
+
 export interface Snapshot {
   v: 1;
   status: ForemanStatus;
@@ -141,4 +163,5 @@ export interface Snapshot {
   feed: FeedItem[];
   goal?: Goal;
   books: BookView[];
+  git?: GitPulse;
 }

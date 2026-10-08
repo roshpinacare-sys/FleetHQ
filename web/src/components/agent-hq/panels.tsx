@@ -81,7 +81,11 @@ export function MonitorPanel({
       <div ref={scroller} className="hq-scroll min-h-0 flex-1 overflow-y-auto rounded-xl border border-zinc-800 bg-zinc-950/80 p-3" dir="ltr">
         {logs.length === 0 && <div className="grid h-24 place-items-center text-xs text-zinc-600">—</div>}
         {logs.map((entry, i) => (
-          <div key={i} className="flex gap-2 py-0.5 font-mono text-[11.5px] leading-5">
+          <div
+            key={i}
+            className="hq-feed-in flex gap-2 py-0.5 font-mono text-[11.5px] leading-5"
+            style={{ animationDelay: `${Math.min(i, 12) * 0.02}s` }}
+          >
             <span className="shrink-0 text-zinc-600">{new Date(entry.ts).toLocaleTimeString(lang === 'he' ? 'he-IL' : 'en-GB', { hour12: false })}</span>
             <span className={`shrink-0 ${KIND_STYLE[entry.kind].color}`}>{KIND_STYLE[entry.kind].label}</span>
             <span className="whitespace-pre-wrap break-all text-zinc-300">{entry.text}</span>
@@ -125,7 +129,7 @@ export function WallPanel({
                   <button
                     key={task.id}
                     onClick={() => setOpen(expanded ? null : task.id)}
-                    className="w-full rounded-lg border border-zinc-800 bg-zinc-950/70 p-2 text-right transition hover:border-zinc-600"
+                    className="hq-card w-full rounded-lg border border-zinc-800 bg-zinc-950/70 p-2 text-right"
                   >
                     <div className="flex items-start gap-2" dir="auto">
                       {owner && <span className="mt-0.5 h-3 w-3 shrink-0 rounded-sm" style={{ backgroundColor: owner.color }} />}
@@ -164,52 +168,40 @@ export function WallPanel({
   );
 }
 
-// ---- Podium panel ------------------------------------------------------------------
+// ---- Podium panel (transparency record — decisions resolve autonomously) --------------
 
-export function PodiumPanel({
-  lang,
-  decisions,
-  onAnswer,
-}: {
-  lang: Lang;
-  decisions: Decision[];
-  onAnswer: (id: string, option?: string, text?: string) => void;
-}) {
-  const [draft, setDraft] = useState<Record<string, string>>({});
+export function PodiumPanel({ lang, decisions }: { lang: Lang; decisions: Decision[] }) {
   const open = decisions.filter((d) => d.status === 'open');
   const answered = decisions.filter((d) => d.status === 'answered').slice(-6).reverse();
   return (
     <div className="space-y-3">
-      {!open.length && <div className="grid h-24 place-items-center text-sm text-zinc-500">{t('noDecisions', lang)}</div>}
+      {/* the autonomy banner — visitors see the record, never hold the pen */}
+      <div className="rounded-none border border-[#00E5FF]/30 bg-[#00E5FF]/5 px-3 py-2 text-[11.5px] leading-4.5 text-[#8fe9f7]">
+        🔒 {t('podiumAutonomous', lang)}
+      </div>
+      {!open.length && !answered.length && <div className="grid h-24 place-items-center text-sm text-zinc-500">{t('noDecisions', lang)}</div>}
       {open.map((d) => (
-        <div key={d.id} className="rounded-xl border border-amber-700/50 bg-amber-500/5 p-4">
-          <div className="mb-1 flex items-center gap-2 text-xs text-amber-400">
-            <span className="grid h-5 w-5 place-items-center rounded-full bg-amber-500/20 font-bold">!</span>
-            {t('needsYou', lang)}
+        <div key={d.id} className="rounded-none border border-[#00E5FF]/40 bg-[#00E5FF]/5 p-4">
+          <div className="mb-1 flex items-center gap-2 text-xs text-[#4de3ff]">
+            <span className="grid h-5 w-5 place-items-center rounded-full bg-[#00E5FF]/20 font-bold">⏳</span>
+            {t('deciding', lang)}
           </div>
           <p className="font-medium leading-5" dir="auto">{d.question}</p>
           {d.context && <p className="mt-2 whitespace-pre-wrap text-xs leading-4 text-zinc-400" dir="auto">{d.context}</p>}
-          <div className="mt-3 flex flex-wrap gap-2">
+          <div className="mt-3 flex flex-wrap items-center gap-1.5">
             {d.options.map((o) => (
-              <button key={o} onClick={() => onAnswer(d.id, o, draft[d.id] || undefined)} className="rounded-lg bg-amber-500/90 px-3 py-2 text-sm font-semibold text-zinc-950 transition hover:bg-amber-400">
+              <span key={o} className="rounded-full border border-[#232329] bg-[#101015] px-2.5 py-1 text-xs text-zinc-400" dir="auto">
                 {o}
-              </button>
+              </span>
             ))}
           </div>
-          <input
-            value={draft[d.id] ?? ''}
-            onChange={(e) => setDraft((s) => ({ ...s, [d.id]: e.target.value }))}
-            placeholder={t('freeText', lang)}
-            className="mt-2 w-full rounded-lg border border-zinc-800 bg-zinc-950 px-3 py-2 text-sm outline-none focus:border-amber-600"
-            dir="auto"
-          />
         </div>
       ))}
       {answered.map((d) => (
-        <div key={d.id} className="rounded-xl border border-zinc-800 bg-zinc-900/40 p-3 opacity-70">
+        <div key={d.id} className="hq-card rounded-none border border-zinc-800 bg-zinc-900/40 p-3 opacity-80">
           <p className="text-sm leading-5" dir="auto">{truncate(d.question, 90)}</p>
-          <p className="mt-1 text-xs text-zinc-400" dir="auto">
-            {t('answered', lang)}: {d.answer?.option ?? d.answer?.text ?? '—'} · {timeAgo(d.answer?.ts ?? d.createdAt, lang)}
+          <p className="mt-1 text-xs text-[#7dffb0]" dir="auto">
+            {t('resolved', lang)}: {d.answer?.option ?? d.answer?.text ?? '—'} · {timeAgo(d.answer?.ts ?? d.createdAt, lang)}
           </p>
         </div>
       ))}
@@ -227,7 +219,7 @@ export function LibraryPanel({ lang, reports }: { lang: Lang; reports: Report[] 
       {reports.map((r) => {
         const expanded = open === r.id;
         return (
-          <div key={r.id} className="rounded-xl border border-zinc-800 bg-zinc-900/40 p-4">
+          <div key={r.id} className="hq-card rounded-xl border border-zinc-800 bg-zinc-900/40 p-4">
             <button className="w-full text-right" onClick={() => setOpen(expanded ? null : r.id)}>
               <div className="font-semibold leading-5" dir="auto">{r.title}</div>
               <div className="mt-1 text-xs text-zinc-500" dir="auto">
@@ -271,7 +263,7 @@ export function FleetPanel({
           <button
             key={b.id}
             onClick={() => onPreview(b.id)}
-            className="flex w-full items-center gap-3 rounded-lg border border-zinc-800 bg-zinc-900/40 p-2.5 text-right transition hover:border-zinc-600"
+            className="hq-card hq-card-lift flex w-full items-center gap-3 rounded-lg border border-zinc-800 bg-zinc-900/40 p-2.5 text-right"
           >
             <span className="h-8 w-1.5 shrink-0 rounded-full" style={{ backgroundColor: owner?.color ?? '#52525b' }} />
             <span className="min-w-0 flex-1">
