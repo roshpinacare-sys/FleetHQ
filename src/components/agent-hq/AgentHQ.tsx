@@ -6,6 +6,7 @@ import { Office } from './Office';
 import { NetworkAtlas } from './Network';
 import { FleetPanel, LibraryPanel, MonitorPanel, PodiumPanel, WallPanel } from './panels';
 import { GitWirePanel } from './GitWire';
+import StackHealth from './StackHealth';
 import { ReceptionChat, type PublicStats } from './ReceptionChat';
 import type { AgentView, BookView, CrewMember, Decision, FeedItem, GitPulse, Goal, LogEntry, Report, Snapshot, Task } from './types';
 import { STATE_COLORS } from './types';
@@ -679,6 +680,9 @@ export default function AgentHQ() {
             })}
           </div>
         </section>
+
+        {/* 04 · sovereign stack health — chains re-verified from disk */}
+        <StackHealth lang={lang} />
       </main>
 
       {/* ================= footer ================= */}

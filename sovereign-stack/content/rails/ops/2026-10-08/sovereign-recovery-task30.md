@@ -1,3 +1,9 @@
+<!-- sovereign-rail
+parent_broadcast_root: 16ff2ed9476cd658f72a2bf758d1b3b21d5d2e34c35d62fab4406512848e1158
+source: content/sources/sovereign-recovery-task30.json
+source_sha256: 83c619d754e368ddacae931b1b31a5865a8f2c8be76f74339950bd8baaa0c756
+-->
+
 # Sovereign Stack — Sandbox-Reset Recovery & Task 30 Fusion Receipt
 
 Measured record of the fresh-sandbox continuity event: FleetHQ re-clone, Task 28/29 stack recovery, and the Task 30 content/health/bench fusion — every claim measured live on this machine.
