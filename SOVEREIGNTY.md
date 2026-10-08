@@ -107,3 +107,63 @@ git clone https://github.com/roshpinacare-sys/FleetHQ && cd FleetHQ/mini-service
 # English — the doctrine in one breath
 
 The sandbox is only a viewer; the office's true home is git — **FleetHQ** holds the code (including `run-office.sh`, the `Dockerfile`, and the sealed vault), **Domain** holds the books and memory, persisted by commits. If the sandbox dies: clone both repos, open the vault (or copy `.env.example` → `.env`), run `./run-office.sh`, and verify via a socket.io `snapshot` probe on :3010 — under five minutes, on any machine. Keys never enter git (gitignored `.env` + encrypted `vault/keys.env.enc`), the public socket is read-only, and `mini-services/agent-hq/SECURITY.md` is the binding security doctrine.
+
+---
+
+## 6. ריבונות v2 — הכספת בעלת-עצמה (2026-10-09, boot-sovereign)
+
+> **הבעיה-שהוכחה בדם:** הכספת הייתה "חתומה" אבל סיסמתה == הטוקן של המפעיל.
+> מכונה חדשה עם טוקן אחר = סנדבוקס מת. 10+ שחזורים ידניים של המפעיל = ההוכחה.
+> **התיקון המבני:** הכספת עכשיו בעלת-עצמה — סיסמה-אם אקראית (P) + רישום-WRAP
+> שמתרחב מעצמו, ושכבת-גישה שלא תפוג לעולם (SSH deploy keys).
+
+### 6.1 מודל האמון (שכבות, מהחזקה לחלשה)
+
+| שכבה | מה זה | תפוגה | מי מסוגל |
+|---|---|---|---|
+| **T1** | מפתח-פריסה SSH (`deploy_*`, אד25519/RSA-3072) על fleet-vault | **לעולם לא** | מכונה שמחזיקה את המפתח: משכפלת פרטי + פותחת wrap-ssh |
+| **T2** | כל טוקן GitHub רשום ב-`vault/wraps/` | לפי טוקן (הנוכחי: 2026-12-12) | כל סוכן שהמפעיל/פלטפורמה "חיבר לגיטהאב" |
+| **T3** | חותמות-לגאסי (סיסמה==טוקן) | כמו הטוקן | תאימות-לאחור בלבד; נשלב החוצה |
+
+**החוק:** P אקראי (openssl rand 48B), אף-פעם לא שווה טוקן. P נוסע רק כ-wraps:
+`wraps/<sha256(C)>.enc = openssl(P, key=sha256hex(C))`. פורמט-קובץ אחד, אין-יוצאים-מן-הכלל.
+**התרחבות-עצמית:** כל אתחול מצליח רושם את-הטוקן-שלו כ-wrap חדש → הסוכן-הבא-שנולד-עם-אותו-טוקן משרת את-עצמו.
+
+### 6.2 הפקודה-האחת (boot-sovereign)
+
+```bash
+bash vault/boot-sovereign.sh   # מגלה-טוקן → מושך כספת-פרטית → פותח wrap → מפרוס מפתחות
+                               # → מתקין deploy keys → רושם-wrap → כותב sovereign-agent.env → מעיר שירותים
+```
+נמדד-חי (2026-10-09): **תרגיל-C** — מכונה-חדשה עם מפתח-פריסה בלבד (אפס-טוקנים, אפס-סודות,
+אפס-קבצי-.env): שחזור-מלא תוך ~15 שניות, כולל מפתחות-מוח (keyed) + כל-4-מפתחות-הפריסה.
+**תרגיל-A** (אפס-הרשאות): כשל-כנה עם הוראות-מדויקות — המשרד לא מעמיד-פנים.
+
+### 6.3 חוק-השער-לסוכנים (/v1 על :3000)
+
+```env
+OPENAI_API_BASE=http://localhost:3000/v1   # פרוקסי → sovereign-gateway :3011
+OPENAI_API_KEY=any-string-here             # מפתח-בובה — השער מקבל כל-מחרוזת
+AI_TIMEOUT=60000
+MAX_RETRIES=5
+```
+(תבנית-מחויבת: `sovereign-agent.env.example`; נוצר-חי ע"י boot-sovereign.)
+השער מרכז failover אמיתי: 429→45ש׳±jitter, 401/402/403→5דק׳, רשת→15ש׳, ירידת-max_tokens
+ב-429-חוזר (×0.75, רצפה 384), שער-איכות, עדיפות-קבלה.
+
+### 6.4 חוקיות GitHub (ההיתר-המלא)
+
+- **deploy keys** דרך ה-API הרשמי (`POST /repos/{o}/{r}/keys`) = פיצ'ר סטנדרטי; מפתח-פרטי
+  נע בתוך הכספת המוצפנת בלבד (`ssh-keys.tar.enc`), לעולם לא ב-plaintext.
+- **כספת מוצפנת בריפו ציבורי** = ciphertext בלבד (openssl salted, PBKDF2-200k) — כמו
+  git-crypt/SOPS; secret-scanning לא מדליק על מוצפן.
+- **wraps רק בריפו הפרטי** — רשימת-הרשאות לא נחשפת לעולם.
+- **אין התחמקות-ממגבלות, אין-ספאם, אין-כרייה ב-Actions** — ע"פ `steem/docs/GITHUB-COMPLIANCE.md`.
+- **מצאנו-וסגרנו:** `identity/pat.env` plaintext בריפו-הפרטי (עידן-קודם) — הוסר מ-HEAD;
+  `SovereignConsole/upload/pat.env` + `.env` מוחזקים בריפו פרטי — רשום לסיבוב-הבא.
+
+### 6.5 מה עוד נשאר למפעיל (פעם-אחת, לא יותר)
+
+1. (מומלץ, חוסם-לתמיד) GitHub App: PEM לא-תפוג → הנפקת-טוקני-התקנה לנצח; ה-PEM נאטם בכספת.
+2. (כשיהיה-טוקן-חדש) סיבוב-טוקן: boot רושם-אוטומטית את-החדש כ-wrap; הישן פשוט פוג.
+3. דחיפת `sovereign-deploy-r2` keys לריפוים נוספים (steem ✓, saos-dex ✓, FleetHQ ✓, fleet-vault ✓).
