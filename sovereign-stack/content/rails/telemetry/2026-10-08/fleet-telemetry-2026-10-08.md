@@ -1,3 +1,9 @@
+<!-- sovereign-rail
+parent_broadcast_root: acc768c5d8c3bff302da3b5ed6e9cec021d292298bf22f2ffc926fcf4bc69c2d
+source: content/sources/fleet-telemetry-2026-10-08.json
+source_sha256: 721f21f59684ee710967dcdc0de35e6d2b8f13522a366b5e85e0c987d54b258c
+-->
+
 # דיג'סט-טלמטריה יומי — 2026-10-08
 
 סיכום מדוד של מארח-הצי ועדי-השרשרת, נאסף מקבצי-הבריאות בהקפאה הראשונה של היום (UTC). אף-ערך-לא-מומצא; מסמך-זה עובר סריקת-סודות ועיגון שרשרת ככל-תוצר.

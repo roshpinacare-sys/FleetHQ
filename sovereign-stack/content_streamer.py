@@ -35,7 +35,7 @@ from mem_profiler import effective_budget       # noqa: E402
 from memory_store import MemoryStore            # noqa: E402
 
 ROOT = Path(__file__).resolve().parent
-DEFAULT_HQ = "/home/z/fleet/repos/FleetHQ"
+DEFAULT_HQ = "/home/z/my-project"  # this workspace IS the FleetHQ clone here
 
 
 def _now() -> str:
@@ -248,7 +248,7 @@ def stream(stack_root: Path = ROOT, hq: Path | None = Path(DEFAULT_HQ),
 
     # anchor the seal itself in the manifest chain (idempotent by root)
     man = root / "content" / "MANIFEST.md"
-    marker = f"broadcast root={rails_root}"
+    marker = f"BROADCAST :: root={rails_root}"
     if ok and not (man.is_file() and marker in man.read_text(
             encoding="utf-8", errors="ignore")):
         MemoryStore(str(man)).append(
