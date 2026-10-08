@@ -736,3 +736,21 @@ Stage Summary:
 - **הוכחה-חיה בדפדפן** (דרך Caddy :81, הנתיב-האמיתי של המפעיל): snapshot socket → `backend= live | צוות חי — זיכרון שוחזר מהגיט (5 משמרות, 3 לקחים) | agents: 6 | books: 22`; משימות t6/t8/t10 בעבודה; erez קורא dex-book (list_books/read_book ביומן); חוט-הגיט ב-UI: **40 קומיטים** (office-memory: foreman books sync…); צילום-מסך /tmp/office-alive.png.
 - **הבהרת-אבחון חשובה**: UI בגישה-ישירה ל-:3000 יראה 0-תמיד (socket עובר רק דרך Caddy XTransformPort=3010) — מי שבודק ישירות-מקומי מקבל רושם-שווא של מוות. הנתיב-האמיתי (פרלוק/פאנל) חי.
 - דחיפה: c9cc426 (FleetHQ) — plant-books + 28-a/b logs. דפוס: `bun mini-services/agent-hq/tools/plant-books.ts` לרוץ באתחול (boot-sovereign כבר מריץ sync; הוספת קריאה עתידית).
+---
+Task ID: 30
+Agent: Z.ai Code (main session — פיוזן-צבא ותוכן)
+Task: הנחיה — Swarm Fusion & Content Acceleration: מסילת-תוכן אוטומטית (קומפיילר אפס-תלות בתוך sovereign-stack/), מוניטור-משאבים לדשבורד (קריאת /health + התראות-בלתי-ניתנות-לשינוי ב-receipts/), ושתי שאלות-מפעיל (פריסת-תוכן בין-הריפוים; בנצ'מרק-TPS רציף).
+
+Work Log (הכל נמדד):
+- שחזור-רציפות: הסנדבוקס אופס בשנית (sovereign-stack לא-היה-קיים, אפס-רימוטים, מחזור-מפתחות-GPG ריק, b3b9992 לא-נמצא מקומית). FLEET-BINDING.md הוביל ל-clone יחיד של FleetHQ → הסטאק כולו (Task 28+29) חזר; b3b9992 אומת בהיסטוריה לפני כל עבודה. תצפית-חיה: reflog ה-clone-הישן שרד ב-snapshot והופיע אחרי מהלך-ספריות — נמדד ותועד, לא נוחש.
+- פסקי-דין אפס-אמון על ההנחיה: "GPG r5" — **שקר** (מחזור-ריק; התאום כבר תיקן-כן ב-e1f33fe) → אומץ sha256+שרשרת בלבד. "b3b9992 נעול" — אמת. "22 ריפוים" — אמת ברמת-הארגון (Task 27 מדד 22/22); בסנדבוקס-זה כרכב-דחיפה אחד (FleetHQ-clone) — נמדד, לא סיפור.
+- content_rail.py: מערכי-נתונים → מרקדאון-דטרמיניסטי (bytes זהים בין-ריצות ובין-roots) + תאום-מכווץ (compaction.py) + סריקת-סודות לפני staging (רב-תבניתי כולל צורות-WIF; פסילה + קבלת-REJECTED ממוסכת) + עיגון-אידמפוטנטי ב-content/MANIFEST.md (אותו sha לא נכרך פעמיים) + verify (הליכת-שרשרת + השוואת-hash לכל-קובץ-מעוגן).
+- health_monitor.py: גישוש חוק-90000ms → health/status.json (אטומי) + history.jsonl (union-ts) + כל-אנומליה → receipts/ALERT-*.json בלתי-ניתן-לשינוי + RECEIPTS.chain (MemoryStore). ריצה-אמיתית: llamacpp-local DOWN (כן — אין-מארח-אינפרנס), nextjs-control OK 33ms, llm7-free OK 218ms → ALERT נכרך (chain n=1, verify ירוק).
+- tps_bench.py: מדידת-TPS-אמת (streaming, חציון-3-ריצות) → תקציב-דחיסה דטרמיניסטי (TPS-נמוך ⇒ max_chars-קטן: 6000/4000/2500/1500/800). מול 8080 מת: **exit 4 UNREACHABLE + state=UNREACHABLE נכתב — אף-מספר-לא-הומצא**.
+- selftest מורחב (T8 תוכן, T9 בריאות): **18/18 PASS חי** — דטרמיניזם-בין-roots, אידמפוטנטיות-עיגון, פסילת-סודות+קבלת-דחייה, snapshot+history, DOWN-ממדד-לא-מנוחש, שרשרת-קבלות.
+- דשבורד: API חדש /api/fleet-health (קריאת-קבצי-הסטאק + אימות-שרשראות-חי-בכל-קריאה) + מקטע "בריאות-הסטאק-הריבוני" בקונסולה. אומת-דפדפן: DOWN-אדום / UNREACHABLE-ענבר / OK-ירוק — כנות-מלאה; מובייל-390px תקין; אפס-שגיאות-קונסולה; lint נקי.
+- תשובות-המפעיל: (1) פריסת-תוכן — `sovereign-stack/content/{sources,rails/<rail>/<date>}` + `health/` + `receipts/` משוכפל-פר-ריפו, שורשי-השרשרת מוצלבים ב-MEMORY.md כ-claims; (2) בנצ'מרק-TPS — כבר-נבנה (tps_bench.py --once/--loop) ומכוון-אוטומטית את יחס-הדחיסה; כאן ידווח UNREACHABLE-כן עד שמארח-אינפרנס-חי יעלה — לא-ימציא מספרים.
+- סנכרון-צבא: עבודת-התאום (e1f33fe — sentinels/telemetry) לא-נגעה ב-sovereign-stack → מיזוג-נקי; הסטאק+התוצרים+הקבלות נדחפים ל-FleetHQ.
+
+Stage Summary:
+- מסילת-התוכן והבריאות חיות-ומוכחות: תוצר-ראשון נעגן (sha256=9a16f659…, 2746 bytes), שרשרת-MANIFEST + RECEIPTS ירוקות, והקונסולה מציגה הכל-חי-מהדיסק. אפס-סודות, אפס-GPG-מזויף, אפס-מספרים-מומצאים.
