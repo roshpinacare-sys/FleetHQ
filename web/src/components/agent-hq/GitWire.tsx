@@ -23,8 +23,8 @@ export function GitWirePanel({ lang, git }: { lang: Lang; git?: GitPulse }) {
     return (
       <div className="grid h-full place-items-center p-6 text-center">
         <div>
-          <p className="text-sm text-zinc-400">{t('gitUnavailable', lang)}</p>
-          <p className="mt-2 text-xs text-zinc-600">{t('gitLive', lang)}</p>
+          <p className="text-sm text-stone-400">{t('gitUnavailable', lang)}</p>
+          <p className="mt-2 text-xs text-stone-600">{t('gitLive', lang)}</p>
         </div>
       </div>
     );
@@ -32,8 +32,8 @@ export function GitWirePanel({ lang, git }: { lang: Lang; git?: GitPulse }) {
   return (
     <div className="flex h-full min-h-0 flex-col" dir="auto">
       <div className="mb-2 flex items-center justify-between gap-2">
-        <span className="flex items-center gap-2 text-xs text-zinc-400">
-          <span className="h-2 w-2 rounded-full bg-emerald-400 hq-pulse" />
+        <span className="flex items-center gap-2 text-xs text-stone-400">
+          <span className="h-2 w-2 rounded-full bg-[#34d399] hq-pulse" />
           {t('gitLive', lang)}
         </span>
         {git.repoUrl && (
@@ -41,7 +41,7 @@ export function GitWirePanel({ lang, git }: { lang: Lang; git?: GitPulse }) {
             href={git.repoUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="shrink-0 rounded-lg border border-zinc-700 px-2.5 py-1 text-xs font-semibold text-emerald-400 transition hover:border-emerald-500"
+            className="shrink-0 rounded-lg border border-amber-400/35 px-2.5 py-1 text-xs font-bold text-[#f5e3b8] transition hover:border-amber-400/70 hover:shadow-[0_0_14px_rgba(224,180,95,0.2)]"
           >
             {t('gitOpen', lang)} ↗
           </a>
@@ -54,17 +54,17 @@ export function GitWirePanel({ lang, git }: { lang: Lang; git?: GitPulse }) {
             <div
               key={c.hash}
               data-t={`${c.repo}${c.branch ? ` · ${c.branch}` : ''}`}
-              className={`hq-card hq-tip rounded-xl border p-2.5 ${fresh ? 'border-emerald-600/60 bg-emerald-500/10' : 'border-zinc-800 bg-zinc-900/50'}`}
+              className={`hq-card hq-tip rounded-xl border p-2.5 ${fresh ? 'border-amber-400/50 bg-amber-400/8' : 'border-white/7 bg-black/30'}`}
             >
               <div className="flex items-center gap-2">
-                <code className="rounded-md bg-emerald-950/60 px-1.5 py-0.5 font-mono text-[11px] font-bold text-emerald-400" dir="ltr">
+                <code className="rounded-md bg-amber-400/12 px-1.5 py-0.5 font-mono text-[11px] font-bold text-[#f5e3b8]" dir="ltr">
                   {c.hash}
                 </code>
-                <span className="text-[11px] text-zinc-500" dir="ltr">
+                <span className="text-[11px] text-stone-500" dir="ltr">
                   {timeAgo(c.ts, lang)}
                 </span>
                 {fresh && (
-                  <span className="rounded-full bg-emerald-500/20 px-2 py-0.5 text-[10px] font-bold text-emerald-300">
+                  <span className="rounded-full bg-amber-400/20 px-2 py-0.5 text-[10px] font-bold text-[#f5e3b8]">
                     {t('newestCommit', lang)}
                   </span>
                 )}
@@ -76,14 +76,14 @@ export function GitWirePanel({ lang, git }: { lang: Lang; git?: GitPulse }) {
                   {c.author}
                 </span>
               </div>
-              <p className="mt-1.5 line-clamp-2 text-xs leading-5 text-zinc-200" dir="auto">
+              <p className="mt-1.5 line-clamp-2 text-xs leading-5 text-stone-200" dir="auto">
                 {c.subject}
               </p>
             </div>
           );
         })}
       </div>
-      <p className="mt-2 border-t border-zinc-800 pt-2 text-[11px] leading-4 text-zinc-500">{t('gitPrivacy', lang)}</p>
+      <p className="mt-2 border-t border-white/8 pt-2 text-[11px] leading-4 text-stone-500">{t('gitPrivacy', lang)}</p>
     </div>
   );
 }

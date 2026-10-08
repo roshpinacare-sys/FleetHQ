@@ -132,6 +132,26 @@ export const T = {
     he: 'עמית עונה מתיאור קבוע של הפלטפורמה וממונים ציבוריים בלבד — לא מנתונים פנימיים',
     en: 'Amit answers from a fixed platform description and public counters only — never from internal data',
   },
+  // ---- the network atlas (the self-developing map of the sovereign domains) ----
+  atlasTitle: { he: 'מפת הרשת · הטריטוריות הריבוניות', en: 'NETWORK ATLAS · SOVEREIGN TERRITORIES' },
+  atlasOffice: { he: 'המשרד', en: 'Office' },
+  atlasNetwork: { he: 'הרשת', en: 'Network' },
+  atlasViewHint: {
+    he: 'הרשת נפתחת מעצמה ככל שהמשרד מפתח את המציאות — מחוז נפתח כשהספר שלו טרי',
+    en: 'The network opens itself as the office develops the reality — a district opens when its book is fresh',
+  },
+  atlasHq: { he: 'מפקדת הצי', en: 'FLEET HQ' },
+  atlasTerritory: { he: 'שטח נפתח', en: 'territory open' },
+  atlasLive: { he: 'חי', en: 'LIVE' },
+  atlasOpen: { he: 'פתוח', en: 'OPEN' },
+  atlasSealed: { he: 'אטום', en: 'SEALED' },
+  atlasLocked: { he: 'נעול — הצוות עובד עליו', en: 'Sealed — the crew is on it' },
+  atlasEmpty: {
+    he: 'הרשת נבנית — ברגע שהספרים ייטענו המחוזות ייפתחו אחד אחרי השני',
+    en: 'The network is forming — once the books load, districts open one by one',
+  },
+  atlasHours: { he: 'שע׳ מאז פעימה', en: 'h since heartbeat' },
+  atlasFrontier: { he: 'החזית הבאה', en: 'Next frontier' },
 } as const;
 
 export type TKey = keyof typeof T;

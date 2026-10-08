@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import io, { type Socket } from 'socket.io-client';
 import { Office } from './Office';
+import { NetworkAtlas } from './Network';
 import { FleetPanel, LibraryPanel, MonitorPanel, PodiumPanel, WallPanel } from './panels';
 import { GitWirePanel } from './GitWire';
 import { ReceptionChat, type PublicStats } from './ReceptionChat';
@@ -10,6 +11,7 @@ import type { AgentView, BookView, CrewMember, Decision, FeedItem, GitPulse, Goa
 import { t, goalStatusName, type Lang } from './i18n';
 
 type Tab = 'monitor' | 'wall' | 'podium' | 'library' | 'fleet' | 'git';
+type View = 'office' | 'network';
 
 const EMPTY_SNAPSHOT: Snapshot = {
   v: 1,
@@ -49,7 +51,7 @@ function CounterUp({ value, className }: { value: number; className?: string }) 
   return <b className={`font-mono tabular-nums ${className ?? ''}`}>{shown}</b>;
 }
 
-/** Odometer readout — per-digit column strips, 1s power3 glide (magic.odometer law).
+/** Odometer readout — per-digit column strips, 1s power3 glide.
  *  Deterministic SSR: value 0 renders as "0" on both server and first client render. */
 function Odometer({ value, className }: { value: number; className?: string }) {
   const digits = String(Math.max(0, Math.floor(value))).split('');
@@ -68,10 +70,9 @@ function Odometer({ value, className }: { value: number; className?: string }) {
   );
 }
 
-/** Particle constellation atmosphere — deterministic init (no Math.random),
- *  link threshold d²<6000, pink/cyan dots, paused offscreen (IntersectionObserver)
- *  and skipped entirely under prefers-reduced-motion (magic.particles law). */
-function ParticleField() {
+/** Warm dust atmosphere — deterministic init (no Math.random), gold/ember motes,
+ *  paused offscreen (IntersectionObserver) and skipped under prefers-reduced-motion. */
+function DustField() {
   const ref = useRef<HTMLCanvasElement>(null);
   useEffect(() => {
     const canvas = ref.current;
@@ -81,12 +82,14 @@ function ParticleField() {
     if (!ctx) return;
     let raf = 0;
     let visible = true;
-    const N = 110;
+    const N = 90;
     const pts = Array.from({ length: N }, (_, i) => ({
       x: ((i * 73 + 11) % 100) / 100,
       y: ((i * 41 + 29) % 100) / 100,
-      vx: (((i * 11) % 7) - 3) * 0.0004,
-      vy: (((i * 17) % 5) - 2) * 0.0004,
+      vx: (((i * 11) % 7) - 3) * 0.00028,
+      vy: (((i * 17) % 5) - 2) * 0.00028,
+      r: i % 4 === 0 ? 1.4 : 0.9,
+      tw: (i * 37) % 628,
     }));
     const dpr = Math.min(2, window.devicePixelRatio || 1);
     const resize = () => {
@@ -100,39 +103,23 @@ function ParticleField() {
       visible = e.isIntersecting;
     });
     io.observe(canvas);
-    const loop = () => {
+    const loop = (t: number) => {
       raf = requestAnimationFrame(loop);
       if (!visible) return;
       const w = canvas.width;
       const h = canvas.height;
       ctx.clearRect(0, 0, w, h);
-      for (const p of pts) {
+      for (let i = 0; i < N; i++) {
+        const p = pts[i];
         p.x += p.vx;
         p.y += p.vy;
         if (p.x < 0 || p.x > 1) p.vx *= -1;
         if (p.y < 0 || p.y > 1) p.vy *= -1;
-      }
-      const th = 6000 * dpr * dpr;
-      ctx.lineWidth = 0.6;
-      for (let i = 0; i < N; i++) {
-        for (let j = i + 1; j < N; j++) {
-          const dx = (pts[i].x - pts[j].x) * w;
-          const dy = (pts[i].y - pts[j].y) * h;
-          const d2 = dx * dx + dy * dy;
-          if (d2 < th) {
-            ctx.strokeStyle = `rgba(255, 20, 100, ${((1 - d2 / th) * 0.3).toFixed(3)})`;
-            ctx.beginPath();
-            ctx.moveTo(pts[i].x * w, pts[i].y * h);
-            ctx.lineTo(pts[j].x * w, pts[j].y * h);
-            ctx.stroke();
-          }
-        }
-      }
-      for (let i = 0; i < N; i++) {
-        ctx.fillStyle = i % 2 ? '#FF1464' : '#00E5FF';
-        ctx.globalAlpha = 0.5;
+        const twinkle = 0.35 + 0.3 * Math.sin(t * 0.0012 + p.tw);
+        ctx.globalAlpha = twinkle;
+        ctx.fillStyle = i % 5 === 0 ? '#f5e3b8' : '#e0b45f';
         ctx.beginPath();
-        ctx.arc(pts[i].x * w, pts[i].y * h, 1.1 * dpr, 0, Math.PI * 2);
+        ctx.arc(p.x * w, p.y * h, p.r * dpr, 0, Math.PI * 2);
         ctx.fill();
       }
       ctx.globalAlpha = 1;
@@ -147,7 +134,7 @@ function ParticleField() {
   return <canvas ref={ref} className="hq-particles" aria-hidden="true" />;
 }
 
-/** JourneyBar pitch per act (yuv-decks law): queued 90°, doing 58°, review 115°, done 90°. */
+/** JourneyBar pitch per act: queued 90°, doing 58°, review 115°, done 90°. */
 function journeyAngle(status: Goal['status']): number {
   switch (status) {
     case 'planning': return 90;
@@ -165,15 +152,37 @@ function journeyAct(status: Goal['status']): string {
   }
 }
 
-/** Section header — the page's visible ORDER: numbered, mono-indexed, consistently spaced. */
+/** Section header — the page's visible ORDER: numbered, gold-indexed, hairline rule. */
 function SectionHead({ index, title, children }: { index: string; title: string; children?: React.ReactNode }) {
   return (
     <div className="mb-2 flex items-baseline gap-3">
-      <span className="font-mono text-sm font-bold tracking-[0.2em] text-[#FF1464]" dir="ltr">{index}</span>
-      <h2 className="text-lg font-black tracking-wide text-zinc-100">{title}</h2>
-      <span className="h-px flex-1 bg-gradient-to-l from-[#26262e] to-transparent" aria-hidden="true" />
+      <span className="hq-secnum text-sm font-bold" dir="ltr">{index}</span>
+      <h2 className="text-lg font-black tracking-wide text-[#f5e3b8]">{title}</h2>
+      <span className="hq-secline" aria-hidden="true" />
       {children}
     </div>
+  );
+}
+
+/** The gold monogram — the fleet crest: double ring + צ, breathing glow. */
+function Crest({ glitch }: { glitch: boolean }) {
+  return (
+    <svg viewBox="0 0 100 100" className={`hq-breath h-14 w-14 shrink-0 ${glitch ? 'hq-glitch' : ''}`} role="img" aria-label={t('title', 'he')}>
+      <defs>
+        <linearGradient id="crestGold" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#f8ecc9" />
+          <stop offset="0.5" stopColor="#e0b45f" />
+          <stop offset="1" stopColor="#a8823a" />
+        </linearGradient>
+      </defs>
+      <circle cx="50" cy="50" r="47" fill="rgba(23,16,10,0.9)" stroke="url(#crestGold)" strokeWidth="2.4" />
+      <circle cx="50" cy="50" r="40" fill="none" stroke="url(#crestGold)" strokeWidth="1" opacity="0.55" />
+      <path d="M50 0.8 L53.4 4.3 L50 7.8 L46.6 4.3 Z" fill="url(#crestGold)" />
+      <path d="M50 92.2 L53.4 95.7 L50 99.2 L46.6 95.7 Z" fill="url(#crestGold)" />
+      <text x="50" y="53" textAnchor="middle" dominantBaseline="central" fontSize="38" fontWeight="800" fill="url(#crestGold)">
+        צ
+      </text>
+    </svg>
   );
 }
 
@@ -184,6 +193,7 @@ export default function AgentHQ() {
   const [logs, setLogs] = useState<Record<string, LogEntry[]>>({});
   const [bubbles, setBubbles] = useState<Record<string, { text: string; ts: number }>>({});
   const [tab, setTab] = useState<Tab>('monitor');
+  const [view, setView] = useState<View>('office');
   const [selected, setSelected] = useState<string | null>(null);
   const [connected, setConnected] = useState(false);
   const [chatOpen, setChatOpen] = useState(false);
@@ -260,7 +270,7 @@ export default function AgentHQ() {
     socket.on('status', (status: Snapshot['status']) => setSnap((prev) => ({ ...prev, status })));
     socket.on('git', (g: GitPulse) => {
       setSnap((prev) => ({ ...prev, git: g }));
-      // glitch burst on a genuinely fresh commit (the wordmark tears for half a second)
+      // warm flicker on a genuinely fresh commit (the wordmark tears for half a second)
       const h = g.commits[0]?.hash ?? null;
       const prevHash = lastHashRef.current;
       lastHashRef.current = h;
@@ -336,17 +346,17 @@ export default function AgentHQ() {
   const goalPhase =
     !goal || goal.status === 'done' || goal.status === 'failed'
       ? null
-      : { color: goal.status === 'planning' ? '#FF1464' : goal.status === 'active' ? '#00E5FF' : '#ffb020', label: goalStatusName(goal.status, lang) };
+      : { color: goal.status === 'planning' ? '#a8823a' : goal.status === 'active' ? '#e0b45f' : '#fbbf24', label: goalStatusName(goal.status, lang) };
   // JourneyBar rail: share of tasks really done (never the goal's self-report)
   const doneCount = snap.tasks.filter((x) => x.status === 'done').length;
   const tasksTotal = snap.tasks.length;
   const doneRatio = tasksTotal > 0 ? doneCount / tasksTotal : 0;
 
   return (
-    <div className="hq-root flex min-h-screen flex-col bg-[#0a0a0d] text-zinc-100" dir={rtl ? 'rtl' : 'ltr'}>
-      {/* atmosphere: particle constellation + drifting neon washes + grain (behind everything) */}
+    <div className="hq-root flex min-h-screen flex-col bg-[#0d0906] text-stone-100" dir={rtl ? 'rtl' : 'ltr'}>
+      {/* atmosphere: warm dust + drifting ember washes + grain (behind everything) */}
       <div className="hq-atmosphere" aria-hidden="true">
-        <ParticleField />
+        <DustField />
         <div className="hq-blob hq-blob-a" />
         <div className="hq-blob hq-blob-b" />
         <div className="hq-blob hq-blob-c" />
@@ -354,46 +364,47 @@ export default function AgentHQ() {
       </div>
 
       {/* ================= header ================= */}
-      <header className="sticky top-0 z-30 border-b border-[#232329] bg-[#0a0a0d]/88 backdrop-blur-md">
+      <header className="sticky top-0 z-30 border-b border-amber-400/12 bg-[#120d09]/85 backdrop-blur-md">
         <div className="mx-auto flex max-w-[1500px] flex-wrap items-center gap-x-4 gap-y-2 px-4 py-3">
           <div className="flex items-center gap-3">
-            <div className="grid h-12 w-12 place-items-center rounded-none bg-[#FF1464] text-xl font-black text-white shadow-[0_0_24px_rgba(255,20,100,0.45)]">צ</div>
+            <Crest glitch={glitch} />
             <div>
               <h1 className={`hq-aurora ${glitch ? 'hq-glitch' : ''} text-2xl font-black leading-7 tracking-wide`}>
                 {t('title', lang)}
               </h1>
-              <p className="text-sm text-zinc-400">{t('subtitle', lang)}</p>
+              <p className="text-sm text-stone-400">{t('subtitle', lang)}</p>
             </div>
           </div>
 
           <div className="flex flex-wrap items-center gap-2 text-[13px]">
-            <span className={`flex items-center gap-1.5 rounded-full px-2.5 py-1 font-semibold ${connected ? 'bg-[#00E5FF]/10 text-[#4de3ff]' : 'bg-red-500/15 text-red-400'}`}>
-              <span className={`h-2 w-2 rounded-full ${connected ? 'bg-[#00E5FF] hq-pulse' : 'bg-red-400'}`} />
-              {connected ? t('live', lang) : t('connecting', lang)}
+            <span className={`hq-chip ${connected ? '' : 'hq-chip-life'}`}>
+              <span className={`h-2 w-2 rounded-full ${connected ? 'bg-[#e0b45f] hq-pulse' : 'bg-red-400'}`} aria-hidden="true" />
+              <span className={connected ? 'text-[#f5e3b8]' : 'text-red-300'}>{connected ? t('live', lang) : t('connecting', lang)}</span>
             </span>
-            <span className={`rounded-full px-2.5 py-1 font-semibold ${sim ? 'bg-amber-500/15 text-amber-400' : 'bg-[#00E5FF]/10 text-[#4de3ff]'}`} title={snap.status.message[lang]}>
-              {sim ? t('demoCrew', lang) : t('liveCrew', lang)}
+            <span className="hq-chip" title={snap.status.message[lang]}>
+              <span className={sim ? 'text-amber-300' : 'text-[#f5e3b8]'}>{sim ? t('demoCrew', lang) : t('liveCrew', lang)}</span>
             </span>
             {goalPhase && (
-              <span className="flex items-center gap-2 rounded-full bg-[#15151a] px-2.5 py-1 ring-1 ring-[#26262e]">
-                <svg viewBox="0 0 20 20" className="h-3.5 w-3.5 -rotate-90">
-                  <circle cx="10" cy="10" r="7" fill="none" stroke="#2a2a32" strokeWidth="3" />
+              <span className="hq-chip">
+                <svg viewBox="0 0 20 20" className="h-3.5 w-3.5 -rotate-90" aria-hidden="true">
+                  <circle cx="10" cy="10" r="7" fill="none" stroke="#3d3020" strokeWidth="3" />
                   <circle cx="10" cy="10" r="7" fill="none" stroke={goalPhase.color} strokeWidth="3" strokeDasharray={`${(goal?.progress ?? 0) * 44} 44`} strokeLinecap="round" />
                 </svg>
-                <span dir="auto" className="max-w-52 truncate">{goal?.text}</span>
-                <span className="font-mono tabular-nums" style={{ color: goalPhase.color }}>{Math.round((goal?.progress ?? 0) * 100)}%</span>
+                <span dir="auto" className="max-w-52 truncate text-stone-200">{goal?.text}</span>
+                <span className="font-mono tabular-nums text-[#f5e3b8]" style={{ color: goalPhase.color }}>{Math.round((goal?.progress ?? 0) * 100)}%</span>
               </span>
             )}
-            <span className="rounded-full bg-[#15151a] px-2.5 py-1 text-zinc-300 ring-1 ring-[#26262e]">
-              {t('opsDone', lang)}: <Odometer value={snap.status.opsDone} className="text-[#ff5c92]" />
+            <span className="hq-chip">
+              <span className="text-stone-400">{t('opsDone', lang)}:</span>
+              <Odometer value={snap.status.opsDone} className="text-[#f5e3b8]" />
             </span>
           </div>
 
-          <div className="ms-auto flex items-center gap-3 text-[13px] text-zinc-400">
-            <span className="hidden font-mono tabular-nums tracking-wider text-[#4de3ff] sm:inline" dir="ltr">{clock} {t('jerusalem', lang)}</span>
+          <div className="ms-auto flex items-center gap-3 text-[13px] text-stone-400">
+            <span className="hidden font-mono tabular-nums tracking-wider text-[#f5e3b8] sm:inline" dir="ltr">{clock} {t('jerusalem', lang)}</span>
             <button
               onClick={() => setLang(rtl ? 'en' : 'he')}
-              className="rounded-none border border-[#2e2e36] px-4 py-2 text-sm font-semibold transition hover:border-[#FF1464] hover:text-[#ff5c92]"
+              className="hq-btn-ghost px-4 py-2 text-sm"
             >
               {rtl ? 'EN' : 'עברית'}
             </button>
@@ -407,101 +418,132 @@ export default function AgentHQ() {
           {/* office + console */}
           <section className="flex min-w-0 flex-col gap-3">
             <SectionHead index="01" title={t('secOffice', lang)}>
-              <span className="hidden shrink-0 font-mono text-[11.5px] tabular-nums text-zinc-500 sm:block" dir="ltr">
+              <span className="hidden shrink-0 font-mono text-[11.5px] tabular-nums text-stone-500 sm:block" dir="ltr">
                 {agentList.filter((a) => a.state !== 'idle').length}/{agentList.length || snap.crew.length} {t('atWork', lang)}
               </span>
             </SectionHead>
-            <div className="relative overflow-hidden rounded-none border border-[#232329] bg-[#0c0c10] shadow-[0_0_60px_rgba(0,0,0,0.6)]">
-              {/* HUD corner brackets around the office viewport */}
-              <div className="pointer-events-none absolute inset-0 z-10" aria-hidden="true">
-                <div className="absolute left-2 top-2 h-4 w-4 border-l-2 border-t-2 border-[#3a3b44]" />
-                <div className="absolute right-2 top-2 h-4 w-4 border-r-2 border-t-2 border-[#3a3b44]" />
-                <div className="absolute bottom-2 left-2 h-4 w-4 border-b-2 border-l-2 border-[#3a3b44]" />
-                <div className="absolute bottom-2 right-2 h-4 w-4 border-b-2 border-r-2 border-[#3a3b44]" />
+            <div className="hq-glass hq-rise overflow-hidden">
+              {/* the view switch: the room ⇄ the network atlas */}
+              <div className="flex items-center gap-1.5 border-b border-amber-400/12 bg-black/25 px-3 py-2">
+                {(
+                  [
+                    ['office', t('atlasOffice', lang), '◉'],
+                    ['network', t('atlasNetwork', lang), '✦'],
+                  ] as Array<[View, string, string]>
+                ).map(([key, label, glyph]) => (
+                  <button
+                    key={key}
+                    onClick={() => setView(key)}
+                    aria-pressed={view === key}
+                    className={`hq-tab text-[14px] ${view === key ? '' : 'text-stone-400'}`}
+                    data-active={view === key}
+                  >
+                    <span aria-hidden="true" className="me-1.5 opacity-70">{glyph}</span>
+                    {label}
+                  </button>
+                ))}
+                <span className="ms-auto hidden text-[11.5px] leading-snug text-stone-500 md:block">
+                  {view === 'network' ? t('atlasViewHint', lang) : ''}
+                </span>
               </div>
               <div className="aspect-[4/3] w-full sm:aspect-[1180/640]">
-                <Office
-                  lang={lang}
-                  crew={snap.crew}
-                  agents={agents}
-                  logs={logs}
-                  tasks={snap.tasks}
-                  books={snap.books}
-                  git={snap.git}
-                  openDecisions={openDecisionCount}
-                  reportsCount={snap.reports.length}
-                  newestReport={snap.reports[0]?.title}
-                  bubbles={bubbles}
-                  selected={selected}
-                  sim={sim}
-                  receptionOpen={chatOpen}
-                  onSelectAgent={selectAgent}
-                  onOpenReception={() => setChatOpen(true)}
-                  onOpenTab={(x) => openTab(x)}
-                />
+                {view === 'office' ? (
+                  <Office
+                    lang={lang}
+                    crew={snap.crew}
+                    agents={agents}
+                    logs={logs}
+                    tasks={snap.tasks}
+                    books={snap.books}
+                    git={snap.git}
+                    openDecisions={openDecisionCount}
+                    reportsCount={snap.reports.length}
+                    newestReport={snap.reports[0]?.title}
+                    bubbles={bubbles}
+                    selected={selected}
+                    sim={sim}
+                    receptionOpen={chatOpen}
+                    onSelectAgent={selectAgent}
+                    onOpenReception={() => setChatOpen(true)}
+                    onOpenTab={(x) => openTab(x)}
+                  />
+                ) : (
+                  <NetworkAtlas
+                    lang={lang}
+                    books={snap.books}
+                    opsDone={snap.status.opsDone}
+                    onOpenTab={() => openTab('fleet')}
+                  />
+                )}
+              </div>
+              {/* HUD corner brackets around the viewport */}
+              <div className="pointer-events-none absolute inset-0" aria-hidden="true">
+                <div className="absolute left-2 top-2 h-4 w-4 border-l-2 border-t-2 border-[#5a4526]/70" />
+                <div className="absolute right-2 top-2 h-4 w-4 border-r-2 border-t-2 border-[#5a4526]/70" />
+                <div className="absolute bottom-2 left-2 h-4 w-4 border-b-2 border-l-2 border-[#5a4526]/70" />
+                <div className="absolute bottom-2 right-2 h-4 w-4 border-b-2 border-r-2 border-[#5a4526]/70" />
               </div>
               {sim && (
-                <div className="absolute start-3 top-3 rounded-none bg-amber-500/90 px-3 py-1.5 text-xs font-bold text-zinc-950">
+                <div className="absolute start-3 top-3 rounded-lg bg-amber-400/90 px-3 py-1.5 text-xs font-bold text-[#241a08]">
                   {t('demoCrew', lang)} — {t('demoNote', lang)}
                 </div>
               )}
             </div>
 
-            {/* flight HUD strip — the mission-control anchor (gradient progress + instruments) */}
-            <div className="rounded-none border border-[#232329] bg-[#0c0c10]" dir="ltr">
-              <div className="h-[6px] w-full bg-[#15151a]">
+            {/* flight HUD strip — the mission-control anchor (gold rail + instruments) */}
+            <div className="hq-glass hq-rise-2 p-0" dir="ltr">
+              <div className="h-[6px] w-full overflow-hidden rounded-t-[14px] bg-[#241a10]">
                 <div
-                  className="h-full bg-gradient-to-r from-[#FF1464] via-[#ff7ab0] to-[#00E5FF] transition-[width] duration-700"
+                  className="h-full bg-gradient-to-r from-[#a8823a] via-[#e0b45f] to-[#f5e3b8] transition-[width] duration-700"
                   style={{ width: `${Math.round((goal?.progress ?? 0) * 100)}%` }}
                 />
               </div>
-              <div className="flex flex-wrap items-stretch divide-x divide-[#1c1c22] rtl:divide-x-reverse">
+              <div className="flex flex-wrap items-stretch divide-x divide-white/6 rtl:divide-x-reverse">
                 <div className="flex min-w-[150px] flex-1 items-center gap-2 px-4 py-3">
-                  <span className="rounded-none border border-[#2e2e36] px-2 py-1 font-mono text-[11px] tracking-[0.22em] text-[#4de3ff]">
+                  <span className="hq-chip font-mono text-[11px] tracking-[0.22em] text-[#f5e3b8]">
                     ◉ {goal ? goalPhase?.label.split('…')[0].toUpperCase() : (lang === 'he' ? 'מוכן' : 'READY')}
                   </span>
-                  <span dir="auto" className="truncate text-[13px] text-zinc-300">{goal?.text ?? t('noGoal', lang)}</span>
+                  <span dir="auto" className="truncate text-[13px] text-stone-300">{goal?.text ?? t('noGoal', lang)}</span>
                 </div>
                 {(
                   [
-                    [t('wall', lang), activeTasks, '#4de3ff'],
-                    [t('reports', lang), snap.reports.length, '#7dffb0'],
-                    [t('podium', lang), openDecisionCount, openDecisionCount > 0 ? '#4de3ff' : '#8f9199'],
-                  ] as Array<[string, number, string]>
-                ).map(([label, value, color]) => (
+                    [t('wall', lang), activeTasks],
+                    [t('reports', lang), snap.reports.length],
+                    [t('podium', lang), openDecisionCount],
+                  ] as Array<[string, number]>
+                ).map(([label, value]) => (
                   <div key={label} className="min-w-[104px] flex-1 px-4 py-2.5">
-                    <div className="text-[11px] font-semibold uppercase tracking-[0.18em] text-zinc-500">{label}</div>
-                    <div className="font-mono text-xl tabular-nums leading-6" style={{ color }}>
+                    <div className="text-[11px] font-bold uppercase tracking-[0.18em] text-stone-500">{label}</div>
+                    <div className="font-mono text-xl tabular-nums leading-6 text-[#f5e3b8]">
                       <CounterUp value={value} />
                     </div>
                   </div>
                 ))}
                 <div className="min-w-[104px] flex-1 px-4 py-2.5">
-                  <div className="text-[11px] font-semibold uppercase tracking-[0.18em] text-zinc-500">{t('opsDone', lang)}</div>
-                  <div className="font-mono text-xl leading-6 text-[#ff5c92]">
+                  <div className="text-[11px] font-bold uppercase tracking-[0.18em] text-stone-500">{t('opsDone', lang)}</div>
+                  <div className="font-mono text-xl leading-6 text-[#f5e3b8]">
                     <Odometer value={snap.status.opsDone} />
                   </div>
                 </div>
               </div>
-              {/* JourneyBar — the mission rail: done-share + phase pitch marker (yuv-decks) */}
+              {/* JourneyBar — the mission rail: done-share + phase pitch marker */}
               {goal && tasksTotal > 0 && (
-                <div className="relative h-7 border-t border-[#1c1c22]" aria-hidden="true">
-                  <div className="absolute inset-x-6 top-[15px] border-t border-dashed border-[#2e2e36]" />
+                <div className="relative h-7 border-t border-white/6" aria-hidden="true">
+                  <div className="absolute inset-x-6 top-[15px] border-t border-dashed border-[#3d3020]" />
                   <div
-                    className="absolute left-6 top-[15px] h-[2px] -translate-y-1/2 bg-gradient-to-r from-[#FF1464] to-[#00E5FF] transition-[width] duration-700"
+                    className="absolute left-6 top-[15px] h-[2px] -translate-y-1/2 bg-gradient-to-r from-[#a8823a] to-[#f5e3b8] transition-[width] duration-700"
                     style={{ width: `calc((100% - 3rem) * ${doneRatio.toFixed(3)})` }}
                   />
                   <div
-                    className="absolute top-[15px] text-[13px] leading-none text-[#FF1464] drop-shadow-[0_0_8px_rgba(255,20,100,0.6)]"
+                    className="hq-journey-plane absolute top-[15px] text-[13px] leading-none text-[#f5e3b8] drop-shadow-[0_0_8px_rgba(224,180,95,0.6)]"
                     style={{
                       left: `calc(1.5rem + (100% - 3rem) * ${doneRatio.toFixed(3)})`,
                       transform: `translate(-50%, -50%) rotate(${journeyAngle(goal.status)}deg)`,
-                      transition: 'transform 0.5s cubic-bezier(0.34, 1.4, 0.5, 1)',
                     }}
                   >
                     ✈
                   </div>
-                  <span className="absolute right-6 top-[5px] font-mono text-[9px] tracking-[0.3em] text-[#4de3ff]">
+                  <span className="absolute right-6 top-[5px] font-mono text-[9px] tracking-[0.3em] text-[#c9a96a]">
                     {journeyAct(goal.status)} · {goalStatusName(goal.status, lang)} {doneCount}/{tasksTotal}
                   </span>
                 </div>
@@ -510,11 +552,11 @@ export default function AgentHQ() {
 
             {/* the autonomy line — replaced the old goal console: visitors watch, the
                 operator works. No stranger ever gets a steering wheel. */}
-            <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 rounded-none border border-[#232329] bg-[#0c0c10] px-4 py-3">
-              <span className="rounded-none border border-[#00E5FF]/40 bg-[#00E5FF]/8 px-2.5 py-1 font-mono text-[11.5px] font-bold tracking-[0.22em] text-[#4de3ff]">
+            <div className="hq-glass flex flex-wrap items-center gap-x-3 gap-y-1.5 px-4 py-3">
+              <span className="hq-chip font-mono text-[11.5px] tracking-[0.22em] text-[#f5e3b8]">
                 ◉ {lang === 'he' ? 'אוטונומי לחלוטין' : 'FULLY AUTONOMOUS'}
               </span>
-              <span className="text-[13px] leading-5 text-zinc-300">
+              <span className="text-[13px] leading-5 text-stone-300">
                 {lang === 'he'
                   ? 'היעדים מתוזמנים ומוכרעים על ידי מערכת ההפעלה בעצמה — למבקרים אין שליטה על הצוות, וזה בכוונה. יש שאלה? פנו לעמית בקבלה.'
                   : 'Goals are scheduled and decided by the operating system itself — visitors hold no control over the crew, by design. Questions? Ask Amit at the front desk.'}
@@ -522,26 +564,26 @@ export default function AgentHQ() {
             </div>
 
             {/* feed */}
-            <div className="rounded-none border border-[#232329] bg-[#0c0c10] p-4">
+            <div className="hq-glass hq-rise-3 p-4">
               <SectionHead index="02" title={t('secJournal', lang)}>
-                <span className="shrink-0 rounded-full bg-[#00E5FF]/10 px-2.5 py-0.5 font-mono text-[11.5px] font-bold text-[#4de3ff]" dir="ltr">
+                <span className="shrink-0 rounded-full bg-amber-400/12 px-2.5 py-0.5 font-mono text-[11.5px] font-bold text-[#f5e3b8]" dir="ltr">
                   {snap.feed.length}
                 </span>
               </SectionHead>
               <div className="hq-scroll grid max-h-48 gap-1 overflow-y-auto sm:grid-cols-2" dir="auto">
-                {snap.feed.length === 0 && <p className="text-[13px] text-zinc-600">{t('emptyFeed', lang)}</p>}
+                {snap.feed.length === 0 && <p className="text-[13px] text-stone-600">{t('emptyFeed', lang)}</p>}
                 {[...snap.feed].reverse().map((f, i) => (
                   <div
                     key={f.id}
-                    className="hq-feed-in flex items-start gap-2 rounded-none px-2 py-1.5 text-[13px] leading-5 hover:bg-[#15151a]"
+                    className="hq-feed-in flex items-start gap-2 rounded-lg px-2 py-1.5 text-[13px] leading-5 hover:bg-white/4"
                     style={{ animationDelay: `${Math.min(i, 12) * 0.02}s` }}
                   >
-                    {i === 0 && <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-[#00E5FF] hq-pulse" aria-hidden="true" />}
-                    <span className="shrink-0 pt-px font-mono text-[11.5px] tabular-nums text-zinc-600" dir="ltr">
+                    {i === 0 && <span className="hq-pulse mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-[#e0b45f]" aria-hidden="true" />}
+                    <span className="shrink-0 pt-px font-mono text-[11.5px] tabular-nums text-stone-600" dir="ltr">
                       {new Date(f.ts).toLocaleTimeString('he-IL', { hour12: false })}
                     </span>
                     <FeedBadge kind={f.kind} />
-                    <span className={`min-w-0 ${f.kind === 'error' ? 'text-red-400' : f.kind === 'user' ? 'text-[#ff8fb4]' : 'text-zinc-200'}`}>{f.text}</span>
+                    <span className={`min-w-0 ${f.kind === 'error' ? 'text-red-400' : f.kind === 'user' ? 'text-[#f5e3b8]' : 'text-stone-200'}`}>{f.text}</span>
                   </div>
                 ))}
               </div>
@@ -549,8 +591,8 @@ export default function AgentHQ() {
           </section>
 
           {/* side panels */}
-          <aside className="flex min-w-0 flex-col rounded-none border border-[#232329] bg-[#0c0c10]">
-            <nav className="flex gap-1 overflow-x-auto border-b border-[#232329] p-2" aria-label="panels">
+          <aside className="hq-glass flex min-w-0 flex-col">
+            <nav className="flex gap-1 overflow-x-auto border-b border-amber-400/12 p-2" aria-label="panels">
               {(
                 [
                   ['monitor', t('monitor', lang), openDecisionCount],
@@ -564,13 +606,12 @@ export default function AgentHQ() {
                 <button
                   key={key}
                   onClick={() => openTab(key)}
-                  className={`relative shrink-0 rounded-none px-3.5 py-2.5 text-[15px] font-semibold transition ${
-                    tab === key ? 'bg-[#FF1464]/12 text-[#ff5c92] shadow-[inset_0_-2px_0_0_#FF1464]' : 'text-zinc-400 hover:bg-[#15151a] hover:text-zinc-200'
-                  }`}
+                  className={`hq-tab text-[15px] ${tab === key ? '' : 'text-stone-400'}`}
+                  data-active={tab === key}
                 >
                   {label}
                   {badge > 0 && (
-                    <span className="absolute -top-0.5 -end-0.5 grid h-4 min-w-4 place-items-center rounded-full bg-[#FF1464] px-1 font-mono text-[10px] font-bold text-white">
+                    <span className="absolute -top-0.5 -end-0.5 grid h-4 min-w-4 place-items-center rounded-full bg-[#e0b45f] px-1 font-mono text-[10px] font-bold text-[#241a08]">
                       {badge}
                     </span>
                   )}
@@ -591,7 +632,7 @@ export default function AgentHQ() {
         {/* crew roster chips */}
         <div className="mt-5">
           <SectionHead index="03" title={t('secCrew', lang)}>
-            <span className="ms-auto shrink-0 font-mono text-[11.5px] tabular-nums text-zinc-500" dir="ltr">
+            <span className="ms-auto shrink-0 font-mono text-[11.5px] tabular-nums text-stone-500" dir="ltr">
               {agentList.filter((a) => a.state !== 'idle').length}/{agentList.length || snap.crew.length} {t('atWork', lang)}
             </span>
           </SectionHead>
@@ -603,13 +644,12 @@ export default function AgentHQ() {
                 <button
                   key={c.id}
                   onClick={() => selectAgent(c.id)}
-                  className={`flex items-center gap-2.5 rounded-none border px-3.5 py-2.5 text-sm transition ${
-                    active ? 'border-[#FF1464] bg-[#FF1464]/10 shadow-[0_0_18px_rgba(255,20,100,0.2)]' : 'border-[#232329] bg-[#0c0c10] hover:border-[#3a3b44]'
-                  }`}
+                  className="hq-crewchip text-sm"
+                  data-active={active}
                 >
-                  <span className="h-3 w-3 rounded-full" style={{ backgroundColor: a ? rosterDot(a.state) : '#52525b' }} />
-                  <span className="text-[15px] font-semibold" style={{ color: c.color }}>{c.name[lang]}</span>
-                  <span className="text-[13px] text-zinc-400">{a?.activity || c.title[lang]}</span>
+                  <span className="h-3 w-3 rounded-full" style={{ backgroundColor: a ? rosterDot(a.state) : '#a8a29e' }} aria-hidden="true" />
+                  <span className="text-[15px] font-bold" style={{ color: c.color }}>{c.name[lang]}</span>
+                  <span className="text-[13px] text-stone-400">{a?.activity || c.title[lang]}</span>
                 </button>
               );
             })}
@@ -618,12 +658,12 @@ export default function AgentHQ() {
       </main>
 
       {/* ================= footer ================= */}
-      <footer className="mt-auto border-t border-[#232329] bg-[#08080b] pb-[env(safe-area-inset-bottom)]">
-        <div className="mx-auto flex max-w-[1500px] flex-wrap items-center gap-x-4 gap-y-1 px-4 py-3.5 text-[13px] text-zinc-500" dir="auto">
-          <span className="font-semibold text-zinc-300">{t('footerTruth', lang)}</span>
+      <footer className="mt-auto border-t border-amber-400/12 bg-[#0e0a06] pb-[env(safe-area-inset-bottom)]">
+        <div className="mx-auto flex max-w-[1500px] flex-wrap items-center gap-x-4 gap-y-1 px-4 py-3.5 text-[13px] text-stone-500" dir="auto">
+          <span className="font-bold text-stone-300">{t('footerTruth', lang)}</span>
           <span className="ms-auto flex gap-3">
             <span>
-              <CounterUp value={snap.books.length} className="text-zinc-400" /> {t('books', lang)} · <CounterUp value={snap.agents.length} className="text-zinc-400" /> {t('agents', lang)}
+              <CounterUp value={snap.books.length} className="text-stone-400" /> {t('books', lang)} · <CounterUp value={snap.agents.length} className="text-stone-400" /> {t('agents', lang)}
             </span>
             <span className="font-mono" dir="ltr">{snap.status.llmProvider}</span>
           </span>
@@ -632,15 +672,16 @@ export default function AgentHQ() {
 
       {/* book preview dialog */}
       {preview && (
-        <div className="fixed inset-0 z-50 grid place-items-center bg-black/60 p-4" onClick={() => setPreview(null)} role="dialog" aria-modal="true">
-          <div className="max-h-[80vh] w-full max-w-2xl overflow-hidden rounded-none border border-[#2e2e36] bg-[#0c0c10] shadow-2xl" onClick={(e) => e.stopPropagation()}>
-            <div className="flex items-center justify-between border-b border-[#232329] px-4 py-3">
-              <h3 className="text-base font-bold">{t('preview', lang)}: {preview.id}</h3>
-              <button onClick={() => setPreview(null)} className="rounded-none border border-[#2e2e36] px-3.5 py-2 text-sm hover:border-[#00E5FF] hover:text-[#4de3ff]">
+        <div className="fixed inset-0 z-50 grid place-items-center bg-black/70 p-4 backdrop-blur-sm" onClick={() => setPreview(null)} role="dialog" aria-modal="true">
+          <div className="hq-glass max-h-[80vh] w-full max-w-2xl overflow-hidden" onClick={(e) => e.stopPropagation()}>
+            <div className="hq-hairline" aria-hidden="true" />
+            <div className="flex items-center justify-between border-b border-amber-400/15 px-4 py-3">
+              <h3 className="text-base font-bold text-[#f5e3b8]">{t('preview', lang)}: {preview.id}</h3>
+              <button onClick={() => setPreview(null)} className="hq-btn-ghost px-3.5 py-2 text-sm">
                 {t('close', lang)}
               </button>
             </div>
-            <pre className="hq-scroll max-h-[65vh] overflow-auto whitespace-pre-wrap p-4 font-mono text-[13px] leading-6 text-zinc-300" dir="ltr">
+            <pre className="hq-scroll max-h-[65vh] overflow-auto whitespace-pre-wrap p-4 font-mono text-[13px] leading-6 text-stone-300" dir="ltr">
               {preview.excerpt}
             </pre>
           </div>
@@ -661,22 +702,22 @@ function rosterDot(state: AgentView['state']): string {
     case 'writing': return '#7BA05B';
     case 'waiting_user': case 'blocked': case 'error': return '#e5484d';
     case 'done': return '#46a758';
-    default: return '#71717a';
+    default: return '#a8a29e';
   }
 }
 
 function FeedBadge({ kind }: { kind: FeedItem['kind'] }) {
   const map: Record<FeedItem['kind'], { c: string; s: string }> = {
-    goal: { c: 'bg-[#FF1464]/20 text-[#ff8fb4]', s: '◎' },
-    plan: { c: 'bg-[#FF1464]/20 text-[#ff8fb4]', s: '▦' },
-    task: { c: 'bg-zinc-700/50 text-zinc-300', s: '▤' },
-    message: { c: 'bg-rose-500/15 text-rose-300', s: '❝' },
-    decision: { c: 'bg-[#00E5FF]/15 text-[#8fe9f7]', s: '⏳' },
-    report: { c: 'bg-[#00E5FF]/10 text-[#4de3ff]', s: '▤' },
+    goal: { c: 'bg-amber-400/18 text-[#f5e3b8]', s: '◎' },
+    plan: { c: 'bg-amber-400/18 text-[#f5e3b8]', s: '▦' },
+    task: { c: 'bg-stone-700/50 text-stone-300', s: '▤' },
+    message: { c: 'bg-amber-500/15 text-amber-200', s: '❝' },
+    decision: { c: 'bg-emerald-500/15 text-emerald-300', s: '⏳' },
+    report: { c: 'bg-emerald-500/12 text-emerald-200', s: '▤' },
     git: { c: 'bg-emerald-500/15 text-emerald-300', s: '⑂' },
-    system: { c: 'bg-zinc-800 text-zinc-400', s: '·' },
+    system: { c: 'bg-stone-800 text-stone-400', s: '·' },
     error: { c: 'bg-red-500/20 text-red-400', s: '!' },
-    user: { c: 'bg-[#FF1464]/25 text-[#ff8fb4]', s: '★' },
+    user: { c: 'bg-amber-400/25 text-[#f5e3b8]', s: '★' },
   };
   const { c, s } = map[kind] ?? map.system;
   return <span className={`shrink-0 rounded px-1.5 text-[10px] font-bold ${c}`}>{s}</span>;
