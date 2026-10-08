@@ -211,3 +211,16 @@ Work Log (הכל נמדד):
 
 Stage Summary:
 - התרסקות-t34 הפכה מבנית-בלתי-אפשרית: סטייה-מהיעד נתפסת דטרמיניסטית בתכנון ובביקורת; לולאת-redo חסומה-תקרה; אישור-שקר הוחלף בביטול+החלפה או אישור-כנות-מתועד; עובד לא יכול "לסיים כלום" בלי עדות-כלים. המשרד החי מוכיח את עצמו: משמרת-מלאה עם 3 עובדים על ספרים אמיתיים בתוך ~6 דקות מהריסטרט, והלקח-החדש מצטט מדידות אמיתיות.
+Agent: Z.ai Code (main session — packster + CID + supervisor + מסילת-חשבונות + איחוד-מירוץ)
+Task: פקודת-ההאצה (Task 33): שלושת-רכיבי-הארסנל בבנייה-ילידה-סטדליב, שני יעדי-פעולה (קומפיילר-תוכן-צפוף + עקיבת-עדי-חשבונות-חלופיים), הכרעת שתי שאלות-המפעיל, ואיחוד-מירוץ-התאום בזמן-אמת.
+
+Work Log (הכל נמדד):
+- אימות Task 32: 44/44 חי · origin/main=21904dd אומת · חותם b05246f5 תואם — הצהרות-אמת.
+- פסקי-דין ארסנל (חוק-הבעלות): msgpack-javascript/forever/IPFS-CID — הפורמט-הוא-התקן → packster.py (וקטורי-מפרט, קאנוני, 39.4%-נמדד), thread_supervisor.py (guarded_call+Heartbeat+GUARDRESET; נטישת-תהליכון-מתועדת-כנה), cid_builder.py (CIDv1-raw bafkrei… עולמי).
+- יעד 1: streamer — CID-לפני-דיסק לכל-תוצר + bundle_cid=cid(packster-rows) + DIRECTORY_CONTRACT (Q1 הוכרע-בקוד). יעד 2: health_monitor — מסילת-חשבונות: whitelist-קפדנית (מפתח-פרטי-לעולם-לא-נקרא), nonce+balance לכל-חשבון×עד → history.jsonl; ריצה-חיה: absent-כן.
+- telemetry_digest: digest-latest.pack + self-heal only-if-stale (הקפאה-נשמרת). tps_bench: UNREACHABLE exit-4 כנה (Q2 — כבר-מ-Task 30).
+- **מירוץ-תאום בזמן-הדחיפה**: 985ecc3→bc2fe45→a661914 נדחפו-במקביל; דחיפה-ראשונה-נדחתה (מדוד). פסקי-דין-עבודת-התאום: marker-idempotence (באג-אמיתי→תיקון-אמיתי), DEFAULT_HQ, content_rail generation-law, t14_generation, דחיית-nodemon/pako/crypto-js — **הכל-אומת-בקריאת-קוד-ואומץ**. פרוטוקול: JSON=live-wins · קוד=union (הבסיס-שלהם+הדלתות-שלי) · RECEIPTS=append-only-superset · worklog=union.
+- תוצא-מאוחד: **selftest 74/74 PASS חי** (T14=תאום, T15-T17=שלי) · שורש-חדש **164957b1636dd7ee** parent=b05246f541fbdb59 (advanced-generation חי) · **bundle_cid=bafkreihxaphebydlzlgalqfgjubyosxnd5hfh3zp45r7sfnfzukywyugmi** · cross-lineage חי (cross_match=false-כן) · health/guard/tps ירוקים-כנים · דשבורד: שורת-CID-חבילה אומתת-דפדפן (390px overflowX=false).
+
+Stage Summary:
+- שני-יעדי-הפעולה חיים: כל-תוצר-מטביע-כתובת-תוכן-בלתי-ניתנת-לשינוי-לפני-דיסק, ומסילת-העדים מוכנה-לכתובות-פומביות-בלבד. שלושת-הרכיבים ילידי-סטדליב. המירוץ-עם-התאום נפתר-ללא-איבוד-ידע-משני-הצדדים. **74/74 ירוק.** Q1: DIRECTORY_CONTRACT. Q2: tps_bench חי (UNREACHABLE-כן).
