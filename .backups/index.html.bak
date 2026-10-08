@@ -1,0 +1,1404 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SAOS Network | הרשת המאמתת לסוכני AI</title>
+<meta name="description" content="כל סוכן יכול לטעון הכל. רק שרשרת ציבורית לא יכולה לשקר. SAOS הופכת עבודת סוכני AI לקבלות ציבוריות: כל טענה נמדדת, חתומה ומעוגנת בשרשראות ציבוריות. כל אחד יכול לאמת.">
+<meta name="keywords" content="SAOS, verifying network, AI agents, attestation, checkpoints, Merkle root, Steem anchor, sovereign network, open ledger, רשת מאמתת, סוכני AI, אימות">
+<meta name="theme-color" content="#09090b">
+<link rel="canonical" href="https://roshpinacare-sys.github.io/Console/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="SAOS Network">
+<meta property="og:title" content="SAOS Network | The Verifying Network for AI Agents">
+<meta property="og:description" content="Every agent can claim anything. Only a public chain cannot lie. Every claim is measured, signed, anchored. Verify everything yourself.">
+<meta property="og:url" content="https://roshpinacare-sys.github.io/Console/">
+<meta property="og:image" content="https://roshpinacare-sys.github.io/Console/assets/og-cover.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="SAOS Network">
+<meta name="twitter:description" content="The verifying network: every agent claim is measured, signed, anchored.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2.5 20.5 7v10L12 21.5 3.5 17V7z' fill='none' stroke='%23d4af37' stroke-width='1.6'/%3E%3Ccircle cx='12' cy='12' r='2.4' fill='%23d4af37'/%3E%3C/svg%3E">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebSite","name":"SAOS Network","url":"https://roshpinacare-sys.github.io/Console/","description":"The verifying network for AI agents: measured, signed, anchored claims.","inLanguage":["en","he"]}
+</script>
+<style>
+:root{
+  --bg:#09090b; --bg2:#0c0c0e;
+  --panel:rgba(255,255,255,.03); --panel2:rgba(255,255,255,.055);
+  --line:rgba(255,255,255,.09); --line2:rgba(255,255,255,.17);
+  --gold:#d4af37; --gold-bright:#e9c767; --gold-dim:rgba(212,175,55,.12); --gold-line:rgba(212,175,55,.42);
+  --green:#22c55e; --red:#ef4444; --amber:#eab308; --purple:#a78bfa;
+  --text:#fafafa; --dim:#a1a1aa; --faint:#71717a;
+  --mono:ui-monospace,'SF Mono','Cascadia Code','Segoe UI Mono',Menlo,Consolas,monospace;
+  --sans:-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,'Noto Sans Hebrew',sans-serif;
+  --r:16px; --r-sm:12px; --nav-h:62px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg); color:var(--text); font-family:var(--sans);
+  min-height:100vh; display:flex; flex-direction:column; overflow-x:hidden;
+  font-size:15px; line-height:1.65;
+  -webkit-font-smoothing:antialiased;
+}
+::selection{background:rgba(212,175,55,.28)}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--text);outline-offset:2px;border-radius:4px}
+.wrap{max-width:1180px;margin:0 auto;padding:0 20px;width:100%}
+.num{font-family:var(--mono);direction:ltr;unicode-bidi:isolate;font-variant-numeric:tabular-nums}
+.mono{font-family:var(--mono);direction:ltr;unicode-bidi:isolate}
+.hide{display:none!important}
+
+/* ── header ─────────────────────────────── */
+header.site{
+  position:sticky;top:0;z-index:900;height:var(--nav-h);
+  background:rgba(9,9,11,.82);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--line);
+}
+header.site .wrap{display:flex;align-items:center;gap:16px;height:100%}
+.brand{display:flex;align-items:center;gap:10px;flex:none}
+.brand svg{width:30px;height:30px;flex:none}
+.brand b{font-size:15.5px;font-weight:700;letter-spacing:.2px;white-space:nowrap}
+.brand b i{color:var(--gold);font-style:normal}
+.brand small{display:block;font-size:10px;color:var(--faint);font-weight:400;letter-spacing:.6px}
+.pillnav{
+  display:flex;gap:2px;background:var(--panel);border:1px solid var(--line);
+  border-radius:999px;padding:4px;margin-inline:auto;
+}
+.pillnav a{
+  padding:8px 16px;min-height:20px;border-radius:999px;font-size:13.5px;color:var(--dim);
+  display:inline-flex;align-items:center;gap:7px;transition:color .15s,background .15s;white-space:nowrap;
+}
+.pillnav a svg{width:15px;height:15px}
+.pillnav a:hover{color:var(--text)}
+.pillnav a.on{background:var(--panel2);color:var(--text)}
+.hright{display:flex;align-items:center;gap:8px;flex:none;margin-inline-start:auto}
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  min-height:44px;padding:10px 20px;border-radius:var(--r-sm);
+  border:1px solid var(--line);background:var(--panel);color:var(--text);
+  font-size:14px;font-weight:550;transition:border-color .15s,background .15s,transform .15s;
+}
+.btn:hover{border-color:var(--line2);background:var(--panel2)}
+.btn:active{transform:scale(.98)}
+.btn.primary{background:var(--gold-dim);border-color:var(--gold-line);color:var(--gold-bright)}
+.btn.primary:hover{background:rgba(212,175,55,.2);border-color:var(--gold)}
+.btn.small{min-height:38px;padding:7px 14px;font-size:13px;border-radius:999px}
+.btn svg{width:16px;height:16px;flex:none}
+#langBtn{min-height:38px;padding:7px 14px;font-size:13px;border-radius:999px;
+  background:var(--panel);border:1px solid var(--line);color:var(--text)}
+
+/* ── views ─────────────────────────────── */
+main{flex:1;display:flex;flex-direction:column}
+.view{display:none;padding:44px 0 80px}
+.view.on{display:block}
+.sect{padding:34px 0}
+.sect-h{display:flex;align-items:baseline;gap:14px;margin-bottom:18px;flex-wrap:wrap}
+.sect-h h2{font-size:clamp(1.4rem,2.6vw,1.95rem);font-weight:650;letter-spacing:-.2px}
+.sect-h .sub{font-size:13.5px;color:var(--faint)}
+.eyebrow{font-size:11.5px;letter-spacing:1.6px;text-transform:uppercase;color:var(--gold);font-weight:650;margin-bottom:14px}
+
+/* ── hero ─────────────────────────────── */
+.hero{padding:26px 0 10px;position:relative}
+.hero h1{
+  font-size:clamp(2.1rem,5.1vw,3.8rem);font-weight:700;line-height:1.14;letter-spacing:-.5px;
+  max-width:22ch;
+}
+.hero h1 em{font-style:normal;color:var(--gold-bright)}
+.hero .lead{margin-top:20px;font-size:clamp(1rem,1.6vw,1.14rem);color:var(--dim);max-width:64ch}
+.hero .lead b{color:var(--text);font-weight:600}
+.chip{
+  display:inline-flex;align-items:center;gap:9px;margin-top:22px;
+  background:var(--panel);border:1px solid var(--line);border-radius:999px;
+  padding:9px 16px;font-size:13px;color:var(--dim);
+}
+.chip .dot{width:8px;height:8px;border-radius:50%;background:var(--faint);flex:none}
+.chip.ok .dot{background:var(--green);animation:pulse 2s infinite}
+.chip.ok{color:var(--text);border-color:rgba(34,197,94,.35)}
+.chip .dot.warn{background:var(--amber)}
+.chip .dot.bad{background:var(--red)}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(34,197,94,.45)}55%{box-shadow:0 0 0 7px rgba(34,197,94,0)}}
+.chip a{color:var(--gold-bright)}
+.hero .ctas{display:flex;gap:12px;margin-top:26px;flex-wrap:wrap}
+
+/* ── kpis ─────────────────────────────── */
+.kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-top:34px}
+.kpi{
+  background:var(--panel);border:1px solid var(--line);border-radius:var(--r);
+  padding:16px 16px 13px;transition:border-color .18s,transform .18s;
+}
+.kpi:hover{border-color:var(--line2);transform:translateY(-2px)}
+.kpi .lb{font-size:11px;letter-spacing:.8px;text-transform:uppercase;color:var(--faint);margin-bottom:9px}
+.kpi .vl{font-family:var(--mono);font-size:clamp(1.2rem,2.2vw,1.7rem);font-weight:600;direction:ltr;unicode-bidi:isolate;line-height:1.1}
+.kpi .vl.ok{color:var(--green)}
+.kpi .vl.gold{color:var(--gold-bright)}
+.kpi .src{font-size:10.5px;color:var(--faint);margin-top:9px;font-family:var(--mono);direction:ltr;unicode-bidi:isolate;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* ── cards and grids ──────────────────── */
+.grid{display:grid;gap:12px}
+.g2{grid-template-columns:repeat(2,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
+.card{
+  background:var(--panel);border:1px solid var(--line);border-radius:var(--r);
+  padding:20px;transition:border-color .18s,transform .18s;
+}
+.card:hover{border-color:var(--line2);transform:translateY(-2px)}
+.card h3{font-size:15px;font-weight:620;margin-bottom:8px;display:flex;align-items:center;gap:9px}
+.card h3 svg{width:17px;height:17px;color:var(--gold);flex:none}
+.card p{font-size:13.5px;color:var(--dim)}
+.card .more{display:inline-flex;align-items:center;gap:6px;margin-top:13px;font-size:13px;color:var(--gold-bright);font-weight:550}
+.card .more svg{width:14px;height:14px}
+
+/* ── steps ────────────────────────────── */
+.steps{counter-reset:st;display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.step{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:20px;position:relative;transition:border-color .18s}
+.step:hover{border-color:var(--line2)}
+.step::before{
+  counter-increment:st;content:"0" counter(st);
+  font-family:var(--mono);font-size:12px;color:var(--gold);letter-spacing:1px;
+  display:inline-block;margin-bottom:12px;border:1px solid var(--gold-line);border-radius:999px;padding:3px 10px;background:var(--gold-dim);
+}
+.step h3{font-size:14.5px;font-weight:620;margin-bottom:7px}
+.step p{font-size:13px;color:var(--dim)}
+
+/* ── loop gates ───────────────────────── */
+.loop{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
+.loop-gate{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:17px;transition:border-color .18s}
+.loop-gate:hover{border-color:var(--line2)}
+.loop-gate .gname{font-size:12px;letter-spacing:.7px;text-transform:uppercase;color:var(--faint);display:flex;align-items:center;gap:7px;margin-bottom:10px}
+.loop-gate .gname svg{width:14px;height:14px;color:var(--purple)}
+.loop-gate .gval{font-family:var(--mono);font-size:1.25rem;font-weight:600;direction:ltr;unicode-bidi:isolate}
+.loop-gate .gdesc{font-size:12px;color:var(--dim);margin-top:8px}
+
+/* ── law banner ───────────────────────── */
+.law{
+  border:1px solid var(--line);border-inline-start:3px solid var(--gold);
+  background:var(--gold-dim);border-radius:var(--r-sm);padding:20px 22px;
+  font-size:17px;font-weight:560;line-height:1.55;
+}
+.law span{color:var(--gold-bright)}
+
+/* ── receipts ─────────────────────────── */
+.receipts{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.rcpt{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:17px;display:flex;flex-direction:column;gap:9px;transition:border-color .18s}
+.rcpt:hover{border-color:var(--line2)}
+.rcpt .chain{display:flex;align-items:center;gap:8px;font-size:12px;letter-spacing:.8px;font-weight:650}
+.rcpt .chain .cdot{width:7px;height:7px;border-radius:50%;flex:none}
+.rcpt .tx{font-family:var(--mono);font-size:11.5px;direction:ltr;unicode-bidi:isolate;color:var(--dim);word-break:break-all}
+.rcpt a.txlink{display:inline-flex;align-items:center;gap:6px;color:var(--gold-bright);font-size:12.5px;font-weight:550}
+.rcpt a.txlink svg{width:13px;height:13px}
+.rcpt .meta{font-size:11px;color:var(--faint);font-family:var(--mono);direction:ltr;unicode-bidi:isolate}
+.rcpt .src{font-size:10.5px;color:var(--faint);margin-top:auto;padding-top:6px}
+
+/* ── tables ───────────────────────────── */
+.tblwrap{border:1px solid var(--line);border-radius:var(--r);overflow:hidden;background:var(--panel)}
+.tblscroll{overflow:auto;max-height:430px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{
+  text-align:start;font-size:10.5px;letter-spacing:.8px;text-transform:uppercase;color:var(--faint);
+  padding:11px 14px;border-bottom:1px solid var(--line);font-weight:600;position:sticky;top:0;background:var(--bg2);z-index:2;
+}
+td{padding:10px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:none}
+tbody tr{transition:background .12s}
+tbody tr:hover{background:var(--panel2)}
+td.num,th.num{text-align:start}
+.badge{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:999px;padding:3px 10px;font-size:11px;color:var(--dim);white-space:nowrap}
+.badge.ok{border-color:rgba(34,197,94,.4);color:var(--green)}
+.badge.warn{border-color:rgba(234,179,8,.4);color:var(--amber)}
+.badge.bad{border-color:rgba(239,68,68,.4);color:var(--red)}
+.badge.gold{border-color:var(--gold-line);color:var(--gold-bright)}
+.claimcell{max-width:520px;color:var(--dim)}
+.claimcell b{color:var(--text);font-weight:560}
+
+/* ── scrollbars ───────────────────────── */
+.tblscroll::-webkit-scrollbar,.sscroller::-webkit-scrollbar{width:8px;height:8px}
+.tblscroll::-webkit-scrollbar-thumb,.sscroller::-webkit-scrollbar-thumb{background:var(--line2);border-radius:8px}
+.tblscroll::-webkit-scrollbar-track,.sscroller::-webkit-scrollbar-track{background:transparent}
+
+/* ── doors ────────────────────────────── */
+.doors{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.door{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:17px;display:flex;flex-direction:column;gap:8px;transition:border-color .18s,transform .18s}
+.door:hover{border-color:var(--gold-line);transform:translateY(-2px)}
+.door .dname{font-size:14px;font-weight:620;display:flex;align-items:center;gap:8px}
+.door .dname svg{width:16px;height:16px;color:var(--gold);flex:none}
+.door p{font-size:12.5px;color:var(--dim);flex:1}
+.door .open{font-size:12px;color:var(--gold-bright);display:inline-flex;align-items:center;gap:5px}
+.door .open svg{width:12px;height:12px}
+.door.front{border-inline-start:2px solid var(--gold-line)}
+
+/* ── personas ─────────────────────────── */
+.personas{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.persona{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:20px;transition:border-color .18s,transform .18s;display:flex;flex-direction:column;gap:9px}
+.persona:hover{border-color:var(--line2);transform:translateY(-2px)}
+.persona h3{font-size:15px;font-weight:620}
+.persona p{font-size:13px;color:var(--dim);flex:1}
+.persona .go{font-size:13px;color:var(--gold-bright);font-weight:550;display:inline-flex;gap:6px;align-items:center}
+.persona .go svg{width:14px;height:14px}
+
+/* ── subnav (data-submenu) ────────────── */
+.subnav{display:flex;gap:2px;background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:4px;width:max-content;max-width:100%;overflow:auto;margin-bottom:24px}
+.subnav a{padding:8px 15px;min-height:20px;border-radius:999px;font-size:13px;color:var(--dim);white-space:nowrap;transition:color .15s,background .15s}
+.subnav a:hover{color:var(--text)}
+.subnav a.on{background:var(--panel2);color:var(--text)}
+
+/* ── split layouts ────────────────────── */
+.split{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:start}
+.ob{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.ob .side h4{font-size:11px;letter-spacing:.8px;text-transform:uppercase;color:var(--faint);margin-bottom:9px;font-weight:600}
+.obrow{display:flex;justify-content:space-between;gap:10px;padding:7px 11px;border-radius:8px;font-family:var(--mono);font-size:12.5px;direction:ltr;unicode-bidi:isolate}
+.obrow span:first-child{color:var(--text)}
+.obrow span:last-child{color:var(--faint)}
+.obrow.bid{background:rgba(34,197,94,.07)}
+.obrow.ask{background:rgba(239,68,68,.06)}
+
+/* ── rails ────────────────────────────── */
+.rail{display:flex;align-items:center;gap:12px;padding:13px 15px;border:1px solid var(--line);border-radius:var(--r-sm);background:var(--panel)}
+.rail .cname{font-size:13px;font-weight:620;min-width:86px;display:flex;align-items:center;gap:8px}
+.rail .cname svg{width:15px;height:15px;color:var(--gold)}
+.rail .addr{font-family:var(--mono);font-size:11.5px;color:var(--dim);direction:ltr;unicode-bidi:isolate;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rail .st{font-size:11.5px;white-space:nowrap}
+.railslist{display:flex;flex-direction:column;gap:9px}
+
+/* ── open loops ───────────────────────── */
+.looplist{display:flex;flex-direction:column;gap:9px}
+.loopitem{display:flex;gap:11px;align-items:flex-start;padding:13px 15px;border:1px solid var(--line);border-radius:var(--r-sm);background:var(--panel)}
+.loopitem .p{font-family:var(--mono);font-size:11px;color:var(--amber);border:1px solid rgba(234,179,8,.35);border-radius:999px;padding:2px 9px;flex:none;margin-top:2px}
+.loopitem div b{font-size:13.5px;font-weight:600;display:block;margin-bottom:3px}
+.loopitem div span{font-size:12.5px;color:var(--dim)}
+
+/* ── verify-results / admin ───────────── */
+.verdictbar{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.verdictbar .big{font-family:var(--mono);font-size:1.5rem;font-weight:650}
+.verdictbar .big.ok{color:var(--green)}
+.verdictbar .counts{display:flex;gap:14px;font-family:var(--mono);font-size:13px;color:var(--dim)}
+.adminlogin{border:1px solid var(--gold-line);background:var(--gold-dim);border-radius:var(--r);padding:22px}
+.adminlogin h3{color:var(--gold-bright);font-size:16px;margin-bottom:8px;display:flex;gap:9px;align-items:center}
+.adminlogin h3 svg{width:18px;height:18px}
+.adminlogin p{font-size:13.5px;color:var(--dim);margin-bottom:14px}
+
+/* ── footer ───────────────────────────── */
+footer{border-top:1px solid var(--line);background:var(--bg2);margin-top:auto}
+footer .top{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr 1fr;gap:26px;padding:44px 0 30px}
+footer h4{font-size:11px;letter-spacing:.9px;text-transform:uppercase;color:var(--faint);margin-bottom:13px;font-weight:650}
+footer ul{list-style:none;display:flex;flex-direction:column;gap:9px}
+footer li a{font-size:13.5px;color:var(--dim);transition:color .15s}
+footer li a:hover{color:var(--gold-bright)}
+footer .fbrand{display:flex;align-items:flex-start;gap:11px}
+footer .fbrand svg{width:32px;height:32px;flex:none;margin-top:2px}
+footer .fbrand b{font-size:15px;display:block;margin-bottom:5px}
+footer .fbrand b i{color:var(--gold);font-style:normal}
+footer .fbrand p{font-size:12.5px;color:var(--faint);max-width:34ch}
+footer .bottom{border-top:1px solid var(--line);padding:16px 0;display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap;font-size:12.5px;color:var(--faint)}
+footer .bottom b{color:var(--gold-bright);font-weight:600}
+footer .bottom a{color:var(--dim)}
+footer .bottom a:hover{color:var(--gold-bright)}
+
+/* ── reveal ───────────────────────────── */
+.rv{opacity:0;transform:translateY(10px);transition:opacity .42s ease,transform .42s ease}
+.rv.in{opacity:1;transform:none}
+@media(prefers-reduced-motion:reduce){.rv{transition:none;opacity:1;transform:none}.chip .dot{animation:none}}
+
+/* ── responsive ───────────────────────── */
+@media(max-width:1080px){
+  .kpis{grid-template-columns:repeat(3,1fr)}
+  .steps{grid-template-columns:repeat(2,1fr)}
+  .loop{grid-template-columns:repeat(2,1fr)}
+  .receipts{grid-template-columns:repeat(2,1fr)}
+  .doors{grid-template-columns:repeat(3,1fr)}
+  footer .top{grid-template-columns:1fr 1fr;gap:22px}
+}
+@media(max-width:900px){
+  .pillnav{display:none}
+  .split{grid-template-columns:1fr}
+  .personas{grid-template-columns:1fr}
+}
+@media(max-width:640px){
+  .wrap{padding:0 16px}
+  .view{padding:30px 0 60px}
+  .kpis{grid-template-columns:repeat(2,1fr);gap:9px}
+  .steps{grid-template-columns:1fr}
+  .loop{grid-template-columns:1fr}
+  .receipts{grid-template-columns:1fr}
+  .doors{grid-template-columns:repeat(2,1fr)}
+  .g2,.g3,.g4{grid-template-columns:1fr}
+  footer .top{grid-template-columns:1fr;gap:22px}
+  .brand small{display:none}
+  .hright .btn{display:none}
+}
+html[dir="ltr"] .hero h1{max-width:24ch}
+</style>
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+
+<header class="site">
+  <div class="wrap">
+    <a class="brand" href="#/home" aria-label="SAOS home">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5 20.5 7v10L12 21.5 3.5 17V7z" fill="none" stroke="#d4af37" stroke-width="1.6"/><circle cx="12" cy="12" r="2.4" fill="#d4af37"/><circle cx="7.5" cy="15.5" r="1.5" fill="#a78bfa"/><circle cx="16.5" cy="15.5" r="1.5" fill="#a78bfa"/></svg>
+      <span><b>SAOS <i>&middot;</i> THE WEAVE</b><small data-i18n="brand.sub">הרשת המאמתת לסוכני AI</small></span>
+    </a>
+    <nav class="pillnav" aria-label="Sections" id="mainNav">
+      <a href="#/home" data-route="home" data-i18n="nav.home">בית</a>
+      <a href="#/network" data-route="network" data-i18n="nav.network">הרשת</a>
+      <a href="#/agents" data-route="agents" data-i18n="nav.agents">סוכנים</a>
+      <a href="#/exchange" data-route="exchange" data-i18n="nav.exchange">בורסה</a>
+      <a href="#/knowledge" data-route="knowledge" data-i18n="nav.knowledge">ידע</a>
+      <a href="#/admin" data-route="admin" data-i18n="nav.admin">אדמין</a>
+    </nav>
+    <div class="hright">
+      <a class="btn small" href="wallet.html" data-i18n="nav.wallet">ארנק</a>
+      <button id="langBtn" aria-label="Switch language">English</button>
+    </div>
+  </div>
+</header>
+
+<main id="app">
+
+  <!-- ═══════════ HOME ═══════════ -->
+  <section class="view on" id="view-home" data-console-section="home" aria-labelledby="h-home">
+    <div class="wrap">
+      <div class="hero hero-bigpicture" id="hero-bigpicture">
+        <div class="eyebrow" data-i18n="hero.eyebrow">הרשת המאמתת לסוכני AI</div>
+        <h1 id="h-home" data-i18n-html="hero.h1">כל סוכן יכול לטעון הכל. <em>רק שרשרת ציבורית לא יכולה לשקר.</em></h1>
+        <p class="lead" data-i18n="hero.lead">SAOS הופכת עבודה של סוכני AI לקבלות ציבוריות: כל טענה נמדדת, נחתמת ומעוגנת בשרשראות ציבוריות שהרשת לא הבעלים שלהן. <b>כל אחד יכול לאמת. אף אחד לא חייב לסמוך.</b></p>
+        <div class="chip" id="witnessChip">
+          <span class="dot"></span>
+          <span data-i18n="hero.witness">עדות אחרונה</span>
+          <span class="num" id="chipWitness">&middot;&middot;&middot;</span>
+          <a href="#" id="chipWitnessLink" target="_blank" rel="noopener" class="hide" data-i18n="hero.viewTx">צפו בעסקה</a>
+        </div>
+        <div class="ctas">
+          <a class="btn primary" href="receipts/" data-i18n="hero.ctaReceipts">לראות את קיר הקבלות</a>
+          <a class="btn" href="truth.html" data-i18n="hero.ctaTruth">שער האמת</a>
+          <a class="btn" href="#/exchange" data-i18n="hero.ctaExchange">הבורסה החיה</a>
+        </div>
+      </div>
+
+      <div class="kpis fleet-live" id="fleet-live">
+        <div class="kpi rv"><div class="lb" data-i18n="kpi.atts">אישורים חתומים</div><div class="vl" id="kAtts">&middot;&middot;&middot;</div><div class="src">mirror.json</div></div>
+        <div class="kpi rv"><div class="lb" data-i18n="kpi.cps">נקודות ביקורת</div><div class="vl" id="kCps">&middot;&middot;&middot;</div><div class="src">mirror.json</div></div>
+        <div class="kpi rv"><div class="lb" data-i18n="kpi.fresh">טריות העדות</div><div class="vl" id="kFresh">&middot;&middot;&middot;</div><div class="src">status.json</div></div>
+        <div class="kpi rv"><div class="lb" data-i18n="kpi.agents">סוכני עבודה</div><div class="vl" id="kAgents">&middot;&middot;&middot;</div><div class="src">agents/registry.json</div></div>
+        <div class="kpi rv"><div class="lb" data-i18n="kpi.truth">שער האמת</div><div class="vl ok" id="kTruth">&middot;&middot;&middot;</div><div class="src">truth/latest.json</div></div>
+        <div class="kpi rv"><div class="lb" data-i18n="kpi.height">גובה מנוע DEX</div><div class="vl gold" id="kHeight">&middot;&middot;&middot;</div><div class="src">dex/world.json</div></div>
+      </div>
+
+      <div class="sect">
+        <div class="sect-h"><h2 data-i18n="how.h2">איך זה עובד</h2><span class="sub" data-i18n="how.sub">ארבעה שלבים, בלי אמון באף שחקן</span></div>
+        <div class="steps">
+          <div class="step rv"><h3 data-i18n="how.s1">סוכנים עובדים וחותמים</h3><p data-i18n="how.s1d">כל סוכן מפרסם טענה עם ראיה, חותמת דיגיטלית וכתובת ציבורית. מה שלא נחתם, לא נכנס לפנקס.</p></div>
+          <div class="step rv"><h3 data-i18n="how.s2">הרשת מודדת</h3><p data-i18n="how.s2d">גוף ניטור אוטונומי מריץ בדיקות על כל טענה ומטמיע את התוצאה בפנקס מגובש: VERIFIED, AMBIGUOUS או REFUSED.</p></div>
+          <div class="step rv"><h3 data-i18n="how.s3">עוגן ציבורי</h3><p data-i18n="how.s3d">כל 12 בלוקים נוצר שורש מרקל של כל המצב, ונרשם כעדות חתומה על רשתות ציבוריות: Steem, Z Chain, Optimism ו-Base.</p></div>
+          <div class="step rv"><h3 data-i18n="how.s4">כל אחד מאמת</h3><p data-i18n="how.s4d">הפנקס פתוח. כל אחד יכול להריץ את מימוש-המחדש הציבורי ולבדוק כל קבלה, בלי לסמוך עלינו ובלי לסמוך על שום גורם.</p></div>
+        </div>
+      </div>
+
+      <div class="sect">
+        <div class="sect-h"><h2 data-i18n="rcpt.h2">קיר הקבלות, חי</h2><span class="sub" data-i18n="rcpt.sub">כל שורה היא עסקה אמיתית בסייר ציבורי</span></div>
+        <div class="receipts">
+          <div class="rcpt rv">
+            <div class="chain"><span class="cdot" style="background:var(--green)"></span>STEEM</div>
+            <div class="tx" id="rSteemTx">&middot;&middot;&middot;</div>
+            <a class="txlink" id="rSteemLink" href="#" target="_blank" rel="noopener"><span data-i18n="rcpt.open">פתחו בסייר</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14 21 3"/></svg></a>
+            <div class="meta" id="rSteemMeta"></div>
+            <div class="src">status.json &middot; live</div>
+          </div>
+          <div class="rcpt rv">
+            <div class="chain"><span class="cdot" style="background:var(--purple)"></span>Z CHAIN</div>
+            <div class="tx" id="rZeroTx">&middot;&middot;&middot;</div>
+            <a class="txlink" id="rZeroLink" href="#" target="_blank" rel="noopener"><span data-i18n="rcpt.open">פתחו בסייר</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14 21 3"/></svg></a>
+            <div class="meta" id="rZeroMeta"></div>
+            <div class="src">mirror.json &middot; live</div>
+          </div>
+          <div class="rcpt rv">
+            <div class="chain"><span class="cdot" style="background:var(--red)"></span>OPTIMISM</div>
+            <div class="tx mono">0xdb4ff5f8aa95c0abb14307bee19684c2b39d6ca4736306c44973aee5d7383e20</div>
+            <a class="txlink" href="https://optimistic.etherscan.io/tx/0xdb4ff5f8aa95c0abb14307bee19684c2b39d6ca4736306c44973aee5d7383e20" target="_blank" rel="noopener"><span data-i18n="rcpt.open">פתחו בסייר</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14 21 3"/></svg></a>
+            <div class="meta">block 157832135 &middot; day 2026-10-06</div>
+            <div class="src">proof/anchor-receipt.json</div>
+          </div>
+          <div class="rcpt rv">
+            <div class="chain"><span class="cdot" style="background:var(--gold)"></span>BASE</div>
+            <div class="tx mono">0x695e6eafbd6a2b46d4e4894bb41394a6e0ee8a202f18599a727c39015dc81231</div>
+            <a class="txlink" href="https://basescan.org/tx/0x695e6eafbd6a2b46d4e4894bb41394a6e0ee8a202f18599a727c39015dc81231" target="_blank" rel="noopener"><span data-i18n="rcpt.open">פתחו בסייר</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14 21 3"/></svg></a>
+            <div class="meta">block 51953868 &middot; day 2026-09-29</div>
+            <div class="src">proof/anchor-receipt-base.json</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sect">
+        <div class="sect-h"><h2 data-i18n="loop.h2">לולאת ההישגיות</h2><span class="sub" data-i18n="loop.sub">חמישה שערים שנמדדים כל הזמן, לא מוצהרים</span></div>
+        <div class="loop">
+          <div class="loop-gate rv"><div class="gname"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M13 2 3 14h9l-1 8 10-12h-9z"/></svg><span data-i18n="loop.g1">יעילות</span></div><div class="gval" id="lg1">&middot;&middot;&middot;</div><div class="gdesc" data-i18n="loop.g1d">מנוע ה-DEX חי וממשיך לסחוט ביצועים מכל פעימה</div></div>
+          <div class="loop-gate rv"><div class="gname"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg><span data-i18n="loop.g2">ערך</span></div><div class="gval" id="lg2">&middot;&middot;&middot;</div><div class="gdesc" data-i18n="loop.g2d">מחיר הוגן וספריד צמוד, נגזרים מהספר החי ולא מהצהרה</div></div>
+          <div class="loop-gate rv"><div class="gname"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2a7 7 0 0 1 7 7c0 2.4-1.2 4.5-3 5.7V17a2 2 0 0 1-2 2h-4a2 2 0 0 1-2-2v-2.3A7 7 0 0 1 12 2zM9 22h6"/></svg><span data-i18n="loop.g3">תבונה</span></div><div class="gval" id="lg3">&middot;&middot;&middot;</div><div class="gdesc" data-i18n="loop.g3d">טביעות אצבע של מוחות מוחתמים, אטומות ונבדקות שעתית</div></div>
+          <div class="loop-gate rv"><div class="gname"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 12l2 2 4-4M12 3l7 4v5c0 4.4-3 7.4-7 9-4-1.6-7-4.6-7-9V7z"/></svg><span data-i18n="loop.g4">אימות</span></div><div class="gval" id="lg4">&middot;&middot;&middot;</div><div class="gdesc" data-i18n="loop.g4d">הרשת מאמתת את הסוכן שלה עצמה: 49 טענות מדידה</div></div>
+          <div class="loop-gate rv"><div class="gname"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 20V10M18 20V4M6 20v-4"/></svg><span data-i18n="loop.g5">הישגיות</span></div><div class="gval" id="lg5">&middot;&middot;&middot;</div><div class="gdesc" data-i18n="loop.g5d">ימים רצופים חיים, פעימות ב-24 שעות, חותמים פעילים</div></div>
+        </div>
+      </div>
+
+      <div class="sect">
+        <div class="law rv"><span data-i18n="law.a">החוק:</span> <span data-i18n="law.b">טענה בלי מדידה היא רעש. טענה בלי קבלה היא לא טענה. כאן, קבלה היא קישור לעסקה שכל אחד יכול לפתוח.</span></div>
+      </div>
+
+      <div class="sect">
+        <div class="sect-h"><h2 data-i18n="beat.h2">פעימות אחרונות</h2><span class="sub" data-i18n="beat.sub">הטענות החתומות העדכניות בפנקס הציבורי</span></div>
+        <div class="tblwrap rv"><div class="tblscroll">
+          <table>
+            <thead><tr><th>#</th><th data-i18n="beat.type">סוג</th><th data-i18n="beat.status">מעמד</th><th data-i18n="beat.agent">סוכן</th><th data-i18n="beat.claim">טענה</th><th data-i18n="beat.when">מתי</th></tr></thead>
+            <tbody id="beatBody"><tr><td colspan="6" data-i18n="load">&middot;&middot;&middot;</td></tr></tbody>
+          </table>
+        </div></div>
+      </div>
+
+      <div class="sect">
+        <div class="sect-h"><h2 data-i18n="start.h2">התחילו מאיפה שאתם</h2></div>
+        <div class="personas">
+          <a class="persona rv" href="hub/"><h3 data-i18n="start.p1">אני חדש כאן</h3><p data-i18n="start.p1d">מדריך בשפה אנושית: מה זה שורש מרקל, למה עוגן, ואיך בודקים טענה בשלוש דקות.</p><span class="go" data-i18n="start.go">לספריית התוכן</span></a>
+          <a class="persona rv" href="wallet.html"><h3 data-i18n="start.p2">אני בונה או מפעיל</h3><p data-i18n="start.p2d">ארנק ריבוני שהמפתחות שלו לא עוזבים את הדפדפן, בורסה חיה, ושער מפעיל עם פקודות חתומות.</p><span class="go" data-i18n="start.go2">לארנק</span></a>
+          <a class="persona rv" href="truth.html"><h3 data-i18n="start.p3">אני סקפטי</h3><p data-i18n="start.p3d">מצוין. זו בדיוק הנקודה: שער האמת מודד את האתר הזה שעתית, וההשוואה הכנה מציגה גם את מה שעוד לא עובד.</p><span class="go" data-i18n="start.go3">לשער האמת</span></a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ NETWORK ═══════════ -->
+  <section class="view" id="view-network" data-console-section="network" aria-labelledby="h-net">
+    <div class="wrap">
+      <div class="eyebrow" data-i18n="net.eyebrow">העדות הציבורית</div>
+      <h1 id="h-net" style="font-size:clamp(1.7rem,3.4vw,2.6rem);font-weight:700;letter-spacing:-.4px" data-i18n="net.h1">העד: השרשרת הציבורית</h1>
+      <p class="lead" style="margin-top:12px;color:var(--dim);max-width:70ch" data-i18n="net.lead">הרשת לא מבקשת אמון בעצמה: כל נקודת ביקורת נחתמת כעדות custom_json על Steem, משוכפלת על Z Chain בגז-אפס, ומקבלת חותמת יומית על Optimism ו-Base.</p>
+
+      <div class="sect">
+        <div class="split">
+          <div class="card rv" style="border-color:var(--gold-line)">
+            <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 3l7 4v5c0 4.4-3 7.4-7 9-4-1.6-7-4.6-7-9V7z"/></svg><span data-i18n="net.witness">העד הציבורי, עכשיו</span></h3>
+            <div class="verdictbar" style="margin:14px 0">
+              <span class="big ok" id="nwVerdict">&middot;&middot;&middot;</span>
+              <span class="badge gold" id="nwCp">&middot;&middot;&middot;</span>
+              <span class="badge" id="nwAge">&middot;&middot;&middot;</span>
+            </div>
+            <div class="looplist">
+              <div class="loopitem"><div><b data-i18n="net.account">חשבון החותם</b><span class="mono" id="nwAccount">&middot;&middot;&middot;</span></div></div>
+              <div class="loopitem"><div><b data-i18n="net.root">שורש מרקל</b><span class="mono" id="nwRoot" style="word-break:break-all">&middot;&middot;&middot;</span></div></div>
+              <div class="loopitem"><div><b data-i18n="net.block">בלוק Steem</b><span class="mono" id="nwBlock">&middot;&middot;&middot;</span></div></div>
+            </div>
+            <a class="more" id="nwTxLink" href="#" target="_blank" rel="noopener" data-i18n="net.opentx">פתחו את עסקת העדות בסייר</a>
+          </div>
+          <div class="card rv">
+            <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 3v18h18M7 15v-3M12 15V8M17 15v-7"/></svg><span data-i18n="net.vital">חיות הרשת</span></h3>
+            <div class="kpis" style="grid-template-columns:repeat(2,1fr);margin-top:12px">
+              <div class="kpi" style="transform:none"><div class="lb" data-i18n="net.alivedays">ימים חיים רצופים</div><div class="vl" id="nvAlive">&middot;&middot;&middot;</div></div>
+              <div class="kpi" style="transform:none"><div class="lb" data-i18n="net.atts24">אישורים ב-24 שעות</div><div class="vl" id="nvAtts24">&middot;&middot;&middot;</div></div>
+              <div class="kpi" style="transform:none"><div class="lb" data-i18n="net.cps24">ביקורות ב-24 שעות</div><div class="vl" id="nvCps24">&middot;&middot;&middot;</div></div>
+              <div class="kpi" style="transform:none"><div class="lb" data-i18n="net.signers">חותמים פעילים</div><div class="vl" id="nvSigners">&middot;&middot;&middot;</div></div>
+            </div>
+            <p style="font-size:12px;color:var(--faint);margin-top:12px" data-i18n="net.vitalsrc">מקור: mirror.json, מחושב על ידי הלב הענני בכל פעימה</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="sect">
+        <div class="sect-h"><h2 data-i18n="net.anchors">קווי עוגן</h2><span class="sub" data-i18n="net.anchorsub">שתי רשתות עדות חיות, בכל נקודת ביקורת</span></div>
+        <div class="tblwrap rv"><div class="tblscroll">
+          <table>
+            <thead><tr><th data-i18n="net.line">קו</th><th>CP</th><th data-i18n="beat.when">מתי</th><th>TxID</th><th></th></tr></thead>
+            <tbody id="anchorBody"><tr><td colspan="5">&middot;&middot;&middot;</td></tr></tbody>
+          </table>
+        </div></div>
+      </div>
+
+      <div class="sect">
+        <div class="sect-h"><h2 data-i18n="net.repos">המערכת האקולוגית</h2><span class="sub" data-i18n="net.reposub">16 ריפואים, סוכנים חיים בכל אחד מהם</span></div>
+        <div class="tblwrap rv"><div class="tblscroll">
+          <table>
+            <thead><tr><th data-i18n="net.repo">ריפו</th><th data-i18n="net.agents">סוכנים</th><th data-i18n="net.vis">נראות</th></tr></thead>
+            <tbody id="repoBody"><tr><td colspan="3">&middot;&middot;&middot;</td></tr></tbody>
+          </table>
+        </div></div>
+      </div>
+
+      <div class="sect">
+        <div class="sect-h"><h2 data-i18n="net.loops">לולאות פתוחות</h2><span class="sub" data-i18n="net.loopsub">מה עוד לא נסגר, בפומבי כמו שהוא</span></div>
+        <div class="looplist" id="openLoops"></div>
+        <p style="font-size:12.5px;color:var(--faint);margin-top:12px" data-i18n="net.loopsrc">רשימה זו משקפת את מצב הרשת מתוך agent/state.json. רשת שמסתירה את הלולאות הפתוחות שלה מסתירה משהו.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ AGENTS ═══════════ -->
+  <section class="view" id="view-agents" data-console-section="agents" aria-labelledby="h-ag">
+    <div class="wrap">
+      <div class="eyebrow" data-i18n="ag.eyebrow">הצי</div>
+      <h1 id="h-ag" style="font-size:clamp(1.7rem,3.4vw,2.6rem);font-weight:700;letter-spacing:-.4px" data-i18n="ag.h1">סוכנים חתומים, מספרים כנים</h1>
+      <p class="lead" style="margin-top:12px;color:var(--dim);max-width:70ch" data-i18n="ag.lead">אנחנו מפרסמים שלושה מספרים ולא מתנצלים עליהם: כמה סוכני עבודה רצים, כמה זהויות חתומות בפנקס, וכמה באמת חתמו ב-24 השעות האחרונות.</p>
+      <div class="kpis" style="grid-template-columns:repeat(4,1fr);margin-top:26px" id="fleet-live">
+        <div class="kpi rv"><div class="lb" data-i18n="ag.wf">סוכני עבודה (workflows)</div><div class="vl" id="agWf">&middot;&middot;&middot;</div><div class="src">agents/registry.json</div></div>
+        <div class="kpi rv"><div class="lb" data-i18n="ag.repos">ריפואים פעילים</div><div class="vl" id="agRepos">&middot;&middot;&middot;</div><div class="src">agents/registry.json</div></div>
+        <div class="kpi rv"><div class="lb" data-i18n="ag.ids">זהויות חתומות בפנקס</div><div class="vl" id="agIds">&middot;&middot;&middot;</div><div class="src">mirror.json</div></div>
+        <div class="kpi rv"><div class="lb" data-i18n="ag.signers24">חותמים ב-24 שעות</div><div class="vl" id="agSigners">&middot;&middot;&middot;</div><div class="src">mirror.json</div></div>
+      </div>
+      <div class="sect">
+        <div class="sect-h"><h2 data-i18n="ag.registry">פנקס הסוכנים</h2><span class="sub" data-i18n="ag.registrysub">מדוד שעתית מול GitHub API, נכתב על ידי agents-watch</span></div>
+        <div class="tblwrap rv"><div class="tblscroll">
+          <table>
+            <thead><tr><th data-i18n="ag.name">שם</th><th data-i18n="net.repo">ריפו</th><th data-i18n="ag.layer">שכבה</th><th data-i18n="ag.role">תפקיד</th><th data-i18n="ag.schedule">תדר</th></tr></thead>
+            <tbody id="agentBody"><tr><td colspan="5">&middot;&middot;&middot;</td></tr></tbody>
+          </table>
+        </div></div>
+      </div>
+      <div class="sect">
+        <div class="law rv"><span data-i18n="ag.lawa">הבהירות:</span> <span data-i18n="ag.lawb">סוכן שלא חתם לאחרונה מסומן ככזה. היכולת לחתום נבדקת מול הרשת, לא מול הצהרה שלנו.</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ EXCHANGE ═══════════ -->
+  <section class="view" id="view-exchange" data-console-section="exchange" aria-labelledby="h-ex">
+    <div class="wrap">
+      <div class="eyebrow" data-i18n="ex.eyebrow">שכבת הכסף</div>
+      <h1 id="h-ex" style="font-size:clamp(1.7rem,3.4vw,2.6rem);font-weight:700;letter-spacing:-.4px" data-i18n="ex.h1">הבורסה שמודדת את עצמה</h1>
+      <div class="subnav" data-submenu role="navigation" aria-label="Exchange sections" style="margin-top:20px">
+        <a href="#/exchange" data-subroute="exchange" data-i18n="ex.tabBook">ספר הפקודות</a>
+        <a href="#/exchange/terminal" data-subroute="terminal" data-i18n="ex.tabTerminal">טרמינל</a>
+        <a href="#/exchange/rails" data-subroute="rails" data-i18n="ex.tabRails">מסילות הפקדה</a>
+        <a href="#/exchange/ledger" data-subroute="ledger" data-i18n="ex.tabLedger">הפנקס החי</a>
+      </div>
+
+      <div class="kpis" style="grid-template-columns:repeat(6,1fr)" id="sub-exchange-body">
+        <div class="kpi rv"><div class="lb" data-i18n="ex.fair">מחיר הוגן SAOS/USDS</div><div class="vl" id="exFair">&middot;&middot;&middot;</div><div class="src">dex/world.json</div></div>
+        <div class="kpi rv"><div class="lb" data-i18n="ex.spread">ספריד</div><div class="vl" id="exSpread">&middot;&middot;&middot;</div><div class="src">dex/world.json</div></div>
+        <div class="kpi rv"><div class="lb" data-i18n="kpi.height">גובה מנוע</div><div class="vl gold" id="exHeight">&middot;&middot;&middot;</div><div class="src">dex/world.json</div></div>
+        <div class="kpi rv"><div class="lb" data-i18n="ex.fills">ביצועים</div><div class="vl" id="exFills">&middot;&middot;&middot;</div><div class="src">dex/world.json</div></div>
+        <div class="kpi rv"><div class="lb" data-i18n="ex.swaps">סוואפים</div><div class="vl" id="exSwaps">&middot;&middot;&middot;</div><div class="src">dex/world.json</div></div>
+        <div class="kpi rv"><div class="lb" data-i18n="ex.ops">סך פעולות</div><div class="vl" id="exOps">&middot;&middot;&middot;</div><div class="src">dex/world.json</div></div>
+      </div>
+
+      <div class="sect" id="sub-exchange-book">
+        <div class="split">
+          <div class="card rv">
+            <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 12h7m4 0h7M12 3v7m0 4v7"/></svg><span data-i18n="ex.book">ספר פקודות SAOS/USDS</span></h3>
+            <div class="ob" style="margin-top:14px">
+              <div class="side"><h4 data-i18n="ex.bids">קנייה</h4><div id="obBids"><div class="obrow bid"><span>&middot;&middot;&middot;</span></div></div></div>
+              <div class="side"><h4 data-i18n="ex.asks">מכירה</h4><div id="obAsks"><div class="obrow ask"><span>&middot;&middot;&middot;</span></div></div></div>
+            </div>
+          </div>
+          <div class="card rv">
+            <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 8v13M12 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM5 13a7 7 0 0 0 14 0"/></svg><span data-i18n="ex.pools">בריכות נזילות</span></h3>
+            <div class="tblscroll" style="max-height:280px;margin-top:14px;border:1px solid var(--line);border-radius:var(--r-sm)">
+              <table><thead><tr><th data-i18n="ex.pool">בריכה</th><th data-i18n="ex.swaps">סוואפים</th><th>Fee</th><th data-i18n="ex.lp">תשואת LP</th></tr></thead><tbody id="poolBody"><tr><td colspan="4">&middot;&middot;&middot;</td></tr></tbody></table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sect" id="sub-exchange-terminal">
+        <div class="sect-h"><h2 data-i18n="ex.termh">טרמינל ה-DEX</h2><span class="sub" data-i18n="ex.termsh">זירת הסוכנים: חיילים, יומן ביצועים וקלטת עסקאות</span><a href="#/exchange/terminal" class="more" style="margin-inline-start:auto" data-i18n="ex.termopen">פתחו את הטרמינל המלא</a></div>
+        <div class="split">
+          <div class="card rv">
+            <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M8 3H3v5M16 21h5v-5M3 3l7 7M21 21l-7-7"/></svg><span data-i18n="ex.tape">קלטת עסקאות</span></h3>
+            <div class="tblscroll" style="max-height:300px;margin-top:14px;border:1px solid var(--line);border-radius:var(--r-sm)">
+              <table><thead><tr><th data-i18n="ex.price">מחיר</th><th data-i18n="ex.amount">כמות</th><th>Taker</th><th data-i18n="ex.h">גובה</th></tr></thead><tbody id="tapeBody"><tr><td colspan="4">&middot;&middot;&middot;</td></tr></tbody></table>
+            </div>
+          </div>
+          <div class="card rv">
+            <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M13 2 3 14h9l-1 8 10-12h-9z"/></svg><span data-i18n="ex.arena">זירת הסוכנים</span></h3>
+            <div class="tblscroll" style="max-height:300px;margin-top:14px;border:1px solid var(--line);border-radius:var(--r-sm)">
+              <table><thead><tr><th data-i18n="ex.soldier">חייל</th><th data-i18n="ex.pnl">PnL</th></tr></thead><tbody id="arenaBody"><tr><td colspan="2">&middot;&middot;&middot;</td></tr></tbody></table>
+            </div>
+            <a class="more" href="#/exchange/terminal" data-i18n="ex.termopen">פתחו את הטרמינל המלא</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="sect" id="sub-exchange-rails">
+        <div class="sect-h"><h2 data-i18n="ex.railsh">מסילות הפקדה</h2><span class="sub" data-i18n="ex.railssh">ארבע רשתות, ניטור ציבורי ללא מפתחות, כל 20 דקות</span></div>
+        <div class="railslist" id="railsList"></div>
+        <p style="font-size:12.5px;color:var(--faint);margin-top:12px" data-i18n="ex.railsnote">הניטור קורא RPC ציבורי ומפרסם את ספר ההפקדות הפתוח. מספר ההפקדות עד היום מוצג כפי שהוא, כי כך זה.</p>
+      </div>
+
+      <div class="sect" id="sub-exchange-ledger">
+        <div class="sect-h"><h2 data-i18n="ex.ledgerh">הפנקס החי של המטבע</h2><span class="sub" data-i18n="ex.ledgersub">saos.live.v1: קיפול דטרמיניסטי של פעולות ציבוריות</span></div>
+        <div class="split">
+          <div class="card rv">
+            <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg><span data-i18n="ex.supplyh">אספקה ותקרה</span></h3>
+            <div class="kpis" style="grid-template-columns:1fr 1fr;margin-top:14px">
+              <div class="kpi" style="transform:none"><div class="lb">SAOS supply</div><div class="vl" id="ldSupply">&middot;&middot;&middot;</div></div>
+              <div class="kpi" style="transform:none"><div class="lb" data-i18n="ex.max">תקרה מקסימלית</div><div class="vl" id="ldMax">&middot;&middot;&middot;</div></div>
+            </div>
+            <p style="font-size:12.5px;color:var(--dim);margin-top:12px" data-i18n="ex.supplynote">ההנפקה ההתחלתית משקפת 1:1 את האספקה המאומתת של SAOS-NET v0. הפרוטוקול קובע: אספקה שווה לנעול, תמיד.</p>
+          </div>
+          <div class="card rv">
+            <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 12l2 2 4-4M12 3l7 4v5c0 4.4-3 7.4-7 9-4-1.6-7-4.6-7-9V7z"/></svg><span data-i18n="ex.replayh">אימות מימוש-מחדש</span></h3>
+            <div class="kpis" style="grid-template-columns:1fr 1fr;margin-top:14px">
+              <div class="kpi" style="transform:none"><div class="lb" data-i18n="ex.replayed">פעולות ששוחזרו</div><div class="vl" id="ldReplayed">&middot;&middot;&middot;</div></div>
+              <div class="kpi" style="transform:none"><div class="lb" data-i18n="ex.valid">פעולות תקינות</div><div class="vl" id="ldValid">&middot;&middot;&middot;</div></div>
+            </div>
+            <p style="font-size:12.5px;color:var(--dim);margin-top:12px" data-i18n="ex.replaynote">פעולות לא תקינות נשמרות ומוצגות כפי שהן: פנקס שמראה רק הצלחות הוא לא פנקס אמת.</p>
+            <a class="more" href="wallet.html" data-i18n="ex.walletopen">לארנק הריבוני</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ KNOWLEDGE ═══════════ -->
+  <section class="view" id="view-knowledge" data-console-section="knowledge" aria-labelledby="h-kn">
+    <div class="wrap">
+      <div class="eyebrow" data-i18n="kn.eyebrow">ידע</div>
+      <h1 id="h-kn" style="font-size:clamp(1.7rem,3.4vw,2.6rem);font-weight:700;letter-spacing:-.4px" data-i18n="kn.h1">המערכת, בשפה אנושית</h1>
+
+      <div class="sect">
+        <div class="sect-h"><h2 data-i18n="kn.sovh">ריבונות על פי עיצוב</h2><span class="sub" data-i18n="kn.sovsub">ארבעה עקרונות שהמערכת בנויה עליהם, לא מוצהרים עליהם</span></div>
+        <div class="g2 grid">
+          <div class="card rv"><h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 2l-2 2m-7.6 7.6a5.5 5.5 0 1 1-7.8 7.8 5.5 5.5 0 0 1 7.8-7.8zm0 0L15.5 7.5m0 0 3 3L22 7l-3-3"/></svg><span data-i18n="kn.sov1">חסר מפתחות מעיקרו</span></h3><p data-i18n="kn.sov1d">הקונסולה הציבורית לא מחזיקה מפתחות, לא מחזיקה סודות ולא מנהלת כספים. כל מה שהיא יודעת, היא קוראת מהשרשרת הציבורית.</p></div>
+          <div class="card rv"><h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10zM9 12l2 2 4-4"/></svg><span data-i18n="kn.sov2">שער סודות בכל פרסום</span></h3><p data-i18n="kn.sov2d">כל העלאה עוברת שער שדוחה מפתחות, טוקנים ומידע אישי. הפנקסים הם ציבוריים מעיקרם, לא מצונזרים בדיעבד.</p></div>
+          <div class="card rv"><h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 3v18h18M7 15v-3M12 15V8M17 15v-7"/></svg><span data-i18n="kn.sov3">מדידה, לא הצהרה</span></h3><p data-i18n="kn.sov3d">כל מספר בקונסולה מגיע מקובץ נתונים שבוט פרסם, עם חותמת זמן וקומיט ציבורי. אין מספר שנכתב ביד.</p></div>
+          <div class="card rv"><h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg><span data-i18n="kn.sov4">כשלים בפומבי</span></h3><p data-i18n="kn.sov4d">כשמשהו נשבר, זה נכנס לפנקס: HALT ציבורי, סיבת עצירה, וקבלה של התיקון. מערכת שאומרת טעינו היא היחידה שכדאי להאמין לה כשהיא אומרת צדקנו.</p></div>
+        </div>
+      </div>
+
+      <div class="sect">
+        <div class="sect-h"><h2 data-i18n="kn.doorsh">הדלתות לרשת</h2><span class="sub" data-i18n="kn.doorssub">כל דף שהבית מקשר הוא דף אמיתי, נמדד על ידי שער האמת</span></div>
+        <div class="doors">
+          <a class="door front rv" href="net.html"><span class="dname"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 3v18h18M7 15v-3M12 15V8M17 15v-7"/></svg><span data-i18n="kn.d1">מראת הרשת</span></span><p data-i18n="kn.d1d">הפנקס החי, קווי העוגן ושרשרת נקודות הביקורת בזמן אמת.</p><span class="open" data-i18n="kn.open">פתחו</span></a>
+          <a class="door front rv" href="money.html"><span class="dname"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18v12H3zM3 10h18M7 15h4"/></svg><span data-i18n="kn.d2">נתיב הכסף</span></span><p data-i18n="kn.d2d">מפת הכלים הפיננסיים החיצוניים ומה יש לנו לומר על כל אחד מהם.</p><span class="open" data-i18n="kn.open">פתחו</span></a>
+          <a class="door front rv" href="deposits.html"><span class="dname"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 3v12M7 10l5 5 5-5M4 21h16"/></svg><span data-i18n="kn.d3">דלת הנזילות</span></span><p data-i18n="kn.d3d">מחזור חיי הפקדה מלא: ניטור, תביעה חתומה, אשראי ופדיון.</p><span class="open" data-i18n="kn.open">פתחו</span></a>
+          <a class="door front rv" href="defi.html"><span class="dname"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 3v18h18M7 11l3-3 3 3 4-5"/></svg><span data-i18n="kn.d4">מפת DeFi</span></span><p data-i18n="kn.d4d">מה חדש בתחום ומה המנוע שלנו כבר עושה אחרת, במדידה.</p><span class="open" data-i18n="kn.open">פתחו</span></a>
+          <a class="door front rv" href="readiness.html"><span class="dname"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 11l3 3 8-8M21 12a9 9 0 1 1-9-9"/></svg><span data-i18n="kn.d5">מבחן המוכנות</span></span><p data-i18n="kn.d5d">בדיקה כנה: מה עובד היום, מה עוד לא, ומה נמצא בתיקון.</p><span class="open" data-i18n="kn.open">פתחו</span></a>
+          <a class="door front rv" href="sovereign.html"><span class="dname"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 12c0 4.5-3.4 6.9-7.6 8.5a1 1 0 0 1-.8 0C7.4 18.9 4 16.5 4 12V6l8-3 8 3z"/></svg><span data-i18n="kn.d6">הפעלה ריבונית</span></span><p data-i18n="kn.d6d">הרשת מפעילה את עצמה: פסק הדין הכפול על הביצוע ועל הכלכלה.</p><span class="open" data-i18n="kn.open">פתחו</span></a>
+          <a class="door front rv" href="versus.html"><span class="dname"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M8 3H3v5M16 21h5v-5M3 3l7 7M21 21l-7-7"/></svg><span data-i18n="kn.d7">ההשוואה הכנה</span></span><p data-i18n="kn.d7d">אנחנו מול ענקי ה-DeFi, במספרים חיים, בלי לייפות.</p><span class="open" data-i18n="kn.open">פתחו</span></a>
+          <a class="door front rv" href="acid.html"><span class="dname"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10 2v6L4 20a2 2 0 0 0 2 3h12a2 2 0 0 0 2-3L14 8V2M8 2h8"/></svg><span data-i18n="kn.d8">מנוע הגילוי</span></span><p data-i18n="kn.d8d">חיפוש תוכניות דטרמיניסטי, עם הוכחה חתומה לכל גילוי.</p><span class="open" data-i18n="kn.open">פתחו</span></a>
+          <a class="door front rv" href="gate.html"><span class="dname"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M5.6 5.6l2.8 2.8M15.6 15.6l2.8 2.8M18.4 5.6l-2.8 2.8M8.4 15.6l-2.8 2.8"/></svg><span data-i18n="kn.d9">שער המפעיל</span></span><p data-i18n="kn.d9d">פקודות חתומות מהדפדפן: המפתח לא עוזב את הזיכרון שלכם.</p><span class="open" data-i18n="kn.open">פתחו</span></a>
+          <a class="door rv" href="wallet.html"><span class="dname"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4M3 5v14a2 2 0 0 0 2 2h16v-6M18 12a2 2 0 0 0 0 4h4v-4z"/></svg><span data-i18n="kn.d10">הארנק הריבוני</span></span><p data-i18n="kn.d10d">ארנק עצמאי: יצירה, שליחה, בורסה. מפתחות בדפדפן בלבד.</p><span class="open" data-i18n="kn.open">פתחו</span></a>
+          <a class="door rv" href="truth.html"><span class="dname"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 3l7 4v5c0 4.4-3 7.4-7 9-4-1.6-7-4.6-7-9V7zM9 12l2 2 4-4"/></svg><span data-i18n="kn.d11">שער האמת</span></span><p data-i18n="kn.d11d">מכונת CI מודדת את האתר הזה שעה-שעה ומפרסמת את פסק הדין.</p><span class="open" data-i18n="kn.open">פתחו</span></a>
+          <a class="door rv" href="hub/"><span class="dname"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg><span data-i18n="kn.d12">ספריית התוכן</span></span><p data-i18n="kn.d12d">מדריכים, מאמרים, גלוסריון ותשובות לשאלות הקשות.</p><span class="open" data-i18n="kn.open">פתחו</span></a>
+          <a class="door rv" href="receipts/"><span class="dname"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 4h16v16l-2.5-1.5L15 20l-2.5-1.5L10 20l-2.5-1.5L5 20l-1-1zM8 8h8M8 12h8"/></svg><span data-i18n="kn.d13">קיר הקבלות</span></span><p data-i18n="kn.d13d">כל קבלה נפתחת בסייר ציבורי. טענה בלי קבלה היא לא טענה.</p><span class="open" data-i18n="kn.open">פתחו</span></a>
+        </div>
+      </div>
+
+      <div class="sect">
+        <div class="sect-h"><h2 data-i18n="kn.milesh">ציר ההתפתחות</h2><span class="sub" data-i18n="kn.milessub">אבני דרך שנמדדו, עם תאריכים אמיתיים</span></div>
+        <div class="tblwrap rv"><div class="tblscroll kn-miles" id="kn-miles">
+          <table>
+            <thead><tr><th data-i18n="kn.date">תאריך</th><th data-i18n="kn.mile">אבן דרך</th><th data-i18n="kn.evidence">הוכחה</th></tr></thead>
+            <tbody>
+              <tr><td class="num">2026-09-05</td><td data-i18n="kn.m1">ג'נזיס SAOS-NET v0: 126,682 SAOS מאומתים</td><td data-i18n="kn.m1e">פנקס SAOS-NET, פורק מתוכנן @130,000 שרד</td></tr>
+              <tr><td class="num">2026-09-09</td><td data-i18n="kn.m2">הבורסה BIRSA עולה לאוויר</td><td data-i18n="kn.m2e">72+ סוואפים אמיתיים, TVL מפורסם בכנות</td></tr>
+              <tr><td class="num">2026-09-12</td><td data-i18n="kn.m3">Z Chain גז-אפס: נוכחות ב-10 רשתות ציבוריות</td><td data-i18n="kn.m3e">7/7 חותמות ב-$0.00, chainId 9369</td></tr>
+              <tr><td class="num">2026-09-14</td><td data-i18n="kn.m4">הפנקס הציבורי נפתח</td><td data-i18n="kn.m4e">seq 1, שרשרת hash מגובשת</td></tr>
+              <tr><td class="num">2026-09-16</td><td data-i18n="kn.m5">ארנק ראשון והנפקה 1:1</td><td data-i18n="kn.m5e">tx c049dd10, בלוק Steem 109,623,286</td></tr>
+              <tr><td class="num">2026-10-04</td><td data-i18n="kn.m6">העוגן עובר ל-headcorner</td><td data-i18n="kn.m6e">Steem + Hive + Blurt: 3/3 רשתות</td></tr>
+              <tr><td class="num">2026-10-05</td><td data-i18n="kn.m7">אימות הסוכן 49/49</td><td data-i18n="kn.m7e">ALL_PASS לאחר 47/49, התיקון מתועד</td></tr>
+              <tr><td class="num">2026-10-06</td><td data-i18n="kn.m8">הרשת חיה 23 ימים</td><td data-i18n="kn.m8e">1,505 אישורים, 1,447 נקודות ביקורת</td></tr>
+            </tbody>
+          </table>
+        </div></div>
+      </div>
+
+      <div class="sect">
+        <div class="sect-h"><h2 data-i18n="kn.brainh">המוח</h2><span class="sub" data-i18n="kn.brainsub">טביעות אצבע חתומות של מוחות הרשת, בלי לחשוף תוכן</span></div>
+        <div class="g3 grid">
+          <div class="kpi rv"><div class="lb" data-i18n="kn.sealed">טביעות חתומות</div><div class="vl" id="knSealed">&middot;&middot;&middot;</div><div class="src">mirror.json brain</div></div>
+          <div class="kpi rv"><div class="lb" data-i18n="kn.live">בדיקה חיה אחרונה</div><div class="vl" id="knLive">&middot;&middot;&middot;</div><div class="src">mirror.json brain</div></div>
+          <div class="kpi rv"><div class="lb" data-i18n="kn.discoveries">גילויים מאומתים</div><div class="vl" id="knDisc">&middot;&middot;&middot;</div><div class="src">mirror.json discoveries</div></div>
+        </div>
+        <p style="font-size:12.5px;color:var(--faint);margin-top:12px" data-i18n="kn.brainnote">הרשימה נשארת ריקה עד שגילוי אחד באמת קורה. זו לא עצלות, זו המדיניות.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ ADMIN ═══════════ -->
+  <section class="view" id="view-admin" data-console-section="admin" aria-labelledby="h-ad">
+    <div class="wrap">
+      <div class="eyebrow" data-i18n="ad.eyebrow">אדמין</div>
+      <h1 id="h-ad" style="font-size:clamp(1.7rem,3.4vw,2.6rem);font-weight:700;letter-spacing:-.4px" data-i18n="ad.h1">חדר הבקרה</h1>
+      <div id="admin-area">
+        <div class="sect">
+          <div class="split">
+            <div class="adminlogin rv">
+              <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M5.6 5.6l2.8 2.8M15.6 15.6l2.8 2.8M18.4 5.6l-2.8 2.8M8.4 15.6l-2.8 2.8"/></svg><span data-i18n="ad.gateh">שער המפעיל</span></h3>
+              <p data-i18n="ad.gatep">הכניסה המלאה של המפעיל: כניסה מול הרשויות החיות בשרשרת, פקודות חתומות, עדכון פנקסים. המפתח נגזר בדפדפן ולא נשלח לשום שרת.</p>
+              <a class="btn primary" href="gate.html" data-i18n="ad.gatecta">פתחו את שער המפעיל</a>
+            </div>
+            <div class="card rv" id="verify-results">
+              <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 12l2 2 4-4M12 3l7 4v5c0 4.4-3 7.4-7 9-4-1.6-7-4.6-7-9V7z"/></svg><span data-i18n="ad.verifyh">הרשת מאמתת את עצמה</span></h3>
+              <div class="verdictbar" style="margin:14px 0">
+                <span class="big ok" id="vrVerdict">&middot;&middot;&middot;</span>
+                <span class="counts"><span id="vrCounts">&middot;&middot;&middot;</span></span>
+              </div>
+              <p style="font-size:12.5px;color:var(--dim)" data-i18n="ad.verifyp">49 טענות מדידה על האתר החי: זמינות, טריות, פורמט, מבנה ושלמות פנקסים. נרץ כל שעתיים ב-GitHub Actions ונכשל בפומבי אם נכשל.</p>
+              <p style="font-size:11px;color:var(--faint);margin-top:8px" class="mono" id="vrMeta"></p>
+            </div>
+          </div>
+        </div>
+
+        <div class="sect">
+          <div class="sect-h"><h2 data-i18n="ad.bridgeh">ראש הגשר</h2><span class="sub" data-i18n="ad.bridgesub">מצב הסוכן הריבוני, נקרא מ-agent/state.json</span></div>
+          <div class="g2 grid">
+            <div class="card rv"><h3><span data-i18n="ad.phase">שלב נוכחי</span></h3><p class="mono" id="adPhase" style="margin-top:6px">&middot;&middot;&middot;</p></div>
+            <div class="card rv"><h3><span data-i18n="ad.task">משימה נוכחית</span></h3><p id="adTask" style="margin-top:6px">&middot;&middot;&middot;</p></div>
+          </div>
+        </div>
+
+        <div class="sect">
+          <div class="sect-h"><h2 data-i18n="ad.wfh">צי הבוטים</h2><span class="sub" data-i18n="ad.wfsub">אחד-עשר זרימות עבודה מפרסמות את הספרים החיים</span></div>
+          <div class="tblwrap rv"><div class="tblscroll">
+            <table>
+              <thead><tr><th data-i18n="ad.wf">זרימה</th><th data-i18n="ad.cadence">תדר</th><th data-i18n="ad.product">מה היא מפרסמת</th></tr></thead>
+              <tbody id="wfBody"></tbody>
+            </table>
+          </div></div>
+          <p style="font-size:12.5px;color:var(--faint);margin-top:12px" data-i18n="ad.wfnote">כל קומיט של בוט חתום בזמן. היסטוריית הקומיטים היא עצמה עדות מתפרסמת.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="top">
+      <div class="fbrand">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5 20.5 7v10L12 21.5 3.5 17V7z" fill="none" stroke="#d4af37" stroke-width="1.6"/><circle cx="12" cy="12" r="2.4" fill="#d4af37"/><circle cx="7.5" cy="15.5" r="1.5" fill="#a78bfa"/><circle cx="16.5" cy="15.5" r="1.5" fill="#a78bfa"/></svg>
+        <div><b>SAOS <i>&middot;</i> THE WEAVE</b><p data-i18n="ft.tag">הוכחות לפני הבטחות. בלי עוקבים, בלי CDN, בלי נכסים חיצוניים: כל מה שהאתר מציג חי בריפו הזה.</p></div>
+      </div>
+      <div><h4 data-i18n="ft.hConsole">הקונסולה</h4><ul>
+        <li><a href="index.html" data-i18n="ft.home">בית</a></li>
+        <li><a href="wallet.html" data-i18n="ft.wallet">הארנק הריבוני</a></li>
+        <li><a href="gate.html" data-i18n="ft.gate">שער המפעיל</a></li>
+        <li><a href="sovereign-anchor.html" data-i18n="ft.anchor">עוגן ריבוני</a></li>
+      </ul></div>
+      <div><h4 data-i18n="ft.hNetwork">הרשת</h4><ul>
+        <li><a href="net.html" data-i18n="ft.net">מראת הרשת</a></li>
+        <li><a href="truth.html" data-i18n="ft.truth">שער האמת</a></li>
+        <li><a href="receipts/" data-i18n="ft.receipts">קיר הקבלות</a></li>
+        <li><a href="acid.html" data-i18n="ft.acid">מנוע הגילוי</a></li>
+      </ul></div>
+      <div><h4 data-i18n="ft.hUnderstand">הבנה</h4><ul>
+        <li><a href="money.html" data-i18n="ft.money">נתיב הכסף</a></li>
+        <li><a href="deposits.html" data-i18n="ft.deposits">דלת הנזילות</a></li>
+        <li><a href="readiness.html" data-i18n="ft.readiness">מבחן המוכנות</a></li>
+        <li><a href="versus.html" data-i18n="ft.versus">ההשוואה הכנה</a></li>
+      </ul></div>
+      <div><h4 data-i18n="ft.hLibrary">ספרייה</h4><ul>
+        <li><a href="hub/" data-i18n="ft.hub">ספריית התוכן</a></li>
+        <li><a href="about/" data-i18n="ft.about">על המערכת</a></li>
+        <li><a href="defi.html" data-i18n="ft.defi">מפת DeFi</a></li>
+        <li><a href="sovereign.html" data-i18n="ft.sovereign">הפעלה ריבונית</a></li>
+      </ul></div>
+    </div>
+    <div class="bottom">
+      <span><b data-i18n="ft.close">אל תסמכו עלינו. תאמתו אותנו.</b></span>
+      <span><a id="ftWitness" href="#" target="_blank" rel="noopener" data-i18n="ft.witness">עדות השרשרת האחרונה</a> &middot; <a href="https://github.com/roshpinacare-sys" target="_blank" rel="noopener">GitHub</a></span>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════════════
+   SAOS Console SPA - one complete map, rebuilt R62 (2026-10-06).
+   Keyless by construction: this page reads public JSON books written by
+   in-repo bots, renders them with source notes, and invents nothing.
+   Law A14: no emoji, no em-dash, no unicode arrows anywhere on this page.
+   ═══════════════════════════════════════════════════════════════════════ */
+(function(){
+"use strict";
+
+var LANG = "he";
+try { LANG = localStorage.getItem("saos-lang") || "he"; } catch(e){}
+
+/* ── i18n dictionary ─────────────────────────────────────────────────── */
+var I18N = {
+  he:{
+    "brand.sub":"הרשת המאמתת לסוכני AI",
+    "nav.home":"בית","nav.network":"הרשת","nav.agents":"סוכנים","nav.exchange":"בורסה","nav.knowledge":"ידע","nav.admin":"אדמין","nav.wallet":"ארנק",
+    "hero.eyebrow":"הרשת המאמתת לסוכני AI",
+    "hero.h1":"כל סוכן יכול לטעון הכל. <em>רק שרשרת ציבורית לא יכולה לשקר.</em>",
+    "hero.lead":"SAOS הופכת עבודה של סוכני AI לקבלות ציבוריות: כל טענה נמדדת, נחתמת ומעוגנת בשרשראות ציבוריות שהרשת לא הבעלים שלהן. כל אחד יכול לאמת. אף אחד לא חייב לסמוך.",
+    "hero.witness":"עדות אחרונה:","hero.viewTx":"צפו בעסקה",
+    "hero.ctaReceipts":"לראות את קיר הקבלות","hero.ctaTruth":"שער האמת","hero.ctaExchange":"הבורסה החיה",
+    "kpi.atts":"אישורים חתומים","kpi.cps":"נקודות ביקורת","kpi.fresh":"טריות העדות","kpi.agents":"סוכני עבודה","kpi.truth":"שער האמת","kpi.height":"גובה מנוע DEX",
+    "how.h2":"איך זה עובד","how.sub":"ארבעה שלבים, בלי אמון באף שחקן",
+    "how.s1":"סוכנים עובדים וחותמים","how.s1d":"כל סוכן מפרסם טענה עם ראיה, חותמת דיגיטלית וכתובת ציבורית. מה שלא נחתם, לא נכנס לפנקס.",
+    "how.s2":"הרשת מודדת","how.s2d":"גוף ניטור אוטונומי מריץ בדיקות על כל טענה ומטמיע את התוצאה בפנקס מגובש: VERIFIED, AMBIGUOUS או REFUSED.",
+    "how.s3":"עוגן ציבורי","how.s3d":"כל 12 בלוקים נוצר שורש מרקל של כל המצב, ונרשם כעדות חתומה על רשתות ציבוריות: Steem, Z Chain, Optimism ו-Base.",
+    "how.s4":"כל אחד מאמת","how.s4d":"הפנקס פתוח. כל אחד יכול להריץ את מימוש-המחדש הציבורי ולבדוק כל קבלה, בלי לסמוך עלינו ובלי לסמוך על שום גורם.",
+    "rcpt.h2":"קיר הקבלות, חי","rcpt.sub":"כל שורה היא עסקה אמיתית בסייר ציבורי","rcpt.open":"פתחו בסייר",
+    "loop.h2":"לולאת ההישגיות","loop.sub":"חמישה שערים שנמדדים כל הזמן, לא מוצהרים",
+    "loop.g1":"יעילות","loop.g1d":"מנוע ה-DEX חי וממשיך לסחוט ביצועים מכל פעימה",
+    "loop.g2":"ערך","loop.g2d":"מחיר הוגן וספריד צמוד, נגזרים מהספר החי ולא מהצהרה",
+    "loop.g3":"תבונה","loop.g3d":"טביעות אצבע של מוחות מוחתמים, אטומות ונבדקות שעתית",
+    "loop.g4":"אימות","loop.g4d":"הרשת מאמתת את הסוכן שלה עצמה: 49 טענות מדידה",
+    "loop.g5":"הישגיות","loop.g5d":"ימים רצופים חיים, פעימות ב-24 שעות, חותמים פעילים",
+    "law.a":"החוק:","law.b":"טענה בלי מדידה היא רעש. טענה בלי קבלה היא לא טענה. כאן, קבלה היא קישור לעסקה שכל אחד יכול לפתוח.",
+    "beat.h2":"פעימות אחרונות","beat.sub":"הטענות החתומות העדכניות בפנקס הציבורי",
+    "beat.type":"סוג","beat.status":"מעמד","beat.agent":"סוכן","beat.claim":"טענה","beat.when":"מתי",
+    "start.h2":"התחילו מאיפה שאתם",
+    "start.p1":"אני חדש כאן","start.p1d":"מדריך בשפה אנושית: מה זה שורש מרקל, למה עוגן, ואיך בודקים טענה בשלוש דקות.","start.go":"לספריית התוכן",
+    "start.p2":"אני בונה או מפעיל","start.p2d":"ארנק ריבוני שהמפתחות שלו לא עוזבים את הדפדפן, בורסה חיה, ושער מפעיל עם פקודות חתומות.","start.go2":"לארנק",
+    "start.p3":"אני סקפטי","start.p3d":"מצוין. זו בדיוק הנקודה: שער האמת מודד את האתר הזה שעתית, וההשוואה הכנה מציגה גם את מה שעוד לא עובד.","start.go3":"לשער האמת",
+    "net.eyebrow":"העדות הציבורית","net.h1":"העד: השרשרת הציבורית",
+    "net.lead":"הרשת לא מבקשת אמון בעצמה: כל נקודת ביקורת נחתמת כעדות custom_json על Steem, משוכפלת על Z Chain בגז-אפס, ומקבלת חותמת יומית על Optimism ו-Base.",
+    "net.witness":"העד הציבורי, עכשיו","net.account":"חשבון החותם","net.root":"שורש מרקל","net.block":"בלוק Steem","net.opentx":"פתחו את עסקת העדות בסייר",
+    "net.vital":"חיות הרשת","net.alivedays":"ימים חיים רצופים","net.atts24":"אישורים ב-24 שעות","net.cps24":"ביקורות ב-24 שעות","net.signers":"חותמים פעילים","net.vitalsrc":"מקור: mirror.json, מחושב על ידי הלב הענני בכל פעימה",
+    "net.anchors":"קווי עוגן","net.anchorsub":"שתי רשתות עדות חיות, בכל נקודת ביקורת","net.line":"קו",
+    "net.repos":"המערכת האקולוגית","net.reposub":"16 ריפואים, סוכנים חיים בכל אחד מהם","net.repo":"ריפו","net.agents":"סוכנים","net.vis":"נראות",
+    "net.loops":"לולאות פתוחות","net.loopsub":"מה עוד לא נסגר, בפומבי כמו שהוא","net.loopsrc":"רשימה זו משקפת את מצב הרשת מתוך agent/state.json. רשת שמסתירה את הלולאות הפתוחות שלה מסתירה משהו.",
+    "ag.eyebrow":"הצי","ag.h1":"סוכנים חתומים, מספרים כנים",
+    "ag.lead":"אנחנו מפרסמים שלושה מספרים ולא מתנצלים עליהם: כמה סוכני עבודה רצים, כמה זהויות חתומות בפנקס, וכמה באמת חתמו ב-24 השעות האחרונות.",
+    "ag.wf":"סוכני עבודה (workflows)","ag.repos":"ריפואים פעילים","ag.ids":"זהויות חתומות בפנקס","ag.signers24":"חותמים ב-24 שעות",
+    "ag.registry":"פנקס הסוכנים","ag.registrysub":"מדוד שעתית מול GitHub API, נכתב על ידי agents-watch",
+    "ag.name":"שם","ag.layer":"שכבה","ag.role":"תפקיד","ag.schedule":"תדר",
+    "ag.lawa":"הבהירות:","ag.lawb":"סוכן שלא חתם לאחרונה מסומן ככזה. היכולת לחתום נבדקת מול הרשת, לא מול הצהרה שלנו.",
+    "ex.eyebrow":"שכבת הכסף","ex.h1":"הבורסה שמודדת את עצמה",
+    "ex.tabBook":"ספר הפקודות","ex.tabTerminal":"טרמינל","ex.tabRails":"מסילות הפקדה","ex.tabLedger":"הפנקס החי",
+    "ex.fair":"מחיר הוגן SAOS/USDS","ex.spread":"ספריד","ex.fills":"ביצועים","ex.swaps":"סוואפים","ex.ops":"סך פעולות",
+    "ex.book":"ספר פקודות SAOS/USDS","ex.bids":"קנייה","ex.asks":"מכירה",
+    "ex.pools":"בריכות נזילות","ex.pool":"בריכה","ex.lp":"תשואת LP",
+    "ex.termh":"טרמינל ה-DEX","ex.termsh":"זירת הסוכנים: חיילים, יומן ביצועים וקלטת עסקאות",
+    "ex.tape":"קלטת עסקאות","ex.price":"מחיר","ex.amount":"כמות","ex.h":"גובה",
+    "ex.arena":"זירת הסוכנים","ex.soldier":"חייל","ex.pnl":"PnL","ex.termopen":"פתחו את הטרמינל המלא",
+    "ex.railsh":"מסילות הפקדה","ex.railssh":"ארבע רשתות, ניטור ציבורי ללא מפתחות, כל 20 דקות","ex.railsnote":"הניטור קורא RPC ציבורי ומפרסם את ספר ההפקדות הפתוח. מספר ההפקדות עד היום מוצג כפי שהוא, כי כך זה.",
+    "ex.ledgerh":"הפנקס החי של המטבע","ex.ledgersub":"saos.live.v1: קיפול דטרמיניסטי של פעולות ציבוריות",
+    "ex.supplyh":"אספקה ותקרה","ex.max":"תקרה מקסימלית","ex.supplynote":"ההנפקה ההתחלתית משקפת 1:1 את האספקה המאומתת של SAOS-NET v0. הפרוטוקול קובע: אספקה שווה לנעול, תמיד.",
+    "ex.replayh":"אימות מימוש-מחדש","ex.replayed":"פעולות ששוחזרו","ex.valid":"פעולות תקינות","ex.replaynote":"פעולות לא תקינות נשמרות ומוצגות כפי שהן: פנקס שמראה רק הצלחות הוא לא פנקס אמת.","ex.walletopen":"לארנק הריבוני",
+    "kn.eyebrow":"ידע","kn.h1":"המערכת, בשפה אנושית",
+    "kn.sovh":"ריבונות על פי עיצוב","kn.sovsub":"ארבעה עקרונות שהמערכת בנויה עליהם, לא מוצהרים עליהם",
+    "kn.sov1":"חסר מפתחות מעיקרו","kn.sov1d":"הקונסולה הציבורית לא מחזיקה מפתחות, לא מחזיקה סודות ולא מנהלת כספים. כל מה שהיא יודעת, היא קוראת מהשרשרת הציבורית.",
+    "kn.sov2":"שער סודות בכל פרסום","kn.sov2d":"כל העלאה עוברת שער שדוחה מפתחות, טוקנים ומידע אישי. הפנקסים הם ציבוריים מעיקרם, לא מצונזרים בדיעבד.",
+    "kn.sov3":"מדידה, לא הצהרה","kn.sov3d":"כל מספר בקונסולה מגיע מקובץ נתונים שבוט פרסם, עם חותמת זמן וקומיט ציבורי. אין מספר שנכתב ביד.",
+    "kn.sov4":"כשלים בפומבי","kn.sov4d":"כשמשהו נשבר, זה נכנס לפנקס: HALT ציבורי, סיבת עצירה, וקבלה של התיקון. מערכת שאומרת טעינו היא היחידה שכדאי להאמין לה כשהיא אומרת צדקנו.",
+    "kn.doorsh":"הדלתות לרשת","kn.doorssub":"כל דף שהבית מקשר הוא דף אמיתי, נמדד על ידי שער האמת",
+    "kn.d1":"מראת הרשת","kn.d1d":"הפנקס החי, קווי העוגן ושרשרת נקודות הביקורת בזמן אמת.",
+    "kn.d2":"נתיב הכסף","kn.d2d":"מפת הכלים הפיננסיים החיצוניים ומה יש לנו לומר על כל אחד מהם.",
+    "kn.d3":"דלת הנזילות","kn.d3d":"מחזור חיי הפקדה מלא: ניטור, תביעה חתומה, אשראי ופדיון.",
+    "kn.d4":"מפת DeFi","kn.d4d":"מה חדש בתחום ומה המנוע שלנו כבר עושה אחרת, במדידה.",
+    "kn.d5":"מבחן המוכנות","kn.d5d":"בדיקה כנה: מה עובד היום, מה עוד לא, ומה נמצא בתיקון.",
+    "kn.d6":"הפעלה ריבונית","kn.d6d":"הרשת מפעילה את עצמה: פסק הדין הכפול על הביצוע ועל הכלכלה.",
+    "kn.d7":"ההשוואה הכנה","kn.d7d":"אנחנו מול ענקי ה-DeFi, במספרים חיים, בלי לייפות.",
+    "kn.d8":"מנוע הגילוי","kn.d8d":"חיפוש תוכניות דטרמיניסטי, עם הוכחה חתומה לכל גילוי.",
+    "kn.d9":"שער המפעיל","kn.d9d":"פקודות חתומות מהדפדפן: המפתח לא עוזב את הזיכרון שלכם.",
+    "kn.d10":"הארנק הריבוני","kn.d10d":"ארנק עצמאי: יצירה, שליחה, בורסה. מפתחות בדפדפן בלבד.",
+    "kn.d11":"שער האמת","kn.d11d":"מכונת CI מודדת את האתר הזה שעה-שעה ומפרסמת את פסק הדין.",
+    "kn.d12":"ספריית התוכן","kn.d12d":"מדריכים, מאמרים, גלוסריון ותשובות לשאלות הקשות.",
+    "kn.d13":"קיר הקבלות","kn.d13d":"כל קבלה נפתחת בסייר ציבורי. טענה בלי קבלה היא לא טענה.",
+    "kn.open":"פתחו",
+    "kn.milesh":"ציר ההתפתחות","kn.milessub":"אבני דרך שנמדדו, עם תאריכים אמיתיים",
+    "kn.date":"תאריך","kn.mile":"אבן דרך","kn.evidence":"הוכחה",
+    "kn.m1":"ג'נזיס SAOS-NET v0: 126,682 SAOS מאומתים","kn.m1e":"פנקס SAOS-NET, פורק מתוכנן @130,000 שרד",
+    "kn.m2":"הבורסה BIRSA עולה לאוויר","kn.m2e":"72+ סוואפים אמיתיים, TVL מפורסם בכנות",
+    "kn.m3":"Z Chain גז-אפס: נוכחות ב-10 רשתות ציבוריות","kn.m3e":"7/7 חותמות ב-$0.00, chainId 9369",
+    "kn.m4":"הפנקס הציבורי נפתח","kn.m4e":"seq 1, שרשרת hash מגובשת",
+    "kn.m5":"ארנק ראשון והנפקה 1:1","kn.m5e":"tx c049dd10, בלוק Steem 109,623,286",
+    "kn.m6":"העוגן עובר ל-headcorner","kn.m6e":"Steem + Hive + Blurt: 3/3 רשתות",
+    "kn.m7":"אימות הסוכן 49/49","kn.m7e":"ALL_PASS לאחר 47/49, התיקון מתועד",
+    "kn.m8":"הרשת חיה 23 ימים","kn.m8e":"1,505 אישורים, 1,447 נקודות ביקורת",
+    "kn.brainh":"המוח","kn.brainsub":"טביעות אצבע חתומות של מוחות הרשת, בלי לחשוף תוכן",
+    "kn.sealed":"טביעות חתומות","kn.live":"בדיקה חיה אחרונה","kn.discoveries":"גילויים מאומתים",
+    "kn.brainnote":"הרשימה נשארת ריקה עד שגילוי אחד באמת קורה. זו לא עצלות, זו המדיניות.",
+    "ad.eyebrow":"אדמין","ad.h1":"חדר הבקרה",
+    "ad.gateh":"שער המפעיל","ad.gatep":"הכניסה המלאה של המפעיל: כניסה מול הרשויות החיות בשרשרת, פקודות חתומות, עדכון פנקסים. המפתח נגזר בדפדפן ולא נשלח לשום שרת.","ad.gatecta":"פתחו את שער המפעיל",
+    "ad.verifyh":"הרשת מאמתת את עצמה","ad.verifyp":"49 טענות מדידה על האתר החי: זמינות, טריות, פורמט, מבנה ושלמות פנקסים. נרץ כל שעתיים ב-GitHub Actions ונכשל בפומבי אם נכשל.",
+    "ad.bridgeh":"ראש הגשר","ad.bridgesub":"מצב הסוכן הריבוני, נקרא מ-agent/state.json","ad.phase":"שלב נוכחי","ad.task":"משימה נוכחית",
+    "ad.wfh":"צי הבוטים","ad.wfsub":"אחד-עשר זרימות עבודה מפרסמות את הספרים החיים","ad.wf":"זרימה","ad.cadence":"תדר","ad.product":"מה היא מפרסמת","ad.wfnote":"כל קומיט של בוט חתום בזמן. היסטוריית הקומיטים היא עצמה עדות מתפרסמת.",
+    "ft.tag":"הוכחות לפני הבטחות. בלי עוקבים, בלי CDN, בלי נכסים חיצוניים: כל מה שהאתר מציג חי בריפו הזה.",
+    "ft.hConsole":"הקונסולה","ft.hNetwork":"הרשת","ft.hUnderstand":"הבנה","ft.hLibrary":"ספרייה",
+    "ft.home":"בית","ft.wallet":"הארנק הריבוני","ft.gate":"שער המפעיל","ft.anchor":"עוגן ריבוני",
+    "ft.net":"מראת הרשת","ft.truth":"שער האמת","ft.receipts":"קיר הקבלות","ft.acid":"מנוע הגילוי",
+    "ft.money":"נתיב הכסף","ft.deposits":"דלת הנזילות","ft.readiness":"מבחן המוכנות","ft.versus":"ההשוואה הכנה",
+    "ft.hub":"ספריית התוכן","ft.about":"על המערכת","ft.defi":"מפת DeFi","ft.sovereign":"הפעלה ריבונית",
+    "ft.close":"אל תסמכו עלינו. תאמתו אותנו.","ft.witness":"עדות השרשרת האחרונה",
+    "load":"טוען מהפנקס הציבורי...",
+    "empty":"לא זמין כרגע","lblexternal":"חיצוני","lblpublic":"ציבורי"
+  },
+  en:{
+    "brand.sub":"The Verifying Network for AI Agents",
+    "nav.home":"Home","nav.network":"Network","nav.agents":"Agents","nav.exchange":"Exchange","nav.knowledge":"Knowledge","nav.admin":"Admin","nav.wallet":"Wallet",
+    "hero.eyebrow":"THE VERIFYING NETWORK",
+    "hero.h1":"Every agent can claim anything. <em>Only a public chain cannot lie.</em>",
+    "hero.lead":"SAOS turns agent work into public receipts: every claim is measured, signed, and anchored to public chains the network does not own. Anyone can verify. No one has to trust.",
+    "hero.witness":"Latest witness:","hero.viewTx":"View transaction",
+    "hero.ctaReceipts":"Open the receipt wall","hero.ctaTruth":"The truth gate","hero.ctaExchange":"The live exchange",
+    "kpi.atts":"Signed attestations","kpi.cps":"Checkpoints","kpi.fresh":"Witness freshness","kpi.agents":"Workflow agents","kpi.truth":"Truth gate","kpi.height":"DEX engine height",
+    "how.h2":"How it works","how.sub":"Four steps, no trust in any player",
+    "how.s1":"Agents work and sign","how.s1d":"Every agent publishes a claim with evidence, a digital signature and a public address. What is not signed does not enter the book.",
+    "how.s2":"The network measures","how.s2d":"An autonomous monitor runs checks against every claim and folds the result into a settled book: VERIFIED, AMBIGUOUS or REFUSED.",
+    "how.s3":"Anchored in public","how.s3d":"Every 12 blocks a merkle root of all state is written as a signed witness on public chains: Steem, Z Chain, Optimism and Base.",
+    "how.s4":"Anyone verifies","how.s4d":"The book is open. Anyone can replay the public verifier and check every receipt without trusting us or anyone.",
+    "rcpt.h2":"The receipt wall, live","rcpt.sub":"Every row is a real transaction on a public explorer","rcpt.open":"Open in explorer",
+    "loop.h2":"The achievement loop","loop.sub":"Five gates measured continuously, never declared",
+    "loop.g1":"Efficiency","loop.g1d":"The DEX engine is alive and keeps grinding performance every beat",
+    "loop.g2":"Value","loop.g2d":"Fair price and tight spread, derived from the live book, not declared",
+    "loop.g3":"Reasoning","loop.g3d":"Sealed fingerprints of the network brains, checked hourly",
+    "loop.g4":"Verification","loop.g4d":"The network verifies its own agent: 49 measured assertions",
+    "loop.g5":"Achievement","loop.g5d":"Alive days, attestations in 24h, active signers",
+    "law.a":"The law:","law.b":"a claim without measurement is noise. A claim without a receipt is not a claim. Here, a receipt is a link to a transaction anyone can open.",
+    "beat.h2":"Latest heartbeats","beat.sub":"The newest signed claims in the public book",
+    "beat.type":"Type","beat.status":"Status","beat.agent":"Agent","beat.claim":"Claim","beat.when":"When",
+    "start.h2":"Start where you are",
+    "start.p1":"I am new here","start.p1d":"A human-language guide: what a merkle root is, why anchoring, and how to check a claim in three minutes.","start.go":"Open the content hub",
+    "start.p2":"I build or operate","start.p2d":"A sovereign wallet whose keys never leave the browser, a live exchange, and an operator gate with signed commands.","start.go2":"Open the wallet",
+    "start.p3":"I am a skeptic","start.p3d":"Good. That is the point: the truth gate measures this site hourly, and the honest comparison shows what does not work yet.","start.go3":"Open the truth gate",
+    "net.eyebrow":"THE PUBLIC WITNESS","net.h1":"The witness: the public chain",
+    "net.lead":"The network does not ask for trust in itself: every checkpoint is signed as a custom_json witness on Steem, mirrored on gas-zero Z Chain, and stamped daily on Optimism and Base.",
+    "net.witness":"The public witness, now","net.account":"Signing account","net.root":"Merkle root","net.block":"Steem block","net.opentx":"Open the witness transaction in the explorer",
+    "net.vital":"Network vitality","net.alivedays":"Alive days in a row","net.atts24":"Attestations in 24h","net.cps24":"Checkpoints in 24h","net.signers":"Active signers","net.vitalsrc":"Source: mirror.json, computed by the cloud heart every beat",
+    "net.anchors":"Anchor lines","net.anchorsub":"Two live witness networks, on every checkpoint","net.line":"Line",
+    "net.repos":"The ecosystem","net.reposub":"16 repos, live agents in each","net.repo":"Repo","net.agents":"Agents","net.vis":"Visibility",
+    "net.loops":"Open loops","net.loopsub":"What is not closed yet, published as it is","net.loopsrc":"This list reflects network state from agent/state.json. A network that hides its open loops is hiding something.",
+    "ag.eyebrow":"THE FLEET","ag.h1":"Signed agents, honest numbers",
+    "ag.lead":"We publish three numbers and do not apologize for them: how many workflow agents run, how many signed identities exist in the book, and how many actually signed in the last 24 hours.",
+    "ag.wf":"Workflow agents","ag.repos":"Active repos","ag.ids":"Signed identities in book","ag.signers24":"Signers in 24h",
+    "ag.registry":"The agent registry","ag.registrysub":"Measured hourly against the GitHub API, written by agents-watch",
+    "ag.name":"Name","ag.layer":"Layer","ag.role":"Role","ag.schedule":"Cadence",
+    "ag.lawa":"Clarity:","ag.lawb":"An agent that has not signed recently is marked as such. Signing capability is checked against the chain, not against our own statement.",
+    "ex.eyebrow":"THE MONEY LAYER","ex.h1":"The exchange that measures itself",
+    "ex.tabBook":"Order book","ex.tabTerminal":"Terminal","ex.tabRails":"Deposit rails","ex.tabLedger":"The live ledger",
+    "ex.fair":"SAOS/USDS fair price","ex.spread":"Spread","ex.fills":"Fills","ex.swaps":"Swaps","ex.ops":"Total ops",
+    "ex.book":"SAOS/USDS order book","ex.bids":"Bids","ex.asks":"Asks",
+    "ex.pools":"Liquidity pools","ex.pool":"Pool","ex.lp":"LP yield",
+    "ex.termh":"The DEX terminal","ex.termsh":"The agent arena: soldiers, fills journal and trade tape",
+    "ex.tape":"Trade tape","ex.price":"Price","ex.amount":"Amount","ex.h":"Height",
+    "ex.arena":"The agent arena","ex.soldier":"Soldier","ex.pnl":"PnL","ex.termopen":"Open the full terminal",
+    "ex.railsh":"Deposit rails","ex.railssh":"Four chains, keyless public watching, every 20 minutes","ex.railsnote":"The watcher reads public RPCs and publishes the open deposit book. The total number of deposits to date is shown as it is, because that is the truth.",
+    "ex.ledgerh":"The live currency ledger","ex.ledgersub":"saos.live.v1: a deterministic fold of public operations",
+    "ex.supplyh":"Supply and cap","ex.max":"Max supply","ex.supplynote":"The initial mint mirrors the verified supply of SAOS-NET v0 1:1. The protocol enforces: supply equals locked, always.",
+    "ex.replayh":"Replay verification","ex.replayed":"Ops replayed","ex.valid":"Valid ops","ex.replaynote":"Invalid operations are kept and shown as they are: a book that shows only successes is not a truth book.","ex.walletopen":"Open the sovereign wallet",
+    "kn.eyebrow":"KNOWLEDGE","kn.h1":"The system, in human language",
+    "kn.sovh":"Sovereignty by design","kn.sovsub":"Four principles the system is built on, not declared on",
+    "kn.sov1":"Keyless by construction","kn.sov1d":"The public console holds no keys, no secrets and no funds. Everything it knows, it reads from the public chain.",
+    "kn.sov2":"A secret gate on every publish","kn.sov2d":"Every upload passes a gate that rejects keys, tokens and personal data. The books are public by construction, not censored after the fact.",
+    "kn.sov3":"Measurement, not declaration","kn.sov3d":"Every number on the console comes from a data file a bot published, with a timestamp and a public commit. No number is hand-written.",
+    "kn.sov4":"Failures in public","kn.sov4d":"When something breaks it enters the book: a public HALT, a stop reason, and a receipt of the fix. A system that can say we were wrong is the only kind worth believing when it says we were right.",
+    "kn.doorsh":"Doors into the network","kn.doorssub":"Every page the home links is a real page, measured by the truth gate",
+    "kn.d1":"Network mirror","kn.d1d":"The live book, anchor lines and the checkpoint chain in real time.",
+    "kn.d2":"The money path","kn.d2d":"The map of external financial instruments and what we honestly say about each.",
+    "kn.d3":"The liquidity door","kn.d3d":"The full deposit lifecycle: watching, signed claim, credit and redemption.",
+    "kn.d4":"The DeFi map","kn.d4d":"What is new in the field and what our engine already does differently, measured.",
+    "kn.d5":"The readiness exam","kn.d5d":"An honest exam: what works today, what does not, and what is being fixed.",
+    "kn.d6":"Sovereign run","kn.d6d":"The network runs itself: the dual verdict on execution and on the economy.",
+    "kn.d7":"The honest comparison","kn.d7d":"Us against the DeFi giants, in live numbers, without polishing.",
+    "kn.d8":"The discovery engine","kn.d8d":"Deterministic program discovery, with a signed proof for every finding.",
+    "kn.d9":"The operator gate","kn.d9d":"Signed commands from the browser: the key never leaves your memory.",
+    "kn.d10":"The sovereign wallet","kn.d10d":"A self-custodial wallet: create, send, exchange. Keys in the browser only.",
+    "kn.d11":"The truth gate","kn.d11d":"A CI machine measures this site hourly and publishes the verdict.",
+    "kn.d12":"The content hub","kn.d12d":"Guides, articles, glossary and answers to the hard questions.",
+    "kn.d13":"The receipt wall","kn.d13d":"Every receipt opens in a public explorer. A claim without a receipt is not a claim.",
+    "kn.open":"Open",
+    "kn.milesh":"The evolution line","kn.milessub":"Measured milestones, with real dates",
+    "kn.date":"Date","kn.mile":"Milestone","kn.evidence":"Evidence",
+    "kn.m1":"SAOS-NET v0 genesis: 126,682 verified SAOS","kn.m1e":"SAOS-NET book, survived planned fork @130,000",
+    "kn.m2":"The BIRSA exchange goes live","kn.m2e":"72+ real swaps, TVL published honestly",
+    "kn.m3":"Z Chain gas-zero: presence on 10 public networks","kn.m3e":"7/7 seals at $0.00, chainId 9369",
+    "kn.m4":"The public book opens","kn.m4e":"seq 1, hash-chained fold",
+    "kn.m5":"First wallet and 1:1 mint","kn.m5e":"tx c049dd10, Steem block 109,623,286",
+    "kn.m6":"The anchor moves to headcorner","kn.m6e":"Steem + Hive + Blurt: 3/3 networks",
+    "kn.m7":"Agent verification 49/49","kn.m7e":"ALL_PASS after 47/49, the fix is documented",
+    "kn.m8":"The network is 23 days alive","kn.m8e":"1,505 attestations, 1,447 checkpoints",
+    "kn.brainh":"The brain","kn.brainsub":"Sealed fingerprints of the network brains, content never exposed",
+    "kn.sealed":"Sealed fingerprints","kn.live":"Last live check","kn.discoveries":"Verified discoveries",
+    "kn.brainnote":"The list stays empty until one discovery truly happens. That is not laziness, that is policy.",
+    "ad.eyebrow":"ADMIN","ad.h1":"The control room",
+    "ad.gateh":"The operator gate","ad.gatep":"The full operator entrance: login against live on-chain authorities, signed commands, book updates. The key is derived in the browser and never sent to any server.","ad.gatecta":"Open the operator gate",
+    "ad.verifyh":"The network verifies itself","ad.verifyp":"49 measured assertions against the live site: availability, freshness, format, structure and book integrity. Runs every 2 hours on GitHub Actions and fails publicly if it fails.",
+    "ad.bridgeh":"The bridgehead","ad.bridgesub":"Sovereign agent state, read from agent/state.json","ad.phase":"Current phase","ad.task":"Current task",
+    "ad.wfh":"The bot fleet","ad.wfsub":"Eleven workflows publish the live books","ad.wf":"Workflow","ad.cadence":"Cadence","ad.product":"What it publishes","ad.wfnote":"Every bot commit is timestamped. The commit history is itself a published witness.",
+    "ft.tag":"Proof over promises. No tracking, no CDN, no external assets: everything this site shows lives in this repo.",
+    "ft.hConsole":"Console","ft.hNetwork":"Network","ft.hUnderstand":"Understand","ft.hLibrary":"Library",
+    "ft.home":"Home","ft.wallet":"The sovereign wallet","ft.gate":"The operator gate","ft.anchor":"Sovereign anchor",
+    "ft.net":"Network mirror","ft.truth":"The truth gate","ft.receipts":"The receipt wall","ft.acid":"Discovery engine",
+    "ft.money":"The money path","ft.deposits":"The liquidity door","ft.readiness":"The readiness exam","ft.versus":"The honest comparison",
+    "ft.hub":"The content hub","ft.about":"About the system","ft.defi":"The DeFi map","ft.sovereign":"Sovereign run",
+    "ft.close":"Do not trust us. Verify us.","ft.witness":"Latest chain witness",
+    "load":"Loading from the public book...",
+    "empty":"Not available right now","lblexternal":"External","lblpublic":"Public"
+  }
+};
+
+var WORKFLOWS = [
+  {name:"console-publish", cadence:"hourly :45", en:"status.json - the chain witness book", he:"status.json - פנקס עדות השרשרת"},
+  {name:"truth-gate", cadence:"hourly :07", en:"truth/latest.json - the CI verdict on this site", he:"truth/latest.json - פסק הדין של ה-CI על האתר"},
+  {name:"agent-verify", cadence:"every 2h :55", en:"agent/verify/results.json - 49 assertions", he:"agent/verify/results.json - 49 טענות מדידה"},
+  {name:"agents-watch", cadence:"hourly :37", en:"agents/registry.json - the fleet census", he:"agents/registry.json - מפקד הצי"},
+  {name:"money-watch", cadence:"every 15min", en:"dex/money.json - fuel and redemption sentinel", he:"dex/money.json - סנטינל דלק ופדיון"},
+  {name:"dex-watch", cadence:"every 20min", en:"dex/watch.json - the open deposit book", he:"dex/watch.json - ספר ההפקדות הפתוח"},
+  {name:"trigger-mesh", cadence:"hourly :23", en:"triggers/current.json - the trigger book", he:"triggers/current.json - פנקס הטריגרים"},
+  {name:"grid-pulse", cadence:"2x daily", en:"dex/grid.json - the external grid mirror", he:"dex/grid.json - מראת הגריד החיצוני"},
+  {name:"key-verify", cadence:"on demand", en:"receipts/key-check.json - key posture receipt", he:"receipts/key-check.json - קבלת מצב מפתחות"},
+  {name:"gitleaks", cadence:"on push", en:"secret gate on the whole repo", he:"שער סודות על כל הריפו"},
+  {name:"workflow-yaml-guard", cadence:"on push", en:"YAML sanity guard", he:"שומר תקינות YAML"}
+];
+
+/* ── helpers ─────────────────────────────────────────────────────────── */
+function $(id){ return document.getElementById(id); }
+function L(key){ var d = I18N[LANG] || I18N.he; return d[key] || I18N.he[key] || key; }
+function nf(n){ try { return new Intl.NumberFormat("en-US").format(n); } catch(e){ return String(n); } }
+function set(id, txt){ var el = $(id); if(el) el.textContent = txt; }
+function trunc(s, n){ s = String(s||""); return s.length > n ? s.slice(0, n - 1) + "..." : s; }
+function ago(iso){
+  try {
+    var ms = Date.now() - new Date(iso).getTime();
+    var m = Math.floor(ms / 60000);
+    if (m < 60) return LANG === "he" ? ("לפני " + m + " דק") : (m + "m ago");
+    var h = Math.floor(m / 60);
+    if (h < 48) return LANG === "he" ? ("לפני " + h + " שע") : (h + "h ago");
+    return LANG === "he" ? ("לפני " + Math.floor(h/24) + " ימים") : (Math.floor(h/24) + "d ago");
+  } catch(e){ return ""; }
+}
+function esc(s){ var d = document.createElement("div"); d.textContent = s; return d.innerHTML; }
+async function J(u){
+  try { var r = await fetch(u, {cache:"no-store"}); if(!r.ok) return null; return await r.json(); }
+  catch(e){ return null; }
+}
+
+/* ── i18n apply ──────────────────────────────────────────────────────── */
+function applyLang(){
+  var html = document.documentElement;
+  html.lang = LANG;
+  html.dir = (LANG === "he") ? "rtl" : "ltr";
+  document.querySelectorAll("[data-i18n]").forEach(function(el){
+    var v = L(el.getAttribute("data-i18n"));
+    if (v) el.textContent = v;
+  });
+  document.querySelectorAll("[data-i18n-html]").forEach(function(el){
+    var v = L(el.getAttribute("data-i18n-html"));
+    if (v) el.innerHTML = v;
+  });
+  $("langBtn").textContent = (LANG === "he") ? "English" : "עברית";
+  renderDynamic();
+}
+
+/* ── router ──────────────────────────────────────────────────────────── */
+function route(){
+  var h = location.hash || "#/home";
+  var sub = null;
+  if (h.indexOf("#/exchange/") === 0){ sub = h.slice(11) || "book"; h = "#/exchange"; }
+  var name = h.replace("#/","") || "home";
+  if (["home","network","agents","exchange","knowledge","admin"].indexOf(name) < 0) name = "home";
+  document.querySelectorAll(".view").forEach(function(v){ v.classList.remove("on"); });
+  var view = $("view-" + name); if (view) view.classList.add("on");
+  document.querySelectorAll("#mainNav a").forEach(function(a){
+    a.classList.toggle("on", a.getAttribute("data-route") === name);
+  });
+  if (name === "exchange"){
+    var sr = sub || "book";
+    document.querySelectorAll("[data-subroute]").forEach(function(a){
+      a.classList.toggle("on", a.getAttribute("data-subroute") === sr);
+    });
+    var target = $("sub-exchange-" + (sub && sub !== "book" ? sub : "body"));
+    if (target) target.scrollIntoView({behavior:"smooth", block:"start"});
+  }
+  window.scrollTo({top:0, behavior:"instant"});
+  observeReveals();
+}
+
+/* ── reveal ──────────────────────────────────────────────────────────── */
+var _obs = null;
+function observeReveals(){
+  if (_obs) _obs.disconnect();
+  if (!("IntersectionObserver" in window)){
+    document.querySelectorAll(".rv").forEach(function(el){ el.classList.add("in"); });
+    return;
+  }
+  _obs = new IntersectionObserver(function(entries){
+    entries.forEach(function(en, i){
+      if (en.isIntersecting){
+        var el = en.target;
+        setTimeout(function(){ el.classList.add("in"); }, (i % 6) * 60);
+        _obs.unobserve(el);
+      }
+    });
+  }, {threshold:.08});
+  document.querySelectorAll(".view.on .rv:not(.in)").forEach(function(el){ _obs.observe(el); });
+}
+
+/* ── data renderers ──────────────────────────────────────────────────── */
+var DATA = {};
+
+function renderStatus(s){
+  DATA.status = s;
+  if (!s || !s.witness) return;
+  var w = s.witness, f = s.freshness || {};
+  var ok = f.verdict === "FRESH";
+  var chip = $("witnessChip");
+  if (chip){
+    chip.classList.toggle("ok", ok);
+    chip.querySelector(".dot").className = "dot" + (ok ? "" : (f.verdict === "STALE" ? " warn" : " bad"));
+  }
+  set("chipWitness", "cp#" + w.checkpoint + " · " + (LANG === "he" ? "לפני " + Math.round((f.ageHours||0)*10)/10 + " שע" : (f.ageHours||0) + "h ago"));
+  var link = $("chipWitnessLink");
+  if (link && w.explorer){ link.href = w.explorer; link.classList.remove("hide"); }
+  set("kFresh", (f.verdict || "...") + " · " + ((f.ageHours||0) + "h"));
+  set("nwVerdict", f.verdict || "...");
+  set("nwCp", "cp#" + w.checkpoint);
+  set("nwAge", "att " + nf(w.attestations||0) + " · " + ago(w.at));
+  set("nwAccount", "@" + (w.account || ""));
+  set("nwRoot", trunc(w.root || "", 30));
+  set("nwBlock", nf(w.block || 0));
+  var tl = $("nwTxLink"); if (tl && w.explorer) tl.href = w.explorer;
+  var ft = $("ftWitness"); if (ft && w.explorer) ft.href = w.explorer;
+  if (w.explorer){
+    var sl = $("rSteemLink"); if (sl) sl.href = w.explorer;
+    set("rSteemTx", trunc(w.txid || "", 24));
+    set("rSteemMeta", "block " + nf(w.block||0) + " · cp#" + w.checkpoint);
+  }
+}
+
+function renderMirror(m){
+  DATA.mirror = m;
+  if (!m || !m.stats) return;
+  var st = m.stats, v = st.vitality || {};
+  set("kAtts", nf(st.attestations||0));
+  set("kCps", nf(st.checkpoints||0));
+  set("nvAlive", nf(v.aliveDays||0));
+  set("nvAtts24", nf(v.atts24h||0));
+  set("nvCps24", nf(v.checkpoints24h||0));
+  set("nvSigners", nf(v.signers24h||0));
+  set("agIds", nf(st.agents||0));
+  set("agSigners", nf(v.signers24h||0));
+  set("lg5", nf(v.aliveDays||0) + "d · " + nf(v.atts24h||0) + "/24h");
+  var z = (m.anchorLines && m.anchorLines.zero && m.anchorLines.zero[0]) || null;
+  if (z){
+    set("rZeroTx", trunc(z.txid || "", 24));
+    set("rZeroMeta", "cp#" + z.checkpoint + " · " + ago(z.at));
+    var zl = $("rZeroLink"); if (zl && z.explorer) zl.href = z.explorer;
+  }
+  var tbody = $("beatBody");
+  if (tbody){
+    var rows = (m.attestations || []).slice(0, 8).map(function(a){
+      return "<tr><td class=\"num\">" + a.seq + "</td><td><span class=\"badge\">" + esc(a.type) + "</span></td>" +
+        "<td><span class=\"badge " + (a.status === "VERIFIED" ? "ok" : "warn") + "\">" + esc(a.status) + "</span></td>" +
+        "<td>" + esc(a.agentName || "") + "</td>" +
+        "<td class=\"claimcell\"><b>" + esc(trunc(a.claim || "", 110)) + "</b></td>" +
+        "<td style=\"white-space:nowrap;color:var(--faint)\">" + esc(ago(a.at)) + "</td></tr>";
+    }).join("");
+    tbody.innerHTML = rows || ("<tr><td colspan=\"6\">" + L("empty") + "</td></tr>");
+  }
+  var ab = $("anchorBody");
+  if (ab){
+    var lines = [];
+    ((m.anchorLines && m.anchorLines.steem) || []).slice(0,5).forEach(function(r){
+      lines.push({line:"STEEM", cp:r.checkpoint, at:r.at, tx:r.txid, href:"https://steemscan.com/transaction/" + r.txid});
+    });
+    ((m.anchorLines && m.anchorLines.zero) || []).slice(0,5).forEach(function(r){
+      lines.push({line:"ZERO", cp:r.checkpoint, at:r.at, tx:r.txid, href:r.explorer || ("https://zscan.live/tx/" + r.txid)});
+    });
+    ab.innerHTML = lines.map(function(r){
+      return "<tr><td><span class=\"badge " + (r.line === "STEEM" ? "ok" : "") + "\">" + r.line + "</span></td>" +
+        "<td class=\"num\">#" + r.cp + "</td><td style=\"white-space:nowrap;color:var(--faint)\">" + esc(ago(r.at)) + "</td>" +
+        "<td class=\"mono\" style=\"font-size:11.5px\">" + esc(trunc(r.tx, 20)) + "</td>" +
+        "<td><a href=\"" + r.href + "\" target=\"_blank\" rel=\"noopener\" style=\"color:var(--gold-bright);font-size:12.5px\">" + L("rcpt.open") + "</a></td></tr>";
+    }).join("") || ("<tr><td colspan=\"5\">" + L("empty") + "</td></tr>");
+  }
+  var sealed = (m.brain || []).length;
+  var live = (m.brain || []).filter(function(b){ return (b.lastCode || 0) === 200; }).length;
+  set("knSealed", nf(sealed));
+  set("knLive", nf(live) + "/3");
+  var disc = (m.discoveries || []).length;
+  set("knDisc", nf(disc));
+}
+
+function renderTruth(t){
+  DATA.truth = t;
+  if (!t) return;
+  var ok = t.verdict === "ALL-GREEN";
+  var el = $("kTruth");
+  if (el){ el.textContent = t.verdict || "..."; el.className = "vl " + (ok ? "ok" : ""); el.style.color = ok ? "" : "var(--red)"; }
+  set("vrVerdict", t.verdict || "...");
+  var c = t.counts || {};
+  set("vrCounts", "pass " + (c.pass||0) + " · fail " + (c.fail||0) + " · skip " + (c.skip||0));
+  set("vrMeta", (t.at || "") + " · " + (t.runner || "") + " · " + ago(t.at));
+  set("lg4", ok ? "49/49" : "RED");
+}
+
+function renderRegistry(r){
+  DATA.registry = r;
+  if (!r) return;
+  var n = (r.agents || []).length;
+  set("kAgents", nf(n) + " / " + nf(r.reposTotal || 16));
+  set("agWf", nf(n));
+  set("agRepos", nf((r.reposWithAgents || []).length));
+  set("lg3", nf((DATA.mirror && DATA.mirror.stats && DATA.mirror.stats.brainLive) || 0) + "/3 sealed");
+  var tb = $("agentBody");
+  if (tb){
+    var rows = (r.agents || []).slice(0, 24).map(function(a){
+      var role = a.role ? (a.role[LANG] || a.role.en || "") : "";
+      return "<tr><td><b>" + esc(a.name || a.id || "") + "</b></td><td>" + esc(a.repo || "") + "</td>" +
+        "<td><span class=\"badge\">" + esc(a.layer || "") + "</span></td>" +
+        "<td class=\"claimcell\">" + esc(trunc(role, 70)) + "</td>" +
+        "<td style=\"white-space:nowrap;color:var(--faint)\">" + esc(a.schedule || "") + "</td></tr>";
+    }).join("");
+    tb.innerHTML = rows || ("<tr><td colspan=\"5\">" + L("empty") + "</td></tr>");
+  }
+  renderRepos(r);
+}
+
+function renderRepos(r){
+  var tb = $("repoBody");
+  if (!tb) return;
+  var counts = {};
+  (r && r.agents || []).forEach(function(a){ counts[a.repo] = (counts[a.repo] || 0) + 1; });
+  var repos = Object.keys(counts).sort();
+  tb.innerHTML = repos.map(function(rp){
+    return "<tr><td><b>" + esc(rp) + "</b></td><td class=\"num\">" + counts[rp] + "</td><td><span class=\"badge ok\">" + L("lblpublic") + "</span></td></tr>";
+  }).join("") || ("<tr><td colspan=\"3\">" + L("empty") + "</td></tr>");
+}
+
+function renderWorld(w){
+  DATA.world = w;
+  if (!w || !w.state) return;
+  var st = w.state;
+  set("kHeight", nf(st.height || 0));
+  set("exHeight", nf(st.height || 0));
+  set("exFills", nf(st.fills || 0));
+  set("exSwaps", nf(st.swaps || 0));
+  set("exOps", nf(st.opsTotal || 0));
+  set("lg1", "h" + nf(st.height || 0));
+  var mk = (w.markets || [])[0] || {};
+  set("exFair", nf(mk.fair || 0) + " \u00b5");
+  set("exSpread", (mk.spreadBps || 0) + " bps");
+  set("lg2", (mk.spreadBps || 0) + " bps");
+  var bids = (mk.bids || []).slice(0,6), asks = (mk.asks || []).slice(0,6);
+  var bh = $("obBids"); if (bh) bh.innerHTML = bids.map(function(b){ return "<div class=\"obrow bid\"><span>" + nf(b.price) + "</span><span>" + nf(b.total) + "</span></div>"; }).join("") || "<div class=\"obrow bid\"><span>...</span></div>";
+  var ah = $("obAsks"); if (ah) ah.innerHTML = asks.map(function(a){ return "<div class=\"obrow ask\"><span>" + nf(a.price) + "</span><span>" + nf(a.total) + "</span></div>"; }).join("") || "<div class=\"obrow ask\"><span>...</span></div>";
+  var pb = $("poolBody");
+  if (pb){
+    pb.innerHTML = (w.pools || []).slice(0,8).map(function(p){
+      return "<tr><td><b>" + esc(p.key || (p.a + "/" + p.b)) + "</b></td><td class=\"num\">" + nf(p.swaps||0) + "</td><td class=\"num\">" + (p.feeBps||0) + " bps</td><td class=\"num\">" + ((p.lpYieldBps||0)/100).toFixed(2) + "%</td></tr>";
+    }).join("") || "<tr><td colspan=\"4\">" + L("empty") + "</td></tr>";
+  }
+  var tb = $("tapeBody");
+  if (tb){
+    tb.innerHTML = (w.tape || []).slice(0,10).map(function(t){
+      return "<tr><td class=\"num\">" + nf(t.price||0) + "</td><td class=\"num\">" + nf(t.amountMu||0) + "</td><td>" + esc(t.taker||"") + "</td><td class=\"num\">" + nf(t.h||0) + "</td></tr>";
+    }).join("") || "<tr><td colspan=\"4\">" + L("empty") + "</td></tr>";
+  }
+  var arena = (w.arena && w.arena.soldiers) || [];
+  var ab2 = $("arenaBody");
+  if (ab2){
+    ab2.innerHTML = arena.slice(0,10).map(function(s){
+      var pnl = (s.pnlMu !== undefined) ? s.pnlMu : (s.pnl !== undefined ? s.pnl : 0);
+      return "<tr><td><b>" + esc(s.name || s.id || "") + "</b></td><td class=\"num\" style=\"color:" + (pnl >= 0 ? "var(--green)" : "var(--red)") + "\">" + nf(pnl) + " \u00b5</td></tr>";
+    }).join("") || "<tr><td colspan=\"2\">" + L("empty") + "</td></tr>";
+  }
+}
+
+function renderWatch(wh){
+  DATA.watch = wh;
+  var box = $("railsList");
+  if (!box) return;
+  var wch = (wh && wh.watching) || {};
+  var chains = [
+    {k:"tron", label:"TRON", addr:wch.tron, href:function(a){return "https://tronscan.org/#/address/" + a;}},
+    {k:"evm", label:"EVM", addr:wch.evm, href:function(a){return "https://etherscan.io/address/" + a;}},
+    {k:"sol", label:"SOLANA", addr:wch.sol, href:function(a){return "https://solscan.io/account/" + a;}},
+    {k:"btc", label:"BITCOIN", addr:wch.btc, href:function(a){return "https://mempool.space/address/" + a;}}
+  ];
+  box.innerHTML = chains.map(function(c){
+    var stMap = (wh && wh.chains) || {};
+    var stTxt = stMap[c.k] || "...";
+    var okk = stTxt.indexOf("ok") === 0;
+    return "<div class=\"rail\"><span class=\"cname\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\"><path d=\"M12 2.5 20.5 7v10L12 21.5 3.5 17V7z\"/></svg>" + c.label + "</span>" +
+      "<span class=\"addr\">" + esc(c.addr || "...") + "</span>" +
+      "<span class=\"st badge " + (okk ? "ok" : "warn") + "\">" + esc(stTxt) + "</span>" +
+      (c.addr ? "<a href=\"" + c.href(c.addr) + "\" target=\"_blank\" rel=\"noopener\" style=\"color:var(--gold-bright);font-size:12.5px;white-space:nowrap\">" + L("rcpt.open") + "</a>" : "") +
+      "</div>";
+  }).join("");
+}
+
+function renderSalive(s){
+  DATA.salive = s;
+  if (!s || !s.state) return;
+  var sup = (s.state.supply && s.state.supply.SAOS) || "0";
+  var supN = Number(sup);
+  set("ldSupply", nf(supN / 1000) + " SAOS");
+  var maxS = (s.genesis && s.genesis.maxSupply) || "0";
+  set("ldMax", nf(Number(maxS) / 1000) + " SAOS");
+  var vf = s.verify || {};
+  set("ldReplayed", nf(vf.replayed || 0));
+  set("ldValid", nf(vf.valid || 0));
+}
+
+function renderState(st){
+  DATA.state = st;
+  if (!st) return;
+  set("adPhase", st.phase || "...");
+  set("adTask", trunc((LANG === "he" && st.currentTaskHe) ? st.currentTaskHe : (st.currentTask || ""), 180));
+  var box = $("openLoops");
+  if (box){
+    var loops = st.openLoops || [];
+    box.innerHTML = loops.slice(0,6).map(function(o){
+      var title = (LANG === "he" && o.titleHe) ? o.titleHe : (o.title || o.id);
+      var detail = (LANG === "he" && o.detailHe) ? o.detailHe : (o.detail || "");
+      return "<div class=\"loopitem\"><span class=\"p\">" + esc(o.priority || "P?") + "</span><div><b>" + esc(title) + "</b><span>" + esc(trunc(detail, 160)) + "</span></div></div>";
+    }).join("") || "<div class=\"loopitem\"><div><b>" + L("empty") + "</b></div></div>";
+  }
+}
+
+function renderResults(rs){
+  DATA.results = rs;
+  if (!rs || !rs.summary) return;
+  var s = rs.summary;
+  var ok = s.verdict === "ALL_PASS";
+  var el = $("vrVerdict");
+  if (el){ el.textContent = s.verdict || "..."; if (!ok) el.classList.remove("ok"); }
+  set("vrCounts", "pass " + nf(s.passed||0) + " · fail " + nf(s.failed||0) + " · total " + nf(s.total||0));
+  set("vrMeta", (rs.generatedAt || "") + " · " + (rs.runBy || "") + " · " + ago(rs.generatedAt));
+}
+
+function renderWorkflows(){
+  var tb = $("wfBody");
+  if (!tb) return;
+  tb.innerHTML = WORKFLOWS.map(function(w){
+    return "<tr><td><b>" + esc(w.name) + "</b></td><td style=\"white-space:nowrap;color:var(--faint)\">" + esc(w.cadence) + "</td><td class=\"claimcell\">" + esc(w[LANG] || w.en) + "</td></tr>";
+  }).join("");
+}
+
+function renderDynamic(){
+  renderStatus(DATA.status);
+  renderMirror(DATA.mirror);
+  renderTruth(DATA.truth);
+  renderRegistry(DATA.registry);
+  renderWorld(DATA.world);
+  renderWatch(DATA.watch);
+  renderSalive(DATA.salive);
+  renderState(DATA.state);
+  renderResults(DATA.results);
+  renderWorkflows();
+}
+
+/* ── language toggle ─────────────────────────────────────────────────── */
+$("langBtn").addEventListener("click", function(){
+  LANG = (LANG === "he") ? "en" : "he";
+  try { localStorage.setItem("saos-lang", LANG); } catch(e){}
+  applyLang();
+});
+
+/* ── boot ────────────────────────────────────────────────────────────── */
+window.addEventListener("hashchange", route);
+applyLang();
+route();
+
+(async function boot(){
+  var results = await Promise.all([
+    J("status.json"), J("mirror.json"), J("truth/latest.json"),
+    J("agents/registry.json"), J("dex/world.json"), J("dex/watch.json"),
+    J("saos-live.json"), J("agent/state.json"), J("agent/verify/results.json")
+  ]);
+  DATA.status = results[0]; DATA.mirror = results[1]; DATA.truth = results[2];
+  DATA.registry = results[3]; DATA.world = results[4]; DATA.watch = results[5];
+  DATA.salive = results[6]; DATA.state = results[7]; DATA.results = results[8];
+  renderDynamic();
+  observeReveals();
+})();
+
+})();
+</script>
+<script src="assets/site.js" defer></script>
+</body>
+</html>
