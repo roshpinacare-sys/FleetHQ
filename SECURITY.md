@@ -1,68 +1,66 @@
-# Security & Sanitization Notes
+# דוקטרינת האבטחה של מפקדת הצי — Fleet HQ Security Doctrine
 
-This document is the public record of what this repository contains, what it deliberately
-does **not** contain, and how the demo/live separation works. If you fork or deploy Fleet HQ,
-this is the checklist to keep your own deployment equally safe.
+> מטרת המסמך: שלעולם לא יקרה שום מצב שבו סוד נחשף בטעות כאן, וששום AI זר לא
+> יוכל לקבל גישה או להשפיע דרך ערוצי הלמידה והתקשורת. הדוקטרינה ממומשת בקוד —
+> לא רק בנייר.
 
-## What is in this repository
+## העיקרון המכונן
 
-- **Source code only**: the foreman service (`foreman/`) and the web office (`web/`).
-- **Synthetic demo books** (`foreman/demo-data/`): every file starts with a
-  `"notice": "DEMO DATA — SYNTHETIC"` field. Accounts, numbers, IDs and verdicts in those
-  files are invented placeholders (e.g. `demo-pool-a`, `demo-verify`).
-- **No credentials of any kind.** No API keys, tokens, passwords, or private URLs exist in
-  this repository. The LLM key is read from the process environment only
-  (`OPENAI_API_KEY` / `OPENAI_BASE_URL` / `OPENAI_MODEL`). The `z-ai-web-dev-sdk` is used
-  dynamically when installed locally; the receptionist route imports it lazily and fails
-  honest when no provider is configured.
+**שום סוד לא מגיע למודל, ליומן, לסוקט הציבורי או לגיט בטקסט פתוח.
+כל בייט שמגיע מבחוץ עובד שער לפני שהוא פוגש מודל.**
 
-## What is deliberately NOT here
+## 1. ערוץ הלמידה מהגיט — מה ומאיפה המשרד לומד (`src/gitlearn.ts`)
 
-- **No real data books.** The live mode reads whatever directory `AGENT_HQ_DATA_DIR`
-  points at — *your* copy, on *your* machine. The default is `foreman/data/` which does not
-  exist in a fresh checkout (create it; it is git-ignored).
-- **No real account names, balances, chain identifiers, or endpoints.** Nothing in the
-  code or the demo data references any production system.
-- **No write access to your books.** The agent toolset is read-and-report only:
-  `list_books`, `read_book`, `measure`, `cross_check`, `write_report` (into the office's
-  in-memory library), `message`, `ask_operator`. There is no shell tool, no arbitrary file
-  write, and no network tool.
+- המשרד לומד משני הריפואים האמיתיים שלו: **Domain** (ספרי הנתונים שהצי מייצר)
+  ו**FleetHQ** (קוד המשרד עצמו — `AGENT_HQ_FLEET_DIR`).
+- הלמידה היא **מטא-דאטה בלבד**: נושאי קומיטים, מחברים, ספירות 24h/7d, נתיבים חמים.
+  לעולם לא תוכן קבצים, לא diffים, לא עץ העבודה.
+- **נושאי קומיטים = נתון, לא הוראה.** כל פרומפט שכולל גיט מסמן זאת מפורשות —
+  הגנה מהזרקת פרומפט דרך קומיט זדוני בריפו ציבורי.
+- כל מחרוזת עוברת `scrubSecrets()` (`src/security.ts`): דפוסי מפתחות
+  (`xai-`, `sk-or-v1-`, `sk-`, `ghp_`, `github_pat_`, `AKIA…`, `Bearer …`,
+  `api_key=…`, `password=…`) מוחלפים ב-`«redacted»` **לפני** שהם מגיעים למודל,
+  ליומן או לפיד.
+- נתיבים רגישים **נזרקים כליל** (`isSensitivePath`): `.env*`, `vault/`, `keys`,
+  `*.pem|*.key|*.enc`, `pat.*`, `secret|credential|password`, `id_rsa`, `.git`,
+  `upload/`. מעל זה פועלת רשימת היתר בלבד: `data|docs|mini-services|src|public|
+  scripts|examples|skills`.
 
-## The public office is read-only, by construction
+## 2. הכספת (`vault/`)
 
-- **The socket surface has zero control events.** Earlier versions accepted
-  `goal:submit` / `decision:answer`; both handlers were **deleted**. A visitor (or a
-  script) can request snapshots and book excerpts — nothing else. Goals are scheduled by
-  the autonomous operator; agent questions resolve by policy in seconds and are published
-  as transparency records.
-- **The receptionist chat cannot leak.** Its API route has no filesystem, database, or
-  socket access. It sends the model a fixed platform prompt + whitelisted numeric counters
-  (extra fields are dropped, roles are forced server-side, history is sanitized and
-  capped). Rate limits, timeouts, retries and a circuit breaker are built in. Errors
-  return generic messages.
-- **The git wire is metadata only.** It reads `git log` (hash, timestamp, author, subject)
-  from the configured repository. No file contents, no diffs, no commit bodies.
+| שכבה | מימוש |
+|---|---|
+| פלטנקסט | `.env.local`, `mini-services/agent-hq/.env`, `vault/keys.env` — gitignored + chmod 600 |
+| גיט | רק `vault/keys.env.enc` — AES-256-CBC + PBKDF2 (200k איטרציות) |
+| סיסמה | אצל הבעלים בלבד (+ `vault/.passphrase` gitignored להפעלה אוטונומית מקומית) |
+| חסימות `.gitignore` | `/upload/`, `/tool-results/`, `*.rar`, `*.zip`, `vault/keys.env`, `vault/.passphrase`, `.env*` |
+| אימות | סריקת כל קובץ עקוב מול דפוסי מפתחות ידועים → **0 התאמות** (בוצע) |
 
-## Demo vs live, in one table
+פעולות: `VAULT_PASSPHRASE=… bash vault/vault.sh seal|open|deploy|status`.
 
-| | Demo (`sim`) | Live (`live`) |
-|---|---|---|
-| Agents | scripted scenario | real LLM calls |
-| Books | bundled `demo-data/` (synthetic) | `AGENT_HQ_DATA_DIR` (yours) |
-| Labeling | `DEMO · SIMULATION` watermark + badge, always visible | `Live crew · real model agents` badge |
-| Network | listens on loopback via your own proxy | same |
+## 3. המשטח הציבורי — מה זר / AI אחר יכול ומה אסור
 
-## Deployment checklist
+- **הסוקט קריאה-בלבד**: אין `goal:submit`, אין `decision:answer` — זר מקבל
+  חלון, לא הגה. ההכרעות מתקבלות במשרד, לפי מדיניות המפעיל האוטונומי.
+- **קבלת עמית** (`/api/visitor-chat`): sandbox מלא — בלי מערכת קבצים, בלי DB,
+  בלי כלים; היסטוריה מסוננת ומוגבלת, rate-limit לכל IP, שובר מעגלים, תפקידים
+  נקבעים בשרת. הודעות מבקר = נתונים בלבד.
+- **הוויזואליזציה היא מסך בלבד** — מחיקת הסנדבוקס לא עוצרת את המשרד; הוא חי
+  בגיט (ראה `SOVEREIGNTY.md`).
 
-1. Never commit `foreman/data/` — it is in `.gitignore`; keep it that way.
-2. Provide keys via environment (`.env` is git-ignored; see `.env.example`).
-3. Put the foreman behind your own proxy/firewall. The socket surface trusts the local
-   network; do not expose raw port 3010 to the internet.
-4. If you extend the toolset with write/networking tools, gate them behind the same
-   `ask_operator` decision flow — that is the pattern this project is built around.
-5. Keep the socket read-only. Any new client→server event that mutates state reintroduces
-   a public control surface — review it like a production security change.
+## 4. גבולות הסוכנים — מה המודל יכול לעשות
 
-## Reporting
+- תשובות **JSON-בלבד** דרך `extractJson` — אין הרצה חופשית של טקסט.
+- **כלים = רשימה סגורה** ב-`execTool`: `list_books | read_book | measure |
+  cross_check | git_report | write_report | message | ask_operator`.
+  אין shell, אין רשת, אין גישה ישירה לקבצים מחוץ לספרים.
+- פלט המודל יכול רק **ליצור משימות, דוחות והודעות** — לא לגעת בקוד, במפתחות
+  או בגיט. הזיכרון נכתב רק דרך `persistMemory()` המסונף.
 
-Open an issue for anything you find. Thank you.
+## 5. תקרית? פרוטוקול תגובה
+
+1. סובב את המפתח שנחשף אצל הספק (לא אצלנו — אצלם).
+2. עדכן `vault/keys.env` → `VAULT_PASSPHRASE=… bash vault/vault.sh seal` →
+   commit + push של ה-.enc בלבד.
+3. במכונות הפעילות: `vault.sh open` והפעלה מחדש.
+4. דווח בכנות בפיד המשרד — השקיפות היא חוק.

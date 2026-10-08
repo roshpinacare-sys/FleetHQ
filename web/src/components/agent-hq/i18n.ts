@@ -21,6 +21,10 @@ export const T = {
   goalDone: { he: 'היעד הושלם', en: 'Goal complete' },
   goalFailed: { he: 'היעד נכשל — נסה שוב', en: 'Goal failed — try again' },
   opsDone: { he: 'פעולות שהושלמו', en: 'Operations done' },
+  // optional foreman status extras (rendered only when the wire carries them)
+  statusCredits: { he: 'קרדיטים', en: 'credits' },
+  statusShifts: { he: 'משמרות', en: 'shifts' },
+  statusLessons: { he: 'לקחים', en: 'lessons' },
   monitor: { he: 'מסך-בקרה', en: 'Monitor' },
   wall: { he: 'לוח משימות', en: 'Task wall' },
   podium: { he: 'שלט ההחלטות', en: 'Decision podium' },

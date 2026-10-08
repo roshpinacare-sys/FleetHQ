@@ -23,14 +23,14 @@ const H = 640;
 const CX = 590;
 const CY = 344;
 
-const GOLD = '#e0b45f';
-const GOLD_L = '#f5e3b8';
-const GOLD_D = '#a8823a';
+const GOLD = '#d946ef';   // fuchsia-500 — the ONE data accent
+const GOLD_L = '#e4e4e7'; // zinc-200 — titles & values
+const GOLD_D = '#7c3aed'; // violet-500
 const LIFE = '#34d399';
 const AMBER = '#fbbf24';
-const RED = '#f87171';
-const CHALK = '#ece7dc';
-const DIM = '#8a7a58';
+const RED = '#fb7185';
+const CHALK = '#e4e4e7';
+const DIM = '#71717a';
 
 type DistrictState = 'live' | 'open' | 'sealed';
 
@@ -112,9 +112,9 @@ export function NetworkAtlas({ lang, books, opsDone, commits, reports, busy, onO
       <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMid meet" style={{ direction: 'ltr' }} className="h-full w-full select-none" role="img" aria-label={t('atlasTitle', lang)}>
         <defs>
           <radialGradient id="at-space" cx="50%" cy="44%" r="72%">
-            <stop offset="0%" stopColor="#241a10" />
-            <stop offset="55%" stopColor="#170f09" />
-            <stop offset="100%" stopColor="#0e0906" />
+            <stop offset="0%" stopColor="#18181b" />
+            <stop offset="55%" stopColor="#111113" />
+            <stop offset="100%" stopColor="#09090b" />
           </radialGradient>
           <radialGradient id="at-hq-glow" cx="50%" cy="50%" r="50%">
             <stop offset="0%" stopColor={GOLD} stopOpacity="0.32" />
@@ -122,13 +122,13 @@ export function NetworkAtlas({ lang, books, opsDone, commits, reports, busy, onO
             <stop offset="100%" stopColor={GOLD} stopOpacity="0" />
           </radialGradient>
           <radialGradient id="at-core" cx="38%" cy="32%" r="80%">
-            <stop offset="0%" stopColor="#f8ecc9" />
-            <stop offset="55%" stopColor="#e0b45f" />
-            <stop offset="100%" stopColor="#a8823a" />
+            <stop offset="0%" stopColor="#fdf4ff" />
+            <stop offset="55%" stopColor="#d946ef" />
+            <stop offset="100%" stopColor="#7c3aed" />
           </radialGradient>
           <linearGradient id="at-wire" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stopColor={GOLD_L} stopOpacity="0.7" />
-            <stop offset="100%" stopColor={GOLD_D} stopOpacity="0.35" />
+            <stop offset="0%" stopColor="#f0abfc" stopOpacity="0.75" />
+            <stop offset="100%" stopColor="#7c3aed" stopOpacity="0.4" />
           </linearGradient>
           <filter id="at-glow" x="-80%" y="-80%" width="260%" height="260%">
             <feGaussianBlur stdDeviation="3" result="b" />
@@ -142,7 +142,7 @@ export function NetworkAtlas({ lang, books, opsDone, commits, reports, busy, onO
         {/* deep space */}
         <rect width={W} height={H} fill="url(#at-space)" />
         {/* faint star field — deterministic */}
-        <g fill="#ffe9c4">
+        <g fill="#e4e4e7">
           {Array.from({ length: 90 }, (_, i) => (
             <circle
               key={i}
@@ -162,7 +162,7 @@ export function NetworkAtlas({ lang, books, opsDone, commits, reports, busy, onO
         <g>
           <circle cx={CX} cy={CY} r="150" fill="url(#at-hq-glow)" className="hq-pool" />
           {/* territory arc — share of the network really opened */}
-          <circle cx={CX} cy={CY} r="64" fill="none" stroke="#3d3020" strokeWidth="3.5" />
+          <circle cx={CX} cy={CY} r="64" fill="none" stroke="#3f3f46" strokeWidth="3.5" />
           <circle
             cx={CX}
             cy={CY}
@@ -175,7 +175,7 @@ export function NetworkAtlas({ lang, books, opsDone, commits, reports, busy, onO
             transform={`rotate(-90 ${CX} ${CY})`}
             style={{ transition: 'stroke-dasharray 900ms cubic-bezier(0.2,0.8,0.3,1)' }}
           />
-          <circle cx={CX} cy={CY} r="46" fill="#1c130a" stroke={GOLD} strokeOpacity="0.8" strokeWidth="2" />
+          <circle cx={CX} cy={CY} r="46" fill="#131316" stroke={GOLD} strokeOpacity="0.8" strokeWidth="2" />
           <circle cx={CX} cy={CY} r="38" fill="none" stroke={GOLD_D} strokeWidth="1" opacity="0.7" />
           <text x={CX} y={CY - 8} textAnchor="middle" fontSize="13" fontWeight="800" letterSpacing="2.4" fill={GOLD_L} fontFamily={mono} direction="ltr">
             HQ
@@ -208,7 +208,7 @@ export function NetworkAtlas({ lang, books, opsDone, commits, reports, busy, onO
             return (
               <g key={`city-${d.id}`} transform={`translate(${bx},${by})`} pointerEvents="none">
                 {/* body */}
-                <rect x={-w / 2} y={-h} width={w} height={h} rx="1.2" fill={lit ? '#221809' : '#150e08'} stroke={lit ? '#5a4526' : '#332616'} strokeWidth="0.7" />
+                <rect x={-w / 2} y={-h} width={w} height={h} rx="1.2" fill={lit ? '#231a2e' : '#101012'} stroke={lit ? '#3f3f46' : '#26262b'} strokeWidth="0.7" />
                 {live && <rect x={-w / 2} y={-h} width={w} height="1.6" fill={GOLD} opacity="0.85" />}
                 {/* lit windows — deterministic pattern, real state drives the light */}
                 {lit &&
@@ -244,7 +244,7 @@ export function NetworkAtlas({ lang, books, opsDone, commits, reports, busy, onO
         {districts.map((d) => {
           const sealed = d.state === 'sealed';
           const live = d.state === 'live';
-          const stroke = sealed ? '#4a3a26' : live ? GOLD : GOLD_D;
+          const stroke = sealed ? '#3f3f46' : live ? GOLD : GOLD_D;
           return (
             <g key={d.id}>
               {/* wire HQ → district */}
@@ -285,12 +285,12 @@ export function NetworkAtlas({ lang, books, opsDone, commits, reports, busy, onO
               {!sealed && <circle cx={d.x} cy={d.y} r={coreR + 12} fill={GOLD} opacity="0.06" className="hq-pool" />}
               {/* core */}
               {sealed ? (
-                <circle cx={d.x} cy={d.y} r={coreR} fill="#150e08" stroke="#4a3a26" strokeWidth="1.4" strokeDasharray="3 4" />
+                <circle cx={d.x} cy={d.y} r={coreR} fill="#101012" stroke="#3f3f46" strokeWidth="1.4" strokeDasharray="3 4" />
               ) : (
                 <circle cx={d.x} cy={d.y} r={coreR} fill="url(#at-core)" stroke={GOLD_L} strokeOpacity={open ? 0.55 : 0.95} strokeWidth="1.4" filter="url(#at-glow)" />
               )}
               {sealed && (
-                <text x={d.x} y={d.y + 4} textAnchor="middle" fontSize="11" fill="#6b5a3e">
+                <text x={d.x} y={d.y + 4} textAnchor="middle" fontSize="11" fill="#52525b">
                   ✕
                 </text>
               )}
@@ -298,13 +298,13 @@ export function NetworkAtlas({ lang, books, opsDone, commits, reports, busy, onO
               {live && <circle cx={d.x + coreR - 3} cy={d.y - coreR + 3} r="3.2" fill={LIFE} stroke="#120d09" strokeWidth="1.2" className="hq-pulse" />}
               {/* label chip */}
               <g transform={`translate(${d.x},${d.y + coreR + 6})`} pointerEvents="none">
-                <rect x="-62" y="0" width="124" height="30" rx="5" fill={sealed ? '#150e08cc' : '#17100add'} stroke={sealed ? 'rgba(255,255,255,0.06)' : 'rgba(224,180,95,0.3)'} strokeWidth="0.8" />
+                <rect x="-62" y="0" width="124" height="30" rx="5" fill={sealed ? '#0f0f12cc' : '#131316dd'} stroke={sealed ? 'rgba(255,255,255,0.06)' : 'rgba(217,70,239,0.3)'} strokeWidth="0.8" />
                 {sealed ? (
                   <>
-                    <text x="0" y="12.5" fontSize="10.5" fontWeight="700" fill="#7a6a4c" textAnchor="middle">
+                    <text x="0" y="12.5" fontSize="10.5" fontWeight="700" fill="#a1a1aa" textAnchor="middle">
                       {truncate(d.title[lang], 16)}
                     </text>
-                    <text x="0" y="24.5" fontSize="9" fill="#5f5138" textAnchor="middle" fontFamily={mono} direction="ltr">
+                    <text x="0" y="24.5" fontSize="9" fill="#71717a" textAnchor="middle" fontFamily={mono} direction="ltr">
                       {t('atlasSealed', lang)}
                     </text>
                   </>
@@ -332,7 +332,7 @@ export function NetworkAtlas({ lang, books, opsDone, commits, reports, busy, onO
 
         {/* ── THE OFFICE ECONOMY — honest indices, reference-clean card ── */}
         <g>
-          <rect x="812" y="22" width="344" height="196" rx="8" fill="#17100add" stroke="rgba(224,180,95,0.35)" strokeWidth="1.2" />
+          <rect x="812" y="22" width="344" height="196" rx="8" fill="#131316dd" stroke="rgba(217,70,239,0.35)" strokeWidth="1.2" />
           <rect x="812" y="22" width="344" height="2.6" rx="1.3" fill="url(#at-wire)" />
           <text x="1140" y="48" fontSize="12.5" fontWeight="800" letterSpacing="1.2" fill={GOLD_L} textAnchor="end">
             {t('econTitle', lang)}
@@ -348,7 +348,7 @@ export function NetworkAtlas({ lang, books, opsDone, commits, reports, busy, onO
                   {row.value}
                 </text>
                 {/* meter rail + fill */}
-                <rect x="828" y={y + 6.5} width="280" height="3.2" rx="1.6" fill="#3a2c1a" />
+                <rect x="828" y={y + 6.5} width="280" height="3.2" rx="1.6" fill="#3f3f46" />
                 <rect
                   x="828"
                   y={y + 6.5}
@@ -369,12 +369,12 @@ export function NetworkAtlas({ lang, books, opsDone, commits, reports, busy, onO
 
         {/* ── header plaque ── */}
         <g>
-          <rect x="24" y="22" width="384" height="66" rx="8" fill="#17100add" stroke="rgba(224,180,95,0.35)" strokeWidth="1.2" />
+          <rect x="24" y="22" width="384" height="66" rx="8" fill="#131316dd" stroke="rgba(217,70,239,0.35)" strokeWidth="1.2" />
           <rect x="24" y="22" width="2.6" height="66" fill={GOLD} />
           <text x="40" y="44" fontSize="12.5" fontWeight="800" letterSpacing="1.2" fill={GOLD_L}>
             {t('atlasTitle', lang)}
           </text>
-          <text x="40" y="62" fontSize="9.8" fill="#b3a98f">
+          <text x="40" y="62" fontSize="9.8" fill="#a1a1aa">
             {t('atlasViewHint', lang)}
           </text>
           {/* legend */}
@@ -383,7 +383,7 @@ export function NetworkAtlas({ lang, books, opsDone, commits, reports, busy, onO
             <text x="52" y="78.5" fill={CHALK}>{counts.live} {t('atlasLive', lang)}</text>
             <circle cx="140" cy="75" r="3" fill={GOLD} />
             <text x="148" y="78.5" fill={CHALK}>{counts.open} {t('atlasOpen', lang)}</text>
-            <circle cx="236" cy="75" r="3" fill="none" stroke="#6b5a3e" strokeWidth="1.2" strokeDasharray="2 2" />
+            <circle cx="236" cy="75" r="3" fill="none" stroke="#52525b" strokeWidth="1.2" strokeDasharray="2 2" />
             <text x="245" y="78.5" fill={CHALK}>{counts.sealed} {t('atlasSealed', lang)}</text>
           </g>
         </g>

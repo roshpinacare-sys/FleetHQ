@@ -82,11 +82,12 @@ let breakerOpenUntil = 0;
 // ---- sovereign multi-brain chain (mirrors the foreman's llm.ts) ---------------------------
 // Amit answers through the FIRST live brain; on failure the next brain+model is tried.
 //   1. xAI Grok (XAI_API_KEY — awaits credits, breaker skips it cheaply)
-//   2. OpenRouter (OPENROUTER_API_KEY — 6 verified models, free pool first)
+//   2. OpenRouter (OPENROUTER_API_KEY — 1 strong + 8 verified :free models, rotating)
 //   3. Kilo Code free auto (NO KEY — kilo-auto/free, verified live)
 //   4. LLM7.io anonymous (NO KEY)
 //   5. Pollinations (NO KEY — openai-fast / gpt-oss-20b, verified live)
-//   6. the bundled z-ai SDK
+//   6. OVHcloud AI (NO KEY — EU anonymous tier, verified live)
+//   7. the bundled z-ai SDK
 // Each brain+model gets its own 5-minute cooldown after a hard error (no-credits 403,
 // 429, auth, dead model) so one dead brain never slows the reception down.
 // No keys are logged.
@@ -125,9 +126,12 @@ async function brainChain(): Promise<Brain[]> {
         'deepseek/deepseek-chat-v3.1',
         'nvidia/nemotron-3.5-lightning:free',
         'inclusionai/ling-3.0-flash-sante:free',
+        'google/gemma-4-26b-a4b-it:free',
+        'thinkingmachines/inkling:free',
         'cohere/north-mini-code:free',
         'nvidia/nemotron-3-super-120b-a12b:free',
         'nvidia/nemotron-3-ultra-550b-a55b:free',
+        'poolside/laguna-s-2.1:free',
       ]),
     });
   }
@@ -152,6 +156,15 @@ async function brainChain(): Promise<Brain[]> {
     key: process.env.POLLINATIONS_TOKEN,
     models: ['openai-fast'],
   });
+  // KEYLESS brain — OVHcloud EU anonymous tier (verified live; ~2 RPM/model)
+  if (process.env.OVH_API_KEY || process.env.OVH_MODELS) {
+    brains.push({
+      name: 'ovh',
+      base: 'https://oai.endpoints.kepler.ai.cloud.ovh.net/v1',
+      key: process.env.OVH_API_KEY,
+      models: parseModels(process.env.OVH_MODELS, ['gpt-oss-120b', 'Meta-Llama-3_3-70B-Instruct']),
+    });
+  }
   return brains;
 }
 
