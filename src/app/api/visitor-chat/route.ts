@@ -126,23 +126,32 @@ async function brainChain(): Promise<Brain[]> {
       models: [process.env.XAI_MODEL || 'grok-4-fast-non-reasoning'],
     });
   }
-  if (process.env.OPENROUTER_API_KEY) {
+  // Multi-key OpenRouter rotation: up to 3 independent inference keys — each
+  // key is its OWN brain, so a rate-limited/empty key cools down and the chain
+  // shifts to the next key automatically (same doctrine as the foreman chain).
+  const orKeys = [
+    process.env.OPENROUTER_API_KEY,
+    process.env.OPENROUTER_API_KEY_2,
+    process.env.OPENROUTER_API_KEY_3,
+  ].filter((k): k is string => typeof k === 'string' && k.trim().length > 10);
+  const orModels = parseModels(process.env.OPENROUTER_MODELS, [
+    'deepseek/deepseek-chat-v3.1',
+    'nvidia/nemotron-3.5-lightning:free',
+    'inclusionai/ling-3.0-flash-sante:free',
+    'google/gemma-4-26b-a4b-it:free',
+    'thinkingmachines/inkling:free',
+    'cohere/north-mini-code:free',
+    'nvidia/nemotron-3-super-120b-a12b:free',
+    'nvidia/nemotron-3-ultra-550b-a55b:free',
+    'poolside/laguna-s-2.1:free',
+  ]);
+  for (const [i, key] of orKeys.entries()) {
     brains.push({
-      name: 'openrouter',
+      name: orKeys.length > 1 ? `openrouter-${i + 1}` : 'openrouter',
       base: 'https://openrouter.ai/api/v1',
-      key: process.env.OPENROUTER_API_KEY,
+      key,
       referer: true,
-      models: parseModels(process.env.OPENROUTER_MODELS, [
-        'deepseek/deepseek-chat-v3.1',
-        'nvidia/nemotron-3.5-lightning:free',
-        'inclusionai/ling-3.0-flash-sante:free',
-        'google/gemma-4-26b-a4b-it:free',
-        'thinkingmachines/inkling:free',
-        'cohere/north-mini-code:free',
-        'nvidia/nemotron-3-super-120b-a12b:free',
-        'nvidia/nemotron-3-ultra-550b-a55b:free',
-        'poolside/laguna-s-2.1:free',
-      ]),
+      models: orModels,
     });
   }
   brains.push(
@@ -429,6 +438,8 @@ export async function POST(req: NextRequest) {
             if (candidate && qualityGate(candidate)) {
               reply = candidate;
               consecutiveFails = 0;
+              // server-side ops log only — never sent to the visitor
+              console.log(`[reception] answered via brain: ${id}`);
               break outer;
             }
             throw new Error('no_reply');
