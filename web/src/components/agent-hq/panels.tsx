@@ -50,40 +50,40 @@ export function MonitorPanel({
   const task = tasks.find((x) => x.id === agent?.taskId);
 
   if (!member || !agent)
-    return <div className="grid h-40 place-items-center text-sm text-zinc-500">{t('selectAgent', lang)}</div>;
+    return <div className="grid h-40 place-items-center text-[15px] text-zinc-500">{t('selectAgent', lang)}</div>;
 
   return (
     <div className="flex h-full flex-col gap-3">
       <div className="rounded-xl border border-zinc-800 bg-zinc-900/60 p-4" dir="auto">
         <div className="flex items-center gap-3">
-          <span className="grid h-9 w-9 place-items-center rounded-lg text-sm font-bold text-zinc-950" style={{ backgroundColor: member.color }}>
+          <span className="grid h-11 w-11 place-items-center rounded-lg text-base font-bold text-zinc-950" style={{ backgroundColor: member.color }}>
             {member.name[lang].slice(0, 2)}
           </span>
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2">
-              <span className="font-semibold">{member.name[lang]}</span>
-              <span className="rounded-full px-2 py-0.5 text-[11px] font-semibold" style={{ backgroundColor: `${STATE_COLORS[agent.state]}22`, color: STATE_COLORS[agent.state] }}>
+              <span className="text-base font-semibold">{member.name[lang]}</span>
+              <span className="rounded-full px-2.5 py-0.5 text-[12.5px] font-semibold" style={{ backgroundColor: `${STATE_COLORS[agent.state]}22`, color: STATE_COLORS[agent.state] }}>
                 {stateName(agent.state, lang)}
               </span>
             </div>
-            <div className="truncate text-xs text-zinc-500">
+            <div className="truncate text-[13px] text-zinc-500">
               {member.title[lang]} · {stationName(agent.station, lang)}
             </div>
           </div>
         </div>
-        {agent.activity && <div className="mt-3 rounded-lg bg-zinc-950/70 px-3 py-2 text-sm text-zinc-300" dir="auto">{agent.activity}</div>}
+        {agent.activity && <div className="mt-3 rounded-lg bg-zinc-950/70 px-3 py-2 text-[14px] text-zinc-300" dir="auto">{agent.activity}</div>}
         {task && (
-          <div className="mt-2 text-xs text-zinc-500" dir="auto">
+          <div className="mt-2 text-[13px] text-zinc-500" dir="auto">
             {t('assignee', lang)}: <span className="text-zinc-300">{task.title}</span>
           </div>
         )}
       </div>
       <div ref={scroller} className="hq-scroll min-h-0 flex-1 overflow-y-auto rounded-xl border border-zinc-800 bg-zinc-950/80 p-3" dir="ltr">
-        {logs.length === 0 && <div className="grid h-24 place-items-center text-xs text-zinc-600">—</div>}
+        {logs.length === 0 && <div className="grid h-24 place-items-center text-[13px] text-zinc-600">—</div>}
         {logs.map((entry, i) => (
           <div
             key={i}
-            className="hq-feed-in flex gap-2 py-0.5 font-mono text-[11.5px] leading-5"
+            className="hq-feed-in flex gap-2 py-0.5 font-mono text-[13px] leading-5.5"
             style={{ animationDelay: `${Math.min(i, 12) * 0.02}s` }}
           >
             <span className="shrink-0 text-zinc-600">{new Date(entry.ts).toLocaleTimeString(lang === 'he' ? 'he-IL' : 'en-GB', { hour12: false })}</span>
@@ -110,16 +110,16 @@ export function WallPanel({
   const [open, setOpen] = useState<string | null>(null);
   const cols: Array<'todo' | 'doing' | 'review' | 'done' | 'blocked'> = ['todo', 'doing', 'review', 'done', 'blocked'];
   const crewById = new Map(crew.map((c) => [c.id, c]));
-  if (!tasks.length) return <div className="grid h-40 place-items-center text-sm text-zinc-500">{t('noTasks', lang)}</div>;
+  if (!tasks.length) return <div className="grid h-40 place-items-center text-[15px] text-zinc-500">{t('noTasks', lang)}</div>;
   return (
     <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-5">
       {cols.map((status) => {
         const list = tasks.filter((x) => x.status === status);
         return (
-          <div key={status} className="rounded-xl border border-zinc-800 bg-zinc-900/40 p-2">
-            <div className="mb-2 flex items-center justify-between px-1 text-xs font-semibold text-zinc-400">
+          <div key={status} className="rounded-xl border border-zinc-800 bg-zinc-900/40 p-2.5">
+            <div className="mb-2 flex items-center justify-between px-1 text-[13px] font-semibold text-zinc-300">
               <span>{taskStatusName(status, lang)}</span>
-              <span className="rounded-full bg-zinc-800 px-1.5 text-[11px]">{list.length}</span>
+              <span className="rounded-full bg-zinc-800 px-2 py-0.5 text-[12px]">{list.length}</span>
             </div>
             <div className="space-y-2">
               {list.map((task) => {
@@ -129,18 +129,29 @@ export function WallPanel({
                   <button
                     key={task.id}
                     onClick={() => setOpen(expanded ? null : task.id)}
-                    className="hq-card w-full rounded-lg border border-zinc-800 bg-zinc-950/70 p-2 text-right"
+                    className="hq-card w-full rounded-lg border border-zinc-800 bg-zinc-950/70 p-2.5 text-right"
                   >
                     <div className="flex items-start gap-2" dir="auto">
                       {owner && <span className="mt-0.5 h-3 w-3 shrink-0 rounded-sm" style={{ backgroundColor: owner.color }} />}
-                      <span className="text-xs font-medium leading-4 text-zinc-200">{task.title}</span>
+                      <span className="text-[13.5px] font-medium leading-5 text-zinc-200">{task.title}</span>
                     </div>
+                    {task.why && !expanded && (
+                      <p className="mt-1.5 flex items-center gap-1.5 text-[12px] leading-4 text-[#8fe9f7]" dir="auto">
+                        <span className="shrink-0 font-mono text-[10px] tracking-wider text-[#4de3ff]/70">{task.matchBy === 'fit' ? 'FIT' : 'LLM'}</span>
+                        {truncate(task.why, 60)}
+                      </p>
+                    )}
                     {expanded && (
-                      <div className="mt-2 space-y-1.5 border-t border-zinc-800 pt-2 text-[11px] text-zinc-400" dir="auto">
-                        {task.description && <p className="leading-4">{task.description}</p>}
+                      <div className="mt-2 space-y-1.5 border-t border-zinc-800 pt-2 text-[12.5px] text-zinc-400" dir="auto">
+                        {task.description && <p className="leading-4.5">{task.description}</p>}
                         {owner && (
                           <p>
                             {t('assignee', lang)}: <span style={{ color: owner.color }}>{owner.name[lang]}</span>
+                          </p>
+                        )}
+                        {task.why && (
+                          <p className="text-[#8fe9f7]">
+                            {task.matchBy === 'fit' ? 'FIT' : 'LLM'} · {task.why}
                           </p>
                         )}
                         {task.dependsOn.length > 0 && (
@@ -149,7 +160,7 @@ export function WallPanel({
                           </p>
                         )}
                         {task.summary && (
-                          <p className="rounded bg-zinc-900 p-1.5 leading-4 text-zinc-300">
+                          <p className="rounded bg-zinc-900 p-1.5 leading-4.5 text-zinc-300">
                             {t('summary', lang)}: {task.summary}
                           </p>
                         )}
@@ -159,7 +170,7 @@ export function WallPanel({
                   </button>
                 );
               })}
-              {!list.length && <div className="px-1 py-2 text-[11px] text-zinc-700">—</div>}
+              {!list.length && <div className="px-1 py-2 text-[12px] text-zinc-700">—</div>}
             </div>
           </div>
         );
@@ -176,21 +187,21 @@ export function PodiumPanel({ lang, decisions }: { lang: Lang; decisions: Decisi
   return (
     <div className="space-y-3">
       {/* the autonomy banner — visitors see the record, never hold the pen */}
-      <div className="rounded-none border border-[#00E5FF]/30 bg-[#00E5FF]/5 px-3 py-2 text-[11.5px] leading-4.5 text-[#8fe9f7]">
+      <div className="rounded-none border border-[#00E5FF]/30 bg-[#00E5FF]/5 px-3 py-2 text-[12.5px] leading-5 text-[#8fe9f7]">
         🔒 {t('podiumAutonomous', lang)}
       </div>
-      {!open.length && !answered.length && <div className="grid h-24 place-items-center text-sm text-zinc-500">{t('noDecisions', lang)}</div>}
+      {!open.length && !answered.length && <div className="grid h-24 place-items-center text-[15px] text-zinc-500">{t('noDecisions', lang)}</div>}
       {open.map((d) => (
         <div key={d.id} className="rounded-none border border-[#00E5FF]/40 bg-[#00E5FF]/5 p-4">
-          <div className="mb-1 flex items-center gap-2 text-xs text-[#4de3ff]">
+          <div className="mb-1 flex items-center gap-2 text-[13px] text-[#4de3ff]">
             <span className="grid h-5 w-5 place-items-center rounded-full bg-[#00E5FF]/20 font-bold">⏳</span>
             {t('deciding', lang)}
           </div>
-          <p className="font-medium leading-5" dir="auto">{d.question}</p>
-          {d.context && <p className="mt-2 whitespace-pre-wrap text-xs leading-4 text-zinc-400" dir="auto">{d.context}</p>}
+          <p className="text-[14.5px] font-medium leading-6" dir="auto">{d.question}</p>
+          {d.context && <p className="mt-2 whitespace-pre-wrap text-[13px] leading-5 text-zinc-400" dir="auto">{d.context}</p>}
           <div className="mt-3 flex flex-wrap items-center gap-1.5">
             {d.options.map((o) => (
-              <span key={o} className="rounded-full border border-[#232329] bg-[#101015] px-2.5 py-1 text-xs text-zinc-400" dir="auto">
+              <span key={o} className="rounded-full border border-[#232329] bg-[#101015] px-2.5 py-1 text-[12.5px] text-zinc-400" dir="auto">
                 {o}
               </span>
             ))}
@@ -199,8 +210,8 @@ export function PodiumPanel({ lang, decisions }: { lang: Lang; decisions: Decisi
       ))}
       {answered.map((d) => (
         <div key={d.id} className="hq-card rounded-none border border-zinc-800 bg-zinc-900/40 p-3 opacity-80">
-          <p className="text-sm leading-5" dir="auto">{truncate(d.question, 90)}</p>
-          <p className="mt-1 text-xs text-[#7dffb0]" dir="auto">
+          <p className="text-[14px] leading-5.5" dir="auto">{truncate(d.question, 90)}</p>
+          <p className="mt-1 text-[13px] text-[#7dffb0]" dir="auto">
             {t('resolved', lang)}: {d.answer?.option ?? d.answer?.text ?? '—'} · {timeAgo(d.answer?.ts ?? d.createdAt, lang)}
           </p>
         </div>
@@ -213,7 +224,7 @@ export function PodiumPanel({ lang, decisions }: { lang: Lang; decisions: Decisi
 
 export function LibraryPanel({ lang, reports }: { lang: Lang; reports: Report[] }) {
   const [open, setOpen] = useState<string | null>(null);
-  if (!reports.length) return <div className="grid h-32 place-items-center px-6 text-center text-sm text-zinc-500">{t('noReports', lang)}</div>;
+  if (!reports.length) return <div className="grid h-32 place-items-center px-6 text-center text-[15px] text-zinc-500">{t('noReports', lang)}</div>;
   return (
     <div className="space-y-3">
       {reports.map((r) => {
@@ -221,17 +232,17 @@ export function LibraryPanel({ lang, reports }: { lang: Lang; reports: Report[] 
         return (
           <div key={r.id} className="hq-card rounded-xl border border-zinc-800 bg-zinc-900/40 p-4">
             <button className="w-full text-right" onClick={() => setOpen(expanded ? null : r.id)}>
-              <div className="font-semibold leading-5" dir="auto">{r.title}</div>
-              <div className="mt-1 text-xs text-zinc-500" dir="auto">
+              <div className="text-[15px] font-semibold leading-5.5" dir="auto">{r.title}</div>
+              <div className="mt-1 text-[13px] text-zinc-500" dir="auto">
                 {t('by', lang)} {r.author} · {timeAgo(r.ts, lang)}
               </div>
             </button>
             {expanded ? (
-              <p className="mt-3 whitespace-pre-wrap rounded-lg bg-zinc-950/70 p-3 text-sm leading-6 text-zinc-300" dir="auto">
+              <p className="mt-3 whitespace-pre-wrap rounded-lg bg-zinc-950/70 p-3 text-[14px] leading-6.5 text-zinc-300" dir="auto">
                 {r.body}
               </p>
             ) : (
-              <p className="mt-2 line-clamp-2 text-xs leading-4 text-zinc-500" dir="auto">{r.body}</p>
+              <p className="mt-2 line-clamp-2 text-[13px] leading-5 text-zinc-500" dir="auto">{r.body}</p>
             )}
           </div>
         );
@@ -267,19 +278,19 @@ export function FleetPanel({
           >
             <span className="h-8 w-1.5 shrink-0 rounded-full" style={{ backgroundColor: owner?.color ?? '#52525b' }} />
             <span className="min-w-0 flex-1">
-              <span className="block truncate text-sm font-medium text-zinc-200" dir="auto">
+              <span className="block truncate text-[14px] font-medium text-zinc-200" dir="auto">
                 {b.title[lang]}
               </span>
-              <span className="block text-[11px] text-zinc-500" dir="ltr">
+              <span className="block text-[12px] text-zinc-500" dir="ltr">
                 {b.file} · {fmtBytes(b.bytes)}
               </span>
             </span>
             <span className="shrink-0 text-left">
-              <span className={`block text-xs font-semibold ${stale ? 'text-amber-400' : b.ok === false ? 'text-red-400' : 'text-teal-300'}`} dir="auto">
+              <span className={`block text-[13px] font-semibold ${stale ? 'text-amber-400' : b.ok === false ? 'text-red-400' : 'text-teal-300'}`} dir="auto">
                 {b.ageHours !== undefined ? `${b.ageHours.toFixed(1)}h` : '—'}
               </span>
               {owner && (
-                <span className="block text-[10px] text-zinc-500" dir="auto">
+                <span className="block text-[11.5px] text-zinc-500" dir="auto">
                   {owner.name[lang]}
                 </span>
               )}
@@ -287,7 +298,7 @@ export function FleetPanel({
           </button>
         );
       })}
-      {!books.length && <div className="grid h-24 place-items-center text-sm text-zinc-500">{t('noBooks', lang)}</div>}
+      {!books.length && <div className="grid h-24 place-items-center text-[15px] text-zinc-500">{t('noBooks', lang)}</div>}
     </div>
   );
 }

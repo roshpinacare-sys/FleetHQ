@@ -31,6 +31,37 @@ const MAX_LOG = 160;
 // the crew's own routine: when the room is idle, the office schedules patrol
 // shifts itself so a visitor ALWAYS sees real, measured work — never a frozen set.
 const PATROL_COOLDOWN_MS = 15 * 60_000;
+
+// ---- LLM task-matching: deterministic fit fallback ---------------------------------------
+// When the model plans (or rescues), every task must land with the RIGHT worker.
+// The primary matcher is the model itself (it returns a one-line "why" per task).
+// This keyword scorer is the honest fallback: it scores each worker's specialty
+// vocabulary + owned book names against the task text. Deterministic, explainable.
+const FIT_KEYWORDS: Record<string, string[]> = {
+  gal: ['dex', 'fills', 'market', 'trade', 'exchange', 'price', 'מסחר', 'דקס', 'ביצועים', 'מחיר', 'שוק', 'עסקה'],
+  erez: ['audit', 'claims', 'capability', 'workflow', 'harness', 'ביקורת', 'טענות', 'חוזה', 'יכולת', 'תהליך', 'בדיקת תקינות'],
+  tamar: ['econ', 'sovereign', 'capital', 'money', 'economy', 'policy', 'כלכלה', 'ריבונות', 'הון', 'כסף', 'מדיניות'],
+  shachar: ['indicator', 'census', 'learning', 'pulse', 'health', 'scan', 'stale', 'מדד', 'מפקד', 'מודיעין', 'למידה', 'סריקה', 'טריות', 'בריאות', 'ישן'],
+  yarden: ['registry', 'coord', 'scheduler', 'status', 'mirror', 'infrastructure', 'bus', 'רישום', 'תזמון', 'תיאום', 'תשתית', 'אוטובוס', 'מראה'],
+};
+
+function bestFitWorker(text: string, exclude?: string): { id: string; why: string } {
+  const t = text.toLowerCase();
+  let best = WORKERS.find((w) => w !== exclude) ?? 'shachar';
+  let bestScore = -1;
+  for (const id of WORKERS) {
+    if (id === exclude) continue;
+    let score = 0;
+    for (const k of FIT_KEYWORDS[id] ?? []) if (t.includes(k)) score += 1;
+    const c = crewOf(id)!;
+    for (const b of c.books) if (t.includes(b.toLowerCase())) score += 2;
+    if (score > bestScore) {
+      bestScore = score;
+      best = id;
+    }
+  }
+  return { id: best, why: crewOf(best)!.specialty.he };
+}
 const PATROL_ARM_DELAY_MS = 40_000;
 const PATROLS = [
   'סיור שגרה: סרוק את ספרי הצי ודווח מה ישן או דורש בדיקה',
@@ -190,7 +221,7 @@ export class Office {
     return item;
   }
 
-  addTask(input: { title: string; description?: string; assignee?: string; dependsOn?: string[]; createdBy: string }): Task {
+  addTask(input: { title: string; description?: string; assignee?: string; dependsOn?: string[]; why?: string; matchBy?: 'llm' | 'fit'; createdBy: string }): Task {
     const task: Task = {
       id: this.id('t'),
       title: input.title.slice(0, 140),
@@ -198,6 +229,8 @@ export class Office {
       status: 'todo',
       ...(input.assignee ? { assignee: input.assignee } : {}),
       dependsOn: input.dependsOn ?? [],
+      ...(input.why ? { why: input.why.slice(0, 120) } : {}),
+      ...(input.matchBy ? { matchBy: input.matchBy } : {}),
       createdBy: input.createdBy,
       createdAt: Date.now(),
       updatedAt: Date.now(),
@@ -338,21 +371,25 @@ export class Office {
             `טריות הספרים (id: גיל, ok): ${freshness}\n\n` +
             'תכנן 2-4 משימות אמיתיות וממוקדות שמקדמות את היעד בפועל. ' +
             'כל משימה חייבת להסתמך על ספרים אמיתיים מהרשימה בלבד. ' +
-            'assignee חייב להיות אחד מ: ' + WORKERS.join(', ') + '.\n' +
-            'תשיב אך ורק: {"tasks":[{"title":"…","description":"…","assignee":"gal","dependsOn":[]}]}',
+            'assignee חייב להיות אחד מ: ' + WORKERS.join(', ') + ' — בחר את העובד שההתמחות שלו מתאימה באמת למשימה. ' +
+            'לכל משימה הוסף "why": עד 8 מילים שמסבירים למה דווקא העובד הזה.\n' +
+            'תשיב אך ורק: {"tasks":[{"title":"…","description":"…","assignee":"gal","why":"…","dependsOn":[]}]}',
         },
       ]);
-      const plan = extractJson<{ tasks?: Array<{ title?: string; description?: string; assignee?: string; dependsOn?: string[] }> }>(res.text);
+      const plan = extractJson<{ tasks?: Array<{ title?: string; description?: string; assignee?: string; why?: string; dependsOn?: string[] }> }>(res.text);
       const planned = (plan?.tasks ?? []).filter((t) => t.title && WORKERS.includes(t.assignee ?? '')).slice(0, 4);
       if (!planned.length) {
-        // honest fallback: one broad sweep task
+        // honest fallback: one broad sweep task, matched by the deterministic fit scorer
+        const fit = bestFitWorker(goalText);
         const t = this.addTask({
           title: 'סריקת בריאות כללית של ספרי הצי',
           description: goalText,
-          assignee: 'shachar',
+          assignee: fit.id,
+          why: fit.why,
+          matchBy: 'fit',
           createdBy: LEAD,
         });
-        this.log(LEAD, 'error', 'plan parse failed → single sweep task');
+        this.log(LEAD, 'error', `plan parse failed → single sweep task (fit: ${fit.id})`);
         void this.runWorker(t.id);
         return;
       }
@@ -362,13 +399,16 @@ export class Office {
           title: p.title!,
           description: p.description,
           assignee: p.assignee!,
+          why: p.why,
+          matchBy: 'llm',
           dependsOn: (p.dependsOn ?? []).map((d) => ids[d as unknown as number]).filter(Boolean) as string[],
           createdBy: LEAD,
         });
         ids[i] = t.id;
       });
       this.setGoal({ status: 'active', progress: 0.05 });
-      this.feedPush('plan', `תוכנית אושרה: ${planned.length} משימות`, LEAD);
+      const whyLine = planned.map((p) => `${crewOf(p.assignee!)?.name.he ?? p.assignee}: ${p.why ?? '—'}`).join(' · ');
+      this.feedPush('plan', `תוכנית אושרה: ${planned.length} משימות — התאמות: ${whyLine}`.slice(0, 380), LEAD);
       this.bubble(LEAD, 'התוכנית על הלוח. קדימה לעבודה.');
       this.setState(LEAD, 'idle', 'משגיח מהלוח', 'wall');
     } catch (e) {
@@ -383,10 +423,22 @@ export class Office {
         this.feedPush('error', 'תכנון נכשל פעמיים — המפקדה ממתינה ליעד חדש');
         return;
       }
-      setTimeout(() => {
-        if (this.goal && this.goal.status === 'planning') void this.leadPlan(goalText);
-        else if (this.goal && this.goal.status === 'failed') this.feedPush('error', 'תכנון נכשל — נסה שוב');
-      }, 15000);
+      // The model is saturated or silent. The office does NOT freeze: it runs the
+      // deterministic, fit-matched routine sweep right now — honestly labeled —
+      // and the next patrol shift plans a real model route when the provider frees.
+      const fit = bestFitWorker(goalText);
+      const sweep = this.addTask({
+        title: 'סריקת בריאות כללית של ספרי הצי (שגרה מדודה)',
+        description: goalText,
+        assignee: fit.id,
+        why: fit.why,
+        matchBy: 'fit',
+        createdBy: LEAD,
+      });
+      this.setGoal({ status: 'active', progress: 0.05 });
+      this.feedPush('system', `המודל לא זמין כרגע — המפקדה ממשיכה בשגרה המדודה · ${crewOf(fit.id)?.name.he ?? fit.id} (התאמת FIT)`);
+      this.bubble(LEAD, 'המודל סטורם — רצים את השגרה המדודה.');
+      void this.runWorker(sweep.id);
     }
   }
 
@@ -434,25 +486,69 @@ export class Office {
   }
 
   private rescued = new Set<string>();
+  private patrolPending = false;
 
   /**
    * The office's own heartbeat: when the room has been idle past the cooldown,
-   * the chief schedules a routine patrol shift on the real books. Visitors always
-   * see measured work — and the shift is honestly labeled as scheduled routine,
-   * never as a commander's order.
+   * the operator schedules a routine patrol shift on the real books. The LLM
+   * picks WHICH patrol is most valuable right now from the real freshness table
+   * (rotation is the honest fallback). Visitors always see measured work — and
+   * the shift is honestly labeled as scheduled routine, never a commander's order.
    */
   private maybePatrol() {
-    if (!this.patrolArmed) return;
+    if (!this.patrolArmed || this.patrolPending) return;
     if (this.goal && (this.goal.status === 'planning' || this.goal.status === 'active' || this.goal.status === 'review')) return;
     if (Date.now() - this.lastShiftEnd < PATROL_COOLDOWN_MS) return;
     if ([...this.agents.values()].some((rt) => rt.running)) return;
-    const text = PATROLS[this.patrolIdx++ % PATROLS.length];
-    this.goal = { id: this.id('g'), text, status: 'planning', progress: 0, createdAt: Date.now(), updatedAt: Date.now(), origin: 'patrol' };
-    this.emit('goal', this.goal);
-    this.feedPush('goal', `סיור שגרה מתוזמן — ${text.replace('סיור שגרה: ', '')}`);
-    this.log(LEAD, 'text', 'routine patrol shift — scheduled by the office itself');
-    this.bubble(LEAD, 'מפקדה ריקה? לא אצלנו. סיור שגרה יוצא לדרך.');
-    void this.leadPlan(text);
+    this.patrolPending = true;
+    void this.operatorPatrol();
+  }
+
+  private async operatorPatrol() {
+    try {
+      const freshness = this.books
+        .map((b) => `${b.id}: ${b.ageHours !== undefined ? b.ageHours.toFixed(1) + 'h' : 'no heartbeat'}${b.ok === false ? ' OK=FALSE' : ''}`)
+        .join('; ');
+      let text = PATROLS[this.patrolIdx++ % PATROLS.length];
+      let byOperator = false;
+      try {
+        const res = await chat([
+          {
+            role: 'system',
+            content:
+              'אתה המפעיל האוטונומי של מפקדת הצי. בחרת את סיור השגרה המועיל ביותר כרגע, לפי מצב הספרים האמיתי. תשיב אך ורק JSON.',
+          },
+          {
+            role: 'user',
+            content:
+              `טריות הספרים (id: גיל, ok): ${freshness}\n\n` +
+              `אפשרויות סיור:\n${PATROLS.map((p, i) => `${i}: ${p}`).join('\n')}\n\n` +
+              'איזו אפשרות הכי מועילה עכשיו, ולמה? תשיב אך ורק: {"index": <מספר>, "why": "עד 8 מילים"}',
+          },
+        ]);
+        const pick = extractJson<{ index?: number; why?: string }>(res.text);
+        if (typeof pick?.index === 'number' && Number.isInteger(pick.index) && pick.index >= 0 && pick.index < PATROLS.length) {
+          text = PATROLS[pick.index];
+          byOperator = true;
+          if (pick.why) this.log(LEAD, 'text', `operator patrol choice: ${pick.why.slice(0, 80)}`);
+        }
+      } catch {
+        // provider saturated/absent → the honest rotation fallback
+      }
+      this.goal = { id: this.id('g'), text, status: 'planning', progress: 0, createdAt: Date.now(), updatedAt: Date.now(), origin: 'patrol' };
+      this.emit('goal', this.goal);
+      this.feedPush(
+        'goal',
+        byOperator
+          ? `המפעיל האוטונומי בחר סיור לפי מצב הספרים — ${text.replace('סיור שגרה: ', '')}`
+          : `סיור שגרה מתוזמן — ${text.replace('סיור שגרה: ', '')}`,
+      );
+      this.log(LEAD, 'text', 'routine patrol shift — scheduled by the office itself');
+      this.bubble(LEAD, 'מפקדה ריקה? לא אצלנו. סיור שגרה יוצא לדרך.');
+      void this.leadPlan(text);
+    } finally {
+      this.patrolPending = false;
+    }
   }
 
   /** The chief never leaves a blocked task on the floor: one honest reassignment. */
@@ -465,10 +561,12 @@ export class Office {
       this.setState(LEAD, 'walking', 'ניגש לחסימה על הלוח', 'wall', task.id);
       await sleep(1000);
       const busy = new Set([...this.tasks.values()].filter((t) => t.status === 'doing').map((t) => t.assignee));
-      const candidates = WORKERS.filter((w) => w !== task.assignee && !busy.has(w));
-      const pick = (candidates[0] ?? WORKERS.find((w) => w !== task.assignee) ?? task.assignee)!;
+      const free = WORKERS.filter((w) => w !== task.assignee && !busy.has(w));
+      // rescue matching: the best-fit free worker by specialty — never a blind rotation
+      const fit = bestFitWorker(`${task.title} ${task.description ?? ''}`, task.assignee);
+      const pick = (free.includes(fit.id) ? fit.id : free[0] ?? WORKERS.find((w) => w !== task.assignee) ?? task.assignee)!;
       this.taskAttempts.set(task.id, 0);
-      this.patchTask(task.id, { status: 'todo', assignee: pick, summary: undefined });
+      this.patchTask(task.id, { status: 'todo', assignee: pick, summary: undefined, why: fit.id === pick ? fit.why : undefined, matchBy: fit.id === pick ? 'fit' : undefined });
       const pickName = crewOf(pick)?.name.he ?? pick;
       this.log(LEAD, 'result', `rescue: ${task.title} → ${pickName}`);
       this.feedPush('system', `ראש-המטה מעביר משימה חסומה ל${pickName}`, LEAD);

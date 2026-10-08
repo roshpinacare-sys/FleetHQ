@@ -111,6 +111,8 @@ flowchart LR
     GIT --> DATA
 ```
 
+**Task matching (LLM fit reasons).** Every task lands with the *right* worker, and you can see why: the planning model assigns each task a one-line fit reason (`why`), shown on the wall card with an `LLM` badge. If the model is saturated, a deterministic specialty scorer takes over (`FIT` badge) — it scores each worker's specialty vocabulary and owned books against the task text, and the office keeps running an honest, measured routine instead of freezing. The autonomous operator even uses the model to *pick which routine patrol is most valuable right now* from the real freshness table (rotation is the fallback).
+
 **The agent loop.** Every step is a real model call returning strict JSON: `{say?, thought?, tool?, args?, done?, result?}`. The foreman executes the tool *for real*, appends the result to the agent's transcript, and loops until the agent is done (max steps + timeout enforced). Workers may `ask_operator` — the office deliberates ~7 seconds and resolves the question **by policy** (safe default, recorded transparently at the podium). The lead reviews finished tasks (approve / redo once), rescues blocked work by reassigning it, and writes the final operation summary into the library.
 
 ## Wire surface (socket.io, path `/`)

@@ -165,6 +165,18 @@ function journeyAct(status: Goal['status']): string {
   }
 }
 
+/** Section header — the page's visible ORDER: numbered, mono-indexed, consistently spaced. */
+function SectionHead({ index, title, children }: { index: string; title: string; children?: React.ReactNode }) {
+  return (
+    <div className="mb-2 flex items-baseline gap-3">
+      <span className="font-mono text-sm font-bold tracking-[0.2em] text-[#FF1464]" dir="ltr">{index}</span>
+      <h2 className="text-lg font-black tracking-wide text-zinc-100">{title}</h2>
+      <span className="h-px flex-1 bg-gradient-to-l from-[#26262e] to-transparent" aria-hidden="true" />
+      {children}
+    </div>
+  );
+}
+
 export default function AgentHQ() {
   const [lang, setLang] = useState<Lang>('he');
   const [snap, setSnap] = useState<Snapshot>(EMPTY_SNAPSHOT);
@@ -345,16 +357,16 @@ export default function AgentHQ() {
       <header className="sticky top-0 z-30 border-b border-[#232329] bg-[#0a0a0d]/88 backdrop-blur-md">
         <div className="mx-auto flex max-w-[1500px] flex-wrap items-center gap-x-4 gap-y-2 px-4 py-3">
           <div className="flex items-center gap-3">
-            <div className="grid h-10 w-10 place-items-center rounded-none bg-[#FF1464] font-black text-white shadow-[0_0_24px_rgba(255,20,100,0.45)]">צ</div>
+            <div className="grid h-12 w-12 place-items-center rounded-none bg-[#FF1464] text-xl font-black text-white shadow-[0_0_24px_rgba(255,20,100,0.45)]">צ</div>
             <div>
-              <h1 className={`hq-aurora ${glitch ? 'hq-glitch' : ''} text-lg font-black leading-5 tracking-wide`}>
+              <h1 className={`hq-aurora ${glitch ? 'hq-glitch' : ''} text-2xl font-black leading-7 tracking-wide`}>
                 {t('title', lang)}
               </h1>
-              <p className="text-xs text-zinc-500">{t('subtitle', lang)}</p>
+              <p className="text-sm text-zinc-400">{t('subtitle', lang)}</p>
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2 text-xs">
+          <div className="flex flex-wrap items-center gap-2 text-[13px]">
             <span className={`flex items-center gap-1.5 rounded-full px-2.5 py-1 font-semibold ${connected ? 'bg-[#00E5FF]/10 text-[#4de3ff]' : 'bg-red-500/15 text-red-400'}`}>
               <span className={`h-2 w-2 rounded-full ${connected ? 'bg-[#00E5FF] hq-pulse' : 'bg-red-400'}`} />
               {connected ? t('live', lang) : t('connecting', lang)}
@@ -377,11 +389,11 @@ export default function AgentHQ() {
             </span>
           </div>
 
-          <div className="ms-auto flex items-center gap-3 text-xs text-zinc-400">
+          <div className="ms-auto flex items-center gap-3 text-[13px] text-zinc-400">
             <span className="hidden font-mono tabular-nums tracking-wider text-[#4de3ff] sm:inline" dir="ltr">{clock} {t('jerusalem', lang)}</span>
             <button
               onClick={() => setLang(rtl ? 'en' : 'he')}
-              className="rounded-none border border-[#2e2e36] px-3 py-1.5 font-semibold transition hover:border-[#FF1464] hover:text-[#ff5c92]"
+              className="rounded-none border border-[#2e2e36] px-4 py-2 text-sm font-semibold transition hover:border-[#FF1464] hover:text-[#ff5c92]"
             >
               {rtl ? 'EN' : 'עברית'}
             </button>
@@ -394,6 +406,11 @@ export default function AgentHQ() {
         <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_400px]">
           {/* office + console */}
           <section className="flex min-w-0 flex-col gap-3">
+            <SectionHead index="01" title={t('secOffice', lang)}>
+              <span className="hidden shrink-0 font-mono text-[11.5px] tabular-nums text-zinc-500 sm:block" dir="ltr">
+                {agentList.filter((a) => a.state !== 'idle').length}/{agentList.length || snap.crew.length} {t('atWork', lang)}
+              </span>
+            </SectionHead>
             <div className="relative overflow-hidden rounded-none border border-[#232329] bg-[#0c0c10] shadow-[0_0_60px_rgba(0,0,0,0.6)]">
               {/* HUD corner brackets around the office viewport */}
               <div className="pointer-events-none absolute inset-0 z-10" aria-hidden="true">
@@ -439,11 +456,11 @@ export default function AgentHQ() {
                 />
               </div>
               <div className="flex flex-wrap items-stretch divide-x divide-[#1c1c22] rtl:divide-x-reverse">
-                <div className="flex min-w-[150px] flex-1 items-center gap-2 px-4 py-2.5">
-                  <span className="rounded-none border border-[#2e2e36] px-1.5 py-0.5 font-mono text-[10px] tracking-[0.22em] text-[#4de3ff]">
+                <div className="flex min-w-[150px] flex-1 items-center gap-2 px-4 py-3">
+                  <span className="rounded-none border border-[#2e2e36] px-2 py-1 font-mono text-[11px] tracking-[0.22em] text-[#4de3ff]">
                     ◉ {goal ? goalPhase?.label.split('…')[0].toUpperCase() : (lang === 'he' ? 'מוכן' : 'READY')}
                   </span>
-                  <span dir="auto" className="truncate text-xs text-zinc-400">{goal?.text ?? t('noGoal', lang)}</span>
+                  <span dir="auto" className="truncate text-[13px] text-zinc-300">{goal?.text ?? t('noGoal', lang)}</span>
                 </div>
                 {(
                   [
@@ -452,16 +469,16 @@ export default function AgentHQ() {
                     [t('podium', lang), openDecisionCount, openDecisionCount > 0 ? '#4de3ff' : '#8f9199'],
                   ] as Array<[string, number, string]>
                 ).map(([label, value, color]) => (
-                  <div key={label} className="min-w-[104px] flex-1 px-4 py-2">
-                    <div className="text-[9px] font-semibold uppercase tracking-[0.18em] text-zinc-500">{label}</div>
-                    <div className="font-mono text-base tabular-nums leading-5" style={{ color }}>
+                  <div key={label} className="min-w-[104px] flex-1 px-4 py-2.5">
+                    <div className="text-[11px] font-semibold uppercase tracking-[0.18em] text-zinc-500">{label}</div>
+                    <div className="font-mono text-xl tabular-nums leading-6" style={{ color }}>
                       <CounterUp value={value} />
                     </div>
                   </div>
                 ))}
-                <div className="min-w-[104px] flex-1 px-4 py-2">
-                  <div className="text-[9px] font-semibold uppercase tracking-[0.18em] text-zinc-500">{t('opsDone', lang)}</div>
-                  <div className="font-mono text-base leading-5 text-[#ff5c92]">
+                <div className="min-w-[104px] flex-1 px-4 py-2.5">
+                  <div className="text-[11px] font-semibold uppercase tracking-[0.18em] text-zinc-500">{t('opsDone', lang)}</div>
+                  <div className="font-mono text-xl leading-6 text-[#ff5c92]">
                     <Odometer value={snap.status.opsDone} />
                   </div>
                 </div>
@@ -494,10 +511,10 @@ export default function AgentHQ() {
             {/* the autonomy line — replaced the old goal console: visitors watch, the
                 operator works. No stranger ever gets a steering wheel. */}
             <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 rounded-none border border-[#232329] bg-[#0c0c10] px-4 py-3">
-              <span className="rounded-none border border-[#00E5FF]/40 bg-[#00E5FF]/8 px-2 py-1 font-mono text-[10px] font-bold tracking-[0.22em] text-[#4de3ff]">
+              <span className="rounded-none border border-[#00E5FF]/40 bg-[#00E5FF]/8 px-2.5 py-1 font-mono text-[11.5px] font-bold tracking-[0.22em] text-[#4de3ff]">
                 ◉ {lang === 'he' ? 'אוטונומי לחלוטין' : 'FULLY AUTONOMOUS'}
               </span>
-              <span className="text-xs leading-4 text-zinc-400">
+              <span className="text-[13px] leading-5 text-zinc-300">
                 {lang === 'he'
                   ? 'היעדים מתוזמנים ומוכרעים על ידי מערכת ההפעלה בעצמה — למבקרים אין שליטה על הצוות, וזה בכוונה. יש שאלה? פנו לעמית בקבלה.'
                   : 'Goals are scheduled and decided by the operating system itself — visitors hold no control over the crew, by design. Questions? Ask Amit at the front desk.'}
@@ -505,22 +522,26 @@ export default function AgentHQ() {
             </div>
 
             {/* feed */}
-            <div className="rounded-none border border-[#232329] bg-[#0c0c10] p-3">
-              <h2 className="mb-2 text-xs font-bold uppercase tracking-[0.2em] text-zinc-500">{t('feed', lang)}</h2>
-              <div className="hq-scroll grid max-h-36 gap-1 overflow-y-auto sm:grid-cols-2" dir="auto">
-                {snap.feed.length === 0 && <p className="text-xs text-zinc-600">{t('emptyFeed', lang)}</p>}
+            <div className="rounded-none border border-[#232329] bg-[#0c0c10] p-4">
+              <SectionHead index="02" title={t('secJournal', lang)}>
+                <span className="shrink-0 rounded-full bg-[#00E5FF]/10 px-2.5 py-0.5 font-mono text-[11.5px] font-bold text-[#4de3ff]" dir="ltr">
+                  {snap.feed.length}
+                </span>
+              </SectionHead>
+              <div className="hq-scroll grid max-h-48 gap-1 overflow-y-auto sm:grid-cols-2" dir="auto">
+                {snap.feed.length === 0 && <p className="text-[13px] text-zinc-600">{t('emptyFeed', lang)}</p>}
                 {[...snap.feed].reverse().map((f, i) => (
                   <div
                     key={f.id}
-                    className="hq-feed-in flex items-start gap-2 rounded-none px-2 py-1 text-xs leading-4 hover:bg-[#15151a]"
+                    className="hq-feed-in flex items-start gap-2 rounded-none px-2 py-1.5 text-[13px] leading-5 hover:bg-[#15151a]"
                     style={{ animationDelay: `${Math.min(i, 12) * 0.02}s` }}
                   >
-                    {i === 0 && <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#00E5FF] hq-pulse" aria-hidden="true" />}
-                    <span className="shrink-0 font-mono text-[10px] tabular-nums text-zinc-600" dir="ltr">
+                    {i === 0 && <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-[#00E5FF] hq-pulse" aria-hidden="true" />}
+                    <span className="shrink-0 pt-px font-mono text-[11.5px] tabular-nums text-zinc-600" dir="ltr">
                       {new Date(f.ts).toLocaleTimeString('he-IL', { hour12: false })}
                     </span>
                     <FeedBadge kind={f.kind} />
-                    <span className={`min-w-0 ${f.kind === 'error' ? 'text-red-400' : f.kind === 'user' ? 'text-[#ff8fb4]' : 'text-zinc-300'}`}>{f.text}</span>
+                    <span className={`min-w-0 ${f.kind === 'error' ? 'text-red-400' : f.kind === 'user' ? 'text-[#ff8fb4]' : 'text-zinc-200'}`}>{f.text}</span>
                   </div>
                 ))}
               </div>
@@ -543,7 +564,7 @@ export default function AgentHQ() {
                 <button
                   key={key}
                   onClick={() => openTab(key)}
-                  className={`relative shrink-0 rounded-none px-3 py-2 text-sm font-semibold transition ${
+                  className={`relative shrink-0 rounded-none px-3.5 py-2.5 text-[15px] font-semibold transition ${
                     tab === key ? 'bg-[#FF1464]/12 text-[#ff5c92] shadow-[inset_0_-2px_0_0_#FF1464]' : 'text-zinc-400 hover:bg-[#15151a] hover:text-zinc-200'
                   }`}
                 >
@@ -556,7 +577,7 @@ export default function AgentHQ() {
                 </button>
               ))}
             </nav>
-            <div key={tab} className="hq-page-enter min-h-0 flex-1 p-3">
+            <div key={tab} className="hq-page-enter min-h-0 flex-1 p-4">
               {tab === 'monitor' && <MonitorPanel lang={lang} crew={snap.crew} agent={selectedAgent} logs={logs[selected ?? ''] ?? []} tasks={snap.tasks} />}
               {tab === 'wall' && <WallPanel lang={lang} tasks={snap.tasks} crew={snap.crew} />}
               {tab === 'podium' && <PodiumPanel lang={lang} decisions={snap.decisions} />}
@@ -568,34 +589,38 @@ export default function AgentHQ() {
         </div>
 
         {/* crew roster chips */}
-        <div className="mt-4 flex flex-wrap gap-2">
-          {snap.crew.map((c) => {
-            const a = agents[c.id];
-            const active = selected === c.id;
-            return (
-              <button
-                key={c.id}
-                onClick={() => selectAgent(c.id)}
-                className={`flex items-center gap-2 rounded-none border px-3 py-2 text-sm transition ${
-                  active ? 'border-[#FF1464] bg-[#FF1464]/10 shadow-[0_0_18px_rgba(255,20,100,0.2)]' : 'border-[#232329] bg-[#0c0c10] hover:border-[#3a3b44]'
-                }`}
-              >
-                <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: a ? rosterDot(a.state) : '#52525b' }} />
-                <span className="font-semibold" style={{ color: c.color }}>{c.name[lang]}</span>
-                <span className="text-xs text-zinc-500">{a?.activity || c.title[lang]}</span>
-              </button>
-            );
-          })}
-          <span className="ms-auto self-center font-mono text-[11px] tabular-nums text-zinc-600" dir="ltr">
-            {agentList.filter((a) => a.state !== 'idle').length}/{agentList.length || snap.crew.length} {lang === 'he' ? 'בעבודה' : 'working'}
-          </span>
+        <div className="mt-5">
+          <SectionHead index="03" title={t('secCrew', lang)}>
+            <span className="ms-auto shrink-0 font-mono text-[11.5px] tabular-nums text-zinc-500" dir="ltr">
+              {agentList.filter((a) => a.state !== 'idle').length}/{agentList.length || snap.crew.length} {t('atWork', lang)}
+            </span>
+          </SectionHead>
+          <div className="flex flex-wrap gap-2.5">
+            {snap.crew.map((c) => {
+              const a = agents[c.id];
+              const active = selected === c.id;
+              return (
+                <button
+                  key={c.id}
+                  onClick={() => selectAgent(c.id)}
+                  className={`flex items-center gap-2.5 rounded-none border px-3.5 py-2.5 text-sm transition ${
+                    active ? 'border-[#FF1464] bg-[#FF1464]/10 shadow-[0_0_18px_rgba(255,20,100,0.2)]' : 'border-[#232329] bg-[#0c0c10] hover:border-[#3a3b44]'
+                  }`}
+                >
+                  <span className="h-3 w-3 rounded-full" style={{ backgroundColor: a ? rosterDot(a.state) : '#52525b' }} />
+                  <span className="text-[15px] font-semibold" style={{ color: c.color }}>{c.name[lang]}</span>
+                  <span className="text-[13px] text-zinc-400">{a?.activity || c.title[lang]}</span>
+                </button>
+              );
+            })}
+          </div>
         </div>
       </main>
 
       {/* ================= footer ================= */}
       <footer className="mt-auto border-t border-[#232329] bg-[#08080b] pb-[env(safe-area-inset-bottom)]">
-        <div className="mx-auto flex max-w-[1500px] flex-wrap items-center gap-x-4 gap-y-1 px-4 py-3 text-[11px] text-zinc-500" dir="auto">
-          <span className="font-semibold text-zinc-400">{t('footerTruth', lang)}</span>
+        <div className="mx-auto flex max-w-[1500px] flex-wrap items-center gap-x-4 gap-y-1 px-4 py-3.5 text-[13px] text-zinc-500" dir="auto">
+          <span className="font-semibold text-zinc-300">{t('footerTruth', lang)}</span>
           <span className="ms-auto flex gap-3">
             <span>
               <CounterUp value={snap.books.length} className="text-zinc-400" /> {t('books', lang)} · <CounterUp value={snap.agents.length} className="text-zinc-400" /> {t('agents', lang)}
@@ -610,12 +635,12 @@ export default function AgentHQ() {
         <div className="fixed inset-0 z-50 grid place-items-center bg-black/60 p-4" onClick={() => setPreview(null)} role="dialog" aria-modal="true">
           <div className="max-h-[80vh] w-full max-w-2xl overflow-hidden rounded-none border border-[#2e2e36] bg-[#0c0c10] shadow-2xl" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between border-b border-[#232329] px-4 py-3">
-              <h3 className="font-bold">{t('preview', lang)}: {preview.id}</h3>
-              <button onClick={() => setPreview(null)} className="rounded-none border border-[#2e2e36] px-3 py-1.5 text-sm hover:border-[#00E5FF] hover:text-[#4de3ff]">
+              <h3 className="text-base font-bold">{t('preview', lang)}: {preview.id}</h3>
+              <button onClick={() => setPreview(null)} className="rounded-none border border-[#2e2e36] px-3.5 py-2 text-sm hover:border-[#00E5FF] hover:text-[#4de3ff]">
                 {t('close', lang)}
               </button>
             </div>
-            <pre className="hq-scroll max-h-[65vh] overflow-auto whitespace-pre-wrap p-4 font-mono text-xs leading-5 text-zinc-300" dir="ltr">
+            <pre className="hq-scroll max-h-[65vh] overflow-auto whitespace-pre-wrap p-4 font-mono text-[13px] leading-6 text-zinc-300" dir="ltr">
               {preview.excerpt}
             </pre>
           </div>

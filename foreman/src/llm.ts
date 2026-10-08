@@ -84,17 +84,29 @@ export async function chat(messages: ChatMessage[], _maxTokens = 900): Promise<C
 async function chatRaw(messages: ChatMessage[], maxTokens = 900): Promise<ChatResult> {
   const c = await detect();
   if (c.kind === 'zai') {
+    // HARD TIMEOUT: a hung provider call must never freeze the office loop.
+    // Everything (plan, workers, patrol, operator) awaits this queue — one
+    // hanging call would stall the whole room forever. 60s cap, then it
+    // flows into the normal retry/backoff path.
+    const withTimeout = <T>(p: Promise<T>, ms: number): Promise<T> =>
+      Promise.race([
+        p,
+        new Promise<never>((_, rej) => setTimeout(() => rej(new Error('llm timeout')), ms)),
+      ]);
     const ZAI = (c.mod as any).default ?? (c.mod as any);
-    const zai = await ZAI.create();
+    const zai = await withTimeout(ZAI.create(), 20_000);
     // the SDK expects the system prompt as the first message with role 'assistant'
     const mapped = messages.map((m, i) => ({
       role: m.role === 'system' ? (i === 0 ? 'assistant' : 'user') : m.role,
       content: m.role === 'system' && i > 0 ? `[הנחיית מערכת] ${m.content}` : m.content,
     }));
-    const completion = await zai.chat.completions.create({
-      messages: mapped,
-      thinking: { type: 'disabled' },
-    });
+    const completion = await withTimeout(
+      zai.chat.completions.create({
+        messages: mapped,
+        thinking: { type: 'disabled' },
+      }),
+      60_000,
+    );
     const text = completion?.choices?.[0]?.message?.content ?? '';
     return { text, provider: 'z-ai' };
   }

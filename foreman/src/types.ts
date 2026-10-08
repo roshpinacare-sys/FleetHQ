@@ -50,6 +50,10 @@ export interface Task {
   assignee?: string;
   dependsOn: string[];
   summary?: string;
+  /** Why this worker — the LLM's one-line fit reasoning (shown on the wall card). */
+  why?: string;
+  /** Who did the matching: the model (llm) or the deterministic specialty fit (fit). */
+  matchBy?: 'llm' | 'fit';
   createdBy: string;
   createdAt: number;
   updatedAt: number;

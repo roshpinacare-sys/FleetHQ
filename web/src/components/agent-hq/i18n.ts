@@ -3,6 +3,10 @@ export type Lang = 'he' | 'en';
 export const T = {
   title: { he: 'מפקדת הצי', en: 'Fleet HQ' },
   subtitle: { he: 'חדר הפעולה של הסוכנים — בזמן אמת', en: 'The agents’ operations room — live' },
+  secOffice: { he: 'רצפת הפעולה', en: 'Operations floor' },
+  secJournal: { he: 'יומן הפעולות', en: 'Operations journal' },
+  secCrew: { he: 'הצוות', en: 'The crew' },
+  atWork: { he: 'בעבודה עכשיו', en: 'working now' },
   live: { he: 'חי', en: 'LIVE' },
   connecting: { he: 'מתחבר…', en: 'Connecting…' },
   offline: { he: 'מנותק', en: 'Offline' },

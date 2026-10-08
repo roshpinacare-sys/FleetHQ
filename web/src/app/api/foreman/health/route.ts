@@ -19,11 +19,6 @@ export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 const PORT = 3010;
-// Where the foreman service lives. Default assumes the published layout
-// (web/ and foreman/ are sibling folders). Override with FOREMAN_DIR.
-// The endpoint takes NO input and spawns ONE fixed local service — it cannot
-// be used to run anything else. If you run the foreman yourself (recommended
-// for production), this supervisor simply reports health and never spawns.
 const CWD = process.env.FOREMAN_DIR ?? new URL('../../../../foreman', import.meta.url).pathname;
 
 let lastSpawnAt = 0;

@@ -349,16 +349,16 @@ function OfficeInner(props: OfficeProps) {
         <rect x="806" y="38" width="336" height="142" rx="4" fill="url(#oq-panel)" stroke={CYAN} strokeOpacity="0.3" strokeWidth="1.2" />
         <rect x="806" y="38" width="336" height="26" rx="4" fill={TITLE_BAR} stroke="#1f2a30" strokeWidth="0.8" />
         <circle cx="822" cy="51" r="3.4" fill={CYAN} className="hq-pulse" filter="url(#oq-glow-c)" />
-        <text x="832" y="55" fontSize="10.5" fontWeight="800" letterSpacing="1.6" fill="#bff3ff">
+        <text x="832" y="55" fontSize="12.5" fontWeight="800" letterSpacing="1.6" fill="#bff3ff">
           {t('gitWireLabel', lang)}
         </text>
-        <text x="1130" y="55" fontSize="10" fontWeight="700" fill={CYAN} textAnchor="end" fontFamily={mono}>
+        <text x="1130" y="55" fontSize="11.5" fontWeight="700" fill={CYAN} textAnchor="end" fontFamily={mono}>
           {commitCount} ◂ {t('commits', lang)}
         </text>
         {/* the wire itself: commits travel along it */}
         <line x1="500" y1="196" x2="806" y2="180" stroke={CYAN} strokeOpacity="0.3" strokeWidth="1.2" strokeDasharray="3 7" className="hq-dash" />
         {commits.length === 0 && (
-          <text x="974" y="118" fontSize="9.5" fill="#5c5e66" textAnchor="middle">
+          <text x="974" y="118" fontSize="11" fill="#5c5e66" textAnchor="middle">
             {git ? t('gitUnavailable', lang) : '…'}
           </text>
         )}
@@ -368,20 +368,20 @@ function OfficeInner(props: OfficeProps) {
             <g key={c.hash} transform={`translate(816,${72 + i * 17})`}>
               {fresh && <rect x="-4" y="-9" width="322" height="15" rx="2" fill={CYAN} opacity="0.1" />}
               <rect x="0" y="-8" width="40" height="12" rx="0" fill={fresh ? `${CYAN}22` : '#0a1a20'} stroke={fresh ? CYAN : '#1d4a58'} strokeWidth="0.7" />
-              <text x="20" y="1.4" fontSize="7.6" fill={fresh ? '#aef0ff' : '#6fb5c8'} textAnchor="middle" fontFamily={mono} direction="ltr">
+              <text x="20" y="1.4" fontSize="9" fill={fresh ? '#aef0ff' : '#6fb5c8'} textAnchor="middle" fontFamily={mono} direction="ltr">
                 {c.hash}
               </text>
-              <text x="48" y="1.6" fontSize="8.4" fill={fresh ? CHALK : '#b0b3bd'}>
-                {truncate(c.subject, 52)}
+              <text x="48" y="1.6" fontSize="9.8" fill={fresh ? CHALK : '#b0b3bd'}>
+                {truncate(c.subject, 44)}
               </text>
-              <text x="314" y="1.6" fontSize="7.6" fill="#5f8a97" textAnchor="end" direction="ltr" fontFamily={mono}>
+              <text x="314" y="1.6" fontSize="9" fill="#5f8a97" textAnchor="end" direction="ltr" fontFamily={mono}>
                 {ageLabel(c.ts, lang, now ?? c.ts)}
               </text>
             </g>
           );
         })}
         {git?.available && (
-          <text x="816" y="174" fontSize="7.4" fill="#5f8a97">
+          <text x="816" y="174" fontSize="9" fill="#5f8a97">
             {t('gitLive', lang)}
           </text>
         )}
@@ -392,10 +392,10 @@ function OfficeInner(props: OfficeProps) {
         <rect x="268" y="38" width="520" height="142" rx="4" fill="url(#oq-panel)" stroke={PANEL_EDGE} strokeWidth="1.2" />
         <rect x="268" y="38" width="520" height="26" rx="4" fill={TITLE_BAR} stroke="#202028" strokeWidth="0.8" />
         <rect x="268" y="62" width="520" height="1" fill={PINK} opacity="0.35" />
-        <text x="284" y="55" fontSize="10.5" fontWeight="800" letterSpacing="1.6" fill="#e8e9ee">
+        <text x="284" y="55" fontSize="12.5" fontWeight="800" letterSpacing="1.6" fill="#e8e9ee">
           {t('taskWallLabel', lang)}
         </text>
-        <text x="772" y="55" fontSize="10" fill="#71737c" textAnchor="end" fontFamily={mono}>
+        <text x="772" y="55" fontSize="11.5" fill="#71737c" textAnchor="end" fontFamily={mono}>
           {tasks.length} {lang === 'he' ? 'משימות' : 'tasks'}
         </text>
         {(['todo', 'doing', 'review', 'done'] as const).map((status, ci) => {
@@ -406,7 +406,7 @@ function OfficeInner(props: OfficeProps) {
           return (
             <g key={status}>
               <rect x={colX} y="72" width="114" height="96" rx="2" fill="#0d0d11" stroke={active ? `${PINK}66` : '#222329'} strokeWidth="0.9" />
-              <text x={colX + 7} y="85" fontSize="8.6" fill={active ? '#ff8fb4' : '#8f9199'} fontWeight="700">
+              <text x={colX + 7} y="85" fontSize="10" fill={active ? '#ff8fb4' : '#8f9199'} fontWeight="700">
                 {label} · {list.length}
               </text>
               {list.slice(0, 4).map((task, i) => {
@@ -416,14 +416,14 @@ function OfficeInner(props: OfficeProps) {
                     <rect width="104" height="16" rx="1.5" fill="#15151a" stroke="#26262e" strokeWidth="0.5" />
                     <rect width="3.5" height="16" rx="0" fill={owner ? ACCENT[owner.id] ?? owner.color : '#71717a'} />
                     {task.status === 'doing' && <circle cx="95" cy="8" r="2.4" fill={PINK} className="hq-pulse" filter="url(#oq-glow-p)" />}
-                    <text x="9" y="11" fontSize="7.6" fill="#c9cbd1">
+                    <text x="9" y="11" fontSize="8.8" fill="#c9cbd1">
                       {truncate(task.title, 18)}
                     </text>
                   </g>
                 );
               })}
               {list.length > 4 && (
-                <text x={colX + 7} y="166" fontSize="8" fill="#63656c" fontFamily={mono}>
+                <text x={colX + 7} y="166" fontSize="9.5" fill="#63656c" fontFamily={mono}>
                   +{list.length - 4}
                 </text>
               )}
@@ -487,10 +487,10 @@ function OfficeInner(props: OfficeProps) {
       <g onClick={() => onOpenTab('library')} className="cursor-pointer">
         <rect x="40" y="216" width="172" height="176" rx="4" fill="url(#oq-panel)" stroke={PANEL_EDGE} strokeWidth="1.2" />
         <rect x="40" y="216" width="172" height="24" rx="4" fill={TITLE_BAR} stroke="#202028" strokeWidth="0.8" />
-        <text x="54" y="232" fontSize="10" fontWeight="800" letterSpacing="1.4" fill="#e8e9ee">
+        <text x="54" y="232" fontSize="12.5" fontWeight="800" letterSpacing="1.4" fill="#e8e9ee">
           {t('libraryLabel', lang)}
         </text>
-        <text x="200" y="232" fontSize="11" fontWeight="800" fill="#7dffb0" textAnchor="end" fontFamily={mono}>
+        <text x="200" y="232" fontSize="12.5" fontWeight="800" fill="#7dffb0" textAnchor="end" fontFamily={mono}>
           {reportsCount}
         </text>
         {/* glass-front shelves */}
@@ -510,8 +510,8 @@ function OfficeInner(props: OfficeProps) {
           </g>
         ))}
         {newestReport && (
-          <text x="54" y="386" fontSize="8.2" fill="#9a9ca3">
-            {truncate(newestReport, 30)}
+          <text x="54" y="386" fontSize="9.4" fill="#9a9ca3">
+            {truncate(newestReport, 28)}
           </text>
         )}
       </g>
@@ -521,7 +521,7 @@ function OfficeInner(props: OfficeProps) {
         {/* stage platform */}
         <rect x="952" y="238" width="200" height="118" rx="4" fill="url(#oq-panel)" stroke={openDecisions > 0 ? `${CYAN}88` : PANEL_EDGE} strokeWidth={openDecisions > 0 ? 1.4 : 1.2} />
         <rect x="952" y="238" width="200" height="24" rx="4" fill={TITLE_BAR} stroke="#202028" strokeWidth="0.8" />
-        <text x="968" y="254" fontSize="10" fontWeight="800" letterSpacing="1.4" fill="#e8e9ee">
+        <text x="968" y="254" fontSize="12.5" fontWeight="800" letterSpacing="1.4" fill="#e8e9ee">
           {t('podiumLabel', lang)}
         </text>
         {/* big decision screen */}
@@ -530,7 +530,7 @@ function OfficeInner(props: OfficeProps) {
         <text x="1052" y="296" fontSize="22" fontWeight="800" fill={openDecisions > 0 ? '#4de3ff' : '#3c3e48'} textAnchor="middle" fontFamily={mono} filter={openDecisions > 0 ? 'url(#oq-glow-c)' : undefined}>
           {openDecisions > 0 ? `⏳${openDecisions}` : '—'}
         </text>
-        <text x="1052" y="316" fontSize="8.2" fill={openDecisions > 0 ? '#aef0ff' : '#5c5e66'} textAnchor="middle" fontWeight="600">
+        <text x="1052" y="316" fontSize="9.6" fill={openDecisions > 0 ? '#aef0ff' : '#5c5e66'} textAnchor="middle" fontWeight="600">
           {openDecisions > 0 ? t('needsYou', lang) : t('noDecisions', lang)}
         </text>
         {/* lectern */}
@@ -542,10 +542,10 @@ function OfficeInner(props: OfficeProps) {
       {/* ================= REGISTRY BOARD (south) ================= */}
       <g onClick={() => onOpenTab('fleet')} className="cursor-pointer">
         <rect x="404" y="574" width="372" height="50" rx="4" fill="url(#oq-panel)" stroke={PANEL_EDGE} strokeWidth="1.2" />
-        <text x="422" y="594" fontSize="10" fontWeight="800" letterSpacing="1.4" fill="#e8e9ee">
+        <text x="422" y="594" fontSize="12.5" fontWeight="800" letterSpacing="1.4" fill="#e8e9ee">
           {t('registryLabel', lang)}
         </text>
-        <text x="760" y="594" fontSize="10" fill="#9a9ca3" textAnchor="end" fontFamily={mono}>
+        <text x="760" y="594" fontSize="11.5" fill="#9a9ca3" textAnchor="end" fontFamily={mono}>
           {books.length} {t('books', lang)}
         </text>
         {/* health strip: each book = one tick, colored by freshness */}
@@ -556,7 +556,7 @@ function OfficeInner(props: OfficeProps) {
             return <rect key={b.id} x={(i % 44) * 7.4} y="0" width="5" height="9" rx="1" fill={fresh ? '#00c2a8' : warn ? '#ffb020' : '#ff4a55'} opacity={fresh ? 0.9 : 0.75} />;
           })}
         </g>
-        <text x="422" y="620" fontSize="8" fill={staleBooks > 0 ? '#ffb020' : '#63656c'}>
+        <text x="422" y="620" fontSize="9.6" fill={staleBooks > 0 ? '#ffb020' : '#63656c'}>
           {staleBooks > 0 ? `${staleBooks} ${lang === 'he' ? 'ספרים ישנים או דורשים בדיקה' : 'stale or flagged books'}` : lang === 'he' ? 'כל הספרים טריים' : 'all books fresh'}
         </text>
       </g>
@@ -575,7 +575,7 @@ function OfficeInner(props: OfficeProps) {
         <rect x="308" y="550" width="10" height="10" rx="1" fill="#ff6b4a" />
         <rect x="322" y="550" width="10" height="10" rx="1" fill="#4ab8ff" />
         {/* sign */}
-        <text x="296" y="624" fontSize="8" fill="#63656c" textAnchor="middle">
+        <text x="296" y="624" fontSize="9.2" fill="#63656c" textAnchor="middle">
           {lang === 'he' ? 'פינת הקפה של המפקדה' : 'HQ coffee corner'}
         </text>
       </g>
@@ -603,7 +603,7 @@ function OfficeInner(props: OfficeProps) {
         {/* front-desk sign */}
         <rect x={RECEPTION.x - 62} y={RECEPTION.y + 16} width="124" height="16" rx="1" fill="#0b0b0f" stroke="#26262e" strokeWidth="0.6" />
         <rect x={RECEPTION.x - 62} y={RECEPTION.y + 16} width="2.4" height="16" fill={VIOLET} />
-        <text x={RECEPTION.x + 2} y={RECEPTION.y + 27.5} fontSize="8.6" fill="#e8e9ee" textAnchor="middle" fontWeight="700">
+        <text x={RECEPTION.x + 2} y={RECEPTION.y + 28} fontSize="9.8" fill="#e8e9ee" textAnchor="middle" fontWeight="700">
           {t('repName', lang)} · {t('repRole', lang)}
         </text>
         {/* small terminal on the counter */}
@@ -658,7 +658,7 @@ function OfficeInner(props: OfficeProps) {
               <g>
                 <rect x="-30" y="-13" width="60" height="20" rx="2" fill="#0b0b0e" stroke={CYAN} strokeWidth="1" />
                 <circle cx="-19" cy="-3" r="2.6" fill={CYAN} className="hq-pulse" />
-                <text x="-12" y="0.5" fontSize="9.5" fontWeight="700" fill="#bff3ff">
+                <text x="-12" y="0.5" fontSize="10.5" fontWeight="700" fill="#bff3ff">
                   {t('repInChat', lang)}
                 </text>
               </g>
@@ -666,7 +666,7 @@ function OfficeInner(props: OfficeProps) {
               <g className="hq-pulse">
                 <rect x="-46" y="-13" width="92" height="20" rx="2" fill="#0b0b0e" stroke={PINK} strokeWidth="1" />
                 <path d="M -6 7 L 0 16 L 6 7 Z" fill="#0b0b0e" stroke={PINK} strokeWidth="1" />
-                <text x="0" y="1.5" fontSize="9.5" fontWeight="700" fill="#ff8fb4" textAnchor="middle">
+                <text x="0" y="1.5" fontSize="10.5" fontWeight="700" fill="#ff8fb4" textAnchor="middle">
                   {t('repInvite', lang)}
                 </text>
               </g>
@@ -674,7 +674,7 @@ function OfficeInner(props: OfficeProps) {
           </g>
         </g>
         {/* floor label */}
-        <text x={RECEPTION.x} y={RECEPTION.y + 62} fontSize="8" fill="#63656c" textAnchor="middle">
+        <text x={RECEPTION.x} y={RECEPTION.y + 62} fontSize="9.4" fill="#63656c" textAnchor="middle">
           {lang === 'he' ? 'קבלת המפקדה · לחץ על עמית לשיחה' : 'HQ front desk · click Amit to chat'}
         </text>
       </g>
@@ -740,12 +740,12 @@ function OfficeInner(props: OfficeProps) {
             <rect x={d.x - 6} y={d.y - 62} width="12" height="7" fill="#1e1f25" />
             {/* real log lines */}
             {tail.map((entry, i) => (
-              <text key={i} x={d.x - 54} y={d.y - 93 + i * 12} fontSize="7.2" fill={entry.kind === 'error' ? '#ff7b81' : entry.kind === 'tool' ? '#ffd166' : entry.kind === 'report' ? '#7dffb0' : '#39cfd8'} fontFamily={mono} direction="ltr">
-                {truncate(entry.text.replace(/\s+/g, ' '), 28)}
+              <text key={i} x={d.x - 54} y={d.y - 93 + i * 12} fontSize="8.6" fill={entry.kind === 'error' ? '#ff7b81' : entry.kind === 'tool' ? '#ffd166' : entry.kind === 'report' ? '#7dffb0' : '#39cfd8'} fontFamily={mono} direction="ltr">
+                {truncate(entry.text.replace(/\s+/g, ' '), 20)}
               </text>
             ))}
             {tail.length === 0 && (
-              <text x={d.x - 4} y={d.y - 83} fontSize="7.2" fill="#2f313a" fontFamily={mono}>
+              <text x={d.x - 4} y={d.y - 83} fontSize="8.6" fill="#2f313a" fontFamily={mono}>
                 · · ·
               </text>
             )}
@@ -761,7 +761,7 @@ function OfficeInner(props: OfficeProps) {
             {openCount > 0 && (
               <g transform={`translate(${d.x + 58},${d.y - 110})`} pointerEvents="none">
                 <rect width="20" height="13" rx="6.5" fill={`${accent}44`} stroke={accent} strokeOpacity="0.75" strokeWidth="0.8" />
-                <text x="10" y="9.6" fontSize="8.4" fontWeight="800" fill="#f4f4f6" textAnchor="middle" fontFamily={mono}>
+                <text x="10" y="9.6" fontSize="9" fontWeight="800" fill="#f4f4f6" textAnchor="middle" fontFamily={mono}>
                   {openCount}
                 </text>
               </g>
@@ -772,7 +772,7 @@ function OfficeInner(props: OfficeProps) {
             {/* name plate on the desk front */}
             <rect x={d.x - 34} y={d.y - 44} width="68" height="15" rx="1" fill="#0b0b0f" stroke="#26262e" strokeWidth="0.6" />
             <rect x={d.x - 34} y={d.y - 44} width="2.4" height="15" fill={accent} />
-            <text x={d.x + 2} y={d.y - 33} fontSize="8.6" fill="#e8e9ee" textAnchor="middle" fontWeight="700">
+            <text x={d.x + 2} y={d.y - 32.5} fontSize="10" fill="#e8e9ee" textAnchor="middle" fontWeight="700">
               {member.name[lang]}
             </text>
             {/* chair */}
@@ -860,11 +860,11 @@ function OfficeInner(props: OfficeProps) {
               <rect x="-54" y="-14" width="108" height="27" rx="2" fill="#0b0b0edd" stroke={isSel ? PINK : '#26262e'} strokeWidth="1" />
               <rect x="-54" y="-14" width="2.4" height="27" fill={accent} />
               <circle cx="-44" cy="-5" r="3" fill={STATE_COLORS[state]} />
-              <text x="-37" y="-2.5" fontSize="10" fontWeight="800" fill="#f4f4f6">
+              <text x="-37" y="-2.5" fontSize="11.5" fontWeight="800" fill="#f4f4f6">
                 {member.name[lang]}
               </text>
-              <text x="-46" y="9" fontSize="7.4" fill="#9a9ca3">
-                {truncate(agent?.activity || member.title[lang], 30)}
+              <text x="-46" y="9" fontSize="8.8" fill="#9a9ca3">
+                {truncate(agent?.activity || member.title[lang], 23)}
               </text>
             </g>
             {/* speech bubble */}
@@ -873,8 +873,8 @@ function OfficeInner(props: OfficeProps) {
                 <rect x="-96" y="-24" width="192" height="30" rx="2" fill="#0b0b0e" stroke={PINK} strokeWidth="1" />
                 <path d="M -6 6 L 0 15 L 6 6 Z" fill="#0b0b0e" stroke={PINK} strokeWidth="1" />
                 <rect x="-96" y="-24" width="192" height="30" rx="2" fill="#0b0b0e" />
-                <text x="0" y="-4.5" fontSize="9.5" fill="#f4f4f6" textAnchor="middle" fontWeight="600">
-                  {truncate(bubble.text, 46)}
+                <text x="0" y="-4.5" fontSize="10.5" fill="#f4f4f6" textAnchor="middle" fontWeight="600">
+                  {truncate(bubble.text, 36)}
                 </text>
               </g>
             )}
