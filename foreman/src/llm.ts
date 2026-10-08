@@ -377,6 +377,26 @@ export function stripReasoning(text: string): string {
   return t.trim() || (hadThink ? '' : original);
 }
 
+
+/** Meta-commentary sieve: free models emit drafting chatter ("Let's refine…",
+ *  "Draft: …"), self-check tails ("Check word count: …") and wrapped quotes.
+ *  Keep only the usable answer: cut self-check tails, extract the LAST
+ *  Draft/Final/Answer segment, drop leading meta lines, unwrap quotes. */
+function polish(text: string): string {
+  let t = (text ?? '').trim();
+  const tail = t.search(/\n\s*(?:check\b|word count\b|constraints?\s*:)/i);
+  if (tail > 0) t = t.slice(0, tail).trim();
+  const segs = [...t.matchAll(/(?:^|\n)\s*(?:final(?:\s+answer)?|draft|answer)\s*:\s*/gi)];
+  if (segs.length) {
+    const last = segs[segs.length - 1];
+    t = t.slice((last.index ?? 0) + last[0].length).trim();
+  } else if (/^let'?s\s+(refine|make|draft|craft|write|think|polish)/i.test(t)) {
+    const nl = t.indexOf('\n');
+    if (nl > 0) t = t.slice(nl + 1).trim();
+  }
+  if (/^"[\s\S]+"$/.test(t)) t = t.slice(1, -1).trim();
+  return t;
+}
 async function chatRaw(messages: ChatMessage[], maxTokens: number): Promise<ChatResult> {
   await yieldToReception(); // a human at the front desk goes first
   const brains = await detect();
@@ -387,7 +407,7 @@ async function chatRaw(messages: ChatMessage[], maxTokens: number): Promise<Chat
       const id = `${b.name}/${model}`;
       if ((cooldownUntil.get(id) ?? 0) > now) continue; // this brain is cooling — next
       try {
-        const text = stripReasoning(await callBrain(b, model, messages, maxTokens));
+        const text = polish(stripReasoning(await callBrain(b, model, messages, maxTokens)));
         if (!qualityGate(text)) throw new Error('llm off-topic reply'); // garbage in → chain keeps walking
         return { text, provider: id };
       } catch (e) {
