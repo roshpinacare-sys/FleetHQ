@@ -15,11 +15,16 @@
 //   GET  /v1/system-prompt   the sovereign agent prompt (also SOVEREIGN-PROMPT.md)
 //
 // Sovereign network discipline (env):
-//   AI_TIMEOUT  overall answer deadline in ms   (default 60000)
-//   MAX_RETRIES max brain+model attempts        (default 5)
+//   AI_TIMEOUT / REQUEST_TIMEOUT      overall answer deadline in ms (default 60000)
+//   MAX_RETRIES / MAX_NETWORK_RETRIES max brain+model attempts     (default 8)
+//   COMPACTION_BUDGET                 lossy context budget in chars (default 24000,
+//                                     ≈6K tokens — 0 disables compaction)
 //   DUCKAI_URL  optional local reverse-engineered bridge (duckai) — activates
 //               the slot the moment the env var exists (runs on any machine
 //               with DuckDuckGo access; this sandbox blocks DDG — honest).
+//   LOCAL_LLM_URL optional air-gapped fallback (llama.cpp / llama-swap / any
+//               local OpenAI-compatible server, e.g. http://localhost:8080/v1)
+//               — arms the sovereign offline tier the moment it exists.
 //
 // The gateway stores/transmits NO telemetry and NO identity tokens. It logs
 // brain ids and latencies only — never message content, never keys.
@@ -157,6 +162,18 @@ function buildBrains(): Brain[] {
       ]),
     });
   }
+  // AIR-GAPPED FALLBACK — llama.cpp / any local OpenAI-compatible server
+  // (the sovereignty manifest's http://localhost:8080/v1 tier). Honest like
+  // duckai: the slot exists only when LOCAL_LLM_URL exists. No GPU in this
+  // sandbox — documented in MANIFEST-REVIEW, armed on any machine that has one.
+  if (process.env.LOCAL_LLM_URL) {
+    brains.push({
+      name: 'local-llm',
+      base: process.env.LOCAL_LLM_URL.replace(/\/$/, ''),
+      key: process.env.LOCAL_LLM_KEY || 'unused',
+      models: parseModels(process.env.LOCAL_LLM_MODELS, ['qwen-2.5-coder-32b', 'llama-3.3-70b-instruct']),
+    });
+  }
   brains.push({
     name: 'kilo',
     base: 'https://kilocode.ai/api/openrouter',
@@ -218,9 +235,56 @@ const stats = {
   requests: 0,
   answered: 0,
   failed: 0,
+  compactions: 0,
   lastAnsweredVia: '',
   lastLatencyMs: 0,
 };
+
+// ---- lossy context compaction (the manifest's “Lossy Text Compaction”) -----
+// Free brains have small windows; a bloated history is the #1 self-inflicted
+// 400/429. The gateway compacts ONCE per request, provider-agnostically:
+// system prompts survive (capped), the ORIGINAL request survives (capped),
+// the newest turns fill the remaining budget from the end, everything older
+// becomes one honest stub. Deterministic, no model call, no content logging.
+const COMPACTION_BUDGET = Math.max(0, Number(process.env.COMPACTION_BUDGET) || 24_000); // chars ≈ 6K tokens; 0 disables
+function compactMessages(messages: ChatMessage[]): { messages: ChatMessage[]; compacted: boolean; droppedChars: number } {
+  const total = messages.reduce((a, m) => a + m.content.length, 0);
+  if (!COMPACTION_BUDGET || total <= COMPACTION_BUDGET) return { messages, compacted: false, droppedChars: 0 };
+  const out: ChatMessage[] = [];
+  let used = 0;
+  for (const m of messages) {
+    if (m.role === 'system') {
+      const c = m.content.slice(0, 4000);
+      out.push({ role: m.role, content: c });
+      used += c.length;
+    }
+  }
+  const nonsys = messages.filter((m) => m.role !== 'system');
+  const firstUser = nonsys.find((m) => m.role === 'user');
+  if (firstUser) {
+    const c = firstUser.content.slice(0, 2000);
+    out.push({ role: 'user', content: c });
+    used += c.length;
+  }
+  const tail: ChatMessage[] = [];
+  for (let i = nonsys.length - 1; i >= 0; i--) {
+    const m = nonsys[i];
+    if (m === firstUser) break; // already kept above; everything older is dropped
+    const room = COMPACTION_BUDGET - used;
+    if (room <= 200) break;
+    const c = m.content.length > room ? m.content.slice(0, room) : m.content;
+    tail.unshift({ role: m.role, content: c });
+    used += c.length;
+  }
+  const droppedChars = total - used;
+  if (droppedChars > 0) {
+    out.push({
+      role: 'user',
+      content: `[context compaction] ${droppedChars} chars of earlier conversation were distilled away to fit the live route; the original request and the newest turns are preserved.`,
+    });
+  }
+  return { messages: [...out, ...tail], compacted: true, droppedChars };
+}
 
 // ---- front-desk priority (same file convention as the whole office) ------------------------
 const RECEPTION_FLAG = process.env.RECEPTION_PRIORITY_FILE || '/tmp/fleethq-reception-priority';
@@ -358,15 +422,27 @@ async function walkChain(
   let lastErr: unknown;
   let attempts = 0;
   let rateHits = 0; // sovereign doctrine: repeated 429 → degrade per-attempt load (max_tokens), not the deadline
+  // THE EVENING-QUOTA LAW (measured 2026-10-08): one provider family's exhausted
+  // free quota (e.g. 27 openrouter slots all 429ing at night) must NEVER consume
+  // the whole attempt budget — the walk would die inside family #1 while
+  // cloudflare/kilo/llm7/pollinations/ovh (independent quotas) sit alive.
+  // MAX_RETRIES / MAX_NETWORK_RETRIES (owner manifest: 10) = budget PER FAMILY;
+  // global sanity cap stays 24; the deadline remains the true commander.
+  const perFamily = Math.max(3, Math.min(10, maxAttempts));
+  const familyTried = new Map<string, number>();
   for (const b of brains()) {
+    const family = b.name.replace(/-\d+$/, ''); // openrouter-1/2/3 → one family
     for (const model of b.models) {
       const id = `${b.name}/${model}`;
       if ((cooldownUntil.get(id) ?? 0) > Date.now()) continue;
-      if (attempts >= maxAttempts || Date.now() >= deadline) {
-        throw lastErr ?? new Error('attempt budget exhausted before any live brain');
+      if (Date.now() >= deadline) {
+        throw lastErr ?? new Error('deadline passed before any live brain');
       }
+      if ((familyTried.get(family) ?? 0) >= perFamily) continue; // family quota burned → move on
+      if (attempts >= 24) break; // global sanity cap
       await yieldToReception(isPriority, Math.min(deadline, Date.now() + 3000));
       attempts++;
+      familyTried.set(family, (familyTried.get(family) ?? 0) + 1);
       const budget = deadline - Date.now();
       const t0 = Date.now();
       // degradation ladder: every 429 in this walk shrinks the ask (floor 384)
@@ -481,6 +557,8 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> 
       requests: stats.requests,
       answered: stats.answered,
       failed: stats.failed,
+      compactions: stats.compactions,
+      compaction_budget_chars: COMPACTION_BUDGET,
       last_answered_via: stats.lastAnsweredVia || null,
       last_latency_ms: stats.lastLatencyMs || null,
       brains: state,
@@ -531,12 +609,16 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> 
       return;
     }
     const maxTokens = Math.max(256, Math.min(4096, Number(body.max_tokens) || 900)); // floor: reasoning models starve below 256 and ship a naked scratchpad
-    const deadline = Date.now() + Math.max(5_000, Math.min(120_000, Number(process.env.AI_TIMEOUT) || 60_000));
-    const maxAttempts = Math.max(1, Math.min(24, Number(process.env.MAX_RETRIES) || 8)); // 8: free reasoning models can burn 2-3 attempts on scratchpads before a clean brain answers
+    // the owner's manifest knobs are honored as first-class aliases.
+    // MAX_RETRIES/MAX_NETWORK_RETRIES = per-provider-family budget (see walkChain):
+    const deadline = Date.now() + Math.max(5_000, Math.min(120_000, Number(process.env.AI_TIMEOUT) || Number(process.env.REQUEST_TIMEOUT) || 60_000));
+    const maxAttempts = Math.max(3, Math.min(10, Number(process.env.MAX_RETRIES) || Number(process.env.MAX_NETWORK_RETRIES) || 5));
     const isPriority = (req.headers['x-reception-priority'] ?? '') === '1';
 
     try {
-      const r = await walkChain(messages, maxTokens, deadline, maxAttempts, isPriority);
+      const comp = compactMessages(messages);
+      if (comp.compacted) stats.compactions++;
+      const r = await walkChain(comp.messages, maxTokens, deadline, maxAttempts, isPriority);
       stats.answered++;
       stats.lastLatencyMs = r.latencyMs;
       console.log(`[gateway] served via ${r.brain} (${r.attempts} attempt(s), ${r.latencyMs}ms)`);
@@ -550,7 +632,7 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> 
           prompt_tokens: Math.ceil(messages.reduce((a, m) => a + m.content.length, 0) / 4),
           completion_tokens: Math.ceil(r.text.length / 4),
         },
-        gateway: { brain: r.brain, attempts: r.attempts, latency_ms: r.latencyMs },
+        gateway: { brain: r.brain, attempts: r.attempts, latency_ms: r.latencyMs, compacted: comp.compacted, dropped_chars: comp.droppedChars },
       });
     } catch (e) {
       stats.failed++;
