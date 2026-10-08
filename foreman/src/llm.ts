@@ -1,14 +1,19 @@
 // LLM adapter — SOVEREIGN MULTI-BRAIN CHAIN with deep failover.
 //
 // The crew is only as alive as its brains, so the office carries a fleet of
-// independent providers and walks down the chain on ANY failure. Brains that
-// need no signup are built in (Kilo free auto-router, LLM7 anonymous,
-// Pollinations, OVH), keyed brains activate from env (xAI, OpenRouter, Groq,
-// Cerebras, Mistral, Google AI Studio, GitHub Models, Together, any
+// independent providers and walks down the chain on ANY failure. Brain #0 is
+// the office's OWN local gateway (sovereign-gateway, :3011) — a single stable
+// OpenAI-compatible endpoint that centrally manages failover + cooldowns for
+// the whole office; the direct brains below are the resilient fallback that
+// keeps working even if the gateway process is down. Brains that need no
+// signup are built in (Kilo free auto-router, LLM7 anonymous, Pollinations,
+// OVH), keyed brains activate from env (xAI, OpenRouter, Groq, Cerebras,
+// Mistral, Google AI Studio, GitHub Models, Together, Cloudflare, any
 // OpenAI-compatible), and the bundled z-ai SDK closes the chain. Failover is
 // per PROVIDER+MODEL pair with an individual cooldown, so one dead model never
 // hurts the others.
 //
+//   0. SOVEREIGN GATEWAY   (LOCAL :3011 — brain #0, zero-auth, central cooldowns)
 //   1. xAI Grok            (XAI_API_KEY)
 //   2. OpenRouter          (OPENROUTER_API_KEY — 1 strong + :free rotation)
 //   3. Groq                (GROQ_API_KEY — generous free tier)
@@ -17,13 +22,17 @@
 //   6. Google AI Studio    (GOOGLE_AI_API_KEY — free tier)
 //   7. GitHub Models       (GITHUB_MODELS_TOKEN — free tier)
 //   8. Together AI         (TOGETHER_API_KEY — free tier)
-//   9. Kilo Code free auto (NO KEY — kilo-auto/free via kilocode.ai, verified live)
-//  10. LLM7.io anonymous   (NO KEY — mistral-Nemo verified live; key raises limits)
-//  11. Pollinations        (NO KEY — openai / openai-fast, verified live)
-//  12. OVHcloud AI         (NO KEY — EU anonymous tier, ~2 RPM/model, verified live)
-//  13. OpenAI-compatible   (OPENAI_API_KEY / OPENAI_BASE_URL / OPENAI_MODEL)
-//  14. z-ai-web-dev-sdk    (bundled deployments)
-//  15. nothing → the office falls back to the fit-routine / labeled sim path.
+//   9. Cloudflare Workers AI (CLOUDFLARE_API_TOKEN — free daily neurons)
+//  10. duckai bridge       (DUCKAI_URL — local reverse-engineered DDG bridge,
+//                           source rescued in mini-services/duckai; activates
+//                           the moment the env slot exists)
+//  11. Kilo Code free auto (NO KEY — kilo-auto/free via kilocode.ai, verified live)
+//  12. LLM7.io anonymous   (NO KEY — mistral-Nemo verified live; key raises limits)
+//  13. Pollinations        (NO KEY — openai-fast, verified live)
+//  14. OVHcloud AI         (NO KEY — EU anonymous tier, ~2 RPM/model, verified live)
+//  15. OpenAI-compatible   (OPENAI_API_KEY / OPENAI_BASE_URL / OPENAI_MODEL)
+//  16. z-ai-web-dev-sdk    (bundled deployments)
+//  17. nothing → the office falls back to the fit-routine / labeled sim path.
 //
 // Every keyed brain above activates THE MOMENT its env key appears — no code
 // change needed. Model lists live in the VAULT (.env — gitignored, chmod 600)
@@ -74,6 +83,23 @@ function parseModels(envVal: string | undefined, fallback: string[]): string[] {
 
 function buildBrains(): Brain[] {
   const brains: Brain[] = [];
+  // ---- BRAIN #0: THE SOVEREIGN LOCAL GATEWAY ----------------------------------------
+  // The office's OWN OpenAI-compatible endpoint (mini-services/sovereign-gateway,
+  // :3011, zero-auth — any string as key). While it is up, every consumer funnels
+  // through ONE place that centrally tracks rate limits and cooldowns for ALL
+  // brains: a 429 seen once is not re-hit by anyone else. While it is down, a
+  // localhost call dies in ~1ms and a 15s cooldown lets the direct chain below
+  // carry the office with zero behavior change. 'auto' = walk the gateway's own
+  // full chain. SOVEREIGN_GATEWAY_URL=off disables the slot entirely.
+  const gwUrl = process.env.SOVEREIGN_GATEWAY_URL || 'http://127.0.0.1:3011/v1';
+  if (gwUrl !== 'off') {
+    brains.push({
+      name: 'sovereign-gateway',
+      base: gwUrl,
+      key: process.env.SOVEREIGN_GATEWAY_KEY || 'sovereign-local',
+      models: parseModels(process.env.SOVEREIGN_GATEWAY_MODELS, ['auto']),
+    });
+  }
   if (process.env.XAI_API_KEY) {
     brains.push({
       name: 'xai',
@@ -202,6 +228,7 @@ let cachedBrains: Brain[] | undefined;
 const cooldownUntil = new Map<string, number>();
 const COOLDOWN_MS = 5 * 60_000; // auth / no-credits / dead model — stay away a while
 const RATE_COOLDOWN_MS = 45_000; // 429 quotas recover in seconds-minutes — retry fast
+const NET_COOLDOWN_MS = 15_000; // network-level death (gateway down / dns / timeout) — cheap retry
 
 const HARD_STATUS = new Set([401, 402, 403]); // auth / no-credits — long cooldown
 
@@ -325,6 +352,7 @@ async function callZai(messages: ChatMessage[]): Promise<ChatResult> {
 /** Reasoning models sometimes leak their scratchpad into the content — cut it off. */
 export function stripReasoning(text: string): string {
   const original = (text ?? '').trim();
+  const hadThink = /<think>/i.test(original);
   let t = original.replace(/<think>[\s\S]*?<\/think>/gi, '').trim();
   if (/here(?:'|’)?s (?:a |the )?thinking process|let me think(?: through)?|internal reasoning process/i.test(t)) {
     const blocks = t.split(/\n{2,}/);
@@ -332,14 +360,21 @@ export function stripReasoning(text: string): string {
     for (let i = 1; i < blocks.length; i++) {
       const first = (blocks[i]?.split('\n')[0] ?? '').trim();
       const reasoningStyle = /^(\d+[\.)]|\*\*|-\s|\u2022)/.test(first) || /:$/.test(first);
-      if (!reasoningStyle && (blocks[i]?.length ?? 0) > 40) {
+      if (!reasoningStyle && (blocks[i]?.length ?? 0) > 25) {
         keep = i;
         break;
       }
     }
-    if (keep > 0) t = blocks.slice(keep).join('\n\n').trim();
+    if (keep > 0) {
+      t = blocks.slice(keep).join('\n\n').trim();
+    } else {
+      // reasoning-only content: the scratchpad ran to the end (or the answer is
+      // buried inside numbered reasoning). Shipping a scratchpad to a human is
+      // WORSE than failing — signal failure so the chain walks to the next brain.
+      return '';
+    }
   }
-  return t.trim() || original;
+  return t.trim() || (hadThink ? '' : original);
 }
 
 async function chatRaw(messages: ChatMessage[], maxTokens: number): Promise<ChatResult> {
@@ -361,12 +396,19 @@ async function chatRaw(messages: ChatMessage[], maxTokens: number): Promise<Chat
         const msg = (e as Error).message ?? '';
         const isRate =
           status === 429 || msg.includes('429') || msg.toLowerCase().includes('too many');
-        if (isRate) cooldownUntil.set(id, Date.now() + RATE_COOLDOWN_MS);
-        if ((status && HARD_STATUS.has(status)) || status === 404 || status === 400 || msg.includes('not available') || msg.includes('unavailable') || msg.includes('No endpoints')) {
+        if (isRate) {
+          cooldownUntil.set(id, Date.now() + RATE_COOLDOWN_MS);
+        } else if ((status && HARD_STATUS.has(status)) || status === 404 || status === 400 || msg.includes('not available') || msg.includes('unavailable') || msg.includes('No endpoints')) {
           // dead model / bad key — cool it down too so we stop asking it
           cooldownUntil.set(id, Date.now() + COOLDOWN_MS);
+        } else if (status === 502 && b.name === 'sovereign-gateway') {
+          // gateway walked its whole chain and came back exhausted — pause it
+          // briefly so the next call walks the direct chain immediately
+          cooldownUntil.set(id, Date.now() + NET_COOLDOWN_MS);
+        } else if (!status) {
+          // network-level failure (local gateway briefly down, dns, timeout)
+          cooldownUntil.set(id, Date.now() + NET_COOLDOWN_MS);
         }
-        // else: transient — just try the next brain
       }
     }
   }

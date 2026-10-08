@@ -82,14 +82,18 @@ let breakerOpenUntil = 0;
 
 // ---- sovereign multi-brain chain (mirrors the foreman's llm.ts) ---------------------------
 // Amit answers through the FIRST live brain; on failure the next brain+model is tried.
+//   0. SOVEREIGN GATEWAY (LOCAL :3011 — brain #0, zero-auth, central cooldowns;
+//      marked with x-reception-priority so the crew's chain yields to the visitor)
 //   1. xAI Grok (XAI_API_KEY)
 //   2. OpenRouter (OPENROUTER_API_KEY — 1 strong + :free rotation)
 //   3. Groq / Cerebras / Mistral / Google AI / GitHub Models / Together (free-tier keys)
-//   4. Kilo Code free auto (NO KEY — kilo-auto/free via kilocode.ai, verified live)
-//   5. LLM7.io anonymous (NO KEY — mistral-Nemo verified live; key raises limits)
-//   6. Pollinations (NO KEY — openai / openai-fast, verified live)
-//   7. OVHcloud AI (NO KEY — EU anonymous tier, verified live)
-//   8. the bundled z-ai SDK
+//   4. Cloudflare Workers AI (free daily neurons)
+//   5. duckai bridge (DUCKAI_URL — local reverse-engineered DDG bridge, zero-auth)
+//   6. Kilo Code free auto (NO KEY — kilo-auto/free via kilocode.ai, verified live)
+//   7. LLM7.io anonymous (NO KEY — mistral-Nemo verified live; key raises limits)
+//   8. Pollinations (NO KEY — openai-fast, verified live)
+//   9. OVHcloud AI (NO KEY — EU anonymous tier, verified live)
+//  10. the bundled z-ai SDK
 // Each brain+model gets its own 5-minute cooldown after a hard error (no-credits 403,
 // 429, auth, dead model) so one dead brain never slows the reception down.
 // FRONT-DESK PRIORITY: while Amit works, a tiny ephemeral flag tells the foreman's
@@ -118,6 +122,20 @@ function parseModels(envVal: string | undefined, fallback: string[]): string[] {
 
 async function brainChain(): Promise<Brain[]> {
   const brains: Brain[] = [];
+  // ---- BRAIN #0: THE SOVEREIGN LOCAL GATEWAY --------------------------------------
+  // The office's own zero-auth OpenAI-compatible endpoint (:3011). Central
+  // cooldown management for the whole office; when the gateway process is
+  // down, the localhost call fails in ~1ms and the direct chain below carries
+  // the reception with zero behavior change. SOVEREIGN_GATEWAY_URL=off disables.
+  const gwUrl = process.env.SOVEREIGN_GATEWAY_URL || 'http://127.0.0.1:3011/v1';
+  if (gwUrl !== 'off') {
+    brains.push({
+      name: 'sovereign-gateway',
+      base: gwUrl,
+      key: process.env.SOVEREIGN_GATEWAY_KEY || 'sovereign-local',
+      models: parseModels(process.env.SOVEREIGN_GATEWAY_MODELS, ['auto']),
+    });
+  }
   if (process.env.XAI_API_KEY) {
     brains.push({
       name: 'xai',
@@ -251,6 +269,7 @@ async function askBrain(
     headers['http-referer'] = 'https://fleet-hq.local';
     headers['x-title'] = 'Fleet HQ';
   }
+  if (b.name === 'sovereign-gateway') headers['x-reception-priority'] = '1';
   const body: Record<string, unknown> = {
     model,
     messages: [
@@ -282,6 +301,7 @@ async function askBrain(
 /** Reasoning models sometimes leak their scratchpad into the content — cut it off. */
 function stripReasoning(text: string): string {
   const original = (text ?? '').trim();
+  const hadThink = /<think>/i.test(original);
   let t = original.replace(/<think>[\s\S]*?<\/think>/gi, '').trim();
   if (/here(?:'|’)?s (?:a |the )?thinking process|let me think(?: through)?|internal reasoning process/i.test(t)) {
     const blocks = t.split(/\n{2,}/);
@@ -289,14 +309,20 @@ function stripReasoning(text: string): string {
     for (let i = 1; i < blocks.length; i++) {
       const first = (blocks[i].split('\n')[0] ?? '').trim();
       const reasoningStyle = /^(\d+[\.)]|\*\*|-\s|\u2022)/.test(first) || /:$/.test(first);
-      if (!reasoningStyle && blocks[i].length > 40) {
+      if (!reasoningStyle && blocks[i].length > 25) {
         keep = i;
         break;
       }
     }
-    if (keep > 0) t = blocks.slice(keep).join('\n\n').trim();
+    if (keep > 0) {
+      t = blocks.slice(keep).join('\n\n').trim();
+    } else {
+      // reasoning-only content: the scratchpad ran to the end with no answer.
+      // Shipping a scratchpad to a visitor is WORSE than failing — the chain walks on.
+      return '';
+    }
   }
-  return t.trim() || original;
+  return t.trim() || (hadThink ? '' : original);
 }
 
 /**
@@ -470,6 +496,8 @@ export async function POST(req: NextRequest) {
             const isAuth = status === 401 || status === 402 || status === 403;
             if (isRate) brainCooldown.set(id, Date.now() + RATE_COOLDOWN_MS);
             else if (isDead || isAuth) brainCooldown.set(id, Date.now() + BRAIN_COOLDOWN_MS);
+            else if (status === 502 && b.name === 'sovereign-gateway') brainCooldown.set(id, Date.now() + 15_000); // gateway exhausted → walk direct for a bit
+            else if (!status) brainCooldown.set(id, Date.now() + 15_000); // network-level death (gateway down/dns) — cheap retry
           }
         }
       }
