@@ -53,3 +53,24 @@ A fresh machine restores its own keys in one step — `bash vault/auto-unseal.sh
 Secret-halves map: KEYS (encrypted) live in git (public + private repo);
 PASSPHRASE lives on the box (`upload/pat.env`, `upload/pat.rar`) and with the
 owner's GitHub account. Neither half alone opens anything.
+
+## ריבונות מורחבת (2026-10-08)
+
+### Cloudflare — מוח חינמי + אחסון מחוץ לקופסה
+- **Workers AI** (מאומת חי): מוח מס' 4 בשרשרת — `@cf/meta/llama-3.3-70b-instruct-fp8-fast`
+  + 3 מודלים נוספים, הקצאה חינמית יומית (~10k neurons). מופעל אוטומטית כש-
+  `CLOUDFLARE_API_TOKEN` + `CLOUDFLARE_ACCOUNT_ID` קיימים בכספת (אטומו ונפרסו).
+- **R2 (S3)**: הפרטים אטומים ומוכנים; החשבון דורש הפעלה אחת של R2 בדשבורד.
+  אז `bun vault/r2-backup.ts --mirror` מעלה עותק מוצפן של הכספת מחוץ לגיט.
+  (בארגז הנוכחי נקודת ה-S3 חסומה ברשת — הסקריפט נכשל ביושר; ירוץ ממכונה רגילה.)
+
+### דוקטרינת אריכות-ימים מעבר ל-$100
+המשרד לא תלוי במפתח אחד: שרשרת 2026-10-08 =
+`openrouter-1→2→3 (150 בקשות חינם/יום + קרדיט) → cloudflare-ai (חינם יומי) → kilo → llm7 → pollinations → ovh → z-ai`.
+גם אם כל הקרדיטים והמכסות ייגמרו — kilo/llm7/pollinations/ovh ממשיכים להחזיק את
+הקבלה והצוות. מפתח-הניהול של OpenRouter שמור ליצירת מפתחות-בת לפי הצורך.
+
+### duckai (github.com/amirkabiri/duckai) — נבדק בכנות
+שרת OpenAI-compatible מעל DuckDuckGo AI. עובד כמנגנון, אך duckduckgo.com
+חסום ברשת הארגז (ConnectionRefused — נבדק). חיבור לעתיד בלי שינוי קוד: להריץ
+duckai בכל מכונה שבה DDG פתוח ולהפנות את תא `OPENAI_BASE_URL` של המשרד אליו.

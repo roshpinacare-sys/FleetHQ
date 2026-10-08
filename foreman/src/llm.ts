@@ -121,6 +121,23 @@ function buildBrains(): Brain[] {
     ...keyedBrain('github-models', 'https://models.github.ai/inference', process.env.GITHUB_MODELS_TOKEN, parseModels(process.env.GITHUB_MODELS, ['openai/gpt-4.1-mini', 'meta/Llama-3.3-70B-Instruct'])),
     ...keyedBrain('together', 'https://api.together.xyz/v1', process.env.TOGETHER_API_KEY, parseModels(process.env.TOGETHER_MODELS, ['meta-llama/Llama-3.3-70B-Instruct-Turbo'])),
   );
+  // KEYED FREE brain — Cloudflare Workers AI (OpenAI-compatible endpoint).
+  // VERIFIED LIVE 2026-10-08: 4 models answer, 70B fp8-fast answers Hebrew.
+  // Free allocation (~10k neurons/day); on exhaustion the chain walks on —
+  // cooldowns keep the dead brain from slowing anything.
+  if (process.env.CLOUDFLARE_API_TOKEN && process.env.CLOUDFLARE_ACCOUNT_ID) {
+    brains.push({
+      name: 'cloudflare-ai',
+      base: `https://api.cloudflare.com/client/v4/accounts/${process.env.CLOUDFLARE_ACCOUNT_ID}/ai/v1`,
+      key: process.env.CLOUDFLARE_API_TOKEN,
+      models: parseModels(process.env.CLOUDFLARE_AI_MODELS, [
+        '@cf/meta/llama-3.3-70b-instruct-fp8-fast',
+        '@cf/meta/llama-4-scout-17b-16e-instruct',
+        '@cf/mistralai/mistral-small-3.1-24b-instruct',
+        '@cf/qwen/qwen2.5-coder-32b-instruct',
+      ]),
+    });
+  }
   // KEYLESS brain — Kilo Code free auto-router. VERIFIED LIVE (200) via
   // kilocode.ai/api/openrouter with model kilo-auto/free. The old api.kilo.ai
   // gateway endpoint is dead — do not "restore" it.

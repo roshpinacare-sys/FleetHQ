@@ -38,18 +38,20 @@ elif [ -f "$ROOT/upload/pat.env" ]; then
 fi
 [ -n "$PASS" ] || { echo "[vault] no passphrase source (set VAULT_PASSPHRASE or restore upload/pat.env)"; exit 1; }
 
-# ---- 2) try pulling the freshest sealed copy from the private vault repo ----
+# ---- 2) pull the sealed copy from the private vault repo ONLY if missing ----
+# DOCTRINE (fixed 2026-10-08): git clone always stamps fresh mtimes, so an
+# mtime (-nt) comparison silently CLOBBERS a newer local seal with an older
+# repo copy. A local keys.env.enc IS the authority (the box that sealed last);
+# the private repo pull exists for FRESH machines that have no local copy.
 # (agents never touch credentials: the PAT is used only by this infrastructure
 #  script as git auth AND as the vault passphrase — it is never logged)
-if [ -n "${VAULT_PRIVATE_REPO:-}" ] || true; then
+if [ ! -s "$ENC" ]; then
   REPO="${VAULT_PRIVATE_REPO:-roshpinacare-sys/fleet-vault}"
   TMPCLONE="$(mktemp -d)"
   if git clone --depth 1 -q "https://x-access-token:${PASS}@github.com/${REPO}.git" "$TMPCLONE" 2>/dev/null; then
     if [ -f "$TMPCLONE/keys.env.enc" ]; then
-      if [ "$TMPCLONE/keys.env.enc" -nt "$ENC" ]; then
-        cp "$TMPCLONE/keys.env.enc" "$ENC" && chmod 600 "$ENC"
-        echo "[vault] refreshed sealed vault from private repo $REPO"
-      fi
+      cp "$TMPCLONE/keys.env.enc" "$ENC" && chmod 600 "$ENC"
+      echo "[vault] pulled sealed vault from private repo $REPO (no local copy existed)"
     fi
   fi
   rm -rf "$TMPCLONE"
