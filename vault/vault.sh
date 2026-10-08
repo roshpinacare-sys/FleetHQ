@@ -31,6 +31,12 @@ case "$cmd" in
   seal)
     require_pass
     [ -f "$KEYS" ] || { echo "no $KEYS to seal — fill it first (see vault/README.md)"; exit 1; }
+    # SAFETY (2026-10-08): an empty-structure seal ERASES real keys on the next
+    # open (this exact accident happened in a parallel re-seal). Refuse honestly.
+    if ! grep -qE "^[A-Z_][A-Z0-9_]*=.+" "$KEYS"; then
+      echo "REFUSING to seal: keys.env has ZERO valued slots (empty seal would erase the real keys)"
+      exit 1
+    fi
     openssl enc -"$CIPHER" $KDF -in "$KEYS" -out "$ENC" -pass env:VAULT_PASSPHRASE
     chmod 600 "$ENC" "$KEYS"
     echo "sealed → $ENC  (safe to git commit; the plaintext stays gitignored)"
