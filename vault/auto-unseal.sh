@@ -70,7 +70,7 @@ if bash "$DIR/vault.sh" open >/dev/null 2>&1; then
   # (git auth ONLY — agents and the model never see it). Seed from the boot
   # credential when the vault carries none.
   FHQ_ENV="$ROOT/mini-services/agent-hq/.env"
-  BOOTCRED="${VAULT_CANDIDATES%%$'\n'*}"
+  BOOTCRED="${VAULT_CANDIDATES:-}"
   if [ -f "$FHQ_ENV" ] && [ -n "$BOOTCRED" ] && ! grep -qE "^GITHUB_PAT=.+" "$FHQ_ENV"; then
     if grep -qE "^GITHUB_PAT=" "$FHQ_ENV"; then
       sed -i "s|^GITHUB_PAT=.*|GITHUB_PAT=${BOOTCRED}|" "$FHQ_ENV"
