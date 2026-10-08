@@ -33,6 +33,16 @@ source "$HERE/vaultlib.sh"
 
 say() { printf '[sovereign-boot] %s\n' "$*"; }
 
+# ---- SELF-HEAL the transport kit BEFORE anything else ------------------------
+# The SSH shim is CODE, not a secret — it ships with the public boot kit
+# (FleetHQ vault/ssh/tool) and must never depend on the vault being open.
+if [ ! -f "$HERE/ssh/tool/git-ssh-shim.mjs" ]; then
+  ( cd "$(dirname "$HERE")" && git checkout HEAD -- vault/ssh/tool/ 2>/dev/null ) || true
+fi
+if [ -f "$HERE/ssh/tool/git-ssh-shim.mjs" ] && [ ! -d "$HERE/ssh/tool/node_modules" ]; then
+  ( cd "$HERE/ssh/tool" && bun add ssh2@^1.16.0 >/dev/null 2>&1 ) || true
+fi
+
 step_started=""
 begin() { step_started="$(date +%s)"; }
 

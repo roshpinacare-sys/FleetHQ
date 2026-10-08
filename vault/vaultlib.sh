@@ -92,15 +92,36 @@ vault_repo_pull() {
       if (cd "$dst" && git -c credential.helper= fetch -q "https://x-access-token:${c}@github.com/${VAULT_REPO}.git" '+refs/heads/*:refs/remotes/origin/*' 2>/dev/null); then ok="$c"; break; fi
     done
   else
-    local tmp; tmp="$(mktemp -d)"
+    # clone attempts: each into a FRESH dir (a failed clone leaves debris
+    # that would poison the next attempt). HTTPS candidates first, then the
+    # never-expiring SSH deploy key via the shim (no ssh binary needed).
+    local tmp ok_clone=""
+    try_clone() { # $1 = url
+      tmp="$(mktemp -d)"
+      if git clone -q --depth 1 "$1" "$tmp" 2>/dev/null; then ok_clone=1; else rm -rf "$tmp"; fi
+    }
+    local c
     for c in $VAULT_CANDIDATES; do
-      if git clone -q --depth 1 "https://x-access-token:${c}@github.com/${VAULT_REPO}.git" "$tmp" 2>/dev/null; then ok="$c"; break; fi
+      [ -n "$ok_clone" ] && break
+      [ -n "${VAULT_DEBUG:-}" ] && echo "[vault-debug] https attempt (${#c}-char credential)" >&2
+      try_clone "https://x-access-token:${c}@github.com/${VAULT_REPO}.git"
+      [ -n "$ok_clone" ] && ok="$c"
     done
-    if [ -z "$ok" ] && [ -f "$SSH_DIR/deploy_fleet-vault" ]; then
-      if GIT_SSH_COMMAND="bun $VAULT_ROOT/vault/ssh/tool/git-ssh-shim.mjs" SOVEREIGN_SSH_DIR="$SSH_DIR" \
-         git clone -q --depth 1 "git@github.com:${VAULT_REPO}.git" "$tmp" 2>/dev/null; then ok="ssh-deploy-key"; fi
+    if [ -z "$ok_clone" ] && [ -f "$SSH_DIR/deploy_fleet-vault" ]; then
+      # resilience law: GitHub SSH drops connections intermittently —
+      # never give up after one hiccup (3 attempts, growing pause)
+      local attempt
+      for attempt in 1 2 3; do
+        [ -n "${VAULT_DEBUG:-}" ] && echo "[vault-debug] ssh attempt $attempt via deploy key + shim" >&2
+        GIT_SSH_COMMAND="bun $VAULT_ROOT/vault/ssh/tool/git-ssh-shim.mjs" SOVEREIGN_SSH_DIR="$SSH_DIR" \
+          try_clone "git@github.com:${VAULT_REPO}.git"
+        [ -n "$ok_clone" ] && { ok="ssh-deploy-key"; break; }
+        sleep $(( attempt * 2 ))
+      done
     fi
-    if [ -n "$ok" ]; then rm -rf "$dst"; mv "$tmp" "$dst"; fi
+    if [ -n "$ok_clone" ]; then
+      rm -rf "$dst"; mv "$tmp" "$dst"
+    fi
   fi
   [ -n "$ok" ] || return 1
   VAULT_PULL_CRED="$ok"
