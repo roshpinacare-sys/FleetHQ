@@ -737,6 +737,24 @@ Stage Summary:
 - **הבהרת-אבחון חשובה**: UI בגישה-ישירה ל-:3000 יראה 0-תמיד (socket עובר רק דרך Caddy XTransformPort=3010) — מי שבודק ישירות-מקומי מקבל רושם-שווא של מוות. הנתיב-האמיתי (פרלוק/פאנל) חי.
 - דחיפה: c9cc426 (FleetHQ) — plant-books + 28-a/b logs. דפוס: `bun mini-services/agent-hq/tools/plant-books.ts` לרוץ באתחול (boot-sovereign כבר מריץ sync; הוספת קריאה עתידית).
 ---
+Task ID: 29
+Agent: Z.ai Code (main session)
+Task: "Swarm Retainment Protocol" (מועתק) + שתי הוראות-טקטיות: (1) רוטינת-השגחה על תיקיית Domain/agents שמזהה מחיקה ומשקמת, (2) מנוע-חטף-טלמטריה שמזרים family_priority ל-receipts/.
+
+Work Log (הכל נמדד):
+- **שומר-המדף (watchdog.ts)** — stdlib בלבד, אפס-תלות (chokidar נדחה: fs.watch מספיק): שני-מסילות — אירוע (fs.watch רקורסיבי, debounce 2.5s) + מחזורי (60s, חגורה-וגם-מכתבות נגד שעונים-שותקים של containers). חוק-הסלמה כנה: ספרים-חסרים → plant-books.ts (שיקום-מדידה בשניות); 3× כישלון → אירוע-CRITICAL בלבד; **boot-sovereign.sh לא נקרא בחיים-תיקנים** (הוא כלי-אתחול-קר — קריאה-באמצע-חיים היתה מכפילה-שירותים; תועד בקוד).
+- **מנוע-חטף-טלמטריה (telemetry-snapshot.ts)**: כל-30s → `receipts/gateway-telemetry-latest.json` (atomic tmp+rename) + היסטוריה-מדודה כל-10-דק׳ ב-jsonl (חסם 2000 שורות). הקוקפיט קורא חי מ-/api/v1/telemetry; הקובץ לפוסטמורטם ושרידות-אחרי-מיחזור.
+- **supervisor-wiring**: /api/foreman/health עכשיו מבטיח גם את שני הסנטינלים (pgrep+spawn-detached, debounce 30s) — ילדי-עץ-השרת, הדפוס-ששורד. נמדד: `sentinels:{watchdog:true,snapshot:true}`.
+- **Merkle-lineage מה-stdlib** (crypto.sha256): שורש-מרקל מעל 22 הספרים → `receipts/books-lineage.json` + היסטוריה-עם-שינוי-בלבד (חסם 300). **תיקון-כנה לטענת-המניפסט**: אין-GPG-כאן — ה-integrity הוא sha256-lineage, לא חתימות-GPG (אין-מפתחות-GPG; טענת-חתימה הייתה שקר).
+- **תיקוני-מניפסט-נוספים**: DuckDB-Wasm נדחה (תלות+זיכרון על ראש-2.5GB; הסטטיסטיקה-המתגלגלת כבר חיה-בתהליך-השער, ההיסטוריה ב-jsonl).
+- **הוכחת-השמדה-החיה**: מחקתי 6 ספרים ידנית → מסילת-האירוע זיהתה במילישניות → `wipe-detected {missing:6}` → `restore-started` → `restore-done {books:22, still_missing:[], lineage_root:17d8e0b3…}` — **סגור-לולאה מלא בלי-אדם**.
+- receipts/ בבית-הציבורי; gateway-telemetry-latest.json מנודה-מגיט (churn 30s; כל-השאר נוסע).
+
+Stage Summary:
+- וקטור-המוות שנמצא ב-28-b (מדף-ריק=חזות-מוות) עכשיו **סגור רגע-אחר-רגע**: מחיקה → אירוע → שיקום → קבלה-מבוססת-שורש-מרקל, בלי מפעיל.
+- שני מקורות-אמת נפרדים ושלמים: השער מודד ניתוב (receipts טלמטריה), השומר מודד שלמות-מדף (receipts lineage) — אין-כפילות-מקורות.
+- הפרוטוקול-המודבק קיבל פסק-דין: נדחו chokidar/DuckDB-Wasm/חתימות-GPG-שאינן/קריאת-boot-sovereign-בחיים — כל-אחת-עם-נימוק; נבנו שני-הסנטינלים-הסטדליב + קבלות-מרקל.
+---
 Task ID: 30
 Agent: Z.ai Code (main session — פיוזן-צבא ותוכן)
 Task: הנחיה — Swarm Fusion & Content Acceleration: מסילת-תוכן אוטומטית (קומפיילר אפס-תלות בתוך sovereign-stack/), מוניטור-משאבים לדשבורד (קריאת /health + התראות-בלתי-ניתנות-לשינוי ב-receipts/), ושתי שאלות-מפעיל (פריסת-תוכן בין-הריפוים; בנצ'מרק-TPS רציף).
