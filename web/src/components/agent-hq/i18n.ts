@@ -152,6 +152,22 @@ export const T = {
   },
   atlasHours: { he: 'שע׳ מאז פעימה', en: 'h since heartbeat' },
   atlasFrontier: { he: 'החזית הבאה', en: 'Next frontier' },
+  // ---- the city & the office economy (the autonomy layer of the atlas) ----
+  atlasCity: { he: 'העיר שצומחת מהעבודה', en: 'The city that grows from the work' },
+  atlasCityHint: {
+    he: 'כל מבנה נולד ממחוז אמיתי — חי: מואר ופועל · פתוח: דולק · אטום: סגרי בטון',
+    en: 'Every building is born from a real district — live: lit & working · open: lit · sealed: dark stub',
+  },
+  econTitle: { he: 'כלכלת המפקדה', en: 'HQ ECONOMY' },
+  econProd: { he: 'ייצור · משימות שהושלמו', en: 'production · ops done' },
+  econCirc: { he: 'מחזור · קומיטים אמיתיים', en: 'circulation · real commits' },
+  econKnow: { he: 'ידע · דוחות בספרייה', en: 'knowledge · library reports' },
+  econReserve: { he: 'רזרבות · ספרים טריים', en: 'reserves · fresh books' },
+  econArea: { he: 'שטח ריבוני פתוח', en: 'sovereign territory open' },
+  econNote: {
+    he: 'כל מדד נגזר ישירות מהפעילות האמיתית — אין המצאות',
+    en: 'every index is derived directly from real activity — nothing invented',
+  },
 } as const;
 
 export type TKey = keyof typeof T;

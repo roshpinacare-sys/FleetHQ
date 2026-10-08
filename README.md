@@ -68,12 +68,29 @@ Open **http://localhost:3000** — you'll see the office with the simulated crew
 
    Book expectations are light: any JSON file with an optional date-ish field (`at`, `asOf`, `generatedAt`, …) gets a heartbeat; optional `ok` / `verdict` top-level fields are surfaced. See `foreman/src/books.ts` for the built-in registry (edit `BOOK_DEFS` to match your domain).
 
-2. **LLM.** The foreman auto-detects, in order:
-   - `z-ai-web-dev-sdk` if it is installed next to the foreman,
-   - any OpenAI-compatible endpoint via `OPENAI_API_KEY` (+ optional `OPENAI_BASE_URL`, `OPENAI_MODEL`).
-   - Nothing found → the office stays in the labeled demo mode. It never fakes "live".
+2. **LLM — the sovereign brain chain.** Both the foreman and the receptionist walk the SAME failover chain, first live brain wins. Per brain+model cooldown (5 min) after a hard error, so one dead provider never slows the others. Keyless brains need NO signup:
 
-3. **Run.** Restart the foreman — the header badge flips to **Live crew · real model agents**. The autonomous operator schedules the patrol; the crew works the books and you watch it happen in real time.
+   1. **xAI Grok** — `XAI_API_KEY` (+ optional `XAI_MODEL`, `XAI_BASE_URL`)
+   2. **OpenRouter** — `OPENROUTER_API_KEY`, one key → a whole pool: 5 verified free models first (`nemotron-3.5-lightning`, `ling-3.0-flash`, `north-mini-code`, `nemotron-3-super`, `nemotron-3-ultra`), `deepseek-chat-v3.1` as the credited reserve. Configure via `OPENROUTER_MODELS` (comma-separated). Reasoning tokens are excluded and any leaked scratchpad is stripped.
+   3. **Kilo Code free auto-router** — NO KEY (`kilo-auto/free`)
+   4. **LLM7.io** — only mounted with a free `LLM7_API_KEY` (the anonymous tier is closed)
+   5. **Pollinations** — NO KEY (`openai-fast` / gpt-oss-20b)
+   6. **Any OpenAI-compatible endpoint** — `OPENAI_API_KEY` (+ `OPENAI_BASE_URL`, `OPENAI_MODEL`)
+   7. **`z-ai-web-dev-sdk`** if it is installed next to the foreman
+   8. Nothing found → the office stays in the labeled demo mode. It never fakes "live".
+
+3. **The vault.** Keys live in gitignored env files — the template is committed:
+
+```sh
+cp .env.example .env.local               # web/reception vault
+cp .env.example foreman/.env             # foreman vault
+# fill in what you have — even zero keys run the keyless brains
+chmod 600 .env.local foreman/.env        # never commit real keys
+```
+
+   `.env.example` documents every brain and the verified free-model list. The live status bar in the UI shows the chain as it is mounted (e.g. `xai→openrouter→kilo→pollinations`).
+
+4. **Run.** Restart the foreman — the header badge flips to **Live crew · real model agents**. The autonomous operator schedules the patrol; the crew works the books and you watch it happen in real time.
 
 ```sh
 # example

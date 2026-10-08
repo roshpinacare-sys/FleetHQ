@@ -45,6 +45,9 @@ interface NetworkProps {
   lang: Lang;
   books: BookView[];
   opsDone: number;
+  commits: number;
+  reports: number;
+  busy: number;
   onOpenTab: (tab: 'fleet') => void;
 }
 
@@ -56,7 +59,7 @@ function districtState(b: BookView): DistrictState {
   return 'sealed';
 }
 
-export function NetworkAtlas({ lang, books, opsDone, onOpenTab }: NetworkProps) {
+export function NetworkAtlas({ lang, books, opsDone, commits, reports, busy, onOpenTab }: NetworkProps) {
   const mono = "'JetBrains Mono', ui-monospace, monospace";
 
   const districts = useMemo<District[]>(() => {
@@ -89,9 +92,24 @@ export function NetworkAtlas({ lang, books, opsDone, onOpenTab }: NetworkProps) 
 
   const territoryAngle = counts.ratio * 360;
 
+  // honest economy indices — every value is a real counter, nothing invented
+  const economy = useMemo(() => {
+    const fresh = books.filter((b) => b.ageHours !== undefined && b.ageHours <= 6 && b.ok !== false).length;
+    const rows: Array<{ label: string; value: string; pct: number }> = [
+      { label: t('econProd', lang), value: `${opsDone}`, pct: Math.min(1, opsDone / Math.max(24, opsDone)) },
+      { label: t('econCirc', lang), value: `${commits}`, pct: Math.min(1, commits / Math.max(60, commits)) },
+      { label: t('econKnow', lang), value: `${reports}`, pct: Math.min(1, reports / Math.max(30, reports)) },
+      { label: t('econReserve', lang), value: `${fresh}/${books.length}`, pct: books.length ? fresh / books.length : 0 },
+      { label: t('econArea', lang), value: `${Math.round(counts.ratio * 100)}%`, pct: counts.ratio },
+    ];
+    return rows;
+  }, [books, opsDone, commits, reports, counts.ratio, lang]);
+
   return (
     <div className="relative h-full w-full" dir={lang === 'he' ? 'rtl' : 'ltr'}>
-      <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMid slice" className="h-full w-full select-none" role="img" aria-label={t('atlasTitle', lang)}>
+      {/* direction:ltr at the SVG root — see Office.tsx: the RTL page must not flip
+          SVG text anchors or labels spill out of their cards. Hebrew is bidi-safe. */}
+      <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMid meet" style={{ direction: 'ltr' }} className="h-full w-full select-none" role="img" aria-label={t('atlasTitle', lang)}>
         <defs>
           <radialGradient id="at-space" cx="50%" cy="44%" r="72%">
             <stop offset="0%" stopColor="#241a10" />
@@ -173,6 +191,54 @@ export function NetworkAtlas({ lang, books, opsDone, onOpenTab }: NetworkProps) 
             {Math.round(counts.ratio * 100)}% {t('atlasTerritory', lang)}
           </text>
         </g>
+
+        {/* ── THE CITY — a building is born from every real district ── */}
+        <g>
+          <title>{`${t('atlasCity', lang)} — ${t('atlasCityHint', lang)}`}</title>
+          {districts.slice(0, 12).map((d, i) => {
+            const angle = (-90 + (i % 6) * 60 + d.orbit * 31) * (Math.PI / 180);
+            const r = 104;
+            const bx = CX + r * Math.cos(angle);
+            const by = CY + r * Math.sin(angle) * 0.86;
+            const live = d.state === 'live';
+            const open = d.state === 'open';
+            const h = live ? 30 + (i % 3) * 3 : open ? 21 + (i % 3) * 2 : 8;
+            const w = 13 + (i % 2) * 2;
+            const lit = live || open;
+            return (
+              <g key={`city-${d.id}`} transform={`translate(${bx},${by})`} pointerEvents="none">
+                {/* body */}
+                <rect x={-w / 2} y={-h} width={w} height={h} rx="1.2" fill={lit ? '#221809' : '#150e08'} stroke={lit ? '#5a4526' : '#332616'} strokeWidth="0.7" />
+                {live && <rect x={-w / 2} y={-h} width={w} height="1.6" fill={GOLD} opacity="0.85" />}
+                {/* lit windows — deterministic pattern, real state drives the light */}
+                {lit &&
+                  [0, 1, 2].slice(0, Math.max(2, Math.floor(h / 11))).map((row) => (
+                    <g key={row}>
+                      {((i + row) % 2 === 0 || live) && (
+                        <rect
+                          x={-w / 2 + 3}
+                          y={-h + 4 + row * 7}
+                          width={w - 6}
+                          height="2.6"
+                          rx="0.6"
+                          fill={live ? GOLD_L : GOLD_D}
+                          opacity={live ? 0.95 : 0.55}
+                          className={live && row === 0 ? 'hq-pulse' : undefined}
+                        />
+                      )}
+                    </g>
+                  ))}
+                {/* live antenna — the district is breathing right now */}
+                {live && <line x1="0" y1={-h} x2="0" y2={-h - 6} stroke={GOLD} strokeWidth="1" opacity="0.8" />}
+                {live && <circle cx="0" cy={-h - 7.4} r="1.3" fill={LIFE} className="hq-pulse" />}
+              </g>
+            );
+          })}
+        </g>
+        {/* city caption under the core (territory caption stays at +88) */}
+        <text x={CX} y={CY + 112} textAnchor="middle" fontSize="9.6" fill={DIM}>
+          {t('atlasCity', lang)}{busy > 0 ? ` · ${busy} ${lang === 'he' ? 'עובדים כרגע' : 'at work now'}` : ''}
+        </text>
 
         {/* ── wires + districts ── */}
         {districts.map((d) => {
@@ -263,6 +329,43 @@ export function NetworkAtlas({ lang, books, opsDone, onOpenTab }: NetworkProps) 
             {t('atlasEmpty', lang)}
           </text>
         )}
+
+        {/* ── THE OFFICE ECONOMY — honest indices, reference-clean card ── */}
+        <g>
+          <rect x="812" y="22" width="344" height="196" rx="8" fill="#17100add" stroke="rgba(224,180,95,0.35)" strokeWidth="1.2" />
+          <rect x="812" y="22" width="344" height="2.6" rx="1.3" fill="url(#at-wire)" />
+          <text x="1140" y="48" fontSize="12.5" fontWeight="800" letterSpacing="1.2" fill={GOLD_L} textAnchor="end">
+            {t('econTitle', lang)}
+          </text>
+          {economy.map((row, i) => {
+            const y = 74 + i * 26;
+            return (
+              <g key={row.label}>
+                <text x="1140" y={y} fontSize="10.4" fill={CHALK} textAnchor="end">
+                  {row.label}
+                </text>
+                <text x="828" y={y} fontSize="11.5" fontWeight="800" fill={GOLD_L} textAnchor="start" fontFamily={mono} direction="ltr">
+                  {row.value}
+                </text>
+                {/* meter rail + fill */}
+                <rect x="828" y={y + 6.5} width="280" height="3.2" rx="1.6" fill="#3a2c1a" />
+                <rect
+                  x="828"
+                  y={y + 6.5}
+                  width={Math.max(4, 280 * row.pct)}
+                  height="3.2"
+                  rx="1.6"
+                  fill={GOLD}
+                  opacity="0.9"
+                  style={{ transition: 'width 900ms cubic-bezier(0.2,0.8,0.3,1)' }}
+                />
+              </g>
+            );
+          })}
+          <text x="984" y="209" fontSize="8.8" fill={DIM} textAnchor="middle">
+            {t('econNote', lang)}
+          </text>
+        </g>
 
         {/* ── header plaque ── */}
         <g>

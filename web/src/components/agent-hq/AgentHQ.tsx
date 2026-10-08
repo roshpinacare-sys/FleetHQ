@@ -194,7 +194,9 @@ export default function AgentHQ() {
   const [bubbles, setBubbles] = useState<Record<string, { text: string; ts: number }>>({});
   const [tab, setTab] = useState<Tab>('monitor');
   const [view, setView] = useState<View>('office');
-  const [selected, setSelected] = useState<string | null>(null);
+  // Default to the chief of staff so the monitor panel is NEVER a dead
+  // "pick an agent" empty state — the room always has something to show.
+  const [selected, setSelected] = useState<string | null>('aluf');
   const [connected, setConnected] = useState(false);
   const [chatOpen, setChatOpen] = useState(false);
   const [clock, setClock] = useState('');
@@ -446,7 +448,7 @@ export default function AgentHQ() {
                   {view === 'network' ? t('atlasViewHint', lang) : ''}
                 </span>
               </div>
-              <div className="aspect-[4/3] w-full sm:aspect-[1180/640]">
+              <div className="aspect-[1180/640] w-full">
                 {view === 'office' ? (
                   <Office
                     lang={lang}
@@ -472,6 +474,9 @@ export default function AgentHQ() {
                     lang={lang}
                     books={snap.books}
                     opsDone={snap.status.opsDone}
+                    commits={snap.git?.available ? snap.git.commits.length : 0}
+                    reports={snap.reports.length}
+                    busy={Object.values(agents).filter((a) => a.state !== 'idle').length}
                     onOpenTab={() => openTab('fleet')}
                   />
                 )}

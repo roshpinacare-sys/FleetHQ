@@ -38,16 +38,18 @@ const PANEL = '#1a130c';
 const PANEL_EDGE = 'rgba(224, 180, 95, 0.32)';
 const TITLE_BAR = '#22180e';
 
+// Desk island on a strict grid: row A = 3 desks (x 420/590/760), row B = 2 desks
+// (x 505/675), all spaced exactly 170 apart so nothing floats or collides.
 const DESKS: Record<string, { x: number; y: number }> = {
-  gal: { x: 360, y: 330 },
-  erez: { x: 590, y: 330 },
-  tamar: { x: 820, y: 330 },
-  shachar: { x: 470, y: 512 },
-  yarden: { x: 710, y: 512 },
+  gal: { x: 420, y: 316 },
+  erez: { x: 590, y: 316 },
+  tamar: { x: 760, y: 316 },
+  shachar: { x: 505, y: 470 },
+  yarden: { x: 675, y: 470 },
 };
 
 const STATIONS: Record<Exclude<Station, 'desk'>, { x: number; y: number }> = {
-  wall: { x: 490, y: 196 },
+  wall: { x: 560, y: 196 },
   podium: { x: 1000, y: 300 },
   library: { x: 130, y: 352 },
   offstage: { x: 590, y: 640 },
@@ -136,7 +138,7 @@ type AgentStateLike = AgentView['state'];
 
 /** Quadratic bezier path task-wall → desk top (inbound work packet). */
 function wallToDeskPath(d: { x: number; y: number }): string {
-  const sx = 528;
+  const sx = 560;
   const sy = 184;
   const ex = d.x;
   const ey = d.y - 78;
@@ -160,7 +162,7 @@ function deskToLibraryPath(d: { x: number; y: number }): string {
 function deskToWallPath(d: { x: number; y: number }): string {
   const sx = d.x;
   const sy = d.y - 78;
-  const ex = 528;
+  const ex = 560;
   const ey = 184;
   const cx = (sx + ex) / 2;
   const cy = Math.min(sy, ey) - 46;
@@ -212,7 +214,9 @@ function OfficeInner(props: OfficeProps) {
     return cols;
   }, [tasks]);
 
-  const staleBooks = books.filter((b) => (b.ageHours ?? 0) > 72 || b.ok === false).length;
+  const freshCount = books.filter((b) => b.ageHours !== undefined && b.ageHours <= 6 && b.ok !== false).length;
+  const warnCount = books.filter((b) => !(b.ageHours !== undefined && b.ageHours <= 6 && b.ok !== false) && (b.ageHours ?? 0) <= 72 && b.ok !== false).length;
+  const staleCount = Math.max(0, books.length - freshCount - warnCount);
   const crewById = useMemo(() => new Map(crew.map((c) => [c.id, c])), [crew]);
   const commits = git?.available ? git.commits.slice(0, 6) : [];
   const commitCount = git?.available ? git.commits.length : 0;
@@ -229,7 +233,10 @@ function OfficeInner(props: OfficeProps) {
   const mono = "'JetBrains Mono', ui-monospace, monospace";
 
   return (
-    <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMid slice" className="h-full w-full select-none" role="img" aria-label="Fleet HQ office floor">
+    <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMid meet" style={{ direction: 'ltr' }} className="h-full w-full select-none" role="img" aria-label="Fleet HQ office floor">
+      {/* direction:ltr at the SVG root — the RTL page must NOT flip SVG text anchors,
+          or every title flows out of its board (the "crooked room" bug). Hebrew
+          still renders perfectly: Unicode bidi shapes it inside each text run. */}
       <defs>
         {/* warm wood floor */}
         <linearGradient id="oq-floor" x1="0" y1="0" x2="0" y2="1">
@@ -275,8 +282,8 @@ function OfficeInner(props: OfficeProps) {
           <stop offset="100%" stopColor="#000000" stopOpacity="0.52" />
         </radialGradient>
         <linearGradient id="oq-panel" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#231910" />
-          <stop offset="100%" stopColor="#191208" />
+          <stop offset="0%" stopColor="#2c2114" />
+          <stop offset="100%" stopColor="#1d150c" />
         </linearGradient>
         <linearGradient id="oq-screen" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stopColor="#120d08" />
@@ -332,11 +339,11 @@ function OfficeInner(props: OfficeProps) {
           <line key={`fv${i}`} x1={i * 49.2 - 40} y1="196" x2={(i - 11.8) * 118 + 590} y2={H} />
         ))}
       </g>
-      {/* the big warm rug — anchors the work area */}
+      {/* the big warm rug — centered exactly under the desk island */}
       <g pointerEvents="none">
-        <rect x="330" y="392" width="520" height="180" rx="16" fill="url(#oq-rug)" />
-        <rect x="338" y="400" width="504" height="164" rx="12" fill="none" stroke={GOLD} strokeOpacity="0.14" strokeWidth="1.6" />
-        <rect x="346" y="408" width="488" height="148" rx="9" fill="none" stroke={GOLD} strokeOpacity="0.08" strokeWidth="1" />
+        <rect x="340" y="248" width="500" height="308" rx="16" fill="url(#oq-rug)" />
+        <rect x="348" y="256" width="484" height="292" rx="12" fill="none" stroke={GOLD} strokeOpacity="0.14" strokeWidth="1.6" />
+        <rect x="356" y="264" width="468" height="276" rx="9" fill="none" stroke={GOLD} strokeOpacity="0.08" strokeWidth="1" />
       </g>
       {/* back wall */}
       <rect x="0" y="0" width={W} height="196" fill="url(#oq-wall)" />
@@ -349,14 +356,15 @@ function OfficeInner(props: OfficeProps) {
 
       {/* ceiling rails + brass pendant lamps with warm light shafts */}
       <line x1="0" y1="8" x2={W} y2="8" stroke="#3a2c1a" strokeWidth="2" opacity="0.7" />
-      {[350, 590, 830].map((x) => (
+      {/* lamps sit EXACTLY over the three row-A desks — light lands on work, not void */}
+      {[420, 590, 760].map((x) => (
         <g key={`lamp-${x}`}>
           <line x1={x} y1="8" x2={x} y2="26" stroke="#4a3a22" strokeWidth="2.5" />
           {/* the shade — brass cone */}
           <path d={`M ${x - 22} 26 L ${x + 22} 26 L ${x + 26} 36 L ${x - 26} 36 Z`} fill="url(#oq-brass)" stroke="#6b5228" strokeWidth="0.8" />
           <ellipse cx={x} cy="37" rx="24" ry="6" fill="#ffe9c4" opacity="0.9" />
-          {/* light shaft — widening cone to the floor */}
-          <path d={`M ${x - 24} 38 L ${x + 24} 38 L ${x + 150} ${H} L ${x - 150} ${H} Z`} fill="url(#oq-shaft)" pointerEvents="none" />
+          {/* light shaft — narrow cone ending on the desks, not the void */}
+          <path d={`M ${x - 24} 38 L ${x + 24} 38 L ${x + 92} 545 L ${x - 92} 545 Z`} fill="url(#oq-shaft)" pointerEvents="none" />
         </g>
       ))}
 
@@ -406,13 +414,14 @@ function OfficeInner(props: OfficeProps) {
       <g onClick={() => onOpenTab('git')} className="cursor-pointer">
         {freshest && now !== null && now - freshest.ts < 26000 && <circle cx="974" cy="109" r="86" fill={GOLD} opacity="0.05" className="hq-pulse" />}
         <rect x="806" y="38" width="336" height="142" rx="6" fill="url(#oq-panel)" stroke={PANEL_EDGE} strokeWidth="1.2" />
+        <rect x="806" y="38" width="336" height="2.6" rx="1.3" fill="url(#oq-goldbar)" opacity="0.9" />
         <rect x="806" y="38" width="336" height="26" rx="6" fill={TITLE_BAR} stroke="rgba(224,180,95,0.18)" strokeWidth="0.8" />
         <rect x="806" y="62" width="336" height="1" fill={GOLD} opacity="0.3" />
         <circle cx="821" cy="51" r="3.2" fill={GOLD} className="hq-pulse" filter="url(#oq-glow-g)" />
-        <text x="832" y="55.5" fontSize="12.5" fontWeight="800" letterSpacing="1.4" fill={GOLD_L}>
+        <text x="832" y="55.5" fontSize="14" fontWeight="800" letterSpacing="1.4" fill={GOLD_L}>
           {t('gitWireLabel', lang)}
         </text>
-        <text x="1130" y="55" fontSize="11.5" fontWeight="700" fill={GOLD} textAnchor="end" fontFamily={mono}>
+        <text x="1130" y="55.5" fontSize="12.5" fontWeight="700" fill={GOLD} textAnchor="end" fontFamily={mono}>
           {commitCount} ◂ {t('commits', lang)}
         </text>
         {/* the wire itself: commits travel along it */}
@@ -425,16 +434,16 @@ function OfficeInner(props: OfficeProps) {
         {commits.map((c, i) => {
           const fresh = i === 0 && now !== null && now - c.ts < 26000;
           return (
-            <g key={c.hash} transform={`translate(816,${72 + i * 17})`}>
-              {fresh && <rect x="-4" y="-9" width="322" height="15" rx="3" fill={GOLD} opacity="0.1" />}
-              <rect x="0" y="-8" width="40" height="12" rx="2" fill={fresh ? '#2a2010' : '#1c150c'} stroke={fresh ? GOLD : '#5a4526'} strokeWidth="0.7" />
-              <text x="20" y="1.4" fontSize="9" fill={fresh ? GOLD_L : '#c9a96a'} textAnchor="middle" fontFamily={mono} direction="ltr">
+            <g key={c.hash} transform={`translate(816,${73 + i * 18})`}>
+              {fresh && <rect x="-4" y="-10" width="322" height="16" rx="3" fill={GOLD} opacity="0.1" />}
+              <rect x="0" y="-8" width="42" height="13" rx="2" fill={fresh ? '#2a2010' : '#1c150c'} stroke={fresh ? GOLD : '#5a4526'} strokeWidth="0.7" />
+              <text x="21" y="1.6" fontSize="9.6" fill={fresh ? GOLD_L : '#c9a96a'} textAnchor="middle" fontFamily={mono} direction="ltr">
                 {c.hash}
               </text>
-              <text x="48" y="1.6" fontSize="9.8" fill={fresh ? CHALK : '#b3aa9b'}>
-                {truncate(c.subject, 44)}
+              <text x="50" y="1.8" fontSize="10.6" fill={fresh ? CHALK : '#b3aa9b'}>
+                {truncate(c.subject, 42)}
               </text>
-              <text x="314" y="1.6" fontSize="9" fill="#8a7a58" textAnchor="end" direction="ltr" fontFamily={mono}>
+              <text x="314" y="1.8" fontSize="9.6" fill="#8a7a58" textAnchor="end" direction="ltr" fontFamily={mono}>
                 {ageLabel(c.ts, lang, now ?? c.ts)}
               </text>
             </g>
@@ -450,12 +459,13 @@ function OfficeInner(props: OfficeProps) {
       {/* ================= TASK WALL (north-center) ================= */}
       <g onClick={() => onOpenTab('wall')} className="cursor-pointer">
         <rect x="268" y="38" width="520" height="142" rx="6" fill="url(#oq-panel)" stroke={PANEL_EDGE} strokeWidth="1.2" />
+        <rect x="268" y="38" width="520" height="2.6" rx="1.3" fill="url(#oq-goldbar)" opacity="0.9" />
         <rect x="268" y="38" width="520" height="26" rx="6" fill={TITLE_BAR} stroke="rgba(224,180,95,0.18)" strokeWidth="0.8" />
         <rect x="268" y="62" width="520" height="1" fill={GOLD} opacity="0.3" />
-        <text x="284" y="55.5" fontSize="12.5" fontWeight="800" letterSpacing="1.4" fill={GOLD_L}>
+        <text x="284" y="56" fontSize="14" fontWeight="800" letterSpacing="1.4" fill={GOLD_L}>
           {t('taskWallLabel', lang)}
         </text>
-        <text x="772" y="55" fontSize="11.5" fill="#a89a82" textAnchor="end" fontFamily={mono}>
+        <text x="772" y="56" fontSize="12.5" fill="#a89a82" textAnchor="end" fontFamily={mono}>
           {tasks.length} {lang === 'he' ? 'משימות' : 'tasks'}
         </text>
         {(['todo', 'doing', 'review', 'done'] as const).map((status, ci) => {
@@ -466,24 +476,39 @@ function OfficeInner(props: OfficeProps) {
           return (
             <g key={status}>
               <rect x={colX} y="72" width="114" height="96" rx="4" fill="#17100a" stroke={active ? 'rgba(224,180,95,0.5)' : 'rgba(255,255,255,0.07)'} strokeWidth="0.9" />
-              <text x={colX + 7} y="85" fontSize="10" fill={active ? GOLD_L : '#a89a82'} fontWeight="700">
+              <text x={colX + 7} y="87" fontSize="11.5" fill={active ? GOLD_L : '#a89a82'} fontWeight="700">
                 {label} · {list.length}
               </text>
               {list.slice(0, 4).map((task, i) => {
                 const owner = task.assignee ? crewById.get(task.assignee) : undefined;
                 return (
-                  <g key={task.id} transform={`translate(${colX + 5},${89 + i * 19})`}>
-                    <rect width="104" height="16" rx="3" fill="#20170e" stroke="rgba(255,255,255,0.06)" strokeWidth="0.5" />
-                    <rect width="3.5" height="16" rx="1.5" fill={owner ? ACCENT[owner.id] ?? owner.color : '#8a7a58'} />
-                    {task.status === 'doing' && <circle cx="95" cy="8" r="2.4" fill={GOLD} className="hq-pulse" filter="url(#oq-glow-g)" />}
-                    <text x="9" y="11" fontSize="9.2" fill="#ded7c9">
-                      {truncate(task.title, 18)}
+                  <g key={task.id} transform={`translate(${colX + 5},${93 + i * 20})`}>
+                    <rect width="104" height="17" rx="3" fill="#20170e" stroke="rgba(255,255,255,0.06)" strokeWidth="0.5" />
+                    <rect width="3.5" height="17" rx="1.5" fill={owner ? ACCENT[owner.id] ?? owner.color : '#8a7a58'} />
+                    {task.status === 'doing' && <circle cx="95" cy="8.5" r="2.4" fill={GOLD} className="hq-pulse" filter="url(#oq-glow-g)" />}
+                    <text x="9" y="12" fontSize="10.2" fill="#ded7c9">
+                      {truncate(task.title, 17)}
                     </text>
                   </g>
                 );
               })}
+              {/* designed empty state: the wall is honest about waiting */}
+              {list.length === 0 &&
+                (status === 'todo' ? (
+                  [0, 1].map((gi) => (
+                    <g key={`ghost-${gi}`} transform={`translate(${colX + 5},${93 + gi * 20})`} opacity="0.55">
+                      <rect width="104" height="17" rx="3" fill="none" stroke="#5a4526" strokeWidth="0.8" strokeDasharray="4 4" />
+                      <line x1="8" y1="8.5" x2="64" y2="8.5" stroke="#5a4526" strokeWidth="2.4" strokeDasharray="3 4" opacity="0.7" />
+                      <line x1="8" y1="13" x2="44" y2="13" stroke="#4a3a22" strokeWidth="1.6" strokeDasharray="2 4" opacity="0.5" />
+                    </g>
+                  ))
+                ) : (
+                  <text x={colX + 57} y="124" fontSize="11" fill="#5a4d3c" textAnchor="middle">
+                    —
+                  </text>
+                ))}
               {list.length > 4 && (
-                <text x={colX + 7} y="166" fontSize="9.5" fill="#8a7a58" fontFamily={mono}>
+                <text x={colX + 7} y="166" fontSize="10.5" fill="#8a7a58" fontFamily={mono}>
                   +{list.length - 4}
                 </text>
               )}
@@ -545,7 +570,8 @@ function OfficeInner(props: OfficeProps) {
       {/* ================= LIBRARY (west, glass-front) ================= */}
       <g onClick={() => onOpenTab('library')} className="cursor-pointer">
         <rect x="40" y="216" width="172" height="176" rx="6" fill="url(#oq-panel)" stroke={PANEL_EDGE} strokeWidth="1.2" />
-        <rect x="40" y="216" width="172" height="24" rx="6" fill={TITLE_BAR} stroke="rgba(224,180,95,0.18)" strokeWidth="0.8" />
+        <rect x="40" y="216" width="172" height="2.6" rx="1.3" fill="url(#oq-goldbar)" opacity="0.9" />
+        <rect x="40" y="216" width="172" height="26" rx="6" fill={TITLE_BAR} stroke="rgba(224,180,95,0.18)" strokeWidth="0.8" />
         <text x="54" y="232.5" fontSize="12.5" fontWeight="800" letterSpacing="1.4" fill={GOLD_L}>
           {t('libraryLabel', lang)}
         </text>
@@ -569,8 +595,13 @@ function OfficeInner(props: OfficeProps) {
           </g>
         ))}
         {newestReport && (
-          <text x="54" y="386" fontSize="9.4" fill="#a89a82">
-            {truncate(newestReport, 28)}
+          <text x="54" y="386" fontSize="10.2" fill="#a89a82">
+            {truncate(newestReport, 26)}
+          </text>
+        )}
+        {reportsCount === 0 && (
+          <text x="126" y="386" fontSize="10.2" fill={GOLD_D} textAnchor="middle" fontWeight="600">
+            {lang === 'he' ? 'הדוח הראשון בכתיבה…' : 'first report in the works…'}
           </text>
         )}
       </g>
@@ -579,45 +610,71 @@ function OfficeInner(props: OfficeProps) {
       <g onClick={() => onOpenTab('podium')} className="cursor-pointer">
         {/* stage platform */}
         <rect x="952" y="238" width="200" height="118" rx="6" fill="url(#oq-panel)" stroke={openDecisions > 0 ? 'rgba(251,191,36,0.6)' : PANEL_EDGE} strokeWidth={openDecisions > 0 ? 1.5 : 1.2} />
+        <rect x="952" y="238" width="200" height="2.6" rx="1.3" fill="url(#oq-goldbar)" opacity="0.9" />
         <rect x="952" y="238" width="200" height="24" rx="6" fill={TITLE_BAR} stroke="rgba(224,180,95,0.18)" strokeWidth="0.8" />
         <text x="968" y="254.5" fontSize="12.5" fontWeight="800" letterSpacing="1.4" fill={GOLD_L}>
           {t('podiumLabel', lang)}
         </text>
-        {/* big decision screen */}
+        {/* big decision screen — the empty state is honest AND alive, never a dead dash */}
         <rect x="972" y="270" width="160" height="58" rx="3" fill="url(#oq-screen)" stroke="#3a2c1a" strokeWidth="0.9" />
         {openDecisions > 0 && <rect x="972" y="270" width="160" height="58" rx="3" fill={AMBER} opacity="0.08" className="hq-pulse" />}
-        <text x="1052" y="296" fontSize="22" fontWeight="800" fill={openDecisions > 0 ? GOLD_L : '#4a4234'} textAnchor="middle" fontFamily={mono} filter={openDecisions > 0 ? 'url(#oq-glow-g)' : undefined}>
-          {openDecisions > 0 ? `⏳${openDecisions}` : '—'}
-        </text>
-        <text x="1052" y="316" fontSize="9.6" fill={openDecisions > 0 ? GOLD_L : '#6b6154'} textAnchor="middle" fontWeight="600">
-          {openDecisions > 0 ? t('needsYou', lang) : t('noDecisions', lang)}
-        </text>
+        {openDecisions > 0 ? (
+          <>
+            <text x="1052" y="296" fontSize="22" fontWeight="800" fill={GOLD_L} textAnchor="middle" fontFamily={mono} filter="url(#oq-glow-g)">
+              ⏳{openDecisions}
+            </text>
+            <text x="1052" y="316" fontSize="9.6" fill={GOLD_L} textAnchor="middle" fontWeight="600">
+              {t('needsYou', lang)}
+            </text>
+          </>
+        ) : (
+          <>
+            <circle cx="1052" cy="291" r="6.5" fill="none" stroke={LIFE} strokeWidth="1.6" opacity="0.85" />
+            <path d="M 1048.7 291 L 1051 293.4 L 1055.5 288.6" stroke={LIFE} strokeWidth="1.6" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+            <text x="1052" y="312" fontSize="10" fill={CHALK} textAnchor="middle" fontWeight="700">
+              {t('noDecisions', lang)}
+            </text>
+            <text x="1052" y="323" fontSize="8.8" fill="#8a7a58" textAnchor="middle">
+              {lang === 'he' ? 'המפעיל האוטונומי בשליטה' : 'the autonomous operator holds it'}
+            </text>
+          </>
+        )}
         {/* brass lectern */}
         <path d="M 1014 356 L 1090 356 L 1082 384 L 1022 384 Z" fill="#2b2115" stroke="#4a3a22" strokeWidth="1" />
         <rect x="1010" y="350" width="84" height="9" rx="2" fill="url(#oq-brass)" stroke="#6b5228" strokeWidth="0.6" />
         <circle cx="1052" cy="354.5" r="2.4" fill={openDecisions > 0 ? GOLD : '#5a4526'} className={openDecisions > 0 ? 'hq-pulse' : ''} filter={openDecisions > 0 ? 'url(#oq-glow-g)' : undefined} />
       </g>
 
-      {/* ================= REGISTRY BOARD (south) ================= */}
+      {/* ================= REGISTRY KIOSK (south-center — grounded, standing on the floor) ================= */}
       <g onClick={() => onOpenTab('fleet')} className="cursor-pointer">
-        <rect x="404" y="574" width="372" height="50" rx="6" fill="url(#oq-panel)" stroke={PANEL_EDGE} strokeWidth="1.2" />
-        <text x="422" y="594" fontSize="12.5" fontWeight="800" letterSpacing="1.4" fill={GOLD_L}>
+        {/* kiosk legs — the board STANDS, it does not float */}
+        <rect x="446" y="618" width="8" height="14" fill="#332616" />
+        <rect x="726" y="618" width="8" height="14" fill="#332616" />
+        <rect x="438" y="630" width="304" height="5" rx="2" fill="#241a10" />
+        <rect x="424" y="560" width="332" height="60" rx="6" fill="url(#oq-panel)" stroke={PANEL_EDGE} strokeWidth="1.2" />
+        <text x="442" y="581" fontSize="14" fontWeight="800" letterSpacing="1.4" fill={GOLD_L}>
           {t('registryLabel', lang)}
         </text>
-        <text x="760" y="594" fontSize="11.5" fill="#a89a82" textAnchor="end" fontFamily={mono}>
+        <text x="738" y="581" fontSize="12.5" fill="#a89a82" textAnchor="end" fontFamily={mono}>
           {books.length} {t('books', lang)}
         </text>
-        {/* health strip: each book = one tick, colored by freshness */}
-        <g transform="translate(422,600)">
-          {books.slice(0, 44).map((b, i) => {
+        {/* health strip: each book = one tick, colored by freshness — bigger, readable */}
+        <g transform="translate(442,590)">
+          {books.slice(0, 40).map((b, i) => {
             const fresh = b.ageHours !== undefined && b.ageHours <= 6 && b.ok !== false;
             const warn = !fresh && (b.ageHours ?? 0) <= 72 && b.ok !== false;
-            return <rect key={b.id} x={(i % 44) * 7.4} y="0" width="5" height="9" rx="1.5" fill={fresh ? LIFE : warn ? AMBER : RED} opacity={fresh ? 0.9 : 0.75} />;
+            return <rect key={b.id} x={(i % 40) * 7.5} y="0" width="6" height="12" rx="1.5" fill={fresh ? LIFE : warn ? AMBER : RED} opacity={fresh ? 0.95 : 0.8} />;
           })}
         </g>
-        <text x="422" y="620" fontSize="9.6" fill={staleBooks > 0 ? AMBER : '#8a7a58'}>
-          {staleBooks > 0 ? `${staleBooks} ${lang === 'he' ? 'ספרים ישנים או דורשים בדיקה' : 'stale or flagged books'}` : lang === 'he' ? 'כל הספרים טריים' : 'all books fresh'}
-        </text>
+        {/* legend: real counts, not just colored pixels */}
+        <g transform="translate(442,612)">
+          <circle cx="3" cy="-3" r="3" fill={LIFE} />
+          <text x="10" y="0" fontSize="10.5" fill="#b3aa9b">{freshCount} {lang === 'he' ? 'טריים' : 'fresh'}</text>
+          <circle cx="86" cy="-3" r="3" fill={AMBER} />
+          <text x="93" y="0" fontSize="10.5" fill="#b3aa9b">{warnCount} {lang === 'he' ? 'ישנים' : 'aging'}</text>
+          <circle cx="168" cy="-3" r="3" fill={RED} />
+          <text x="175" y="0" fontSize="10.5" fill="#b3aa9b">{staleCount} {lang === 'he' ? 'דורשים טיפול' : 'need care'}</text>
+        </g>
       </g>
 
       {/* ================= COFFEE CORNER (south-west — the one warm pocket) ================= */}
@@ -634,7 +691,7 @@ function OfficeInner(props: OfficeProps) {
         <rect x="308" y="550" width="10" height="10" rx="2" fill="#a85a3c" />
         <rect x="322" y="550" width="10" height="10" rx="2" fill="#3ba08f" />
         {/* sign */}
-        <text x="296" y="624" fontSize="9.2" fill="#8a7a58" textAnchor="middle">
+        <text x="296" y="624" fontSize="10.2" fill="#8a7a58" textAnchor="middle">
           {lang === 'he' ? 'פינת הקפה של המפקדה' : 'HQ coffee corner'}
         </text>
       </g>
@@ -662,7 +719,7 @@ function OfficeInner(props: OfficeProps) {
         {/* front-desk sign */}
         <rect x={RECEPTION.x - 62} y={RECEPTION.y + 16} width="124" height="16" rx="2" fill="#17100a" stroke="rgba(224,180,95,0.25)" strokeWidth="0.6" />
         <rect x={RECEPTION.x - 62} y={RECEPTION.y + 16} width="2.4" height="16" fill={COPPER} />
-        <text x={RECEPTION.x + 2} y={RECEPTION.y + 28} fontSize="9.8" fill={CHALK} textAnchor="middle" fontWeight="700">
+        <text x={RECEPTION.x + 2} y={RECEPTION.y + 28.5} fontSize="11" fill={CHALK} textAnchor="middle" fontWeight="700">
           {t('repName', lang)} · {t('repRole', lang)}
         </text>
         {/* small terminal on the counter */}
@@ -733,7 +790,7 @@ function OfficeInner(props: OfficeProps) {
           </g>
         </g>
         {/* floor label */}
-        <text x={RECEPTION.x} y={RECEPTION.y + 62} fontSize="9.4" fill="#8a7a58" textAnchor="middle">
+        <text x={RECEPTION.x} y={RECEPTION.y + 62} fontSize="10.4" fill="#8a7a58" textAnchor="middle">
           {lang === 'he' ? 'קבלת המפקדה · לחץ על עמית לשיחה' : 'HQ front desk · click Amit to chat'}
         </text>
       </g>
@@ -800,8 +857,8 @@ function OfficeInner(props: OfficeProps) {
             <rect x={d.x - 6} y={d.y - 62} width="12" height="7" fill="#2b2115" />
             {/* real log lines */}
             {tail.map((entry, i) => (
-              <text key={i} x={d.x - 54} y={d.y - 92 + i * 12} fontSize="9.2" fill={entry.kind === 'error' ? RED : entry.kind === 'tool' ? GOLD : entry.kind === 'report' ? LIFE : '#d9cba8'} fontFamily={mono} direction="ltr">
-                {truncate(entry.text.replace(/\s+/g, ' '), 20)}
+              <text key={i} x={d.x - 54} y={d.y - 91 + i * 12.5} fontSize="10" fill={entry.kind === 'error' ? RED : entry.kind === 'tool' ? GOLD : entry.kind === 'report' ? LIFE : '#d9cba8'} fontFamily={mono} direction="ltr">
+                {truncate(entry.text.replace(/\s+/g, ' '), 17)}
               </text>
             ))}
             {tail.length === 0 && (
@@ -830,9 +887,9 @@ function OfficeInner(props: OfficeProps) {
             <rect x={d.x - 30} y={d.y - 72} width="52" height="5" rx="1.5" fill="#241a10" stroke="#3a2c1a" strokeWidth="0.5" />
             <rect x={d.x + 52} y={d.y - 72} width="8" height="7" rx="1.5" fill={accent} opacity="0.9" />
             {/* name plate on the desk front */}
-            <rect x={d.x - 34} y={d.y - 44} width="68" height="15" rx="2" fill="#17100a" stroke="rgba(224,180,95,0.22)" strokeWidth="0.6" />
-            <rect x={d.x - 34} y={d.y - 44} width="2.4" height="15" fill={accent} />
-            <text x={d.x + 2} y={d.y - 32.5} fontSize="10" fill={CHALK} textAnchor="middle" fontWeight="700">
+            <rect x={d.x - 38} y={d.y - 44} width="76" height="17" rx="2" fill="#17100a" stroke="rgba(224,180,95,0.22)" strokeWidth="0.6" />
+            <rect x={d.x - 38} y={d.y - 44} width="2.4" height="17" fill={accent} />
+            <text x={d.x + 2} y={d.y - 30.5} fontSize="11.5" fill={CHALK} textAnchor="middle" fontWeight="700">
               {member.name[lang]}
             </text>
             {/* chair */}
@@ -917,14 +974,14 @@ function OfficeInner(props: OfficeProps) {
             <circle cx="15" cy="-59" r="5" fill={STATE_COLORS[state]} stroke="#120d09" strokeWidth="1.5" className={isBusy || state === 'waiting_user' ? 'hq-pulse' : ''} filter={isBusy ? 'url(#oq-glow-g)' : undefined} />
             {/* nameplate — glass chip with gold edge */}
             <g transform="translate(0,-74)">
-              <rect x="-54" y="-14" width="108" height="27" rx="5" fill="#17100aee" stroke={isSel ? GOLD : 'rgba(224,180,95,0.22)'} strokeWidth="1" />
-              <rect x="-54" y="-14" width="2.4" height="27" rx="1" fill={accent} />
-              <circle cx="-44" cy="-5" r="3" fill={STATE_COLORS[state]} />
-              <text x="-37" y="-2.5" fontSize="11.5" fontWeight="800" fill={CHALK}>
+              <rect x="-58" y="-15" width="116" height="29" rx="5" fill="#17100aee" stroke={isSel ? GOLD : 'rgba(224,180,95,0.22)'} strokeWidth="1" />
+              <rect x="-58" y="-15" width="2.4" height="29" rx="1" fill={accent} />
+              <circle cx="-47" cy="-5.5" r="3.2" fill={STATE_COLORS[state]} />
+              <text x="-39" y="-2" fontSize="12.5" fontWeight="800" fill={CHALK}>
                 {member.name[lang]}
               </text>
-              <text x="-46" y="9" fontSize="9.2" fill="#b3a98f">
-                {truncate(agent?.activity || member.title[lang], 22)}
+              <text x="-49" y="10" fontSize="10" fill="#b3a98f">
+                {truncate(agent?.activity || member.title[lang], 21)}
               </text>
             </g>
             {/* speech bubble */}
