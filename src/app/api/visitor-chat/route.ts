@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { writeFile, unlink } from 'node:fs/promises';
 
 // ============================================================================
 // /api/visitor-chat — AMIT, THE OFFICE RECEPTIONIST (security-critical endpoint)
@@ -81,15 +82,18 @@ let breakerOpenUntil = 0;
 
 // ---- sovereign multi-brain chain (mirrors the foreman's llm.ts) ---------------------------
 // Amit answers through the FIRST live brain; on failure the next brain+model is tried.
-//   1. xAI Grok (XAI_API_KEY — awaits credits, breaker skips it cheaply)
-//   2. OpenRouter (OPENROUTER_API_KEY — 1 strong + 8 verified :free models, rotating)
-//   3. Kilo Code free auto (NO KEY — kilo-auto/free, verified live)
-//   4. LLM7.io anonymous (NO KEY)
-//   5. Pollinations (NO KEY — openai-fast / gpt-oss-20b, verified live)
-//   6. OVHcloud AI (NO KEY — EU anonymous tier, verified live)
-//   7. the bundled z-ai SDK
+//   1. xAI Grok (XAI_API_KEY)
+//   2. OpenRouter (OPENROUTER_API_KEY — 1 strong + :free rotation)
+//   3. Groq / Cerebras / Mistral / Google AI / GitHub Models / Together (free-tier keys)
+//   4. Kilo Code free auto (NO KEY — kilo-auto/free via kilocode.ai, verified live)
+//   5. LLM7.io anonymous (NO KEY — mistral-Nemo verified live; key raises limits)
+//   6. Pollinations (NO KEY — openai / openai-fast, verified live)
+//   7. OVHcloud AI (NO KEY — EU anonymous tier, verified live)
+//   8. the bundled z-ai SDK
 // Each brain+model gets its own 5-minute cooldown after a hard error (no-credits 403,
 // 429, auth, dead model) so one dead brain never slows the reception down.
+// FRONT-DESK PRIORITY: while Amit works, a tiny ephemeral flag tells the foreman's
+// crew chain to yield the shared anonymous quotas — the human visitor goes first.
 // No keys are logged.
 interface Brain {
   name: string;
@@ -98,8 +102,14 @@ interface Brain {
   models: string[];
   referer?: boolean;
 }
+
+function keyedBrain(name: string, base: string, key: string | undefined, models: string[]): Brain[] {
+  if (!key) return [];
+  return [{ name, base, key, models }];
+}
 const brainCooldown = new Map<string, number>();
-const BRAIN_COOLDOWN_MS = 5 * 60_000;
+const BRAIN_COOLDOWN_MS = 5 * 60_000; // auth / no-credits / dead model — stay away a while
+const RATE_COOLDOWN_MS = 45_000; // 429 quotas recover in seconds-minutes — retry fast
 
 function parseModels(envVal: string | undefined, fallback: string[]): string[] {
   const list = (envVal ?? '').split(',').map((s) => s.trim()).filter(Boolean);
@@ -135,36 +145,52 @@ async function brainChain(): Promise<Brain[]> {
       ]),
     });
   }
+  brains.push(
+    ...keyedBrain('groq', 'https://api.groq.com/openai/v1', process.env.GROQ_API_KEY, parseModels(process.env.GROQ_MODELS, ['llama-3.3-70b-versatile', 'llama-3.1-8b-instant'])),
+    ...keyedBrain('cerebras', 'https://api.cerebras.ai/v1', process.env.CEREBRAS_API_KEY, parseModels(process.env.CEREBRAS_MODELS, ['llama-3.3-70b'])),
+    ...keyedBrain('mistral', 'https://api.mistral.ai/v1', process.env.MISTRAL_API_KEY, parseModels(process.env.MISTRAL_MODELS, ['mistral-small-latest', 'open-mistral-nemo'])),
+    ...keyedBrain('google-ai', 'https://generativelanguage.googleapis.com/v1beta/openai', process.env.GOOGLE_AI_API_KEY, parseModels(process.env.GOOGLE_AI_MODELS, ['gemini-2.0-flash', 'gemini-2.0-flash-lite'])),
+    ...keyedBrain('github-models', 'https://models.github.ai/inference', process.env.GITHUB_MODELS_TOKEN, parseModels(process.env.GITHUB_MODELS, ['openai/gpt-4.1-mini', 'meta/Llama-3.3-70B-Instruct'])),
+    ...keyedBrain('together', 'https://api.together.xyz/v1', process.env.TOGETHER_API_KEY, parseModels(process.env.TOGETHER_MODELS, ['meta-llama/Llama-3.3-70B-Instruct-Turbo'])),
+  );
+  // VERIFIED LIVE: kilocode.ai/api/openrouter + kilo-auto/free. The old
+  // api.kilo.ai gateway is dead — do not "restore" it.
   brains.push({
     name: 'kilo',
-    base: 'https://api.kilo.ai/api/gateway',
+    base: 'https://kilocode.ai/api/openrouter',
     key: process.env.KILO_API_KEY,
-    models: ['kilo-auto/free'],
+    models: parseModels(process.env.KILO_MODELS, ['kilo-auto/free', 'nvidia/nemotron-3-ultra-550b-a55b:free']),
   });
-  if (process.env.LLM7_API_KEY) {
-    // LLM7.io — anonymous tier is closed (verified); mount only with a free token
-    brains.push({
-      name: 'llm7',
-      base: 'https://api.llm7.io/v1',
-      key: process.env.LLM7_API_KEY,
-      models: ['mistral-Nemo-Instruct-2407'],
-    });
-  }
+  // VERIFIED LIVE anonymously (mistral-Nemo 200). Big models drain daily;
+  // Nemo keeps answering. Optional key raises limits.
+  brains.push({
+    name: 'llm7',
+    base: 'https://api.llm7.io/v1',
+    key: process.env.LLM7_API_KEY,
+    models: parseModels(process.env.LLM7_MODELS, ['mistral-Nemo-Instruct-2407', 'DeepSeek-V4-Flash-0731', 'GLM-5.3-Flash']),
+  });
   brains.push({
     name: 'pollinations',
     base: 'https://text.pollinations.ai/openai',
     key: process.env.POLLINATIONS_TOKEN,
-    models: ['openai-fast'],
+    models: parseModels(process.env.POLLINATIONS_MODELS, ['openai-fast']),
   });
-  // KEYLESS brain — OVHcloud EU anonymous tier (verified live; ~2 RPM/model)
-  if (process.env.OVH_API_KEY || process.env.OVH_MODELS) {
-    brains.push({
-      name: 'ovh',
-      base: 'https://oai.endpoints.kepler.ai.cloud.ovh.net/v1',
-      key: process.env.OVH_API_KEY,
-      models: parseModels(process.env.OVH_MODELS, ['gpt-oss-120b', 'Meta-Llama-3_3-70B-Instruct']),
-    });
-  }
+  // KEYLESS brain — OVHcloud EU anonymous tier (verified live). ~2 RPM per
+  // MODEL per IP — seven models ≈ 14 RPM aggregate; rotation = capacity.
+  brains.push({
+    name: 'ovh',
+    base: 'https://oai.endpoints.kepler.ai.cloud.ovh.net/v1',
+    key: process.env.OVH_API_KEY,
+    models: parseModels(process.env.OVH_MODELS, [
+      'Mistral-Small-3.2-24B-Instruct-2506',
+      'gpt-oss-120b',
+      'Qwen3.5-397B-A17B',
+      'Meta-Llama-3_3-70B-Instruct',
+      'Qwen3.8-27B',
+      'gpt-oss-20b',
+      'Mistral-Nemo-Instruct-2407',
+    ]),
+  });
   return brains;
 }
 
@@ -246,6 +272,18 @@ function stripReasoning(text: string): string {
     if (keep > 0) t = blocks.slice(keep).join('\n\n').trim();
   }
   return t.trim() || original;
+}
+
+/**
+ * Quality gate — the reception answers in Hebrew/English; a reply flooded
+ * with CJK characters is garbage from a weak anonymous router and is WORSE
+ * than an honest failure. Garbage counts as a brain failure → chain walks on.
+ */
+function qualityGate(text: string): boolean {
+  if (!text || text.trim().length < 2) return false;
+  const cjk = (text.match(/[\u4e00-\u9fff\u3040-\u30ff\uac00-\ud7af]/g) ?? []).length;
+  if (cjk / Math.max(1, text.length) >= 0.08) return false;
+  return true;
 }
 
 function rateLimited(ip: string): boolean {
@@ -351,6 +389,17 @@ export async function POST(req: NextRequest) {
   const history = sanitizeHistory(payload?.history);
   const statsBlock = sanitizeStats(payload?.stats);
 
+  // front-desk priority: tell the crew's chain a human is waiting (ephemeral
+  // /tmp flag — contains nothing but a timestamp, safe and non-sensitive)
+  const RECEPTION_FLAG = process.env.RECEPTION_PRIORITY_FILE || '/tmp/fleethq-reception-priority';
+  let flagRaised = false;
+  try {
+    await writeFile(RECEPTION_FLAG, JSON.stringify({ until: Date.now() + 20_000 }), 'utf8');
+    flagRaised = true;
+  } catch {
+    // flag is an optimization, never a dependency
+  }
+
   try {
     const system =
       `${PLATFORM_KNOWLEDGE}${statsBlock}\n\n` +
@@ -376,8 +425,9 @@ export async function POST(req: NextRequest) {
           const id = `${b.name}/${model}`;
           if ((brainCooldown.get(id) ?? 0) > now) continue;
           try {
-            reply = stripReasoning(await askBrain(b, model, system, history, message));
-            if (reply) {
+            const candidate = stripReasoning(await askBrain(b, model, system, history, message));
+            if (candidate && qualityGate(candidate)) {
+              reply = candidate;
               consecutiveFails = 0;
               break outer;
             }
@@ -386,20 +436,22 @@ export async function POST(req: NextRequest) {
             lastErr = e;
             const status = (e as Error & { status?: number }).status;
             const msg = (e as Error).message ?? '';
-            const hard =
-              (status && [401, 402, 403, 429].includes(status)) ||
-              msg.includes('429') ||
-              msg.toLowerCase().includes('too many');
-            if (hard || status === 400 || msg.includes('unavailable'))
-              brainCooldown.set(id, Date.now() + BRAIN_COOLDOWN_MS);
+            const isRate =
+              status === 429 || msg.includes('429') || msg.toLowerCase().includes('too many');
+            const isDead =
+              status === 400 || status === 404 || msg.includes('unavailable');
+            const isAuth = status === 401 || status === 402 || status === 403;
+            if (isRate) brainCooldown.set(id, Date.now() + RATE_COOLDOWN_MS);
+            else if (isDead || isAuth) brainCooldown.set(id, Date.now() + BRAIN_COOLDOWN_MS);
           }
         }
       }
       // last living brain: the bundled SDK
       if (!reply) {
         try {
-          reply = stripReasoning(await askBrain({ name: 'zai', base: '', models: [] }, '', system, history, message));
-          if (reply) {
+          const candidate = stripReasoning(await askBrain({ name: 'zai', base: '', models: [] }, '', system, history, message));
+          if (candidate && qualityGate(candidate)) {
+            reply = candidate;
             consecutiveFails = 0;
             break;
           }
@@ -418,5 +470,13 @@ export async function POST(req: NextRequest) {
   } catch {
     // generic only — never leak internals through the error path
     return NextResponse.json({ error: 'reception_unavailable' }, { status: 502 });
+  } finally {
+    if (flagRaised) {
+      try {
+        await unlink(RECEPTION_FLAG);
+      } catch {
+        // the flag self-expires via its timestamp anyway
+      }
+    }
   }
 }
