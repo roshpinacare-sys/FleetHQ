@@ -126,8 +126,13 @@ OPENAI_API_BASE=http://localhost:3000/v1
 OPENAI_API_KEY=any-string-here
 AZURE_DEPLOYMENT_NAME=auto
 MODEL_NAME=auto
-AI_TIMEOUT=60000
-MAX_RETRIES=5
+BACKUP_MODEL_NAME=qwen-2.5-coder-32b
+# hard resilience knobs (owner manifest values; the gateway honors both names)
+AI_TIMEOUT=90000
+MAX_RETRIES=10
+REQUEST_TIMEOUT=90000
+MAX_NETWORK_RETRIES=10
+AUTO_RECONNECT=true
 EOF
 chmod 600 "$VAULT_ROOT/sovereign-agent.env"
 say "sovereign-agent.env written (OPENAI_API_BASE=http://localhost:3000/v1, dummy key)"

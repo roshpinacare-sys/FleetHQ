@@ -1,0 +1,72 @@
+# ============================================================================
+# docker-compose.sovereign.yml — תשתית-ריבונות אופציונלית לכל מכונה (run-anywhere)
+# ----------------------------------------------------------------------------
+# זהו תיקון מקצועי של ה-compose שהגיע במניפסט שאסף הבעלים מגוגל:
+#   * duckai הוזז מ-3000 (התנגשות-פורט עם קבלת Next) ל-3031 — הסלוט הרגיל שלנו;
+#   * LiteLLM הוסר — שני שערים עצמאיים כבר קיימים (Next /v1 פרוקסי + :3011 ישיר);
+#   * Langfuse/Postgres נשארו אופציונליים (טלמטריה עצמית-מארחת) — כבויים כברירת
+#     מחדל, כי המשרד כנה על אפס-טלמטריה; הפעלה: `docker compose --profile telemetry up`;
+#   * סיסמאות באות מה-env המקומי בלבד (LANGFUSE_SALT וכו') — לעולם לא קשיחות בקובץ.
+#
+# בסנדבוקס הנוכחי אין Docker (נבדק) — הקובץ מיועד למכונת-הבית/שרת של הבעלים.
+# לאחר עליית duckai על מכונה עם גישה ל-DuckDuckGo:
+#   LOCAL: DUCKAI_URL=http://<host>:3031/v1  → סלוט duckai בשער נדלק מיד.
+# ============================================================================
+
+services:
+  # מוח-חינם אנונימי (duckai) — OpenAI-compatible מעל backend של DuckDuckGo AI.
+  # דורש מכונה עם גישת-רשת ל-duckduckgo.com (מהסנדבוקס זה חסום — כנה).
+  duckai:
+    image: amirkabiri/duckai:latest
+    container_name: sovereign-duckai
+    ports:
+      - "3031:3000"          # במקור: 3000:3000 — היה מרסק את קבלת Next על :3000
+    restart: unless-stopped
+
+  # שכבת-ה-air-gap: llama.cpp מקומי (GGUF). כבוי כברירת מחדל — הפעלה עם
+  # `docker compose --profile local-llm up` אחרי הורדת מודל ל-./models.
+  # השער מחובר אליו עם LOCAL_LLM_URL=http://localhost:8080/v1
+  local-llm:
+    image: ghcr.io/ggml-org/llama.cpp:server
+    container_name: sovereign-local-llm
+    profiles: ["local-llm"]
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./models:/models
+    command: >
+      -m /models/qwen2.5-coder-32b-q4_k_m.gguf
+      --host 0.0.0.0 --port 8080 --ctx-size 8192
+    restart: unless-stopped
+
+  # טלמטריה עצמית-מארחת (Langfuse) — אופציונלית לגמרי. המשרד עצמו אפס-טלמטריה
+  # לפי חוק-הברזל; הפרופיל הזה רק למי שרוצה tracing מקומי על :4000.
+  telemetry-db:
+    image: postgres:16
+    container_name: sovereign-telemetry-db
+    profiles: ["telemetry"]
+    environment:
+      POSTGRES_USER: langfuse
+      POSTGRES_PASSWORD: ${LANGFUSE_DB_PASSWORD:?set in local .env — never committed}
+      POSTGRES_DB: langfuse
+    volumes:
+      - telemetry-db-data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  langfuse-server:
+    image: langfuse/langfuse:latest
+    container_name: sovereign-langfuse
+    profiles: ["telemetry"]
+    depends_on:
+      - telemetry-db
+    environment:
+      DATABASE_URL: postgresql://langfuse:${LANGFUSE_DB_PASSWORD}@telemetry-db:5432/langfuse
+      NEXTAUTH_SECRET: ${LANGFUSE_NEXTAUTH_SECRET:?set in local .env — never committed}
+      NEXTAUTH_URL: http://localhost:4000
+      SALT: ${LANGFUSE_SALT:?set in local .env — never committed}
+    ports:
+      - "4000:3000"
+    restart: unless-stopped
+
+volumes:
+  telemetry-db-data:
