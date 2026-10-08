@@ -24,6 +24,14 @@ ROOT="$(dirname "$DIR")"
 CIPHER="aes-256-cbc"
 KDF="-pbkdf2 -iter 200000 -salt"
 
+# sovereignty v2: if no explicit passphrase, unwrap via the wrap registry
+# (session pass → wraps → legacy credential) — see vaultlib.sh
+if [ -z "${VAULT_PASSPHRASE:-}" ] && [ -f "$DIR/vaultlib.sh" ]; then
+  # shellcheck source=vaultlib.sh
+  source "$DIR/vaultlib.sh" >/dev/null 2>&1 || true
+  vault_unwrap >/dev/null 2>&1 && VAULT_PASSPHRASE="$VAULT_PASS" || true
+fi
+
 require_pass() { : "${VAULT_PASSPHRASE:?set VAULT_PASSPHRASE first (the fleet vault passphrase)}"; }
 
 cmd="${1:-status}"
