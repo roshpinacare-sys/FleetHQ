@@ -30,10 +30,17 @@ deployed_ok() {
   grep -qE "^[A-Z_]+=.+" "$f" 2>/dev/null
 }
 
-# ---- 1) refresh the freshest sealed copy from the private repo ONLY if missing
+# ---- 1) refresh the freshest sealed copy from the private repo when needed
 # DOCTRINE (fixed 2026-10-08): a local keys.env.enc IS the authority (the box
 # that sealed last); the private repo pull exists for FRESH machines.
-if [ ! -s "$ENC" ]; then
+# FIXED 2026-10-08b (sovereign-audit): ALSO pull when the local WRAPS are
+# absent — a fresh machine may hold a valid seal but zero wraps, and without
+# wraps no credential can unwrap P (the "keyless-honest" false negative).
+NEED_PULL=NO
+[ ! -s "$ENC" ] && NEED_PULL=YES
+[ ! -d "$WRAPS_DIR" ] && NEED_PULL=YES
+[ -d "$WRAPS_DIR" ] && [ -z "$(ls "$WRAPS_DIR" 2>/dev/null)" ] && NEED_PULL=YES
+if [ "$NEED_PULL" = "YES" ]; then
   TMPCLONE="/tmp/sovereign-vault-$(date +%s)"
   if vault_repo_pull "$TMPCLONE" clone; then
     [ -f "$TMPCLONE/keys.env.enc" ] && cp "$TMPCLONE/keys.env.enc" "$ENC" && chmod 600 "$ENC"
