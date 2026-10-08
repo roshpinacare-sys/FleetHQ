@@ -1,0 +1,61 @@
+{
+  "format": "weave-agreement-v1",
+  "generatedAt": "2026-10-07T08:32:18.964Z",
+  "doctrine": "the ledger book is judged against the independent chain census - divergence is the heaviest finding a truth network can raise",
+  "verdict": "AGREE",
+  "ledger": {
+    "book": "mirror.json",
+    "generatedAt": "2026-10-06T19:23:59.047Z",
+    "ageHours": 13.1,
+    "claims": {
+      "headHash": "0x1f66f33643ba16de88e92ce2abd42461955e5f76d91a6e0d26981026d9f741a5",
+      "checkpoints": 1487,
+      "attestations": 1545
+    }
+  },
+  "chain": {
+    "book": "weave/census.json",
+    "generatedAt": "2026-10-07T08:24:08.149Z",
+    "ageHours": 0.1,
+    "censusVerdict": "IRREGULAR",
+    "tilingState": "HOLED",
+    "latest": {
+      "checkpoint": 1507,
+      "root": "0x64cba875c12f7cce2ad581c2443c7c96a04102d713325d5232b6a96c3112fdd2",
+      "headHash": "0x64cba875c12f7cce2ad581c2443c7c96a04102d713325d5232b6a96c3112fdd2",
+      "at": "2026-10-07T07:44:34.622Z",
+      "witness": "headcorner",
+      "txid": "30bb4162ebdbdbd72d4ac3365b92d6417ce5d3d9"
+    },
+    "claims": {
+      "headHash": "0x64cba875c12f7cce2ad581c2443c7c96a04102d713325d5232b6a96c3112fdd2",
+      "checkpoints": 1507,
+      "attestations": 1565
+    }
+  },
+  "checks": [
+    {
+      "name": "headHash-witnessed-on-chain",
+      "ledger": "0x1f66f33643ba16de88e92ce2abd42461955e5f76d91a6e0d26981026d9f741a5",
+      "chain": "cp#1487 @2026-10-06T19:24:40.899Z (headcorner)",
+      "match": true
+    },
+    {
+      "name": "checkpoints-monotonic",
+      "ledger": 1487,
+      "chain": 1507,
+      "delta": 20,
+      "tolerance": "chain ahead up to +20",
+      "match": true
+    },
+    {
+      "name": "attestations-monotonic",
+      "ledger": 1545,
+      "chain": 1565,
+      "delta": 20,
+      "tolerance": "chain ahead up to +20",
+      "match": true
+    }
+  ],
+  "mismatches": 0
+}

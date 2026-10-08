@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SAOS · ההשוואה הכנה מול ענקי ה-DeFi</title>
+<!-- 14-a de-dup 2026-10-02: the full comparison stays served here because the R61 complete-map gate requires all nine system fronts >10KB and sitemapped; the AUTHORITATIVE copy for search engines is the single maintained one on Domain. -->
+<link rel="canonical" href="https://roshpinacare-sys.github.io/Domain/versus.html">
+<meta name="description" content="בחינה חריפה של הרשת שלנו מול הרשתות המתקדמות בעולם ה-DeFi: מה מקבל המפקיד, מי משלם את התשואה, איפה יושב הכסף ומי עושה את העבודה. מספרים חיים משני הצדדים.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="SAOS Network">
+<meta property="og:title" content="SAOS · ההשוואה הכנה מול ענקי ה-DeFi">
+<meta property="og:locale" content="he_IL">
+<meta property="og:locale:alternate" content="en_US">
+<meta property="og:description" content="בחינה חריפה של הרשת שלנו מול הרשתות המתקדמות בעולם ה-DeFi: מה מקבל המפקיד, מי משלם את התשואה, איפה יושב הכסף ומי עושה את העבודה. מספרים חיים משני הצדדים.">
+<meta property="og:url" content="https://roshpinacare-sys.github.io/Domain/versus.html">
+<meta property="og:image" content="https://roshpinacare-sys.github.io/Console/assets/og-cover.png">
+<meta property="og:image:width" content="1024">
+<meta property="og:image:height" content="1024">
+<meta property="og:image:alt" content="SAOS Network seal">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="SAOS · ההשוואה הכנה מול ענקי ה-DeFi">
+<meta name="twitter:description" content="בחינה חריפה של הרשת שלנו מול הרשתות המתקדמות בעולם ה-DeFi: מה מקבל המפקיד, מי משלם את התשואה, איפה יושב הכסף ומי עושה את העבודה. מספרים חיים משני הצדדים.">
+<meta name="theme-color" content="#09090b">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2.5 20.5 7v10L12 21.5 3.5 17V7z' fill='none' stroke='%23d4af37' stroke-width='1.6'/%3E%3Ccircle cx='12' cy='12' r='3' fill='%23d4af37'/%3E%3C/svg%3E">
+<style>
+/* ═══ SAOS Console design system · midnight command center · R62+ ═══
+   Rebuilt against DESIGN.md and the index.html reference implementation:
+   achromatic zinc canvas, one rationed gold accent, hairline borders,
+   inset key-highlight on every raised surface, layered atmosphere,
+   mono numerals, zero decoration without information. */
+:root{
+  --bg:#09090b; --bg2:#0c0c0e; --bg3:#101013;
+  --panel:rgba(255,255,255,.03); --panel2:rgba(255,255,255,.055);
+  --line:rgba(255,255,255,.09); --line2:rgba(255,255,255,.17);
+  --gold:#d4af37; --gold-bright:#e9c767; --gold-dim:rgba(212,175,55,.12); --gold-line:rgba(212,175,55,.42);
+  --green:#22c55e; --amber:#eab308; --red:#ef4444; --purple:#a78bfa;
+  --text:#fafafa; --dim:#a1a1aa; --faint:#71717a;
+  --mono:'JetBrains Mono',ui-monospace,'SF Mono','Cascadia Code','Segoe UI Mono',Menlo,Consolas,monospace;
+  --sans:'Heebo',-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,'Noto Sans Hebrew',sans-serif;
+  --r:16px; --r-sm:12px; --r-lg:20px; --nav-h:62px;
+  --key:inset 0 1px 0 rgba(255,255,255,.055);
+  --key-hover:inset 0 1px 0 rgba(255,255,255,.09),0 12px 34px rgba(0,0,0,.38);
+  /* legacy aliases: inline styles and old hooks on this page still resolve
+     by the old token names */
+  --tx:var(--text); --mut:var(--dim); --yellow:var(--amber);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;background:var(--bg)}
+body{
+  color:var(--text); font-family:var(--sans);
+  min-height:100vh; min-height:100svh; display:flex; flex-direction:column; overflow-x:hidden;
+  font-size:15px; line-height:1.65;
+  -webkit-font-smoothing:antialiased;
+}
+/* layered atmosphere: one gold-tinted dawn line + a fading dot grid */
+body::before{
+  content:""; position:fixed; inset:0; z-index:-2; pointer-events:none;
+  background:
+    radial-gradient(1100px 560px at 50% -180px, rgba(212,175,55,.075), transparent 62%),
+    radial-gradient(760px 420px at 88% 4%, rgba(212,175,55,.035), transparent 60%),
+    var(--bg);
+}
+body::after{
+  content:""; position:fixed; inset:0; z-index:-1; pointer-events:none;
+  background-image:radial-gradient(rgba(255,255,255,.045) 1px, transparent 1.4px);
+  background-size:26px 26px;
+  -webkit-mask-image:linear-gradient(180deg, rgba(0,0,0,.5), transparent 52%);
+  mask-image:linear-gradient(180deg, rgba(0,0,0,.5), transparent 52%);
+}
+::selection{background:rgba(212,175,55,.28)}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--text);outline-offset:2px;border-radius:4px}
+h1,h2,h3,h4{text-wrap:balance}
+.wrap{max-width:1180px;margin:0 auto;padding:0 20px;width:100%}
+.mono{font-family:var(--mono);direction:ltr;unicode-bidi:isolate}
+.num{font-family:var(--mono);direction:ltr;unicode-bidi:isolate;font-variant-numeric:tabular-nums;white-space:nowrap}
+
+/* ── sticky glass header ───────────────── */
+header.nhead{
+  position:sticky;top:0;z-index:900;
+  background:rgba(9,9,11,.72);backdrop-filter:blur(18px) saturate(150%);-webkit-backdrop-filter:blur(18px) saturate(150%);
+  border-bottom:1px solid var(--line);
+}
+.nhead .wrap{display:flex;align-items:center;gap:14px;min-height:var(--nav-h)}
+.brand{display:flex;align-items:center;gap:10px;flex:none;color:var(--text)}
+.brand svg{width:30px;height:30px;flex:none;filter:drop-shadow(0 0 14px rgba(212,175,55,.35))}
+.brand b{font-size:15.5px;font-weight:700;letter-spacing:.2px;white-space:nowrap}
+.brand b i{color:var(--gold);font-style:normal}
+.links{
+  display:flex;gap:2px;background:var(--panel);border:1px solid var(--line);
+  border-radius:999px;padding:4px;margin-inline-start:auto;box-shadow:var(--key);
+}
+.links a{
+  padding:8px 16px;min-height:20px;border-radius:999px;font-size:13.5px;color:var(--dim);
+  display:inline-flex;align-items:center;transition:color .15s,background .15s;white-space:nowrap;
+}
+.links a:hover{color:var(--text);background:var(--panel2)}
+.mburger{
+  display:none;background:rgba(255,255,255,.04);border:1px solid var(--line);color:var(--text);
+  border-radius:999px;width:44px;height:44px;min-width:44px;min-height:44px;cursor:pointer;
+  align-items:center;justify-content:center;margin-inline-start:auto;flex:none;box-shadow:var(--key);
+}
+.mburger:hover{border-color:var(--line2);background:rgba(255,255,255,.07)}
+.mburger:active{transform:scale(.96)}
+
+/* ── hero ─────────────────────────────── */
+main{flex:1;padding:34px 0 64px}
+.hero{padding:6px 0 2px}
+.eyebrow{
+  font-family:var(--mono);font-size:11px;letter-spacing:1.9px;text-transform:uppercase;
+  color:var(--gold-bright);font-weight:600;margin-bottom:16px;
+  display:inline-flex;align-items:center;gap:12px;
+}
+.eyebrow::before{content:"";width:20px;height:1px;background:var(--gold-line);flex:none}
+.hero h1{font-size:clamp(2.2rem,5vw,3.7rem);font-weight:700;line-height:1.12;letter-spacing:-.5px;max-width:22ch}
+.herosub{margin-top:12px;font-size:clamp(1rem,1.6vw,1.14rem);color:var(--dim)}
+.lede{margin-top:18px;font-size:15px;color:var(--dim);line-height:1.75;max-width:74ch}
+.lede b{color:var(--text);font-weight:600}
+
+/* ── stat rail: hairline-divided KPI strip ── */
+.pulse{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:1px;
+  background:var(--line);border:1px solid var(--line);border-radius:var(--r-lg);
+  overflow:hidden;box-shadow:var(--key);margin:30px 0 26px;
+}
+.card .pulse{margin:16px 0 8px}
+.pcard{background:rgba(12,12,14,.86);padding:18px 16px 15px;display:flex;flex-direction:column;gap:7px;transition:background .18s}
+.pcard:hover{background:var(--bg3)}
+.pcard .v{font-family:var(--mono);font-size:clamp(1.5rem,2.2vw,1.85rem);font-weight:620;color:var(--gold-bright);direction:ltr;unicode-bidi:isolate;line-height:1.05;font-variant-numeric:tabular-nums}
+.pcard .v.our{color:var(--purple)}
+.pcard .l{font-size:11px;letter-spacing:.5px;color:var(--faint);line-height:1.5}
+
+/* ── cards ────────────────────────────── */
+.card{
+  background:var(--panel);border:1px solid var(--line);border-radius:var(--r);
+  padding:24px;margin-bottom:22px;box-shadow:var(--key);
+  transition:border-color .18s,box-shadow .18s;
+}
+.card:hover{border-color:var(--line2);box-shadow:var(--key-hover)}
+.card h2{font-size:clamp(1.5rem,2.8vw,2.1rem);font-weight:650;letter-spacing:-.3px;color:var(--text);display:flex;flex-direction:column;gap:8px;margin-bottom:18px}
+.card h2 .en{
+  font-family:var(--mono);font-size:11px;letter-spacing:1.9px;text-transform:uppercase;
+  color:var(--gold-bright);font-weight:600;display:inline-flex;align-items:center;gap:12px;
+}
+.card h2 .en::before{content:"";width:20px;height:1px;background:var(--gold-line);flex:none}
+.card p{font-size:13.5px;color:var(--dim);line-height:1.75;margin-bottom:10px}
+.card p b{color:var(--text);font-weight:600}
+
+/* ── tables: hairline rows, mono numerals, hover scan ── */
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{
+  text-align:start;font-size:11px;letter-spacing:.8px;text-transform:uppercase;color:var(--faint);
+  font-weight:600;padding:11px 14px;border-bottom:1px solid var(--line2);white-space:nowrap;
+  position:sticky;top:0;background:var(--bg2);z-index:2;
+}
+td{padding:11px 14px;border-bottom:1px solid var(--line);vertical-align:top;line-height:1.65}
+tr:last-child td{border-bottom:none}
+tbody tr{transition:background .12s}
+tbody tr:hover{background:rgba(255,255,255,.02)}
+tr.us td{background:rgba(167,139,250,.05)}
+tr.us:hover td{background:rgba(167,139,250,.08)}
+.tlx{
+  border:1px solid var(--line);border-radius:var(--r);background:rgba(9,9,11,.45);
+  overflow:auto;-webkit-overflow-scrolling:touch;box-shadow:var(--key);margin:14px 0 4px;
+}
+.tlx::-webkit-scrollbar{width:8px;height:8px}
+.tlx::-webkit-scrollbar-thumb{background:var(--line2);border-radius:8px}
+.tlx::-webkit-scrollbar-track{background:transparent}
+
+/* ── tags · notes · sources ───────────── */
+.tag{font-size:10.5px;font-family:var(--mono);border:1px solid var(--line2);border-radius:999px;padding:2px 9px;color:var(--dim);white-space:nowrap}
+.tag.g{border-color:rgba(34,197,94,.4);color:var(--green)}
+.tag.y{border-color:rgba(234,179,8,.4);color:var(--amber)}
+.tag.r{border-color:rgba(239,68,68,.4);color:var(--red)}
+.tag.p{border-color:rgba(167,139,250,.4);color:var(--purple)}
+.note{
+  font-size:14px;color:var(--text);background:var(--gold-dim);
+  border:1px solid var(--line);border-inline-start:3px solid var(--gold);
+  border-radius:var(--r-sm);padding:16px 18px;margin:16px 0 4px;line-height:1.7;box-shadow:var(--key);
+}
+.src{font-size:11.5px;color:var(--faint);margin-top:12px;line-height:1.8}
+
+/* ── the roast column ─────────────────── */
+.roast{color:var(--dim)}
+.roast b{color:var(--text);font-weight:600}
+.roast .burn{color:var(--red);font-weight:600}
+.roast .win{color:var(--green);font-weight:600}
+
+/* ── the honest verdict rows ──────────── */
+.verdict{display:grid;gap:12px;margin-top:6px}
+.vrow{
+  display:grid;grid-template-columns:150px 1fr;gap:14px;
+  background:var(--panel);border:1px solid var(--line);border-radius:var(--r-sm);padding:16px 18px;
+  box-shadow:var(--key);transition:border-color .18s;
+}
+.vrow:hover{border-color:var(--line2)}
+.vrow .k{font-size:12.5px;font-weight:700;align-self:start;padding-top:2px}
+.vrow .k.them{color:var(--red)}
+.vrow .k.us{color:var(--green)}
+.vrow .b{font-size:13px;color:var(--dim);line-height:1.7}
+.vrow .b b{color:var(--text);font-weight:600}
+
+/* ── the loop: flow chips ─────────────── */
+.flowline{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:12.5px;color:var(--faint);margin-top:14px}
+.flowline .step{border:1px solid var(--line2);border-radius:999px;padding:6px 13px;background:var(--panel);color:var(--dim);font-weight:550;display:inline-flex;align-items:center;box-shadow:var(--key)}
+.flowline .step.hot{border-color:var(--gold-line);color:var(--gold-bright);background:var(--gold-dim)}
+.flowline .arr{color:var(--faint)}
+
+/* ── where funds sit: custody cards ───── */
+.hcards{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px;margin-top:14px}
+.hcard{
+  background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:18px;
+  box-shadow:var(--key);transition:border-color .18s,transform .18s,box-shadow .18s;
+  display:flex;flex-direction:column;gap:6px;
+}
+.hcard:hover{border-color:var(--line2);transform:translateY(-2px);box-shadow:var(--key-hover)}
+.hcard .nm{font-size:14.5px;font-weight:650}
+.hcard .nm .mono{font-size:11px;color:var(--gold-bright);letter-spacing:.8px}
+.hcard .tvl{font-family:var(--mono);direction:ltr;unicode-bidi:isolate;font-size:clamp(1.15rem,1.8vw,1.35rem);font-weight:650;color:var(--gold-bright);margin:2px 0 4px;font-variant-numeric:tabular-nums}
+.hcard .gets{font-size:12.5px;color:var(--dim);line-height:1.65}
+.hcard .gets b{color:var(--text);font-weight:600}
+.hcard .gets .mono{font-size:11.5px;color:var(--dim)}
+.hcard.us{border-color:rgba(167,139,250,.35);background:rgba(167,139,250,.045)}
+.hcard.us .tvl{color:var(--purple)}
+
+/* ── footer ───────────────────────────── */
+footer{border-top:1px solid var(--line);background:rgba(12,12,14,.9);margin-top:auto;position:relative;padding:18px 0}
+footer::before{content:"";position:absolute;top:-1px;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(212,175,55,.35),transparent)}
+footer .wrap{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;font-size:12px;color:var(--faint)}
+footer a{color:var(--dim)}
+footer a:hover{color:var(--gold-bright)}
+
+/* ── responsive ───────────────────────── */
+@media(max-width:900px){
+  .mburger{display:inline-flex}
+  .nhead nav.links{
+    display:none;position:absolute;top:100%;inset-inline:0;margin:0;
+    flex-direction:column;gap:2px;padding:12px 16px 16px;border-radius:0;
+    background:rgba(9,9,11,.96);backdrop-filter:blur(18px) saturate(150%);-webkit-backdrop-filter:blur(18px) saturate(150%);
+    border-bottom:1px solid var(--line);box-shadow:0 28px 48px -28px rgba(0,0,0,.92);
+  }
+  header.nav-open nav.links{display:flex}
+  .nhead nav.links a{display:flex;align-items:center;min-height:46px;padding:11px 14px;border-radius:var(--r-sm);font-size:15px;color:var(--text)}
+  .nhead nav.links a:hover{background:rgba(255,255,255,.06);color:var(--text)}
+  .pulse{grid-template-columns:repeat(2,1fr)}
+  .pulse .pcard:last-child:nth-child(odd){grid-column:1/-1}
+  .card{padding:18px 16px}
+}
+@media(max-width:640px){
+  .wrap{padding:0 16px}
+  main{padding:26px 0 52px}
+  th,td{padding:9px 10px}
+  .tlx table{font-size:12px}
+  .vrow{grid-template-columns:1fr}
+  .brand b{font-size:14px}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+  html{scroll-behavior:auto}
+}
+@media print{
+  body::before,body::after{display:none}
+  header.nhead{position:static}
+  .card,.vrow,.hcard{box-shadow:none}
+}
+</style>
+  <link rel="stylesheet" href="assets/site.css">
+  <script src="assets/site.js" defer></script>
+
+<script type="application/ld+json">
+{"@context": "https://schema.org", "@graph": [{"@type": "WebPage", "@id": "https://roshpinacare-sys.github.io/Domain/versus.html#webpage", "url": "https://roshpinacare-sys.github.io/Domain/versus.html", "name": "SAOS · ההשוואה הכנה מול ענקי ה-DeFi", "description": "בחינה חריפה של הרשת שלנו מול הרשתות המתקדמות בעולם ה-DeFi: מה מקבל המפקיד, מי משלם את התשואה, איפה יושב הכסף ומי עושה את העבודה. מספרים חיים משני הצדדים.", "inLanguage": "\"he\",\"en\"", "isPartOf": {"@id": "https://roshpinacare-sys.github.io/Console/#website"}, "about": {"@id": "https://roshpinacare-sys.github.io/Console/#org"}}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "בית", "item": "https://roshpinacare-sys.github.io/Console/"}, {"@type": "ListItem", "position": 2, "name": "SAOS · ההשוואה הכנה מול ענקי ה-DeFi", "item": "https://roshpinacare-sys.github.io/Domain/versus.html"}]}, {"@type": "Organization", "@id": "https://roshpinacare-sys.github.io/Console/#org", "name": "SAOS Network", "url": "https://roshpinacare-sys.github.io/Console/", "logo": "https://roshpinacare-sys.github.io/Console/assets/og-cover.png"}]}
+</script>
+<link rel="manifest" href="manifest.webmanifest">
+</head>
+<body>
+<header class="nhead">
+  <div class="wrap">
+    <a class="brand" href="index.html" aria-label="הקונסולה">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5 20.5 7v10L12 21.5 3.5 17V7z" fill="none" stroke="#d4af37" stroke-width="1.6"/><circle cx="12" cy="12" r="2.4" fill="#d4af37"/><circle cx="7.5" cy="15.5" r="1.5" fill="#a78bfa"/><circle cx="16.5" cy="15.5" r="1.5" fill="#a78bfa"/></svg>
+      <span><b>SAOS <i>&middot;</i> THE WEAVE</b></span>
+    </a>
+    <nav class="links" aria-label="דפי הקונסולה">
+      <a href="index.html">הקונסולה</a>
+      <a href="truth.html">שער האמת</a>
+      <a href="money.html">נתיב הכסף</a>
+    </nav>
+    <button class="mburger sw-burger" id="mburger" aria-label="תפריט" aria-expanded="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+  </div>
+</header>
+<main>
+  <div class="wrap">
+
+    <section class="hero">
+      <p class="eyebrow">Versus · רוסט חריף</p>
+      <h1>אנחנו מול הענקים</h1>
+      <p class="herosub">הרשת שלנו מול המתקדמות ב-DeFi - מספרים חיים משני הצדדים</p>
+      <p class="lede">
+      זו הבחינה שהוזמנה: <b>מה יש לנו ביד, מול מה שיש למובילות העולם</b>.
+      לא שיווק ולא עדינות - כל שורה כאן נמדדת חי: ה-TVL שלהם מ-DefiLlama בזמן הפתיחה,
+      המספרים שלנו מקבצי האמת של האתר עצמו. שבע הרשתות המובילות, ארבע שאלות שכל מפקיד שואל:
+      <b>מה אני מקבל? מי משלם לי? איפה הכסף יושב? ומה הסיכון?</b>
+      התשובה הכנה: בגודל אנחנו בקנה-מידה של טעות-עיגול שלהם. בעלות, בהוכחה ובשליטה - הפוך.
+    </p>
+    </section>
+
+    <div class="pulse">
+      <div class="pcard"><div class="v" id="k-their-tvl">$50.0B</div><div class="l">TVL של 7 הענקים · חי מ-DefiLlama</div></div>
+      <div class="pcard"><div class="v our" id="k-our-book">$69K</div><div class="l">הספר הפנימי שלנו · חי מ-world.json</div></div>
+      <div class="pcard"><div class="v our" id="k-agents">24</div><div class="l">סוכנים חיים שעושים את העבודה</div></div>
+      <div class="pcard"><div class="v our" id="k-gas">$0.00</div><div class="l">עלות-גז למפקיד אצלנו · מול $2-30 אצלם</div></div>
+    </div>
+
+    <div class="card">
+      <h2>השורה התחתונה: אנחנו מולם <span class="en">the head-to-head</span></h2>
+      <p>
+        לפני הטבלה, המשפט שחייבים לומר ראשון: <b>הם מנצחים אותנו בכל מדד של כסף</b> - נזילות, תשואה בדולרים, שנות-קרב, ביטוח, אינטגרציות.
+        מי שמפקיד אצלם מקבל 3%-15% בשנה על מיליארדים של עומק. אצלנו התשואה המדודה כרגע היא
+        <span class="mono" id="inline-apy">בסדר-גודל של סנטים</span>. מי שמסתיר את זה הוא לא ריבוני, הוא אשלייתן.
+        הטבלה הזו קיימת כדי לראות בדיוק מה שווה להעתיק מכל אחת מהן - ומה שווה לא להעתיק לעולם.
+      </p>
+      <div class="tlx"><table>
+        <thead><tr>
+          <th>רשת</th><th>TVL חי</th><th>מה המפקיד מקבל</th><th>מי באמת משלם את התשואה</th><th>הרוסט · אנחנו מולם</th>
+        </tr></thead>
+        <tbody id="h2h-body">
+          <tr>
+            <td><b>Aave</b></td>
+            <td class="num" data-tvl="aave">…</td>
+            <td>3%-8% בשנה על יציבים, aTokens שצוברים לבד</td>
+            <td>ריבית של לווים (הניצולת מתמחרת)</td>
+            <td class="roast">יש לנו את אותו מכשיר בדיוק - כספת-הלוואות + חיסכון - בסדר-גודל של <span class="burn">מאית-האחוז מהנזילות שלהם</span>. ההנדסה הגיעה, הכסף לא. <span class="win">אצלם עמלת-גז $2-15 לכניסה; אצלנו 0</span>.</td>
+          </tr>
+          <tr>
+            <td><b>Sky</b> <span class="tag">Maker</span></td>
+            <td class="num" data-tvl="makerdao">…</td>
+            <td>sUSDS ~5%-8%, הכנסה מתמדת על יציב</td>
+            <td>אג"ח ממשלתי US + דמי-יציבות מלווים</td>
+            <td class="roast">התשואה שלהם באה מ<b>מלכודת הדולר</b>: ריבונות על השרשרת, ריבית מהאוצר האמריקאי. אנחנו בחרנו את הכיוון ההפוך - <span class="win">הכנסה מדודה ממנוע אמת, גם כשהיא כמעט אפס</span>, בלי להיות סניף של הפד.</td>
+          </tr>
+          <tr>
+            <td><b>Curve</b></td>
+            <td class="num" data-tvl="curve-dex">…</td>
+            <td>עמלות-מסחר + פליטות CRV + שוחד-גייג'ים</td>
+            <td>סוחרים + <b>אינפלציה של הטוקן</b></td>
+            <td class="roast">העתקנו את ה-ve-escrow והגייג'ים לגרעין - בלי פליטות. <span class="burn">בלי פליטות אין קרחת-שוחד</span>, כלומר אין כסף-זר שמביא נזילות. הכלה כנה: חלק מהפאזל עוד לא מחובר.</td>
+          </tr>
+          <tr>
+            <td><b>Uniswap</b></td>
+            <td class="num" data-tvl="uniswap">…</td>
+            <td>0.01%-0.3% עמלות ל-LP, v4-hooks</td>
+            <td>סוחרים (ומי שמפסיד מאינפורמציה)</td>
+            <td class="roast">העמלות הדינמיות שלנו (34-194bps לפי תנודתיות, דפוס V4 שהותאם) <span class="win">עדינות תיאורטית על הרוב הסטטי שלהם</span> - על נזילות של <span class="burn">חצי מיליונית</span>. התיאוריה לבד לא שווה כלום בלי עומק.</td>
+          </tr>
+          <tr>
+            <td><b>Morpho</b></td>
+            <td class="num" data-tvl="morpho">…</td>
+            <td>כספות מאוצרות-קהילה, 4%-6% על יציבים</td>
+            <td>לווים, דרך אוצר-על מנוהל</td>
+            <td class="roast">המודל שלהם הוא הפרדת-רשויות: בונה, אוצר, מבקר. אצלנו <span class="burn">שלושת התפקידים ביד אחת - המפעיל</span>. זה הכשל-הריבוני הכי חד שלנו, והוא כתוב כאן כי הוא אמת.</td>
+          </tr>
+          <tr>
+            <td><b>Ethena</b></td>
+            <td class="num" data-tvl="ethena">…</td>
+            <td>sUSDe 8%-15% בשוק-פוזיטיבי</td>
+            <td>פרימיית-מימון בפוזיציות דריבטיבים (מי שקצר)</td>
+            <td class="roast">התשואה שלהם היא <b>עסקת-קארי ענקית עם זנב-סיכון של דה-פג</b> שנראה פעמיים. אנחנו דחינו את המודל במכוון: אין לנו פוזיציה, אין מינוף, אין הבטחת-תשואה. <span class="win">ההכנסה שלנו נמדדת - לא מובטחת</span>.</td>
+          </tr>
+          <tr>
+            <td><b>Hyperliquid</b></td>
+            <td class="num" data-tvl="hyperliquid">…</td>
+            <td>מסחר-פרפ, הכנסות שנשרפות למחזיקים</td>
+            <td>עמלות של סוחרים שמפסידים</td>
+            <td class="roast">הבורסה-הבהירה בעולם היא <b>קזינו עם מטבח-פתוח</b>: התשואה של המחזיקים באה מהפסדים של הסוחרים. בחרנו שלא לבנות קזינו - זה מקסימום הכנסה ומינימום ריבונות. <span class="win">את אותו כסף-מסחר אנחנו אוספים בגריד על שוק אמת</span>.</td>
+          </tr>
+          <tr class="us">
+            <td><b>SAOS</b> <span class="tag p">אנחנו</span></td>
+            <td class="num" id="our-tvl-cell">…</td>
+            <td>מסחר ב-0 גז + חיסכון שמתחלק בכל-ההכנסה-המדודה + יציאה מוכחת</td>
+            <td>ריבית-כספות + עמלות-גריד + עמלות-בריכות - <b>מועברות בפועל, לא מובטחות</b></td>
+            <td class="roast">בגודל - אפס מולם. בכנות - <span class="win">אנחנו היחידים כאן שמפרסמים גם את הכישלונות והכיסוי שלהם מודד בכל פעימה</span>. היתרון היחיד שאפשר לקנות בכסף הוא נזילות; את כל השאר - עלות, הוכחה, שליטה - כבר ניצחנו בהגדרה.</td>
+          </tr>
+        </tbody>
+      </table></div>
+      <p class="src">
+        TVL שלהם: DefiLlama <span class="mono">api.llama.fi/tvl/&lt;slug&gt;</span> בזמן-הפתיחה (נופל · תמונת-בנייה עם תאריך).
+        טווחי-תשואה שלהם: טענות-השוק שלהם, לא מדידה שלנו - נכתבים כטווחים ולא כמספר-אמת. שלנו: חי מ-<span class="mono">dex/world.json</span>.
+      </p>
+    </div>
+
+    <div class="card">
+      <h2>איפה הכסף יושב <span class="en">where funds sit · חי משני הצדדים</span></h2>
+      <p>
+        אצלם, ה-TVL יושב בחוזים-חכמים שמוגנים במולטיסיג ובגשרים - שכבות-אמון שכל אחת מהן נפרצה בעבר.
+        אצלנו, <b>הכסף של המפקיד לא זז מהכתובת הציבורית עד שהבעלים תובע</b> - וכל יתרה נמדדת חי מ-RPC ציבורי בלי מפתח:
+      </p>
+      <div class="hcards">
+        <div class="hcard">
+          <div class="nm">המשמרת שלנו <span class="mono">TRON</span></div>
+          <div class="tvl" id="f-custody-trx">… TRX</div>
+          <div class="gets">הכתובת הציבורית <span class="mono">TYVwwu…hZxTy</span>. נמדדת חי מ-trongrid, בלי-מפתח. זה הגיבוי הפיזי לכל WTRX שהוטבע.</div>
+        </div>
+        <div class="hcard">
+          <div class="nm">תיבת-הפדיון <span class="mono">outbox</span></div>
+          <div class="tvl" id="f-outbox-trx">… TRX</div>
+          <div class="gets">הכסף שכבר הרוויח המנוע וממתין לסף-שידור משתלם. פסק-הדין החי: <span id="f-verdict" class="mono">…</span></div>
+        </div>
+        <div class="hcard">
+          <div class="nm">הון-הגריד <span class="mono">STEEM</span></div>
+          <div class="tvl" id="f-steem">…</div>
+          <div class="gets">צד-המכירה של הגריד החיצוני + הדלק השבועי מה-powerdown. נמדד חי מ-api.steemit.com.</div>
+        </div>
+        <div class="hcard">
+          <div class="nm">הספר הפנימי <span class="mono">engine</span></div>
+          <div class="tvl" id="f-engine">$…</div>
+          <div class="gets">הון-העבודה: בריכות, עתודות, כספות. שקוף-לגמרי ב-<span class="mono">world.json</span> - כולל ההפסדים.</div>
+        </div>
+        <div class="hcard">
+          <div class="nm">ההכנסה שהוכחה <span class="mono">income</span></div>
+          <div class="tvl" id="f-income">$…</div>
+          <div class="gets">רווח-אוצר מצטבר + עמלות-בריכות שנצברו. <b>זה כל הכסף שהמנוע הרוויח אי-פעם</b> - מול $50 מיליארד אצלם.</div>
+        </div>
+        <div class="hcard">
+          <div class="nm">מה חסר <span class="mono">gap</span></div>
+          <div class="tvl" id="f-deposits">0</div>
+          <div class="gets">הפקדות-חוץ. הצינור בנוי ומאוכלס-אפס: ארבע מסילות (TRX/ETH/SOL/BTC) נסרקות כל-20-דקות. כשכסף חוץ ייכנס - הכל מעלה נזיל לכאן.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>מי עושה את העבודה <span class="en">who does things</span></h2>
+      <p>
+        אצלם: צוותי-פיתוח בשכר, מבקרי-אבטחה בחוזה, חקלאי-תשואה שנודדים אחרי הפליטה הבאה, וגריד-מוכנות של סוחרים.
+        אצלנו: <b>צי של <span class="mono" id="agent-count-inline">24</span> סוכנים על GitHub Actions</b> - ללא שרת-אם, ללא מפעיל-אנושי בלולאה, עם קבלה ציבורית לכל פעולה.
+        הסוכנים סופרים-מלאי, מזניקים-גריד ברגע שדלק נוחת, שומרים-אוצר, מפרסמים-אמת. הכל בקוד-פתוח בריפאים הציבוריים.
+      </p>
+      <p>
+        ההבדל האמיתי: אצלם הכסף עושה את העבודה. אצלנו <b>המכונה עושה את העבודה והכסף עוד לא הגיע</b>.
+        זה היתרון התחרותי היחיד שמצדיק את קיומנו מולם: תשתית שכבר רצה לבד, בעלות-אפס, שמחכה לכסף -
+        ולא כסף גדול שמחכה לתשתית.
+      </p>
+    </div>
+
+    <div class="card">
+      <h2>פסק-הדין הכן <span class="en">the honest verdict</span></h2>
+      <div class="verdict">
+        <div class="vrow">
+          <div class="k them">הם מוחצים אותנו</div>
+          <div class="b">
+            נזילות ($50B מול $69K) · תשואה בדולרים (3%-15% מול סנטים) · שנות-קרב (7-10 מול שבועות) ·
+            ביטוח וגופי-מבקר · אינטגרציות-ארנק ואורקלים-צד · <b>והפוך-מנוהל: אצלם אין יד-אחת שיכולה לגעת בספר</b>.
+          </div>
+        </div>
+        <div class="vrow">
+          <div class="k us">אנחנו מנצחים בהגדרה</div>
+          <div class="b">
+            עלות (0 גז מול $2-30 לפעולה) · הוכחה (כל טענה מוצלבת מול מדידה-חיה, כולל הכישלונות) ·
+            שליטה (הכסף בכתובת-ציבורית שלא זזה עד תביעה) · אוטונומיה (צי-סוכנים בלי-שרת) ·
+            ו<b>כנות כעקרון-הנדסי</b>: אצלנו תשואה מובטחת = באג, לא שיווק.
+          </div>
+        </div>
+        <div class="vrow">
+          <div class="k" style="color:var(--gold)">המסקנה המעשית</div>
+          <div class="b">
+            לא מתחרים על המפקיד-הזהב של Aave - מתחרים על המפקיד שרוצה <b>שליטה, הוכחה ואפס-עלות</b>, ומוכן לגודל-קטן.
+            כל כלי-DeFi שמכבד את עצמו - הלוואות, חיסכון, ve, בונדים, אצוות, DCA, השקות - כבר מותאם בגרעין שלנו.
+            מה שנשאר לעשות זה לספור את המים שעוברות בצינור: <b>דלק-חוץ · גריד · הכנסה · חוסכים · נזילות · צינור-גדול-יותר</b>.
+          </div>
+        </div>
+      </div>
+      <div class="flowline">
+        <span class="step">הפקדה-חוץ</span><span class="arr">·</span>
+        <span class="step">זיכוי-USDS</span><span class="arr">·</span>
+        <span class="step hot">חיסכון</span><span class="arr">·</span>
+        <span class="step hot">כספת-הלוואות</span><span class="arr">·</span>
+        <span class="step">ריבית-אמת</span><span class="arr">·</span>
+        <span class="step">חלוקה-לחוסכים</span><span class="arr">·</span>
+        <span class="step">פדיון-חוץ</span>
+      </div>
+      <p class="note">
+        החוליה שנוספה בסבב זה (R40): מכשיר-החיסכון - התשובה ל"למה להפקיד". המפקיד מזקין USDS
+        ומקבל את כל-ההכנסה-המדודה של המנוע, פרו-ראטה, בלי-הטבעה: הריבית שלו מגיעה מפירעונות-אמת
+        של לווים ומועברת מיתרת-האוצר החיה. אין הכנסה - אין חלוקה. השיעור המפורסם הוא הנמדד, תמיד.
+      </p>
+    </div>
+
+    <div class="card">
+      <h2>המכשיר החדש: חיסכון-USDS <span class="en">THE-SAVE · live from the chain</span></h2>
+      <div class="pulse" style="margin-bottom:8px">
+        <div class="pcard"><div class="v our" id="s-pot">…</div><div class="l">קרן-החוסכים (חי)</div></div>
+        <div class="pcard"><div class="v our" id="s-savers">…</div><div class="l">חוסכים</div></div>
+        <div class="pcard"><div class="v our" id="s-paid">…</div><div class="l">ריבית שחולקה מצטברת</div></div>
+        <div class="pcard"><div class="v our" id="s-apy">…</div><div class="l">שיעור-יום מדוד (שנתי)</div></div>
+      </div>
+      <p>
+        מה שהמפקיד עושה עם הכסף שלו, צעד-אחר-צעד: מפקיד בכל-מסילה (TRX/ETH/SOL/BTC) · הצופה מפרסם בספר-הפתוח ·
+        חותם תביעה בארנק-הדפדפן · הלב מזכה USDS על שמו הקנוני · <b>מרגע-זה הכסף מרוויח מכל-פעימה של המנוע</b> ·
+        וביציאה: נעילה, שחרור אמת מהכתובת, אימות-קישור על-הרשת-החוץ. כל-צעד מוכח-קצה-לקצה בקבלות הציבוריות.
+      </p>
+      <p class="src">
+        מקור-אמת: <span class="mono">dex/world.json · state.savings</span> - מתפרסם מהפעימה הקרובה של הלב הענני.
+        אם מוצג "-" - המכשיר טרם התאכלס. ההוכחה המקומית המלאה (מחזור: הפקדה · הכנסה · חלוקה · משיכה, אפס-הטבעה):
+        <a href="receipts/index.html">קיר-הקבלות</a>.
+      </p>
+    </div>
+
+  </div>
+</main>
+<footer>
+  <div class="wrap">
+    <span>אנחנו מול הענקים · <a href="index.html">הקונסולה</a> · <a href="truth.html">שער האמת</a> · <a href="money.html">נתיב הכסף</a></span>
+    <span>מקורות: DefiLlama + קבצי-האמת של האתר · מדידה: <span class="mono" id="snapts">2026-09-18</span></span>
+  </div>
+</footer>
+<script>
+(function(){
+"use strict";
+/* תמונת-בנייה - נכתבה בעת-הפרסום; כל-ערך חי דורס אותה בזמן-הפתיחה */
+var SNAP = {
+  measuredAt: "2026-09-18T05:05:00Z",
+  theirTvl: { aave: 17965649532, makerdao: 5632337799, "curve-dex": 1271558923, uniswap: 3610292907, morpho: 10255939437, ethena: 5172454076, hyperliquid: 6741095332 },
+  our: { height: 23000, bookUsd: 69092, incomeUsd: 456, agents: 24, deposits: 0,
+         custodyTrx: 2.000002, outboxTrx: 0.1, verdict: "WAIT",
+         steem: 1.232, sbd: 0.049, weeklySp: 470.84, weeklyUsd: 24.9 },
+  save: null
+};
+var LLAMA = "https://api.llama.fi/tvl/";
+var B = (location.href.match(/\/[Cc]onsole\//) || ["/"])[0];
+function jget(u){return fetch(u,{cache:"no-store"}).then(function(r){if(!r.ok)throw 0;return r.json();}).catch(function(){return null;});}
+function bil(v){ if(v>=1e9) return "$"+(v/1e9).toFixed(1)+"B"; if(v>=1e6) return "$"+(v/1e6).toFixed(1)+"M"; if(v>=1e3) return "$"+(v/1e3).toFixed(1)+"K"; return "$"+v.toFixed(0); }
+function mus(v){ return "$"+(v/1e3).toFixed(v>=1e5?0:2); } /* µ במנוע = מילי-דולר - המרה-אמת (R40) */
+function el(id){ return document.getElementById(id); }
+
+function renderTheirs(){
+  var total = 0, live = 0;
+  var rows = document.querySelectorAll("[data-tvl]");
+  rows.forEach(function(td){
+    var slug = td.getAttribute("data-tvl");
+    td.textContent = "…";
+    jget(LLAMA + slug).then(function(v){
+      var val = (typeof v === "number" && v > 0) ? v : (SNAP.theirTvl[slug] || 0);
+      td.textContent = bil(val);
+      if (typeof v === "number" && v > 0) live++;
+      total += 0; /* סכום-כולל יחושב-מטה */
+    });
+  });
+  /* סכום-כולל: ננסה-חי; נפילה - תמונת-בנייה */
+  Promise.all(Object.keys(SNAP.theirTvl).map(function(s){ return jget(LLAMA + s).then(function(v){ return (typeof v === "number" && v > 0) ? v : SNAP.theirTvl[s]; }); }))
+    .then(function(vals){
+      var t = vals.reduce(function(a,b){ return a + b; }, 0);
+      el("k-their-tvl").textContent = bil(t);
+      el("k-their-tvl").title = live > 0 ? "live DefiLlama" : "build snapshot " + SNAP.measuredAt;
+    });
+}
+
+function renderOurs(){
+  jget(B + "dex/portfolio.json").then(function(P){
+    var t = P && P.portfolio && P.portfolio.totalUsdsMu;
+    if(typeof t === "number" && t > 0){
+      var usd = t / 1e3; /* µ במנוע = מילי-דולר */
+      el("k-our-book").textContent = bil(usd);
+      el("our-tvl-cell").textContent = bil(usd);
+      el("f-engine").textContent = bil(usd);
+      el("k-our-book").title = el("our-tvl-cell").title = "dex/portfolio.json · core book, live";
+    }
+  });
+  jget(B + "dex/world.json").then(function(W){
+    if(!W || !W.state){ return; }
+    var s = W.state;
+    var inc = s.income || {};
+    el("f-income").textContent = mus((inc.poolFeesMu||0) + (inc.treasuryProfitMu||0));
+    /* המכשיר החדש */
+    var sv = s.savings;
+    if(sv){
+      el("s-pot").textContent = mus(sv.potMu);
+      el("s-savers").textContent = String(sv.savers);
+      el("s-paid").textContent = mus(sv.paidMu);
+      el("s-apy").textContent = sv.apyBps > 0 ? ((sv.apyBps/100).toFixed(2) + "%") : (sv.potMu > 0 ? "0.00%" : "-");
+      var inline = el("inline-apy"); if(inline && sv.potMu > 0) inline.textContent = mus(sv.paidMu);
+    } else {
+      el("s-pot").textContent = "-"; el("s-savers").textContent = "-"; el("s-paid").textContent = "-"; el("s-apy").textContent = "-";
+    }
+  });
+  jget(B + "dex/money.json").then(function(M){
+    if(!M) return;
+    if(M.redemption){
+      el("f-custody-trx").textContent = (M.redemption.custody && M.redemption.custody.balanceTrx || SNAP.our.custodyTrx).toFixed(6) + " TRX";
+      el("f-outbox-trx").textContent = (M.redemption.outboxTrx || 0).toFixed(2) + " TRX";
+      el("f-verdict").textContent = M.redemption.verdict + " · " + (M.redemption.action || "");
+    }
+    if(M.fuel){
+      el("f-steem").textContent = (M.fuel.steem||0).toFixed(3) + " STEEM + " + (M.fuel.sbd||0).toFixed(3) + " SBD";
+      var wk = M.fuel.powerdown && M.fuel.powerdown.rateSp || SNAP.our.weeklySp;
+      el("f-steem").title = "powerdown שבועי: " + wk.toFixed(1) + " SP ≈ $" + (SNAP.our.weeklyUsd).toFixed(0);
+    }
+  });
+  jget(B + "agents/registry.json").then(function(R){
+    if(!R || !R.agents) return;
+    var n = R.agents.length;
+    el("k-agents").textContent = String(n);
+    el("agent-count-inline").textContent = String(n);
+  });
+  jget(B + "dex/watch.json").then(function(WD){
+    if(WD && typeof WD.depositsTotal === "number"){
+      el("f-deposits").textContent = String(WD.depositsTotal);
+    }
+  });
+}
+
+renderTheirs();
+renderOurs();
+})();
+</script>
+
+<script>
+/* Z-29-a mobile menu · Z-28 pattern: closes on link tap, outside click, Esc, route change */
+(function(){
+  var hd=document.querySelector('header.nhead'),b=document.getElementById('mburger');
+  if(!hd||!b)return;
+  function set(o){hd.classList.toggle('nav-open',o);b.setAttribute('aria-expanded',o?'true':'false');}
+  b.addEventListener('click',function(e){e.stopPropagation();set(!hd.classList.contains('nav-open'));});
+  document.addEventListener('click',function(e){if(hd.classList.contains('nav-open')&&!hd.contains(e.target))set(false);});
+  hd.addEventListener('click',function(e){if(e.target.closest&&e.target.closest('a'))set(false);});
+  window.addEventListener('hashchange',function(){set(false);});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')set(false);});
+})();
+</script>
+</body>
+</html>
