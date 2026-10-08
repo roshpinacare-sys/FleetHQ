@@ -17,8 +17,19 @@
  */
 import fs from 'node:fs';
 import path from 'node:path';
+import os from 'node:os';
 
 const RECEIPTS = '/home/z/my-project/receipts';
+
+// ---- HOST MEMORY LAW (owner question, answered with code) ----------------
+// The 2.5GB available-memory boundary is the sovereign ceiling: below it the
+// runtime must compact context instead of spawning/loading. The snapshot
+// engine MEASURES the host every cycle, records the curve into
+// receipts/host-mem.jsonl (bounded), and writes an EDGE-TRIGGERED compaction
+// request into receipts/compaction-requests.jsonl exactly when the ceiling is
+// crossed (not every 30s — one honest request per crossing).
+const MEM_CEILING_AVAIL_MB = 2560; // the 2.5GB sovereign boundary
+let memCeilingBreached = false; // edge trigger state
 const GATEWAY = 'http://127.0.0.1:3011';
 const POLL_MS = 30_000;
 const HISTORY_EVERY_MS = 10 * 60_000;
@@ -46,8 +57,52 @@ function appendBounded(file: string, line: string, max: number): void {
   atomicWrite(file, lines.join('\n') + '\n');
 }
 
+function sampleHost(): {
+  total_mb: number;
+  avail_mb: number;
+  used_pct: number;
+  load1: number;
+  rss_mb: number;
+  compact_suggested: boolean;
+} {
+  const total = os.totalmem();
+  const avail = os.freemem();
+  const availMb = Math.round(avail / 1024 / 1024);
+  return {
+    total_mb: Math.round(total / 1024 / 1024),
+    avail_mb: availMb,
+    used_pct: Math.round(((total - avail) / total) * 100),
+    load1: Math.round(os.loadavg()[0] * 100) / 100,
+    rss_mb: Math.round(process.memoryUsage.rss() / 1024 / 1024),
+    compact_suggested: availMb < MEM_CEILING_AVAIL_MB,
+  };
+}
+
 async function pull(): Promise<void> {
   const at = new Date().toISOString();
+  const host = sampleHost();
+  // memory curve — one bounded line per cycle (30s), pruned to 500
+  appendBounded(
+    path.join(RECEIPTS, 'host-mem.jsonl'),
+    JSON.stringify({ at, ...host }),
+    500,
+  );
+  // EDGE-TRIGGERED compaction request: fire only on ceiling crossing
+  if (host.compact_suggested && !memCeilingBreached) {
+    appendBounded(
+      path.join(RECEIPTS, 'compaction-requests.jsonl'),
+      JSON.stringify({
+        at,
+        kind: 'compaction-request',
+        reason: 'host avail below 2.5GB sovereign ceiling',
+        avail_mb: host.avail_mb,
+        engine: 'sovereign-stack/compaction.py',
+      }),
+      200,
+    );
+    console.log(`[telemetry-snapshot] MEM CEILING BREACH — avail ${host.avail_mb}MB < ${MEM_CEILING_AVAIL_MB}MB, compaction requested`);
+  }
+  memCeilingBreached = host.compact_suggested;
   let payload: Record<string, unknown>;
   try {
     const [tel, health] = await Promise.all([
@@ -67,10 +122,11 @@ async function pull(): Promise<void> {
       },
       totals: t.totals ?? null,
       families: t.families ?? [],
+      host,
     };
   } catch (e) {
     // honest failure: the snapshot says the gateway was NOT reachable now
-    payload = { at, ok: false, error: (e as Error).message };
+    payload = { at, ok: false, error: (e as Error).message, host };
   }
   atomicWrite(LATEST, JSON.stringify(payload, null, 2) + '\n');
   // history: 10-minute cadence, bounded — enough for trend postmortems
