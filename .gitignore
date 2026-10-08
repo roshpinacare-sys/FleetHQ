@@ -87,3 +87,13 @@ vault/wraps/
 sovereign-agent.env
 # private vault repo working copy
 .vault-private-repo/
+
+# ── air-gap kit: machine-local artifacts never travel ────────────────────────
+# 1.9GB model binaries, per-host probe results and tuned env stay local
+mini-services/sovereign-gateway/airgap/models/
+mini-services/sovereign-gateway/airgap/host-capabilities.json
+mini-services/sovereign-gateway/airgap/llama-host.env
+mini-services/sovereign-gateway/airgap/download.log
+mini-services/sovereign-gateway/airgap/download-status.txt
+# .env.example files are documentation — they MUST ship (secrets never do)
+!**/.env.example

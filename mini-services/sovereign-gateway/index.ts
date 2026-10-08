@@ -240,6 +240,55 @@ const stats = {
   lastLatencyMs: 0,
 };
 
+// ---- proactive family telemetry (SOVEREIGNTY PROTOCOL §1) --------------------------------
+// Rolling per-family event log over the last hour. The walk RE-INDEXES family
+// priority from this BEFORE any attempt budget is spent: a family whose 429
+// rate climbs is demoted for real, not discovered-the-hard-way. No content,
+// no keys — brain ids, status classes and latencies only.
+const TELEMETRY_WINDOW_MS = 60 * 60_000; // owner spec: “the last hour”
+const TELEMETRY_MAX_EVENTS = 600; // per family — bounded memory, honest
+export type TelemetryKind = 'ok' | 'rate' | 'hard' | 'net';
+const familyEvents = new Map<string, Array<{ t: number; k: TelemetryKind; ms?: number }>>();
+function recordFamily(family: string, k: TelemetryKind, ms?: number): void {
+  let arr = familyEvents.get(family);
+  if (!arr) {
+    arr = [];
+    familyEvents.set(family, arr);
+  }
+  arr.push({ t: Date.now(), k, ms });
+  if (arr.length > TELEMETRY_MAX_EVENTS) arr.splice(0, arr.length - TELEMETRY_MAX_EVENTS);
+}
+function familyHealth(family: string): {
+  total: number; ok: number; rate: number; hard: number; net: number; avgMs: number | null; score: number;
+} {
+  const cutoff = Date.now() - TELEMETRY_WINDOW_MS;
+  const ev = (familyEvents.get(family) ?? []).filter((e) => e.t >= cutoff);
+  const oks = ev.filter((e) => e.k === 'ok');
+  const rate = ev.filter((e) => e.k === 'rate').length;
+  const hard = ev.filter((e) => e.k === 'hard').length;
+  const net = ev.filter((e) => e.k === 'net').length;
+  const avgMs = oks.length ? Math.round(oks.reduce((a, e) => a + (e.ms ?? 0), 0) / oks.length) : null;
+  const total = ev.length;
+  // score ∈ [0,1]: success +1, 429 −0.7, hard death −1, network death −0.4;
+  // no data → neutral 0.5 (an unproven family is neither promoted nor buried).
+  // Families that answer but are slow (>20s avg) carry a small latency penalty.
+  const raw = total ? (oks.length - 0.7 * rate - 1.0 * hard - 0.4 * net) / total : 0.5;
+  const latencyPenalty = avgMs != null && avgMs > 20_000 ? 0.85 : 1;
+  return { total, ok: oks.length, rate, hard, net, avgMs, score: Math.max(0, Math.min(1, raw * latencyPenalty)) };
+}
+// adaptive cooldown multiplier: the denser the 429 traffic in the window, the
+// longer every new cooldown inside that family lives (thundering-herd respect;
+// the owner protocol: “autonomously adjust cooling periods by traffic density”)
+function adaptiveMultiplier(family: string): number {
+  const h = familyHealth(family);
+  if (!h.total) return 1;
+  const density = h.rate / h.total; // 0..1 within the window
+  return 1 + Math.min(3, density * 4); // up to ×4 during a live 429 storm
+}
+function familiesInBuildOrder(): string[] {
+  return [...new Set(brains().map((b) => b.name.replace(/-\d+$/, '')))];
+}
+
 // ---- lossy context compaction (the manifest's “Lossy Text Compaction”) -----
 // Free brains have small windows; a bloated history is the #1 self-inflicted
 // 400/429. The gateway compacts ONCE per request, provider-agnostically:
@@ -430,8 +479,22 @@ async function walkChain(
   // global sanity cap stays 24; the deadline remains the true commander.
   const perFamily = Math.max(3, Math.min(10, maxAttempts));
   const familyTried = new Map<string, number>();
+  // PROACTIVE RE-INDEX (protocol §1): families are walked best-score-first —
+  // a family whose 429/hard rate climbed in the last hour is demoted BEFORE
+  // its attempt budget burns. Original build order breaks score ties, so a
+  // fully-healthy chain walks exactly like the static doctrine chain.
+  const familyOrder = familiesInBuildOrder()
+    .map((f, idx) => ({ f, idx, score: familyHealth(f).score }))
+    .sort((a, b) => b.score - a.score || a.idx - b.idx)
+    .map((x) => x.f);
+  const brainsByFamily = new Map<string, Brain[]>();
   for (const b of brains()) {
-    const family = b.name.replace(/-\d+$/, ''); // openrouter-1/2/3 → one family
+    const f = b.name.replace(/-\d+$/, ''); // openrouter-1/2/3 → one family
+    if (!brainsByFamily.has(f)) brainsByFamily.set(f, []);
+    brainsByFamily.get(f)!.push(b);
+  }
+  walk: for (const family of familyOrder) {
+    for (const b of brainsByFamily.get(family) ?? []) {
     for (const model of b.models) {
       const id = `${b.name}/${model}`;
       if ((cooldownUntil.get(id) ?? 0) > Date.now()) continue;
@@ -439,7 +502,7 @@ async function walkChain(
         throw lastErr ?? new Error('deadline passed before any live brain');
       }
       if ((familyTried.get(family) ?? 0) >= perFamily) continue; // family quota burned → move on
-      if (attempts >= 24) break; // global sanity cap
+      if (attempts >= 24) break walk; // global sanity cap
       await yieldToReception(isPriority, Math.min(deadline, Date.now() + 3000));
       attempts++;
       familyTried.set(family, (familyTried.get(family) ?? 0) + 1);
@@ -453,6 +516,7 @@ async function walkChain(
         cooldownUntil.delete(id);
         stats.lastAnsweredVia = id;
         stats.lastLatencyMs = Date.now() - t0;
+        recordFamily(family, 'ok', stats.lastLatencyMs);
         return { text, brain: id, attempts, latencyMs: stats.lastLatencyMs };
       } catch (e) {
         lastErr = e;
@@ -463,14 +527,20 @@ async function walkChain(
         console.log(`[gateway] brain failed: ${id} → ${status ?? 'network'} ${msg.slice(0, 120)}`);
         if (status === 429 || m.includes('429') || m.includes('too many')) {
           rateHits++;
-          cool(id, RATE_COOLDOWN_MS);
+          recordFamily(family, 'rate');
+          // adaptive: during a live 429 storm the family's cooldowns stretch
+          cool(id, Math.round(RATE_COOLDOWN_MS * adaptiveMultiplier(family)));
         } else if ((status && HARD_STATUS.has(status)) || status === 404 || status === 400 || m.includes('not available') || m.includes('unavailable') || m.includes('no endpoints')) {
+          recordFamily(family, 'hard');
           cool(id, HARD_COOLDOWN_MS);
         } else if (!status) {
-          // network-level death (timeout / refused / dns) — cheap fast retry
-          cool(id, NET_COOLDOWN_MS);
+          // network-level death (timeout / refused / dns) — cheap fast retry,
+          // still density-scaled so a net-dead family isn't hammered in a loop
+          recordFamily(family, 'net');
+          cool(id, Math.round(NET_COOLDOWN_MS * adaptiveMultiplier(family)));
         }
       }
+    }
     }
   }
   // every env brain failed — the bundled platform SDK is the last living brain
@@ -550,6 +620,10 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> 
         return { id, state: until > now ? 'cooling' : 'live', cooling_for_s: until > now ? Math.ceil((until - now) / 1000) : 0 };
       }),
     );
+    // family priority as currently re-indexed by the proactive telemetry
+    const famOrder = familiesInBuildOrder()
+      .map((f, idx) => ({ f, idx, score: familyHealth(f).score }))
+      .sort((a, b) => b.score - a.score || a.idx - b.idx);
     json(res, 200, {
       ok: true,
       service: 'sovereign-gateway',
@@ -561,7 +635,48 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> 
       compaction_budget_chars: COMPACTION_BUDGET,
       last_answered_via: stats.lastAnsweredVia || null,
       last_latency_ms: stats.lastLatencyMs || null,
+      family_priority: famOrder.map((x, i) => ({ rank: i + 1, family: x.f, score: Number(x.score.toFixed(3)) })),
       brains: state,
+    });
+    return;
+  }
+
+  // PROACTIVE TELEMETRY (protocol §1) — the office's own health matrix:
+  // per-family rolling window stats, live priority ranks and adaptive
+  // cooldown multipliers. No content, no keys — classes and counts only.
+  if (req.method === 'GET' && (url === '/telemetry' || url === '/v1/telemetry')) {
+    const famOrder = familiesInBuildOrder()
+      .map((f, idx) => ({ f, idx, score: familyHealth(f).score }))
+      .sort((a, b) => b.score - a.score || a.idx - b.idx);
+    const families = famOrder.map(({ f, idx, score }, i) => {
+      const h = familyHealth(f);
+      return {
+        family: f,
+        build_index: idx + 1,
+        priority_rank: i + 1,
+        score: Number(score.toFixed(3)),
+        window_minutes: Math.round(TELEMETRY_WINDOW_MS / 60_000),
+        total: h.total,
+        ok: h.ok,
+        rate429: h.rate,
+        hard: h.hard,
+        net: h.net,
+        avg_latency_ms: h.avgMs,
+        cooldown_multiplier: Number(adaptiveMultiplier(f).toFixed(2)),
+      };
+    });
+    json(res, 200, {
+      ok: true,
+      service: 'sovereign-gateway',
+      telemetry: 'proactive-family-reindex-v2.2',
+      window_minutes: Math.round(TELEMETRY_WINDOW_MS / 60_000),
+      totals: {
+        requests: stats.requests,
+        answered: stats.answered,
+        failed: stats.failed,
+        compactions: stats.compactions,
+      },
+      families,
     });
     return;
   }
