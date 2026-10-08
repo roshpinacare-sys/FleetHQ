@@ -23,11 +23,16 @@ compaction twin → hash-chained MANIFEST anchor → binary Merkle seal.
 """
 from __future__ import annotations
 import argparse
+import hashlib
 import json
+import os
 import sys
 import time
 from datetime import datetime, timezone
 from pathlib import Path
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import packster                                # noqa: E402
 
 ROOT = Path(__file__).resolve().parent
 
@@ -151,14 +156,43 @@ def build_spec(date: str, data: dict, cap: int = 24) -> dict:
     }
 
 
+def _pack_snapshot(root: Path, spec: dict, force: bool = False) -> dict:
+    """Task 33-a: binary packster snapshot of the frozen spec.
+    Deterministic (canonical msgpack) → identical spec → identical bytes.
+    Writes ONLY when missing/stale (self-heal) — the JSON spec itself is
+    NEVER rewritten after the freeze. Savings are measured, not claimed."""
+    h = root / "health"
+    h.mkdir(parents=True, exist_ok=True)
+    packed = packster.pack(spec)
+    p = h / "digest-latest.pack"
+    need = force or not p.is_file() or p.read_bytes() != packed
+    if need:
+        tmp = p.with_suffix(".pack.tmp")
+        tmp.write_bytes(packed)
+        tmp.replace(p)
+        (h / "digest-latest.pack.sha256").write_text(
+            hashlib.sha256(packed).hexdigest() + "\n", encoding="utf-8")
+    raw_json = json.dumps(spec, ensure_ascii=False).encode("utf-8")
+    return {"bytes": len(packed), "json_bytes": len(raw_json),
+            "savings_pct": (round(100.0 * (1.0 - len(packed) / len(raw_json)), 1)
+                            if raw_json else 0.0),
+            "codec": "msgpack-canonical", "written": need}
+
+
 def emit(root: Path, cap: int = 24) -> dict:
     """Write today's frozen spec (once per UTC day). Never fatal."""
     root = Path(root)
     date = _today()
     out_path = root / "content" / "sources" / f"fleet-telemetry-{date}.json"
     if out_path.is_file():
+        # freeze law intact: only the binary pack may self-heal, never the spec
+        try:
+            heal = _pack_snapshot(root, json.loads(
+                out_path.read_text(encoding="utf-8")), force=False)
+        except Exception as e:
+            heal = {"written": False, "error": f"{type(e).__name__}:{e}"}
         return {"emitted": False, "reason": "frozen", "path": str(out_path),
-                "date": date}
+                "date": date, "pack": heal}
     try:
         data = collect(root, cap)
         if data["missing"]:
@@ -171,7 +205,9 @@ def emit(root: Path, cap: int = 24) -> dict:
         tmp.write_text(json.dumps(spec, ensure_ascii=False, indent=1) + "\n",
                        encoding="utf-8")
         tmp.replace(out_path)
-        return {"emitted": True, "path": str(out_path), "date": date}
+        pack_info = _pack_snapshot(root, spec, force=True)
+        return {"emitted": True, "path": str(out_path), "date": date,
+                "pack": pack_info}
     except Exception as e:                      # never break the streamer
         return {"emitted": False, "reason": f"error:{type(e).__name__}:{e}",
                 "date": date}

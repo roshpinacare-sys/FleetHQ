@@ -1,5 +1,5 @@
 <!-- sovereign-rail
-parent_broadcast_root: acc768c5d8c3bff302da3b5ed6e9cec021d292298bf22f2ffc926fcf4bc69c2d
+parent_broadcast_root: b05246f541fbdb59bdbd62abc3b266ca3aeaffd564fa460983453e815b4a2d8d
 source: content/sources/sovereign-recovery-task30.json
 source_sha256: 83c619d754e368ddacae931b1b31a5865a8f2c8be76f74339950bd8baaa0c756
 -->
