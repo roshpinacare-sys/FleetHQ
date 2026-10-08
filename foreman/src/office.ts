@@ -998,7 +998,12 @@ export class Office {
       ], 700);
       const rep = extractJson<{ title?: string; body?: string }>(res.text);
       if (rep?.title && rep?.body) {
-        this.addReport({ title: rep.title, body: rep.body, author: LEAD });
+        // INDEPENDENT QA SIEVE — one honest pass (never a loop): a second
+        // brain checks the draft against the facts on record. If the sieve
+        // itself fails, the draft is published unchanged — honesty first.
+        const qa = await this.qaSieve(rep.body, doneTasks);
+        if (qa.changed) this.log(LEAD, 'result', 'QA sieve: הדוח תוקן לפני פרסום');
+        this.addReport({ title: rep.title, body: qa.body, author: LEAD });
         this.log(LEAD, 'report', rep.title);
       } else {
         this.log(LEAD, 'error', 'final report parse failed');
@@ -1023,6 +1028,29 @@ export class Office {
       this.setGoal({ status: 'done', progress: 1 });
     } finally {
       rt.running = false;
+    }
+  }
+
+  /** Independent QA sieve for final reports — single pass, fail-open, no loops. */
+  async qaSieve(body: string, facts: Array<{ title: string; summary?: string }>): Promise<{ body: string; changed: boolean }> {
+    try {
+      const res = await chat([
+        { role: 'system', content: 'אתה בקר איכות עצמאי של מפקדת הצי. בדוק טיוטת סיכום מול העובדות בשטח. השב אך ורק JSON.' },
+        {
+          role: 'user',
+          content:
+            `עובדות בשטח:\n${facts.map((t) => `- ${t.title}: ${t.summary ?? ''}`).join('\n')}\n\nטיוטת הסיכום:\n${body}\n\n` +
+            'השב: {"ok":true,"body":"..."} אם הטיוטה מדויקת (body = הטיוטה עצמה), או {"ok":false,"body":"..."} עם גרסה מתוקנת שמסירה כל טענה ללא סימוכין בעובדות, מסמנת אי-ודאות ושומרת עברית ואורך דומה. אסור להמציא.',
+        },
+      ], 700);
+      const qa = extractJson<{ ok?: boolean; body?: string }>(res.text);
+      if (qa?.body && qa.body.trim().length > 20 && qa.body.trim() !== body.trim()) {
+        return { body: qa.body.trim(), changed: true };
+      }
+      return { body, changed: false };
+    } catch (e) {
+      this.log(LEAD, 'error', `QA sieve unavailable — publishing draft unchanged (${(e as Error).message})`);
+      return { body, changed: false };
     }
   }
 
