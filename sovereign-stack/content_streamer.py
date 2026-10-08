@@ -29,6 +29,7 @@ from pathlib import Path
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import content_rail                            # noqa: E402
+import telemetry_digest                        # noqa: E402
 from content_rail import RefusedStage, compile_source, verify_rail  # noqa: E402
 from mem_profiler import effective_budget       # noqa: E402
 from memory_store import MemoryStore            # noqa: E402
@@ -112,11 +113,24 @@ def effective_compaction_budget(stack_root: Path, base: int = 4000) -> dict:
 
 
 def stream(stack_root: Path = ROOT, hq: Path | None = Path(DEFAULT_HQ),
-           base_budget: int = 4000) -> dict:
+           base_budget: int = 4000,
+           telemetry: bool = True) -> dict:
     root = Path(stack_root)
     src_dir = root / "content" / "sources"
     src_dir.mkdir(parents=True, exist_ok=True)
     budget = effective_compaction_budget(root, base_budget)
+
+    # Task 32-a: daily FROZEN telemetry digest → the content queue.
+    # Must run BEFORE the source scan so today's spec is picked up now.
+    # Honest + never fatal: errors become a recorded skip, not a crash.
+    if telemetry:
+        try:
+            tele = telemetry_digest.emit(root)
+        except Exception as e:                     # belt & braces
+            tele = {"emitted": False,
+                    "reason": f"error:{type(e).__name__}:{e}"}
+    else:
+        tele = {"emitted": False, "reason": "disabled"}
 
     compiled, refused, unchanged = [], [], []
     for src in sorted(src_dir.glob("*.json")):
@@ -157,6 +171,7 @@ def stream(stack_root: Path = ROOT, hq: Path | None = Path(DEFAULT_HQ),
                            "bad": det.get("bad", [])},
         "compaction_budget": budget,
         "cross_lineage": cross,
+        "telemetry": tele,
         "counts": {"compiled_now": len(compiled), "unchanged": len(unchanged),
                    "refused": len(refused)},
         "refused": refused,
@@ -181,6 +196,7 @@ def stream(stack_root: Path = ROOT, hq: Path | None = Path(DEFAULT_HQ),
                       "files": len(leaves), "chain_ok": ok,
                       "cross_match": cross.get("convention_match"),
                       "budget": budget["budget"],
+                      "telemetry": tele.get("reason") or tele.get("emitted"),
                       "counts": seal["counts"]}, ensure_ascii=False))
     return seal
 
@@ -192,13 +208,15 @@ def main() -> int:
     ap.add_argument("--root", default=str(ROOT))
     ap.add_argument("--hq", default=DEFAULT_HQ)
     ap.add_argument("--base-budget", type=int, default=4000)
+    ap.add_argument("--no-telemetry", action="store_true",
+                    help="skip the daily telemetry digest emission")
     a = ap.parse_args()
     if not a.once and not a.loop:
         a.once = True
     rc = 0
     while True:
         seal = stream(Path(a.root), Path(a.hq) if a.hq else None,
-                      a.base_budget)
+                      a.base_budget, telemetry=not a.no_telemetry)
         rc = 0 if seal["state"] == "BROADCAST-READY" else 1
         if not a.loop:
             return rc

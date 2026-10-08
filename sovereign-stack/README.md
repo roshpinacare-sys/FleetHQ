@@ -21,7 +21,8 @@ original proposal this replaces).
 | `health_monitor.py` | 90000ms-law probe loop → status.json/history.jsonl + immutable alert receipts | selftest T9 |
 | `tps_bench.py` | Honest Tier-0 TPS probe → deterministic compaction budget | exit 4 = UNREACHABLE (honest) |
 | `content_streamer.py` | Sources → rails streamer, binary Merkle seal, BROADCAST-READY state | selftest T10 |
-| `mem_profiler.py` | /proc memory law: <500MB ⇒ forced tighter compaction (OOM defense) | selftest T11 |
+| `telemetry_digest.py` | Daily FROZEN telemetry digest → content queue (Task 32) | selftest T12 |
+| `mem_profiler.py` | /proc memory law + graduated guard 600/400MB (Task 32) | selftest T11/T13 |
 | `drill_breaker.py` | Circuit-breaker recovery drill (Task 29) | 8/8 PASS |
 | `tamper_watch.py` | Hash-chain watchdog: lock → quarantine → origin rebuild (Task 29) | scope-contract v2 |
 | `vault_env_bridge.py` | Vault → .env (0600) with fingerprint-only receipts (Task 29) | fail-closed proven ×3 |
@@ -73,8 +74,8 @@ python3 content_rail.py verify
 python3 health_monitor.py --once          # or --loop 300 (5-minute sentinel)
 python3 tps_bench.py --endpoint http://localhost:8080
 python3 content_streamer.py --once        # or --loop 300: seal BROADCAST-READY
-python3 mem_profiler.py --once            # or --loop 60: OOM defense law
-python3 selftest.py                       # T1–T11, must stay green
+python3 mem_profiler.py --once --guard    # or --loop 60: OOM law + graduated guard
+python3 selftest.py                       # T1–T13, must stay green
 ```
 
 Laws enforced in this layer:
@@ -106,6 +107,33 @@ Laws enforced in this layer:
    - Cross-lineage with the twin's `books-lineage.json` is verified from its
      own leaf hashes; convention mismatch is **recorded honestly**
      (match=false measured 2026-10-08), never faked.
+
+## Task 32 — operator questions answered (implemented, not debated)
+
+**Q1 — network/host performance into the daily content queue? YES, governed.**
+`telemetry_digest.py` compiles measured state (`health/mem.json`,
+`status.json`, `tps.json` + bounded history tail) into
+`content/sources/fleet-telemetry-<date>.json`. The streamer then treats it
+like any source: deterministic md → compaction twin → secret scan → hash-chain
+anchor → inside the Merkle seal. Laws: **FREEZE** (one spec per UTC day, the
+first emit wins — later emits never rewrite), **MEASURED** (missing files →
+honest skip, never invented), **MINIMAL** (no URLs, no paths — names,
+verdicts, latencies, counts only), **BOUNDED** (history cap, default 24).
+First real digest anchored live: root `b05246f541fbdb59…`.
+
+**Q2 — auto-kill at a secondary 600MB limit? NO blind killing — a graduated
+law instead.** (`mem_profiler.py --guard`, every action receipted):
+
+| Tier | Condition | Action |
+|---|---|---|
+| OK | ≥600MB | nothing |
+| SOFT | <600MB | purge REGENERABLE artifacts only (history.jsonl → last 50 lines, stray `*.tmp`) + `GUARDPURGE` receipt |
+| HARD | <400MB | everything above + SIGTERM **only** to processes matching the explicit `guard-allowlist.txt` ∧ **not** protected-core ∧ provably idle (zero CPU-tick delta over the sample; grace re-sample for cold spawns) — `GUARDKILL` receipts; **dry-run is the default** (`GUARDDRAFT` receipts, no signal; real enforcement needs `--guard-enforce`) |
+
+The allowlist ships EMPTY — by default nothing is killable. The protected
+core (control plane, sentinels, git, caddy…) always wins over the allowlist.
+Purpose-built: the kernel OOM-killer stays the last resort; our law is
+measurement + degradation + receipts, not violence against the fleet itself.
 
 ## Why the evasion tricks from the original proposal are NOT here
 

@@ -13,6 +13,8 @@ Proves, on THIS machine, right now:
   T9  health monitor: snapshot files + immutable alert receipts + chain
   T10 streamer: binary merkle seal + self-healing determinism + cross-lineage
   T11 mem profiler: /proc parse + OOM policy (500MB law) + budget composition
+  T12 telemetry digest: daily FREEZE law + streamer integration (Task 32-a)
+  T13 mem guard: tiers + protected-core + allowlisted idle-kill (Task 32-b)
 
 Exit code 0 = all critical tests PASS (T7 is informational).
 """
@@ -383,6 +385,122 @@ def t11_mem():
               f"{snap['mem_available_mb']}MB free of {snap['mem_total_mb']}MB")
 
 
+def t12_telemetry():
+    print("[T12] telemetry digest: daily freeze + streamer integration")
+    from datetime import datetime, timezone
+    from telemetry_digest import emit
+    with tempfile.TemporaryDirectory() as td:
+        root = Path(td)
+        h = root / "health"
+        h.mkdir(parents=True)
+        (h / "mem.json").write_text(json.dumps(
+            {"ts": "T", "cpus": 2, "loadavg": "0.1", "mem_total_mb": 4041.6,
+             "mem_available_mb": 2665.2, "state": "OK",
+             "policy_max_chars": 4000, "policy_reason": "ok"}),
+            encoding="utf-8")
+        (h / "status.json").write_text(json.dumps(
+            {"ts": "T", "all_ok": False, "results": [
+                {"name": "b-witness", "verdict": "OK", "latency_ms": 64},
+                {"name": "a-witness", "verdict": "DOWN", "latency_ms": 0}]}),
+            encoding="utf-8")
+        r1 = emit(root)
+        today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+        spec = root / "content" / "sources" / f"fleet-telemetry-{today}.json"
+        check("emit writes today's frozen spec",
+              r1["emitted"] and spec.is_file(), r1.get("reason") or "")
+        raw1 = spec.read_bytes()
+        r2 = emit(root)
+        check("FREEZE law: second emit same day never rewrites",
+              r2["emitted"] is False and spec.read_bytes() == raw1
+              and r2.get("reason") == "frozen", str(r2))
+        check("MINIMAL law: no URLs inside the spec",
+              b"url" not in raw1.lower(), "")
+        from content_streamer import stream
+        seal = stream(root, hq=None)
+        check("streamer compiles digest into rails + seal",
+              any("telemetry" in f["path"] for f in seal["staged_files"])
+              and seal["state"] == "BROADCAST-READY", str(seal["counts"]))
+    with tempfile.TemporaryDirectory() as td2:
+        r3 = emit(Path(td2))
+        empty = not any((Path(td2) / "content" / "sources").glob("*.json")) \
+            if (Path(td2) / "content" / "sources").is_dir() else True
+        check("missing health files → honest skip, no spec, no crash",
+              r3["emitted"] is False and empty, r3.get("reason", ""))
+
+
+def t13_guard():
+    print("[T13] mem guard: tiers + protected core + allowlisted idle-kill")
+    from mem_profiler import (classify, guard, parse_stat, read_procs,
+                              soft_purge, tier_for)
+    check("tier law: OK≥600MB / SOFT<600MB / HARD<400MB",
+          tier_for(601 * 1024) == "OK" and tier_for(599 * 1024) == "SOFT"
+          and tier_for(399 * 1024) == "HARD", "")
+    st = parse_stat(Path("/proc/self/stat").read_text(encoding="utf-8"))
+    check("parse_stat on live /proc/self",
+          st["state"] in ("R", "S", "D", "Z", "T") and st["ticks"] >= 0
+          and st["rss_pages"] > 0, f"state={st['state']}")
+    both = {"pid": 1, "comm": "x",
+            "cmdline": "sovereign-guard-test-child next-server"}
+    only = {"pid": 2, "comm": "x",
+            "cmdline": "python3 worker.py sovereign-guard-test-child"}
+    neither = {"pid": 3, "comm": "x", "cmdline": "nano /tmp/a"}
+    check("protected core ALWAYS beats the allowlist",
+          classify(both, ["sovereign-guard-test-child"]) == "protected", "")
+    check("allowlist-only match → killable",
+          classify(only, ["sovereign-guard-test-child"]) == "killable", "")
+    check("no match → other (never killable)",
+          classify(neither, ["sovereign-guard-test-child"]) == "other", "")
+    check("read_procs sees own pid",
+          os.getpid() in {p["pid"] for p in read_procs()}, "")
+    with tempfile.TemporaryDirectory() as td:
+        root = Path(td)
+        h = root / "health"
+        h.mkdir(parents=True)
+        (h / "history.jsonl").write_text(
+            "\n".join(json.dumps({"i": i}) for i in range(120)) + "\n",
+            encoding="utf-8")
+        stray = root / "stale.tmp"
+        stray.write_text("x", encoding="utf-8")
+        act = soft_purge(root)
+        lines = (h / "history.jsonl").read_text(encoding="utf-8").splitlines()
+        check("SOFT: purge trims history to 50 + removes tmp strays",
+              len(lines) == 50 and act["trimmed_history"] == 70
+              and act["removed_tmp"] == 1 and not stray.exists(), str(act))
+        (root / "guard-allowlist.txt").write_text(
+            "# test allowlist\nsovereign-guard-test-child\n",
+            encoding="utf-8")
+        child = subprocess.Popen(
+            [sys.executable, "-c", "import time; time.sleep(60)",
+             "sovereign-guard-test-child"])
+        try:
+            for _ in range(40):
+                if Path(f"/proc/{child.pid}/stat").is_file():
+                    break
+                time.sleep(0.05)
+            time.sleep(0.6)          # let the interpreter settle (startup CPU)
+            res = guard(root, 300 * 1024, enforce=False, sample_s=0.3)
+            drafts = list((root / "receipts").glob("GUARDDRAFT-*.json"))
+            check("HARD dry-run: draft receipt, child untouched",
+                  res["tier"] == "HARD" and drafts
+                  and child.poll() is None,
+                  f"cands={len(res['candidates'])}")
+            res2 = guard(root, 300 * 1024, enforce=True, sample_s=0.3)
+            child.wait(timeout=8)
+            kills = list((root / "receipts").glob("GUARDKILL-*.json"))
+            check("HARD enforce: allowlisted idle child SIGTERMed + receipt",
+                  child.poll() is not None and kills, f"rc={child.poll()}")
+        finally:
+            if child.poll() is None:
+                child.terminate()
+                child.wait(timeout=5)
+    with tempfile.TemporaryDirectory() as td3:
+        res3 = guard(Path(td3), 300 * 1024, enforce=True, sample_s=0.1)
+        check("shipped default (no allowlist) → zero candidates even in "
+              "enforce", res3["candidates"] == []
+              and not list((Path(td3) / "receipts").glob("GUARDKILL-*.json")),
+              "")
+
+
 def t7_live():
     print("[T7] live lanes probe (informational)")
     r = SovereignRouter()
@@ -406,6 +524,8 @@ if __name__ == "__main__":
     t9_health()
     t10_streamer()
     t11_mem()
+    t12_telemetry()
+    t13_guard()
     fails = [r for r in RESULTS if not r[1] and r[0] != "T7-info"]
     print(f"=== VERDICT: {len(RESULTS) - len(fails) - 1}/{len(RESULTS) - 1} PASS"
           + (f" | FAILURES: {[f[0] for f in fails]}" if fails else " | ALL GREEN"))
