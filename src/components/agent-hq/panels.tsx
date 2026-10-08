@@ -31,20 +31,22 @@ const KIND_STYLE: Record<LogEntry['kind'], { color: string; label: string }> = {
 const CARD = 'rounded-2xl border border-white/10 bg-zinc-900/70';
 const SUBTLE = 'rounded-2xl border border-white/[0.06] bg-black/30';
 
-/* wall column status law: todo=zinc · doing=fuchsia · review=amber · done=emerald · blocked=rose */
-const COL_TEXT: Record<'todo' | 'doing' | 'review' | 'done' | 'blocked', string> = {
+/* wall column status law: todo=zinc · doing=fuchsia · review=amber · done=emerald · blocked=rose · cancelled=zinc-strike */
+const COL_TEXT: Record<'todo' | 'doing' | 'review' | 'done' | 'blocked' | 'cancelled', string> = {
   todo: 'text-zinc-400',
   doing: 'text-fuchsia-300',
   review: 'text-amber-300',
   done: 'text-emerald-300',
   blocked: 'text-rose-300',
+  cancelled: 'text-zinc-500',
 };
-const COL_DOT: Record<'todo' | 'doing' | 'review' | 'done' | 'blocked', string> = {
+const COL_DOT: Record<'todo' | 'doing' | 'review' | 'done' | 'blocked' | 'cancelled', string> = {
   todo: 'bg-zinc-500',
   doing: 'bg-fuchsia-500',
   review: 'bg-amber-400',
   done: 'bg-emerald-400',
   blocked: 'bg-rose-400',
+  cancelled: 'bg-zinc-600',
 };
 
 // ---- Monitor panel ------------------------------------------------------------------
@@ -129,11 +131,11 @@ export function WallPanel({
   crew: CrewMember[];
 }) {
   const [open, setOpen] = useState<string | null>(null);
-  const cols: Array<'todo' | 'doing' | 'review' | 'done' | 'blocked'> = ['todo', 'doing', 'review', 'done', 'blocked'];
+  const cols: Array<'todo' | 'doing' | 'review' | 'done' | 'blocked' | 'cancelled'> = ['todo', 'doing', 'review', 'done', 'blocked', 'cancelled'];
   const crewById = new Map(crew.map((c) => [c.id, c]));
   if (!tasks.length) return <div className="grid h-40 place-items-center px-4 text-center text-[15px] text-zinc-500">{t('noTasks', lang)}</div>;
   return (
-    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-5">
+    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-6">
       {cols.map((status) => {
         const list = tasks.filter((x) => x.status === status);
         return (

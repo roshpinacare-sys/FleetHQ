@@ -447,14 +447,30 @@ export async function chat(messages: ChatMessage[], _maxTokens = 900): Promise<C
   return enqueue(() => chatRaw(messages, _maxTokens));
 }
 
-/** Extract a JSON object from a model reply that may include prose or fences. */
+/** Extract a JSON object-or-array from a model reply that may include prose or fences. */
 export function extractJson<T = Record<string, unknown>>(text: string): T | undefined {
   if (!text) return undefined;
   const fenced = text.match(/```(?:json)?\s*([\s\S]*?)```/);
   const candidate = fenced ? (fenced[1] ?? text) : text;
-  const start = candidate.indexOf('{');
+  const o = candidate.indexOf('{');
+  const a = candidate.indexOf('[');
+  // whichever opens first wins — models frequently reply with a bare JSON
+  // array (e.g. a plan as [...] ), and scanning '{' first used to grab the
+  // first ELEMENT of the array instead of the array itself.
+  if (a !== -1 && (o === -1 || a < o)) {
+    const arr = extractBalanced(candidate, '[', ']');
+    if (arr !== undefined) return arr as T;
+  }
+  const obj = extractBalanced(candidate, '{', '}');
+  if (obj !== undefined) return obj as T;
+  const arr = extractBalanced(candidate, '[', ']');
+  return arr !== undefined ? (arr as T) : undefined;
+}
+
+/** Walk to the first balanced open→close span and JSON.parse it. */
+function extractBalanced(candidate: string, open: string, close: string): unknown {
+  const start = candidate.indexOf(open);
   if (start === -1) return undefined;
-  // walk to the matching closing brace
   let depth = 0;
   let inStr = false;
   let esc = false;
@@ -467,12 +483,12 @@ export function extractJson<T = Record<string, unknown>>(text: string): T | unde
       continue;
     }
     if (ch === '"') inStr = true;
-    else if (ch === '{') depth++;
-    else if (ch === '}') {
+    else if (ch === open) depth++;
+    else if (ch === close) {
       depth--;
       if (depth === 0) {
         try {
-          return JSON.parse(candidate.slice(start, i + 1)) as T;
+          return JSON.parse(candidate.slice(start, i + 1));
         } catch {
           return undefined;
         }

@@ -35,7 +35,13 @@ const OPERATOR_POLICY_TEXT = 'מדיניות המפעיל האוטונומי: ה
 const MAX_LOG = 160;
 // the crew's own routine: when the room is idle, the office schedules patrol
 // shifts itself so a visitor ALWAYS sees real, measured work — never a frozen set.
-const PATROL_COOLDOWN_MS = 15 * 60_000;
+// 6 min (was 15): the operator demanded a visibly living office, and idle gaps
+// after short shifts read as a dead room.
+const PATROL_COOLDOWN_MS = 6 * 60_000;
+// REVIEW DISCIPLINE (hardened after the t34 incident): an off-goal task is
+// cancelled and REPLACED in one step — never bounced in a redo loop, never
+// silently approved. Aligned tasks get at most MAX_REDOS bounded redos.
+const MAX_REDOS = 2;
 
 // ---- LLM task-matching: deterministic fit fallback ---------------------------------------
 // When the model plans (or rescues), every task must land with the RIGHT worker.
@@ -67,6 +73,116 @@ function bestFitWorker(text: string, exclude?: string): { id: string; why: strin
   }
   return { id: best, why: crewOf(best)!.specialty.he };
 }
+
+// ---- deterministic goal→task relevance (the anti-drift gate) -----------------------------
+// The t34 incident: an econ-recon goal got a "fleet records" task, the reviewer
+// demanded redo NINE times, then surrendered and approved it. This gate makes
+// goal-drift mechanically impossible: planned tasks that share no content word
+// with the goal never reach a worker, and a review of such a task cancels it.
+const HEB_STOP = new Set([
+  'את', 'של', 'על', 'עם', 'או', 'אם', 'כל', 'רק', 'גם', 'אך', 'מה', 'זה', 'זו', 'כמו', 'אל', 'לא',
+  'אחד', 'אחת', 'שיהיה', 'הכי', 'עוד', 'כבר', 'עבור', 'דווח', 'רשום', 'סיור', 'שגרה', 'בדוק', 'סרוק', 'מדוד',
+  'the', 'for', 'and', 'with', 'that', 'this', 'from', 'into',
+]);
+
+/** lowercase + strip up to two stacked Hebrew prefixes (ה/ב/ל/ו/מ/ש/כ). */
+function normToken(t: string): string {
+  let s = t;
+  for (let i = 0; i < 2; i++) {
+    if (s.length >= 4 && 'הבלומשכ'.includes(s[0]!)) {
+      const rest = s.slice(1);
+      if (rest.length >= 3) s = rest;
+      else break;
+    } else break;
+  }
+  return s;
+}
+
+function contentTokens(text: string): Set<string> {
+  const out = new Set<string>();
+  const raws = text.toLowerCase().match(/[\u05d0-\u05ea]{2,}|[a-z0-9_./-]{2,}/g) ?? [];
+  for (const raw of raws) {
+    const n = normToken(raw);
+    if (n.length >= 2 && !HEB_STOP.has(n) && !HEB_STOP.has(raw)) out.add(n);
+  }
+  return out;
+}
+
+/**
+ * Deterministic goal→task relevance. score = share of the goal's content words
+ * found in the task text (substring both ways catches Hebrew morphology:
+ * ספר/ספרים, כלכלה/הכלכלה). strong = at least one real (≥3-letter) goal
+ * keyword matched — 2-letter tokens are too weak to prove relevance.
+ */
+export function goalRelevance(
+  goalText: string,
+  taskText: string,
+): { score: number; strong: boolean; matched: string[] } {
+  const goal = contentTokens(goalText);
+  const task = contentTokens(taskText);
+  if (!goal.size || !task.size) return { score: 0, strong: false, matched: [] };
+  const matched: string[] = [];
+  for (const g of goal) {
+    if (g.length < 3) continue;
+    for (const t of task) {
+      if (t === g || (t.length >= 3 && (t.includes(g) || g.includes(t)))) {
+        matched.push(g);
+        break;
+      }
+    }
+  }
+  const score = matched.length / goal.size;
+  return { score: Math.round(score * 100) / 100, strong: matched.length > 0, matched };
+}
+
+interface PlannedTask {
+  title: string;
+  description?: string;
+  assignee: string;
+  why?: string;
+  dependsOn?: string[];
+}
+
+interface PlannedRaw {
+  title?: string;
+  description?: string;
+  assignee?: string;
+  why?: string;
+  dependsOn?: string[];
+}
+
+/** Keep only structurally valid AND goal-aligned planned tasks (explainable). */
+function filterPlanned(
+  goalText: string,
+  candidates: PlannedRaw[],
+): { aligned: PlannedTask[]; dropped: Array<{ title: string; score: number }> } {
+  const aligned: PlannedTask[] = [];
+  const dropped: Array<{ title: string; score: number }> = [];
+  const seen = new Set<string>();
+  for (const p of candidates) {
+    const title = (p.title ?? '').trim();
+    const assignee = (p.assignee ?? '').trim();
+    if (!title || !WORKERS.includes(assignee)) continue;
+    const rel = goalRelevance(goalText, `${title} ${p.description ?? ''}`);
+    if (!rel.strong) {
+      dropped.push({ title: title.slice(0, 80), score: rel.score });
+      continue;
+    }
+    const key = title.toLowerCase();
+    if (seen.has(key)) continue;
+    seen.add(key);
+    aligned.push({
+      title,
+      description: p.description?.trim() || undefined,
+      assignee,
+      why: p.why?.trim() || undefined,
+      dependsOn: Array.isArray(p.dependsOn) ? p.dependsOn : undefined,
+    });
+    if (aligned.length >= 4) break;
+  }
+  return { aligned, dropped };
+}
+
 const PATROL_ARM_DELAY_MS = 40_000;
 // The anti-fixation engine: a WIDE routine menu across every domain the office
 // owns — books, git, economy, network, lessons. The operator may pick one OR
@@ -108,6 +224,7 @@ export class Office {
   private booksTimer?: ReturnType<typeof setInterval>;
   private startedAt = Date.now();
   private taskAttempts = new Map<string, number>();
+  private reviewAttempts = new Map<string, number>();
   private gitWire!: GitWire;
   private gitLearn?: GitLearning;
   private gitLearnTimer?: ReturnType<typeof setInterval>;
@@ -484,15 +601,15 @@ export class Office {
       const freshness = this.books
         .map((b) => `${b.id}: ${b.ageHours !== undefined ? b.ageHours.toFixed(1) + 'h' : 'no heartbeat'}${b.ok === false ? ' OK=FALSE' : ''}`)
         .join('; ');
-      const res = await chat([
+      const planMessages = [
         {
-          role: 'system',
+          role: 'system' as const,
           content:
             'אתה אלוף, ראש-המטה של מפקדת הצי — חדר פעולה של צי סוכנים אמיתי. ' +
             'אתה מתכנן עבודה אמיתית על ספרי נתונים אמיתיים. תמיד תשיב אך ורק JSON.',
         },
         {
-          role: 'user',
+          role: 'user' as const,
           content:
             `יעד המפקד: "${goalText}"\n\n` +
             `עובדים והספרים שבבעלותם:\n${WORKERS.map((w) => {
@@ -507,30 +624,53 @@ export class Office {
             'לכל משימה הוסף "why": עד 8 מילים שמסבירים למה דווקא העובד הזה.\n' +
             'תשיב אך ורק: {"tasks":[{"title":"…","description":"…","assignee":"gal","why":"…","dependsOn":[]}]}',
         },
-      ]);
-      const plan = extractJson<{ tasks?: Array<{ title?: string; description?: string; assignee?: string; why?: string; dependsOn?: string[] }> }>(res.text);
-      const planned = (plan?.tasks ?? []).filter((t) => t.title && WORKERS.includes(t.assignee ?? '')).slice(0, 4);
-      if (!planned.length) {
-        // honest fallback: one broad sweep task, matched by the deterministic fit scorer
+      ];
+      const res = await chat(planMessages);
+      const raw = extractJson<{ tasks?: PlannedRaw[] } | PlannedRaw[]>(res.text);
+      let { aligned, dropped } = filterPlanned(goalText, Array.isArray(raw) ? raw : (raw?.tasks ?? []));
+      if (!aligned.length) {
+        // one honest nudge: the model sees its own reply + the exact schema again
+        this.log(LEAD, 'error', 'plan empty/off-goal → JSON-only nudge retry');
+        const res2 = await chat([
+          ...planMessages,
+          { role: 'assistant', content: res.text.slice(0, 600) },
+          {
+            role: 'user',
+            content:
+              'התשובה הקודמת לא נפרשה או לא הייתה מיושרת-יעד. השב שוב — אך ורק אובייקט JSON במבנה המדויק ' +
+              '{"tasks":[{"title":"…","description":"…","assignee":"…","why":"…","dependsOn":[]}]}, ' +
+              'וכל משימה חייבת לקדם ישירות את היעד שבהודעה הראשונה.',
+          },
+        ]);
+        const raw2 = extractJson<{ tasks?: PlannedRaw[] } | PlannedRaw[]>(res2.text);
+        ({ aligned, dropped } = filterPlanned(goalText, Array.isArray(raw2) ? raw2 : (raw2?.tasks ?? [])));
+      }
+      for (const d of dropped) {
+        this.log(LEAD, 'error', `plan filter: "${d.title}" נפסלה — לא מקדמת את היעד (relevance ${d.score})`);
+      }
+      if (!aligned.length) {
+        // honest fallback: THE GOAL ITSELF becomes the task — never an off-goal sweep
         const fit = bestFitWorker(goalText);
         const t = this.addTask({
-          title: 'סריקת בריאות כללית של ספרי הצי',
+          title: goalText.slice(0, 140),
           description: goalText,
           assignee: fit.id,
           why: fit.why,
           matchBy: 'fit',
           createdBy: LEAD,
         });
-        this.log(LEAD, 'error', `plan parse failed → single sweep task (fit: ${fit.id})`);
+        this.log(LEAD, 'error', `plan unusable → goal-derived task (fit: ${fit.id})`);
+        this.feedPush('system', `לא התקבלה תוכנית מיושרת-יעד — הראש-המטה מקצה את היעד עצמו ל${crewOf(fit.id)?.name.he ?? fit.id} (התאמת FIT)`, LEAD);
+        this.setGoal({ status: 'active', progress: 0.05 });
         void this.runWorker(t.id);
         return;
       }
       const ids: Record<number, string> = {};
-      planned.forEach((p, i) => {
+      aligned.forEach((p, i) => {
         const t = this.addTask({
-          title: p.title!,
+          title: p.title,
           description: p.description,
-          assignee: p.assignee!,
+          assignee: p.assignee,
           why: p.why,
           matchBy: 'llm',
           dependsOn: (p.dependsOn ?? []).map((d) => ids[d as unknown as number]).filter(Boolean) as string[],
@@ -539,8 +679,8 @@ export class Office {
         ids[i] = t.id;
       });
       this.setGoal({ status: 'active', progress: 0.05 });
-      const whyLine = planned.map((p) => `${crewOf(p.assignee!)?.name.he ?? p.assignee}: ${p.why ?? '—'}`).join(' · ');
-      this.feedPush('plan', `תוכנית אושרה: ${planned.length} משימות — התאמות: ${whyLine}`.slice(0, 380), LEAD);
+      const whyLine = aligned.map((p) => `${crewOf(p.assignee)?.name.he ?? p.assignee}: ${p.why ?? '—'}`).join(' · ');
+      this.feedPush('plan', `תוכנית אושרה: ${aligned.length} משימות מיושרות-יעד — התאמות: ${whyLine}`.slice(0, 380), LEAD);
       this.bubble(LEAD, 'התוכנית על הלוח. קדימה לעבודה.');
       this.setState(LEAD, 'idle', 'משגיח מהלוח', 'wall');
     } catch (e) {
@@ -560,7 +700,7 @@ export class Office {
       // and the next patrol shift plans a real model route when the provider frees.
       const fit = bestFitWorker(goalText);
       const sweep = this.addTask({
-        title: 'סריקת בריאות כללית של ספרי הצי (שגרה מדודה)',
+        title: goalText.slice(0, 140),
         description: goalText,
         assignee: fit.id,
         why: fit.why,
@@ -568,8 +708,8 @@ export class Office {
         createdBy: LEAD,
       });
       this.setGoal({ status: 'active', progress: 0.05 });
-      this.feedPush('system', `המודל לא זמין כרגע — המפקדה ממשיכה בשגרה המדודה · ${crewOf(fit.id)?.name.he ?? fit.id} (התאמת FIT)`);
-      this.bubble(LEAD, 'המודל סטורם — רצים את השגרה המדודה.');
+      this.feedPush('system', `המודל לא זמין כרגע — היעד עצמו מוקצה ל${crewOf(fit.id)?.name.he ?? fit.id} (התאמת FIT)`, LEAD);
+      this.bubble(LEAD, 'המודל סטורם — היעד עצמו יוצא לדרך.');
       void this.runWorker(sweep.id);
     }
   }
@@ -746,8 +886,10 @@ export class Office {
       const history: Array<{ role: 'user' | 'assistant'; content: string }> = [
         { role: 'user', content: `התחל את המשימה. צעד אחד: כלי או done. ${task.title}` },
       ];
-      const sys = workerSystemPrompt(crew, task, this.books);
+      const sys = workerSystemPrompt(crew, task, this.books, this.goal?.text);
       let finalSummary = '';
+      let toolCalls = 0;
+      let evidenceNudged = false;
       for (let step = 1; step <= MAX_STEPS; step++) {
         if (Date.now() - startedAt > TASK_TIMEOUT_MS) throw new Error('task timeout');
         const res = await chat([{ role: 'system', content: sys }, ...history], 700);
@@ -769,10 +911,19 @@ export class Office {
         if (parsed.say) this.bubble(task.assignee!, parsed.say);
         if (parsed.thought) this.setState(task.assignee!, 'thinking', parsed.thought, 'desk', taskId);
         if (parsed.done) {
-          finalSummary = parsed.result ?? parsed.say ?? 'הושלם';
+          // evidence floor: a task finished without a single real tool call is
+          // NOT work — one honest nudge, then the review sees the gap on record.
+          if (toolCalls === 0 && !evidenceNudged) {
+            evidenceNudged = true;
+            history.push({ role: 'user', content: 'עבודה בלי עדות אינה עבודה: בצעי לפחות קריאת-כלים אחת אמיתית (read_book / measure / cross_check / git_report) ורק אז סיימי עם done.' });
+            this.log(task.assignee!, 'error', 'done without tool evidence → evidence nudge');
+            continue;
+          }
+          finalSummary = (toolCalls === 0 ? '[ללא עדות כלים] ' : '') + (parsed.result ?? parsed.say ?? 'הושלם');
           break;
         }
         if (parsed.tool) {
+          toolCalls++;
           const out = await this.execTool(task.assignee!, parsed.tool, parsed.args ?? {}, taskId);
           history.push({ role: 'user', content: `TOOL RESULT (${parsed.tool}): ${out}` });
           // decision pause
@@ -945,21 +1096,70 @@ export class Office {
       this.log(LEAD, 'tool', `review(${task.id} by ${task.assignee})`);
       await sleep(1200);
       const worker = crewOf(task.assignee ?? '');
+      const goalText = this.goal?.text ?? '';
+      const rel = goalText
+        ? goalRelevance(goalText, `${task.title} ${task.description ?? ''}`)
+        : { score: 1, strong: true, matched: [] as string[] };
+      const attempts = this.reviewAttempts.get(taskId) ?? 0;
+      this.log(LEAD, 'text', `relevance gate: ${rel.score} (${rel.matched.slice(0, 5).join(', ') || '— אין הצטלבות'})`);
+
+      // GATE 1 — an off-goal task is NEVER looped and NEVER approved: it is
+      // cancelled and replaced by a goal-derived task in one honest step.
+      if (goalText && !rel.strong) {
+        this.reviewAttempts.delete(taskId);
+        this.patchTask(taskId, { status: 'cancelled' });
+        this.log(LEAD, 'result', `cancelled: ${task.title} — לא מקדמת את היעד (relevance ${rel.score})`);
+        const fit = bestFitWorker(goalText, task.assignee);
+        this.addTask({
+          title: goalText.slice(0, 140),
+          description: goalText,
+          assignee: fit.id,
+          why: fit.why,
+          matchBy: 'fit',
+          createdBy: LEAD,
+        });
+        this.feedPush(
+          'system',
+          `המשימה "${task.title}" בוטלה — לא מיושרת-יעד (relevance ${rel.score}). במקומה משימה מיושרת-יעד ל${crewOf(fit.id)?.name.he ?? fit.id}`,
+          LEAD,
+        );
+        this.bubble(LEAD, `${worker?.name.he ?? ''}, זו לא הייתה משימת היעד — החלפתי אותה במשימה מיושרת.`);
+        this.setState(LEAD, 'idle', '', 'wall');
+        return;
+      }
+
       const res = await chat([
         { role: 'system', content: 'אתה אלוף, ראש-המטה. בדוק את סיכום המשימה מול היעד. השב אך ורק JSON.' },
         {
           role: 'user',
           content:
-            `יעד: ${this.goal?.text ?? ''}\nמשימה: ${task.title}\nסיכום העובד: ${task.summary ?? ''}\n` +
-            'השב: {"verdict":"approve"|"redo","note":"…"} — redo רק אם המשימה באמת לא מקדמת את היעד.',
+            `יעד: ${goalText}\nמשימה: ${task.title}\nסיכום העובד: ${task.summary ?? ''}\n` +
+            `רלוונטיות דטרמיניסטית ליעד: ${rel.score} (מילות-מפתח: ${rel.matched.slice(0, 5).join(', ') || '—'})\n` +
+            'השב: {"verdict":"approve"|"redo","note":"…"} — redo רק אם העבודה ריקה, ללא נתונים אמיתיים, או לא מקדמת את היעד. ' +
+            'note ב-redo חייב להיות הוראת-תיקון קונקרטית אחת.',
         },
       ], 300);
       const verdict = extractJson<{ verdict?: string; note?: string }>(res.text);
-      if (verdict?.verdict === 'redo' && !task.summary?.includes('[redo]')) {
-        this.patchTask(taskId, { status: 'todo', summary: `[redo] ${verdict.note ?? ''}`.slice(0, 400) });
-        this.log(LEAD, 'result', `redo: ${verdict.note ?? ''}`);
+      if (verdict?.verdict === 'redo' && attempts < MAX_REDOS) {
+        // bounded redo — the worker gets the goal + a concrete corrective note
+        this.reviewAttempts.set(taskId, attempts + 1);
+        this.patchTask(taskId, { status: 'todo', summary: `[redo ${attempts + 1}] ${verdict.note ?? ''}`.slice(0, 400) });
+        this.log(LEAD, 'result', `redo (${attempts + 1}/${MAX_REDOS}): ${verdict.note ?? ''}`);
         this.bubble(LEAD, `${worker?.name.he ?? ''}, צריך עידון: ${verdict.note ?? ''}`);
+      } else if (verdict?.verdict === 'redo') {
+        // cap reached on an ALIGNED task — honest fail-open approval, on the record
+        this.reviewAttempts.delete(taskId);
+        const note = verdict.note ?? '';
+        this.patchTask(taskId, {
+          status: 'done',
+          summary: `${task.summary ?? ''} [אושר בכנות לאחר ${attempts} עידונים — הערת ראש-המטה: ${note}]`.slice(0, 500),
+        });
+        this.log(LEAD, 'result', `approved after ${attempts} redos (cap reached) — note: ${note}`);
+        this.bubble(LEAD, `מאשר בכנות אחרי ${attempts} סבבים — ההערה נרשמה.`);
+        this.award(task.assignee ?? '', 2);
+        this.award(LEAD, 1);
       } else {
+        this.reviewAttempts.delete(taskId);
         this.patchTask(taskId, { status: 'done' });
         this.log(LEAD, 'result', `approved: ${task.title}`);
         this.bubble(LEAD, `אושר. עבודה טובה, ${worker?.name.he ?? ''}.`);
@@ -972,6 +1172,7 @@ export class Office {
       // review is honest about its own failures too
       this.log(LEAD, 'error', `review failed: ${(e as Error).message}`);
       this.patchTask(taskId, { status: 'done' }); // fail-open with the worker's summary on the record
+      this.reviewAttempts.delete(taskId);
       this.setState(LEAD, 'error', 'ביקורת נכשלה — אושר כברירת מחדל', 'wall');
     } finally {
       rt.running = false;
@@ -1063,16 +1264,18 @@ export class Office {
 
 // ---- prompts -------------------------------------------------------------------------------
 
-function workerSystemPrompt(crew: CrewMember, task: Task, books: BookView[]): string {
+function workerSystemPrompt(crew: CrewMember, task: Task, books: BookView[], goalText?: string): string {
   const myBooks = books.filter((b) => crew.books.includes(b.id));
   return (
     `אתה ${crew.name.he} (${crew.title.he}) במפקדת הצי — חדר הפעולה של צי סוכנים אמיתי. ` +
     `התמחותך: ${crew.specialty.he}. בבעלותך הספרים: ${crew.books.join(', ') || '(כללי)'}. ` +
     (myBooks.length ? `טריות ידועה: ${myBooks.map((b) => `${b.id}=${b.ageHours !== undefined ? b.ageHours.toFixed(1) + 'h' : '?'}`).join(', ')}. ` : '') +
+    (goalText ? `\nהיעד הכללי של המשמרת — המשימה שלך חייבת לקדם אותו: "${goalText}"\n` : '') +
     `\n\nהמשימה שלך עכשיו: "${task.title}" — ${task.description ?? '(ללא תיאור נוסף)'}\n` +
-    (task.summary?.startsWith('[redo]') ? `הערת ראש-המטה מהסבב הקודם: ${task.summary}\n` : '') +
+    (task.summary?.startsWith('[redo') ? `הערת ראש-המטה מהסבב הקודם: ${task.summary}\n` : '') +
     `\nכלים (כלי אחד לכל הודעה): list_books | read_book{"id"} | measure{"id","path"} | cross_check{"a","b"} | git_report | write_report{"title","body"} | message{"to","text"} | ask_operator{"question","options","context"} — git_report מחזיר סיכום מטא-דאטה נוקה מסודות של זרם הקומיטים (השתמשי בו כדי ללמוד מהגיט), ask_operator שואל את המפעיל האוטונומי של המפקדה כשחסרה הכרעה\n` +
     `חוקים: עבוד רק מנתונים אמיתיים שקראת בפועל. אסור להמציא מספרים או מסקנות. ` +
+    `אסור לסיים בלי לפחות קריאת-כלים אחת אמיתית, וה-result הסופי חייב לכלול לפחות שני נתונים מדודים (מספר/תאריך/גיל-ספר) שקראת מהספרים. ` +
     `ריבונות: התקשורת שלך עוברת דרך השער הריבוני המקומי (SOVEREIGN GATEWAY) — החלפת מוחים בזמן 429/שגיאה היא אוטומטית ואינה עניינך; אל תעצרי ואל תתנצלי על תקלות רשת. חסכוניות: קראי רק את הספרים הדרושות למשימה — קונטקסט קטן = משרד חי יותר. ` +
     `say עד 12 מילים בעברית. thought עד 20 מילים. כשהמשימה הושלמה ממש — {"done":true,"result":"…"}.\n` +
     `השב אך ורק אובייקט JSON: {"say"?:string,"thought"?:string,"tool"?:string,"args"?:object,"done"?:boolean,"result"?:string}`
