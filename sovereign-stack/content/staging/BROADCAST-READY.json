@@ -1,48 +1,68 @@
 {
- "ts": "2026-10-08T22:13:19Z",
+ "ts": "2026-10-08T22:24:03Z",
  "state": "BROADCAST-READY",
- "rails_merkle_root": "acc768c5d8c3bff302da3b5ed6e9cec021d292298bf22f2ffc926fcf4bc69c2d",
+ "rails_merkle_root": "99f64fccb937c49be16ba46b7fa9a33a975fb1b88919642e795e0f139f25b5d3",
  "generation": {
-  "src_fingerprint": "83c619d754e368ddacae931b1b31a5865a8f2c8be76f74339950bd8baaa0c756",
-  "parent_broadcast_root": "16ff2ed9476cd658f72a2bf758d1b3b21d5d2e34c35d62fab4406512848e1158",
+  "src_fingerprint": "bfca15d0f877049555dddc8e74ae760aacf24321528cee81852faa94771c2698",
+  "parent_broadcast_root": "acc768c5d8c3bff302da3b5ed6e9cec021d292298bf22f2ffc926fcf4bc69c2d",
   "parent_from": "frozen",
-  "prev_root": "acc768c5d8c3bff302da3b5ed6e9cec021d292298bf22f2ffc926fcf4bc69c2d",
+  "prev_root": "99f64fccb937c49be16ba46b7fa9a33a975fb1b88919642e795e0f139f25b5d3",
   "source_hashes": {
+   "fleet-telemetry-2026-10-08.json": "721f21f59684ee710967dcdc0de35e6d2b8f13522a366b5e85e0c987d54b258c",
    "sovereign-recovery-task30.json": "83c619d754e368ddacae931b1b31a5865a8f2c8be76f74339950bd8baaa0c756"
   }
  },
  "staged_files": [
   {
    "path": "content/rails/ops/2026-10-08/sovereign-recovery-task30.md",
-   "sha256": "74fb977124209c2481ef774b59ee2bfe8a45211ada592a076f96219ca11428dd"
+   "sha256": "da2fcd6ca4a5d96cf655a8be2c16473b71eee8d20765403511f792e7e9d317fd"
   },
   {
    "path": "content/rails/ops/2026-10-08/sovereign-recovery-task30.tokens.md",
-   "sha256": "74fb977124209c2481ef774b59ee2bfe8a45211ada592a076f96219ca11428dd"
+   "sha256": "da2fcd6ca4a5d96cf655a8be2c16473b71eee8d20765403511f792e7e9d317fd"
+  },
+  {
+   "path": "content/rails/telemetry/2026-10-08/fleet-telemetry-2026-10-08.md",
+   "sha256": "4187d5cb860d145bf21dbf90f8b3c0469ca0516dc412e06c019890c598c9b854"
+  },
+  {
+   "path": "content/rails/telemetry/2026-10-08/fleet-telemetry-2026-10-08.tokens.md",
+   "sha256": "4187d5cb860d145bf21dbf90f8b3c0469ca0516dc412e06c019890c598c9b854"
   }
  ],
  "manifest_chain": {
   "ok": true,
-  "records": 4,
-  "files_checked": 1,
+  "records": 9,
+  "files_checked": 2,
   "bad": []
  },
  "compaction_budget": {
-  "budget": 4000,
+  "budget": 3600,
   "sources": {
-   "mem_reason": "ok",
-   "mem_avail_mb": 2665.2,
+   "mem_reason": "mem_scaled",
+   "mem_avail_mb": 1807.4,
    "tps_state": "UNREACHABLE",
    "tps_budget": null
   }
  },
  "cross_lineage": {
-  "available": false,
-  "reason": "missing:/home/z/fleet/repos/FleetHQ/receipts/books-lineage.json"
+  "available": true,
+  "books": 22,
+  "at": "2026-10-08T22:23:13.885Z",
+  "their_root": "a379071527ad58874237bc5da833cb9d26749309b060f64af3ce8d21d6f01ebc",
+  "recomputed_root": "39eead911f53862020189c08badd64e3e50fcbdf3388c69dc0470ea6026b012a",
+  "convention_match": false,
+  "lineage_file_sha256": "c0f059ddd8e9e2a91010e0231d1778a2b332d462767a031e0ca004c3935750b7"
+ },
+ "telemetry": {
+  "emitted": false,
+  "reason": "frozen",
+  "path": "/home/z/my-project/sovereign-stack/content/sources/fleet-telemetry-2026-10-08.json",
+  "date": "2026-10-08"
  },
  "counts": {
   "compiled_now": 0,
-  "unchanged": 1,
+  "unchanged": 2,
   "refused": 0
  },
  "refused": [],
