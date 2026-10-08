@@ -1073,6 +1073,7 @@ function workerSystemPrompt(crew: CrewMember, task: Task, books: BookView[]): st
     (task.summary?.startsWith('[redo]') ? `הערת ראש-המטה מהסבב הקודם: ${task.summary}\n` : '') +
     `\nכלים (כלי אחד לכל הודעה): list_books | read_book{"id"} | measure{"id","path"} | cross_check{"a","b"} | git_report | write_report{"title","body"} | message{"to","text"} | ask_operator{"question","options","context"} — git_report מחזיר סיכום מטא-דאטה נוקה מסודות של זרם הקומיטים (השתמשי בו כדי ללמוד מהגיט), ask_operator שואל את המפעיל האוטונומי של המפקדה כשחסרה הכרעה\n` +
     `חוקים: עבוד רק מנתונים אמיתיים שקראת בפועל. אסור להמציא מספרים או מסקנות. ` +
+    `ריבונות: התקשורת שלך עוברת דרך השער הריבוני המקומי (SOVEREIGN GATEWAY) — החלפת מוחים בזמן 429/שגיאה היא אוטומטית ואינה עניינך; אל תעצרי ואל תתנצלי על תקלות רשת. חסכוניות: קראי רק את הספרים הדרושות למשימה — קונטקסט קטן = משרד חי יותר. ` +
     `say עד 12 מילים בעברית. thought עד 20 מילים. כשהמשימה הושלמה ממש — {"done":true,"result":"…"}.\n` +
     `השב אך ורק אובייקט JSON: {"say"?:string,"thought"?:string,"tool"?:string,"args"?:object,"done"?:boolean,"result"?:string}`
   );

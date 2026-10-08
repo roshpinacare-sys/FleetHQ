@@ -21,11 +21,26 @@ export const dynamic = 'force-dynamic';
 const PORT = 3010;
 const CWD = '/home/z/my-project/mini-services/agent-hq';
 
+// SOVEREIGN GATEWAY (:3011) — the office's own OpenAI-compatible endpoint.
+// Supervised exactly like the foreman: respawned as a detached child of THIS
+// server tree whenever a health check finds it down. Fixed command, no input.
+const GW_PORT = 3011;
+const GW_CWD = '/home/z/my-project/mini-services/sovereign-gateway';
+
 let lastSpawnAt = 0;
+let lastGwSpawnAt = 0;
 
 function foremanAlive(): Promise<boolean> {
+  return portAlive(PORT);
+}
+
+function gatewayAlive(): Promise<boolean> {
+  return portAlive(GW_PORT);
+}
+
+function portAlive(port: number): Promise<boolean> {
   return new Promise((resolve) => {
-    const socket = connect(PORT, '127.0.0.1');
+    const socket = connect(port, '127.0.0.1');
     const done = (ok: boolean) => {
       socket.destroy();
       resolve(ok);
@@ -69,13 +84,14 @@ function ensureSyncLoop() {
 export async function GET() {
   try {
     ensureSyncLoop();
+    const gatewayState = await ensureGateway();
     const alive = await foremanAlive();
-    if (alive) return NextResponse.json({ ok: true, foreman: 'up' });
+    if (alive) return NextResponse.json({ ok: true, foreman: 'up', gateway: gatewayState });
 
     // debounce: never spawn twice within 8s
     const now = Date.now();
     if (now - lastSpawnAt < 8000) {
-      return NextResponse.json({ ok: false, foreman: 'spawning' }, { status: 202 });
+      return NextResponse.json({ ok: false, foreman: 'spawning', gateway: gatewayState }, { status: 202 });
     }
     lastSpawnAt = now;
 
@@ -94,8 +110,29 @@ export async function GET() {
     // give it a moment, then re-check once
     await new Promise((r) => setTimeout(r, 2500));
     const up = await foremanAlive();
-    return NextResponse.json({ ok: up, foreman: up ? 'respawned' : 'starting' }, { status: up ? 200 : 202 });
+    return NextResponse.json({ ok: up, foreman: up ? 'respawned' : 'starting', gateway: gatewayState }, { status: up ? 200 : 202 });
   } catch {
-    return NextResponse.json({ ok: false, foreman: 'error' }, { status: 500 });
+    return NextResponse.json({ ok: false, foreman: 'error', gateway: 'error' }, { status: 500 });
+  }
+}
+
+/** Respawn the sovereign gateway as a child of this server tree when down. */
+async function ensureGateway(): Promise<string> {
+  try {
+    if (await gatewayAlive()) return 'up';
+    const now = Date.now();
+    if (now - lastGwSpawnAt < 8000) return 'spawning';
+    lastGwSpawnAt = now;
+    const child = spawn('bun', ['run', 'dev'], {
+      cwd: GW_CWD,
+      detached: true,
+      stdio: 'ignore',
+      env: { ...process.env },
+    });
+    child.unref();
+    await new Promise((r) => setTimeout(r, 2500));
+    return (await gatewayAlive()) ? 'respawned' : 'starting';
+  } catch {
+    return 'error';
   }
 }
