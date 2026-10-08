@@ -1,56 +1,47 @@
 {
- "ts": "2026-10-08T22:04:00Z",
+ "ts": "2026-10-08T22:13:19Z",
  "state": "BROADCAST-READY",
- "rails_merkle_root": "b05246f541fbdb59bdbd62abc3b266ca3aeaffd564fa460983453e815b4a2d8d",
+ "rails_merkle_root": "acc768c5d8c3bff302da3b5ed6e9cec021d292298bf22f2ffc926fcf4bc69c2d",
+ "generation": {
+  "src_fingerprint": "83c619d754e368ddacae931b1b31a5865a8f2c8be76f74339950bd8baaa0c756",
+  "parent_broadcast_root": "16ff2ed9476cd658f72a2bf758d1b3b21d5d2e34c35d62fab4406512848e1158",
+  "parent_from": "frozen",
+  "prev_root": "acc768c5d8c3bff302da3b5ed6e9cec021d292298bf22f2ffc926fcf4bc69c2d",
+  "source_hashes": {
+   "sovereign-recovery-task30.json": "83c619d754e368ddacae931b1b31a5865a8f2c8be76f74339950bd8baaa0c756"
+  }
+ },
  "staged_files": [
   {
    "path": "content/rails/ops/2026-10-08/sovereign-recovery-task30.md",
-   "sha256": "9a16f659eb0a2cbf1201f76983171efbb7065e57c4d013f77c817479c8bb9923"
+   "sha256": "74fb977124209c2481ef774b59ee2bfe8a45211ada592a076f96219ca11428dd"
   },
   {
    "path": "content/rails/ops/2026-10-08/sovereign-recovery-task30.tokens.md",
-   "sha256": "9a16f659eb0a2cbf1201f76983171efbb7065e57c4d013f77c817479c8bb9923"
-  },
-  {
-   "path": "content/rails/telemetry/2026-10-08/fleet-telemetry-2026-10-08.md",
-   "sha256": "ecca690a8a833381edbb19b4a614fe419e89cd3051de1180bb16fb88d83e2c1f"
-  },
-  {
-   "path": "content/rails/telemetry/2026-10-08/fleet-telemetry-2026-10-08.tokens.md",
-   "sha256": "ecca690a8a833381edbb19b4a614fe419e89cd3051de1180bb16fb88d83e2c1f"
+   "sha256": "74fb977124209c2481ef774b59ee2bfe8a45211ada592a076f96219ca11428dd"
   }
  ],
  "manifest_chain": {
   "ok": true,
-  "records": 3,
-  "files_checked": 2,
+  "records": 4,
+  "files_checked": 1,
   "bad": []
  },
  "compaction_budget": {
   "budget": 4000,
   "sources": {
    "mem_reason": "ok",
-   "mem_avail_mb": 2649.4,
+   "mem_avail_mb": 2665.2,
    "tps_state": "UNREACHABLE",
    "tps_budget": null
   }
  },
  "cross_lineage": {
-  "available": true,
-  "books": 22,
-  "at": "2026-10-08T21:36:13.016Z",
-  "their_root": "4f418bb373f64ebf0fb731ae242bcfc02b03b98ce879d418918b2823593e9795",
-  "recomputed_root": "4de0787f4ce625d53c24180c80fbe3ccd53bbd09f39a799b61b19e71baf3748a",
-  "convention_match": false,
-  "lineage_file_sha256": "852433453dfcd3f7ccb1630e20c686b86adaf18708e22db1cba1fc4ab426e50e"
- },
- "telemetry": {
-  "emitted": true,
-  "path": "/home/z/my-project/sovereign-stack/content/sources/fleet-telemetry-2026-10-08.json",
-  "date": "2026-10-08"
+  "available": false,
+  "reason": "missing:/home/z/fleet/repos/FleetHQ/receipts/books-lineage.json"
  },
  "counts": {
-  "compiled_now": 1,
+  "compiled_now": 0,
   "unchanged": 1,
   "refused": 0
  },

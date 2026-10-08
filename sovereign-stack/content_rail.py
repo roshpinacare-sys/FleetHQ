@@ -76,9 +76,27 @@ def _cell(v) -> str:
     return str(v).replace("|", "\\|").replace("\n", " ")
 
 
-def render_markdown(spec: dict) -> str:
-    """Deterministic renderer: same spec → same bytes. No clock inside."""
+def lineage_header(header_meta: Optional[dict]) -> Optional[str]:
+    """Deterministic lineage front-matter (HTML comment, stable key order).
+
+    Carries the fleet's verified merkle lineage INSIDE the asset so any
+    reader (or sibling agent) can authenticate the generation without
+    opening the seal. Keys sorted; no clock inside; own-file sha is NOT
+    here (self-reference impossible) — the file's own sha lives in the
+    MANIFEST chain and the .sha256 sidecar.
+    """
+    if not header_meta:
+        return None
+    kv = [f"{k}: {header_meta[k]}" for k in sorted(header_meta)]
+    return "<!-- sovereign-rail\n" + "\n".join(kv) + "\n-->"
+
+
+def render_markdown(spec: dict, header: Optional[str] = None) -> str:
+    """Deterministic renderer: same spec + header → same bytes. No clock."""
     lines: List[str] = []
+    if header:
+        lines.append(header)
+        lines.append("")
     lines.append(f"# {str(spec.get('title', 'Untitled')).strip()}")
     lines.append("")
     if spec.get("summary"):
@@ -128,8 +146,14 @@ def _atomic_write(path: Path, data: str) -> None:
 
 
 def compile_source(spec: dict, root: Path = ROOT, compact: bool = True,
-                   max_chars: int = 4000) -> dict:
-    """Stage one deliverable. Raises RefusedStage on secret hits."""
+                   max_chars: int = 4000,
+                   header_meta: Optional[dict] = None) -> dict:
+    """Stage one deliverable. Raises RefusedStage on secret hits.
+
+    header_meta (optional) is stamped into the asset header as lineage
+    metadata and is covered by the sha256 (anchored fingerprint includes
+    lineage, not just body).
+    """
     root = Path(root)
     title = str(spec.get("title", "")).strip()
     if not title:
@@ -141,7 +165,7 @@ def compile_source(spec: dict, root: Path = ROOT, compact: bool = True,
     slug = slugify(str(spec.get("slug") or title))
     date = str(spec.get("date") or datetime.now(timezone.utc).strftime("%Y-%m-%d"))
 
-    md = render_markdown(spec)
+    md = render_markdown(spec, lineage_header(header_meta))
     findings = secret_scan(md + "\n" + json.dumps(spec, ensure_ascii=False))
     if findings:
         rec_dir = root / "receipts"
@@ -189,18 +213,38 @@ def compile_source(spec: dict, root: Path = ROOT, compact: bool = True,
 
 
 def verify_rail(root: Path = ROOT) -> Tuple[bool, dict]:
-    """Walk MANIFEST chain + re-hash every staged file it anchors."""
+    """Walk MANIFEST chain + re-hash every staged file it anchors.
+
+    Last-record-wins semantics (append-only ledger): when a slug is
+    legitimately re-compiled (new generation), a NEWER STAGE record
+    supersedes the older one for the same path. Older records stay in the
+    chain (history is never rewritten) but only the LATEST record per
+    file is checked against disk. Chain integrity itself is verified by
+    MemoryStore.verify() — tampering with any record breaks it.
+    """
     root = Path(root)
     man = root / "content" / "MANIFEST.md"
     ok, n = MemoryStore(str(man)).verify()
-    details = {"chain_ok": ok, "records": n, "files_checked": 0, "bad": []}
+    details = {"chain_ok": ok, "records": n, "files_checked": 0,
+               "superseded": 0, "bad": []}
     if not man.is_file():
         return True, details
+    latest: dict = {}                                  # path → kv (last wins)
+    order: list = []
     for ln in man.read_text(encoding="utf-8", errors="ignore").splitlines():
         if not ln.startswith(":: STAGE :: "):
             continue
         body = ln[len(":: STAGE :: "):]
         kv = dict(p.split("=", 1) for p in body.split() if "=" in p)
+        rel = f"{kv.get('rail', '_')}/{kv.get('date', '_')}/" \
+              f"{kv.get('slug', '_')}.md"
+        if rel not in latest:
+            order.append(rel)
+        else:
+            details["superseded"] += 1
+        latest[rel] = kv
+    for rel in order:
+        kv = latest[rel]
         f = root / "content" / "rails" / kv.get("rail", "_") / \
             kv.get("date", "_") / f"{kv.get('slug', '_')}.md"
         if not f.is_file():

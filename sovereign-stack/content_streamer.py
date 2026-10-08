@@ -89,6 +89,53 @@ def cross_lineage(hq: Path | None) -> dict:
                 lf.read_bytes()).hexdigest()}
 
 
+def source_fingerprint(src_dir: Path) -> tuple[str, dict]:
+    """Merkle fingerprint over the SOURCE arrays (sorted by name).
+
+    leaf = sha256(source file bytes). This — not the compiled output —
+    decides whether a new generation starts: identical sources must never
+    churn the lineage (frozen parent), changed sources extend it linearly.
+    """
+    leaves: list[tuple[str, bytes]] = []
+    for f in sorted(src_dir.glob("*.json")):
+        leaves.append((f.name, hashlib.sha256(f.read_bytes()).digest()))
+    return (merkle_root([d for _, d in leaves]),
+            {n: d.hex() for n, d in leaves})
+
+
+def parent_for_generation(seal_path: Path, src_fp: str) -> dict:
+    """Linear-extension law (the anti-churn rule):
+
+    - no previous seal            → parent = 64×"0" (genesis), parent_from=genesis
+    - sources unchanged since the
+      sealed generation           → parent = the seal's OWN parent (frozen;
+                                    re-running must be byte-idempotent)
+    - sources changed/new         → parent = the previous seal's root
+                                    (authenticated linear extension;
+                                    parent_from=advanced)
+    A legacy seal without a src_fingerprint counts as changed (it predates
+    generation tracking) so lineage headers get stamped exactly once.
+    """
+    genesis = "0" * 64
+    if not seal_path.is_file():
+        return {"parent": genesis, "parent_from": "genesis",
+                "prev_root": None, "prev_src_fp": None}
+    try:
+        prev = json.loads(seal_path.read_text(encoding="utf-8"))
+    except Exception:
+        return {"parent": genesis, "parent_from": "genesis",
+                "prev_root": None, "prev_src_fp": None}
+    prev_root = prev.get("rails_merkle_root") or genesis
+    prev_fp = (prev.get("generation") or {}).get("src_fingerprint")
+    if prev_fp == src_fp:
+        return {"parent": (prev.get("generation") or {}).get(
+                    "parent_broadcast_root") or genesis,
+                "parent_from": "frozen", "prev_root": prev_root,
+                "prev_src_fp": prev_fp}
+    return {"parent": prev_root, "parent_from": "advanced",
+            "prev_root": prev_root, "prev_src_fp": prev_fp}
+
+
 def effective_compaction_budget(stack_root: Path, base: int = 4000) -> dict:
     mem = tps = None
     mj = stack_root / "health" / "mem.json"
@@ -119,6 +166,10 @@ def stream(stack_root: Path = ROOT, hq: Path | None = Path(DEFAULT_HQ),
     src_dir = root / "content" / "sources"
     src_dir.mkdir(parents=True, exist_ok=True)
     budget = effective_compaction_budget(root, base_budget)
+    src_fp, src_hashes = source_fingerprint(src_dir)
+    seal_path = root / "content" / "staging" / "BROADCAST-READY.json"
+    gen = parent_for_generation(seal_path, src_fp)
+    parent = gen["parent"]
 
     # Task 32-a: daily FROZEN telemetry digest → the content queue.
     # Must run BEFORE the source scan so today's spec is picked up now.
@@ -140,8 +191,13 @@ def stream(stack_root: Path = ROOT, hq: Path | None = Path(DEFAULT_HQ),
             refused.append({"source": src.name, "why": f"unparsable:{e}"})
             continue
         try:
-            res = compile_source(spec, root, compact=True,
-                                 max_chars=budget["budget"])
+            res = compile_source(
+                spec, root, compact=True, max_chars=budget["budget"],
+                header_meta={
+                    "source": f"content/sources/{src.name}",
+                    "source_sha256": src_hashes.get(src.name, "0" * 64),
+                    "parent_broadcast_root": parent,
+                })
             (compiled if res["manifest_appended"] else unchanged).append(res)
         except RefusedStage as e:
             refused.append({"source": src.name, "why": "secret_scan",
@@ -165,6 +221,13 @@ def stream(stack_root: Path = ROOT, hq: Path | None = Path(DEFAULT_HQ),
         "ts": _now(),
         "state": "BROADCAST-READY" if ok else "HALT-CHAIN-BROKEN",
         "rails_merkle_root": rails_root,
+        "generation": {
+            "src_fingerprint": src_fp,
+            "parent_broadcast_root": parent,
+            "parent_from": gen["parent_from"],
+            "prev_root": gen["prev_root"],
+            "source_hashes": src_hashes,
+        },
         "staged_files": [{"path": p, "sha256": d.hex()} for p, d in leaves],
         "manifest_chain": {"ok": ok, "records": det.get("records"),
                            "files_checked": det.get("files_checked"),
@@ -193,6 +256,7 @@ def stream(stack_root: Path = ROOT, hq: Path | None = Path(DEFAULT_HQ),
                          f"cross_books={cross.get('books')} "
                          f"cross_match={cross.get('convention_match')}")
     print(json.dumps({"state": seal["state"], "rails_root": rails_root[:16],
+                      "parent": parent[:16], "parent_from": gen["parent_from"],
                       "files": len(leaves), "chain_ok": ok,
                       "cross_match": cross.get("convention_match"),
                       "budget": budget["budget"],

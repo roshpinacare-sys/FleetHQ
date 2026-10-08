@@ -501,6 +501,60 @@ def t13_guard():
               "")
 
 
+def t14_generation():
+    print("[T12] generation lineage: genesis → frozen idempotency → "
+          "linear extension → last-record-wins verify")
+    from content_rail import verify_rail
+    from content_streamer import stream
+    with tempfile.TemporaryDirectory() as td:
+        root = Path(td)
+        sdir = root / "content" / "sources"
+        sdir.mkdir(parents=True)
+        spec = {"rail": "tech", "slug": "gen-l", "title": "Gen Law",
+                "summary": "linear lineage",
+                "sections": [{"heading": "H", "body": "result: PASS"}]}
+        (sdir / "a.json").write_text(json.dumps(spec), encoding="utf-8")
+        GENESIS = "0" * 64
+        seal1 = stream(root, hq=None)
+        g1 = seal1["generation"]
+        check("first generation is genesis-rooted",
+              g1["parent_from"] == "genesis"
+              and g1["parent_broadcast_root"] == GENESIS, "")
+        md1 = (root / seal1["staged_files"][0]["path"]).read_text()
+        check("asset header carries lineage metadata",
+              "<!-- sovereign-rail" in md1
+              and f"parent_broadcast_root: {GENESIS}" in md1
+              and "source_sha256:" in md1, md1[:80])
+        seal2 = stream(root, hq=None)
+        g2 = seal2["generation"]
+        check("re-stream freezes parent (zero churn)",
+              g2["parent_from"] == "frozen"
+              and g2["parent_broadcast_root"] == GENESIS
+              and seal2["rails_merkle_root"] == seal1["rails_merkle_root"]
+              and seal2["counts"]["compiled_now"] == 0, str(g2))
+        spec["summary"] = "linear lineage EXTENDED"
+        (sdir / "a.json").write_text(json.dumps(spec), encoding="utf-8")
+        seal3 = stream(root, hq=None)
+        g3 = seal3["generation"]
+        check("source change extends lineage linearly",
+              g3["parent_from"] == "advanced"
+              and g3["parent_broadcast_root"] == seal2["rails_merkle_root"]
+              and seal3["rails_merkle_root"] != seal2["rails_merkle_root"],
+              f"parent={g3['parent_broadcast_root'][:16]}")
+        md3 = (root / seal3["staged_files"][0]["path"]).read_text()
+        check("new generation header anchors parent root",
+              f"parent_broadcast_root: {seal2['rails_merkle_root']}" in md3, "")
+        seal4 = stream(root, hq=None)
+        check("post-advance re-stream frozen + byte-stable",
+              seal4["generation"]["parent_from"] == "frozen"
+              and seal4["rails_merkle_root"] == seal3["rails_merkle_root"]
+              and seal4["counts"]["compiled_now"] == 0, "")
+        ok, det = verify_rail(root)
+        check("last-record-wins verify green on superseded lineage",
+              ok and det["files_checked"] == 1 and det["superseded"] >= 1
+              and not det["bad"], f"det={det}")
+
+
 def t7_live():
     print("[T7] live lanes probe (informational)")
     r = SovereignRouter()
@@ -526,6 +580,7 @@ if __name__ == "__main__":
     t11_mem()
     t12_telemetry()
     t13_guard()
+    t14_generation()
     fails = [r for r in RESULTS if not r[1] and r[0] != "T7-info"]
     print(f"=== VERDICT: {len(RESULTS) - len(fails) - 1}/{len(RESULTS) - 1} PASS"
           + (f" | FAILURES: {[f[0] for f in fails]}" if fails else " | ALL GREEN"))

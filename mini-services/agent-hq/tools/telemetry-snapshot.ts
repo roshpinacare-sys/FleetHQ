@@ -18,6 +18,8 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import os from 'node:os';
+import crypto from 'node:crypto';
+import { execFile } from 'node:child_process';
 
 const RECEIPTS = '/home/z/my-project/receipts';
 
@@ -34,6 +36,75 @@ const GATEWAY = 'http://127.0.0.1:3011';
 const POLL_MS = 30_000;
 const HISTORY_EVERY_MS = 10 * 60_000;
 const HISTORY_MAX_LINES = 2000;
+
+// ---- TASK-31 BRIDGE (unified single-source-of-truth telemetry loop) ------
+// mem_profiler.py (the sovereign-stack python sentinel, 500MB OOM law) and
+// this memguard (ts, 2.5GB ceiling law) are two intentional layers with
+// different thresholds and consumers. This bridge sweeps the python
+// sentinel's raw outputs (health/mem.json + compaction-policy.json) into
+// receipts/host-mem.jsonl as edge-triggered records — append-only, so the
+// linear history tree is never rewritten. Every 5 minutes this process also
+// KICKS mem_profiler.py --once so both layers measure the same living host.
+const STACK = '/home/z/my-project/sovereign-stack';
+const MEM_JSON = path.join(STACK, 'health', 'mem.json');
+const POLICY_JSON = path.join(STACK, 'health', 'compaction-policy.json');
+const PROFILER_KICK_MS = 5 * 60_000;
+let lastMemHash = '';
+let lastPolicyHash = '';
+let lastProfilerKick = 0;
+
+function sha256File(file: string): string | null {
+  try {
+    return crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex');
+  } catch {
+    return null; // absent measured, never invented
+  }
+}
+
+function readJson(file: string): unknown {
+  try {
+    return JSON.parse(fs.readFileSync(file, 'utf8'));
+  } catch {
+    return null;
+  }
+}
+
+function sweepTask31Bridge(at: string): void {
+  const memSha = sha256File(MEM_JSON);
+  const polSha = sha256File(POLICY_JSON);
+  if (!memSha && !polSha) return; // profiler never ran yet — nothing to bridge
+  if (memSha === lastMemHash && polSha === lastPolicyHash) return; // edge only
+  const first = !lastMemHash && !lastPolicyHash;
+  lastMemHash = memSha ?? '';
+  lastPolicyHash = polSha ?? '';
+  if (first) return; // first sight = baseline, not a change event
+  appendBounded(
+    path.join(RECEIPTS, 'host-mem.jsonl'),
+    JSON.stringify({
+      at,
+      kind: 'task31-mem-profiler-bridge',
+      mem: readJson(MEM_JSON),
+      policy: readJson(POLICY_JSON),
+      evidence: { mem_json_sha256: memSha, compaction_policy_sha256: polSha },
+    }),
+    500,
+  );
+  console.log('[telemetry-snapshot] task31 bridge: mem_profiler output change recorded');
+}
+
+function kickProfiler(now: number): void {
+  if (now - lastProfilerKick < PROFILER_KICK_MS) return;
+  lastProfilerKick = now;
+  execFile(
+    'python3',
+    ['mem_profiler.py', '--once'],
+    { cwd: STACK, timeout: 20_000 },
+    (err) => {
+      if (err) console.log(`[telemetry-snapshot] mem_profiler kick failed: ${err.message}`);
+      else console.log('[telemetry-snapshot] mem_profiler kicked (task31 refresh)');
+    },
+  );
+}
 
 fs.mkdirSync(RECEIPTS, { recursive: true });
 const LATEST = path.join(RECEIPTS, 'gateway-telemetry-latest.json');
@@ -87,6 +158,9 @@ async function pull(): Promise<void> {
     JSON.stringify({ at, ...host }),
     500,
   );
+  // TASK-31 unified loop: refresh python sentinel, then bridge its outputs
+  kickProfiler(Date.now());
+  sweepTask31Bridge(at);
   // EDGE-TRIGGERED compaction request: fire only on ceiling crossing
   if (host.compact_suggested && !memCeilingBreached) {
     appendBounded(
