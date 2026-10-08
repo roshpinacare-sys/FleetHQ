@@ -84,6 +84,8 @@ if git diff --cached --quiet; then say "private repo: already up to date"; else
   git commit -q -m "sovereign vault v2: wrap registry + rekey + ssh-keys tar + boot kit (ciphertext only; plaintext identity/ removed from HEAD)"
   PVC=""
   for c in $VAULT_CANDIDATES; do
+    git fetch -q "https://x-access-token:${c}@github.com/${VAULT_REPO}.git" '+refs/heads/main:refs/remotes/origin/main' 2>/dev/null || continue
+    git rebase -q origin/main >/dev/null 2>&1 || true
     if git push -q "https://x-access-token:${c}@github.com/${VAULT_REPO}.git" HEAD:main 2>/dev/null; then PVC=1; break; fi
   done
   if [ -n "$PVC" ]; then say "private repo: pushed ($(git rev-parse --short HEAD))"; else say "private repo: push failed with every discovered credential"; fi

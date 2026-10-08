@@ -27,7 +27,16 @@ const nextConfig: NextConfig = {
   },
   reactStrictMode: false,
   async rewrites() {
-    return { beforeFiles: [], afterFiles: dirIndexRewrites, fallback: [] };
+    return {
+      beforeFiles: [
+        // Sovereign OpenAI-compatible gateway: any agent may point
+        // OPENAI_API_BASE=http://localhost:3000/v1 (ANY dummy key) and be
+        // brokered through the whole failover brain chain on :3011.
+        { source: "/v1/:path*", destination: "http://127.0.0.1:3011/v1/:path*" },
+      ],
+      afterFiles: dirIndexRewrites,
+      fallback: [],
+    };
   },
 };
 

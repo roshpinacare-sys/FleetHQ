@@ -205,6 +205,13 @@ const RATE_COOLDOWN_MS = 45_000; // 429 — quotas recover fast
 const NET_COOLDOWN_MS = 15_000; // network-level death — cheap retry soon
 const HARD_STATUS = new Set([401, 402, 403]);
 
+// jittered cooldown (sovereign doctrine: thundering-herd avoidance — every
+// cooldown lands in ±15% of its nominal value so parallel chains de-sync)
+function cool(id: string, ms: number): void {
+  const jittered = Math.round(ms * (0.85 + Math.random() * 0.3));
+  cooldownUntil.set(id, Date.now() + jittered);
+}
+
 // ---- honest counters ----------------------------------------------------------------------
 const stats = {
   startedAt: Date.now(),
@@ -350,6 +357,7 @@ async function walkChain(
 ): Promise<WalkResult> {
   let lastErr: unknown;
   let attempts = 0;
+  let rateHits = 0; // sovereign doctrine: repeated 429 → degrade per-attempt load (max_tokens), not the deadline
   for (const b of brains()) {
     for (const model of b.models) {
       const id = `${b.name}/${model}`;
@@ -361,8 +369,10 @@ async function walkChain(
       attempts++;
       const budget = deadline - Date.now();
       const t0 = Date.now();
+      // degradation ladder: every 429 in this walk shrinks the ask (floor 384)
+      const degrade = Math.max(384, Math.round(maxTokens * Math.pow(0.75, rateHits)));
       try {
-        const text = polish(stripReasoning(await callBrain(b, model, messages, maxTokens, budget)));
+        const text = polish(stripReasoning(await callBrain(b, model, messages, degrade, budget)));
         if (!qualityGate(text)) throw new Error('off-topic reply');
         cooldownUntil.delete(id);
         stats.lastAnsweredVia = id;
@@ -376,12 +386,13 @@ async function walkChain(
         // honest ops log — brain id + failure class only, never content, never keys
         console.log(`[gateway] brain failed: ${id} → ${status ?? 'network'} ${msg.slice(0, 120)}`);
         if (status === 429 || m.includes('429') || m.includes('too many')) {
-          cooldownUntil.set(id, Date.now() + RATE_COOLDOWN_MS);
+          rateHits++;
+          cool(id, RATE_COOLDOWN_MS);
         } else if ((status && HARD_STATUS.has(status)) || status === 404 || status === 400 || m.includes('not available') || m.includes('unavailable') || m.includes('no endpoints')) {
-          cooldownUntil.set(id, Date.now() + HARD_COOLDOWN_MS);
+          cool(id, HARD_COOLDOWN_MS);
         } else if (!status) {
           // network-level death (timeout / refused / dns) — cheap fast retry
-          cooldownUntil.set(id, Date.now() + NET_COOLDOWN_MS);
+          cool(id, NET_COOLDOWN_MS);
         }
       }
     }
