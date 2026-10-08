@@ -38,6 +38,16 @@ DEFAULT_CONFIG = {
         {"name": "nextjs-control", "url": "http://localhost:3000/",
          "expect_status": 200},
         {"name": "llm7-free", "url": "https://api.llm7.io/v1/models",
+         "expect_status": 200},
+        {"name": "eth-mainnet-rpc", "url": "https://eth.drpc.org",
+         "method": "POST",
+         "body": {"jsonrpc": "2.0", "id": 1,
+                   "method": "eth_blockNumber", "params": []},
+         "expect_status": 200},
+        {"name": "zero-rail-rpc", "url": "https://rpc.zero.tech",
+         "method": "POST",
+         "body": {"jsonrpc": "2.0", "id": 1,
+                   "method": "eth_blockNumber", "params": []},
          "expect_status": 200}
     ],
 }
@@ -55,10 +65,16 @@ def _atomic_write(path: Path, data: str) -> None:
 
 def probe(target: dict, timeout_ms: int) -> dict:
     url = target["url"]
+    body = target.get("body")
+    method = target.get("method") or ("POST" if body else "GET")
+    data = json.dumps(body).encode() if body else None
     t0 = time.monotonic()
     try:
-        req = urllib.request.Request(url, headers={"User-Agent":
-                                                   "sovereign-health/1"})
+        req = urllib.request.Request(
+            url, data=data, method=method,
+            headers={"User-Agent": "sovereign-health/1",
+                     **({"Content-Type": "application/json"} if data
+                        else {})})
         with urllib.request.urlopen(req, timeout=timeout_ms / 1000) as r:
             status = r.status
             err = None
@@ -77,8 +93,9 @@ def probe(target: dict, timeout_ms: int) -> dict:
         verdict, detail = "DEGRADED", f"latency={latency_ms}ms"
     else:
         verdict, detail = "OK", f"status={status} latency={latency_ms}ms"
-    return {"name": target["name"], "url": url, "status": status,
-            "latency_ms": latency_ms, "verdict": verdict, "detail": detail}
+    return {"name": target["name"], "url": url, "method": method,
+            "status": status, "latency_ms": latency_ms,
+            "verdict": verdict, "detail": detail}
 
 
 def _alert(snapshot: dict, res: dict, root: Path) -> str:
@@ -125,6 +142,19 @@ def run_once(config_path: Optional[str] = None, root: Path = ROOT) -> dict:
     ts = _now()
     snap = {"ts": ts, "timeout_ms": timeout_ms, "all_ok": all_ok,
             "results": results}
+    # attach host-memory measurement if the profiler has measured it
+    mem_file = root / "health" / "mem.json"
+    if mem_file.is_file():
+        try:
+            mem = json.loads(mem_file.read_text(encoding="utf-8"))
+            snap["mem"] = {"state": mem.get("state"),
+                           "mem_available_mb": mem.get("mem_available_mb"),
+                           "mem_total_mb": mem.get("mem_total_mb")}
+            if mem.get("state") == "LOW-MEM":
+                all_ok = False
+                snap["all_ok"] = False
+        except Exception:
+            pass
     raw = json.dumps(snap, ensure_ascii=False, sort_keys=True)
     snap["sha256"] = hashlib.sha256(raw.encode()).hexdigest()
 

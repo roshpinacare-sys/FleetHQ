@@ -11,6 +11,8 @@ Proves, on THIS machine, right now:
   T7  live lanes: probe configured routes (INFO — network optional in CI)
   T8  content rail: deterministic bytes + idempotent anchor + secret-refusal
   T9  health monitor: snapshot files + immutable alert receipts + chain
+  T10 streamer: binary merkle seal + self-healing determinism + cross-lineage
+  T11 mem profiler: /proc parse + OOM policy (500MB law) + budget composition
 
 Exit code 0 = all critical tests PASS (T7 is informational).
 """
@@ -309,6 +311,78 @@ def t9_health():
         srv.shutdown()
 
 
+def t10_streamer():
+    print("[T10] content streamer: merkle seal + self-healing + cross-lineage")
+    from content_streamer import merkle_root, stream
+    d1 = hashlib.sha256(b"a").digest()
+    d2 = hashlib.sha256(b"b").digest()
+    check("merkle convention (parent=sha256(L||R), odd=dup)",
+          merkle_root([d1, d2]) == hashlib.sha256(d1 + d2).hexdigest()
+          and merkle_root([d1]) == d1.hex()
+          and merkle_root([]) == "0" * 64, "")
+    with tempfile.TemporaryDirectory() as td:
+        root = Path(td)
+        sdir = root / "content" / "sources"
+        sdir.mkdir(parents=True)
+        for name, slug in (("a.json", "t10a"), ("b.json", "t10b")):
+            spec = {"rail": "tech", "slug": slug, "title": slug.upper(),
+                    "summary": "stream determinism",
+                    "sections": [{"heading": "H", "body": "result: PASS"}]}
+            (sdir / name).write_text(json.dumps(spec), encoding="utf-8")
+        seal1 = stream(root, hq=None)
+        seal2 = stream(root, hq=None)
+        check("merkle root deterministic + non-trivial",
+              seal2["rails_merkle_root"] == seal1["rails_merkle_root"]
+              and seal1["rails_merkle_root"] != "0" * 64,
+              seal1["rails_merkle_root"][:16])
+        check("seal BROADCAST-READY + manifest chain ok",
+              seal1["state"] == "BROADCAST-READY"
+              and seal1["manifest_chain"]["ok"], "")
+        check("re-stream idempotent (0 compiled, 2 unchanged)",
+              seal2["counts"]["compiled_now"] == 0
+              and seal2["counts"]["unchanged"] == 2, str(seal2["counts"]))
+        check("missing cross-lineage recorded honestly (never faked)",
+              seal1["cross_lineage"]["available"] is False, "")
+        f = root / seal1["staged_files"][0]["path"]
+        f.write_bytes(f.read_bytes() + b"\ntampered\n")
+        seal3 = stream(root, hq=None)
+        check("tampered deliverable self-heals on re-stream",
+              seal3["rails_merkle_root"] == seal1["rails_merkle_root"]
+              and seal3["state"] == "BROADCAST-READY", "")
+
+
+def t11_mem():
+    print("[T11] mem profiler: parse + OOM policy + budget composition")
+    from mem_profiler import effective_budget, parse_meminfo, policy_for
+    mi = parse_meminfo("MemTotal:        4138564 kB\n"
+                       "MemAvailable:    2830896 kB\n"
+                       "HugePages_Total:       0\n")
+    check("meminfo parse (units + zero-values, noise-skip)",
+          mi.get("MemTotal") == 4138564
+          and mi.get("MemAvailable") == 2830896
+          and mi.get("HugePages_Total") == 0, str(mi))
+    low = policy_for(400_000, 4_138_564)
+    okp = policy_for(2_830_896, 4_138_564)
+    check("500MB law: low-mem forces tighter budget",
+          low["low_mem"] and low["max_chars"] < 4000
+          and low["reason"] == "low_mem_forced", f"budget={low['max_chars']}")
+    check("healthy memory keeps base budget",
+          not okp["low_mem"] and okp["max_chars"] == 4000,
+          f"budget={okp['max_chars']}")
+    check("effective budget = min(mem, tps, base)",
+          effective_budget({"policy_max_chars": 1500},
+                           {"recommended_compaction_max_chars": 2500})
+          == 1500
+          and effective_budget(None, None) == 4000, "")
+    import mem_profiler
+    with tempfile.TemporaryDirectory() as td:
+        snap = mem_profiler.profile(Path(td))
+        check("real /proc measurement written",
+              (Path(td) / "health" / "mem.json").is_file()
+              and snap["mem_total_mb"] > 0,
+              f"{snap['mem_available_mb']}MB free of {snap['mem_total_mb']}MB")
+
+
 def t7_live():
     print("[T7] live lanes probe (informational)")
     r = SovereignRouter()
@@ -330,6 +404,8 @@ if __name__ == "__main__":
     t7_live()
     t8_content_rail()
     t9_health()
+    t10_streamer()
+    t11_mem()
     fails = [r for r in RESULTS if not r[1] and r[0] != "T7-info"]
     print(f"=== VERDICT: {len(RESULTS) - len(fails) - 1}/{len(RESULTS) - 1} PASS"
           + (f" | FAILURES: {[f[0] for f in fails]}" if fails else " | ALL GREEN"))

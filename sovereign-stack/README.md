@@ -20,6 +20,8 @@ original proposal this replaces).
 | `content_rail.py` | Deterministic content-rail compiler (secret-scan → stage → anchor) | selftest T8 |
 | `health_monitor.py` | 90000ms-law probe loop → status.json/history.jsonl + immutable alert receipts | selftest T9 |
 | `tps_bench.py` | Honest Tier-0 TPS probe → deterministic compaction budget | exit 4 = UNREACHABLE (honest) |
+| `content_streamer.py` | Sources → rails streamer, binary Merkle seal, BROADCAST-READY state | selftest T10 |
+| `mem_profiler.py` | /proc memory law: <500MB ⇒ forced tighter compaction (OOM defense) | selftest T11 |
 | `drill_breaker.py` | Circuit-breaker recovery drill (Task 29) | 8/8 PASS |
 | `tamper_watch.py` | Hash-chain watchdog: lock → quarantine → origin rebuild (Task 29) | scope-contract v2 |
 | `vault_env_bridge.py` | Vault → .env (0600) with fingerprint-only receipts (Task 29) | fail-closed proven ×3 |
@@ -45,7 +47,7 @@ bash run.sh                    # selftest + live lane probe
 Drop a GGUF into `./models/` (e.g. Qwen2.5-Coder-7B-Instruct Q4_K_M ≈ 4.7 GB;
 Qwen2.5-Coder-32B Q4_K_M ≈ 20 GB for heavy reasoning, needs ~24 GB RAM/VRAM).
 
-## Task 30 — fusion layer (content rail + health + bench)
+## Task 30/31 — fusion layer (content rail + health + bench + streamer + mem law)
 
 Zero-dependency production layer added on the recovered base (the sandbox was
 reset again; the whole stack came back from the FleetHQ clone — `b3b9992`
@@ -70,7 +72,9 @@ python3 content_rail.py compile --source content/sources/<file>.json
 python3 content_rail.py verify
 python3 health_monitor.py --once          # or --loop 300 (5-minute sentinel)
 python3 tps_bench.py --endpoint http://localhost:8080
-python3 selftest.py                       # T1–T9, must stay green
+python3 content_streamer.py --once        # or --loop 300: seal BROADCAST-READY
+python3 mem_profiler.py --once            # or --loop 60: OOM defense law
+python3 selftest.py                       # T1–T11, must stay green
 ```
 
 Laws enforced in this layer:
@@ -87,6 +91,21 @@ Laws enforced in this layer:
    `RECEIPTS.chain` (rewriting history breaks the chain by construction).
 5. **Honest UNREACHABLE**: if the local inference host is down, `tps_bench`
    exits 4 and records `state=UNREACHABLE` — no number is invented.
+6. **Task 31 additions — streamer + memory law**:
+   - `content_streamer.py` seals `content/staging/BROADCAST-READY.json` with a
+     **binary Merkle root** (leaf=sha256(file bytes), sorted by path,
+     parent=sha256(L‖R), odd node duplicated) over every staged deliverable;
+     re-streaming self-heals tampered files (determinism = healing) and never
+     duplicates a broadcast record for the same root.
+   - Budget composition: `effective = min(4000, mem_policy, tps_policy)`.
+   - `mem_profiler.py` enforces the **500MB law**: MemAvailable below the
+     threshold ⇒ budget forced down (measured 800 chars at ~390MB in tests),
+     LOW-MEM alert chained in RECEIPTS.chain.
+   - `health_monitor.py` probes chain witnesses with **POST JSON-RPC**
+     (eth-mainnet, zero-rail) — latency receipts isolate slow nodes.
+   - Cross-lineage with the twin's `books-lineage.json` is verified from its
+     own leaf hashes; convention mismatch is **recorded honestly**
+     (match=false measured 2026-10-08), never faked.
 
 ## Why the evasion tricks from the original proposal are NOT here
 
