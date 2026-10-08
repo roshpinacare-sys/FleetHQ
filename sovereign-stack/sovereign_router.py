@@ -156,7 +156,13 @@ class SovereignRouter:
     def route(self, messages: List[Dict[str, str]], model: Optional[str] = None,
               max_tokens: int = 1024, temperature: float = 0.7,
               ) -> Dict[str, Any]:
-        """Execute with the resilience law. Raises RuntimeError when ALL lanes die."""
+        """Execute with the resilience law. Raises RuntimeError when ALL lanes die.
+
+        Fair-retry semantics: a short Retry-After (quota window) is honored on
+        the SAME lane (at most one fair retry per lane per round) and does NOT
+        count as a give-up; the breaker only counts real give-ups, so a lane
+        that recovers within its quota window is never punished.
+        """
         payload: Dict[str, Any] = {"messages": messages, "max_tokens": max_tokens,
                                    "temperature": temperature}
         attempt = 0
@@ -168,37 +174,47 @@ class SovereignRouter:
                 if not self.breaker.allow(name):
                     continue
                 progressed = True
-                attempt += 1
-                use = dict(payload)
-                use["model"] = model or route.get("model")
-                t0 = time.time()
-                try:
-                    status, headers, data = self._post_chat(route, use, self.timeout)
-                except Exception as e:  # network anomaly → routing event
-                    status, headers, data = 0, {}, {"error": {"message": str(e)}}
-                dt = round(time.time() - t0, 2)
-                self.telemetry.append({"lane": name, "status": status, "s": dt})
-                if status == 200 and data.get("choices"):
-                    self.breaker.record(name, True)
-                    self._save_state()
-                    return {"content": data["choices"][0]["message"]["content"],
-                            "lane": name, "model": use["model"], "latency_s": dt,
-                            "attempts": attempt}
-                # resilience law
-                self.breaker.record(name, False)
-                retry_after = headers.get("Retry-After") or headers.get("retry-after")
-                if retry_after:
+                fair = 0
+                while True:
+                    attempt += 1
+                    use = dict(payload)
+                    use["model"] = model or route.get("model")
+                    t0 = time.time()
                     try:
-                        sleep_s = min(float(retry_after), MAX_RETRY_AFTER_SLEEP)
-                    except ValueError:
-                        sleep_s = 0
-                    if 0 < sleep_s <= 5.0:
-                        self.log(f"[{name}] 429/quota → honoring Retry-After {sleep_s}s")
+                        status, headers, data = self._post_chat(
+                            route, use, self.timeout)
+                    except Exception as e:  # network anomaly → routing event
+                        status, headers, data = 0, {}, {"error": {"message": str(e)}}
+                    dt = round(time.time() - t0, 2)
+                    self.telemetry.append({"lane": name, "status": status,
+                                           "s": dt})
+                    if status == 200 and data.get("choices"):
+                        self.breaker.record(name, True)
+                        self._save_state()
+                        return {"content": data["choices"][0]["message"]["content"],
+                                "lane": name, "model": use["model"],
+                                "latency_s": dt, "attempts": attempt}
+                    # resilience law: short quota window → same-lane fair retry
+                    retry_after = (headers.get("Retry-After")
+                                   or headers.get("retry-after"))
+                    sleep_s = 0.0
+                    if retry_after:
+                        try:
+                            sleep_s = min(float(retry_after),
+                                          MAX_RETRY_AFTER_SLEEP)
+                        except ValueError:
+                            sleep_s = 0.0
+                    if 0 < sleep_s <= 5.0 and fair < 1:
+                        fair += 1
+                        self.log(f"[{name}] 429/quota → honoring Retry-After "
+                                 f"{sleep_s}s (fair retry on same lane)")
                         time.sleep(sleep_s)
-                        attempt -= 1  # same provider gets its fair retry
                         continue
-                last_err = f"{name}:{status}"
-                self.log(f"[{name}] routing event (status={status}) → next lane")
+                    # give-up on this lane → breaker counts it
+                    self.breaker.record(name, False)
+                    last_err = f"{name}:{status}"
+                    self.log(f"[{name}] routing event (status={status}) → next lane")
+                    break
             if not progressed:
                 # all breakers open → wait for half-open window
                 time.sleep(min(2.0 * attempt, 8.0))
