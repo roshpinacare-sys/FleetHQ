@@ -574,3 +574,26 @@ Stage Summary:
 - The vault is no longer an empty box: 3 live inference keys (≈$300 combined credit) + 1 management key sealed, deployed, pushed to both repos, and PROVEN serving live Hebrew answers through the strongest paid model (deepseek-chat-v3.1).
 - Honest remaining gaps (owner action, once each): (1) Grok/xAI key — NOT on this machine anywhere; paste it and the chain's #1 slot activates with zero code change; (2) GitHub Models — blocked by sandbox network (proven canned responder), slot wired for when network allows; the PAT's git power is already fully in use; (3) key 5e83a's account daily-free quota resets tomorrow (paid models unaffected).
 - vault.sh digit-name bug fixed at the root — future numbered slots deploy correctly.
+
+---
+Task ID: 14
+Agent: Z.ai Code (main session)
+Task: Owner uploaded Cloudflare credentials (API token + R2 S3 keys) + pointed at github.com/amirkabiri/duckai; asked to examine what more can be extracted from existing keys, plan life beyond the $100 credit, add content quality sieves, and above all guarantee sovereignty before the sandbox is wiped.
+
+Work Log:
+- Cloudflare token verified LIVE (active). Workers AI works: OpenAI-compatible endpoint tested with 5 models — 4 live (llama-3.3-70b-instruct-fp8-fast answers Hebrew, llama-4-scout-17b, mistral-small-3.1-24b, qwen2.5-coder-32b). R2 NOT enabled on the account (owner one-click needed) — credentials sealed anyway; sandbox network also blocks the R2 S3 endpoint (honest fail).
+- duckai examined and RUN on the box (port 3031): mechanism works, but duckduckgo.com is ConnectionRefused from this sandbox — dead here BY NETWORK. Sovereign integration path documented: run duckai on any machine with DDG access and point the existing OPENAI_BASE_URL slot at it — zero code change.
+- OpenRouter longevity measured honestly: accounts B/C have total_credits 0 with key-level limit 100 (free-tier 50 req/day each = 150/day baseline) + existing usage on record; management key can list/create virtual keys on account A. New capacity: Workers AI 10k neurons/day free.
+- NEW BRAIN wired in ALL THREE chains (foreman llm.ts sovereign+runtime, reception route.ts): cloudflare-ai with 4-model rotation, slot after the OpenRouter trio. Proven through the chain itself: with OpenRouter keys blanked, `chat()` answered Hebrew via cloudflare-ai/@cf/meta/llama-3.3-70b-instruct-fp8-fast. Crew chain = openrouter-1→2→3→cloudflare-ai→kilo→llm7→pollinations→ovh.
+- INDEPENDENT QA SIEVE added to the office's final-report path (office.ts both copies): after the lead writes the summary, a second brain checks it against the facts on record and may correct it — single pass, fail-open (sieve failure publishes the draft unchanged, logged honestly). Never a loop.
+- Vault re-sealed with 17 valued slots (OpenRouter×4 + Cloudflare token/account + R2 credentials/bucket) and deployed everywhere.
+- SOVEREIGNTY DRILL #2 caught a REAL clobber bug: auto-unseal compared mtimes against a fresh git clone (always newer) and would overwrite a NEWER local seal with an OLDER repo copy. Fixed at the root: local seal is the authority; repo pull only when no local copy exists.
+- MID-TASK CONVERGENCE INCIDENT: the crew's own Task 25 (another writer) pushed an EMPTY vault re-seal + worklog changes — two competing seals. Handled honestly: decrypted the remote seal (0 valued slots proven), union-resolved the worklog conflict, re-sealed the union (mine was a strict superset), pushed 9792b3f, then re-sealed the private repo (8d61fe0) superseding the empty seal.
+- NEW SAFETY GUARD in vault.sh: `seal` now REFUSES a keys.env with zero valued slots (tested: empty → exit 1 with clear message; real path unaffected). This makes the Task-25-style accident impossible.
+- Pushes: FleetHQ c8e0772..9792b3f + seal-guard commit; private fleet-vault re-sealed. Security scans clean (no plaintext secrets in any staged diff). Reception re-verified live post-restore; foreman health OK; dev.log clean.
+
+Stage Summary:
+- The office now survives the sandbox: full restore from bare git clone + auto-unseal proven twice (17-18 env slots incl. all 4 OpenRouter keys + Cloudflare + R2), two independent encrypted homes (public FleetHQ + private fleet-vault), a third off-box home ready (R2, one dashboard click), and an empty-seal accident now structurally impossible.
+- Beyond-$100 doctrine is real and measured: 150 OpenRouter free req/day across 3 accounts + Workers AI 70B free daily + 4 keyless brains + credit-backed deepseek until it dries — with automatic per-brain cooldowns and an honest reception.
+- Quality: reports now pass draft → lead review → independent QA sieve before publication.
+- Honest remaining owner actions (one-time): enable R2 in the Cloudflare dashboard (backup script ready + tested fail-honest), optionally run duckai on a DDG-reachable machine wired via OPENAI_BASE_URL.
