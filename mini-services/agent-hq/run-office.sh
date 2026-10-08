@@ -24,11 +24,15 @@ echo "[run-office] bun $(bun --version)"
 echo "[run-office] bun install ..."
 bun install
 
-# ---- 3) Vault first (it produces the .env files) ----------------------------
-# הכספת קודמת: אם VAULT_PASSPHRASE מוגדר ו-vault/vault.sh קיים, הפענוח מפיק את
-# קובצי ה-.env — ואסור לדרוס אותם בהעתקה מ-.env.example למטה.
-if [ -n "${VAULT_PASSPHRASE:-}" ] && [ -f "$ROOT/vault/vault.sh" ]; then
-  echo "[run-office] opening sealed vault (vault/keys.env.enc -> .env files) ..."
+# ---- 3) Vault first (it produces the .env files) — AUTONOMOUS ----------------
+# ריבונות מלאה: הפענוח לא תלוי בבעלים. auto-unseal.sh מוצא את מפתח הפענוח
+# (VAULT_PASSPHRASE או upload/pat.env), מושך את הכספת החתומה הכי טרייה מהריפו
+# הפרטי (fleet-vault), ומפיק את קובצי ה-.env במדיניות מיזוג שלא דורסת קיים.
+if [ -f "$ROOT/vault/auto-unseal.sh" ]; then
+  echo "[run-office] autonomous vault unseal ..."
+  bash "$ROOT/vault/auto-unseal.sh" || echo "[run-office] continuing with existing .env (keyless honest mode)"
+elif [ -n "${VAULT_PASSPHRASE:-}" ] && [ -f "$ROOT/vault/vault.sh" ]; then
+  echo "[run-office] opening sealed vault (manual passphrase) ..."
   VAULT_PASSPHRASE="$VAULT_PASSPHRASE" bash "$ROOT/vault/vault.sh" open || echo "vault open failed — continuing with existing .env"
 fi
 

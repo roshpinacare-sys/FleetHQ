@@ -49,10 +49,27 @@ case "$cmd" in
     ;;
   deploy)
     [ -f "$KEYS" ] || { echo "no $KEYS — run: VAULT_PASSPHRASE=... bash vault/vault.sh open"; exit 1; }
-    cp "$KEYS" "$ROOT/.env.local"
-    cp "$KEYS" "$ROOT/mini-services/agent-hq/.env"
-    chmod 600 "$ROOT/.env.local" "$ROOT/mini-services/agent-hq/.env"
-    echo "deployed → .env.local + mini-services/agent-hq/.env (both 600, both gitignored)"
+    # MERGE-DEPLOY (non-destructive): vault slots with real values win; slots
+    # that are empty in the vault NEVER stomp a value already living in the
+    # target (e.g. the infrastructure-only GITHUB_PAT in agent-hq/.env);
+    # target-only lines are preserved.
+    merge_env() {
+      src="$1"; dst="$2"
+      [ -f "$src" ] || return 0
+      if [ ! -f "$dst" ]; then cp "$src" "$dst"; chmod 600 "$dst"; return 0; fi
+      awk -F= '
+        FNR==NR { if ($0 ~ /^[A-Za-z_]+=/ && length(substr($0, index($0,"=")+1)) > 0) want[$1]=$0; next }
+        {
+          if ($0 ~ /^[A-Za-z_]+=/ && ($1 in want)) { print want[$1]; delete want[$1] }
+          else print
+        }
+        END { for (k in want) print want[k] }
+      ' "$src" "$dst" > "$dst.tmp" && mv "$dst.tmp" "$dst" && chmod 600 "$dst"
+    }
+    merge_env "$KEYS" "$ROOT/.env.local"
+    merge_env "$KEYS" "$ROOT/mini-services/agent-hq/.env"
+    chmod 600 "$ROOT/.env.local" "$ROOT/mini-services/agent-hq/.env" 2>/dev/null || true
+    echo "deployed → .env.local + mini-services/agent-hq/.env (merged, 600, gitignored)"
     ;;
   status)
     [ -f "$ENC" ] && echo "present: keys.env.enc (sealed, committed)" || echo "missing: keys.env.enc"
