@@ -28,14 +28,32 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import cid_builder                             # noqa: E402
 import content_rail                            # noqa: E402
+import packster                                # noqa: E402
 import telemetry_digest                        # noqa: E402
+import thread_supervisor                       # noqa: E402
 from content_rail import RefusedStage, compile_source, verify_rail  # noqa: E402
 from mem_profiler import effective_budget       # noqa: E402
 from memory_store import MemoryStore            # noqa: E402
 
 ROOT = Path(__file__).resolve().parent
 DEFAULT_HQ = "/home/z/my-project"  # this workspace IS the FleetHQ clone here
+
+# Task 33: fleet-wide directory contract (operator Q1, decided).
+# Every fleet repo mirrors EXACTLY this shape under its sovereign-stack/;
+# roots are cross-referenced in receipts/books-lineage.json — sibling
+# agents accept an update only as an authenticated linear extension.
+DIRECTORY_CONTRACT = {
+    "content/sources/": "raw JSON spec arrays (input; one file per unit)",
+    "content/rails/<rail>/<date>/": "compiled deterministic markdown + .sha256 sidecars",
+    "content/staging/": "BROADCAST-READY.json seal awaiting the local trigger",
+    "content/MANIFEST.md": "hash-chained anchor of every staged asset",
+    "health/": "sentinel snapshots (mem/status/tps/history/guard-state)",
+    "receipts/": "append-only RECEIPTS.chain + immutable markers",
+    "credentials/": "0600 local-only account layer (gitignored; addresses, never keys)",
+}
+BUNDLE_CODEC = "packster-msgpack-canonical+cidv1-raw-sha256"
 
 
 def _now() -> str:
@@ -206,13 +224,22 @@ def stream(stack_root: Path = ROOT, hq: Path | None = Path(DEFAULT_HQ),
             refused.append({"source": src.name, "why": str(e)})
 
     # merkle over the staged deliverables (leaf = sha256 of file bytes,
-    # files sorted by relative path)
-    leaves: list[tuple[str, bytes]] = []
+    # files sorted by relative path) + in-memory CID per buffer BEFORE the
+    # seal is written (Task 33-b: lineage compliance pre-staging)
+    leaves: list[tuple[str, bytes, str]] = []
     staged = root / "content" / "rails"
     for f in sorted(staged.rglob("*.md")):
         rel = str(f.relative_to(root))
-        leaves.append((rel, hashlib.sha256(f.read_bytes()).digest()))
-    rails_root = merkle_root([d for _, d in leaves])
+        b = f.read_bytes()
+        leaves.append((rel, hashlib.sha256(b).digest(), cid_builder.cid(b)))
+    rails_root = merkle_root([d for _, d, _ in leaves])
+
+    # Task 33-a: bundle rows packed canonically (packster) → the packed
+    # bundle itself is content-addressed (cid_builder) → the seal binds
+    # path+sha256+cid rows immutably.
+    rows = [[p, d.hex(), c] for p, d, c in leaves]
+    packed_rows = packster.pack(rows)
+    bundle_cid = cid_builder.cid(packed_rows)
 
     ok, det = verify_rail(root)
     cross = cross_lineage(hq)
@@ -228,7 +255,12 @@ def stream(stack_root: Path = ROOT, hq: Path | None = Path(DEFAULT_HQ),
             "prev_root": gen["prev_root"],
             "source_hashes": src_hashes,
         },
-        "staged_files": [{"path": p, "sha256": d.hex()} for p, d in leaves],
+        "staged_files": [{"path": p, "sha256": d.hex(), "cid": c}
+                         for p, d, c in leaves],
+        "bundle_cid": bundle_cid,
+        "bundle_codec": BUNDLE_CODEC,
+        "bundle_pack_bytes": len(packed_rows),
+        "directory_contract": DIRECTORY_CONTRACT,
         "manifest_chain": {"ok": ok, "records": det.get("records"),
                            "files_checked": det.get("files_checked"),
                            "bad": det.get("bad", [])},
@@ -261,6 +293,7 @@ def stream(stack_root: Path = ROOT, hq: Path | None = Path(DEFAULT_HQ),
                       "cross_match": cross.get("convention_match"),
                       "budget": budget["budget"],
                       "telemetry": tele.get("reason") or tele.get("emitted"),
+                      "bundle_cid": bundle_cid,
                       "counts": seal["counts"]}, ensure_ascii=False))
     return seal
 
@@ -274,14 +307,31 @@ def main() -> int:
     ap.add_argument("--base-budget", type=int, default=4000)
     ap.add_argument("--no-telemetry", action="store_true",
                     help="skip the daily telemetry digest emission")
+    ap.add_argument("--stall", type=float, default=600.0,
+                    help="guarded_call timeout per --loop iteration (Task 33-c)")
     a = ap.parse_args()
     if not a.once and not a.loop:
         a.once = True
     rc = 0
+    receipts_root = Path(a.root) / "receipts"
     while True:
-        seal = stream(Path(a.root), Path(a.hq) if a.hq else None,
-                      a.base_budget, telemetry=not a.no_telemetry)
-        rc = 0 if seal["state"] == "BROADCAST-READY" else 1
+        # Task 33-c: every loop iteration is a bounded guarded_call — a hung
+        # compile can never wedge the daemon; timeout → GUARDRESET receipt
+        # + fresh baseline next tick (no human review needed).
+        guarded = thread_supervisor.guarded_call(
+            stream, Path(a.root), Path(a.hq) if a.hq else None,
+            a.base_budget, not a.no_telemetry,
+            timeout_s=a.stall, receipts_root=receipts_root)
+        if not guarded["ok"]:
+            print(json.dumps({"state": "GUARDRESET",
+                              "reason": "iteration_timeout_abandoned",
+                              "elapsed_s": guarded["elapsed_s"],
+                              "receipt": guarded.get("receipt_id")},
+                             ensure_ascii=False))
+            rc = 1
+        else:
+            seal = guarded["value"]
+            rc = 0 if seal["state"] == "BROADCAST-READY" else 1
         if not a.loop:
             return rc
         try:

@@ -1,14 +1,18 @@
 {
- "ts": "2026-10-08T21:36:41Z",
+ "ts": "2026-10-08T22:46:21Z",
  "timeout_ms": 90000,
  "all_ok": false,
+ "accounts": {
+  "source": "absent",
+  "count": 0
+ },
  "results": [
   {
    "name": "llamacpp-local",
    "url": "http://localhost:8080/health",
    "method": "GET",
    "status": null,
-   "latency_ms": 3,
+   "latency_ms": 4,
    "verdict": "DOWN",
    "detail": "URLError: <urlopen error [Errno 111] Connection refused>"
   },
@@ -17,37 +21,42 @@
    "url": "http://localhost:3000/",
    "method": "GET",
    "status": 200,
-   "latency_ms": 47,
+   "latency_ms": 53,
    "verdict": "OK",
-   "detail": "status=200 latency=47ms"
+   "detail": "status=200 latency=53ms"
   },
   {
    "name": "llm7-free",
    "url": "https://api.llm7.io/v1/models",
    "method": "GET",
    "status": 200,
-   "latency_ms": 225,
+   "latency_ms": 239,
    "verdict": "OK",
-   "detail": "status=200 latency=225ms"
+   "detail": "status=200 latency=239ms"
   },
   {
    "name": "eth-mainnet-rpc",
    "url": "https://eth.drpc.org",
    "method": "POST",
    "status": 200,
-   "latency_ms": 64,
+   "latency_ms": 71,
    "verdict": "OK",
-   "detail": "status=200 latency=64ms"
+   "detail": "status=200 latency=71ms"
   },
   {
    "name": "zero-rail-rpc",
    "url": "https://rpc.zero.tech",
    "method": "POST",
    "status": 200,
-   "latency_ms": 355,
+   "latency_ms": 700,
    "verdict": "OK",
-   "detail": "status=200 latency=355ms"
+   "detail": "status=200 latency=700ms"
   }
  ],
- "sha256": "0d5a4ea0891a5983ec9083a36e396c9a28722c3c97223737d482737bfd94a64e"
+ "mem": {
+  "state": "OK",
+  "mem_available_mb": 2608.3,
+  "mem_total_mb": 4041.6
+ },
+ "sha256": "ec1073674f55599d01a74ec86511b448cd8ac81b08c6538925eea0a39e4bb8da"
 }
