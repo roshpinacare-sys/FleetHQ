@@ -17,6 +17,12 @@ original proposal this replaces).
 | `memory_store.py` | Hash-chained MEMORY.md, tamper-evident | selftest T5 |
 | `mcp_min.py` | Minimal MCP stdio client (stdlib) | selftest T6 |
 | `selftest.py` | The whole proof, on this machine | exit 0 required |
+| `content_rail.py` | Deterministic content-rail compiler (secret-scan → stage → anchor) | selftest T8 |
+| `health_monitor.py` | 90000ms-law probe loop → status.json/history.jsonl + immutable alert receipts | selftest T9 |
+| `tps_bench.py` | Honest Tier-0 TPS probe → deterministic compaction budget | exit 4 = UNREACHABLE (honest) |
+| `drill_breaker.py` | Circuit-breaker recovery drill (Task 29) | 8/8 PASS |
+| `tamper_watch.py` | Hash-chain watchdog: lock → quarantine → origin rebuild (Task 29) | scope-contract v2 |
+| `vault_env_bridge.py` | Vault → .env (0600) with fingerprint-only receipts (Task 29) | fail-closed proven ×3 |
 | `docker-compose.yml` + `litellm_config.yml` | llama.cpp + LiteLLM + Langfuse + Postgres | verified images |
 | `env.example` | Fallback config shape (real values from office vault) | — |
 
@@ -38,6 +44,49 @@ bash run.sh                    # selftest + live lane probe
 
 Drop a GGUF into `./models/` (e.g. Qwen2.5-Coder-7B-Instruct Q4_K_M ≈ 4.7 GB;
 Qwen2.5-Coder-32B Q4_K_M ≈ 20 GB for heavy reasoning, needs ~24 GB RAM/VRAM).
+
+## Task 30 — fusion layer (content rail + health + bench)
+
+Zero-dependency production layer added on the recovered base (the sandbox was
+reset again; the whole stack came back from the FleetHQ clone — `b3b9992`
+verified present before any work). Layout — replicated per fleet repo:
+
+```
+sovereign-stack/
+├── content/
+│   ├── sources/                 # verified input data arrays (JSON)
+│   ├── rails/<rail>/<date>/<slug>.md (+ .tokens.md + .sha256)
+│   └── MANIFEST.md              # hash-chained index of every staged deliverable
+├── health/
+│   ├── targets.json             # probe config (written on first run)
+│   ├── status.json              # latest snapshot (the Next.js console reads this)
+│   ├── history.jsonl            # append-only, ts-ordered
+│   └── tps.json                 # Tier-0 TPS / honest UNREACHABLE state
+└── receipts/                    # append-only immutable alerts + RECEIPTS.chain
+```
+
+```bash
+python3 content_rail.py compile --source content/sources/<file>.json
+python3 content_rail.py verify
+python3 health_monitor.py --once          # or --loop 300 (5-minute sentinel)
+python3 tps_bench.py --endpoint http://localhost:8080
+python3 selftest.py                       # T1–T9, must stay green
+```
+
+Laws enforced in this layer:
+
+1. **Determinism**: same source JSON → byte-identical deliverable (manifest
+   anchoring is idempotent — the same sha is never chained twice).
+2. **Secrets never stage**: the pre-stage scan (incl. fleet-history WIF shapes)
+   refuses with an immutable `REJECTED-*.json` receipt; findings are masked.
+3. **Lineage = sha256 + hash chain, NOT GPG**: no GPG keys exist in the fleet;
+   minting one to imitate "a verified r5 credential" would be a lie
+   (same honest correction as FleetHQ `e1f33fe`).
+4. **Anomalies are measured, never guessed**: probe timeout default 90000 ms;
+   every anomaly becomes an append-only `ALERT-*.json` chained in
+   `RECEIPTS.chain` (rewriting history breaks the chain by construction).
+5. **Honest UNREACHABLE**: if the local inference host is down, `tps_bench`
+   exits 4 and records `state=UNREACHABLE` — no number is invented.
 
 ## Why the evasion tricks from the original proposal are NOT here
 

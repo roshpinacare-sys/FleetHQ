@@ -1,0 +1,32 @@
+{
+ "ts": "2026-10-08T21:19:05Z",
+ "timeout_ms": 90000,
+ "all_ok": false,
+ "results": [
+  {
+   "name": "llamacpp-local",
+   "url": "http://localhost:8080/health",
+   "status": null,
+   "latency_ms": 2,
+   "verdict": "DOWN",
+   "detail": "URLError: <urlopen error [Errno 111] Connection refused>"
+  },
+  {
+   "name": "nextjs-control",
+   "url": "http://localhost:3000/",
+   "status": 200,
+   "latency_ms": 33,
+   "verdict": "OK",
+   "detail": "status=200 latency=33ms"
+  },
+  {
+   "name": "llm7-free",
+   "url": "https://api.llm7.io/v1/models",
+   "status": 200,
+   "latency_ms": 218,
+   "verdict": "OK",
+   "detail": "status=200 latency=218ms"
+  }
+ ],
+ "sha256": "e8f24f79528fc420c40c26f8028fffa2d1b4a1db6a3fcd168c2296f53c6e121c"
+}

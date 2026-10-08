@@ -9,10 +9,13 @@ Proves, on THIS machine, right now:
   T5  memory chain: verify OK → tamper detected → compact keeps integrity
   T6  MCP: initialize → tools/list → tools/call against a toy stdio server
   T7  live lanes: probe configured routes (INFO — network optional in CI)
+  T8  content rail: deterministic bytes + idempotent anchor + secret-refusal
+  T9  health monitor: snapshot files + immutable alert receipts + chain
 
 Exit code 0 = all critical tests PASS (T7 is informational).
 """
 from __future__ import annotations
+import hashlib
 import json
 import os
 import subprocess
@@ -21,6 +24,7 @@ import tempfile
 import threading
 import time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from pathlib import Path
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
@@ -225,6 +229,86 @@ def t6_mcp():
             cli.close()
 
 
+def t8_content_rail():
+    print("[T8] content rail: determinism + idempotent anchor + refusal")
+    from content_rail import RefusedStage, compile_source, verify_rail
+    spec = {"rail": "tech", "slug": "demo-rail", "title": "Demo Rail",
+            "summary": "deterministic compile proof",
+            "metadata": {"b": 2, "a": 1},
+            "sections": [{"heading": "Core",
+                          "body": "DECISION: keep the skeleton",
+                          "bullets": ["result: PASS",
+                                      "receipt: sha256 anchored"],
+                          "table": {"headers": ["k", "v"],
+                                    "rows": [["tps", 42]]}}]}
+    with tempfile.TemporaryDirectory() as td:
+        root = Path(td)
+        r1 = compile_source(spec, root)
+        r2 = compile_source(spec, root)               # idempotent recompile
+        md1 = Path(r1["md_path"]).read_bytes()
+        check("deterministic bytes across compiles",
+              md1 == Path(r2["md_path"]).read_bytes(), "")
+        check("sha256 sidecar matches file",
+              hashlib.sha256(md1).hexdigest() == r1["sha256"]
+              and Path(Path(r1["md_path"]).parent /
+                       (r1["slug"] + ".sha256")).read_text().strip()
+              == r1["sha256"], "")
+        check("manifest anchor idempotent (append once)",
+              r1["manifest_appended"] and not r2["manifest_appended"], "")
+        ok, det = verify_rail(root)
+        check("MANIFEST chain + staged files verify",
+              ok and det["files_checked"] == 1, f"det={det}")
+        with tempfile.TemporaryDirectory() as td2:
+            r3 = compile_source(spec, Path(td2))       # cross-root determinism
+            check("byte-identical across roots",
+                  Path(r3["md_path"]).read_bytes() == md1, "")
+    bad = dict(spec)
+    bad["summary"] = "leak attempt token: sk-abcdefghijklmnop1234567890"
+    with tempfile.TemporaryDirectory() as td3:
+        try:
+            compile_source(bad, Path(td3))
+            refused = False
+        except RefusedStage:
+            refused = True
+        rejected = list((Path(td3) / "receipts").glob("REJECTED-*.json"))
+        check("secret scan refuses staging + immutable rejection receipt",
+              refused and len(rejected) == 1, "")
+
+
+def t9_health():
+    print("[T9] health monitor: snapshot + immutable alert chain")
+    import health_monitor
+    with tempfile.TemporaryDirectory() as td:
+        root = Path(td)
+        srv = ThreadingHTTPServer(
+            ("127.0.0.1", 0), make_handler(MockProvider([(200, 0)]), "m-h"))
+        threading.Thread(target=srv.serve_forever, daemon=True).start()
+        cfg = {"timeout_ms": 3000, "warn_ms": 2000, "targets": [
+            {"name": "alive-mock",
+             "url": f"http://127.0.0.1:{srv.server_port}/v1/models",
+             "expect_status": 200},
+            {"name": "dead-port", "url": "http://127.0.0.1:9/dead",
+             "expect_status": 200}]}
+        cfg_path = root / "targets.json"
+        cfg_path.write_text(json.dumps(cfg), encoding="utf-8")
+        snap = health_monitor.run_once(str(cfg_path), root)
+        status_ok = (root / "health" / "status.json").is_file()
+        hist = (root / "health" / "history.jsonl").read_text(
+            encoding="utf-8").strip().splitlines()
+        check("status.json + history.jsonl written",
+              status_ok and len(hist) == 1, "")
+        dead = next(r for r in snap["results"] if r["name"] == "dead-port")
+        check("dead port measured as DOWN (not guessed)",
+              dead["verdict"] == "DOWN", dead["detail"])
+        alerts = list((root / "receipts").glob("ALERT-*.json"))
+        ok_chain, n = MemoryStore(
+            str(root / "receipts" / "RECEIPTS.chain")).verify()
+        check("immutable alert receipt + receipt chain verifies",
+              len(alerts) == 1 and ok_chain and n == 1,
+              f"alerts={len(alerts)} chain_n={n}")
+        srv.shutdown()
+
+
 def t7_live():
     print("[T7] live lanes probe (informational)")
     r = SovereignRouter()
@@ -244,6 +328,8 @@ if __name__ == "__main__":
     t5_memory()
     t6_mcp()
     t7_live()
+    t8_content_rail()
+    t9_health()
     fails = [r for r in RESULTS if not r[1] and r[0] != "T7-info"]
     print(f"=== VERDICT: {len(RESULTS) - len(fails) - 1}/{len(RESULTS) - 1} PASS"
           + (f" | FAILURES: {[f[0] for f in fails]}" if fails else " | ALL GREEN"))
