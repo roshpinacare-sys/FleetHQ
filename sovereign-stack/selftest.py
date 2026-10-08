@@ -1,0 +1,250 @@
+#!/usr/bin/env python3
+"""selftest.py — Zero-trust live proof of the sovereign stack.
+
+Proves, on THIS machine, right now:
+  T1  router failover: 503-lane and 429-quota lanes are routing events; a 200 wins
+  T2  Retry-After honored (quota lane gets its fair retry, ~1s sleep observed)
+  T3  compaction: big noisy log → skeleton survives, ratio bounded
+  T4  consensus: majority cluster elected against an outlier
+  T5  memory chain: verify OK → tamper detected → compact keeps integrity
+  T6  MCP: initialize → tools/list → tools/call against a toy stdio server
+  T7  live lanes: probe configured routes (INFO — network optional in CI)
+
+Exit code 0 = all critical tests PASS (T7 is informational).
+"""
+from __future__ import annotations
+import json
+import os
+import subprocess
+import sys
+import tempfile
+import threading
+import time
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+from sovereign_router import SovereignRouter, CircuitBreaker  # noqa: E402
+from compaction import compact_text                            # noqa: E402
+from fork_consensus import consensus_vote                      # noqa: E402
+from memory_store import MemoryStore                           # noqa: E402
+
+RESULTS: list[tuple[str, bool, str]] = []
+
+
+def check(name: str, ok: bool, note: str = "") -> None:
+    RESULTS.append((name, ok, note))
+    print(f"  {'PASS' if ok else 'FAIL'}  {name}  {note}")
+
+
+# ---------------------------------------------------------------- mock lanes
+class MockProvider:
+    """OpenAI-compatible mock with scripted status sequence."""
+
+    def __init__(self, script: list[tuple[int, int]]):  # (status, retry_after)
+        self.script = list(script)
+        self.i = 0
+        self.hits = 0
+        self.lock = threading.Lock()
+
+    def next(self) -> tuple[int, int]:
+        with self.lock:
+            self.hits += 1
+            if self.i < len(self.script):
+                v = self.script[self.i]
+                self.i += 1
+                return v
+            return self.script[-1]
+
+
+def make_handler(provider: MockProvider, model: str = "mock-model"):
+    class H(BaseHTTPRequestHandler):
+        def log_message(self, *a):  # silence
+            pass
+
+        def _send(self, code: int, body: dict, retry_after: int | None = None):
+            raw = json.dumps(body).encode()
+            self.send_response(code)
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Length", str(len(raw)))
+            if retry_after:
+                self.send_header("Retry-After", str(retry_after))
+            self.end_headers()
+            self.wfile.write(raw)
+
+        def do_GET(self):
+            if self.path.endswith("/models"):
+                self._send(200, {"object": "list",
+                                 "data": [{"id": model}]})
+            else:
+                self._send(404, {"error": "nf"})
+
+        def do_POST(self):
+            status, retry_after = provider.next()
+            if status == 200:
+                self._send(200, {"choices": [{"message": {
+                    "role": "assistant",
+                    "content": "MOCK-OK from " + model}}]},
+                    retry_after)
+            else:
+                self._send(status, {"error": {"code": status}}, retry_after)
+    return H
+
+
+def spawn_mock(script: list[tuple[int, int]], model: str):
+    provider = MockProvider(script)
+    srv = ThreadingHTTPServer(("127.0.0.1", 0), make_handler(provider, model))
+    threading.Thread(target=srv.serve_forever, daemon=True).start()
+    url = f"http://127.0.0.1:{srv.server_port}/v1/chat/completions"
+    return srv, provider, {"name": model, "url": url, "key": "unused",
+                           "model": model, "tier": 1}
+
+
+# ---------------------------------------------------------------- tests
+def t1_t2_router():
+    print("[T1/T2] router: failover + Retry-After honoring")
+    s1, p1, r1 = spawn_mock([(503, 0)], "mock-503")            # always down
+    s2, p2, r2 = spawn_mock([(429, 1), (429, 1), (200, 0)], "mock-quota")
+    s3, p3, r3 = spawn_mock([(200, 0)], "mock-healthy")
+    router = SovereignRouter(routes=[r1, r2, r3], timeout=10,
+                             max_retries=12)
+    t0 = time.time()
+    try:
+        out = router.route([{"role": "user", "content": "ping"}])
+        ok = out["content"].startswith("MOCK-OK")
+    except RuntimeError as e:
+        ok, out = False, str(e)
+    dt = time.time() - t0
+    check("router reaches a 200 despite 503+429 lanes", ok,
+          f"lanes={[(t['lane'], t['status']) for t in router.telemetry]}")
+    check("Retry-After honored (~1s observed)", dt >= 1.0, f"elapsed={dt:.2f}s")
+    for s in (s1, s2, s3):
+        s.shutdown()
+
+
+def t3_compaction():
+    print("[T3] compaction: skeleton survives, ratio bounded")
+    noise = ["routine log line, nothing special " + "z" * 40] * 300
+    signal = ["DECISION: primary lane = local llama.cpp on 8080",
+              "RESULT: custody probe PASS 14/14 accounts",
+              "error: llm7 quota exceeded → honored Retry-After 1s",
+              "receipt: TruthRail commit 8da7dd1 verified"]
+    doc = "\n".join(noise + signal + noise)
+    out = compact_text(doc, max_chars=3500)
+    ratio = len(out) / len(doc)
+    keeps = all(k in out for k in ("DECISION", "8da7dd1", "PASS",
+                                   "error", "8080"))
+    check("compaction ratio bounded (<0.25)", ratio < 0.25, f"ratio={ratio:.3f}")
+    check("decision skeleton survives", keeps, "")
+
+
+def t4_consensus():
+    print("[T4] consensus: majority cluster elected")
+    answers = ["deploy the router on port 4000 and verify with selftest",
+               "deploy the router on port 4000, then run selftest to verify",
+               "completely unrelated hallucination about bananas only"]
+    best, meta = consensus_vote(answers)
+    check("majority (2/3) elected, outlier rejected",
+          "port 4000" in best and meta["top_size"] == 2,
+          f"meta={meta}")
+
+
+def t5_memory():
+    print("[T5] memory chain: integrity + tamper detection + compaction")
+    with tempfile.TemporaryDirectory() as td:
+        path = os.path.join(td, "MEMORY.md")
+        ms = MemoryStore(path)
+        s1 = ms.append("DECISION", "compaction before every big request")
+        s2 = ms.append("RESULT", "selftest 7/7 PASS")
+        ms.append("OPEN", "fleet heart funding unsolved")
+        ok, n = ms.verify()
+        check("chain verifies (3 records)", ok and n == 3, f"n={n}")
+        # tamper: edit history line
+        raw = open(path, encoding="utf-8").read()
+        raw_bad = raw.replace("selftest 7/7 PASS", "selftest 9/9 PASS (lie)")
+        open(path, "w", encoding="utf-8").write(raw_bad)
+        ok2, _ = MemoryStore(path).verify()
+        check("tampering detected", ok2 is False, "")
+        # compact keeps integrity (fresh untampered copy — the tampered one
+        # is correctly refused, which the previous check just proved)
+        open(path, "w", encoding="utf-8").write(raw)
+        ms2 = MemoryStore(path)
+        kept = ms2.compact(keep_last=2)
+        ok3, n3 = ms2.verify()
+        check("compact keeps chain valid", ok3 and kept == 2, f"kept={kept} n={n3}")
+
+
+TOY_MCP_SERVER = r'''
+import json, sys
+tools = [{"name": "echo", "description": "echo back input",
+          "inputSchema": {"type": "object",
+                          "properties": {"text": {"type": "string"}},
+                          "required": ["text"]}}]
+for line in sys.stdin:
+    line = line.strip()
+    if not line: continue
+    req = json.loads(line)
+    m, rid = req.get("method"), req.get("id")
+    if m == "initialize":
+        out = {"jsonrpc":"2.0","id":rid,"result":{
+            "protocolVersion":"2024-11-05","capabilities":{"tools":{}},
+            "serverInfo":{"name":"toy-echo","version":"1.0"}}}
+    elif m == "tools/list":
+        out = {"jsonrpc":"2.0","id":rid,"result":{"tools":tools}}
+    elif m == "tools/call":
+        text = req["params"]["arguments"]["text"]
+        out = {"jsonrpc":"2.0","id":rid,"result":{"content":[
+            {"type":"text","text":"ECHO:" + text}]}}
+    else:
+        out = {"jsonrpc":"2.0","id":rid,"error":{"code":-32601,
+               "message":"method not found"}}
+    sys.stdout.write(json.dumps(out) + "\n"); sys.stdout.flush()
+'''
+
+
+def t6_mcp():
+    print("[T6] MCP: initialize → tools/list → tools/call")
+    from mcp_min import MCPClient
+    with tempfile.TemporaryDirectory() as td:
+        sp = os.path.join(td, "toy_server.py")
+        open(sp, "w", encoding="utf-8").write(TOY_MCP_SERVER)
+        cli = MCPClient([sys.executable, sp])
+        try:
+            info = cli.start()
+            tools = cli.tools_list()
+            out = cli.call("echo", {"text": "sovereign-alive"})
+            ok = (info.get("serverInfo", {}).get("name") == "toy-echo"
+                  and any(t["name"] == "echo" for t in tools)
+                  and out == "ECHO:sovereign-alive")
+            check("full MCP roundtrip", ok,
+                  f"server={info.get('serverInfo',{}).get('name')} "
+                  f"tools={[t['name'] for t in tools]}")
+        except Exception as e:
+            check("full MCP roundtrip", False, f"err={e}")
+        finally:
+            cli.close()
+
+
+def t7_live():
+    print("[T7] live lanes probe (informational)")
+    r = SovereignRouter()
+    alive = r.probe_all()
+    local_any = any(alive.get(n) for n in ("litellm-local", "llamacpp-local"))
+    free = alive.get("llm7-free", False)
+    note = f"probes={alive} local_any={local_any} llm7={free}"
+    print(f"  INFO  lanes: {note}")
+    RESULTS.append(("T7-info", True, note))
+
+
+if __name__ == "__main__":
+    print("=== SOVEREIGN STACK SELFTEST (zero-trust, this machine, now) ===")
+    t1_t2_router()
+    t3_compaction()
+    t4_consensus()
+    t5_memory()
+    t6_mcp()
+    t7_live()
+    fails = [r for r in RESULTS if not r[1] and r[0] != "T7-info"]
+    print(f"=== VERDICT: {len(RESULTS) - len(fails) - 1}/{len(RESULTS) - 1} PASS"
+          + (f" | FAILURES: {[f[0] for f in fails]}" if fails else " | ALL GREEN"))
+    sys.exit(1 if fails else 0)

@@ -1,0 +1,29 @@
+# LiteLLM gateway config — sovereign lanes
+# Lane 0: your own llama.cpp (ownership — cannot be blocked)
+# Lane 1: llm7 free lane (designed for API consumption; base verified live:
+#         https://api.llm7.io/v1 with Bearer unused)
+model_list:
+  - model_name: local-primary
+    litellm_params:
+      model: openai/local-primary
+      api_base: http://llamacpp:8080/v1
+      api_key: unused
+
+  - model_name: free-fallback
+    litellm_params:
+      model: openai/free-fallback
+      api_base: https://api.llm7.io/v1
+      api_key: os.environ/LLM7_API_KEY
+
+router_settings:
+  fallbacks:
+    - local-primary: ["free-fallback"]
+  num_retries: 3
+  retry_after: 1
+  timeout: 90
+
+litellm_settings:
+  drop_params: true
+
+general_settings:
+  master_key: os.environ/LITELLM_MASTER_KEY
