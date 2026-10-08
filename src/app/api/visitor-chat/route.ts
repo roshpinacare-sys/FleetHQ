@@ -325,6 +325,26 @@ function stripReasoning(text: string): string {
   return t.trim() || (hadThink ? '' : original);
 }
 
+
+/** Meta-commentary sieve: free models emit drafting chatter ("Let's refine…",
+ *  "Draft: …"), self-check tails ("Check word count: …") and wrapped quotes.
+ *  Keep only the usable answer: cut self-check tails, extract the LAST
+ *  Draft/Final/Answer segment, drop leading meta lines, unwrap quotes. */
+function polish(text: string): string {
+  let t = (text ?? '').trim();
+  const tail = t.search(/\n\s*(?:check\b|word count\b|constraints?\s*:)/i);
+  if (tail > 0) t = t.slice(0, tail).trim();
+  const segs = [...t.matchAll(/(?:^|\n)\s*(?:final(?:\s+answer)?|draft|answer)\s*:\s*/gi)];
+  if (segs.length) {
+    const last = segs[segs.length - 1];
+    t = t.slice((last.index ?? 0) + last[0].length).trim();
+  } else if (/^let'?s\s+(refine|make|draft|craft|write|think|polish)/i.test(t)) {
+    const nl = t.indexOf('\n');
+    if (nl > 0) t = t.slice(nl + 1).trim();
+  }
+  if (/^"[\s\S]+"$/.test(t)) t = t.slice(1, -1).trim();
+  return t;
+}
 /**
  * Quality gate — the reception answers in Hebrew/English; a reply flooded
  * with CJK characters is garbage from a weak anonymous router and is WORSE
@@ -476,8 +496,15 @@ export async function POST(req: NextRequest) {
           const id = `${b.name}/${model}`;
           if ((brainCooldown.get(id) ?? 0) > now) continue;
           try {
-            const candidate = stripReasoning(await askBrain(b, model, system, history, message));
-            if (candidate && qualityGate(candidate)) {
+            const candidate = polish(stripReasoning(await askBrain(b, model, system, history, message)));
+            // Hebrew gate: a Hebrew question deserves a Hebrew answer. Free
+            // routers love emitting English meta-commentary (self-checks,
+            // drafts, reasoning) — text with no real Hebrew content is a
+            // failure and the chain walks on. (English visitors skip this.)
+            const hebrewOk =
+              lang !== 'he' ||
+              (candidate.match(/[\u0590-\u05FF]/g) ?? []).length >= 20;
+            if (candidate && hebrewOk && qualityGate(candidate)) {
               reply = candidate;
               consecutiveFails = 0;
               // server-side ops log only — never sent to the visitor

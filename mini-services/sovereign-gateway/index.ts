@@ -314,6 +314,26 @@ async function callZai(messages: ChatMessage[]): Promise<string> {
   return text;
 }
 
+
+/** Meta-commentary sieve: free models emit drafting chatter ("Let's refine…",
+ *  "Draft: …"), self-check tails ("Check word count: …") and wrapped quotes.
+ *  Keep only the usable answer: cut self-check tails, extract the LAST
+ *  Draft/Final/Answer segment, drop leading meta lines, unwrap quotes. */
+function polish(text: string): string {
+  let t = (text ?? '').trim();
+  const tail = t.search(/\n\s*(?:check\b|word count\b|constraints?\s*:)/i);
+  if (tail > 0) t = t.slice(0, tail).trim();
+  const segs = [...t.matchAll(/(?:^|\n)\s*(?:final(?:\s+answer)?|draft|answer)\s*:\s*/gi)];
+  if (segs.length) {
+    const last = segs[segs.length - 1];
+    t = t.slice((last.index ?? 0) + last[0].length).trim();
+  } else if (/^let'?s\s+(refine|make|draft|craft|write|think|polish)/i.test(t)) {
+    const nl = t.indexOf('\n');
+    if (nl > 0) t = t.slice(nl + 1).trim();
+  }
+  if (/^"[\s\S]+"$/.test(t)) t = t.slice(1, -1).trim();
+  return t;
+}
 // ---- the sovereign walk ---------------------------------------------------------------------
 interface WalkResult {
   text: string;
@@ -342,7 +362,7 @@ async function walkChain(
       const budget = deadline - Date.now();
       const t0 = Date.now();
       try {
-        const text = stripReasoning(await callBrain(b, model, messages, maxTokens, budget));
+        const text = polish(stripReasoning(await callBrain(b, model, messages, maxTokens, budget)));
         if (!qualityGate(text)) throw new Error('off-topic reply');
         cooldownUntil.delete(id);
         stats.lastAnsweredVia = id;
@@ -369,7 +389,7 @@ async function walkChain(
   // every env brain failed — the bundled platform SDK is the last living brain
   try {
     const t0 = Date.now();
-    const text = stripReasoning(await callZai(messages));
+    const text = polish(stripReasoning(await callZai(messages)));
     if (qualityGate(text)) {
       stats.lastAnsweredVia = 'z-ai';
       return { text, brain: 'z-ai', attempts, latencyMs: Date.now() - t0 };
