@@ -2,6 +2,7 @@ import { Server } from 'socket.io';
 import { createServer } from 'http';
 import { Office } from './src/office';
 import { excerptBook } from './src/books';
+import { startFrontHouse } from './src/fronthouse';
 
 // Fleet HQ foreman — the real crew service.
 //   AGENT_HQ_PORT       (default 3010)
@@ -51,4 +52,6 @@ io.on('connection', (socket) => {
 
 httpServer.listen(PORT, () => {
   console.log(`[fleet-hq] foreman listening on :${PORT} (data: ${process.env.AGENT_HQ_DATA_DIR ?? '/home/z/my-project/Domain'})`);
+  // the foreman is the office's survivor — it now keeps the front door (:3000) alive too
+  startFrontHouse();
 });
