@@ -36,6 +36,32 @@ interface Msg {
   text: string;
 }
 
+/**
+ * Honest, VARYING availability notes. When the shared free brains are
+ * saturated, עמית says so — a different way each time, never a fake answer,
+ * never one canned line. Rotation is seeded by the message count so each
+ * attempt in the same conversation reads as a fresh, human note.
+ */
+const FALLBACKS: Record<Lang, string[]> = {
+  he: [
+    'המוחות הציבוריים ספוקים כרגע מרוב תנועה — ההצטברות משתחררת בדרך כלל תוך דקה. נסו שוב עוד רגע.',
+    'הקו למוחות הפתוחים תפוס כרגע — הצוות עובד במקביל על אותם משאבים. שאלו שוב בעוד רגע קצר.',
+    'אני כאן, אבל המנועים החינמיים שאני מדבר דרכם נמצאים בעומס שיא. עוד ניסיון בעוד רגע בדרך כלל עובד.',
+    'כל המוחות הפתוחים עמוסים כרגע — זה קורה בשעות שיא. בקשו שוב, ואענה ברגע שהקו מתפנה.',
+  ],
+  en: [
+    'The public brains are saturated with traffic right now — this usually clears within a minute. Try again shortly.',
+    'The open-brain line is busy — the crew shares the same free capacity. Ask again in a moment.',
+    'I\u2019m here, but the free engines I speak through are under peak load right now. One more try usually goes through.',
+    'All open brains are momentarily swamped — peak-hour stuff. Ask again and I\u2019ll answer the moment the line clears.',
+  ],
+};
+
+function honestFallback(lang: Lang): string {
+  const list = FALLBACKS[lang];
+  return list[Math.floor(Math.random() * list.length)] ?? list[0];
+}
+
 export function ReceptionChat({
   lang,
   open,
@@ -99,7 +125,8 @@ export function ReceptionChat({
         setNotice('error');
       } else {
         const data = (await res.json()) as { reply?: string };
-        setMsgs((m) => [...m, { role: 'rep', text: data.reply || t('repError', lang) }]);
+        // honest varied fallback — never one canned line repeated
+        setMsgs((m) => [...m, { role: 'rep', text: data.reply || honestFallback(lang) }]);
       }
     } catch {
       setNotice('error');
@@ -166,7 +193,7 @@ export function ReceptionChat({
           </div>
         )}
         {notice === 'rate' && <p className="text-center text-[11px] text-amber-400">{t('repRate', lang)}</p>}
-        {notice === 'error' && <p className="text-center text-[11px] text-rose-400">{t('repError', lang)}</p>}
+        {notice === 'error' && <p className="text-center text-[11px] text-rose-400">{honestFallback(lang)}</p>}
       </div>
 
       {/* suggestions (stay available so a visitor can retry after an error) */}

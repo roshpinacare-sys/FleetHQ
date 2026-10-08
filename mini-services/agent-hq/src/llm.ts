@@ -2,26 +2,43 @@
 //
 // The crew is only as alive as its brains, so the office carries a fleet of
 // independent providers and walks down the chain on ANY failure. Brains that
-// need no signup are built in (Kilo free auto-router, LLM7 anonymous), keyed
-// brains activate from env (xAI, OpenRouter, any OpenAI-compatible), and the
-// bundled z-ai SDK closes the chain. Failover is per PROVIDER+MODEL pair with
-// an individual cooldown, so one dead model never hurts the others.
+// need no signup are built in (Kilo free auto-router, LLM7 anonymous,
+// Pollinations, OVH), keyed brains activate from env (xAI, OpenRouter, Groq,
+// Cerebras, Mistral, Google AI Studio, GitHub Models, Together, any
+// OpenAI-compatible), and the bundled z-ai SDK closes the chain. Failover is
+// per PROVIDER+MODEL pair with an individual cooldown, so one dead model never
+// hurts the others.
 //
-//   1. xAI Grok            (XAI_API_KEY — awaits credits, breaker skips it cheaply)
-//   2. OpenRouter          (OPENROUTER_API_KEY — 1 strong + 8 verified :free models, rotating)
-//   3. Kilo Code free auto (NO KEY — kilo-auto/free, verified live, 200 req/h)
-//   4. LLM7.io anonymous   (NO KEY — optional LLM7_API_KEY raises limits)
-//   5. Pollinations        (NO KEY — openai-fast / gpt-oss-20b, verified live)
-//   6. OVHcloud AI         (NO KEY — EU anonymous tier, ~2 RPM/model, verified live)
-//   7. OpenAI-compatible   (OPENAI_API_KEY / OPENAI_BASE_URL / OPENAI_MODEL)
-//   8. z-ai-web-dev-sdk    (bundled deployments)
-//   9. nothing → the office falls back to the fit-routine / labeled sim path.
+//   1. xAI Grok            (XAI_API_KEY)
+//   2. OpenRouter          (OPENROUTER_API_KEY — 1 strong + :free rotation)
+//   3. Groq                (GROQ_API_KEY — generous free tier)
+//   4. Cerebras            (CEREBRAS_API_KEY — free tier)
+//   5. Mistral La Plateforme (MISTRAL_API_KEY — free tier)
+//   6. Google AI Studio    (GOOGLE_AI_API_KEY — free tier)
+//   7. GitHub Models       (GITHUB_MODELS_TOKEN — free tier)
+//   8. Together AI         (TOGETHER_API_KEY — free tier)
+//   9. Kilo Code free auto (NO KEY — kilo-auto/free via kilocode.ai, verified live)
+//  10. LLM7.io anonymous   (NO KEY — mistral-Nemo verified live; key raises limits)
+//  11. Pollinations        (NO KEY — openai / openai-fast, verified live)
+//  12. OVHcloud AI         (NO KEY — EU anonymous tier, ~2 RPM/model, verified live)
+//  13. OpenAI-compatible   (OPENAI_API_KEY / OPENAI_BASE_URL / OPENAI_MODEL)
+//  14. z-ai-web-dev-sdk    (bundled deployments)
+//  15. nothing → the office falls back to the fit-routine / labeled sim path.
 //
-// Model lists live in the VAULT (.env — gitignored, chmod 600) and their
-// verified defaults are mirrored in .env.example committed to git.
+// Every keyed brain above activates THE MOMENT its env key appears — no code
+// change needed. Model lists live in the VAULT (.env — gitignored, chmod 600)
+// and their verified defaults are mirrored in .env.example committed to git.
+//
+// FRONT-DESK PRIORITY: the reception (Amit) and the crew share the same
+// anonymous per-IP quotas. While a human visitor is waiting, the reception
+// writes a tiny priority flag; this chain yields up to a few seconds so the
+// visitor is never stuck behind crew chatter. The flag is ephemeral (/tmp),
+// never sensitive, and its absence means "no priority, act normally".
 //
 // No keys are ever hardcoded or logged. Provider errors surface as honest,
-// generic messages. Ordered automatically by model quality (strong first).
+// generic messages.
+
+import { readFile } from 'node:fs/promises';
 
 export interface ChatMessage {
   role: 'system' | 'user' | 'assistant';
@@ -39,7 +56,12 @@ interface Brain {
   key?: string; // undefined/empty → anonymous access (no auth header)
   models: string[];
   referer?: boolean; // send OpenRouter-style politeness headers
-  softOnly?: boolean; // never hard-fail the whole chain (network errors only)
+}
+
+/** OpenAI-compatible keyed brain shorthand. */
+function keyedBrain(name: string, base: string, key: string | undefined, models: string[]): Brain[] {
+  if (!key) return [];
+  return [{ name, base, key, models }];
 }
 
 function parseModels(envVal: string | undefined, fallback: string[]): string[] {
@@ -79,22 +101,37 @@ function buildBrains(): Brain[] {
       ]),
     });
   }
-  // KEYLESS brain — free auto-router, works with zero signup (per awesome-free-llm-apis)
+  // ---- keyed free-tier brains: activate the moment a key appears in the vault ----
+  brains.push(
+    ...keyedBrain('groq', 'https://api.groq.com/openai/v1', process.env.GROQ_API_KEY, parseModels(process.env.GROQ_MODELS, ['llama-3.3-70b-versatile', 'llama-3.1-8b-instant'])),
+    ...keyedBrain('cerebras', 'https://api.cerebras.ai/v1', process.env.CEREBRAS_API_KEY, parseModels(process.env.CEREBRAS_MODELS, ['llama-3.3-70b'])),
+    ...keyedBrain('mistral', 'https://api.mistral.ai/v1', process.env.MISTRAL_API_KEY, parseModels(process.env.MISTRAL_MODELS, ['mistral-small-latest', 'open-mistral-nemo'])),
+    ...keyedBrain('google-ai', 'https://generativelanguage.googleapis.com/v1beta/openai', process.env.GOOGLE_AI_API_KEY, parseModels(process.env.GOOGLE_AI_MODELS, ['gemini-2.0-flash', 'gemini-2.0-flash-lite'])),
+    ...keyedBrain('github-models', 'https://models.github.ai/inference', process.env.GITHUB_MODELS_TOKEN, parseModels(process.env.GITHUB_MODELS, ['openai/gpt-4.1-mini', 'meta/Llama-3.3-70B-Instruct'])),
+    ...keyedBrain('together', 'https://api.together.xyz/v1', process.env.TOGETHER_API_KEY, parseModels(process.env.TOGETHER_MODELS, ['meta-llama/Llama-3.3-70B-Instruct-Turbo'])),
+  );
+  // KEYLESS brain — Kilo Code free auto-router. VERIFIED LIVE (200) via
+  // kilocode.ai/api/openrouter with model kilo-auto/free. The old api.kilo.ai
+  // gateway endpoint is dead — do not "restore" it.
   brains.push({
     name: 'kilo',
-    base: 'https://api.kilo.ai/api/gateway',
+    base: 'https://kilocode.ai/api/openrouter',
     key: process.env.KILO_API_KEY, // optional; anonymous works
     models: parseModels(process.env.KILO_MODELS, ['kilo-auto/free', 'nvidia/nemotron-3-ultra-550b-a55b:free']),
   });
-  // LLM7.io — anonymous tier is closed (verified); mount only with a free token
-  if (process.env.LLM7_API_KEY) {
-    brains.push({
-      name: 'llm7',
-      base: 'https://api.llm7.io/v1',
-      key: process.env.LLM7_API_KEY,
-      models: parseModels(process.env.LLM7_MODELS, ['mistral-Nemo-Instruct-2407']),
-    });
-  }
+  // KEYLESS brain — LLM7.io anonymous VERIFIED LIVE (200, mistral-Nemo).
+  // Anonymous daily quota is drained on the big models; the small Nemo model
+  // keeps answering. Optional LLM7_API_KEY (free from token.llm7.io) lifts it.
+  brains.push({
+    name: 'llm7',
+    base: 'https://api.llm7.io/v1',
+    key: process.env.LLM7_API_KEY,
+    models: parseModels(process.env.LLM7_MODELS, [
+      'mistral-Nemo-Instruct-2407',
+      'DeepSeek-V4-Flash-0731',
+      'GLM-5.3-Flash',
+    ]),
+  });
   if (process.env.OPENAI_API_KEY) {
     brains.push({
       name: 'openai',
@@ -103,7 +140,8 @@ function buildBrains(): Brain[] {
       models: [process.env.OPENAI_MODEL || 'gpt-4o-mini'],
     });
   }
-  // KEYLESS brain — Pollinations (text.pollinations.ai/openai, verified live; gpt-oss-20b)
+  // KEYLESS brain — Pollinations (text.pollinations.ai/openai). Their model
+  // catalog is down to ONE live model — do not list legacy "openai" anymore.
   brains.push({
     name: 'pollinations',
     base: 'https://text.pollinations.ai/openai',
@@ -111,13 +149,21 @@ function buildBrains(): Brain[] {
     models: parseModels(process.env.POLLINATIONS_MODELS, ['openai-fast']),
   });
   // KEYLESS brain — OVHcloud AI Endpoints (EU anonymous tier, verified live).
-  // ~2 RPM per model per IP, so it sits last among the keyless brains and its
-  // cooldowns do the pacing. Optional OVH_API_KEY lifts the anonymous tier.
+  // ~2 RPM per MODEL per IP — so the rotation below is the capacity: seven
+  // quality models ≈ 14 RPM aggregate. Verified live + good Hebrew quality.
   brains.push({
     name: 'ovh',
     base: 'https://oai.endpoints.kepler.ai.cloud.ovh.net/v1',
     key: process.env.OVH_API_KEY, // optional; anonymous works
-    models: parseModels(process.env.OVH_MODELS, ['gpt-oss-120b', 'Meta-Llama-3_3-70B-Instruct']),
+    models: parseModels(process.env.OVH_MODELS, [
+      'Mistral-Small-3.2-24B-Instruct-2506',
+      'gpt-oss-120b',
+      'Qwen3.5-397B-A17B',
+      'Meta-Llama-3_3-70B-Instruct',
+      'Qwen3.8-27B',
+      'gpt-oss-20b',
+      'Mistral-Nemo-Instruct-2407',
+    ]),
   });
   return brains;
 }
@@ -126,9 +172,10 @@ let cachedBrains: Brain[] | undefined;
 
 /** Per brain+model cooldown: after a hard error that exact brain is skipped until this time. */
 const cooldownUntil = new Map<string, number>();
-const COOLDOWN_MS = 5 * 60_000;
+const COOLDOWN_MS = 5 * 60_000; // auth / no-credits / dead model — stay away a while
+const RATE_COOLDOWN_MS = 45_000; // 429 quotas recover in seconds-minutes — retry fast
 
-const HARD_STATUS = new Set([401, 402, 403, 429]); // auth / no-credits / saturated
+const HARD_STATUS = new Set([401, 402, 403]); // auth / no-credits — long cooldown
 
 async function detect(): Promise<Brain[]> {
   if (cachedBrains) return cachedBrains;
@@ -136,9 +183,28 @@ async function detect(): Promise<Brain[]> {
   return cachedBrains;
 }
 
+// ---- front-desk priority (cross-process, file-based, ephemeral) ---------------------------
+// The reception writes {until:<ms>} while a human waits; the crew yields.
+const RECEPTION_FLAG =
+  process.env.RECEPTION_PRIORITY_FILE || '/tmp/fleethq-reception-priority';
+const RECEPTION_YIELD_MS = 9_000; // never wait forever — crew keeps working after this
+
+async function yieldToReception(): Promise<void> {
+  const deadline = Date.now() + RECEPTION_YIELD_MS;
+  for (;;) {
+    try {
+      const raw = await readFile(RECEPTION_FLAG, 'utf8');
+      const until = (JSON.parse(raw) as { until?: number }).until ?? 0;
+      if (until <= Date.now() || Date.now() >= deadline) return;
+      await new Promise((r) => setTimeout(r, 500));
+    } catch {
+      return; // no flag file → nobody waiting → act normally
+    }
+  }
+}
+
 export async function llmAvailable(): Promise<{ ok: boolean; provider: string }> {
   const brains = await detect();
-  const now = Date.now();
   const names = brains.map((b) => b.name);
   return names.length ? { ok: true, provider: names.join('→') } : { ok: false, provider: 'none' };
 }
@@ -160,6 +226,19 @@ async function withTimeout<T>(p: Promise<T>, ms: number): Promise<T> {
     p,
     new Promise<never>((_, rej) => setTimeout(() => rej(new Error('llm timeout')), ms)),
   ]);
+}
+
+/**
+ * Quality gate — a Hebrew/English office rejects CJK-flood replies. Weak
+ * anonymous routers sometimes answer Hebrew questions in mixed Chinese/Arabic
+ * gibberish; that is WORSE than an honest failure, so it counts as a brain
+ * failure and the chain keeps walking.
+ */
+export function qualityGate(text: string): boolean {
+  if (!text || text.trim().length < 2) return false;
+  const cjk = (text.match(/[\u4e00-\u9fff\u3040-\u30ff\uac00-\ud7af]/g) ?? []).length;
+  if (cjk / Math.max(1, text.length) >= 0.08) return false;
+  return true;
 }
 
 /** One attempt against one OpenAI-compatible brain+model. */
@@ -223,9 +302,9 @@ export function stripReasoning(text: string): string {
     const blocks = t.split(/\n{2,}/);
     let keep = -1;
     for (let i = 1; i < blocks.length; i++) {
-      const first = (blocks[i].split('\n')[0] ?? '').trim();
+      const first = (blocks[i]?.split('\n')[0] ?? '').trim();
       const reasoningStyle = /^(\d+[\.)]|\*\*|-\s|\u2022)/.test(first) || /:$/.test(first);
-      if (!reasoningStyle && blocks[i].length > 40) {
+      if (!reasoningStyle && (blocks[i]?.length ?? 0) > 40) {
         keep = i;
         break;
       }
@@ -236,6 +315,7 @@ export function stripReasoning(text: string): string {
 }
 
 async function chatRaw(messages: ChatMessage[], maxTokens: number): Promise<ChatResult> {
+  await yieldToReception(); // a human at the front desk goes first
   const brains = await detect();
   const now = Date.now();
   let lastErr: unknown;
@@ -245,18 +325,17 @@ async function chatRaw(messages: ChatMessage[], maxTokens: number): Promise<Chat
       if ((cooldownUntil.get(id) ?? 0) > now) continue; // this brain is cooling — next
       try {
         const text = stripReasoning(await callBrain(b, model, messages, maxTokens));
+        if (!qualityGate(text)) throw new Error('llm off-topic reply'); // garbage in → chain keeps walking
         return { text, provider: id };
       } catch (e) {
         lastErr = e;
         const status = (e as Error & { status?: number }).status;
         const msg = (e as Error).message ?? '';
-        const hard =
-          (status && HARD_STATUS.has(status)) ||
-          msg.includes('429') ||
-          msg.toLowerCase().includes('too many');
-        if (hard) cooldownUntil.set(id, Date.now() + COOLDOWN_MS);
-        if (status === 404 || status === 400 || msg.includes('not available') || msg.includes('unavailable') || msg.includes('No endpoints')) {
-          // dead model — cool it down too so we stop asking it
+        const isRate =
+          status === 429 || msg.includes('429') || msg.toLowerCase().includes('too many');
+        if (isRate) cooldownUntil.set(id, Date.now() + RATE_COOLDOWN_MS);
+        if ((status && HARD_STATUS.has(status)) || status === 404 || status === 400 || msg.includes('not available') || msg.includes('unavailable') || msg.includes('No endpoints')) {
+          // dead model / bad key — cool it down too so we stop asking it
           cooldownUntil.set(id, Date.now() + COOLDOWN_MS);
         }
         // else: transient — just try the next brain
@@ -265,7 +344,9 @@ async function chatRaw(messages: ChatMessage[], maxTokens: number): Promise<Chat
   }
   // every env brain failed — try the bundled SDK as the last living brain
   try {
-    return await callZai(messages);
+    const z = await callZai(messages);
+    if (!qualityGate(z.text)) throw new Error('llm off-topic reply');
+    return z;
   } catch (e) {
     lastErr = e;
   }
@@ -280,7 +361,7 @@ export async function chat(messages: ChatMessage[], _maxTokens = 900): Promise<C
 export function extractJson<T = Record<string, unknown>>(text: string): T | undefined {
   if (!text) return undefined;
   const fenced = text.match(/```(?:json)?\s*([\s\S]*?)```/);
-  const candidate = fenced ? fenced[1] : text;
+  const candidate = fenced ? (fenced[1] ?? text) : text;
   const start = candidate.indexOf('{');
   if (start === -1) return undefined;
   // walk to the matching closing brace
