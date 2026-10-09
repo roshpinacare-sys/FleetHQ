@@ -15,6 +15,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
+import { execFile } from 'node:child_process';
 
 export const dynamic = 'force-dynamic';
 
@@ -141,6 +142,34 @@ function lastLines(file: string, n: number): string[] {
   }
 }
 
+/** Fifth sentinel state, measured live (never cached): process alive + last
+ * history row freshness. Alive comes from pgrep on the supervised command
+ * line; last_ts from the append-only history lane. Absent is honest. */
+function monitorState(): Promise<{
+  alive: boolean;
+  last_ts: string | null;
+  stale_min: number | null;
+}> {
+  const histTail = lastLines(path.join(STACK, 'health', 'history.jsonl'), 1);
+  let lastTs: string | null = null;
+  try {
+    const j = JSON.parse(histTail[0] ?? '') as { ts?: string };
+    if (typeof j?.ts === 'string') lastTs = j.ts;
+  } catch {
+    lastTs = null;
+  }
+  const staleMin =
+    lastTs !== null
+      ? Math.max(0, Math.round((Date.now() - new Date(lastTs).getTime()) / 60_000 * 10) / 10)
+      : null;
+  return new Promise((resolve) => {
+    execFile('pgrep', ['-f', 'health_monitor.py --loop'], { timeout: 3000 }, (err, stdout) => {
+      const alive = !err && String(stdout || '').split('\n').some((l) => l.trim());
+      resolve({ alive, last_ts: lastTs, stale_min: staleMin });
+    });
+  });
+}
+
 export async function GET() {
   const at = new Date().toISOString();
   const manifestChain = verifyMemoryChain(path.join(STACK, 'content', 'MANIFEST.md'));
@@ -231,6 +260,8 @@ export async function GET() {
     receiptsChain.ok &&
     (seal?.state ?? '') !== 'HALT-CHAIN-BROKEN';
 
+  const monitor = await monitorState();
+
   return Response.json({
     at,
     all_ok: allOk,
@@ -247,5 +278,6 @@ export async function GET() {
     unified_bridge: { records: bridgeCount, curve_tail: memCurve },
     shift_history: shiftHistory,
     lineage_guard: lineageGuard,
+    monitor,
   });
 }
