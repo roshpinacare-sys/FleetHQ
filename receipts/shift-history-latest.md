@@ -1,6 +1,6 @@
 # 🗂️ יומן-משמרות — Shift History (LIVE)
 
-עודכן: 2026-10-09T02:09:43.911Z
+עודכן: 2026-10-09T02:11:43.956Z
 
 **מקור**: יומן-אירועים append-only של המשרד (Domain/agents/office-events.jsonl, מגובה-גיט) — הכל נאסף מהיומן, כלום לא הומצא.
 
@@ -9,38 +9,42 @@
 
 - **מקור**: פטרול אוטונומי
 - **נפתחה**: 2026-10-09 02:06:21 UTC
-- **באוויר**: 3 דק'
-- **שער-ההתאמה**: אישורים 0 · ביטולים 0 · redos 1 · ממוצע relevance 1.00
-- **ביקורת-עמיתים**: confirm 0 · dispute 0 · skipped 1
-- **צריכת-אמת**: קריאות 18 · prompt 26173 · completion 1229 tokens
-- **יעילות-משמרת**: 27,402 tokens · אין אישורים עדיין — המדד יופיע באישור הראשון
+- **באוויר**: 5 דק'
+- **שער-ההתאמה**: אישורים 0 · ביטולים 0 · redos 2 · ממוצע relevance 1.00
+- **ביקורת-עמיתים**: confirm 0 · dispute 0 · skipped 2
+- **צריכת-אמת**: קריאות 28 · prompt 41679 · completion 2838 tokens
+- **יעילות-משמרת**: 44,517 tokens · אין אישורים עדיין — המדד יופיע באישור הראשון
 
 ### לוח המשימות
 | עובד | משימה | סטטוס | סיכום |
 |---|---|---|---|
-| תמר | סיור כלכלה: עבור על פנקס הכלכלה ודווח על מגמות וחובות פתוחים | doing | [redo 1] הסיכוםicter lacks actual data on economic trends or open liabilities. Provide a concrete report detailing speci |
+| תמר | סיור כלכלה: עבור על פנקס הכלכלה ודווח על מגמות וחובות פתוחים | doing | [redo 2] ספק נתונים אמיתיים על מגמות כלכליות וחובות פתוחים מתוך פנקס הכלכלה, והצבע על מגמות ברורות. |
 
 ### ספר-השער (verdicts אחרונים)
 - תכנון נפל למשימה-נגזרת-יעד (fit fallback)
 - relevance 1 — aluf
 - redo 1/2: הסיכוםicter lacks actual data on economic trends or open liabilities. Provide a 
+- relevance 1 — aluf
+- redo 2/2: ספק נתונים אמיתיים על מגמות כלכליות וחובות פתוחים מתוך פנקס הכלכלה, והצבע על מגמ
 
 ### ביקורת-עמיתים (cross-check)
 - SKIPPED — checker loop exhausted
+- SKIPPED — checker loop exhausted
 
 ### צריכת-טוקנים לפי עובד
-- תמר: 12 קריאות · 22644+262 tokens
-- גל: 2 קריאות · 293+43 tokens
+- תמר: 19 קריאות · 37725+1804 tokens
+- גל: 4 קריאות · 590+75 tokens
 
 ### פעילות עובדים
-- תמר: 31 שורות · אחרון: "shape: {protocol, asOf, authority, head, steemFleet, bannedCapital, law} full: {"protocol":"SAOS-FLE"
+- תמר: 44 שורות · אחרון: "unparseable reply → reprompt"
+- גל: 3 שורות · אחרון: "unknown tool search"
 
 ---
 
 ## מדדי-ריבון
 
 - **משמרות מצטברות**: 16 · לקחים שנצברו: 11
-- **זיכרון-מארח**: 1616MB פנויים מתוך 4042MB (60% בשימוש)
+- **זיכרון-מארח**: 1939MB פנויים מתוך 4042MB (52% בשימוש)
 - **כלכלת-הצוות**: aluf 95 · tamar 18 · erez 18 · yarden 12 · shachar 30 · gal 15
 
 ### מדד-יעילות-הציי (cost-per-task על משמרות-סגורות)
