@@ -2,6 +2,7 @@ import { Server } from 'socket.io';
 import { createServer } from 'http';
 import { Office } from './src/office';
 import { excerptBook } from './src/books';
+import { sanitizePublicText } from './src/security';
 import { startFrontHouse } from './src/fronthouse';
 
 // Fleet HQ foreman — the real crew service.
@@ -44,7 +45,8 @@ io.on('connection', (socket) => {
   socket.on('book:preview', ({ id }: { id?: string }, ack?: (r: unknown) => void) => {
     if (!id || !ack) return;
     const ex = excerptBook(String(id), 2400);
-    ack(ex ? { ok: true, id, excerpt: ex } : { ok: false, error: 'book not found' });
+    // the excerpt crosses to a browser client — it passes the gate like every emit
+    ack(ex ? { ok: true, id, excerpt: sanitizePublicText(ex, 2400) } : { ok: false, error: 'book not found' });
   });
 
   socket.on('books:refresh', () => office.refreshBooks());

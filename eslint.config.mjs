@@ -65,6 +65,7 @@ const eslintConfig = [...nextCoreWebVitals, ...nextTypescript, {
     ".vault-private-repo/**",
     "download/**",
     "upload/**",
+    ".shots/**",
   ]
 }];
 

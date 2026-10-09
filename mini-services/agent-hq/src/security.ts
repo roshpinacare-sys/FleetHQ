@@ -39,6 +39,18 @@ export function scrubSecrets(text: string): string {
   return out;
 }
 
+/**
+ * The BROWSER gate — for text crossing to the public socket (logs, bubbles,
+ * feed, tasks, decisions, reports, goal, git subjects). Same law as
+ * scrubSecrets + the same control-character class stripControl removes, but
+ * WITHOUT whitespace collapse or length slicing: those would corrupt ordinary
+ * multi-line content (log results, report bodies). Length caps stay where they
+ * are enforced today, at construction time.
+ */
+export function sanitizePublicText(text: string): string {
+  return scrubSecrets(String(text ?? '')).replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/g, ' ');
+}
+
 /** Strip control characters (injection hygiene) and hard-cap length. */
 export function stripControl(text: string, max = 160): string {
   return String(text ?? '')

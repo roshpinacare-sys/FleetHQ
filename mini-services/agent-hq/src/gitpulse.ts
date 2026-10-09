@@ -6,11 +6,21 @@
 // real subjects, nothing invented, nothing simulated. Metadata only — never
 // file contents, never diffs, never anything private.
 //
+// SECURITY (Task 45-c): a commit SUBJECT and AUTHOR are UNTRUSTED DATA —
+// anything that ever lands in the public repo's history (by an operator, an
+// agent, or a leaked credential) could carry a secret-shaped string or
+// control-character payload straight to the public socket UI. The gate
+// (scrubSecrets + stripControl) therefore runs HERE, at the only place a
+// CommitView is ever built — the same law the git-learning wire applies
+// (gitlearn.ts) — so the pulse, the snapshot and every feed line built from
+// these commits are clean by construction.
+//
 // Fail-soft everywhere: if git or the repo is missing, available=false and the
 // UI simply hides the wire.
 
 import { execFile } from 'child_process';
 import type { CommitView, GitPulse } from './types';
+import { scrubSecrets, stripControl } from './security';
 
 const MAX_COMMITS = 40;
 
@@ -39,6 +49,26 @@ function run(dir: string, args: string[]): Promise<string> {
   });
 }
 
+/**
+ * The commit gate: scrub + strip ONE untrusted git-log field before it can
+ * become part of any public view. Exported so the security regression suite
+ * can prove the boundary holds (tools/security-regression.ts).
+ */
+export function sanitizeCommitField(raw: string, max: number): string {
+  return stripControl(scrubSecrets(raw), max);
+}
+
+/** Build the public CommitView from raw git-log fields — always through the gate. */
+export function toCommitView(src: GitWireSource, hash: string, ts: number, author: string, subject: string): CommitView {
+  return {
+    hash,
+    ts,
+    author: sanitizeCommitField(author || 'fleet', 40),
+    subject: sanitizeCommitField(subject, 160),
+    repo: src.label,
+  };
+}
+
 /** One fetch of the real log. Returns newest-first commits, or null when unavailable. */
 export async function fetchCommits(src: GitWireSource): Promise<CommitView[] | null> {
   try {
@@ -59,13 +89,7 @@ export async function fetchCommits(src: GitWireSource): Promise<CommitView[] | n
       const author = rest.slice(idx2 + 1, idx3);
       const subject = rest.slice(idx3 + 1);
       if (!hash || !Number.isFinite(ts)) continue;
-      commits.push({
-        hash,
-        ts,
-        author: (author || 'fleet').slice(0, 40),
-        subject: subject.replace(/\s+/g, ' ').slice(0, 160),
-        repo: src.label,
-      });
+      commits.push(toCommitView(src, hash, ts, author, subject));
     }
     return commits;
   } catch {
