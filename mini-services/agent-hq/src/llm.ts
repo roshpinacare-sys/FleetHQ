@@ -57,6 +57,52 @@ export interface ChatMessage {
 export interface ChatResult {
   text: string;
   provider: string;
+  usage?: { prompt_tokens?: number; completion_tokens?: number };
+}
+
+// ---- token usage telemetry (the honest consumption profiler) -----------------------------
+// Providers report usage on the OpenAI-compatible envelope; callBrain now keeps
+// it instead of dropping it. A sink (registered by the office) receives one
+// record per successful call: provider-reported tokens WHEN the provider
+// reports them, plus always-measurable char counts. Never throws — telemetry
+// must never break a chat.
+export interface ChatUsage {
+  agent?: string;
+  phase?: string;
+  provider: string;
+  prompt_tokens?: number;
+  completion_tokens?: number;
+  prompt_chars: number;
+  completion_chars: number;
+}
+
+type UsageSink = (u: ChatUsage) => void;
+let usageSink: UsageSink | undefined;
+
+export function setUsageSink(fn: UsageSink | undefined): void {
+  usageSink = fn;
+}
+
+function emitUsage(
+  meta: { agent?: string; phase?: string } | undefined,
+  provider: string,
+  usage: { prompt_tokens?: number; completion_tokens?: number } | undefined,
+  promptText: string,
+  completionText: string,
+): void {
+  try {
+    usageSink?.({
+      agent: meta?.agent,
+      phase: meta?.phase,
+      provider,
+      prompt_tokens: usage?.prompt_tokens,
+      completion_tokens: usage?.completion_tokens,
+      prompt_chars: promptText.length,
+      completion_chars: completionText.length,
+    });
+  } catch {
+    // telemetry must never break a chat
+  }
 }
 
 interface Brain {
@@ -297,7 +343,7 @@ export function qualityGate(text: string): boolean {
 }
 
 /** One attempt against one OpenAI-compatible brain+model. */
-async function callBrain(b: Brain, model: string, messages: ChatMessage[], maxTokens: number): Promise<string> {
+async function callBrain(b: Brain, model: string, messages: ChatMessage[], maxTokens: number): Promise<{ text: string; usage?: { prompt_tokens?: number; completion_tokens?: number } }> {
   const headers: Record<string, string> = { 'content-type': 'application/json' };
   if (b.key) headers.authorization = `Bearer ${b.key}`;
   if (b.referer) {
@@ -319,10 +365,13 @@ async function callBrain(b: Brain, model: string, messages: ChatMessage[], maxTo
     (err as Error & { status?: number }).status = res.status;
     throw err;
   }
-  const json = (await res.json()) as { choices?: Array<{ message?: { content?: string } }> };
+  const json = (await res.json()) as {
+    choices?: Array<{ message?: { content?: string } }>;
+    usage?: { prompt_tokens?: number; completion_tokens?: number };
+  };
   const text = json.choices?.[0]?.message?.content ?? '';
   if (!text) throw new Error('llm empty reply');
-  return text;
+  return { text, usage: json.usage };
 }
 
 /** Final fallback: the bundled z-ai SDK (system prompt as first assistant message). */
@@ -397,7 +446,7 @@ function polish(text: string): string {
   if (/^"[\s\S]+"$/.test(t)) t = t.slice(1, -1).trim();
   return t;
 }
-async function chatRaw(messages: ChatMessage[], maxTokens: number): Promise<ChatResult> {
+async function chatRaw(messages: ChatMessage[], maxTokens: number, meta?: { agent?: string; phase?: string }): Promise<ChatResult> {
   await yieldToReception(); // a human at the front desk goes first
   const brains = await detect();
   const now = Date.now();
@@ -407,9 +456,11 @@ async function chatRaw(messages: ChatMessage[], maxTokens: number): Promise<Chat
       const id = `${b.name}/${model}`;
       if ((cooldownUntil.get(id) ?? 0) > now) continue; // this brain is cooling — next
       try {
-        const text = polish(stripReasoning(await callBrain(b, model, messages, maxTokens)));
+        const r = await callBrain(b, model, messages, maxTokens);
+        const text = polish(stripReasoning(r.text));
         if (!qualityGate(text)) throw new Error('llm off-topic reply'); // garbage in → chain keeps walking
-        return { text, provider: id };
+        emitUsage(meta, id, r.usage, JSON.stringify(messages), text);
+        return { text, provider: id, usage: r.usage };
       } catch (e) {
         lastErr = e;
         const status = (e as Error & { status?: number }).status;
@@ -436,6 +487,7 @@ async function chatRaw(messages: ChatMessage[], maxTokens: number): Promise<Chat
   try {
     const z = await callZai(messages);
     if (!qualityGate(z.text)) throw new Error('llm off-topic reply');
+    emitUsage(meta, z.provider, undefined, JSON.stringify(messages), z.text);
     return z;
   } catch (e) {
     lastErr = e;
@@ -443,8 +495,8 @@ async function chatRaw(messages: ChatMessage[], maxTokens: number): Promise<Chat
   throw lastErr ?? new Error('NO_LLM');
 }
 
-export async function chat(messages: ChatMessage[], _maxTokens = 900): Promise<ChatResult> {
-  return enqueue(() => chatRaw(messages, _maxTokens));
+export async function chat(messages: ChatMessage[], _maxTokens = 900, meta?: { agent?: string; phase?: string }): Promise<ChatResult> {
+  return enqueue(() => chatRaw(messages, _maxTokens, meta));
 }
 
 /** Extract a JSON object-or-array from a model reply that may include prose or fences. */
