@@ -1,69 +1,224 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
-import type { AgentView, BookView, CrewMember, Decision, LogEntry, Report, Task } from './types';
-import { STATE_COLORS } from './types';
-import { t, taskStatusName, stateName, stationName, type Lang } from './i18n';
+// Ops Slate components — the console instrument set (DESIGN.md §5).
+// Every color comes from tokens.ts semantics; no ad-hoc palettes here.
+
+import { useEffect, useMemo, useRef, useState } from 'react';
+import type { AgentView, BookView, CrewMember, Decision, FeedItem, Goal, LogEntry, Report, Task } from './types';
+import { t, taskStatusName, stateName, type Lang } from './i18n';
+import {
+  AGENT_SEMANTIC,
+  FEED_KIND_SEMANTIC,
+  GOAL_SEMANTIC,
+  TASK_SEMANTIC,
+  semanticVar,
+  type Semantic,
+} from '@/components/hq/tokens';
+
+/* ── shared helpers (the ONE copy — audit finding L1) ────────────────── */
+
+export function timeAgo(ts: number, lang: Lang): string {
+  const m = Math.max(0, Math.round((Date.now() - ts) / 60000));
+  if (m < 1) return t('now', lang);
+  if (m < 60) return lang === 'he' ? `לפני ${m} דק׳` : `${m}m ago`;
+  const h = Math.floor(m / 60);
+  if (h < 24) return lang === 'he' ? `לפני ${h} שע׳` : `${h}h ago`;
+  const d = Math.floor(h / 24);
+  return lang === 'he' ? `לפני ${d} ימים` : `${d}d ago`;
+}
 
 function truncate(s: string, n: number): string {
   return s.length > n ? s.slice(0, n - 1) + '…' : s;
 }
 
-function timeAgo(ts: number, lang: Lang): string {
-  const m = Math.round((Date.now() - ts) / 60000);
-  if (m < 1) return lang === 'he' ? 'עכשיו' : 'now';
-  if (m < 60) return lang === 'he' ? `לפני ${m} דק׳` : `${m}m ago`;
-  const h = Math.floor(m / 60);
-  return lang === 'he' ? `לפני ${h} שע׳` : `${h}h ago`;
+function fmtBytes(n: number): string {
+  return n >= 1024 ? `${(n / 1024).toFixed(1)}K` : String(n);
 }
 
-const KIND_STYLE: Record<LogEntry['kind'], { color: string; label: string }> = {
-  text: { color: 'text-zinc-400', label: '·' },
-  tool: { color: 'text-fuchsia-300', label: '⚙' },
-  result: { color: 'text-emerald-300', label: '≡' },
-  error: { color: 'text-rose-400', label: '!' },
-  report: { color: 'text-emerald-300', label: '▤' },
-  say: { color: 'text-violet-200', label: '❝' },
+/* ── primitives ──────────────────────────────────────────────────────── */
+
+export function StatusDot({ s, live = false }: { s: Semantic; live?: boolean }) {
+  return <span className={`sl-dot ${live ? 'sl-dot-live' : ''}`} style={{ backgroundColor: semanticVar(s) }} aria-hidden="true" />;
+}
+
+export function Panel({ title, meta, children, actions }: { title: string; meta?: string; children: React.ReactNode; actions?: React.ReactNode }) {
+  return (
+    <section className="sl-panel min-w-0">
+      <header className="sl-panel-head">
+        <h2 className="sl-panel-title" dir="auto">{title}</h2>
+        {actions}
+        {meta && <span className="sl-panel-meta" dir="ltr">{meta}</span>}
+      </header>
+      {children}
+    </section>
+  );
+}
+
+/* ── alerts strip: exists only when something needs eyes ─────────────── */
+
+export function AlertsStrip({ blocked, openDecisions, errors, lang }: { blocked: number; openDecisions: number; errors: number; lang: Lang }) {
+  if (!blocked && !openDecisions && !errors) return null;
+  return (
+    <div className="sl-alerts" role="status" aria-live="polite">
+      <span className="sl-alert" style={{ color: 'var(--st-danger)' }}>
+        <StatusDot s="danger" />
+        {t('alertAttention', lang)}
+      </span>
+      {blocked > 0 && (
+        <button className="sl-alert underline decoration-dotted underline-offset-4" onClick={() => document.getElementById('sec-tasks')?.scrollIntoView({ behavior: 'smooth' })}>
+          {blocked} {blocked === 1 ? t('alertBlocked', lang) : t('alertBlockedPlural', lang)}
+        </button>
+      )}
+      {openDecisions > 0 && (
+        <button className="sl-alert underline decoration-dotted underline-offset-4" onClick={() => document.getElementById('sec-decisions')?.scrollIntoView({ behavior: 'smooth' })}>
+          {openDecisions} {t('alertOpenDecisions', lang)}
+        </button>
+      )}
+      {errors > 0 && (
+        <button className="sl-alert underline decoration-dotted underline-offset-4" onClick={() => document.getElementById('sec-journal')?.scrollIntoView({ behavior: 'smooth' })}>
+          {errors} {t('alertErrors', lang)}
+        </button>
+      )}
+    </div>
+  );
+}
+
+/* ── status strip: real instruments, "—" when unknown ────────────────── */
+
+export function StripItem({ label, value, tone, mono = true }: { label: string; value: string; tone?: Semantic; mono?: boolean }) {
+  return (
+    <div className="flex min-w-[104px] flex-1 flex-col gap-0.5 px-4 py-3">
+      <span className="text-[11px] font-semibold tracking-[0.06em] text-[color:var(--ink-3)]" dir="auto">{label}</span>
+      <span className={`flex items-center gap-1.5 text-[15px] font-semibold leading-5 ${mono ? 'font-mono tabular-nums' : ''}`} style={tone ? { color: semanticVar(tone) } : undefined} dir={mono ? 'ltr' : 'auto'}>
+        {value}
+      </span>
+    </div>
+  );
+}
+
+/* ── goal card ───────────────────────────────────────────────────────── */
+
+export function GoalCard({ goal, doneCount, tasksTotal, lang }: { goal?: Goal; doneCount: number; tasksTotal: number; lang: Lang }) {
+  const sem = goal ? GOAL_SEMANTIC[goal.status] : 'neutral';
+  return (
+    <Panel title={t('goalCard', lang)} meta={goal ? `${Math.round(goal.progress * 100)}%` : undefined}>
+      <div className="p-4">
+        {goal ? (
+          <>
+            <div className="flex items-center gap-2">
+              <StatusDot s={sem} live={goal.status === 'active'} />
+              <span className="text-[13px] font-semibold" style={{ color: semanticVar(sem) }} dir="auto">
+                {goalStatusName(goal.status, lang)}
+              </span>
+              {goal.origin && (
+                <span className="sl-chip !py-0.5 !text-[11px]" dir="auto">
+                  {goal.origin === 'patrol' ? t('patrolBadge', lang) : t('commanderBadge', lang)}
+                </span>
+              )}
+            </div>
+            <p className="mt-2 text-[14px] leading-6 text-[color:var(--ink)]" dir="auto">{goal.text}</p>
+            <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-[color:var(--surface-2)]" role="progressbar" aria-valuenow={Math.round(goal.progress * 100)} aria-valuemin={0} aria-valuemax={100}>
+              <div className="h-full rounded-full transition-[width] duration-700" style={{ width: `${Math.round(goal.progress * 100)}%`, backgroundColor: semanticVar(sem) }} />
+            </div>
+            <p className="mt-2 text-[12px] text-[color:var(--ink-3)]" dir="auto">
+              {t('goalTasksDone', lang)}: <span className="font-mono tabular-nums">{doneCount}/{tasksTotal}</span>
+            </p>
+          </>
+        ) : (
+          <p className="text-[13px] leading-6 text-[color:var(--ink-3)]" dir="auto">{t('goalNone', lang)}</p>
+        )}
+      </div>
+    </Panel>
+  );
+}
+
+function goalStatusName(s: Goal['status'], lang: Lang): string {
+  switch (s) {
+    case 'planning': return t('goalPlanning', lang);
+    case 'active': return t('goalActive', lang);
+    case 'review': return t('goalReview', lang);
+    case 'done': return t('goalDone', lang);
+    default: return t('goalFailed', lang);
+  }
+}
+
+/* ── task board: full-width kanban, honest lifecycle order ───────────── */
+
+const COLS: Array<Task['status']> = ['todo', 'doing', 'review', 'blocked', 'done', 'cancelled'];
+
+export function TasksBoard({ lang, tasks, crew }: { lang: Lang; tasks: Task[]; crew: CrewMember[] }) {
+  const [open, setOpen] = useState<string | null>(null);
+  const crewById = useMemo(() => new Map(crew.map((c) => [c.id, c])), [crew]);
+  return (
+    <Panel title={t('secTasks', lang)} meta={`${tasks.filter((x) => x.status === 'doing').length} ${t('stripWorking', lang)}`}>
+      {tasks.length === 0 ? (
+        <div className="sl-empty" dir="auto">{t('tasksEmpty', lang)}</div>
+      ) : (
+        <div className="p-3">
+          <div className="sl-board sl-scroll pb-1">
+            {COLS.map((status) => {
+              const list = tasks.filter((x) => x.status === status);
+              const sem = TASK_SEMANTIC[status];
+              return (
+                <div key={status} className="sl-col">
+                  <div className="sl-col-head">
+                    <StatusDot s={sem} />
+                    <span className="truncate" dir="auto">{taskStatusName(status, lang)}</span>
+                    <span className="ms-auto font-mono tabular-nums text-[color:var(--ink-3)]">{list.length}</span>
+                  </div>
+                  <div className="sl-col-cards sl-scroll max-h-[420px] overflow-y-auto">
+                    {list.map((task) => {
+                      const owner = task.assignee ? crewById.get(task.assignee) : undefined;
+                      const expanded = open === task.id;
+                      return (
+                        <button key={task.id} onClick={() => setOpen(expanded ? null : task.id)} className="sl-card" aria-expanded={expanded}>
+                          <span className="flex items-start gap-2" dir="auto">
+                            {owner && <span className="mt-1 h-2.5 w-2.5 shrink-0 rounded-sm" style={{ backgroundColor: owner.color }} aria-hidden="true" />}
+                            <span className="min-w-0 text-[13px] font-medium leading-5 text-[color:var(--ink)]">{task.title}</span>
+                          </span>
+                          {task.why && !expanded && (
+                            <span className="mt-1 flex items-center gap-1.5 text-[11.5px] leading-4 text-[color:var(--ink-3)]" dir="auto">
+                              <span className="shrink-0 font-mono text-[10px] font-semibold" style={{ color: semanticVar('info') }}>{task.matchBy === 'fit' ? 'FIT' : 'LLM'}</span>
+                              <span className="truncate">{truncate(task.why, 64)}</span>
+                            </span>
+                          )}
+                          {expanded && (
+                            <span className="mt-2 block space-y-1.5 border-t border-[color:var(--line)] pt-2 text-[12px] leading-4 text-[color:var(--ink-2)]" dir="auto">
+                              {task.description && <span className="block">{task.description}</span>}
+                              {owner && <span className="block">{t('assignee', lang)}: <span style={{ color: owner.color }}>{owner.name[lang]}</span></span>}
+                              {task.why && <span className="block" style={{ color: semanticVar('info') }}>{task.matchBy === 'fit' ? 'FIT' : 'LLM'} · {task.why}</span>}
+                              {task.dependsOn.length > 0 && <span className="block">{t('dependsOn', lang)}: <span className="font-mono">{task.dependsOn.join(', ')}</span></span>}
+                              {task.summary && <span className="block rounded-md bg-[color:var(--surface-2)] p-1.5">{t('summary', lang)}: {task.summary}</span>}
+                              <span className="block text-[color:var(--ink-3)]">{timeAgo(task.updatedAt, lang)}</span>
+                            </span>
+                          )}
+                        </button>
+                      );
+                    })}
+                    {!list.length && <span className="px-1 py-1.5 text-[11px] text-[color:var(--ink-3)]">—</span>}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+    </Panel>
+  );
+}
+
+/* ── agent inspector (the monitor) ───────────────────────────────────── */
+
+const LOG_TONE: Record<LogEntry['kind'], Semantic> = {
+  text: 'neutral',
+  tool: 'info',
+  result: 'ok',
+  error: 'danger',
+  report: 'ok',
+  say: 'info',
 };
 
-/* Midnight Magenta card primitives — the panels share the room's furniture law:
-   zinc-900 glass cards, white/10 hairlines, rounded-2xl, no color noise. */
-const CARD = 'rounded-2xl border border-white/10 bg-zinc-900/70';
-const SUBTLE = 'rounded-2xl border border-white/[0.06] bg-black/30';
-
-/* wall column status law: todo=zinc · doing=fuchsia · review=amber · done=emerald · blocked=rose · cancelled=zinc-strike */
-const COL_TEXT: Record<'todo' | 'doing' | 'review' | 'done' | 'blocked' | 'cancelled', string> = {
-  todo: 'text-zinc-400',
-  doing: 'text-fuchsia-300',
-  review: 'text-amber-300',
-  done: 'text-emerald-300',
-  blocked: 'text-rose-300',
-  cancelled: 'text-zinc-500',
-};
-const COL_DOT: Record<'todo' | 'doing' | 'review' | 'done' | 'blocked' | 'cancelled', string> = {
-  todo: 'bg-zinc-500',
-  doing: 'bg-fuchsia-500',
-  review: 'bg-amber-400',
-  done: 'bg-emerald-400',
-  blocked: 'bg-rose-400',
-  cancelled: 'bg-zinc-600',
-};
-
-// ---- Monitor panel ------------------------------------------------------------------
-
-export function MonitorPanel({
-  lang,
-  crew,
-  agent,
-  logs,
-  tasks,
-}: {
-  lang: Lang;
-  crew: CrewMember[];
-  agent: AgentView | undefined;
-  logs: LogEntry[];
-  tasks: Task[];
-}) {
+export function AgentInspector({ lang, crew, agent, logs, tasks }: { lang: Lang; crew: CrewMember[]; agent?: AgentView; logs: LogEntry[]; tasks: Task[] }) {
   const scroller = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const el = scroller.current;
@@ -73,45 +228,38 @@ export function MonitorPanel({
   const task = tasks.find((x) => x.id === agent?.taskId);
 
   if (!member || !agent)
-    return <div className="grid h-40 place-items-center text-[15px] text-zinc-500">{t('selectAgent', lang)}</div>;
+    return <div className="sl-empty" dir="auto">{t('selectAgent', lang)}</div>;
 
   return (
-    <div className="flex h-full flex-col gap-3">
-      <div className={`${CARD} p-4`} dir="auto">
-        <div className="flex items-center gap-3">
-          <span className="grid h-11 w-11 place-items-center rounded-xl border border-white/15 text-base font-bold text-zinc-950" style={{ backgroundColor: member.color }}>
-            {member.name[lang].slice(0, 2)}
-          </span>
-          <div className="min-w-0 flex-1">
-            <div className="flex items-center gap-2">
-              <span className="text-base font-bold text-zinc-100">{member.name[lang]}</span>
-              <span className="rounded-full px-2.5 py-0.5 text-[12.5px] font-semibold" style={{ backgroundColor: `${STATE_COLORS[agent.state]}22`, color: STATE_COLORS[agent.state] }}>
-                {stateName(agent.state, lang)}
-              </span>
-            </div>
-            <div className="truncate text-[13px] text-zinc-500">
-              {member.title[lang]} · {stationName(agent.station, lang)}
-            </div>
+    <div className="flex h-full min-h-0 flex-col">
+      <div className="flex items-center gap-3 border-b border-[color:var(--line)] p-3" dir="auto">
+        <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg text-[13px] font-bold text-[#14060f]" style={{ backgroundColor: member.color }} aria-hidden="true">
+          {member.name[lang].slice(0, 2)}
+        </span>
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-2">
+            <span className="truncate text-[14px] font-semibold text-[color:var(--ink)]">{member.name[lang]}</span>
+            <span className="sl-chip !py-0" style={{ color: semanticVar(AGENT_SEMANTIC[agent.state]) }}>
+              <StatusDot s={AGENT_SEMANTIC[agent.state]} live={AGENT_SEMANTIC[agent.state] === 'working'} />
+              {stateName(agent.state, lang)}
+            </span>
           </div>
+          <div className="truncate text-[12px] text-[color:var(--ink-3)]" dir="auto">{member.title[lang]}</div>
         </div>
-        {agent.activity && <div className="mt-3 rounded-xl bg-black/40 px-3 py-2 text-[14px] text-zinc-300" dir="auto">{agent.activity}</div>}
-        {task && (
-          <div className="mt-2 text-[13px] text-zinc-500" dir="auto">
-            {t('assignee', lang)}: <span className="text-zinc-300">{task.title}</span>
-          </div>
-        )}
       </div>
-      <div ref={scroller} className="hq-scroll min-h-0 flex-1 overflow-y-auto rounded-2xl border border-white/10 bg-black/40 p-3" dir="ltr">
-        {logs.length === 0 && <div className="grid h-24 place-items-center text-[13px] text-zinc-600">—</div>}
+      <div className="space-y-2 border-b border-[color:var(--line)] p-3" dir="auto">
+        {agent.activity && <p className="text-[13px] leading-5 text-[color:var(--ink-2)]">{agent.activity}</p>}
+        <p className="text-[12px] text-[color:var(--ink-3)]">
+          {t('currentTask', lang)}: {task ? <span className="text-[color:var(--ink-2)]">{task.title}</span> : t('noCurrentTask', lang)}
+        </p>
+      </div>
+      <div ref={scroller} className="hq-scroll min-h-0 flex-1 overflow-y-auto bg-[color:var(--surface-2)] p-2.5" dir="ltr">
+        {logs.length === 0 && <div className="sl-empty !p-6">{t('logEmpty', lang)}</div>}
         {logs.map((entry, i) => (
-          <div
-            key={i}
-            className="hq-feed-in flex gap-2 py-0.5 font-mono text-[13px] leading-5.5"
-            style={{ animationDelay: `${Math.min(i, 12) * 0.02}s` }}
-          >
-            <span className="shrink-0 text-zinc-600">{new Date(entry.ts).toLocaleTimeString(lang === 'he' ? 'he-IL' : 'en-GB', { hour12: false })}</span>
-            <span className={`shrink-0 ${KIND_STYLE[entry.kind].color}`}>{KIND_STYLE[entry.kind].label}</span>
-            <span className="whitespace-pre-wrap break-all text-zinc-300">{entry.text}</span>
+          <div key={i} className="sl-feed-in flex gap-2 py-0.5 font-mono text-[12px] leading-5">
+            <span className="shrink-0 text-[color:var(--ink-3)]">{new Date(entry.ts).toLocaleTimeString(lang === 'he' ? 'he-IL' : 'en-GB', { hour12: false })}</span>
+            <span className="shrink-0" style={{ color: semanticVar(LOG_TONE[entry.kind]) }}>·</span>
+            <span className="whitespace-pre-wrap break-all text-[color:var(--ink-2)]">{entry.text}</span>
           </div>
         ))}
       </div>
@@ -119,214 +267,154 @@ export function MonitorPanel({
   );
 }
 
-// ---- Task wall panel ------------------------------------------------------------------
+/* ── decisions (transparency record — resolved autonomously) ─────────── */
 
-export function WallPanel({
-  lang,
-  tasks,
-  crew,
-}: {
-  lang: Lang;
-  tasks: Task[];
-  crew: CrewMember[];
-}) {
-  const [open, setOpen] = useState<string | null>(null);
-  const cols: Array<'todo' | 'doing' | 'review' | 'done' | 'blocked' | 'cancelled'> = ['todo', 'doing', 'review', 'done', 'blocked', 'cancelled'];
-  const crewById = new Map(crew.map((c) => [c.id, c]));
-  if (!tasks.length) return <div className="grid h-40 place-items-center px-4 text-center text-[15px] text-zinc-500">{t('noTasks', lang)}</div>;
-  return (
-    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-6">
-      {cols.map((status) => {
-        const list = tasks.filter((x) => x.status === status);
-        return (
-          <div key={status} className={`${SUBTLE} flex flex-col p-3`}>
-            <div className={`mb-2 flex items-center gap-1.5 px-1 text-[13px] font-bold ${COL_TEXT[status]}`}>
-              <span className={`h-2 w-2 shrink-0 rounded-full ${COL_DOT[status]}`} aria-hidden="true" />
-              <span className="min-w-0 truncate">{taskStatusName(status, lang)}</span>
-              <span className="ms-auto shrink-0 rounded-full bg-white/5 px-2 py-0.5 font-mono text-[12px] text-zinc-300">{list.length}</span>
-            </div>
-            <div className="hq-scroll max-h-96 min-h-10 space-y-2 overflow-y-auto pe-0.5">
-              {list.map((task) => {
-                const owner = task.assignee ? crewById.get(task.assignee) : undefined;
-                const expanded = open === task.id;
-                return (
-                  <button
-                    key={task.id}
-                    onClick={() => setOpen(expanded ? null : task.id)}
-                    className="hq-card w-full rounded-xl border border-white/10 bg-zinc-950/60 p-3 text-start"
-                  >
-                    <div className="flex items-start gap-2" dir="auto">
-                      {owner && <span className="mt-0.5 h-3 w-3 shrink-0 rounded-sm" style={{ backgroundColor: owner.color }} />}
-                      <span className="text-[13.5px] font-medium leading-5 text-zinc-200">{task.title}</span>
-                    </div>
-                    {task.why && !expanded && (
-                      <p className="mt-1.5 flex items-center gap-1.5 text-[12px] leading-4 text-fuchsia-200/90" dir="auto">
-                        <span className="shrink-0 font-mono text-[10px] tracking-wider text-fuchsia-300">{task.matchBy === 'fit' ? 'FIT' : 'LLM'}</span>
-                        {truncate(task.why, 60)}
-                      </p>
-                    )}
-                    {expanded && (
-                      <div className="mt-2 space-y-1.5 border-t border-white/10 pt-2 text-[12.5px] text-zinc-400" dir="auto">
-                        {task.description && <p className="leading-4.5">{task.description}</p>}
-                        {owner && (
-                          <p>
-                            {t('assignee', lang)}: <span style={{ color: owner.color }}>{owner.name[lang]}</span>
-                          </p>
-                        )}
-                        {task.why && (
-                          <p className="text-fuchsia-200/90">
-                            {task.matchBy === 'fit' ? 'FIT' : 'LLM'} · {task.why}
-                          </p>
-                        )}
-                        {task.dependsOn.length > 0 && (
-                          <p>
-                            {t('dependsOn', lang)}: {task.dependsOn.join(', ')}
-                          </p>
-                        )}
-                        {task.summary && (
-                          <p className="rounded-lg bg-white/5 p-1.5 leading-4.5 text-zinc-300">
-                            {t('summary', lang)}: {task.summary}
-                          </p>
-                        )}
-                        <p className="text-zinc-600">{timeAgo(task.updatedAt, lang)}</p>
-                      </div>
-                    )}
-                  </button>
-                );
-              })}
-              {!list.length && <div className="px-1 py-2 text-[12px] text-zinc-700">—</div>}
-            </div>
-          </div>
-        );
-      })}
-    </div>
-  );
-}
-
-// ---- Podium panel (transparency record — decisions resolve autonomously) --------------
-
-export function PodiumPanel({ lang, decisions }: { lang: Lang; decisions: Decision[] }) {
+export function DecisionsPanel({ lang, decisions }: { lang: Lang; decisions: Decision[] }) {
   const open = decisions.filter((d) => d.status === 'open');
-  const answered = decisions.filter((d) => d.status === 'answered').slice(-6).reverse();
+  const answered = decisions.filter((d) => d.status === 'answered').slice(-5).reverse();
   return (
-    <div className="hq-scroll max-h-96 space-y-3 overflow-y-auto pe-0.5 ps-0.5">
-      {/* the autonomy banner — visitors see the record, never hold the pen */}
-      <div className="rounded-2xl border border-fuchsia-500/25 bg-fuchsia-500/5 px-4 py-2.5 text-[12.5px] leading-5 text-fuchsia-100/90">
-        🔒 {t('podiumAutonomous', lang)}
-      </div>
-      {!open.length && !answered.length && <div className="grid h-24 place-items-center text-[15px] text-zinc-500">{t('noDecisions', lang)}</div>}
+    <div className="divide-y divide-[color:var(--line)]">
+      {!open.length && !answered.length && <div className="sl-empty" dir="auto">{t('noDecisions', lang)}</div>}
       {open.map((d) => (
-        <div key={d.id} className="rounded-2xl border border-fuchsia-500/40 bg-fuchsia-500/5 p-4">
-          <div className="mb-1 flex items-center gap-2 text-[13px] text-fuchsia-200">
-            <span className="grid h-5 w-5 place-items-center rounded-full bg-fuchsia-500/20 font-bold">⏳</span>
+        <article key={d.id} className="p-3.5">
+          <div className="flex items-center gap-2 text-[12px] font-semibold" style={{ color: semanticVar('attention') }} dir="auto">
+            <StatusDot s="attention" live />
             {t('deciding', lang)}
           </div>
-          <p className="text-[14.5px] font-medium leading-6 text-zinc-100" dir="auto">{d.question}</p>
-          {d.context && <p className="mt-2 whitespace-pre-wrap text-[13px] leading-5 text-zinc-400" dir="auto">{d.context}</p>}
-          <div className="mt-3 flex flex-wrap items-center gap-1.5">
+          <p className="mt-1.5 text-[14px] font-medium leading-6 text-[color:var(--ink)]" dir="auto">{d.question}</p>
+          {d.context && <p className="mt-1.5 whitespace-pre-wrap text-[12.5px] leading-5 text-[color:var(--ink-2)]" dir="auto">{d.context}</p>}
+          <div className="mt-2.5 flex flex-wrap items-center gap-1.5">
             {d.options.map((o) => (
-              <span key={o} className="rounded-full border border-white/10 bg-black/30 px-3 py-1.5 text-[12.5px] text-zinc-400" dir="auto">
-                {o}
-              </span>
+              <span key={o} className="sl-chip" dir="auto">{o}</span>
             ))}
           </div>
-        </div>
+        </article>
       ))}
       {answered.map((d) => (
-        <div key={d.id} className="hq-card rounded-2xl border border-white/10 bg-black/25 p-4 opacity-80">
-          <p className="text-[14px] leading-5.5 text-zinc-200" dir="auto">{truncate(d.question, 90)}</p>
-          <p className="mt-1 text-[13px] text-emerald-300" dir="auto">
+        <article key={d.id} className="p-3.5">
+          <p className="text-[13px] leading-5 text-[color:var(--ink-2)]" dir="auto">{truncate(d.question, 110)}</p>
+          <p className="mt-1 text-[12px]" style={{ color: semanticVar('ok') }} dir="auto">
             {t('resolved', lang)}: {d.answer?.option ?? d.answer?.text ?? '—'} · {timeAgo(d.answer?.ts ?? d.createdAt, lang)}
           </p>
-        </div>
+        </article>
       ))}
     </div>
   );
 }
 
-// ---- Library panel ------------------------------------------------------------------
+/* ── reports (the library, latest first) ─────────────────────────────── */
 
-export function LibraryPanel({ lang, reports }: { lang: Lang; reports: Report[] }) {
+export function ReportsPanel({ lang, reports, limit }: { lang: Lang; reports: Report[]; limit?: number }) {
   const [open, setOpen] = useState<string | null>(null);
-  if (!reports.length) return <div className="grid h-32 place-items-center px-6 text-center text-[15px] text-zinc-500">{t('noReports', lang)}</div>;
+  if (!reports.length) return <div className="sl-empty" dir="auto">{t('noReports', lang)}</div>;
+  const shown = limit ? reports.slice(0, limit) : reports;
   return (
-    <div className="hq-scroll max-h-96 space-y-3 overflow-y-auto pe-0.5 ps-0.5">
-      {reports.map((r) => {
+    <div className="divide-y divide-[color:var(--line)]">
+      {shown.map((r) => {
         const expanded = open === r.id;
         return (
-          <div key={r.id} className="hq-card rounded-2xl border border-white/10 bg-black/25 p-4">
-            <button className="w-full text-start" onClick={() => setOpen(expanded ? null : r.id)}>
-              <div className="text-[15px] font-semibold leading-5.5 text-zinc-100" dir="auto">{r.title}</div>
-              <div className="mt-1 text-[13px] text-zinc-500" dir="auto">
+          <article key={r.id} className="p-3.5">
+            <button className="w-full text-start" onClick={() => setOpen(expanded ? null : r.id)} aria-expanded={expanded}>
+              <span className="block text-[14px] font-semibold leading-5 text-[color:var(--ink)]" dir="auto">{r.title}</span>
+              <span className="mt-0.5 block text-[12px] text-[color:var(--ink-3)]" dir="auto">
                 {t('by', lang)} {r.author} · {timeAgo(r.ts, lang)}
-              </div>
+              </span>
             </button>
             {expanded ? (
-              <p className="mt-3 whitespace-pre-wrap rounded-xl bg-black/40 p-3 text-[14px] leading-6.5 text-zinc-300" dir="auto">
-                {r.body}
-              </p>
+              <p className="mt-2.5 whitespace-pre-wrap rounded-lg bg-[color:var(--surface-2)] p-3 text-[13px] leading-6 text-[color:var(--ink-2)]" dir="auto">{r.body}</p>
             ) : (
-              <p className="mt-2 line-clamp-2 text-[13px] leading-5 text-zinc-500" dir="auto">{r.body}</p>
+              <p className="mt-1.5 line-clamp-2 text-[12.5px] leading-5 text-[color:var(--ink-3)]" dir="auto">{r.body}</p>
             )}
-          </div>
+          </article>
         );
       })}
     </div>
   );
 }
 
-// ---- Fleet registry panel --------------------------------------------------------------
+/* ── fleet books registry ────────────────────────────────────────────── */
 
-export function FleetPanel({
-  lang,
-  books,
-  crew,
-  onPreview,
-}: {
-  lang: Lang;
-  books: BookView[];
-  crew: CrewMember[];
-  onPreview: (id: string) => void;
-}) {
-  const crewById = new Map(crew.map((c) => [c.id, c]));
+export function FleetBooksPanel({ lang, books, crew, onPreview }: { lang: Lang; books: BookView[]; crew: CrewMember[]; onPreview: (id: string) => void }) {
+  const crewById = useMemo(() => new Map(crew.map((c) => [c.id, c])), [crew]);
   return (
-    <div className="hq-scroll max-h-96 space-y-2 overflow-y-auto pe-1 ps-0.5">
+    <div className="sl-scroll max-h-[420px] overflow-y-auto">
       {books.map((b) => {
         const owner = b.owner ? crewById.get(b.owner) : undefined;
         const stale = (b.ageHours ?? 0) > 72;
+        const sem: Semantic = b.ok === false ? 'danger' : stale ? 'attention' : 'ok';
         return (
-          <button
-            key={b.id}
-            onClick={() => onPreview(b.id)}
-            className="hq-card hq-card-lift flex min-h-11 w-full items-center gap-3 rounded-xl border border-white/10 bg-black/25 p-3 text-start"
-          >
-            <span className="h-8 w-1.5 shrink-0 rounded-full" style={{ backgroundColor: owner?.color ?? '#a1a1aa' }} />
+          <button key={b.id} onClick={() => onPreview(b.id)} className="sl-row w-full" dir="auto">
+            <span className="h-6 w-1 shrink-0 rounded-full" style={{ backgroundColor: owner?.color ?? 'var(--st-neutral)' }} aria-hidden="true" />
             <span className="min-w-0 flex-1">
-              <span className="block truncate text-[14px] font-medium text-zinc-200" dir="auto">
-                {b.title[lang]}
-              </span>
-              <span className="block text-[12px] text-zinc-500" dir="ltr">
-                {b.file} · {fmtBytes(b.bytes)}
-              </span>
+              <span className="block truncate text-[13px] font-medium text-[color:var(--ink)]">{b.title[lang]}</span>
+              <span className="block truncate text-[11.5px] text-[color:var(--ink-3)]" dir="ltr">{b.file} · {fmtBytes(b.bytes)}</span>
             </span>
             <span className="shrink-0 text-end">
-              <span className={`block text-[13px] font-semibold ${stale ? 'text-amber-400' : b.ok === false ? 'text-rose-400' : 'text-emerald-300'}`} dir="auto">
+              <span className="block font-mono text-[12px] tabular-nums" style={{ color: semanticVar(sem) }} dir="ltr">
                 {b.ageHours !== undefined ? `${b.ageHours.toFixed(1)}h` : '—'}
               </span>
-              {owner && (
-                <span className="block text-[11.5px] text-zinc-500" dir="auto">
-                  {owner.name[lang]}
-                </span>
-              )}
+              {owner && <span className="block text-[11px] text-[color:var(--ink-3)]" dir="auto">{owner.name[lang]}</span>}
             </span>
           </button>
         );
       })}
-      {!books.length && <div className="grid h-24 place-items-center text-[15px] text-zinc-500">{t('noBooks', lang)}</div>}
+      {!books.length && <div className="sl-empty" dir="auto">{t('noBooks', lang)}</div>}
     </div>
   );
 }
 
-function fmtBytes(n: number): string {
-  return n >= 1024 ? `${(n / 1024).toFixed(1)}K` : String(n);
+/* ── activity journal with filters ───────────────────────────────────── */
+
+type FeedFilter = 'all' | 'work' | 'done' | 'issues';
+const FILTER_KINDS: Record<Exclude<FeedFilter, 'all'>, string[]> = {
+  work: ['goal', 'plan', 'task', 'message', 'user'],
+  done: ['decision', 'report', 'git'],
+  issues: ['error'],
+};
+
+export function FeedJournal({ lang, feed }: { lang: Lang; feed: FeedItem[] }) {
+  const [filter, setFilter] = useState<FeedFilter>('all');
+  const sorted = useMemo(() => [...feed].sort((a, b) => b.ts - a.ts), [feed]);
+  const shown = filter === 'all' ? sorted : sorted.filter((f) => FILTER_KINDS[filter].includes(f.kind));
+  const filters: Array<[FeedFilter, string, number]> = [
+    ['all', t('filterAll', lang), sorted.length],
+    ['work', t('filterWorking', lang), sorted.filter((f) => FILTER_KINDS.work.includes(f.kind)).length],
+    ['done', t('filterDone', lang), sorted.filter((f) => FILTER_KINDS.done.includes(f.kind)).length],
+    ['issues', t('filterIssues', lang), sorted.filter((f) => f.kind === 'error').length],
+  ];
+  return (
+    <div className="flex min-h-0 flex-col">
+      <div className="flex flex-wrap gap-1.5 border-b border-[color:var(--line)] p-2.5" role="tablist" aria-label={t('secJournal', lang)}>
+        {filters.map(([key, label, n]) => (
+          <button key={key} role="tab" aria-selected={filter === key} onClick={() => setFilter(key)} className="sl-chip transition-colors" data-active={filter === key}
+            style={filter === key ? { borderColor: 'var(--accent)', color: 'var(--ink)', background: 'var(--accent-dim)' } : undefined}>
+            {label}
+            <span className="font-mono tabular-nums text-[color:var(--ink-3)]">{n}</span>
+          </button>
+        ))}
+      </div>
+      <div className="sl-scroll max-h-[420px] min-h-[120px] overflow-y-auto p-1.5" dir="auto">
+        {shown.length === 0 && <div className="sl-empty !p-6" dir="auto">{t('emptyFeed', lang)}</div>}
+        {shown.map((f) => {
+          const sem = FEED_KIND_SEMANTIC[f.kind] ?? 'neutral';
+          return (
+            <div key={f.id} className="sl-feed-in flex items-start gap-2 rounded-lg px-2 py-1.5 text-[13px] leading-5 hover:bg-[rgba(255,255,255,0.03)]">
+              <span className="shrink-0 pt-0.5 font-mono text-[11px] tabular-nums text-[color:var(--ink-3)]" dir="ltr">
+                {new Date(f.ts).toLocaleTimeString(lang === 'he' ? 'he-IL' : 'en-GB', { hour12: false })}
+              </span>
+              <span
+                className="sl-tip shrink-0 rounded px-1 font-mono text-[10px] font-bold"
+                data-t={f.kind}
+                style={{ color: semanticVar(sem), backgroundColor: 'var(--surface-2)' }}
+                aria-label={f.kind}
+              >
+                {f.kind === 'error' ? '!' : f.kind === 'git' ? '⑂' : f.kind === 'decision' ? '✓' : f.kind === 'report' ? '▤' : f.kind === 'goal' ? '◎' : '·'}
+              </span>
+              <span className={`min-w-0 ${f.kind === 'error' ? 'font-medium' : ''}`} style={{ color: f.kind === 'error' ? semanticVar('danger') : 'var(--ink-2)' }}>{f.text}</span>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
 }

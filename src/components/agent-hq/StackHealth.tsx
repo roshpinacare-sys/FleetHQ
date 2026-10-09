@@ -10,6 +10,8 @@
  */
 import { useEffect, useState } from 'react';
 import type { Lang } from './i18n';
+import { HEALTH_TONE_SEMANTIC, semanticVar } from '@/components/hq/tokens';
+import { Panel } from './panels';
 
 interface FleetHealth {
   at: string;
@@ -74,8 +76,7 @@ function tr(k: keyof typeof L, lang: Lang): string {
 }
 
 function Dot({ tone }: { tone: 'ok' | 'warn' | 'bad' }) {
-  const c = tone === 'ok' ? '#22c55e' : tone === 'warn' ? '#eab308' : '#ef4444';
-  return <span className="inline-block h-2.5 w-2.5 shrink-0 rounded-full" style={{ backgroundColor: c }} aria-hidden="true" />;
+  return <span className="sl-dot" style={{ backgroundColor: semanticVar(HEALTH_TONE_SEMANTIC[tone]) }} aria-hidden="true" />;
 }
 
 function Cell({
@@ -84,13 +85,13 @@ function Cell({
   label: string; tone: 'ok' | 'warn' | 'bad'; value: string; sub?: string; ltr?: boolean;
 }) {
   return (
-    <div className="flex min-w-0 flex-col gap-1 rounded-lg border border-white/10 bg-white/[0.03] p-3">
-      <span className="truncate text-[12px] font-semibold text-zinc-400" dir="auto">{label}</span>
-      <span className="flex items-center gap-2 text-[13px] font-bold text-zinc-200" dir={ltr ? 'ltr' : 'auto'}>
+    <div className="flex min-w-0 flex-col gap-1 rounded-lg border border-[color:var(--line)] bg-[color:var(--surface-2)] p-3">
+      <span className="truncate text-[11.5px] font-semibold text-[color:var(--ink-2)]" dir="auto">{label}</span>
+      <span className="flex items-center gap-2 text-[13px] font-bold text-[color:var(--ink)]" dir={ltr ? 'ltr' : 'auto'}>
         <Dot tone={tone} />
-        <span className="truncate font-mono text-[12.5px]">{value}</span>
+        <span className="truncate font-mono text-[12px]">{value}</span>
       </span>
-      {sub ? <span className="truncate text-[11px] text-zinc-500" dir="ltr">{sub}</span> : null}
+      {sub ? <span className="truncate text-[10.5px] text-[color:var(--ink-3)]" dir="ltr">{sub}</span> : null}
     </div>
   );
 }
@@ -119,25 +120,19 @@ export default function StackHealth({ lang }: { lang: Lang }) {
   const absentTone = (x: unknown): 'ok' | 'warn' => (x == null ? 'warn' : 'ok');
 
   return (
-    <section className="mt-6" aria-label={tr('secStack', lang)}>
-      <div className="hq-glass hq-rise-3 p-4">
-        <div className="mb-3 flex flex-wrap items-center gap-2">
-          <span className="text-[15px] font-bold text-zinc-200" dir="auto">{tr('secStack', lang)}</span>
-          {h ? (
-            <span className="flex items-center gap-1.5 rounded-full border border-white/10 px-2 py-0.5 font-mono text-[11px]" dir="ltr">
-              <Dot tone={h.all_ok ? 'ok' : 'bad'} />
-              all_ok={String(h.all_ok)}
-            </span>
-          ) : null}
-          <span className="ms-auto text-[11.5px] text-zinc-500" dir="auto">{tr('verified', lang)}</span>
-        </div>
-
+    <section id="sec-stack" className="mt-6" aria-label={tr('secStack', lang)}>
+      <Panel title={tr('secStack', lang)} actions={h ? (
+        <span className="sl-chip font-mono" dir="ltr">
+          <Dot tone={h.all_ok ? 'ok' : 'bad'} />
+          all_ok={String(h.all_ok)}
+        </span>
+      ) : undefined} meta={tr('verified', lang)}>
         {!h && !err ? (
-          <div className="py-6 text-center text-[13px] text-zinc-500" dir="auto">{tr('loading', lang)}</div>
+          <div className="py-6 text-center text-[13px] text-[color:var(--ink-3)]" dir="auto">{tr('loading', lang)}</div>
         ) : !h ? (
-          <div className="py-6 text-center text-[13px] text-red-400" dir="auto">{tr('unreachable', lang)}</div>
+          <div className="py-6 text-center text-[13px]" style={{ color: 'var(--st-danger)' }} dir="auto">{tr('unreachable', lang)}</div>
         ) : (
-          <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 lg:grid-cols-4">
+          <div className="grid grid-cols-2 gap-2 p-3 sm:grid-cols-3 lg:grid-cols-4">
             <Cell label={tr('manifest', lang)} tone={chainTone(h.chains.manifest.ok)}
               value={h.chains.manifest.ok ? `${tr('ok', lang)} · n=${h.chains.manifest.records}` : tr('broken', lang)}
               sub={h.chains.manifest.detail} ltr={false} />
@@ -203,7 +198,7 @@ export default function StackHealth({ lang }: { lang: Lang }) {
               sub={h.status?.results?.map((r) => `${r.name}=${r.latency_ms}ms`).join(' · ') || undefined} ltr={false} />
           </div>
         )}
-      </div>
+      </Panel>
     </section>
   );
 }
