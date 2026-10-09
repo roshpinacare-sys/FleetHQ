@@ -1,21 +1,12 @@
 {
- "ts": "2026-10-08T22:46:21Z",
+ "ts": "2026-10-09T01:17:20Z",
  "timeout_ms": 90000,
- "all_ok": false,
+ "all_ok": true,
  "accounts": {
   "source": "absent",
   "count": 0
  },
  "results": [
-  {
-   "name": "llamacpp-local",
-   "url": "http://localhost:8080/health",
-   "method": "GET",
-   "status": null,
-   "latency_ms": 4,
-   "verdict": "DOWN",
-   "detail": "URLError: <urlopen error [Errno 111] Connection refused>"
-  },
   {
    "name": "nextjs-control",
    "url": "http://localhost:3000/",
@@ -30,9 +21,9 @@
    "url": "https://api.llm7.io/v1/models",
    "method": "GET",
    "status": 200,
-   "latency_ms": 239,
+   "latency_ms": 257,
    "verdict": "OK",
-   "detail": "status=200 latency=239ms"
+   "detail": "status=200 latency=257ms"
   },
   {
    "name": "eth-mainnet-rpc",
@@ -48,15 +39,15 @@
    "url": "https://rpc.zero.tech",
    "method": "POST",
    "status": 200,
-   "latency_ms": 700,
+   "latency_ms": 365,
    "verdict": "OK",
-   "detail": "status=200 latency=700ms"
+   "detail": "status=200 latency=365ms"
   }
  ],
  "mem": {
   "state": "OK",
-  "mem_available_mb": 2608.3,
+  "mem_available_mb": 2021.3,
   "mem_total_mb": 4041.6
  },
- "sha256": "ec1073674f55599d01a74ec86511b448cd8ac81b08c6538925eea0a39e4bb8da"
+ "sha256": "372e10c9eef3bac5c46a25ab68b5109c29c503cac668afd97ea149d25f105cc7"
 }

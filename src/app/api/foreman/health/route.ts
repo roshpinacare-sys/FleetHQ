@@ -91,6 +91,13 @@ const SNAPSHOT_TS = '/home/z/my-project/mini-services/agent-hq/tools/telemetry-s
 const HISTORY_TS = '/home/z/my-project/mini-services/agent-hq/tools/shift-history.ts';
 const LINEAGE_TS = '/home/z/my-project/mini-services/agent-hq/tools/lineage-guard.ts';
 
+// health_monitor — the JSON-RPC witness + probe loop (sovereign-stack, python,
+// stdlib only). Loops every 120s: probes live targets, parses witness account
+// transaction state (nonce/balance) from the secure credentials layer, and
+// appends latency + state rows to sovereign-stack/health/history.jsonl.
+// Fixed command, no input, safe by construction.
+const MONITOR_CMD = '/home/z/my-project/sovereign-stack/health_monitor.py';
+
 function pgrepAlive(pattern: string): Promise<boolean> {
   return new Promise((resolve) => {
     execFile('pgrep', ['-f', pattern], { timeout: 3000 }, (err, stdout) => {
@@ -116,14 +123,39 @@ const watchdogStamp = { v: 0 };
 const snapshotStamp = { v: 0 };
 const historyStamp = { v: 0 };
 const lineageStamp = { v: 0 };
+const monitorStamp = { v: 0 };
 
-function ensureSentinels(): Promise<{ watchdog: boolean; snapshot: boolean; history: boolean; lineage: boolean }> {
+function ensureSentinels(): Promise<{
+  watchdog: boolean;
+  snapshot: boolean;
+  history: boolean;
+  lineage: boolean;
+  monitor: boolean;
+}> {
   return Promise.all([
     ensureNode('shelf-watchdog', WATCHDOG_TS, 'tools/watchdog.ts', watchdogStamp),
     ensureNode('telemetry-snapshot', SNAPSHOT_TS, 'tools/telemetry-snapshot.ts', snapshotStamp),
     ensureNode('shift-history', HISTORY_TS, 'tools/shift-history.ts', historyStamp),
     ensureNode('lineage-guard', LINEAGE_TS, 'tools/lineage-guard.ts', lineageStamp),
-  ]).then(([watchdog, snapshot, history, lineage]) => ({ watchdog, snapshot, history, lineage }));
+    ensureMonitor(),
+  ]).then(([watchdog, snapshot, history, lineage, monitor]) => ({ watchdog, snapshot, history, lineage, monitor }));
+}
+
+function ensureMonitor(): Promise<boolean> {
+  return pgrepAlive('health_monitor.py --loop').then((alive) => {
+    if (alive) return true;
+    const now = Date.now();
+    if (now - monitorStamp.v < 30_000) return false; // debounce respawns
+    monitorStamp.v = now;
+    const child = spawn('python3', [MONITOR_CMD, '--loop', '120'], {
+      cwd: '/home/z/my-project/sovereign-stack',
+      detached: true,
+      stdio: 'ignore',
+    });
+    child.unref();
+    console.log('[supervisor] respawned health-monitor');
+    return false; // will report alive on the next poll
+  }).catch(() => false);
 }
 
 export async function GET() {
