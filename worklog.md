@@ -243,3 +243,21 @@ Work Log (הכל נמדד חי):
 
 Stage Summary:
 - מקור-התגמולים הוכח-מהשרשרת (claimer-אוטומטי + curation), הכלכלה נמדדה ($0.022/יום), הבעיה (בזבוז-VP 80-96% + VP-FLOOR-באג) נמדדה ותוקנה-בקוד, ו-~2462 SP חוזרים-עצמאית עד 10-11 → תשואה-צפויה עד ~8-12×. התקרה-הכנה בלי-SP-נוסף: $0.3-0.5/יום fleet-wide (מתועד-בדוח).
+
+---
+Task ID: 34
+Agent: Z.ai Code (main session)
+Task: הבעלים העביר פרוטוקול-הדבקה נוסף (ה-14) עם שתי יעדי-פעולה קונקרטיים: (1) "מאמת סכמת-משימות אוטומטי" (2) "מתמליט יומן-פעילות חי → receipts/shift-history-latest.md", עם הוראת-עוגן "ודחוף". חוק-האמת: כל הצהרה מההדבקה נבדקת מול הדיסק לפני שנחשבת.
+
+Work Log (הכל נמדד):
+- **ביקורת-אמת של ההדבקה**: commit 167f47c קיים ✓ · goalRelevance חי ב-office.ts (MAX_REDOS=2 בשורה 44, השער ב-117, סינון-תכנון ב-166, GATE-1 ב-1101, redos חסומים ב-1143) ✓ · Caddy :81 חי ✓ — אבל **"duplicate foreman daemon" היה בדיה** (5396=sovereign-gateway:3011, 14901=agent-hq:3010 — שירותים שונים, מופע-אחד-כל-אחד) ו-**receipts/shift-history-latest.md לא היה קיים** (היעד השני של ההדבקה = בדיה שנדרשה בנייה אמיתית).
+- **יומן-אירועים (office.ts)**: 7 טאפים כירורגיים — log() (השער-היחיד לכל-שורות-הצוות), addTask, patchTask (רק שינויי status/assignee), submitGoal, setGoal (רק שינויי-סטטוס), patrol-goal. הכל עובר scrubSecrets לפני-דיסק, כתיבה מסודרת (journalQueue), רוטציה 2MB, fail-soft. יעד: Domain/agents/office-events.jsonl — מגובה-גיט ע"י domain-sync.sh.
+- **tools/shift-history.ts (המתמליט)**: stdlib-בלבד, כל-60שנ', קורא זנב-יומן (4000 שורות + .prev), בונה receipts/shift-history-latest.md (משמרת-פתוחה חיה: לוח-משימות, ספר-השער — relevance/cancellations/redos/approvals/no-evidence, פעילות-עובדים, מדדי-ריבון) + receipts/shift-history-history.jsonl (שורה-אחת-למשמרת-סגורה, dedupe לפי goal-id, 2000 שורות) + state-file. כתיבה אטומית (tmp+rename), תקרת-MD 120KB. כלום לא מומצא — הכל מהיומן.
+- **פיקוח-שלישי**: HISTORY_TS ב-/api/foreman/health (pattern tools/shift-history.ts, respawn כילד-עץ-השרת — הדרך-המוכחת-היחידה-ששורדת-את-ה-reaper) → sentinels:{watchdog,snapshot,history}. + שדה shift_history ב-/api/fleet-health + תא-חי "יומן-משמרות" ב-StackHealth (ירוק אם md טרי <5דק').
+- **תיקון-תהליכים אמיתי**: bun --hot בזמן-העריכה יצר 3 boots תוך-250ms (התיאולוגיה-המוכחת-של-טיימרים-כפולים) → kill-נקי + respawn-דרך-ה-supervisor → boot-אחד (23:46:43), מופע-יחיד על :3010 (PID 17603).
+- **הוכחה-חיה E2E**: משמרת g2 ("סיור שגרה: סרוק את ספרי הצי") נסגרה בכנות — shachar קרא ספרים אמיתיים, השער נתן redo(1/2) עם-הערה-קונקרטית ("סרוק בפועל ופרט 3 פריטים ישנים"), אחר-כך redo(2), ואז **approved עם מדידות אמיתיות** (market-grid 97.8h, truth-history 279.5h) · QA sieve תיקן-את-הדוח · history.jsonl קיבל שורה: approvals=1, redos=2 (חסום!), avg_relevance=1.0, no_evidence_flags=0, duration=15דק'. משמרת g3 נפתחה-מיד (פטרול) והופיעה-חיה ב-latest.md תוך-שניות. shifts 9→10, לקחים 6→7.
+- **תיקון-סתימת-סנכרון**: domain-sync נתקע-במעגל-קונפליקטים (UU mirror.json/status.json — מירוץ-וויו-עם-התאום) שחסם-את-היומן-מלהיכנס-לגיט → הוחל-חוק-האיחוד: JSON=live-wins (שלנו 21:19 > שלהם 21:06, נמדד) → d62e9c2 נדחף עם היומן.
+- **דחיפות**: FleetHQ נדחה-פעם-אחת (מירוץ — 254b4c6 של התאום נחת) → stash→rebase→pop → **3d064ff נדחף** ✓ · Domain: **d62e9c2 נדחף** ✓ · סריקת-סודות על-הדיפרנציאל: נקה · lint: נקה · דפדפן: wall חי, StackHealth כולל יומן-משמרות closed=0 ירוק, footer-דביק-תקין.
+
+Stage Summary:
+- שני-יעדי-ההדבקה הוכרעו בכנות: מאמת-הסכמה כבר-חי (goalRelevance — אומת-בקוד-ובחי) והוכח-חי-שוב-במשמרת-g2; המתמליט נבנה-מאפס-והוא-הראיה-הקבועה-של-המשרד: כל-משמרת-מתועדת-מהיומן-על-הדיסק, מגובה-גיט, בלי-אמתלא-אפשרית-ל"המשרד-לא-עשה-כלום". ההדבקה-עצמה נבחנה-באמת: 2 טענות-שקר נחשפו (duplicate-daemon בדיה, shift-history לא-קיים). המשרד חי, מתועד, ומוכיח-את-עצמו-כל-משמרת.
