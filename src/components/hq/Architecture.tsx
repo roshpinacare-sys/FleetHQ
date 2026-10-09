@@ -315,12 +315,12 @@ function Ceiling({ mats }: { mats: OfficeMats }) {
         <meshStandardMaterial color="#1a1714" roughness={0.95} />
       </mesh>
       {/* גיאת אור היקפית — פסים אמיסיביים לאורך הקירות */}
-      {[
-        { p: [0, -0.05, -H / 2 + 0.5] as [number, number, number], s: [W - 1.2, 0.1, 0.24] },
-        { p: [0, -0.05, H / 2 - 0.5] as [number, number, number], s: [W - 1.2, 0.1, 0.24] },
-        { p: [-W / 2 + 0.5, -0.05, 0] as [number, number, number], s: [0.24, 0.1, H - 1.2] },
-        { p: [W / 2 - 0.5, -0.05, 0] as [number, number, number], s: [0.24, 0.1, H - 1.2] },
-      ].map((c, i) => (
+      {([
+        { p: [0, -0.05, -H / 2 + 0.5] as [number, number, number], s: [W - 1.2, 0.1, 0.24] as [number, number, number] },
+        { p: [0, -0.05, H / 2 - 0.5] as [number, number, number], s: [W - 1.2, 0.1, 0.24] as [number, number, number] },
+        { p: [-W / 2 + 0.5, -0.05, 0] as [number, number, number], s: [0.24, 0.1, H - 1.2] as [number, number, number] },
+        { p: [W / 2 - 0.5, -0.05, 0] as [number, number, number], s: [0.24, 0.1, H - 1.2] as [number, number, number] },
+      ] as const).map((c, i) => (
         <mesh key={i} position={c.p}>
           <boxGeometry args={c.s} />
           <primitive object={mats.glowWarm} attach="material" />

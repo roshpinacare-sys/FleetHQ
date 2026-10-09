@@ -51,8 +51,8 @@ function useInputWiring() {
       const dx = e.clientX - lx, dy = e.clientY - ly;
       moved += Math.abs(dx) + Math.abs(dy);
       if (moved > 6) {
-        orbit.current.yaw -= dx * 0.0052;
-        orbit.current.pitch = Math.max(0.08, Math.min(1.15, orbit.current.pitch + dy * 0.0036));
+        orbit.yaw -= dx * 0.0052;
+        orbit.pitch = Math.max(0.08, Math.min(1.15, orbit.pitch + dy * 0.0036));
       }
       lx = e.clientX; ly = e.clientY;
     };
@@ -62,7 +62,7 @@ function useInputWiring() {
     window.addEventListener('pointerup', pu);
 
     const wheel = (e: WheelEvent) => {
-      orbit.current.dist = Math.max(1.2, Math.min(9.5, orbit.current.dist + e.deltaY * 0.0035));
+      orbit.dist = Math.max(1.2, Math.min(9.5, orbit.dist + e.deltaY * 0.0035));
     };
     el.addEventListener('wheel', wheel, { passive: true });
 

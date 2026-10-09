@@ -233,7 +233,10 @@ export async function GET() {
       ...process.env,
       AGENT_HQ_PORT: String(PORT),
       AGENT_HQ_DATA_DIR: '/home/z/my-project/Domain',
-      AGENT_HQ_FLEET_DIR: '/home/z/my-project/fleethq',
+      // the office's own code repo (the git-learning wire studies it):
+      // must point at the REAL FleetHQ checkout — a nonexistent path makes
+      // the learning source silently unavailable (fail-soft hides it).
+      AGENT_HQ_FLEET_DIR: '/home/z/my-project',
     },
     });
     child.unref();

@@ -203,6 +203,12 @@ function postBatcherState(): Promise<{
 }
 
 /** Seventh sentinel — boot-watcher state (revives the dev server itself). */
+interface BootWatcherFileState {
+  at?: string;
+  port_ok?: boolean;
+  spawns?: number;
+  last_spawn_at?: string | null;
+}
 async function bootWatcherState(): Promise<{
   alive: boolean;
   at: string | null;
@@ -211,9 +217,12 @@ async function bootWatcherState(): Promise<{
   last_spawn_at: string | null;
   stale_min: number | null;
 }> {
-  let idx: { at?: string; port_ok?: boolean; spawns?: number; last_spawn_at?: string | null } | null = null;
+  // NOTE: parsed into an explicitly typed variable. `as typeof idx` here let
+  // control-flow narrowing collapse every field to `never` — the whole report
+  // compiled out under ignoreBuildErrors while looking healthy at runtime.
+  let idx: BootWatcherFileState | null = null;
   try {
-    idx = JSON.parse(fs.readFileSync(path.join(RECEIPTS, 'boot-watcher-state.json'), 'utf8')) as typeof idx;
+    idx = JSON.parse(fs.readFileSync(path.join(RECEIPTS, 'boot-watcher-state.json'), 'utf8')) as BootWatcherFileState | null;
   } catch {
     idx = null;
   }

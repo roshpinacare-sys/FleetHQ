@@ -114,7 +114,7 @@ function useFocus(id: string, kind: string) {
     else if (kind === 'podium') st.setPanel('podium');
     else if (kind === 'library') st.setPanel('library');
     else if (kind === 'git') st.setPanel('git');
-    else if (kind === 'reception') st.setChatOpen(true);
+    else if (kind === 'reception') st.setPanel('reception');
     else if (kind === 'flame') st.setPanel('flame');
     else if (kind === 'lead') st.setPanel('agent', 'aluf');
   };
@@ -391,7 +391,8 @@ function Podium({ mats }: { mats: OfficeMats }) {
   const ring = useRef<THREE.Mesh>(null);
   const ring2 = useRef<THREE.Mesh>(null);
   const spot = useRef<THREE.SpotLight>(null);
-  const open = useRef(false);
+  // lerped 0..1 toward "a decision is open" — number, not boolean
+  const open = useRef(0);
   useFrame(({ clock }, dt) => {
     const dec = useHq.getState().snap.decisions.find((d) => d.status === 'open');
     const isOpen = !!dec;
