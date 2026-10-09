@@ -454,7 +454,10 @@ export default function AgentHQ() {
                   {view === 'network' ? t('atlasViewHint', lang) : ''}
                 </span>
               </div>
-              <div className="aspect-[1180/640] w-full">
+              {/* mobile: the room keeps a readable minimum width and pans horizontally
+                  — a squeezed office is an unreadable office */}
+              <div className="overflow-x-auto">
+                <div className="aspect-[1180/640] w-full min-w-[760px]">
                 {view === 'office' ? (
                   <Office
                     lang={lang}
@@ -486,6 +489,7 @@ export default function AgentHQ() {
                     onOpenTab={() => openTab('fleet')}
                   />
                 )}
+                </div>
               </div>
               {/* HUD corner brackets around the viewport — zinc frame, never gold */}
               <div className="pointer-events-none absolute inset-0" aria-hidden="true">
@@ -501,8 +505,9 @@ export default function AgentHQ() {
               )}
             </div>
 
-            {/* flight HUD strip — the mission-control anchor (accent rail + instruments) */}
-            <div className="hq-glass hq-rise-2 p-0" dir="ltr">
+            {/* flight HUD strip — the mission-control anchor (accent rail + instruments).
+                No forced direction: it follows the page (RTL reads right→left). */}
+            <div className="hq-glass hq-rise-2 p-0">
               <div className="h-[6px] w-full overflow-hidden rounded-t-[24px] bg-zinc-900">
                 <div
                   className="h-full bg-gradient-to-r from-[#7c3aed] via-[#d946ef] to-[#f0abfc] transition-[width] duration-700"
@@ -537,24 +542,26 @@ export default function AgentHQ() {
                   </div>
                 </div>
               </div>
-              {/* JourneyBar — the mission rail: done-share + phase pitch marker */}
+              {/* JourneyBar — the mission rail: done-share + phase pitch marker.
+                  Logical properties: the plane departs from the reading start
+                  (right in Hebrew) and lands at the end — never inverted. */}
               {goal && tasksTotal > 0 && (
                 <div className="relative h-7 border-t border-white/10" aria-hidden="true">
                   <div className="absolute inset-x-6 top-[15px] border-t border-dashed border-zinc-700" />
                   <div
-                    className="absolute left-6 top-[15px] h-[2px] -translate-y-1/2 bg-gradient-to-r from-[#7c3aed] to-[#f0abfc] transition-[width] duration-700"
-                    style={{ width: `calc((100% - 3rem) * ${doneRatio.toFixed(3)})` }}
+                    className="absolute top-[15px] h-[2px] -translate-y-1/2 bg-gradient-to-r from-[#7c3aed] to-[#f0abfc] transition-[width] duration-700 rtl:bg-gradient-to-l"
+                    style={{ insetInlineStart: '1.5rem', width: `calc((100% - 3rem) * ${doneRatio.toFixed(3)})` }}
                   />
                   <div
-                    className="hq-journey-plane absolute top-[15px] text-[13px] leading-none text-fuchsia-300 drop-shadow-[0_0_8px_rgba(217,70,239,0.6)]"
+                    className="hq-journey-plane absolute top-[15px] text-[13px] leading-none text-fuchsia-300 drop-shadow-[0_0_8px_rgba(217,70,239,0.6)] rtl:-scale-x-100"
                     style={{
-                      left: `calc(1.5rem + (100% - 3rem) * ${doneRatio.toFixed(3)})`,
+                      insetInlineStart: `calc(1.5rem + (100% - 3rem) * ${doneRatio.toFixed(3)})`,
                       transform: `translate(-50%, -50%) rotate(${journeyAngle(goal.status)}deg)`,
                     }}
                   >
                     ✈
                   </div>
-                  <span className="absolute right-6 top-[5px] font-mono text-[9px] tracking-[0.3em] text-zinc-500">
+                  <span className="absolute end-6 top-[5px] font-mono text-[9px] tracking-[0.3em] text-zinc-500">
                     {journeyAct(goal.status)} · {goalStatusName(goal.status, lang)} {doneCount}/{tasksTotal}
                   </span>
                 </div>
@@ -597,7 +604,7 @@ export default function AgentHQ() {
               </SectionHead>
               <div className="hq-scroll grid max-h-96 gap-1 overflow-y-auto sm:grid-cols-2" dir="auto">
                 {snap.feed.length === 0 && <p className="text-[13px] text-zinc-600">{t('emptyFeed', lang)}</p>}
-                {[...snap.feed].reverse().map((f, i) => (
+                {[...snap.feed].sort((a, b) => b.ts - a.ts).map((f, i) => (
                   <div
                     key={f.id}
                     className="hq-feed-in flex items-start gap-2 rounded-xl px-2 py-1.5 text-[13px] leading-5 hover:bg-white/5"
