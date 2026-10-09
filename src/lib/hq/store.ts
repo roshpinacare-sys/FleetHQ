@@ -42,6 +42,8 @@ interface HqBridgeState {
   lang: Lang;
   /** מראה את מצב החיבור האמיתי של AgentHQ (לתצוגה בלבד — אין כאן חיבור) */
   connected: boolean;
+  /** החדר הרכיב פריים אמיתי ראשון (נמדד מהרנדרר — לא הנחה) */
+  roomReady: boolean;
   snap: Snapshot;
   brains: Map<string, AgentBrain>;
   ui: UiBindings;
@@ -51,6 +53,7 @@ interface HqBridgeState {
   setLang(l: Lang): void;
   setPanel(panel: string, agentId?: string): void;
   toast(text: string): void;
+  setRoomReady(ready: boolean): void;
 
   // ---- הזרמת מציאות (AgentHQ קורא אליהן מתוך מטפלי הסוקט שלו) ----
   syncSnapshot(snap: Snapshot): void;
@@ -100,12 +103,15 @@ export const useHq = create<HqBridgeState>((set, get) => ({
   booted: true,
   lang: 'he',
   connected: false,
+  roomReady: false,
   snap: EMPTY,
   brains: createBrains(),
   ui: {},
   toasts: [],
 
   bindUi(ui) { set({ ui }); },
+
+  setRoomReady(ready) { set({ roomReady: ready }); },
 
   setLang(l) {
     set({ lang: l });

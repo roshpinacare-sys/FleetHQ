@@ -30,10 +30,6 @@ export function to2(x3: number, z3: number): [number, number] {
   return [x3 / SCALE + PLAN_W / 2, z3 / SCALE + PLAN_H / 2];
 }
 
-export const WALK_SPEED = 2.1; // מ'/שנ'
-export const SPRINT_SPEED = 3.6;
-export const PLAYER_R = 0.34; // רדיוס שחקן במטרים
-
 // ─────────────── עוגני תחנות (יחידות תוכנית) ───────────────
 export interface DeskSpot {
   /** מיקום השולחן */
@@ -85,7 +81,84 @@ export const BOOK_SHELF_POS = to3(1390, 120);
 
 /** כניסה — דלתות זכות בדרום */
 export const ENTRANCE: [number, number] = [800, 995];
-export const SPAWN: { x: number; y: number; face: number } = { x: 600, y: 780, face: Math.PI }; // מערבית לדלפק הקבלה על רצפה פנויה — לדלפק אין זכות-וטו על המצלמה
+
+// ─────────────── נקודות תצפית (סרגל המצלמה) ───────────────
+/**
+ * מצלמה מקצועית במקום שחקן: כל נקודת-תצפית היא הרכב מכוון על אזור אמיתי
+ * בתוכנית (מבט אדריכלי פנימי — התקרה קיימת, אין צילום-על). ספריית-המצלמה
+ * מסתובבת סביב `target` (drag), מתרחקת בין minDist..maxDist (גלגלת),
+ * ועוברת בהחלקה-מרוסנת בין נקודות. המקומות מחושבים מהתוכנית — לא המצאה.
+ */
+export interface CameraPreset {
+  id: 'overview' | 'crew' | 'wall' | 'git' | 'podium' | 'library' | 'reception';
+  label: { he: string; en: string };
+  /** נקודת המבט במרחב העולם [x, y, z] */
+  target: [number, number, number];
+  /** זווית אופקית התחלתית (0 = המצלמה דרומית ליעד) */
+  yaw: number;
+  /** זווית גובה התחלתית (רדיאנים) */
+  pitch: number;
+  dist: number;
+  minDist: number;
+  maxDist: number;
+}
+
+const flame3 = to3(FLAME[0], FLAME[1]);
+const arcCenter3 = to3(800, 550);
+const taskWall3 = to3(TASK_WALL.cx, TASK_WALL.cy);
+const gitWall3 = to3(GIT_WALL.cx, GIT_WALL.cy);
+const podium3 = to3(PODIUM.x, PODIUM.y);
+const reception3 = to3(RECEPTION.x, RECEPTION.y);
+
+export const CAMERA_PRESETS: CameraPreset[] = [
+  {
+    id: 'overview', label: { he: 'תצפית כללית', en: 'Overview' },
+    target: [flame3[0], 0.9, flame3[1]],
+    yaw: Math.PI * 0.86, pitch: 0.62, dist: 9.2, minDist: 5, maxDist: 12,
+  },
+  {
+    id: 'crew', label: { he: 'אזור הצוות', en: 'Crew desks' },
+    target: [arcCenter3[0], 0.85, arcCenter3[1]],
+    yaw: Math.PI, pitch: 0.44, dist: 5.2, minDist: 2.6, maxDist: 8,
+  },
+  {
+    id: 'wall', label: { he: 'לוח המשימות', en: 'Task board' },
+    target: [taskWall3[0], 1.5, taskWall3[1]],
+    yaw: Math.PI, pitch: 0.16, dist: 5.6, minDist: 2.4, maxDist: 8,
+  },
+  {
+    id: 'git', label: { he: 'קיר הגיט', en: 'Git wall' },
+    target: [gitWall3[0], 1.45, gitWall3[1]],
+    yaw: Math.PI * 0.94, pitch: 0.14, dist: 5.4, minDist: 2.4, maxDist: 8,
+  },
+  {
+    id: 'podium', label: { he: 'דוכן ההחלטות', en: 'Decisions' },
+    target: [podium3[0], 1.1, podium3[1]],
+    yaw: Math.PI / 2, pitch: 0.3, dist: 4.4, minDist: 2.2, maxDist: 7,
+  },
+  {
+    id: 'library', label: { he: 'הספרייה', en: 'Library' },
+    target: [to3(1290, 300)[0], 1.0, to3(1290, 300)[1]],
+    yaw: -Math.PI / 2, pitch: 0.26, dist: 4.6, minDist: 2.2, maxDist: 7,
+  },
+  {
+    id: 'reception', label: { he: 'קבלה', en: 'Reception' },
+    target: [reception3[0], 1.1, reception3[1]],
+    yaw: 0, pitch: 0.3, dist: 4.4, minDist: 2.2, maxDist: 7,
+  },
+];
+
+/** מיקוד בלחיצה על ישות — מרחק/גובה לפי סוג התחנה (המצלמה ניצבת בין מרכז החדר ליעד) */
+export const FOCUS_PRESETS: Record<string, { dist: number; pitch: number }> = {
+  desk: { dist: 2.6, pitch: 0.34 },
+  wall: { dist: 4.8, pitch: 0.16 },
+  podium: { dist: 3.6, pitch: 0.28 },
+  library: { dist: 3.4, pitch: 0.24 },
+  git: { dist: 5.0, pitch: 0.14 },
+  reception: { dist: 3.4, pitch: 0.3 },
+  flame: { dist: 4.2, pitch: 0.3 },
+  lead: { dist: 3.4, pitch: 0.36 },
+};
 
 // ─────────────── מתקני תאורה (מטרים, מרחב 3D) ───────────────
 /** נברשות מעל שולחנות הצוות + להבה */
@@ -197,14 +270,4 @@ export const STATION_NAV: Record<Station, number> = {
   wall: TASK_WALL.cx, podium: PODIUM.x + 140, library: LIBRARY_TABLE[0], offstage: FLAME[0],
 };
 
-/** הגדרות מיקוד מצלמה לפי סוג תחנה (מרחק, זווית) — כמו FOCUS_PRESETS בקזינו */
-export const FOCUS_PRESETS: Record<string, { dist: number; pitch: number }> = {
-  desk: { dist: 2.7, pitch: 0.42 },
-  wall: { dist: 5.4, pitch: 0.34 },
-  podium: { dist: 3.8, pitch: 0.4 },
-  library: { dist: 3.6, pitch: 0.36 },
-  git: { dist: 5.6, pitch: 0.3 },
-  reception: { dist: 3.4, pitch: 0.38 },
-  flame: { dist: 4.6, pitch: 0.3 },
-  lead: { dist: 3.6, pitch: 0.42 },
-};
+

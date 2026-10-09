@@ -1,14 +1,14 @@
 /**
- * Room3D.tsx — החדר התלת-ממדי המאוחד בתוך AgentHQ.
- * נטען דינמית (client-only) מתוך מסך המשרד: קנבס + שליטה + מפת קומה.
+ * Room3D.tsx — החדר התלת-מימדי המאוחד בתוך AgentHQ.
+ * נטען דינמית (client-only) מתוך מסך המשרד: קנבס + סרגל תצפית מקצועי.
  * כל הנתונים מגיעים מהגשר (lib/hq/store) — AgentHQ מזרים את הפורמן האמיתי.
+ * אין מיני-מפת-שחקן ואין ג'ויסטיק: הניווט הוא נקודות-תצפית אדריכליות.
  */
 'use client';
 
 import { useEffect } from 'react';
 import { Office3D } from './Office3D';
-import { Controls3D } from './Controls3D';
-import { MiniMap } from './MiniMap';
+import { ViewDeck } from './ViewDeck';
 import { useHq } from '@/lib/hq/store';
 
 export default function Room3D() {
@@ -19,11 +19,7 @@ export default function Room3D() {
   return (
     <div className="relative h-full w-full" dir="rtl">
       <Office3D />
-      {/* מפת הקומה — פינה עליונה (התחלת הקריאה בעברית), שקופה ולא חוסמת */}
-      <div className="absolute right-3 top-3 z-10 overflow-hidden rounded-lg border border-[color:var(--line-strong)] shadow-[0_1px_2px_rgba(0,0,0,0.4)]">
-        <MiniMap />
-      </div>
-      <Controls3D />
+      <ViewDeck />
     </div>
   );
 }

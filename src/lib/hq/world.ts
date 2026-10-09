@@ -1,22 +1,24 @@
 /**
- * world.ts — מנוע העולם של המשרד (פיזיקה ביחידות תוכנית, רינדור במטרים).
+ * world.ts — מנוע העולם של המשרד.
  * ------------------------------------------------------------------
- * · שחקן: הליכה/ריצה, התנגשות מול הקוליידרים, זיהוי תחנה קרובה.
- * · סוכנים: מוח ניווט פשוט — כל AgentView של הפורמן מתורגם ליעד תנועה
+ * · סוכנים: מוח ניווט — כל AgentView של הפורמן מתורגם ליעד תנועה אמיתי
  *   (שולחן משלו / לוח / דוכן החלטות / ספרייה), הליכה חלקה, ישיבה ועבודה.
- * · bus: מיני-אוטובוס אירועים בין ה-HUD לסצנה (מיקוד מצלמה, כניסה/יציאה).
+ * · חוזה מצב→תנועה: AGENT_VISUAL — מיפוי דטרמיניסטי מ-AgentState של הפורמן
+ *   לתנוחה/אנימציה. אין כאן המצאת פעילות: מה שהפורמן לא מדווח — לא מוצג.
+ * · director: מצב המצלמה המקצועית (נקודות תצפית + מיקוד) — אין שחקן,
+ *   אין WASD, אין ג'ויסטיק, אין ריצה.
+ * · bus: מיני-אוטובוס אירועים בין סרגל-החדר לסצנה (מיקוד מצלמה).
  */
 import {
-  PLAN_W, PLAN_H, SCALE, WALK_SPEED, SPRINT_SPEED, PLAYER_R,
+  PLAN_W, PLAN_H, SCALE,
   DESKS, LEAD_TABLE, TASK_WALL, PODIUM, LIBRARY_TABLE, FLAME,
-  resolveCircle, INTERACTABLES, type Interactable,
+  resolveCircle,
 } from './contract';
 import type { AgentState, Station } from './protocol';
 
 // ─────────────── אוטובוס אירועים ───────────────
 type BusEvents = {
   focus: { target: { x: number; y: number } | null; kind?: string; id?: string };
-  hud: { kind: 'panel' | 'toast' | 'chat'; id?: string; data?: unknown };
 };
 
 class MiniBus {
@@ -33,72 +35,53 @@ class MiniBus {
 }
 export const bus = new MiniBus();
 
-// ─────────────── מצב קלט גלובלי ───────────────
-export const input = {
-  keys: new Set<string>(),
-  joy: { x: 0, y: 0, active: false },      // ג'ויסטיק מגע
-  look: { x: 0, y: 0 },                     // דלתא מבט (גרירה)
-  tapTarget: null as null | { x: number; y: number },
-  firstPerson: false,
-  sprint: false,
-  /** false = מצלמת פתיחה קולנועית; כל קלט ראשון מוסר את השליטה לשחקן */
-  introDone: false,
+// ─────────────── מצב המצלמה (במאי) ───────────────
+export type PresetId = 'overview' | 'crew' | 'wall' | 'git' | 'podium' | 'library' | 'reception';
+
+/** מצב המצלמה היחיד בחדר — נקרא ונכתב על-ידי CameraDirector וסרגל-התצפית */
+export const director = {
+  /** נקודת התצפית הנבחרת */
+  preset: 'overview' as PresetId,
+  /** מיקוד ישות (גובר על נקודת התצפית עד Esc/בחירה חדשה) — קואורדינטות עולם */
+  focus: null as null | { x: number; z: number; kind: string; id?: string },
+  /** העדפת מערכת: תנועה מופחתת → מעברי מצלמה מיידיים */
+  reducedMotion: false,
 };
 
-/** נקודת עניין קרובה — לחיצה על הסצנה תשלח לכאן */
-export function nearestInteractable(x: number, y: number, maxDist = 130): Interactable | null {
-  let best: Interactable | null = null;
-  let bd = maxDist * maxDist;
-  for (const it of INTERACTABLES) {
-    const dx = it.x - x, dy = it.y - y;
-    const d2 = dx * dx + dy * dy;
-    if (d2 < bd) { bd = d2; best = it; }
-  }
-  return best;
+// ─────────────── חוזה מצב→תנועה (דטרמיניסטי) ───────────────
+/**
+ * המיפוי היחיד ממצב סוכן אמיתי (AgentState של הפורמן) לייצוג חזותי.
+ * · pose: ישיבה רק כשהסוכן בשולחנו ולא בדרך
+ * · work: אנימציית עבודה (הקלדה) רק למצבי עבודה אמיתיים
+ * · gesture: מחווה חד-פעמית להשלמה (הסכמה) או לכשל (ניעור ראש)
+ * מצב waiting_user הוא המתנה — לא עבודה: ידיים רגועות, נקודת כוונת-תשומת.
+ * מצב blocked/error הוא כשל — ללא אנימציית עבודה.
+ */
+export interface AgentVisual {
+  pose: 'sit' | 'stand';
+  work: boolean;
+  gesture: 'none' | 'agree' | 'shake';
 }
-
-// ─────────────── השחקן ───────────────
-export class Player {
-  x = 600; y = 780;
-  facing = Math.PI; // פנים לצפון (לתוך המשרד)
-  vx = 0; vy = 0;
-  /** 0..1 עוצמת הליכה לאנימציה */
-  walkAmt = 0;
-  private tapHold = 0;
-
-  update(dt: number) {
-    let ix = 0, iy = 0;
-    const k = input.keys;
-    if (k.has('KeyW') || k.has('ArrowUp')) iy -= 1;
-    if (k.has('KeyS') || k.has('ArrowDown')) iy += 1;
-    if (k.has('KeyA') || k.has('ArrowLeft')) ix -= 1;
-    if (k.has('KeyD') || k.has('ArrowRight')) ix += 1;
-    if (input.joy.active) { ix += input.joy.x; iy += input.joy.y; }
-
-    // tap-to-move
-    if (input.tapTarget) {
-      const dx = input.tapTarget.x - this.x, dy = input.tapTarget.y - this.y;
-      const d = Math.hypot(dx, dy);
-      if (d > 26) { ix += dx / d; iy += dy / d; }
-      else { input.tapTarget = null; }
-      this.tapHold += dt;
-      if (this.tapHold > 6) { input.tapTarget = null; this.tapHold = 0; }
-    } else this.tapHold = 0;
-
-    const mag = Math.hypot(ix, iy);
-    const spd = (input.sprint ? SPRINT_SPEED : WALK_SPEED) / SCALE; // יחידות תוכנית
-    if (mag > 0.01) {
-      const nx = ix / mag, ny = iy / mag;
-      this.vx = nx * spd; this.vy = ny * spd;
-      this.facing = Math.atan2(nx, ny); // yaw: 0=דרום (+z), מודל פונה +z
-      const p = resolveCircle(this.x + this.vx * dt, this.y + this.vy * dt, PLAYER_R / SCALE);
-      this.x = Math.max(8, Math.min(PLAN_W - 8, p.x));
-      this.y = Math.max(8, Math.min(PLAN_H - 8, p.y));
-      this.walkAmt = Math.min(1, this.walkAmt + dt * 6);
-    } else {
-      this.vx *= 0.72; this.vy *= 0.72;
-      this.walkAmt = Math.max(0, this.walkAmt - dt * 7);
-    }
+export function agentVisual(state: AgentState): AgentVisual {
+  switch (state) {
+    case 'walking':
+      return { pose: 'stand', work: false, gesture: 'none' };
+    case 'waiting_user':
+    case 'blocked':
+      return { pose: 'sit', work: false, gesture: 'none' };
+    case 'done':
+      return { pose: 'sit', work: false, gesture: 'agree' };
+    case 'error':
+      return { pose: 'sit', work: false, gesture: 'shake' };
+    case 'idle':
+      return { pose: 'sit', work: false, gesture: 'none' };
+    case 'reading':
+    case 'checking':
+    case 'writing':
+    case 'thinking':
+      return { pose: 'sit', work: true, gesture: 'none' };
+    default:
+      return { pose: 'sit', work: false, gesture: 'none' };
   }
 }
 
@@ -115,10 +98,10 @@ export class AgentBrain {
   /** yaw להצגה (מוחלק) */
   yaw: number;
   yawTarget: number;
-  /** 0..1 הליכה · 0..1 ישיבה · 0..1 הקלדה */
+  /** 0..1 הליכה · 0..1 ישיבה · 0..1 עבודה */
   walkAmt = 0;
   sitAmt = 0;
-  typeAmt = 0;
+  workAmt = 0;
   /** פאזה לנשימה/הבהוב */
   t = Math.random() * 10;
   state: AgentState = 'idle';
@@ -147,10 +130,8 @@ export class AgentBrain {
       if (state === 'walking') {
         // בדרך לשולחן — עומד קודם ליד הכיסא
         this.setTarget({ x: d.seat[0], y: d.seat[1] + 26, face: d.face, kind: 'stand' });
-      } else if (state === 'idle') {
-        this.setTarget({ x: d.seat[0], y: d.seat[1], face: d.face, kind: 'seat' });
       } else {
-        // reading/checking/writing/thinking/error/... עובד מהכיסא
+        // כל יתר המצבים — מהכיסא (המצב קובע אנימציה, לא מיקום)
         this.setTarget({ x: d.seat[0], y: d.seat[1], face: d.face, kind: 'seat' });
       }
     } else if (station === 'wall') {
@@ -194,11 +175,11 @@ export class AgentBrain {
     } else {
       this.walkAmt = Math.max(0, this.walkAmt - dt * 6);
     }
-    // ישיבה/הקלדה לפי יעד
+    // ישיבה/עבודה לפי החוזה הדטרמיניסטי
     const seated = this.arrived && tgt?.kind === 'seat';
     this.sitAmt += ((seated ? 1 : 0) - this.sitAmt) * Math.min(1, dt * 3.2);
-    const working = seated && ['reading', 'checking', 'writing', 'thinking', 'error'].includes(this.state);
-    this.typeAmt += ((working ? 1 : 0) - this.typeAmt) * Math.min(1, dt * 2.6);
+    const working = seated && agentVisual(this.state).work;
+    this.workAmt += ((working ? 1 : 0) - this.workAmt) * Math.min(1, dt * 2.6);
     // החלקת yaw בקשת הקצרה
     let dyaw = (this.yawTarget - this.yaw) % (Math.PI * 2);
     if (dyaw > Math.PI) dyaw -= Math.PI * 2;
@@ -215,3 +196,11 @@ export function createBrains(): Map<string, AgentBrain> {
   m.set('aluf', new AgentBrain('aluf', { x: LEAD_TABLE.x, y: LEAD_TABLE.y, face: 1.6, seat: [LEAD_TABLE.x, LEAD_TABLE.y] }));
   return m;
 }
+
+/** גבולות החדר במטרים — עוגן למצלמה (לא לצאת מהקירות) */
+export const ROOM_BOUNDS = {
+  minX: -PLAN_W * SCALE / 2 + 0.55,
+  maxX: PLAN_W * SCALE / 2 - 0.55,
+  minZ: -PLAN_H * SCALE / 2 + 0.55,
+  maxZ: PLAN_H * SCALE / 2 - 0.55,
+};
