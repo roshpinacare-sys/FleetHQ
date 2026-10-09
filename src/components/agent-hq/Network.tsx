@@ -65,6 +65,21 @@ function districtState(b: BookView): DistrictState {
   return 'sealed';
 }
 
+/** גיל-אנושי: דקות/שעות/ימים — לעולם לא float גולמי במכשיר תפעולי */
+function fmtAge(hours: number | undefined, lang: 'he' | 'en'): string {
+  if (hours === undefined || hours === null || !Number.isFinite(hours)) return '—';
+  if (hours < 1) {
+    const m = Math.max(1, Math.round(hours * 60));
+    return lang === 'he' ? `${m} דק׳` : `${m}m`;
+  }
+  if (hours < 48) {
+    const h = hours < 10 ? hours.toFixed(1) : String(Math.round(hours));
+    return lang === 'he' ? `${h} ש׳` : `${h}h`;
+  }
+  const d = (hours / 24).toFixed(1);
+  return lang === 'he' ? `${d} ימ׳` : `${d}d`;
+}
+
 export function NetworkAtlas({ lang, books, ready, opsDone, commits, reports, busy, onOpenBook, onOpenFleet }: NetworkProps) {
   const mono = "'JetBrains Mono', ui-monospace, monospace";
 
@@ -188,10 +203,10 @@ export function NetworkAtlas({ lang, books, ready, opsDone, commits, reports, bu
               onClick={() => onOpenBook(d.id)}
               className="cursor-pointer"
               role="button"
-              aria-label={`${d.title[lang]} — ${sealed ? t('atlasSealed', lang) : `${d.ageHours ?? '—'} ${t('atlasHours', lang)}`}`}
+              aria-label={`${d.title[lang]} — ${sealed ? t('atlasSealed', lang) : `${fmtAge(d.ageHours, lang)} ${t('atlasHours', lang)}`}`}
             >
               <title>
-                {d.title[lang]} · {sealed ? t('atlasSealed', lang) : `${d.ageHours ?? '—'} ${t('atlasHours', lang)}`}
+                {d.title[lang]} · {sealed ? t('atlasSealed', lang) : `${fmtAge(d.ageHours, lang)} ${t('atlasHours', lang)}`}
               </title>
               {sealed ? (
                 <circle cx={d.x} cy={d.y} r={coreR} fill="transparent" stroke={color} strokeWidth="1.4" strokeDasharray="3 4" />
@@ -213,7 +228,7 @@ export function NetworkAtlas({ lang, books, ready, opsDone, commits, reports, bu
                   {truncate(d.title[lang], 16)}
                 </text>
                 <text x="0" y="24.5" fontSize="9" fill={sealed ? 'var(--ink-3)' : color} textAnchor="middle" fontFamily={mono} direction="ltr">
-                  {sealed ? t('atlasSealed', lang) : `${d.ageHours ?? '—'}h`}
+                  {sealed ? t('atlasSealed', lang) : fmtAge(d.ageHours, lang)}
                 </text>
               </g>
             </g>

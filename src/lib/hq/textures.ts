@@ -253,23 +253,9 @@ export function makeBlobShadowTexture(): THREE.CanvasTexture {
   return t;
 }
 
-/** הילה רכה לכתמי אור ולהבה */
-export function makeHaloTexture(): THREE.CanvasTexture {
-  const [c, ctx] = makeCanvas(256, 256);
-  const g = ctx.createRadialGradient(128, 128, 4, 128, 128, 124);
-  g.addColorStop(0, 'rgba(255,255,255,1)'); g.addColorStop(0.35, 'rgba(255,255,255,0.4)'); g.addColorStop(1, 'rgba(255,255,255,0)');
-  ctx.fillStyle = g; ctx.fillRect(0, 0, 256, 256);
-  return new THREE.CanvasTexture(c);
-}
-
-/** גרגר אבק רך */
-export function makeSmokeTexture(): THREE.CanvasTexture {
-  const [c, ctx] = makeCanvas(64, 64);
-  const g = ctx.createRadialGradient(32, 32, 1, 32, 32, 30);
-  g.addColorStop(0, 'rgba(255,255,255,0.9)'); g.addColorStop(0.5, 'rgba(255,255,255,0.28)'); g.addColorStop(1, 'rgba(255,255,255,0)');
-  ctx.fillStyle = g; ctx.fillRect(0, 0, 64, 64);
-  return new THREE.CanvasTexture(c);
-}
+// (makeHaloTexture / makeSmokeTexture removed with the cinematic layer —
+//  their only consumers were the light-shaft dust, flame sparks and halo,
+//  all removed as decorative non-information in Task 45.)
 
 // ─────────────── שילוט ───────────────
 

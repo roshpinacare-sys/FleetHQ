@@ -17,7 +17,7 @@ import {
 import {
   makeWoodTexture, makeBrushedMetalTexture, makeMarbleTexture, makeFabricTexture,
   makeMonitorScreen, makeNameplate, makeTaskWallTexture, makeGitWireTexture,
-  makeReceptionScreen, makeSignTexture, makeHaloTexture, makeSmokeTexture,
+  makeReceptionScreen, makeSignTexture,
 } from '@/lib/hq/textures';
 import { useHq } from '@/lib/hq/store';
 import { bus } from '@/lib/hq/world';
@@ -155,12 +155,12 @@ function WorkDesk({ id, mats }: { id: string; mats: OfficeMats }) {
   const monitor = useMemo(() => monitorOf(id, name, color), [id, name, color]);
   const plate = useMemo(() => nameplateOf(id, name, title, color), [id, name, title, color]);
 
-  // זוהר צג חי כאור נקודתי זעיר
-  const glowRef = useRef<THREE.PointLight>(null);
-  useFrame(({ clock }) => {
+  // זוהר צג חי — אמיסיבי בלבד (בלי גוף-אור: 28→5 גופי-תאורה בחדר)
+  const glowMat = useRef<THREE.MeshStandardMaterial>(null);
+  useFrame(() => {
     const ag = useHq.getState().snap.agents.find((a) => a.id === id);
     const active = ag && ['reading', 'writing', 'checking', 'thinking'].includes(ag.state);
-    if (glowRef.current) glowRef.current.intensity = active ? 1.35 : 0.55;
+    if (glowMat.current) glowMat.current.emissiveIntensity = active ? 2.6 : 1.2;
   });
 
   const face = d.face + Math.PI; // הצג פונה ליושב: הצד הקדמי של השולחן נגד כיוון המבט
@@ -178,10 +178,10 @@ function WorkDesk({ id, mats }: { id: string; mats: OfficeMats }) {
           <primitive object={mats.metal} attach="material" />
         </mesh>
       ))}
-      {/* פס תאורה בצבע הסוכן — מתחת למשטח */}
+      {/* פס תאורה בצבע הסוכן — מתחת למשטח; נדלק חזק יותר כשהסוכן בעבודה אמיתית */}
       <mesh position={[0, 0.7, 0.3]}>
         <boxGeometry args={[1.3, 0.02, 0.03]} />
-        <meshStandardMaterial color={color} emissive={color} emissiveIntensity={2.4} toneMapped={false} />
+        <meshStandardMaterial ref={glowMat} color={color} emissive={color} emissiveIntensity={1.2} toneMapped={false} />
       </mesh>
       {/* צג */}
       <group position={[0, 0.76, -0.18]}>
@@ -201,7 +201,6 @@ function WorkDesk({ id, mats }: { id: string; mats: OfficeMats }) {
           <boxGeometry args={[0.06, 0.14, 0.03]} />
           <primitive object={mats.metal} attach="material" />
         </mesh>
-        <pointLight ref={glowRef} position={[0, 0.3, 0.5]} color={color} intensity={0.6} distance={1.7} decay={2} />
       </group>
       {/* מקלדת + עכבר */}
       <mesh position={[0, 0.775, 0.14]} rotation-x={-0.04} castShadow>
@@ -230,7 +229,6 @@ function WorkDesk({ id, mats }: { id: string; mats: OfficeMats }) {
           <sphereGeometry args={[0.022, 8, 8]} />
           <meshStandardMaterial color="#fff2d8" emissive={color} emissiveIntensity={3} toneMapped={false} />
         </mesh>
-        <pointLight position={[0.14, 0.24, 0]} color={color} intensity={0.5} distance={1.1} decay={2} />
       </group>
       {/* כיסא */}
       <Chair seatColor={color} mats={mats} z={0.62} />
@@ -343,15 +341,12 @@ function TaskWall({ mats }: { mats: OfficeMats }) {
         <planeGeometry args={[w, h]} />
         <meshBasicMaterial map={tex.tex} toneMapped={false} />
       </mesh>
-      {/* זרקורי תאורה עליונים */}
+      {/* מנורות תאורה עליונות — גיאומטריה בלבד; הלוח עצמו אמיסיבי */}
       {[-w * 0.3, w * 0.3].map((lx, i) => (
-        <group key={i} position={[lx, h / 2 + 0.28, 0.12]}>
-          <mesh rotation-x={0.9}>
-            <cylinderGeometry args={[0.045, 0.065, 0.12, 12]} />
-            <primitive object={mats.metal} attach="material" />
-          </mesh>
-          <pointLight position={[0, -0.3, 0.35]} color="#ffe2b0" intensity={1.4} distance={3.2} decay={2} />
-        </group>
+        <mesh key={i} position={[lx, h / 2 + 0.28, 0.12]} rotation-x={0.9}>
+          <cylinderGeometry args={[0.045, 0.065, 0.12, 12]} />
+          <primitive object={mats.metal} attach="material" />
+        </mesh>
       ))}
     </group>
   );
@@ -363,23 +358,17 @@ function GitWall({ mats }: { mats: OfficeMats }) {
   const tex = useMemo(() => (gitWireTex ??= makeGitWireTexture()), []);
   const [x, z] = to3(GIT_WALL.cx, GIT_WALL.cy);
   const w = GIT_WALL.w * SCALE, h = GIT_WALL.h * SCALE;
-  const frameMat = useRef<THREE.MeshStandardMaterial>(null);
-  useFrame(({ clock }) => {
-    if (frameMat.current) {
-      frameMat.current.emissiveIntensity = 1.6 + Math.sin(clock.getElapsedTime() * 2.2) * 0.5;
-    }
-  });
+  // מסגרת רגועה — היא מסגרת מכשיר, לא ניאון; אין פעימה
   return (
     <group position={[x, 1.55, z]} onClick={focus}>
       <mesh>
         <boxGeometry args={[w + 0.12, h + 0.12, 0.06]} />
-        <meshStandardMaterial color="#0f1410" emissive="#3ba06f" emissiveIntensity={1.8} roughness={0.4} toneMapped={false} ref={frameMat} />
+        <meshStandardMaterial color="#0f1410" emissive="#2c6a4b" emissiveIntensity={0.85} roughness={0.45} toneMapped={false} />
       </mesh>
       <mesh position={[0, 0, 0.04]}>
         <planeGeometry args={[w, h]} />
         <meshBasicMaterial map={tex.tex} toneMapped={false} />
       </mesh>
-      <pointLight position={[0, 0, 1.1]} color="#54d88c" intensity={0.85} distance={4.4} decay={2} />
     </group>
   );
 }
@@ -388,27 +377,16 @@ function GitWall({ mats }: { mats: OfficeMats }) {
 function Podium({ mats }: { mats: OfficeMats }) {
   const focus = useFocus('podium', 'podium');
   const [x, z] = to3(PODIUM.x, PODIUM.y);
-  const ring = useRef<THREE.Mesh>(null);
-  const ring2 = useRef<THREE.Mesh>(null);
-  const spot = useRef<THREE.SpotLight>(null);
-  // lerped 0..1 toward "a decision is open" — number, not boolean
+  const ringMat = useRef<THREE.MeshStandardMaterial>(null);
+  // אינדיקטור מצב יחיד ומרוסן: טבעת אחת נדלקת רק כשהכרעה באמת פתוחה (אמת מהפורמן)
   const open = useRef(0);
-  useFrame(({ clock }, dt) => {
-    const dec = useHq.getState().snap.decisions.find((d) => d.status === 'open');
-    const isOpen = !!dec;
+  useFrame((_, dt) => {
+    const isOpen = useHq.getState().snap.decisions.some((d) => d.status === 'open');
     open.current += ((isOpen ? 1 : 0) - open.current) * Math.min(1, dt * 4);
-    const t = clock.getElapsedTime();
-    if (ring.current) {
-      ring.current.rotation.z = t * 0.8;
-      const m = ring.current.material as THREE.MeshStandardMaterial;
-      m.opacity = 0.28 + open.current * 0.5 + Math.sin(t * 3) * 0.06;
-      m.emissiveIntensity = 1.2 + open.current * 2.4;
+    if (ringMat.current) {
+      ringMat.current.opacity = 0.12 + open.current * 0.55;
+      ringMat.current.emissiveIntensity = 0.7 + open.current * 1.8;
     }
-    if (ring2.current) {
-      ring2.current.rotation.z = -t * 0.5;
-      ring2.current.scale.setScalar(1 + Math.sin(t * 1.7) * 0.04);
-    }
-    if (spot.current) spot.current.intensity = 1.6 + open.current * 3.4;
   });
   return (
     <group position={[x, 0, z]} onClick={focus}>
@@ -444,29 +422,11 @@ function Podium({ mats }: { mats: OfficeMats }) {
           <primitive object={mats.metal} attach="material" />
         </mesh>
       </group>
-      {/* טבעות הולוגרמה מרחפות */}
-      <mesh ref={ring} position={[0, 1.35, 0]} rotation-x={Math.PI / 2}>
-        <torusGeometry args={[0.85, 0.018, 10, 72]} />
-        <meshStandardMaterial color="#e07b54" emissive="#e07b54" emissiveIntensity={1.6} transparent opacity={0.4} toneMapped={false} />
+      {/* אינדיקטור יחיד: הכרעה פתוחה = טבעת דולקת; סגורה = כמעט שקופה */}
+      <mesh position={[0, 1.35, 0]} rotation-x={Math.PI / 2}>
+        <torusGeometry args={[0.8, 0.016, 10, 72]} />
+        <meshStandardMaterial ref={ringMat} color="#e07b54" emissive="#e07b54" emissiveIntensity={0.7} transparent opacity={0.12} toneMapped={false} />
       </mesh>
-      <mesh ref={ring2} position={[0, 1.55, 0]} rotation-x={Math.PI / 2}>
-        <torusGeometry args={[0.55, 0.012, 10, 64]} />
-        <meshStandardMaterial color="#ffc28a" emissive="#ffc28a" emissiveIntensity={1.4} transparent opacity={0.3} toneMapped={false} />
-      </mesh>
-      {/* זרקור מהתקרה */}
-      <spotLight
-        ref={spot}
-        position={[0, WALL_H - 0.3, 0.4]}
-        angle={0.5}
-        penumbra={0.6}
-        color="#ffcf96"
-        intensity={1.8}
-        distance={7}
-        decay={2}
-        target-position={[0, 0.8, 0]}
-        castShadow
-        shadow-mapSize={[512, 512]}
-      />
       <Billboard position={[0, 2.35, 0]} tex={useMemo(() => makeSignTexture('דוכן ההחלטות', '#e07b54'), [])} scale={[1.5, 0.34]} />
     </group>
   );
@@ -564,7 +524,6 @@ function Library({ mats }: { mats: OfficeMats }) {
           <sphereGeometry args={[0.05, 12, 10]} />
           <meshStandardMaterial color="#ffe9c4" emissive="#ffd9a0" emissiveIntensity={2.4} toneMapped={false} />
         </mesh>
-        <pointLight position={[0.3, 1.1, -0.2]} color="#ffd9a0" intensity={0.9} distance={2.6} decay={2} />
         {/* דוחות מונחים על השולחן — מספרם = דוחות אמיתיים בספרייה */}
         {Array.from({ length: Math.min(reportCount, 4) }).map((_, i) => (
           <mesh key={i} position={[-0.4 + i * 0.22, 0.795, 0.1 - i * 0.06]} rotation-y={i * 0.4}>
@@ -653,9 +612,8 @@ function CoffeeBar({ mats }: { mats: OfficeMats }) {
         </mesh>
         <mesh position={[0, 0.08, 0.21]}>
           <boxGeometry args={[0.34, 0.02, 0.06]} />
-          <meshStandardMaterial color="#54d8c0" emissive="#54d8c0" emissiveIntensity={2} toneMapped={false} />
+          <meshStandardMaterial color="#54d8c0" emissive="#54d8c0" emissiveIntensity={1.6} toneMapped={false} />
         </mesh>
-        <pointLight position={[0, 0.1, 0.4]} color="#ffb054" intensity={0.3} distance={1} decay={2} />
       </group>
       {/* כוסות */}
       {[0.1, 0.4, 0.7].map((cx, i) => (
@@ -687,55 +645,24 @@ function CoffeeBar({ mats }: { mats: OfficeMats }) {
 
 // ─────────────── להבת הריבונות ───────────────
 /**
- * ליבת המשרד — להבת הולוגרמה חיה: קונוס שיידר רועש + ניצוצות + תאורה פועמת.
+ * ליבת המשרד — להבת-הריבונות: קונוס שיידר רועש + תאורה פועמת.
+ * סמל-המשרד; מרוסן: בלי ניצוצות, בלי הילה, בלי צל-נקודתי.
  * צבעי ליבה: ענבר-זהב (חם), בלי כחול.
  */
 export function FlameOfSovereignty() {
   const [x, z] = to3(FLAME[0], FLAME[1]);
   const base = useRef<THREE.Group>(null);
   const light = useRef<THREE.PointLight>(null);
-  const haloRef = useRef<THREE.Sprite>(null);
-  const haloTex = useMemo(() => makeHaloTexture(), []);
-  const smokeTex = useMemo(() => makeSmokeTexture(), []);
   const focus = useFocus('flame', 'flame');
 
-  // ניצוצות — מערכת חלקיקים אחת
-  const SPARKS = 90;
-  const sparkRef = useRef<THREE.Points>(null);
-  const sparkData = useMemo(() => {
-    const pos = new Float32Array(SPARKS * 3);
-    const seed = new Float32Array(SPARKS);
-    for (let i = 0; i < SPARKS; i++) {
-      seed[i] = Math.random();
-      pos[i * 3] = (Math.random() - 0.5) * 0.3;
-      pos[i * 3 + 1] = Math.random() * 1.6;
-      pos[i * 3 + 2] = (Math.random() - 0.5) * 0.3;
-    }
-    return { pos, seed };
-  }, []);
-
   useFrame(({ clock }, dt) => {
+    void dt;
     const t = clock.getElapsedTime();
     if (base.current) {
-      base.current.rotation.y = t * 0.35;
       base.current.position.y = 1.02 + Math.sin(t * 1.8) * 0.03;
     }
     if (light.current) {
       light.current.intensity = 2.4 + Math.sin(t * 7.3) * 0.5 + Math.sin(t * 11.7) * 0.3;
-    }
-    if (haloRef.current) {
-      const s = 2.6 + Math.sin(t * 2.1) * 0.18;
-      haloRef.current.scale.set(s, s, 1);
-    }
-    if (sparkRef.current) {
-      const p = sparkRef.current.geometry.attributes.position as THREE.BufferAttribute;
-      for (let i = 0; i < SPARKS; i++) {
-        let y = p.getY(i) + dt * (0.5 + sparkData.seed[i] * 0.7);
-        if (y > 1.7) y = 0;
-        p.setY(i, y);
-        p.setX(i, Math.sin(t * 2 + sparkData.seed[i] * 9) * 0.16);
-      }
-      p.needsUpdate = true;
     }
   });
 
@@ -750,13 +677,13 @@ export function FlameOfSovereignty() {
         <cylinderGeometry args={[0.78, 0.85, 0.04, 40]} />
         <meshStandardMaterial color="#a67c3d" roughness={0.3} metalness={0.9} />
       </mesh>
-      {/* טבעת קרקע זוהרת */}
+      {/* טבעת קרקע — סימון מקום רגוע */}
       <mesh position-y={0.02} rotation-x={-Math.PI / 2}>
-        <ringGeometry args={[1.15, 1.32, 48]} />
-        <meshStandardMaterial color="#ffb054" emissive="#ffb054" emissiveIntensity={1.6} transparent opacity={0.5} toneMapped={false} side={THREE.DoubleSide} />
+        <ringGeometry args={[1.15, 1.28, 48]} />
+        <meshStandardMaterial color="#ffb054" emissive="#ffb054" emissiveIntensity={0.55} transparent opacity={0.35} toneMapped={false} side={THREE.DoubleSide} />
       </mesh>
 
-      {/* להבה — שיידר פרוצדורלי */}
+      {/* להבה — שיידר פרוצדורלי (סמל-המשרד; נטול ניצוצות והילות) */}
       <group ref={base} position-y={1.02}>
         <mesh>
           <coneGeometry args={[0.3, 1.25, 24, 20, true]} />
@@ -764,20 +691,7 @@ export function FlameOfSovereignty() {
         </mesh>
       </group>
 
-      {/* הילה */}
-      <sprite ref={haloRef} position={[0, 1.35, 0]} scale={[2.6, 2.6, 1]}>
-        <spriteMaterial map={haloTex} color="#ffb054" transparent opacity={0.32} depthWrite={false} blending={THREE.AdditiveBlending} toneMapped={false} />
-      </sprite>
-
-      {/* ניצוצות */}
-      <points ref={sparkRef} position={[0, 0.4, 0]}>
-        <bufferGeometry>
-          <bufferAttribute attach="attributes-position" args={[sparkData.pos, 3]} />
-        </bufferGeometry>
-        <pointsMaterial map={smokeTex} color="#ffcf7a" size={0.055} transparent opacity={0.85} depthWrite={false} blending={THREE.AdditiveBlending} toneMapped={false} sizeAttenuation />
-      </points>
-
-      <pointLight ref={light} position={[0, 1.5, 0]} color="#ffb054" intensity={2.6} distance={7.5} decay={2} castShadow shadow-mapSize={[512, 512]} />
+      <pointLight ref={light} position={[0, 1.5, 0]} color="#ffb054" intensity={2.6} distance={7.5} decay={2} />
     </group>
   );
 }
@@ -861,17 +775,11 @@ function Pendants({ mats }: { mats: OfficeMats }) {
             <cylinderGeometry args={[0.16, 0.05, 0.2, 20]} />
             <primitive object={mats.brass} attach="material" />
           </mesh>
-          {/* מנורת ליבה זוהרת */}
+          {/* מנורת ליבה זוהרת — אמיסיבית בלבד */}
           <mesh position={[0, h - 0.02, 0]}>
             <sphereGeometry args={[0.075, 14, 12]} />
-            <meshStandardMaterial color="#fff3da" emissive="#ffdda6" emissiveIntensity={3.4} toneMapped={false} />
+            <meshStandardMaterial color="#fff3da" emissive="#ffdda6" emissiveIntensity={3.2} toneMapped={false} />
           </mesh>
-          {/* קונוס זוהר עדין */}
-          <mesh position={[0, h - 0.35, 0]}>
-            <coneGeometry args={[0.55, 0.7, 20, 1, true]} />
-            <meshBasicMaterial color="#ffdda6" transparent opacity={0.028} side={THREE.DoubleSide} depthWrite={false} blending={THREE.AdditiveBlending} toneMapped={false} />
-          </mesh>
-          <pointLight position={[0, h - 0.12, 0]} color="#ffdda6" intensity={i === PENDANTS.length - 1 ? 0 : 1.15} distance={4.6} decay={2} />
         </group>
       ))}
     </group>

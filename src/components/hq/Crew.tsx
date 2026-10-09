@@ -19,7 +19,7 @@ import * as SkeletonUtils from 'three/examples/jsm/utils/SkeletonUtils.js';
 import { to3 } from '@/lib/hq/contract';
 import { makeBlobShadowTexture, makeBubbleTexture, makeNameplate } from '@/lib/hq/textures';
 import { useHq } from '@/lib/hq/store';
-import { bus } from '@/lib/hq/world';
+import { bus, agentVisual } from '@/lib/hq/world';
 import { STATE_COLORS } from '@/lib/hq/protocol';
 
 const MALE_URL = '/models/humans/readyplayer.me.glb';
@@ -323,15 +323,15 @@ function HumanAgent({ id, assets }: { id: string; assets: CrewAssets }) {
     g.position.set(x, 0, z);
     if (inner.current) inner.current.rotation.y = brain.yaw;
 
-    // משקולות פעולה
+    // משקולות פעולה — מהחוזה הדטרמיניסטי (agentVisual), לא החלטות פרטיות
     const w = curWeight.current;
     const walkT = brain.walkAmt;
     const sitT = brain.sitAmt;
-    const typeT = sitT * brain.typeAmt;
+    const workT = sitT * brain.workAmt;
     w.idle = Math.max(0.08, 1 - walkT - sitT);
     w.walk = walkT;
-    w.sit = sitT * (1 - typeT * 0.55);
-    w.type = typeT;
+    w.sit = sitT * (1 - workT * 0.55);
+    w.type = workT;
     const setW = (name: string, v: number) => {
       const act = actions.current[name];
       if (!act) return;
@@ -345,22 +345,21 @@ function HumanAgent({ id, assets }: { id: string; assets: CrewAssets }) {
     setW('sit', w.sit);
     setW('type', w.type);
 
-    // מחוות חד-פעמיות לפי מצב הסוכן
+    // מחוות חד-פעמיות לפי החוזה (השלמה → הסכמה · כשל → ניעור ראש)
     const st = useHq.getState().snap.agents.find((a) => a.id === id);
     const now = state.clock.getElapsedTime();
-    if (st) {
-      if (st.state === 'done' && lastGesture.current.name !== 'agree' && now - lastGesture.current.until > 6) {
-        const act = actions.current['agree'];
-        if (act) { act.reset(); act.setLoop(THREE.LoopOnce, 1); act.clampWhenFinished = true; act.setEffectiveWeight(0.9); act.play(); }
-        lastGesture.current = { name: 'agree', until: now + 1.6 };
-        setTimeout(() => { const a2 = actions.current['agree']; a2?.stop(); a2?.setEffectiveWeight(0); }, 1800);
-      }
-      if (st.state === 'error' && lastGesture.current.name !== 'shake' && now - lastGesture.current.until > 6) {
-        const act = actions.current['shake'];
-        if (act) { act.reset(); act.setLoop(THREE.LoopOnce, 1); act.clampWhenFinished = true; act.setEffectiveWeight(0.9); act.play(); }
-        lastGesture.current = { name: 'shake', until: now + 1.4 };
-        setTimeout(() => { const a2 = actions.current['shake']; a2?.stop(); a2?.setEffectiveWeight(0); }, 1600);
-      }
+    const gesture = st ? agentVisual(st.state).gesture : 'none';
+    if (gesture === 'agree' && lastGesture.current.name !== 'agree' && now - lastGesture.current.until > 6) {
+      const act = actions.current['agree'];
+      if (act) { act.reset(); act.setLoop(THREE.LoopOnce, 1); act.clampWhenFinished = true; act.setEffectiveWeight(0.9); act.play(); }
+      lastGesture.current = { name: 'agree', until: now + 1.6 };
+      setTimeout(() => { const a2 = actions.current['agree']; a2?.stop(); a2?.setEffectiveWeight(0); }, 1800);
+    }
+    if (gesture === 'shake' && lastGesture.current.name !== 'shake' && now - lastGesture.current.until > 6) {
+      const act = actions.current['shake'];
+      if (act) { act.reset(); act.setLoop(THREE.LoopOnce, 1); act.clampWhenFinished = true; act.setEffectiveWeight(0.9); act.play(); }
+      lastGesture.current = { name: 'shake', until: now + 1.4 };
+      setTimeout(() => { const a2 = actions.current['shake']; a2?.stop(); a2?.setEffectiveWeight(0); }, 1600);
     }
 
     // נשימה עדינה במנוחה

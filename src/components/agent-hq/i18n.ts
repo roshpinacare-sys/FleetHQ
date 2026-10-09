@@ -215,7 +215,7 @@ export const T = {
   goToTask: { he: 'למשימה', en: 'open task' },
   gitWireCap: { he: '40 הקומיטים האחרונים', en: 'last 40 commits' },
   socketDown: { he: 'החיבור למשרד נפל — מנסה להתחבר מחדש', en: 'Connection to the office dropped — reconnecting' },
-  officeViewHint: { he: 'החדר החי — לחיצה על דמות פותחת את המסך שלה', en: 'The live room — click a figure to open their monitor' },
+  officeViewHint: { he: 'החדר החי — בחר נקודת תצפית מהסרגל, לחיצה על דמות פותחת את המסך שלה (Esc — תצפית כללית)', en: 'The live room — pick a camera preset from the deck, click a figure to open their monitor (Esc — overview)' },
   autonomyLine: {
     he: 'המערכת אוטונומית לחלוטין: היעדים מתוזמנים ומוכרעים על ידי מערכת ההפעלה. שאלות — אצל עמית בקבלה.',
     en: 'Fully autonomous: goals are scheduled and decided by the operating system. Questions — ask Amit at reception.',

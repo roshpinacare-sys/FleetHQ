@@ -33,7 +33,7 @@ export const AGENT_SEMANTIC: Record<AgentState, Semantic> = {
   checking: 'working',
   writing: 'working',
   walking: 'neutral',
-  waiting_user: 'danger',
+  waiting_user: 'attention',
   blocked: 'danger',
   done: 'ok',
   error: 'danger',
