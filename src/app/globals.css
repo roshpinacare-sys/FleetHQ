@@ -121,42 +121,13 @@
   }
 }
 
-/* ── Fleet World (עולם-הצי) ──────────────────────────────────────────────── */
-
-/* neutral violet scrollbar for the world HUD panels (token: HQ accent family) */
-.fw-scroll {
-  scrollbar-width: thin;
-  scrollbar-color: rgba(167, 139, 250, 0.35) transparent;
-}
-.fw-scroll::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-.fw-scroll::-webkit-scrollbar-track {
-  background: transparent;
-}
-.fw-scroll::-webkit-scrollbar-thumb {
-  background: rgba(167, 139, 250, 0.28);
-  border-radius: 999px;
-}
-.fw-scroll::-webkit-scrollbar-thumb:hover {
-  background: rgba(167, 139, 250, 0.5);
-}
-
-/* the world shell carries its own dark sovereign background */
-html,
-body {
-  background: #09090b;
-}
-
-
 /* ═══════════════════════════════════════════════════════════════════
    FLEET HQ — "OPS SLATE" design system (DESIGN.md is the law)
    ═══════════════════════════════════════════════════════════════════
    The console is an instrument: flat surfaces, hairlines, one quiet
    accent, semantic status colors. No glow, no aurora, no particles,
    no odometers — information is the decoration.
-   The office scene (Office.tsx / hq/* / Network.tsx) keeps its own
+   The office scene (Office.tsx / hq/*) keeps its own
    life: the hq-* scene utilities below stay for it, color comes from
    the scene markup itself. prefers-reduced-motion honored everywhere. */
 
@@ -395,7 +366,7 @@ button.sl-row { width: 100%; text-align: start; }
 @keyframes sl-feed-kf { from { opacity: 0; } to { opacity: 1; } }
 
 /* ═══════════════════════════════════════════════════════════════════
-   OFFICE SCENE UTILITIES — kept for Office.tsx / hq/* / Network.tsx /
+   OFFICE SCENE UTILITIES — kept for Office.tsx / hq/* /
    ReceptionChat.tsx. Color comes from the scene markup; these only
    carry motion + the shared glass/button skins (restyled flat).
    ═══════════════════════════════════════════════════════════════════ */

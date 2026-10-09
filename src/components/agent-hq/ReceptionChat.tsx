@@ -139,19 +139,19 @@ export function ReceptionChat({
 
   return (
     <div
-      className="hq-glass hq-page-enter fixed bottom-0 end-0 z-40 flex h-[min(600px,100dvh)] w-full flex-col !rounded-none shadow-[0_28px_80px_-16px_rgba(0,0,0,0.9)] sm:bottom-4 sm:end-4 sm:h-[600px] sm:w-[400px] sm:!rounded-2xl"
+      className="hq-glass hq-page-enter fixed bottom-0 end-0 z-40 flex h-[min(600px,100dvh)] w-full flex-col !rounded-none shadow-[0_1px_2px_rgba(0,0,0,0.4)] sm:bottom-4 sm:end-4 sm:h-[600px] sm:w-[400px] sm:!rounded-2xl"
       role="dialog"
       aria-label={t('repTitle', lang)}
     >
       {/* header — the worker himself, not a help widget */}
-      <div className="flex items-center gap-3 border-b border-white/10 px-4 py-3">
-        <span className="relative grid h-10 w-10 shrink-0 place-items-center rounded-full bg-gradient-to-br from-[#e879f9] to-[#7c3aed] text-base font-black text-zinc-950 shadow-[0_0_18px_rgba(217,70,239,0.35)]">
+      <div className="flex items-center gap-3 border-b border-[color:var(--line)] px-4 py-3">
+        <span className="relative grid h-10 w-10 shrink-0 place-items-center rounded-full border border-[color:var(--line-strong)] bg-[color:var(--surface-2)] text-base font-bold text-[color:var(--accent)]">
           ע
-          <span className="absolute -bottom-0.5 -end-0.5 h-3 w-3 rounded-full border-2 border-zinc-900 bg-emerald-400" />
+          <span className="absolute -bottom-0.5 -end-0.5 h-3 w-3 rounded-full border-2 border-[color:var(--surface)]" style={{ backgroundColor: 'var(--st-ok)' }} aria-hidden="true" />
         </span>
         <div className="min-w-0 flex-1">
-          <div className="text-sm font-bold leading-4 text-zinc-100">{t('repName', lang)} <span className="font-normal text-zinc-500">· {t('repRole', lang)}</span></div>
-          <div className="truncate text-[10.5px] text-zinc-500">{t('repStatus', lang)}</div>
+          <div className="text-sm font-bold leading-4 text-[color:var(--ink)]">{t('repName', lang)} <span className="font-normal text-[color:var(--ink-3)]">· {t('repRole', lang)}</span></div>
+          <div className="truncate text-[10.5px] text-[color:var(--ink-3)]">{t('repStatus', lang)}</div>
         </div>
         <button onClick={onClose} className="hq-btn-ghost min-h-11 min-w-11 px-3 py-2 text-xs" aria-label={t('close', lang)}>
           ✕
@@ -159,7 +159,7 @@ export function ReceptionChat({
       </div>
 
       {/* scope banner — the honest restriction, always visible */}
-      <div className="border-b border-white/[0.06] bg-black/25 px-4 py-1.5 text-[10px] leading-3.5 text-zinc-500">
+      <div className="border-b border-[color:var(--line)] bg-[color:var(--surface-2)] px-4 py-1.5 text-[10px] leading-3.5 text-[color:var(--ink-3)]">
         🔒 {t('repScope', lang)}
       </div>
 
@@ -167,12 +167,12 @@ export function ReceptionChat({
       <div ref={scroller} className="hq-scroll min-h-0 flex-1 space-y-2.5 overflow-y-auto px-3 py-3" aria-live="polite">
         {msgs.map((m, i) => (
           <div key={i} className={`hq-feed-in flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-            {m.role === 'rep' && <span className="me-2 mt-1 grid h-6 w-6 shrink-0 place-items-center rounded-full bg-gradient-to-br from-[#e879f9] to-[#7c3aed] text-[10px] font-black text-zinc-950">ע</span>}
+            {m.role === 'rep' && <span className="me-2 mt-1 grid h-6 w-6 shrink-0 place-items-center rounded-full border border-[color:var(--line-strong)] bg-[color:var(--surface-2)] text-[10px] font-bold text-[color:var(--accent)]">ע</span>}
             <div
               className={`max-w-[82%] whitespace-pre-wrap rounded-2xl px-3.5 py-2.5 text-[13px] leading-5 ${
                 m.role === 'user'
-                  ? 'border border-white/10 bg-white/5 text-zinc-200'
-                  : 'border border-fuchsia-500/25 bg-zinc-800/90 text-zinc-100'
+                  ? 'border border-[color:var(--line)] bg-[color:var(--surface-2)] text-[color:var(--ink-2)]'
+                  : 'border border-[color:var(--line-strong)] bg-[color:var(--surface)] text-[color:var(--ink)]'
               }`}
               dir="auto"
             >
@@ -182,18 +182,18 @@ export function ReceptionChat({
         ))}
         {busy && (
           <div className="flex justify-start">
-            <div className="flex items-center gap-2 rounded-2xl border border-fuchsia-500/25 bg-zinc-800/90 px-3.5 py-2.5">
+            <div className="flex items-center gap-2 rounded-2xl border border-[color:var(--line-strong)] bg-[color:var(--surface)] px-3.5 py-2.5">
               <span className="hq-dot-flash inline-flex gap-1">
-                <i className="h-1.5 w-1.5 rounded-full bg-fuchsia-400" />
-                <i className="h-1.5 w-1.5 rounded-full bg-fuchsia-400" />
-                <i className="h-1.5 w-1.5 rounded-full bg-fuchsia-400" />
+                <i className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: 'var(--st-neutral)' }} />
+                <i className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: 'var(--st-neutral)' }} />
+                <i className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: 'var(--st-neutral)' }} />
               </span>
-              <span className="text-[10px] text-zinc-500">{t('repName', lang)}…</span>
+              <span className="text-[10px] text-[color:var(--ink-3)]">{t('repName', lang)}…</span>
             </div>
           </div>
         )}
-        {notice === 'rate' && <p className="text-center text-[11px] text-amber-400">{t('repRate', lang)}</p>}
-        {notice === 'error' && <p className="text-center text-[11px] text-rose-400">{honestFallback(lang)}</p>}
+        {notice === 'rate' && <p className="text-center text-[11px]" style={{ color: 'var(--st-attention)' }}>{t('repRate', lang)}</p>}
+        {notice === 'error' && <p className="text-center text-[11px]" style={{ color: 'var(--st-danger)' }}>{honestFallback(lang)}</p>}
       </div>
 
       {/* suggestions (stay available so a visitor can retry after an error) */}
@@ -203,7 +203,7 @@ export function ReceptionChat({
             <button
               key={s}
               onClick={() => send(s)}
-              className="min-h-11 rounded-full border border-white/10 bg-black/30 px-3.5 py-1.5 text-[11px] font-semibold text-zinc-300 transition hover:border-fuchsia-500/50 hover:text-fuchsia-200"
+              className="min-h-11 rounded-full border border-[color:var(--line)] bg-[color:var(--surface-2)] px-3.5 py-1.5 text-[11px] font-semibold text-[color:var(--ink-2)] transition-colors hover:border-[color:var(--line-strong)] hover:text-[color:var(--ink)]"
               dir="auto"
             >
               {s}
@@ -213,7 +213,7 @@ export function ReceptionChat({
       )}
 
       {/* input */}
-      <div className="border-t border-white/10 p-2.5">
+      <div className="border-t border-[color:var(--line)] p-2.5">
         <div className="flex gap-2">
           <input
             ref={inputRef}
@@ -221,7 +221,7 @@ export function ReceptionChat({
             onChange={(e) => setDraft(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && send(draft)}
             placeholder={t('repPlaceholder', lang)}
-            className="min-h-11 min-w-0 flex-1 rounded-xl border border-white/10 bg-black/40 px-3.5 py-2.5 text-sm text-zinc-100 outline-none transition focus:border-fuchsia-500/60 focus:shadow-[0_0_0_1px_rgba(217,70,239,0.35),0_0_18px_rgba(217,70,239,0.15)] placeholder:text-zinc-600"
+            className="min-h-11 min-w-0 flex-1 rounded-xl border border-[color:var(--line)] bg-[color:var(--surface-2)] px-3.5 py-2.5 text-sm text-[color:var(--ink)] outline-none transition-colors placeholder:text-[color:var(--ink-3)] focus:border-[color:var(--line-strong)]"
             dir="auto"
             maxLength={600}
             aria-label={t('repPlaceholder', lang)}
@@ -235,7 +235,7 @@ export function ReceptionChat({
             {t('send', lang)}
           </button>
         </div>
-        <p className="mt-1.5 text-[9.5px] leading-3 text-zinc-600">{t('repDisclaimer', lang)}</p>
+        <p className="mt-1.5 text-[9.5px] leading-3 text-[color:var(--ink-3)]">{t('repDisclaimer', lang)}</p>
       </div>
     </div>
   );
