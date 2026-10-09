@@ -48,8 +48,15 @@ const AGENT_NAMES: Record<string, string> = {
 
 interface JournalEntry {
   ts: number;
-  type: 'log' | 'task' | 'goal';
+  type: 'log' | 'task' | 'goal' | 'usage';
   agentId?: string;
+  agent?: string | null;
+  phase?: string | null;
+  provider?: string;
+  prompt_tokens?: number | null;
+  completion_tokens?: number | null;
+  prompt_chars?: number;
+  completion_chars?: number;
   kind?: string;
   text?: string;
   event?: string;
@@ -70,6 +77,15 @@ interface TaskState {
   summary?: string;
 }
 
+interface UsageAgg {
+  calls: number;
+  promptTokens: number;
+  completionTokens: number;
+  tokenReports: number; // how many calls the provider reported tokens for
+  promptChars: number;
+  completionChars: number;
+}
+
 interface ShiftStats {
   goalId: string;
   goalText: string;
@@ -83,7 +99,33 @@ interface ShiftStats {
   gateScores: number[];
   gateLines: string[];
   noEvidence: number;
+  crossChecks: { confirm: number; dispute: number; skipped: number; lines: string[] };
+  usage: UsageAgg;
+  usageByAgent: Map<string, UsageAgg>;
   perAgent: Map<string, { lines: number; last?: { ts: number; text: string } }>;
+}
+
+function emptyUsage(): UsageAgg {
+  return { calls: 0, promptTokens: 0, completionTokens: 0, tokenReports: 0, promptChars: 0, completionChars: 0 };
+}
+
+const CHAR_PER_TOKEN = 4; // honest fallback estimate when a provider omits usage
+
+function addUsage(into: UsageAgg, e: JournalEntry) {
+  into.calls += 1;
+  into.promptChars += e.prompt_chars ?? 0;
+  into.completionChars += e.completion_chars ?? 0;
+  if (typeof e.prompt_tokens === 'number' || typeof e.completion_tokens === 'number') {
+    into.tokenReports += 1;
+    into.promptTokens += e.prompt_tokens ?? 0;
+    into.completionTokens += e.completion_tokens ?? 0;
+  }
+}
+
+function usageTotals(u: UsageAgg): { pt: number; ct: number; reported: boolean } {
+  if (u.tokenReports > 0) return { pt: u.promptTokens, ct: u.completionTokens, reported: true };
+  // no provider usage at all → char-based estimate, explicitly labeled as such
+  return { pt: Math.round(u.promptChars / CHAR_PER_TOKEN), ct: Math.round(u.completionChars / CHAR_PER_TOKEN), reported: false };
 }
 
 function readJournalTail(): JournalEntry[] {
@@ -125,6 +167,9 @@ function emptyStats(goal: JournalEntry, now: number): ShiftStats {
     gateScores: [],
     gateLines: [],
     noEvidence: 0,
+    crossChecks: { confirm: 0, dispute: 0, skipped: 0, lines: [] },
+    usage: emptyUsage(),
+    usageByAgent: new Map(),
     perAgent: new Map(),
   };
 }
@@ -135,6 +180,8 @@ const PLAN_FILTER_LINE = /plan filter: "(.+?)" נפסלה.*?relevance ([\d.]+)/;
 const REDO_LINE = /redo \((\d)\/\d+\): (.+)/;
 const APPROVED_LINE = /^approved: (.+)/;
 const APPROVED_CAP_LINE = /^approved after (\d+) redos \(cap reached\)/;
+const CROSS_CHECK_LINE = /^cross-check\((confirm|dispute)\): (.+)/;
+const CROSS_CHECK_SKIP_LINE = /^cross-check skipped: (.+)/;
 const GOAL_DERIVED_LINE = /plan unusable → goal-derived task \(fit: (\w+)\)/;
 const NO_EVIDENCE_LINE = /ללא עדות כלים/;
 
@@ -181,8 +228,29 @@ function absorbLog(s: ShiftStats, e: JournalEntry) {
     s.gateLines.push(`אושרה: ${ok[1].slice(0, 80)}`);
     return;
   }
+  const cc = CROSS_CHECK_LINE.exec(text);
+  if (cc) {
+    if (cc[1] === 'dispute') s.crossChecks.dispute += 1;
+    else s.crossChecks.confirm += 1;
+    s.crossChecks.lines.push(`${cc[1].toUpperCase()} — ${cc[2].slice(0, 100)}`);
+    return;
+  }
+  const ccs = CROSS_CHECK_SKIP_LINE.exec(text);
+  if (ccs) {
+    s.crossChecks.skipped += 1;
+    s.crossChecks.lines.push(`SKIPPED — ${ccs[1].slice(0, 80)}`);
+    return;
+  }
   if (GOAL_DERIVED_LINE.test(text)) s.gateLines.push('תכנון נפל למשימה-נגזרת-יעד (fit fallback)');
   if (NO_EVIDENCE_LINE.test(text)) s.noEvidence += 1;
+}
+
+function absorbUsage(s: ShiftStats, e: JournalEntry) {
+  addUsage(s.usage, e);
+  const agent = e.agent ?? 'unknown';
+  const slot = s.usageByAgent.get(agent) ?? emptyUsage();
+  addUsage(slot, e);
+  s.usageByAgent.set(agent, slot);
 }
 
 function buildShifts(entries: JournalEntry[]): { closed: ShiftStats[]; open: ShiftStats | null } {
@@ -199,6 +267,7 @@ function buildShifts(entries: JournalEntry[]): { closed: ShiftStats[]; open: Shi
       if (e.ts < start.ts || e.ts >= nextStart.ts) continue;
       if (e.type === 'log') absorbLog(s, e);
       else if (e.type === 'task') absorbTask(s, e);
+      else if (e.type === 'usage') absorbUsage(s, e);
     }
     closed.push(s);
   }
@@ -209,6 +278,7 @@ function buildShifts(entries: JournalEntry[]): { closed: ShiftStats[]; open: Shi
     if (e.ts < last.ts) continue;
     if (e.type === 'log') absorbLog(open, e);
     else if (e.type === 'task') absorbTask(open, e);
+    else if (e.type === 'usage') absorbUsage(open, e);
   }
   return { closed, open };
 }
@@ -260,6 +330,20 @@ function shiftSection(s: ShiftStats, open: boolean): string {
   const gate = s.gateLines.length
     ? s.gateLines.slice(-12).map((l) => `- ${l}`).join('\n')
     : '- (אין הכרעות-שער מתועדות)';
+  const cross = s.crossChecks.lines.length
+    ? s.crossChecks.lines.slice(-6).map((l) => `- ${l}`).join('\n')
+    : '- (אין ביקורות-עמיתים מתועדות)';
+  const u = usageTotals(s.usage);
+  const usageLine =
+    `קריאות ${s.usage.calls} · prompt ${u.pt}${u.reported ? '' : '~'} · completion ${u.ct}${u.reported ? '' : '~'} tokens` +
+    `${u.reported ? '' : ' (אומדן מתווים — הספק לא דיווח)'}`;
+  const usageByAgent = [...s.usageByAgent.entries()]
+    .filter(([id]) => id !== 'aluf' && id !== 'unknown')
+    .map(([id, ua]) => {
+      const t = usageTotals(ua);
+      return `- ${AGENT_NAMES[id] ?? id}: ${ua.calls} קריאות · ${t.pt}${t.reported ? '' : '~'}+${t.ct}${t.reported ? '' : '~'} tokens`;
+    })
+    .join('\n');
   const agents = [...s.perAgent.entries()]
     .filter(([id]) => id !== 'aluf')
     .map(([id, v]) => {
@@ -277,12 +361,20 @@ function shiftSection(s: ShiftStats, open: boolean): string {
     `- **נפתחה**: ${fmtTs(s.startTs)}`,
     `- **${open ? 'באוויר' : 'נמשכה'}**: ${dur((s.endTs ?? Date.now()) - s.startTs)}`,
     `- **שער-ההתאמה**: אישורים ${s.approvals} · ביטולים ${s.cancellations} · redos ${s.redos} · ממוצע relevance ${avg}${s.noEvidence ? ` · ⚠ דוחות ללא-עדות-כלים: ${s.noEvidence}` : ''}`,
+    `- **ביקורת-עמיתים**: confirm ${s.crossChecks.confirm} · dispute ${s.crossChecks.dispute} · skipped ${s.crossChecks.skipped}`,
+    `- **צריכת-אמת**: ${usageLine}`,
     ``,
     `### לוח המשימות`,
     board,
     ``,
     `### ספר-השער (verdicts אחרונים)`,
     gate,
+    ``,
+    `### ביקורת-עמיתים (cross-check)`,
+    cross,
+    ``,
+    `### צריכת-טוקנים לפי עובד`,
+    usageByAgent || '- (אין מדידה במשמרת זו)',
     ``,
     `### פעילות עובדים`,
     agents || '- (אף עובד לא דיבר במשמרת זו)',
@@ -393,7 +485,9 @@ function tick() {
         if (e.ts < g.ts || e.ts >= nextStart.ts) continue;
         if (e.type === 'log') absorbLog(s, e);
         else if (e.type === 'task') absorbTask(s, e);
+        else if (e.type === 'usage') absorbUsage(s, e);
       }
+      const ut = usageTotals(s.usage);
       appendHistoryLine({
         at: new Date(s.endTs ?? Date.now()).toISOString(),
         goal_id: s.goalId,
@@ -408,6 +502,13 @@ function tick() {
           ? Math.round((s.gateScores.reduce((a, b) => a + b, 0) / s.gateScores.length) * 100) / 100
           : null,
         no_evidence_flags: s.noEvidence,
+        cross_checks: { confirm: s.crossChecks.confirm, dispute: s.crossChecks.dispute, skipped: s.crossChecks.skipped },
+        usage: {
+          calls: s.usage.calls,
+          prompt_tokens: ut.pt,
+          completion_tokens: ut.ct,
+          tokens_reported_by_provider: ut.reported,
+        },
         speakers: [...s.perAgent.keys()],
       });
       state.finalized.push(g.id);
