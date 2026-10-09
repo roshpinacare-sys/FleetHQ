@@ -16,23 +16,25 @@
 //   0. SOVEREIGN GATEWAY   (LOCAL :3011 — brain #0, zero-auth, central cooldowns)
 //   1. xAI Grok            (XAI_API_KEY)
 //   2. OpenRouter          (OPENROUTER_API_KEY — 1 strong + :free rotation)
-//   3. Groq                (GROQ_API_KEY — generous free tier)
-//   4. Cerebras            (CEREBRAS_API_KEY — free tier)
-//   5. Mistral La Plateforme (MISTRAL_API_KEY — free tier)
-//   6. Google AI Studio    (GOOGLE_AI_API_KEY — free tier)
-//   7. GitHub Models       (GITHUB_MODELS_TOKEN — free tier)
-//   8. Together AI         (TOGETHER_API_KEY — free tier)
-//   9. Cloudflare Workers AI (CLOUDFLARE_API_TOKEN — free daily neurons)
-//  10. duckai bridge       (DUCKAI_URL — local reverse-engineered DDG bridge,
+//   3. NVIDIA NIM          (NVIDIA_API_KEY — owner-sealed 2026-10-09, verified live:
+//                           nemotron-3-super-120b / nemotron-3-ultra-550b / deepseek-v4.1)
+//   4. Groq                (GROQ_API_KEY — generous free tier)
+//   5. Cerebras            (CEREBRAS_API_KEY — free tier)
+//   6. Mistral La Plateforme (MISTRAL_API_KEY — free tier)
+//   7. Google AI Studio    (GOOGLE_AI_API_KEY — free tier)
+//   8. GitHub Models       (GITHUB_MODELS_TOKEN — free tier)
+//   9. Together AI         (TOGETHER_API_KEY — free tier)
+//  10. Cloudflare Workers AI (CLOUDFLARE_API_TOKEN — free daily neurons)
+//  11. duckai bridge       (DUCKAI_URL — local reverse-engineered DDG bridge,
 //                           source rescued in mini-services/duckai; activates
 //                           the moment the env slot exists)
-//  11. Kilo Code free auto (NO KEY — kilo-auto/free via kilocode.ai, verified live)
-//  12. LLM7.io anonymous   (NO KEY — mistral-Nemo verified live; key raises limits)
-//  13. Pollinations        (NO KEY — openai-fast, verified live)
-//  14. OVHcloud AI         (NO KEY — EU anonymous tier, ~2 RPM/model, verified live)
-//  15. OpenAI-compatible   (OPENAI_API_KEY / OPENAI_BASE_URL / OPENAI_MODEL)
-//  16. z-ai-web-dev-sdk    (bundled deployments)
-//  17. nothing → the office falls back to the fit-routine / labeled sim path.
+//  12. Kilo Code free auto (NO KEY — kilo-auto/free via kilocode.ai, verified live)
+//  13. LLM7.io anonymous   (NO KEY — mistral-Nemo verified live; key raises limits)
+//  14. Pollinations        (NO KEY — openai-fast, verified live)
+//  15. OVHcloud AI         (NO KEY — EU anonymous tier, ~2 RPM/model, verified live)
+//  16. OpenAI-compatible   (OPENAI_API_KEY / OPENAI_BASE_URL / OPENAI_MODEL)
+//  17. z-ai-web-dev-sdk    (bundled deployments)
+//  18. nothing → the office falls back to the fit-routine / labeled sim path.
 //
 // Every keyed brain above activates THE MOMENT its env key appears — no code
 // change needed. Model lists live in the VAULT (.env — gitignored, chmod 600)
@@ -182,6 +184,23 @@ function buildBrains(): Brain[] {
       key,
       referer: true,
       models: orModels,
+    });
+  }
+  // ---- KEYED brain — NVIDIA NIM (integrate.api.nvidia.com, OpenAI-compatible).
+  // Owner-supplied key sealed in the vault 2026-10-09 and verified LIVE in Hebrew:
+  // nemotron-3-super-120b-a12b ✓ · nemotron-3-ultra-550b-a55b ✓ · deepseek-v4.1-flash ✓
+  // (llama-3.3-70b-instruct + gpt-oss-120b are EOL on NIM — do not restore them.)
+  if (process.env.NVIDIA_API_KEY) {
+    brains.push({
+      name: 'nvidia-nim',
+      base: process.env.NVIDIA_BASE_URL || 'https://integrate.api.nvidia.com/v1',
+      key: process.env.NVIDIA_API_KEY,
+      models: parseModels(process.env.NVIDIA_MODELS, [
+        'nvidia/nemotron-3-super-120b-a12b',
+        'nvidia/nemotron-3-ultra-550b-a55b',
+        'deepseek-ai/deepseek-v4.1-flash',
+        'nvidia/nemotron-3.5-lightning-30b-a3b',
+      ]),
     });
   }
   // ---- keyed free-tier brains: activate the moment a key appears in the vault ----
