@@ -221,6 +221,7 @@ export class Office {
   private emit: Emit;
   private nextId = 1;
   private dispatcher?: ReturnType<typeof setInterval>;
+  private heartbeat?: ReturnType<typeof setInterval>;
   private booksTimer?: ReturnType<typeof setInterval>;
   private startedAt = Date.now();
   private taskAttempts = new Map<string, number>();
@@ -314,6 +315,10 @@ export class Office {
     }
     this.emit('status', this.status);
     this.dispatcher = setInterval(() => this.dispatch(), 2200);
+    // liveness heartbeat: a quiet office must still prove it is alive. Without
+    // this, the console cannot distinguish "idle" from "wedged with an open
+    // socket" — every instrument would render a frozen snapshot as current.
+    this.heartbeat = setInterval(() => this.emit('status', this.status), 30_000);
     this.booksTimer = setInterval(() => this.refreshBooks(), 5 * 60_000);
     // the git wire: the fleet's real commit stream (metadata only, public repo)
     this.gitWire = new GitWire(
@@ -336,6 +341,7 @@ export class Office {
 
   shutdown() {
     if (this.dispatcher) clearInterval(this.dispatcher);
+    if (this.heartbeat) clearInterval(this.heartbeat);
     if (this.booksTimer) clearInterval(this.booksTimer);
     if (this.gitLearnTimer) clearInterval(this.gitLearnTimer);
     this.gitWire.stop();

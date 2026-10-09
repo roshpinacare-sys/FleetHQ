@@ -546,7 +546,7 @@ export function makeGitWireTexture(): { tex: THREE.CanvasTexture; set: (commits:
 
 /** מסך לוח שנה/מדדים בקבלה */
 export function makeReceptionScreen(): { tex: THREE.CanvasTexture; set: (s: { mode: string; provider: string; ops: number; goal?: string }) => void; update: (now: number) => void } {
-  let info = { mode: '…', provider: '…', ops: 0, goal: '' };
+  let info: { mode: string; provider: string; ops: number; goal?: string } = { mode: '…', provider: '…', ops: 0, goal: '' };
   const dyn = new DynTex(560, 380, (ctx, w, h) => {
     ctx.fillStyle = '#101014'; ctx.fillRect(0, 0, w, h);
     ctx.direction = 'rtl'; ctx.textAlign = 'right'; ctx.textBaseline = 'middle';

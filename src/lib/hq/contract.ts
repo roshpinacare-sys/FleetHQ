@@ -191,8 +191,8 @@ export const INTERACTABLES: Interactable[] = [
   { id: 'lead', kind: 'lead', x: LEAD_TABLE.x, y: LEAD_TABLE.y, r: 1.9, agentId: 'aluf' },
 ];
 
-/** תחנת ניווט לכל סוג station — אליה הולך סוכן כשהוא נקרא לתחנה */
-export const STATION_NAV: Record<Station, [number, number]> = {
+/** תחנת ניווט לכל סוג station — קואורדינטת-X במפה (אליה הולך סוכן כשהוא נקרא) */
+export const STATION_NAV: Record<Station, number> = {
   desk: DESKS.erez.x, // לא בשימוש ישיר — כל סוכן הולך לשולחן שלו
   wall: TASK_WALL.cx, podium: PODIUM.x + 140, library: LIBRARY_TABLE[0], offstage: FLAME[0],
 };
