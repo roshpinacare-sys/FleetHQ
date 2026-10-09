@@ -131,3 +131,48 @@ tickers, flying mascots.
 - The office scene (2D + 3D) keeps its scene-space palette by design
   (`STATE_COLORS` / `TASK_COL` live in `types.ts` / `lib/hq/protocol.ts`);
   the *console* never imports them — colors come from `tokens.ts` semantics.
+
+## 9. The office camera law (Task 45 — professional spatial interface)
+
+The 3D office is navigated like an architectural-visualization instrument, not a
+game. The player/avatar layer was removed at the root (no WASD, no sprint, no
+first-person, no joystick, no click-to-walk, no player-centric minimap).
+
+- **Camera presets** (`contract.ts → CAMERA_PRESETS`): Overview · Crew desks ·
+  Task board · Git wall · Decisions podium · Library · Reception — each a
+  deliberate interior composition of a zone that actually exists in the plan.
+- **Direct manipulation**: drag = predictable orbit around the current look
+  point (pitch clamped above the floor), wheel/pinch = distance within the
+  preset's bounds; the camera never leaves the room (clamped to walls).
+- **Click-to-inspect** is preserved: clicking an agent/station focuses the
+  camera (room-center framing) and opens the real console panel via the
+  established `setPanel` bridge. `Esc` returns to Overview.
+- **Keyboard**: preset buttons are real focusable controls (`aria-pressed`),
+  digits 1–7 select presets, `Esc` = overview. `prefers-reduced-motion`
+  makes camera transitions instant.
+- **Honest readiness**: `RoomReadiness` measures the first genuinely composed
+  frame (renderer draw-calls) — until then the room shows "החדר בהכנה…" rather
+  than a silent black canvas (weak/software GL can take a while to compile).
+
+### 9a. Activity-to-visual contract (deterministic)
+
+One function, `world.ts → agentVisual(AgentState)`, is the single mapping from
+the foreman's real states to the scene's visuals — consumed by Crew, the desk
+glow and the brain. No other component invents behavior:
+
+| AgentState (wire)        | pose | work anim | gesture | nameplate tone       |
+|--------------------------|------|-----------|---------|----------------------|
+| reading/checking/writing/thinking | sit | yes | — | working (agent color) |
+| idle                     | sit  | no        | —       | neutral              |
+| walking                  | stand| no        | —       | neutral              |
+| waiting_user             | sit  | no        | —       | attention (amber)    |
+| blocked                  | sit  | no        | —       | danger (rose)        |
+| done                     | sit  | no        | agree   | ok                   |
+| error                    | sit  | no        | headShake | danger             |
+
+Motion never implies productivity the wire does not report: a waiting agent is
+visually calm, a blocked agent carries no work animation, and station changes
+follow the foreman's `station` field. Decorative motion (dust, sparks, halo,
+pulsing frames, rotating hologram rings, volumetric shafts, bloom/grain) was
+removed; lighting was consolidated 28→5 fixtures (emissive materials replace
+local point lights), native MSAA replaced the post-processing chain.

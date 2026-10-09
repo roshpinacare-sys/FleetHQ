@@ -248,3 +248,124 @@ regression). *Shipped:* all tokenized/removed.
 - Runtime probes: `/api/foreman/health` 7/7 sentinels; `/api/fleet-health`
   all_ok with chains re-verified; gateway /health provider table live.
 - Dead-code removals verified by pre/post grep: zero remaining imports.
+
+---
+
+## Task 45 — security boundary audit (45-c)
+
+**תאריך:** 2026-10-09 · **תחום:** "שום סוד לא עובר דרך המשרד" — ביקורת נתיבי-חשיפה אמיתיים, תיקון בגבולות-הנתונים (לא מיסוך-קוסמטי), ורגרסיה-חוזרת עם קרדנשלים-סינתטיים.
+**שיטה:** כל נתיב נבדק מהקוד בפועל (קריאה מלאה של gitpulse/gitlearn/office/llm/fronthouse/index + כל-ה-routes תחת `src/app/api/**` + פרובות-חי מול :3000). אין-כאן ממצא ספקולטיבי; לכל-פסק צרוף מקור.
+
+### גבולות-האמון (trust boundaries)
+
+```
+דפדפן ⇄ Caddy :81 ⇄ Next :3000 (API + /v1-proxy + socket-bridge XTransformPort→3010)
+        ⇄ פורמן :3010 (Office — המשרד) ⇄ שער-ריבונות :3011 ⇄ ספקי-LLM חיצוניים (~46 סלוטים)
+גיט (Domain + FleetHQ — נתוני-עבודה ומטא-דאטה) · כספת (vault/*.enc + .env) · /tmp (דגל-קבלה)
+```
+
+### מחלקות-נתונים
+
+| מחלקה | דוגמאות | חוק |
+|---|---|---|
+| חומר-ממשק ציבורי | אירועי-wire (log/bubble/feed/task/decision/report/goal/agent), snapshot, נושאי-קומיטים, מטא-דאטה של ספרים | חוצה לדפדפן — חייב שער (scrub+strip) בגבול |
+| רנטיים-מוגבל | מפתחות-ספקים ב-env, כספת, תוכן-גלמי של קבצי-סודות, כתובות-origin עם טוקן מוטמע | לעולם לא יוצא לדפדפן/מודל/יומן בטקסט פתוח |
+| חומר-משרד (לא-סוד אך לא-ציבור) | תוכן ספרי-Domain | למודל — דרך שער; לדפדפן — מטא-דאטה בלבד |
+
+### נתיבי-חשיפה שנבדקו — פסקים
+
+| # | נתיב | ממצא | פסק |
+|---|---|---|---|
+| 1 | נושאי/מחברי-קומיטים → ממשק-ציבורי (gitpulse.ts) | `fetchCommits` בנה CommitView מ-gitalog **גלמי** — בלי scrubSecrets/stripControl (בניגוד ל-gitlearn.ts:90). מחרוזת-דמוי-מפתח בהיסטוריית-הריפו הציבורי הייתה מגיעה לפיד ולסנאפשוט ללא-צנזורה | **תוקן בגבול** — `toCommitView`/`sanitizeCommitField` (gitpulse.ts:52-70): scrub+strip **לפני** שה-CommitView נוצר; כל-הצרכנים (pulse/snapshot/פיד) יורשים |
+| 2 | גבול-ה-emit של המשרד → סוקט | bubble (office.ts:502) · log (476) · feed (507) · task (517) · decision (560) · report (591) · goal · activity · books.verdict — **גלמיים** אל הדפדפן; מקורות: פלט-מודל, הודעות-שגיאת-ספק, תוכן-ספרים | **תוקן בגבול** — `sanitizeEmitPayload` (office.ts:214-282) עוטף את `emit` בבנאי + `snapshot()` מסונן באותן-פונקציות (office.ts:685-711); `sanitizePublicText` (security.ts:50) — חוק-אחת במקום-אחד, בלי קריסת-רווחים שתשחית תוכן רגיל |
+| 3 | יציאה לספקי-LLM (prompt) | תוצרי כלים `read_book/measure/cross_check` (תוכן-ספרים = נתון-חוץ לפי הדוקטרינה) נכנסו לקונטקסט המודל **ללא שער** (office.ts execTool) | **תוקן בגבול** — scrubSecrets על שלושת-התוצרים לפני ההיסטוריה/הלוג (office.ts:1160-1196). ה-digest של gitlearn כבר מנוקה-מקור (gitlearn.ts:90 + רשימת-היתר :51) |
+| 4 | קבלה (visitor-chat) → ספקים | רק-ידע-ציבורי-קבוע (route.ts:39-68) + ספירות-מותרות-מספריות (411-433) + היסטוריית-מבקר מטוהרת; אין תוכן-ספרים/דיגסט-למידה בנתיב; שגיאות-גנריות (568-570) | **אומת בטוח** |
+| 5 | routes תחת `src/app/api/**` | `/api/foreman/health` — בוליאנים+מחרוזות-קצרות בלבד; `/api/fleet-health` — קבצי-מצב-בריאות בלבד; אפס-הד-של process.env (env נקרא רק לשימוש-צד-שרת); שגיאות-גנריות | **אומת בטוח** |
+| 6 | `git remote -v` / origin-URLs עם טוקן | אפס-קריאות `remote -v/get-url/ls-remote` בקוד-ריצה (rg: 0); lineage-guard רושם `origin` כ-**SHA-קצר** בלבד ומצהיר "never echoes URLs — the remote may embed creds" (lineage-guard.ts:83,449-452); fronthouse מוריד GITHUB_PAT מ-env של שכבת-הווב (fronthouse.ts:61) | **אומת בטוח** |
+| 7 | יומן-המשרד (journal) + לקחים/יעדים | כבר מטוהרים-מקור (office.ts:365-368,436,480,530,642,875,892,1380) | **אומת בטוח** |
+
+### מנגנון-הרגרסיה הסינתטי
+
+**`tools/security-regression.ts`** (Bun, ללא-תלות, סגנון smoke-truth): שישה-סעיפים על 50 טענות —
+(A) כל-קרדנשל-סינתטי (`ghp_0000…fake`, `sk-0000fake…` בן-32, `AKIA0000000000000FAKE`, `xai-0000fake…`, `password=hunter2fake123`, `Bearer faketoken…`) נמחק **מלואו** ב-scrubSecrets וב-sanitizePublicText ·
+(B) `isSensitivePath` מפיל .env/vault/keys/pem/id_rsa/upload/.git ומשאיר נתיבי-עבודה רגילים ·
+(C) stripControl הורג הזרקת-תווי-בקרה בלי לפגוע בטקסט נראה ·
+(D) גבול-הקומיט של gitpulse — נושא עם מפתח-פיקטיבי יוצא «redacted», נושא עברי רגיל עובר שלם ·
+(E) גבול-ה-emit של המשרד — bubble/task/log/report/git מנוקים, id/status/מערכים ושורות-חדשות נשארים תקינים (העדר-שחיתות) ·
+(F) פרובות-חי מול `/api/foreman/health` ו-`/api/fleet-health`: אפס-הד של הסינתטיים ואפס-מופעים של הסמנים הגנריים (`sk-`, `ghp_`, `github_pat_`, `xoxb-`, `BEGIN RSA PRIVATE KEY`, `AKIA`). על-כישלון: שם-הסמן ומספר-בלבד — **גוף-התשובה אף-פעם לא נדפס**.
+מדידה-חיה בשעת-הביקורת: **50/50 ירוק, exit 0** (רץ שוב אחרי-כל-שינוי — `bun run tools/security-regression.ts`).
+
+### סיכונים-שיוריים (בכנות)
+
+1. **`book:preview` (mini-services/agent-hq/index.ts:44-48)** — ה-handler שולח `excerptBook(id, 2400)` **גלמי** לכל-לקוח-סוקט דרך ack, מחוץ לגבול-ה-emit של Office. הקובץ מחוץ לתחום-הבעלות-של-45-c → **דווח למתאם**: תיקון-שורה-אחת (`scrubSecrets(ex)` ב-ack) או העברת-הקריאה דרך השער. זהו-הפער-היחיד-הידוע שנותר.
+2. **כל-מה שכבר נשלח ללקוח נבדק-ב-devtools** — לכן-החוק-היא מזעור-צד-שרת: שום-סוד לא נשלח (מוכח-שלילית ב-F), ומה שנשלח הוא-ציבורי-מעצם-הגדרה.
+3. **הספקים מקבלים תוכן-מנוקה-אך-לא-אנונימי** — תוכן-ספרים/נגזרות-משימות הוא-נתון-המשרד ונשלח לעשרות-מוחות-חיצוניים-מעצם-העיצוב; השער עוצר מחרוזות-דמוי-מפתח, לא-דלף-עסקי-כללי. שיורי-מעצב.
+4. **scrubSecrets הוא דפוסי** — סוד-בצורה-חדשה (קידומת-פרטית) יעבור; הרובד-השני (הפלת-נתיבים-רגישים + רשימת-היתר) הוא-הגנה-ההדדית. רצפת `sk-` היא 28 תווים (מכוון — מניעת-הפעלות-שקר; תועד ב-script).
+5. **גישה-פיזית/לסנדבוקס** — process.env, /tmp ו-dev.log נמצאים-בתוך-גבול-האמון; פשרת-הסנדבוקס = פשרה-מלאה (החוק-הקיים: הגיט הוא-הגוף, הסנדבוקס בן-תמותה).
+6. **הפורמן-החי עדיין-על-הקוד-הקודם** — עד-הריסטארט-המתואם-של-המתאם; ה-emit-wrap/גבול-הקומיט נכנסים-לחיות-רק-אז (הוכחת-הקוד: רגרסיה-50/50 על-המודולים-עצמם).
+
+## Task 45 — visual red-team & operational reality (before/after, measured)
+
+**Before-state evidence (headless probe + screenshots through the gateway):** the
+office canvas rendered nothing while the wire was healthy — the scene mounted
+(445 meshes, camera sane) but the automatic loop drew 1 triangle/frame for
+minutes on software GL (100 shader programs compiled async under 28 lights ×
+post-processing). A first-visit operator on a weak GPU saw a **silent black
+void with zero feedback**. The game layer (player avatar, WASD/sprint/first-
+person, touch joystick + run button, click-to-walk floor, player-centric
+minimap) sat on top of an operational room. Network Atlas rendered raw float
+ages (`0.0076766666666667h`) on every district. `waiting_user`/`blocked`/`error`
+shared one rose color — three meanings, one look.
+
+**Shipped corrections (root causes, not patches):**
+
+- **Game layer removed at the root.** `Player.tsx`, `Controls3D.tsx`
+  (joystick+run), `MiniMap.tsx` deleted; `world.ts` lost the Player class and
+  game input entirely. Replaced by `CameraDirector` (orbit/zoom presets,
+  room-clamped, reduced-motion aware) + `ViewDeck` (7 keyboard-accessible
+  presets bound to real zones, `aria-pressed`, 1–7/Esc, honest room status).
+  Click-to-inspect and the panel bridge are intact (verified live: preset
+  switch, Escape-return, camera math).
+- **Honest room readiness** (`RoomReadiness` → store `roomReady`): the veil
+  "החדר בהכנה…" is driven by the first genuinely composed frame (renderer
+  draw-calls), killing the silent-black-void failure mode.
+- **Graphics quality by restraint, not effects:** lighting 28→5 fixtures
+  (emissive materials replace local point lights; one moon + one warm spot
+  cast shadows), native MSAA replaced Bloom/Vignette/Grain/FXAA, dust/sparks/
+  halo/shafts/hologram-rings removed, pulsing git-frame calmed, flame kept as
+  the office's restrained symbol (no cast-shadow point light, no halo).
+- **Visual state contract** (`world.ts → agentVisual`): one deterministic map
+  from the foreman's states to pose/work-anim/gesture; work animation only for
+  real working states; `waiting_user` re-toned to attention (amber) across
+  scene + console (STATE_COLORS + AGENT_SEMANTIC) — waiting is not failure.
+- **Network Atlas ages humanized** (`fmtAge`): minutes/hours/days in Hebrew/
+  English instead of raw float hours, in labels, titles and aria-labels.
+- **Git fleet inventory (45-b):** read-only per-repo truth (branch, head,
+  ahead/behind, dirty, last-fetch, sanitized errors; sync-state law with
+  explicit unknown) on the wire + in GitEvidencePanel; verified live
+  (probe JSON in worklog; UI renders "שינויים מקומיים" honestly).
+- **Security boundary hardening (45-c):** one emit-boundary law
+  (`sanitizeEmitPayload` + `sanitizePublicText`), commit subjects/authors
+  scrubbed at gitpulse, book:preview excerpt gated, read_book/measure/
+  cross_check model-context scrubbed; 50/50 synthetic-credential regression
+  suite green (tools/security-regression.ts); threat model documented below.
+- **Live-foreman resurrection finding:** after many `bun --hot` reloads across
+  edits, the long-lived foreman process stopped emitting (0 events in 70s
+  while snapshots — sent outside the office emit path — still flowed). The
+  supervisor chain re-spawned duplicates that lost the port race. Precise kill
+  of all three `bun --hot index.ts` processes → clean single respawn →
+  smoke-truth ALL GREEN (heartbeat included) + fleet on the wire. Lesson: the
+  foreman should not be trusted across hot reloads; restart is the recovery.
+
+**Validation record (Task 45):** `bunx tsc --noEmit` 0 errors · eslint clean ·
+smoke-truth 11/11 green against the live foreman · security-regression 50/50 ·
+gitfleet-probe truthful (dirty=churn, honest) · browser: ops/network/git/mobile
+screenshots before+after with zero console errors; office verified rendering
+with crew, nameplates, preset navigation and honest status (software-GL
+compile-storm limits frame-rate in the probe environment — a documented
+limitation, not a product defect; real-GPU rendering was verified in Task 43).
+
+**Deferred, with reasons:** production build remains forbidden by the platform
+(dev-only :3000 law; `ignoreBuildErrors:false` keeps the gate armed for the
+first legitimate build). Task-state persistence across foreman restarts
+remains prerequisite foreman-architecture work (unchanged from Task 44).
