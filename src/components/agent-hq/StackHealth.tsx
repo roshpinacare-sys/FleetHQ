@@ -165,8 +165,10 @@ export default function StackHealth({ lang }: { lang: Lang }) {
               value={h.lineage_guard ? `${h.lineage_guard.last_event ?? '?'} · ${tr('linear', lang)}=${h.lineage_guard.head === h.lineage_guard.origin}` : tr('absent', lang)}
               sub={h.lineage_guard?.last_push ? `push ${h.lineage_guard.last_push.from} → ${h.lineage_guard.last_push.to}` : undefined} ltr={false} />
             <Cell label={tr('probes', lang)}
-              tone={h.status?.results?.every((r) => r.verdict === 'OK') ? 'ok'
-                : h.status?.results?.some((r) => r.verdict === 'OK') ? 'warn' : 'bad'}
+              tone={!h.status?.ts ? 'bad'
+                : Date.now() - new Date(h.status.ts).getTime() > 10 * 60_000 ? 'warn'
+                  : h.status.results?.every((r) => r.verdict === 'OK') ? 'ok'
+                    : h.status.results?.some((r) => r.verdict === 'OK') ? 'warn' : 'bad'}
               value={h.status?.results?.map((r) => `${r.name}:${r.verdict}`).join(' ') ?? tr('absent', lang)}
               sub={h.status?.results?.map((r) => `${r.name}=${r.latency_ms}ms`).join(' · ') || undefined} ltr={false} />
           </div>
