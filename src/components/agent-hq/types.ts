@@ -132,6 +132,34 @@ export interface GitPulse {
   branch?: string;
   commits: CommitView[];
   lastFetch: number;
+  /** The truthful per-repo sync/health inventory (foreman gitfleet wire, read-only).
+   *  Optional for backward compatibility — absent means "not known yet", never green. */
+  fleet?: RepoFleetView[];
+}
+
+export type RepoSyncState =
+  | 'up-to-date'
+  | 'behind'
+  | 'ahead'
+  | 'diverged'
+  | 'dirty'
+  | 'unreachable'
+  | 'unknown';
+
+export interface RepoFleetView {
+  label: string;
+  dir: string; // ok to expose — the learning wire already exposes it
+  branch: string;
+  available: boolean;
+  head: string; // short sha, 7 chars; '' when the repo is unreachable
+  upstreamConfigured: boolean;
+  ahead: number | null; // null = not measured (never fake 0)
+  behind: number | null; // null = not measured (never fake 0)
+  diverged: boolean | null;
+  dirtyCount: number | null; // null = not measured
+  lastFetchAt: number | null; // epoch ms — .git/FETCH_HEAD mtime when present
+  lastSyncError: string | null; // sanitized — never a URL, never a secret
+  syncState: RepoSyncState;
 }
 
 export interface Snapshot {
@@ -159,7 +187,7 @@ export const STATE_COLORS: Record<AgentState, string> = {
   checking: '#34d399',  // emerald-400
   writing: '#a78bfa',   // violet-400
   walking: '#a1a1aa',   // zinc-400
-  waiting_user: '#fb7185', // rose-400
+  waiting_user: '#fbbf24', // amber-400 — המתנה לאישור = כוונת-תשומת, לא כשל
   blocked: '#fb7185',   // rose-400
   done: '#34d399',      // emerald-400
   error: '#fb7185',     // rose-400

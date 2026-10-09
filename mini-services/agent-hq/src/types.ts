@@ -167,6 +167,36 @@ export interface GitPulse {
   branch?: string;
   commits: CommitView[]; // newest first, capped
   lastFetch: number;
+  /** The truthful per-repo sync/health inventory (gitfleet.ts, read-only).
+   *  Optional for backward compatibility — null-free honesty inside each row. */
+  fleet?: RepoFleetView[];
+}
+
+// ---- the repo fleet inventory: truthful per-repo sync state (gitfleet.ts) ----------------
+
+export type RepoSyncState =
+  | 'up-to-date'
+  | 'behind'
+  | 'ahead'
+  | 'diverged'
+  | 'dirty'
+  | 'unreachable'
+  | 'unknown';
+
+export interface RepoFleetView {
+  label: string;
+  dir: string; // ok to expose — the learning wire already exposes it
+  branch: string;
+  available: boolean;
+  head: string; // short sha, 7 chars; '' when the repo is unreachable
+  upstreamConfigured: boolean;
+  ahead: number | null; // null = not measured (never fake 0)
+  behind: number | null; // null = not measured (never fake 0)
+  diverged: boolean | null;
+  dirtyCount: number | null; // null = not measured
+  lastFetchAt: number | null; // epoch ms — .git/FETCH_HEAD mtime when present
+  lastSyncError: string | null; // sanitized — never a URL, never a secret
+  syncState: RepoSyncState;
 }
 
 export interface Snapshot {

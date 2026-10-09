@@ -7,6 +7,7 @@ import type {
   FeedItem,
   FeedKind,
   ForemanStatus,
+  GitPulse,
   Goal,
   LogEntry,
   OfficeMemory,
@@ -22,7 +23,8 @@ import { crossCheckBooks, excerptBook, loadBooks, measureBook } from './books';
 import { chat, extractJson, llmAvailable, setUsageSink } from './llm';
 import { GitWire, resolveGitSource } from './gitpulse';
 import { collectGitLearning, type GitLearning } from './gitlearn';
-import { scrubSecrets, jaccard } from './security';
+import { collectRepoFleet, type RepoFleetView } from './gitfleet';
+import { sanitizePublicText, scrubSecrets, jaccard } from './security';
 
 const MAX_STEPS = 8;
 const TASK_TIMEOUT_MS = 4 * 60_000;
@@ -202,6 +204,85 @@ const ROUTINES = [
 
 export type Emit = (event: string, payload: unknown) => void;
 
+// ---- THE SOCKET BOUNDARY (SECURITY, Task 45-c) ------------------------------------------
+// Every event the office emits toward the browser crosses sanitizeEmitPayload:
+// free-text fields are stripped of secret-shaped strings («redacted») and of
+// control characters BEFORE they can reach the public socket. Numbers, ids and
+// enums are untouched — no broad redaction, no corruption of ordinary content.
+// The granular events are gated in the constructor wrap; the snapshot (which
+// index.ts sends directly) is gated inside snapshot() itself. Both funnel
+// through the same sanitizePublicText law from security.ts.
+
+export function sanitizeEmitPayload(event: string, payload: unknown): unknown {
+  if (payload == null || typeof payload !== 'object') return payload;
+  switch (event) {
+    case 'log': {
+      const p = payload as { agentId?: string; entry?: LogEntry };
+      if (!p.entry) return payload;
+      return { ...p, entry: { ...p.entry, text: sanitizePublicText(p.entry.text) } };
+    }
+    case 'bubble': {
+      const p = payload as { agentId?: string; text?: string; ts?: number };
+      return { ...p, text: sanitizePublicText(String(p.text ?? '')) };
+    }
+    case 'feed': {
+      const p = { ...(payload as FeedItem) };
+      p.text = sanitizePublicText(p.text);
+      return p;
+    }
+    case 'task': {
+      const t = { ...(payload as Task) };
+      t.title = sanitizePublicText(t.title);
+      if (t.description) t.description = sanitizePublicText(t.description);
+      if (t.why) t.why = sanitizePublicText(t.why);
+      if (t.summary) t.summary = sanitizePublicText(t.summary);
+      return t;
+    }
+    case 'decision': {
+      const d = { ...(payload as Decision) };
+      d.question = sanitizePublicText(d.question);
+      d.options = (d.options ?? []).map((o) => sanitizePublicText(o));
+      if (d.context) d.context = sanitizePublicText(d.context);
+      if (d.answer?.text) d.answer = { ...d.answer, text: sanitizePublicText(d.answer.text) };
+      if (d.answer?.option) d.answer = { ...d.answer, option: sanitizePublicText(d.answer.option) };
+      return d;
+    }
+    case 'report': {
+      const r = { ...(payload as Report) };
+      r.title = sanitizePublicText(r.title);
+      r.body = sanitizePublicText(r.body);
+      return r;
+    }
+    case 'goal': {
+      const g = { ...(payload as Goal) };
+      g.text = sanitizePublicText(g.text);
+      return g;
+    }
+    case 'agent': {
+      const a = { ...(payload as AgentView) };
+      a.activity = sanitizePublicText(a.activity);
+      return a;
+    }
+    case 'books': {
+      if (!Array.isArray(payload)) return payload;
+      return (payload as BookView[]).map((b) =>
+        b.verdict ? { ...b, verdict: sanitizePublicText(b.verdict) } : b,
+      );
+    }
+    case 'git': {
+      const g = { ...(payload as GitPulse) };
+      g.commits = (g.commits ?? []).map((c) => ({
+        ...c,
+        subject: sanitizePublicText(c.subject),
+        author: sanitizePublicText(c.author),
+      }));
+      return g;
+    }
+    default:
+      return payload; // status/crew/etc carry no untrusted free text
+  }
+}
+
 interface AgentRuntime {
   view: AgentView;
   logs: LogEntry[];
@@ -229,6 +310,10 @@ export class Office {
   private gitWire!: GitWire;
   private gitLearn?: GitLearning;
   private gitLearnTimer?: ReturnType<typeof setInterval>;
+  // the repo fleet inventory: truthful per-repo sync/health, read-only git.
+  // Refreshed at most every 60s and cached between refreshes (gitfleet.ts).
+  private repoFleet?: RepoFleetView[];
+  private repoFleetTimer?: ReturnType<typeof setInterval>;
   private memory: OfficeMemory = { shifts: 0, lessons: [], recentGoals: [], economy: {}, updatedAt: 0 };
   private patrolArmed = false;
   private lastShiftEnd = 0;
@@ -244,7 +329,9 @@ export class Office {
   private journalQueue: Promise<void> = Promise.resolve();
 
   constructor(emit: Emit) {
-    this.emit = emit;
+    // SECURITY: the emit function itself is the boundary — every granular event
+    // (log/bubble/feed/task/decision/report/goal/agent/books/git) is gated here.
+    this.emit = (event, payload) => emit(event, sanitizeEmitPayload(event, payload));
     for (const c of CREW) {
       this.agents.set(c.id, {
         view: { id: c.id, state: 'idle', activity: '', station: c.role === 'lead' ? 'wall' : 'desk', since: Date.now() },
@@ -323,7 +410,7 @@ export class Office {
     // the git wire: the fleet's real commit stream (metadata only, public repo)
     this.gitWire = new GitWire(
       resolveGitSource(process.env.AGENT_HQ_DATA_DIR ?? '/home/z/my-project/Domain'),
-      (p) => this.emit('git', p),
+      (p) => this.emit('git', this.repoFleet ? { ...p, fleet: this.repoFleet } : p),
       (cs) => {
         for (const c of cs) this.feedPush('git', `commit ${c.hash} — ${c.subject.slice(0, 110)}`);
       },
@@ -333,6 +420,10 @@ export class Office {
     // security gate (metadata only, scrubbed) and refreshes every 10 minutes
     void this.refreshGitLearning();
     this.gitLearnTimer = setInterval(() => void this.refreshGitLearning(), 10 * 60_000);
+    // the repo fleet inventory: truthful sync/health per authorized repo
+    // (read-only git — never fetch/push), refreshed at most every 60s, cached
+    void this.refreshRepoFleet();
+    this.repoFleetTimer = setInterval(() => void this.refreshRepoFleet(), 60_000);
     // arm the autonomous patrol a beat after boot so the room is never a dead set
     setTimeout(() => {
       this.patrolArmed = true;
@@ -344,6 +435,7 @@ export class Office {
     if (this.heartbeat) clearInterval(this.heartbeat);
     if (this.booksTimer) clearInterval(this.booksTimer);
     if (this.gitLearnTimer) clearInterval(this.gitLearnTimer);
+    if (this.repoFleetTimer) clearInterval(this.repoFleetTimer);
     this.gitWire.stop();
   }
 
@@ -403,6 +495,30 @@ export class Office {
     } catch {
       this.gitLearn = undefined;
     }
+  }
+
+  /** Truthful sync/health inventory of the authorized repos (gitfleet.ts).
+   *  The SAME two repos the office studies — no invented fleet, no remote URLs,
+   *  no fetch/push. A green commit count is not proof of synchronization. */
+  private async refreshRepoFleet() {
+    try {
+      this.repoFleet = await collectRepoFleet([
+        { label: 'Domain · ספרי הצי', dir: this.dataDir(), branch: 'main' },
+        { label: 'FleetHQ · קוד המשרד', dir: process.env.AGENT_HQ_FLEET_DIR ?? '/home/z/my-project', branch: 'main' },
+      ]);
+    } catch {
+      this.repoFleet = undefined; // honest absence — the UI shows unknown, never green
+    }
+    // put the refreshed inventory on the wire the UI already receives
+    const pulse = this.gitWire?.pulse;
+    if (pulse) this.emit('git', this.repoFleet ? { ...pulse, fleet: this.repoFleet } : pulse);
+  }
+
+  /** The git pulse plus the cached fleet inventory (when measured). */
+  private gitPulseWithFleet(): GitPulse | undefined {
+    const pulse = this.gitWire?.pulse;
+    if (!pulse) return undefined;
+    return this.repoFleet ? { ...pulse, fleet: this.repoFleet } : pulse;
   }
 
   /** The office economy: honest credits for honest, reviewed work. */
@@ -602,26 +718,31 @@ export class Office {
   }
 
   snapshot(): Snapshot {
+    // SECURITY: the snapshot crosses to the browser directly (index.ts emits it
+    // on connect / snapshot:request), so it is gated through the SAME boundary
+    // functions as the granular events — nothing reaches the socket ungated.
     const logs: Record<string, LogEntry[]> = {};
-    for (const [id, rt] of this.agents) logs[id] = rt.logs.slice(-40);
+    for (const [id, rt] of this.agents)
+      logs[id] = rt.logs.slice(-40).map((e) => ({ ...e, text: sanitizePublicText(e.text) }));
     const status: ForemanStatus = {
       ...this.status,
       memory: { shifts: this.memory.shifts, lessons: this.memory.lessons.length },
       ...(Object.keys(this.memory.economy).length ? { economy: { ...this.memory.economy } } : {}),
     };
+    const gitPulse = this.gitPulseWithFleet();
     return {
       v: 1,
       status,
       crew: CREW,
-      agents: [...this.agents.values()].map((rt) => rt.view),
+      agents: [...this.agents.values()].map((rt) => sanitizeEmitPayload('agent', rt.view) as AgentView),
       logs,
-      tasks: [...this.tasks.values()],
-      decisions: [...this.decisions.values()],
-      reports: this.reports.slice(0, 30),
-      feed: this.feed.slice(-80),
-      ...(this.goal ? { goal: this.goal } : {}),
-      books: this.books,
-      git: this.gitWire?.pulse,
+      tasks: [...this.tasks.values()].map((t) => sanitizeEmitPayload('task', t) as Task),
+      decisions: [...this.decisions.values()].map((d) => sanitizeEmitPayload('decision', d) as Decision),
+      reports: this.reports.slice(0, 30).map((r) => sanitizeEmitPayload('report', r) as Report),
+      feed: this.feed.slice(-80).map((f) => sanitizeEmitPayload('feed', f) as FeedItem),
+      ...(this.goal ? { goal: sanitizeEmitPayload('goal', this.goal) as Goal } : {}),
+      books: sanitizeEmitPayload('books', this.books) as BookView[],
+      git: gitPulse ? (sanitizeEmitPayload('git', gitPulse) as GitPulse) : undefined,
     };
   }
 
@@ -1072,8 +1193,11 @@ export class Office {
           this.log(agentId, 'error', `book ${id} not found`);
           return `ERROR: book ${id} does not exist`;
         }
-        this.log(agentId, 'result', ex.slice(0, 500).replace(/\n+/g, ' '));
-        return ex;
+        // SECURITY: book files are OUTSIDE data — the gate runs before the
+        // excerpt enters the model context (or any log/report downstream).
+        const clean = scrubSecrets(ex);
+        this.log(agentId, 'result', clean.slice(0, 500).replace(/\n+/g, ' '));
+        return clean;
       }
       case 'measure': {
         const id = safe(args.id);
@@ -1082,7 +1206,8 @@ export class Office {
         this.log(agentId, 'tool', `measure(${id}, ${p})`);
         await sleep(450);
         const r = measureBook(id, p);
-        const out = r.found ? JSON.stringify(r.value)?.slice(0, 600) : 'NOT FOUND';
+        // SECURITY: measured values come from book files — gate before the model.
+        const out = r.found ? scrubSecrets(JSON.stringify(r.value) ?? '').slice(0, 600) : 'NOT FOUND';
         this.log(agentId, 'result', `${id}.${p} = ${out}`);
         return out;
       }
@@ -1103,7 +1228,8 @@ export class Office {
           ...cc.notes.map((n) => `note: ${n}`),
         ];
         this.log(agentId, 'result', lines.join('\n').slice(0, 900));
-        return JSON.stringify(cc).slice(0, 1400);
+        // SECURITY: cross-check output is book-derived — gate before the model.
+        return scrubSecrets(JSON.stringify(cc)).slice(0, 1400);
       }
       case 'write_report': {
         const title = safe(args.title) || 'דוח ללא כותרת';
