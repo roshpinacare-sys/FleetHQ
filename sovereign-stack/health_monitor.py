@@ -297,6 +297,35 @@ def run_once(config_path: Optional[str] = None, root: Path = ROOT) -> dict:
     return snap
 
 
+def _next_interval(base: int, history_path: Path) -> int:
+    """Bounded adaptive cadence (Task 37 question 1, adopted natively).
+
+    The last 5 history rows drive the next sleep — measured, never guessed:
+      all calm (0 anomalies)  → widen, up to min(300, base*2)
+      repeated trouble (>=2)  → tighten, down to max(60, base//2)
+      mixed                   → keep base
+    Clamped to [60, 300] so the loop can never go quiet beyond 5 minutes
+    nor hammer a struggling endpoint faster than once a minute. The actual
+    cadence stays observable: consecutive history rows' ts gap IS the
+    measured interval.
+    """
+    lo, hi = 60, 300
+    try:
+        rows = [json.loads(l) for l in
+                history_path.read_text(encoding="utf-8").splitlines()[-5:]
+                if l.strip()]
+    except Exception:
+        return base
+    if not rows:
+        return base
+    bad = sum(1 for r in rows if not r.get("all_ok", False))
+    if bad >= 2:
+        return max(lo, base // 2)
+    if bad == 0:
+        return min(hi, max(base, base * 2))
+    return base
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description="sovereign health/status loop")
     ap.add_argument("--once", action="store_true")
@@ -308,14 +337,16 @@ def main() -> int:
     if not a.once and not a.loop:
         a.once = True
 
+    hpath = Path(a.root) / "health" / "history.jsonl"
     rc = 0
     while True:
         snap = run_once(a.config, Path(a.root))
         rc = 0 if snap["all_ok"] else 1
         if not a.loop:
             return rc
+        iv = _next_interval(int(a.loop), hpath)
         try:
-            time.sleep(a.loop)
+            time.sleep(iv)
         except KeyboardInterrupt:
             return rc
 

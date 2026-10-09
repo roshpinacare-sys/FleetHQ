@@ -28,6 +28,7 @@ interface FleetHealth {
   unified_bridge?: { records: number } | null;
   shift_history?: { md_at?: string; closed_shifts?: number; last_closed?: { goal?: string; approvals?: number; cancellations?: number; redos?: number } | null } | null;
   lineage_guard?: { at?: string; last_event?: string; head?: string; origin?: string; behind?: number; ahead?: number; last_push?: { at?: string; from?: string; to?: string } | null } | null;
+  monitor?: { alive?: boolean; last_ts?: string | null; stale_min?: number | null } | null;
 }
 
 const L = {
@@ -55,6 +56,10 @@ const L = {
   shiftSub: { he: 'משמרת', en: 'shift' },
   lineageGuard: { he: 'שומר-היורש', en: 'Lineage guard' },
   linear: { he: 'ישר', en: 'linear' },
+  witnessMonitor: { he: 'מעקב-העדים', en: 'Witness monitor' },
+  alive: { he: 'חי', en: 'alive' },
+  down: { he: 'מת', en: 'DOWN' },
+  lastTick: { he: 'תיק-אחרון', en: 'last tick' },
 } as const;
 
 function tr(k: keyof typeof L, lang: Lang): string {
@@ -164,6 +169,12 @@ export default function StackHealth({ lang }: { lang: Lang }) {
                   : 'warn'}
               value={h.lineage_guard ? `${h.lineage_guard.last_event ?? '?'} · ${tr('linear', lang)}=${h.lineage_guard.head === h.lineage_guard.origin}` : tr('absent', lang)}
               sub={h.lineage_guard?.last_push ? `push ${h.lineage_guard.last_push.from} → ${h.lineage_guard.last_push.to}` : undefined} ltr={false} />
+            <Cell label={tr('witnessMonitor', lang)}
+              tone={!h.monitor?.alive ? 'bad'
+                : !h.monitor.last_ts ? 'warn'
+                  : h.monitor.stale_min != null && h.monitor.stale_min > 15 ? 'warn' : 'ok'}
+              value={h.monitor ? `${h.monitor.alive ? tr('alive', lang) : tr('down', lang)}${h.monitor.stale_min != null ? ` · Δ=${h.monitor.stale_min}min` : ''}` : tr('absent', lang)}
+              sub={h.monitor?.last_ts ? `${tr('lastTick', lang)}=${h.monitor.last_ts}` : undefined} ltr={false} />
             <Cell label={tr('probes', lang)}
               tone={!h.status?.ts ? 'bad'
                 : Date.now() - new Date(h.status.ts).getTime() > 10 * 60_000 ? 'warn'
