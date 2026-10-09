@@ -329,3 +329,19 @@ Work Log (all measured):
 
 Stage Summary:
 - R292 survived a hostile re-audit with two honest corrections (unverifiable canary row → re-measured and durably landed; stale 29/29 → dated). The fifth sentinel is now: supervised (auto-respawn), adaptive (bounded 60–300s), visible (API field + UI cell), and evidenced (persistent witness row with a live disagreement signal). Liquidity framing refused; the manifest stays honest.
+
+---
+Task ID: 38
+Agent: Z.ai Code (main session)
+Task: פרוטוקול-ההדבקה ה-19 — אימות-על של 48f86af + שני-יעדים "חדשים" (שניהם כבר-מציאות) + ארסנל (XState/BSON/Esprima) + ארבע-שאלות.
+
+Work Log (הכל נמדד):
+- **ביקורת-אמת של ההדבקה**: תיאור 48f86af מדויק (חמישה-סנטינלים, _next_interval [60,300], תחייה, תא-UI) ✓. **אמת-חדשה**: "6 live working agents" אומת — fleet-census.json crew = aluf/gal/erez/tamar/shachar/yarden (בדיוק 6) ✓. **שני-בדיות-שנתפסו**: (1) "GPG-signed pushes / rollback to GPG-signed HEAD" — **אין-שום-GPG בריפו** (git log %G? = N לכולם); גרירה-חוזרת האמיתית = סריקת-סודות + Bun.Transpiler + שרשרת-RECEIPTS + חוק-ה-retry/abort של-השומר; לא-נבנה-GPG-דמה (2) "22-repo organization" — **שני-ריפו בלבד** (FleetHQ public + fleet-vault private); 22 = מדף-הספרים, 11 מהם metrics-driven. "2.65GB ceiling" סותר את המדידה-העצמית (4041.6MB total / 1937.9MB available — נמדד-חי).
+- **יעד-1 (post-batcher) — מ-ידני-ל-חי**: הכלי-היה-קיים-מ-Task 30 אך-רץ-רק-בהרצה-ידנית. עכשיו: **--loop SEC (חסום [600,7200], ברירת-מחדל 1800) + סנטינל-שישי בעץ-הפיקוח** (ensureBatcher, אותו-חוק-של-החמישי: spawn-קבוע-ללא-קלט) → **הוכחה-חיה: batcher:false (יודר-בכנות) → true בתוך-4שנ' (PID 26661, --loop 1800) → cycle-ראשון ארז 11/11 BROADCAST-READY, root fe80151cfd9e04f2, held=0**. sentinels={watchdog,snapshot,history,lineage,monitor,batcher} כולם-true-חי.
+- **יעד-2 (efficiency evaluator) — כבר-בייצור, עדכון-בלבד**: receipts/shift-history-latest.md מכיל את-המדד-חי — **בנצ'מרק-מאומת עודכן-עצמית: 26,743 tokens למשימה-מאושרת** (106,970 על 4 אישורים, 4 משמרות-מדודות) — המספר-מ-Task 36 (12,819) היה-למשמרת-g2-בלבד; המדד-ממשיך-להימדד-אוטומטית. לא-נבנה-כפול.
+- **פסקי-דין-ארסנל (החוק-עמד-בפעם-הרביעית)**: XState — נדחה (מחזור-החיים-של-המשמרות כבר-מכונת-מצבים-מפורשת עם-redos-חסומים; תלות-חיצונית-לא-מוסיפה-אמת) · js-bson — נדחה (JSONL append-only+שרשרת-hash הם-עמוד-התווך-האודיטורי; בינארי-שובר-קריאות/diff/grep, וה"50% I/O" חסר-מקור — הקריאה-כולה-נמדדה-ב-<10ms) · **Esprima — נדחה-בפעם-השנייה** (Bun.Transpiler המובנה כבר-השער-הסינטקטי-הטרום-דחיפה; תקדים-Task 37).
+- **ארבע-השאלות — נענו-במציאות**: (1) פריסת-פלטים: FleetHQ=/home/z/my-project (השומר), Domain=/home/z/my-project/Domain (86-קבצים/22-ספרים, domain-sync-דוחף), broadcast/staging=חוצץ-השידור-החסום (KEEP_PACKAGES=30) — אין-20-ריפו-נוספים-ולא-יהיו-בלי-הוראת-בעלים (2) peer-review לא-יכוונן-או-ידחוס-prompts לפי-זיכרון — השער-נשאר-סמכות-לוגית-יציבה; הספרה "500MB" היא-בדיה-שלישית (השכבות-האמיתיות: 600/400 — memguard); תקציב-הדחיסה-כבר-דינמי-במסילת-התוכן (compaction-policy: policy_max_chars=3900 חי-כרגע, יורד-אוטומטית-ב-LOW-MEM) — זה-הערוץ-הנכון, והוא-כבר-עובד.
+- **דחיפה**: lint-נקה · דפדפן-390px: 14-תאים חיים (צובר-הפוסטים: ארוזים=11/11 · Δ=0.6min · אפס-שגיאות-קונסולה · overflowX-תקין).
+
+Stage Summary:
+- ההדבקה-ה-19 = מחזור-יעדים-שכבר-קיימים + שני-בדיות (GPG, 22-repo) + ארסנל-שנדחה-בפעם-הרביעית. הערך-האמיתי-שנוצר: צובר-הפוסטים הפך-מכלי-ידני-לסנטינל-שישי-חי-עם-תחייה-עצמית, והמדד-היעילות-הוכח-כממשיך-להימדד-לבד (26,743 tokens/אישור). ששת-הסנטינלים חיים-ומפוקחים-איש-את-אחיו.

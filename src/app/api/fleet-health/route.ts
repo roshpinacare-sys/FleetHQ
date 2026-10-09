@@ -170,6 +170,38 @@ function monitorState(): Promise<{
   });
 }
 
+/** Sixth sentinel state: resident packer alive + staging index freshness.
+ * Reads broadcast/staging/index.json (the packer's own honest manifest). */
+function postBatcherState(): Promise<{
+  alive: boolean;
+  at: string | null;
+  ready_count: number | null;
+  held_count: number | null;
+  lineage_root: string | null;
+  stale_min: number | null;
+}> {
+  const idx = readJson(path.join(ROOT, 'broadcast', 'staging', 'index.json')) as
+    | { at?: string; ready_count?: number; held_count?: number; lineage_root?: string }
+    | null;
+  const staleMin =
+    idx?.at != null
+      ? Math.max(0, Math.round((Date.now() - new Date(idx.at).getTime()) / 60_000 * 10) / 10)
+      : null;
+  return new Promise((resolve) => {
+    execFile('pgrep', ['-f', 'tools/post-batcher.ts'], { timeout: 3000 }, (err, stdout) => {
+      const alive = !err && String(stdout || '').split('\n').some((l) => l.trim());
+      resolve({
+        alive,
+        at: idx?.at ?? null,
+        ready_count: typeof idx?.ready_count === 'number' ? idx.ready_count : null,
+        held_count: typeof idx?.held_count === 'number' ? idx.held_count : null,
+        lineage_root: idx?.lineage_root ?? null,
+        stale_min: staleMin,
+      });
+    });
+  });
+}
+
 export async function GET() {
   const at = new Date().toISOString();
   const manifestChain = verifyMemoryChain(path.join(STACK, 'content', 'MANIFEST.md'));
@@ -261,6 +293,7 @@ export async function GET() {
     (seal?.state ?? '') !== 'HALT-CHAIN-BROKEN';
 
   const monitor = await monitorState();
+  const batcher = await postBatcherState();
 
   return Response.json({
     at,
@@ -279,5 +312,6 @@ export async function GET() {
     shift_history: shiftHistory,
     lineage_guard: lineageGuard,
     monitor,
+    post_batcher: batcher,
   });
 }
