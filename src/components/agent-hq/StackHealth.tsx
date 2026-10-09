@@ -27,6 +27,7 @@ interface FleetHealth {
   books_lineage?: { books?: number; root?: string } | null;
   unified_bridge?: { records: number } | null;
   shift_history?: { md_at?: string; closed_shifts?: number; last_closed?: { goal?: string; approvals?: number; cancellations?: number; redos?: number } | null } | null;
+  lineage_guard?: { at?: string; last_event?: string; head?: string; origin?: string; behind?: number; ahead?: number; last_push?: { at?: string; from?: string; to?: string } | null } | null;
 }
 
 const L = {
@@ -52,6 +53,8 @@ const L = {
   probes: { he: 'גשושיות', en: 'probes' },
   shifts: { he: 'יומן-משמרות', en: 'Shift history' },
   shiftSub: { he: 'משמרת', en: 'shift' },
+  lineageGuard: { he: 'שומר-היורש', en: 'Lineage guard' },
+  linear: { he: 'ישר', en: 'linear' },
 } as const;
 
 function tr(k: keyof typeof L, lang: Lang): string {
@@ -154,6 +157,13 @@ export default function StackHealth({ lang }: { lang: Lang }) {
               tone={h.shift_history?.md_at ? (Date.now() - new Date(h.shift_history.md_at).getTime() < 5 * 60_000 ? 'ok' : 'warn') : 'warn'}
               value={h.shift_history?.md_at ? `closed=${h.shift_history.closed_shifts ?? 0}` : tr('absent', lang)}
               sub={h.shift_history?.last_closed?.goal ? `${tr('shiftSub', lang)}: ${h.shift_history.last_closed.goal.slice(0, 60)}` : undefined} ltr={false} />
+            <Cell label={tr('lineageGuard', lang)}
+              tone={!h.lineage_guard ? 'warn'
+                : Date.now() - new Date(h.lineage_guard.at ?? 0).getTime() < 5 * 60_000
+                  ? (h.lineage_guard.last_event === 'secret_abort' || h.lineage_guard.last_event === 'syntax_fail' || h.lineage_guard.last_event === 'conflict_manual' ? 'bad' : 'ok')
+                  : 'warn'}
+              value={h.lineage_guard ? `${h.lineage_guard.last_event ?? '?'} · ${tr('linear', lang)}=${h.lineage_guard.head === h.lineage_guard.origin}` : tr('absent', lang)}
+              sub={h.lineage_guard?.last_push ? `push ${h.lineage_guard.last_push.from} → ${h.lineage_guard.last_push.to}` : undefined} ltr={false} />
             <Cell label={tr('probes', lang)}
               tone={h.status?.results?.every((r) => r.verdict === 'OK') ? 'ok'
                 : h.status?.results?.some((r) => r.verdict === 'OK') ? 'warn' : 'bad'}

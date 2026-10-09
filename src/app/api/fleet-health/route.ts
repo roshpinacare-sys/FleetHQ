@@ -208,6 +208,23 @@ export async function GET() {
     shiftHistory = null;
   }
 
+  const lineageGuard: { at?: string; last_event?: string; head?: string; origin?: string; behind?: number; ahead?: number; last_push?: { at?: string; from?: string; to?: string } | null } | null = (() => {
+    try {
+      const j = JSON.parse(fs.readFileSync(path.join(RECEIPTS, 'lineage-guard.json'), 'utf8')) as {
+        at?: string;
+        last_event?: string;
+        head?: string;
+        origin?: string;
+        behind?: number;
+        ahead?: number;
+        last_push?: { at?: string; from?: string; to?: string } | null;
+      };
+      return j && typeof j === 'object' ? j : null;
+    } catch {
+      return null;
+    }
+  })();
+
   const allOk =
     manifestChain.ok &&
     rails.ok &&
@@ -229,5 +246,6 @@ export async function GET() {
       : null,
     unified_bridge: { records: bridgeCount, curve_tail: memCurve },
     shift_history: shiftHistory,
+    lineage_guard: lineageGuard,
   });
 }

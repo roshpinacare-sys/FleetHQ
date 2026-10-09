@@ -337,6 +337,11 @@ function shiftSection(s: ShiftStats, open: boolean): string {
   const usageLine =
     `קריאות ${s.usage.calls} · prompt ${u.pt}${u.reported ? '' : '~'} · completion ${u.ct}${u.reported ? '' : '~'} tokens` +
     `${u.reported ? '' : ' (אומדן מתווים — הספק לא דיווח)'}`;
+  const effTokens = u.pt + u.ct;
+  const effLine =
+    s.approvals > 0
+      ? `${effTokens.toLocaleString('en-US')}${u.reported ? '' : '~'} tokens · ${Math.round(effTokens / s.approvals).toLocaleString('en-US')}${u.reported ? '' : '~'} לאישור`
+      : `${effTokens.toLocaleString('en-US')}${u.reported ? '' : '~'} tokens · אין אישורים עדיין — המדד יופיע באישור הראשון`;
   const usageByAgent = [...s.usageByAgent.entries()]
     .filter(([id]) => id !== 'aluf' && id !== 'unknown')
     .map(([id, ua]) => {
@@ -363,6 +368,7 @@ function shiftSection(s: ShiftStats, open: boolean): string {
     `- **שער-ההתאמה**: אישורים ${s.approvals} · ביטולים ${s.cancellations} · redos ${s.redos} · ממוצע relevance ${avg}${s.noEvidence ? ` · ⚠ דוחות ללא-עדות-כלים: ${s.noEvidence}` : ''}`,
     `- **ביקורת-עמיתים**: confirm ${s.crossChecks.confirm} · dispute ${s.crossChecks.dispute} · skipped ${s.crossChecks.skipped}`,
     `- **צריכת-אמת**: ${usageLine}`,
+    `- **יעילות-משמרת**: ${effLine}`,
     ``,
     `### לוח המשימות`,
     board,
@@ -417,6 +423,95 @@ function appendHistoryLine(line: object) {
   }
 }
 
+function readHistoryLines(): Record<string, unknown>[] {
+  try {
+    return fs
+      .readFileSync(HISTORY_JSONL, 'utf8')
+      .split('\n')
+      .filter(Boolean)
+      .map((l) => {
+        try {
+          return JSON.parse(l) as Record<string, unknown>;
+        } catch {
+          return null; // torn line — skipped, never fatal
+        }
+      })
+      .filter((x): x is Record<string, unknown> => x !== null);
+  } catch {
+    return [];
+  }
+}
+
+// ---- token-efficiency evaluator (owner directive, protocol 16, target 2) ----
+// cost-per-task = verified token expenditure / completed work. HONESTY LAW:
+// the strict fleet benchmark counts ONLY provider-reported tokens (the same
+// rule the shift tables use); char-estimated shifts are shown but flagged
+// with ~ and excluded from the benchmark — an estimate never becomes a fact.
+type HistoryUsage = { calls?: number; prompt_tokens?: number; completion_tokens?: number; tokens_reported_by_provider?: boolean };
+
+type EfficiencyRow = {
+  goal: string;
+  tokens: number | null; // verified (reported) total; null when the shift was estimate-only
+  tokensAny: number; // reported or estimated — for display
+  approvals: number;
+  tasks: number;
+  tasksDone: number;
+  perApproval: number | null;
+  reported: boolean;
+};
+
+function efficiencyOf(line: Record<string, unknown>): EfficiencyRow | null {
+  const u = line.usage as HistoryUsage | undefined;
+  const approvals = typeof line.approvals === 'number' ? (line.approvals as number) : 0;
+  const tasks = Array.isArray(line.tasks) ? (line.tasks as unknown[]).length : 0;
+  const tasksDone = Array.isArray(line.tasks)
+    ? (line.tasks as { status?: string }[]).filter((t) => t && t.status === 'done').length
+    : 0;
+  if (!u) return null;
+  const reported = u.tokens_reported_by_provider === true;
+  const pt = typeof u.prompt_tokens === 'number' ? u.prompt_tokens : 0;
+  const ct = typeof u.completion_tokens === 'number' ? u.completion_tokens : 0;
+  const total = pt + ct;
+  if (!reported && total === 0) return null;
+  return {
+    goal: typeof line.goal === 'string' ? line.goal : '(יעד לא ידוע)',
+    tokens: reported ? total : null,
+    tokensAny: total,
+    approvals,
+    tasks,
+    tasksDone,
+    perApproval: reported && approvals > 0 ? Math.round(total / approvals) : null,
+    reported,
+  };
+}
+
+function fleetEfficiencyBenchmark(): string {
+  const rows = readHistoryLines()
+    .map(efficiencyOf)
+    .filter((r): r is EfficiencyRow => r !== null);
+  if (!rows.length) return '- (אין עדיין משמרות-סגורות עם מדידות מאומתות — המדד יופיע כשהן ייצברו)';
+  const verified = rows.filter((r) => r.reported);
+  const vTokens = verified.reduce((a, r) => a + (r.tokens ?? 0), 0);
+  const vApprovals = verified.reduce((a, r) => a + r.approvals, 0);
+  const vTasks = verified.reduce((a, r) => a + r.tasks, 0);
+  const vDone = verified.reduce((a, r) => a + r.tasksDone, 0);
+  const bench = vApprovals > 0 ? Math.round(vTokens / vApprovals) : null;
+  const lines = [
+    `- **מדד-היעילות (מאומת בלבד)**: ${bench !== null ? `${bench.toLocaleString('en-US')} tokens למשימה-מאושרת` : '— (אין אישורים במשמרות-המדודות)'} · ${vTokens.toLocaleString('en-US')} tokens על ${vApprovals} אישורים · משימות ${vTasks} (הושלמו ${vDone}) · משמרות-מדודות ${verified.length}/${rows.length}`,
+    `- **עלות-משמרת**: ${verified.length ? `${Math.round(vTokens / verified.length).toLocaleString('en-US')} tokens למשמרת-שהושלמה` : '—'}`,
+  ];
+  const table = rows
+    .slice(-5)
+    .map(
+      (r) =>
+        `| ${r.goal.slice(0, 40)} | ${r.tokensAny.toLocaleString('en-US')}${r.reported ? '' : '~'} | ${r.approvals} | ${r.perApproval !== null ? r.perApproval.toLocaleString('en-US') : '—'} | ${r.tasksDone}/${r.tasks} |`,
+    )
+    .join('\n');
+  lines.push('', `| משמרת | tokens | אישורים | tokens/אישור | הושלמו/משימות |`, `|---|---|---|---|---|`, table);
+  lines.push('', '_~ = אומדן-תווים (הספק לא דיווח) — נכלל בתצוגה, נשלל מהמדד המאומת._');
+  return lines.join('\n');
+}
+
 function readState(): { finalized: string[] } {
   try {
     const st = JSON.parse(fs.readFileSync(STATE_JSON, 'utf8')) as { finalized?: string[] };
@@ -456,6 +551,9 @@ function compileMarkdown(open: ShiftStats | null, mem: ReturnType<typeof readMem
     `- **משמרות מצטברות**: ${mem.shifts ?? '?'} · לקחים שנצברו: ${(mem.lessons ?? []).length}`,
     `- **זיכרון-מארח**: ${hostMemLast()}`,
     `- **כלכלת-הצוות**: ${economy || 'אין נתונים'}`,
+    ``,
+    `### מדד-יעילות-הציי (cost-per-task על משמרות-סגורות)`,
+    fleetEfficiencyBenchmark(),
     ``,
     `### לקחים אחרונים`,
     lessons || '- (אין)',
@@ -508,7 +606,11 @@ function tick() {
           prompt_tokens: ut.pt,
           completion_tokens: ut.ct,
           tokens_reported_by_provider: ut.reported,
+          tokens_total: ut.pt + ut.ct,
+          tokens_per_approval: ut.reported && s.approvals > 0 ? Math.round((ut.pt + ut.ct) / s.approvals) : null,
         },
+        tasks_total: s.tasks.length,
+        tasks_done: s.tasks.filter((t) => t.status === 'done').length,
         speakers: [...s.perAgent.keys()],
       });
       state.finalized.push(g.id);
