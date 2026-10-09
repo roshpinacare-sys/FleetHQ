@@ -118,6 +118,16 @@ tickers, flying mascots.
 
 ## 8. Reference debts consciously accepted
 
-- Time-ago duplicated in 3 files (kept; unified helper is a follow-up, not this pass).
-- `fleet-world/*` components are dead code — left untouched to keep this diff reviewable;
-  removal proposed in the audit.
+- ~~Time-ago duplicated in 3 files~~ **resolved (Task 44):** one `timeAgo` helper
+  in `panels.tsx`; GitWire, AgentHQ and the inspector all consume it.
+- ~~`fleet-world/*` dead code~~ **resolved (Task 44):** the complete family
+  (components + lib + `/api/world`, 4,160 lines) removed after import tracing;
+  the stale `web/` app fork (14,255 lines) and the stale root `foreman/` fork
+  (2.8k lines) removed with it. The root app is the one app.
+- **Network Atlas is a console instrument (Task 44):** it renders with the same
+  semantic tokens as every other surface; the only motion is the real
+  connection pulse. Its spatial model (freshness orbits) is retained because
+  it encodes measured book freshness, not spectacle.
+- The office scene (2D + 3D) keeps its scene-space palette by design
+  (`STATE_COLORS` / `TASK_COL` live in `types.ts` / `lib/hq/protocol.ts`);
+  the *console* never imports them — colors come from `tokens.ts` semantics.

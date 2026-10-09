@@ -21,10 +21,9 @@ const dirIndexRewrites = consoleDirs.flatMap((d) => [
 
 const nextConfig: NextConfig = {
   output: "standalone",
-  /* config options here */
-  typescript: {
-    ignoreBuildErrors: true,
-  },
+  /* Type errors fail the build (default). The old ignoreBuildErrors:true hid
+     real defects (e.g. a compiled-out sentinel report in fleet-health); the
+     app tree is now expected to type-check clean — enforced by tsc. */
   reactStrictMode: false,
   async rewrites() {
     return {
