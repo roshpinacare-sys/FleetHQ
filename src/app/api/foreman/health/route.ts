@@ -90,6 +90,11 @@ const WATCHDOG_TS = '/home/z/my-project/mini-services/agent-hq/tools/watchdog.ts
 const SNAPSHOT_TS = '/home/z/my-project/mini-services/agent-hq/tools/telemetry-snapshot.ts';
 const HISTORY_TS = '/home/z/my-project/mini-services/agent-hq/tools/shift-history.ts';
 const LINEAGE_TS = '/home/z/my-project/mini-services/agent-hq/tools/lineage-guard.ts';
+// post-batcher — the staged broadcast packager as a RESIDENT node (--loop 1800,
+// bounded 600–7200s). Packs the 11 metric books via the standard compaction.py,
+// seals them with the current Merkle lineage root, tags BROADCAST-READY/HELD.
+// No keys, no network — honest drafts only.
+const POSTBATCH_TS = '/home/z/my-project/mini-services/agent-hq/tools/post-batcher.ts';
 
 // health_monitor — the JSON-RPC witness + probe loop (sovereign-stack, python,
 // stdlib only). Loops every 120s: probes live targets, parses witness account
@@ -124,6 +129,7 @@ const snapshotStamp = { v: 0 };
 const historyStamp = { v: 0 };
 const lineageStamp = { v: 0 };
 const monitorStamp = { v: 0 };
+const batcherStamp = { v: 0 };
 
 function ensureSentinels(): Promise<{
   watchdog: boolean;
@@ -131,6 +137,7 @@ function ensureSentinels(): Promise<{
   history: boolean;
   lineage: boolean;
   monitor: boolean;
+  batcher: boolean;
 }> {
   return Promise.all([
     ensureNode('shelf-watchdog', WATCHDOG_TS, 'tools/watchdog.ts', watchdogStamp),
@@ -138,7 +145,8 @@ function ensureSentinels(): Promise<{
     ensureNode('shift-history', HISTORY_TS, 'tools/shift-history.ts', historyStamp),
     ensureNode('lineage-guard', LINEAGE_TS, 'tools/lineage-guard.ts', lineageStamp),
     ensureMonitor(),
-  ]).then(([watchdog, snapshot, history, lineage, monitor]) => ({ watchdog, snapshot, history, lineage, monitor }));
+    ensureBatcher(),
+  ]).then(([watchdog, snapshot, history, lineage, monitor, batcher]) => ({ watchdog, snapshot, history, lineage, monitor, batcher }));
 }
 
 function ensureMonitor(): Promise<boolean> {
@@ -154,6 +162,24 @@ function ensureMonitor(): Promise<boolean> {
     });
     child.unref();
     console.log('[supervisor] respawned health-monitor');
+    return false; // will report alive on the next poll
+  }).catch(() => false);
+}
+
+/** Sixth sentinel — the post-batcher resident node (same law as the fifth). */
+function ensureBatcher(): Promise<boolean> {
+  return pgrepAlive('tools/post-batcher.ts').then((alive) => {
+    if (alive) return true;
+    const now = Date.now();
+    if (now - batcherStamp.v < 30_000) return false; // debounce respawns
+    batcherStamp.v = now;
+    const child = spawn('bun', [POSTBATCH_TS, '--loop', '1800'], {
+      cwd: '/home/z/my-project',
+      detached: true,
+      stdio: 'ignore',
+    });
+    child.unref();
+    console.log('[supervisor] respawned post-batcher');
     return false; // will report alive on the next poll
   }).catch(() => false);
 }

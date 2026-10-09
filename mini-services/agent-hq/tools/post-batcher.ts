@@ -19,7 +19,16 @@
  *      unreadable, the package is tagged HELD with the reason. It is NEVER
  *      marked READY on incomplete evidence.
  *
- * Run: bun mini-services/agent-hq/tools/post-batcher.ts
+ * Run: bun mini-services/agent-hq/tools/post-batcher.ts          (single pack)
+ *      bun mini-services/agent-hq/tools/post-batcher.ts --loop 1800   (resident)
+ *
+ * Task 38: deployment semantics. Bare invocation stays a single pack (manual
+ * back-compat). `--loop SEC` is the RESIDENT node form — pack immediately,
+ * then every SEC seconds (bounded 600–7200s; default 1800). The supervisor
+ * tree owns the resident form as the SIXTH sentinel: if the process is
+ * silently reaped, /api/foreman/health respawns it with the same fixed
+ * command line. No args parsing beyond that — fixed command, safe by
+ * construction (same law as health_monitor.py --loop 120).
  */
 import fs from 'node:fs';
 import path from 'node:path';
@@ -173,4 +182,25 @@ function main(): void {
   if (held > 0) console.log('[post-batcher] honest holds present — see index.json hold_reason fields');
 }
 
-main();
+// ---- entry ------------------------------------------------------------------
+const argv = process.argv.slice(2);
+const loopIdx = argv.indexOf('--loop');
+if (loopIdx === -1) {
+  main();
+} else {
+  const raw = Number(argv[loopIdx + 1]);
+  const sec = Number.isFinite(raw)
+    ? Math.min(7200, Math.max(600, Math.round(raw)))
+    : 1800;
+  main();
+  setInterval(() => {
+    try {
+      main();
+    } catch (e) {
+      console.log(
+        '[post-batcher] cycle error (honest, continuing):',
+        e instanceof Error ? e.message : e,
+      );
+    }
+  }, sec * 1000);
+}

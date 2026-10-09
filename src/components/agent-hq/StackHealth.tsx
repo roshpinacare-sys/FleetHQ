@@ -29,6 +29,7 @@ interface FleetHealth {
   shift_history?: { md_at?: string; closed_shifts?: number; last_closed?: { goal?: string; approvals?: number; cancellations?: number; redos?: number } | null } | null;
   lineage_guard?: { at?: string; last_event?: string; head?: string; origin?: string; behind?: number; ahead?: number; last_push?: { at?: string; from?: string; to?: string } | null } | null;
   monitor?: { alive?: boolean; last_ts?: string | null; stale_min?: number | null } | null;
+  post_batcher?: { alive?: boolean; at?: string | null; ready_count?: number | null; held_count?: number | null; lineage_root?: string | null; stale_min?: number | null } | null;
 }
 
 const L = {
@@ -60,6 +61,8 @@ const L = {
   alive: { he: 'חי', en: 'alive' },
   down: { he: 'מת', en: 'DOWN' },
   lastTick: { he: 'תיק-אחרון', en: 'last tick' },
+  postBatcher: { he: 'צובר-הפוסטים', en: 'Post batcher' },
+  packed: { he: 'ארוזים', en: 'packed' },
 } as const;
 
 function tr(k: keyof typeof L, lang: Lang): string {
@@ -175,6 +178,12 @@ export default function StackHealth({ lang }: { lang: Lang }) {
                   : h.monitor.stale_min != null && h.monitor.stale_min > 15 ? 'warn' : 'ok'}
               value={h.monitor ? `${h.monitor.alive ? tr('alive', lang) : tr('down', lang)}${h.monitor.stale_min != null ? ` · Δ=${h.monitor.stale_min}min` : ''}` : tr('absent', lang)}
               sub={h.monitor?.last_ts ? `${tr('lastTick', lang)}=${h.monitor.last_ts}` : undefined} ltr={false} />
+            <Cell label={tr('postBatcher', lang)}
+              tone={!h.post_batcher?.alive ? 'bad'
+                : !h.post_batcher.at ? 'warn'
+                  : (h.post_batcher.stale_min != null && h.post_batcher.stale_min > 60) || (h.post_batcher.held_count ?? 0) > 0 ? 'warn' : 'ok'}
+              value={h.post_batcher?.ready_count != null ? `${tr('packed', lang)}=${h.post_batcher.ready_count}/11${h.post_batcher.held_count ? ` · held=${h.post_batcher.held_count}` : ''}` : tr('absent', lang)}
+              sub={h.post_batcher?.lineage_root ? `${h.post_batcher.lineage_root.slice(0, 12)}…${h.post_batcher.stale_min != null ? ` · Δ=${h.post_batcher.stale_min}min` : ''}` : undefined} ltr={false} />
             <Cell label={tr('probes', lang)}
               tone={!h.status?.ts ? 'bad'
                 : Date.now() - new Date(h.status.ts).getTime() > 10 * 60_000 ? 'warn'
