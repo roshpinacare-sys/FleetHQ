@@ -86,7 +86,8 @@ let breakerOpenUntil = 0;
 //      marked with x-reception-priority so the crew's chain yields to the visitor)
 //   1. xAI Grok (XAI_API_KEY)
 //   2. OpenRouter (OPENROUTER_API_KEY — 1 strong + :free rotation)
-//   3. Groq / Cerebras / Mistral / Google AI / GitHub Models / Together (free-tier keys)
+//   3. NVIDIA NIM (NVIDIA_API_KEY — owner-sealed 2026-10-09, verified live Hebrew)
+//   4. Groq / Cerebras / Mistral / Google AI / GitHub Models / Together (free-tier keys)
 //   4. Cloudflare Workers AI (free daily neurons)
 //   5. duckai bridge (DUCKAI_URL — local reverse-engineered DDG bridge, zero-auth)
 //   6. Kilo Code free auto (NO KEY — kilo-auto/free via kilocode.ai, verified live)
@@ -170,6 +171,21 @@ async function brainChain(): Promise<Brain[]> {
       key,
       referer: true,
       models: orModels,
+    });
+  }
+  // ---- KEYED brain — NVIDIA NIM (owner-sealed 2026-10-09, verified live in Hebrew;
+  // same law as the foreman's chain: llama-3.3-70b-instruct + gpt-oss-120b are EOL there).
+  if (process.env.NVIDIA_API_KEY) {
+    brains.push({
+      name: 'nvidia-nim',
+      base: process.env.NVIDIA_BASE_URL || 'https://integrate.api.nvidia.com/v1',
+      key: process.env.NVIDIA_API_KEY,
+      models: parseModels(process.env.NVIDIA_MODELS, [
+        'nvidia/nemotron-3-super-120b-a12b',
+        'nvidia/nemotron-3-ultra-550b-a55b',
+        'deepseek-ai/deepseek-v4.1-flash',
+        'nvidia/nemotron-3.5-lightning-30b-a3b',
+      ]),
     });
   }
   brains.push(

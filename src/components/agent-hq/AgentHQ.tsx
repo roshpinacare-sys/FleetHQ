@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import dynamic from 'next/dynamic';
 import io, { type Socket } from 'socket.io-client';
 import { Office } from './Office';
 import { NetworkAtlas } from './Network';
@@ -11,6 +12,20 @@ import { ReceptionChat, type PublicStats } from './ReceptionChat';
 import type { AgentView, BookView, CrewMember, Decision, FeedItem, GitPulse, Goal, LogEntry, Report, Snapshot, Task } from './types';
 import { STATE_COLORS } from './types';
 import { t, goalStatusName, type Lang } from './i18n';
+import { useHq } from '@/lib/hq/store';
+
+// החדר התלת-ממדי — client-only (קנבס WebGL לא רץ על השרת)
+const Room3D = dynamic(() => import('@/components/hq/Room3D'), {
+  ssr: false,
+  loading: () => (
+    <div className="grid h-full w-full place-items-center bg-[#171310]" dir="rtl">
+      <div className="flex flex-col items-center gap-3 text-center">
+        <div className="h-9 w-9 animate-spin rounded-full border-2 border-amber-400/30 border-t-amber-400" />
+        <p className="text-[13px] font-bold text-amber-200/80">החדר נטען… צוות אמיתי, מקום אמיתי</p>
+      </div>
+    </div>
+  ),
+});
 
 type Tab = 'monitor' | 'wall' | 'podium' | 'library' | 'fleet' | 'git';
 type View = 'office' | 'network';
@@ -207,6 +222,28 @@ export default function AgentHQ() {
   const socketRef = useRef<Socket | null>(null);
   const lastHashRef = useRef<string | null>(null);
   const rtl = lang === 'he';
+  // WebGL availability — client probe after mount (server render assumes yes;
+  // without WebGL the room falls back honestly to the proven 2D office).
+  // The probe runs in a microtask so the effect body never sets state directly.
+  const [glOk, setGlOk] = useState(true);
+  useEffect(() => {
+    let alive = true;
+    const probe = () => {
+      let ok = false;
+      try {
+        const c = document.createElement('canvas');
+        ok = Boolean(c.getContext('webgl2') || c.getContext('webgl'));
+      } catch {
+        ok = false;
+      }
+      if (alive) setGlOk(ok);
+    };
+    const id = window.setTimeout(probe, 0);
+    return () => {
+      alive = false;
+      window.clearTimeout(id);
+    };
+  }, []);
 
   // ---- foreman self-heal: if the socket is down, ping the supervisor endpoint ----
   const healForeman = useRef(0);
@@ -215,6 +252,19 @@ export default function AgentHQ() {
     if (now - healForeman.current < 10_000) return; // debounce
     healForeman.current = now;
     fetch('/api/foreman/health').catch(() => {}); // fire-and-forget by design
+  }, []);
+
+  // ---- bridge binding: clicks inside the 3D room drive the REAL panels -------------
+  useEffect(() => {
+    useHq.getState().bindUi({
+      selectAgent: (id) => {
+        setSelected(id);
+        setTab('monitor');
+      },
+      openTab: (x) => setTab(x),
+      openChat: () => setChatOpen(true),
+      setLang: (l) => setLang(l),
+    });
   }, []);
 
   // ---- socket wiring ---------------------------------------------------------------
@@ -233,47 +283,70 @@ export default function AgentHQ() {
 
     socket.on('connect', () => {
       setConnected(true);
+      useHq.getState().syncConnected(true);
       socket.emit('snapshot:request');
     });
     socket.on('disconnect', () => {
       setConnected(false);
+      useHq.getState().syncConnected(false);
       requestForemanHeal(); // the crew service may have died — self-heal
     });
     socket.on('snapshot', (s: Snapshot) => {
       setSnap(s);
       setAgents(Object.fromEntries(s.agents.map((a) => [a.id, a])));
       setLogs((prev) => ({ ...prev, ...s.logs }));
+      useHq.getState().syncSnapshot(s); // the 3D room lives on the same reality
     });
-    socket.on('agent', (a: AgentView) => setAgents((prev) => ({ ...prev, [a.id]: a })));
-    socket.on('log', ({ agentId, entry }: { agentId: string; entry: LogEntry }) =>
+    socket.on('agent', (a: AgentView) => {
+      setAgents((prev) => ({ ...prev, [a.id]: a }));
+      useHq.getState().syncAgent(a);
+    });
+    socket.on('log', ({ agentId, entry }: { agentId: string; entry: LogEntry }) => {
       setLogs((prev) => {
         const list = [...(prev[agentId] ?? []), entry];
         return { ...prev, [agentId]: list.slice(-160) };
-      }),
-    );
-    socket.on('task', (task: Task) =>
+      });
+      useHq.getState().syncLog(agentId, entry);
+    });
+    socket.on('task', (task: Task) => {
       setSnap((prev) => {
         const tasks = prev.tasks.filter((x) => x.id !== task.id);
         return { ...prev, tasks: [...tasks, task] };
-      }),
-    );
+      });
+      useHq.getState().syncTask(task);
+    });
     socket.on('decision', (d: Decision) => {
       setSnap((prev) => {
         const decisions = prev.decisions.filter((x) => x.id !== d.id);
         return { ...prev, decisions: [...decisions, d] };
       });
+      useHq.getState().syncDecision(d);
       // no auto-tab-jump: decisions resolve autonomously — the podium badge +
       // stage glow surface the deliberation without yanking the visitor around.
     });
-    socket.on('report', (r: Report) =>
-      setSnap((prev) => (prev.reports.some((x) => x.id === r.id) ? prev : { ...prev, reports: [r, ...prev.reports] })),
-    );
-    socket.on('feed', (f: FeedItem) => setSnap((prev) => ({ ...prev, feed: [...prev.feed.slice(-160), f] })));
-    socket.on('goal', (g: Goal) => setSnap((prev) => ({ ...prev, goal: g })));
-    socket.on('books', (books: BookView[]) => setSnap((prev) => ({ ...prev, books })));
-    socket.on('status', (status: Snapshot['status']) => setSnap((prev) => ({ ...prev, status })));
+    socket.on('report', (r: Report) => {
+      setSnap((prev) => (prev.reports.some((x) => x.id === r.id) ? prev : { ...prev, reports: [r, ...prev.reports] }));
+      useHq.getState().syncReport(r);
+    });
+    socket.on('feed', (f: FeedItem) => {
+      setSnap((prev) => ({ ...prev, feed: [...prev.feed.slice(-160), f] }));
+      useHq.getState().syncFeed(f);
+    });
+    socket.on('goal', (g: Goal) => {
+      setSnap((prev) => ({ ...prev, goal: g }));
+      useHq.getState().syncGoal(g);
+    });
+    socket.on('books', (books: BookView[]) => {
+      setSnap((prev) => ({ ...prev, books }));
+      useHq.getState().syncBooks(books);
+    });
+    socket.on('status', (status: Snapshot['status']) => {
+      setSnap((prev) => ({ ...prev, status }));
+      useHq.getState().syncStatus(status);
+    });
     socket.on('git', (g: GitPulse) => {
       setSnap((prev) => ({ ...prev, git: g }));
+      useHq.getState().syncGit(g);
       // warm flicker on a genuinely fresh commit (the wordmark tears for half a second)
       const h = g.commits[0]?.hash ?? null;
       const prevHash = lastHashRef.current;
@@ -285,6 +358,7 @@ export default function AgentHQ() {
     });
     socket.on('bubble', ({ agentId, text }: { agentId: string; text: string }) => {
       setBubbles((prev) => ({ ...prev, [agentId]: { text, ts: Date.now() } }));
+      useHq.getState().syncBubble(agentId, text); // real speech → the 3D avatars speak it
       setTimeout(() => setBubbles((prev) => {
         const next = { ...prev };
         const cur = next[agentId];
@@ -453,32 +527,58 @@ export default function AgentHQ() {
                 <span className="ms-auto hidden text-[11.5px] leading-snug text-zinc-500 md:block">
                   {view === 'network' ? t('atlasViewHint', lang) : ''}
                 </span>
+                {/* the receptionist — always one click away, in every view */}
+                <button
+                  onClick={() => setChatOpen(true)}
+                  className={`hq-tab ms-auto text-[13.5px] md:ms-3 ${chatOpen ? '' : 'text-teal-200'}`}
+                  aria-pressed={chatOpen}
+                  title={lang === 'he' ? 'עמית — הקבלה החיה של המשרד' : 'Amit — the office live front desk'}
+                >
+                  <span aria-hidden="true" className="me-1.5 opacity-80">◉</span>
+                  {lang === 'he' ? 'עמית · קבלה' : 'Amit · Reception'}
+                </button>
               </div>
-              {/* mobile: the room keeps a readable minimum width and pans horizontally
-                  — a squeezed office is an unreadable office */}
-              <div className="overflow-x-auto">
-                <div className="aspect-[1180/640] w-full min-w-[760px]">
-                {view === 'office' ? (
-                  <Office
-                    lang={lang}
-                    crew={snap.crew}
-                    agents={agents}
-                    logs={logs}
-                    tasks={snap.tasks}
-                    books={snap.books}
-                    git={snap.git}
-                    openDecisions={openDecisionCount}
-                    reportsCount={snap.reports.length}
-                    newestReport={snap.reports[0]?.title}
-                    bubbles={bubbles}
-                    selected={selected}
-                    sim={sim}
-                    receptionOpen={chatOpen}
-                    onSelectAgent={selectAgent}
-                    onOpenReception={() => setChatOpen(true)}
-                    onOpenTab={(x) => openTab(x)}
-                  />
+              {/* the room itself: the REAL 3D office (WebGL) — with an honest
+                  fallback to the proven 2D office when WebGL is unavailable.
+                  The 3D room is fed by the same foreman socket as everything
+                  else on this page: every figure, screen and board is real. */}
+              {view === 'office' ? (
+                glOk ? (
+                  <div className="relative h-[480px] w-full md:h-[600px]">
+                    <Room3D />
+                    {sim && (
+                      <div className="absolute start-3 top-3 z-20 rounded-full bg-amber-400/95 px-3.5 py-1.5 text-xs font-bold text-zinc-950">
+                        {t('demoCrew', lang)} — {t('demoNote', lang)}
+                      </div>
+                    )}
+                  </div>
                 ) : (
+                  <div className="overflow-x-auto">
+                    <div className="aspect-[1180/640] w-full min-w-[760px]">
+                      <Office
+                        lang={lang}
+                        crew={snap.crew}
+                        agents={agents}
+                        logs={logs}
+                        tasks={snap.tasks}
+                        books={snap.books}
+                        git={snap.git}
+                        openDecisions={openDecisionCount}
+                        reportsCount={snap.reports.length}
+                        newestReport={snap.reports[0]?.title}
+                        bubbles={bubbles}
+                        selected={selected}
+                        sim={sim}
+                        receptionOpen={chatOpen}
+                        onSelectAgent={selectAgent}
+                        onOpenReception={() => setChatOpen(true)}
+                        onOpenTab={(x) => openTab(x)}
+                      />
+                    </div>
+                  </div>
+                )
+              ) : (
+                <div className="aspect-[1180/640] w-full min-w-[760px]">
                   <NetworkAtlas
                     lang={lang}
                     books={snap.books}
@@ -488,9 +588,8 @@ export default function AgentHQ() {
                     busy={Object.values(agents).filter((a) => a.state !== 'idle').length}
                     onOpenTab={() => openTab('fleet')}
                   />
-                )}
                 </div>
-              </div>
+              )}
               {/* HUD corner brackets around the viewport — zinc frame, never gold */}
               <div className="pointer-events-none absolute inset-0" aria-hidden="true">
                 <div className="absolute left-2 top-2 h-4 w-4 border-l-2 border-t-2 border-zinc-600/60" />
