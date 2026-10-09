@@ -15,7 +15,7 @@ import type {
   Station,
   Task,
 } from './types';
-import { readFile, writeFile, mkdir } from 'fs/promises';
+import { readFile, writeFile, mkdir, appendFile, rename, stat } from 'fs/promises';
 import { join } from 'path';
 import { CREW, LEAD, WORKERS, crewOf } from './cast';
 import { crossCheckBooks, excerptBook, loadBooks, measureBook } from './books';
@@ -234,6 +234,13 @@ export class Office {
   private patrolIdx = 0;
   private planFailures = 0;
   opsDone = 0;
+  // ---- event journal (the office's paper trail) -------------------------------------------
+  // Every log line, task transition and goal event is appended to an append-only
+  // journal inside the Domain data repo — the repo domain-sync.sh commits to git.
+  // The shift-history tool compiles it into receipts/; a sandbox recycle cannot
+  // erase what the office actually did. Serialized writes, fail-soft by law:
+  // the paper trail never blocks the office.
+  private journalQueue: Promise<void> = Promise.resolve();
 
   constructor(emit: Emit) {
     this.emit = emit;
@@ -449,6 +456,25 @@ export class Office {
     rt.logs.push(entry);
     if (rt.logs.length > MAX_LOG) rt.logs.splice(0, rt.logs.length - MAX_LOG);
     this.emit('log', { agentId, entry });
+    this.journal({ ts: entry.ts, type: 'log', agentId, kind, text: scrubSecrets(entry.text).slice(0, 400) });
+  }
+
+  /** Append-only journal write (serialized, rotated at 2MB, never throws). */
+  private journal(entry: Record<string, unknown>) {
+    this.journalQueue = this.journalQueue.then(() => this.journalWrite(entry)).catch(() => {});
+  }
+
+  private async journalWrite(entry: Record<string, unknown>) {
+    try {
+      const dir = join(this.dataDir(), 'agents');
+      await mkdir(dir, { recursive: true });
+      const file = join(dir, 'office-events.jsonl');
+      const st = await stat(file).catch(() => null);
+      if (st && st.size > 2_000_000) await rename(file, `${file}.prev`).catch(() => {});
+      await appendFile(file, `${JSON.stringify(entry)}\n`, 'utf8');
+    } catch {
+      // fail-soft: the paper trail never blocks the office
+    }
   }
 
   bubble(agentId: string, text: string) {
@@ -480,6 +506,7 @@ export class Office {
     };
     this.tasks.set(task.id, task);
     this.emit('task', task);
+    this.journal({ ts: task.createdAt, type: 'task', event: 'add', id: task.id, title: scrubSecrets(task.title).slice(0, 140), status: task.status, assignee: task.assignee ?? null });
     this.feedPush('task', `משימה חדשה: ${task.title}`, task.assignee);
     return task;
   }
@@ -490,6 +517,18 @@ export class Office {
     const next = { ...t, ...patch, updatedAt: Date.now() };
     this.tasks.set(id, next);
     this.emit('task', next);
+    if (patch.status || patch.assignee) {
+      this.journal({
+        ts: next.updatedAt,
+        type: 'task',
+        event: 'patch',
+        id: next.id,
+        title: scrubSecrets(next.title).slice(0, 140),
+        status: next.status,
+        assignee: next.assignee ?? null,
+        ...(next.summary ? { summary: scrubSecrets(next.summary).slice(0, 200) } : {}),
+      });
+    }
   }
 
   askHuman(agentId: string, question: string, options: string[], context?: string, taskId?: string): Decision {
@@ -579,6 +618,7 @@ export class Office {
     }
     this.goal = { id: this.id('g'), text: clean, status: 'planning', progress: 0, createdAt: Date.now(), updatedAt: Date.now(), origin: 'commander' };
     this.emit('goal', this.goal);
+    this.journal({ ts: this.goal.createdAt, type: 'goal', event: 'set', id: this.goal.id, text: scrubSecrets(clean).slice(0, 200), origin: 'commander' });
     this.feedPush('user', clean);
     this.planFailures = 0;
     void this.leadPlan(clean);
@@ -587,8 +627,12 @@ export class Office {
 
   private setGoal(patch: Partial<Goal>) {
     if (!this.goal) return;
+    const before = this.goal.status;
     this.goal = { ...this.goal, ...patch, updatedAt: Date.now() };
     this.emit('goal', this.goal);
+    if (patch.status && patch.status !== before) {
+      this.journal({ ts: this.goal.updatedAt, type: 'goal', event: 'status', id: this.goal.id, status: this.goal.status, text: scrubSecrets(this.goal.text).slice(0, 200) });
+    }
   }
 
   private async leadPlan(goalText: string) {
@@ -824,6 +868,7 @@ export class Office {
       void this.persistMemory();
       this.goal = { id: this.id('g'), text, status: 'planning', progress: 0, createdAt: Date.now(), updatedAt: Date.now(), origin: 'patrol' };
       this.emit('goal', this.goal);
+      this.journal({ ts: this.goal.createdAt, type: 'goal', event: 'set', id: this.goal.id, text: scrubSecrets(text).slice(0, 200), origin: 'patrol' });
       this.feedPush(
         'goal',
         invented
