@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono, Heebo, Anton, JetBrains_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Heebo, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 
@@ -18,13 +18,6 @@ const heebo = Heebo({
   variable: "--font-heebo",
   subsets: ["hebrew", "latin"],
   weight: ["400", "500", "600", "700", "800"],
-});
-
-// Anton — display face for hero readouts (the design-law display voice)
-const anton = Anton({
-  variable: "--font-anton",
-  subsets: ["latin"],
-  weight: "400",
 });
 
 // JetBrains Mono — instrument readouts, git hashes, log lines
@@ -50,10 +43,9 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#0a0a0d",
+  themeColor: "#0b0b0e",
   width: "device-width",
   initialScale: 1,
-  maximumScale: 1,
 };
 
 export default function RootLayout({
@@ -64,7 +56,7 @@ export default function RootLayout({
   return (
     <html lang="he" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${heebo.variable} ${anton.variable} ${jetbrains.variable} antialiased bg-background text-foreground`}
+        className={`${geistSans.variable} ${geistMono.variable} ${heebo.variable} ${jetbrains.variable} antialiased bg-background text-foreground`}
         style={{ fontFamily: "var(--font-heebo), var(--font-geist-sans), system-ui, sans-serif" }}
       >
         {children}
