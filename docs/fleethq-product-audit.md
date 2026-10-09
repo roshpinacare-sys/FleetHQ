@@ -115,3 +115,136 @@ Remedy: explicit unknown-state ("—", skeleton, connecting state) until the fir
 **Chosen language: "Ops Slate" — Factory-grade operations surfaces with Linear restraint.** Dark neutral base (the room lives in dark), one quiet accent retained from the existing brand (magenta family, desaturated, used only for interactive/active states and the single live-accent), semantic status colors doing all the remaining work. No gradients, no glow, no aurora, no particles, no blur-glass in the console; the office scene keeps its own atmosphere (it *is* the scene).
 
 Full token/component law: see `DESIGN.md` (repo root).
+
+---
+
+# Second-Pass Audit (Task 44) — 2026-10-09, commit `424db77`
+
+Method: re-read every surface after Task 43's redesign, then traced the data
+contracts end-to-end (foreman spawn path → socket → UI → 3D bridge → health
+endpoint → git sources). Verified live: foreman/gateway up, 7/7 sentinels,
+all three hash chains ok at inspection time. Findings are ranked by trust
+impact; each carries evidence and the correction that shipped (or the reason
+it was deferred).
+
+## What the first pass missed
+
+**T1. CRITICAL — the cold-boot resurrection path boots a stale office.**
+`vault/boot-sovereign.sh:217` runs `bash foreman/run-office.sh` from the repo
+root. The root `foreman/` is a **pre-Task-42 diverged fork** of the live
+foreman (`mini-services/agent-hq/`): no NVIDIA NIM brain (`llm.ts` diff), no
+`fronthouse.ts` (the reception worker), manual-only vault unseal. After a
+sandbox wipe, the office would resurrect with the old brain chain and no
+reception. The runtime supervisor (`api/foreman/health/route.ts`) spawns the
+canonical path — the two paths had silently diverged.
+*Shipped:* boot-sovereign repointed to `mini-services/agent-hq/run-office.sh`;
+stale `foreman/` fork removed (~2.8k lines); `auto-unseal.sh` candidate list
+and README/protocol comments updated.
+
+**T2. CRITICAL — Network Atlas: a legacy island with fabricated instruments.**
+`Network.tsx` (post-Task-43) still renders the old arcade language: 90-point
+star field (banned: particles), `feGaussianBlur` glow filters (banned: neon),
+radial fuchsia/violet gradients, `#d946ef`/`#7c3aed` palettes outside the
+semantic legend. Worse, the "HQ economy" meters are **mathematically fake**:
+`pct = opsDone / Math.max(24, opsDone)` — the expression is ≥1 for any value
+≥24, so production/circulation/knowledge bars sit pinned at ~100% regardless
+of real activity. A meter that cannot move is false operational confidence.
+*Shipped:* Network.tsx rewritten as an Ops Slate instrument — semantic token
+colors (live=`--st-ok`, open=`--st-attention`, sealed=`--st-neutral` dashed,
+accent=`--accent`), no particles/glow/gradients, meters rendered **only**
+where a real ratio exists (fresh books / total, territory opened); absolute
+counters render as plain mono numbers; per-district click now drills to that
+book in the fleet registry (previously every click landed on the same section).
+
+**T3. HIGH — FleetHQ git learning permanently disabled by a dead path.**
+The supervisor exports `AGENT_HQ_FLEET_DIR=/home/z/my-project/fleethq`
+(`api/foreman/health/route.ts`) but no `fleethq/` directory exists — the repo
+lives at `/home/z/my-project`. Because the env is *set*, the `?? fallback`
+never fires, `collectGitLearning` fails on the missing dir, and the office
+brain permanently loses the "FleetHQ · קוד המשרד" learning source (fail-soft
+swallows it — visible nowhere).
+*Shipped:* env corrected to the real checkout path; the learning wire now
+reads both real repositories.
+
+**T4. HIGH — the health endpoint's boot-watcher report was compiled out.**
+`bootWatcherState()` used `JSON.parse(...) as typeof idx` where control-flow
+narrowing had already reduced `idx` to `null` → every field typed `never`
+(8 tsc errors masked by `typescript.ignoreBuildErrors: true`). Runtime
+behavior survived only because casts are erased. The truth endpoint for the
+seventh sentinel did not type-check.
+*Shipped:* explicit state type alias; plus tsconfig excludes for out-of-app
+trees and `ignoreBuildErrors` flipped to `false` so the app tree can no
+longer compile with hidden errors.
+
+**T5. HIGH — a whole stale application ships inside the tree.**
+`web/` is a full second copy of the pre-Task-43 UI (14,255 lines: old
+AgentHQ, old Office, old STATE_COLORS palette), with its own package.json,
+untouched since `6b63870`. Nothing builds, serves, or references it (verified:
+no script/config/Caddy references), yet it sits inside the root tsconfig
+`include: **/*.ts` and the lint sweep — a standing trap for agents and a
+false palette source.
+*Shipped:* removed after trace; the root app is the one app.
+
+**T6. MEDIUM — `fleet-world` dead feature confirmed end-to-end.**
+Traced beyond Task 43's note: the only entry component (`FleetWorld.tsx`) is
+imported by nothing; its only data source (`/api/world`, 1,013 lines) serves
+only that component; lib types/positions/i18n have no other consumers. The
+complete dead family is **4,160 lines** (components + lib + route), plus the
+`.fw-scroll` CSS.
+*Shipped:* removed with evidence; `hq-*` scene utilities untouched.
+
+**T7. MEDIUM — console freshness is asserted, not shown.**
+The socket chip proves transport liveness only: if the foreman wedges with the
+socket open, every instrument keeps rendering its last snapshot as if current,
+and there is no "last update" anywhere. GitPulse already carries `lastFetch`
+but the UI ignored it; the commit strip showed the 40-commit wire cap as an
+absolute count.
+*Shipped:* the console tracks the last real event timestamp and surfaces
+"עודכן לפני X" next to the connection state, turning attention-colored when
+the stream goes quiet; git evidence shows its fetch age; the commit counter is
+labeled as "last 40".
+
+**T8. MEDIUM — leftover type debt in the 3D room (Task 42 legacy).**
+`Player.tsx` camera orbit accessed `orbit.current.*` on a flat object (3
+errors); `Stations.tsx` lerped a boolean ref and called a nonexistent
+`setChatOpen` bridge method (podium ring animation + reception click were
+half-wired); `Architecture.tsx` fed `number[]` to `boxGeometry` tuple args;
+`contract.ts` typed `STATION_NAV` as coordinate tuples while holding scalars;
+`textures.ts` rejected the documented optional `goal` field.
+*Shipped:* all fixed at the contract level (no suppressions); reception click
+from the 3D room verified against `store.setPanel('reception')` → `ui.openChat`.
+
+**T9. LOW — console drift leftovers.** ReceptionChat still wore the old
+fuchsia gradients/glow/zinc palette (it is a console surface, not the scene);
+the 3D minimap wrapper used raw amber + heavy shadow; `api/route.ts` served a
+hello-world; Heebo weight 800 was loaded with no console consumer; the
+autonomy banner and odometers from the first audit stayed gone (no
+regression). *Shipped:* all tokenized/removed.
+
+## Deferred, with reasons
+
+- **Production build cannot run in this environment.** The platform law
+  reserves the sandbox for the auto dev server on :3000 and forbids
+  `bun run build`; the dev server owns `.next/`, and Task 40 proved a build
+  window can corrupt it (kill-test lesson). Strongest valid substitute
+  executed: full `tsc --noEmit` over the app tree (clean after T4/T8), eslint
+  clean, dev-compile + live runtime probes through the gateway. The
+  `ignoreBuildErrors:false` flip means the next legitimate production build
+  enforces the same gate automatically.
+- **Task state persistence / crash recovery of mid-flight tasks** remains a
+  foreman-architecture question (in-memory Office state, restart = re-plan).
+  The honest UI already labels this (socket-down ≠ empty), and StackHealth
+  distinguishes alive/stale/down. Real remediation (persisting task journals
+  across restarts) needs a design decision in the foreman; out of scope for a
+  safe incremental pass — documented as prerequisite work, not hidden.
+
+## Validation record (Task 44)
+
+- `bun run lint` — clean (exit 0).
+- `bunx tsc --noEmit` — app tree clean (was 26 error lines in scope; 90
+  including vendored trees now excluded by explicit tsconfig boundaries).
+- Live socket smoke through the foreman: snapshot/agent/task/feed events
+  observed; crew, books, git wire present (recorded in worklog).
+- Runtime probes: `/api/foreman/health` 7/7 sentinels; `/api/fleet-health`
+  all_ok with chains re-verified; gateway /health provider table live.
+- Dead-code removals verified by pre/post grep: zero remaining imports.
