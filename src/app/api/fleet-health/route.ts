@@ -202,6 +202,40 @@ function postBatcherState(): Promise<{
   });
 }
 
+/** Seventh sentinel — boot-watcher state (revives the dev server itself). */
+async function bootWatcherState(): Promise<{
+  alive: boolean;
+  at: string | null;
+  port_ok: boolean | null;
+  spawns: number | null;
+  last_spawn_at: string | null;
+  stale_min: number | null;
+}> {
+  let idx: { at?: string; port_ok?: boolean; spawns?: number; last_spawn_at?: string | null } | null = null;
+  try {
+    idx = JSON.parse(fs.readFileSync(path.join(RECEIPTS, 'boot-watcher-state.json'), 'utf8')) as typeof idx;
+  } catch {
+    idx = null;
+  }
+  const staleMin =
+    idx?.at != null
+      ? Math.max(0, Math.round((Date.now() - new Date(idx.at).getTime()) / 60_000 * 10) / 10)
+      : null;
+  return new Promise((resolve) => {
+    execFile('pgrep', ['-f', 'tools/boot-watcher.ts'], { timeout: 3000 }, (err, stdout) => {
+      const alive = !err && String(stdout || '').split('\n').some((l) => l.trim());
+      resolve({
+        alive,
+        at: idx?.at ?? null,
+        port_ok: typeof idx?.port_ok === 'boolean' ? idx.port_ok : null,
+        spawns: typeof idx?.spawns === 'number' ? idx.spawns : null,
+        last_spawn_at: idx?.last_spawn_at ?? null,
+        stale_min: staleMin,
+      });
+    });
+  });
+}
+
 export async function GET() {
   const at = new Date().toISOString();
   const manifestChain = verifyMemoryChain(path.join(STACK, 'content', 'MANIFEST.md'));
@@ -294,6 +328,7 @@ export async function GET() {
 
   const monitor = await monitorState();
   const batcher = await postBatcherState();
+  const bootwatcher = await bootWatcherState();
 
   return Response.json({
     at,
@@ -313,5 +348,6 @@ export async function GET() {
     lineage_guard: lineageGuard,
     monitor,
     post_batcher: batcher,
+    boot_watcher: bootwatcher,
   });
 }

@@ -95,6 +95,11 @@ const LINEAGE_TS = '/home/z/my-project/mini-services/agent-hq/tools/lineage-guar
 // seals them with the current Merkle lineage root, tags BROADCAST-READY/HELD.
 // No keys, no network — honest drafts only.
 const POSTBATCH_TS = '/home/z/my-project/mini-services/agent-hq/tools/post-batcher.ts';
+// boot-watcher — the SEVENTH sentinel: revives the dev server itself. The
+// tree above lives INSIDE next-server, so server death kills every path here;
+// this watcher is a detached session-leader probing :3000 every 60s and
+// spawning `bun run dev` when dead (debounced 180s, receipts on disk).
+const BOOTWATCH_TS = '/home/z/my-project/mini-services/agent-hq/tools/boot-watcher.ts';
 
 // health_monitor — the JSON-RPC witness + probe loop (sovereign-stack, python,
 // stdlib only). Loops every 120s: probes live targets, parses witness account
@@ -130,6 +135,7 @@ const historyStamp = { v: 0 };
 const lineageStamp = { v: 0 };
 const monitorStamp = { v: 0 };
 const batcherStamp = { v: 0 };
+const bootwatchStamp = { v: 0 };
 
 function ensureSentinels(): Promise<{
   watchdog: boolean;
@@ -138,6 +144,7 @@ function ensureSentinels(): Promise<{
   lineage: boolean;
   monitor: boolean;
   batcher: boolean;
+  bootwatcher: boolean;
 }> {
   return Promise.all([
     ensureNode('shelf-watchdog', WATCHDOG_TS, 'tools/watchdog.ts', watchdogStamp),
@@ -146,7 +153,8 @@ function ensureSentinels(): Promise<{
     ensureNode('lineage-guard', LINEAGE_TS, 'tools/lineage-guard.ts', lineageStamp),
     ensureMonitor(),
     ensureBatcher(),
-  ]).then(([watchdog, snapshot, history, lineage, monitor, batcher]) => ({ watchdog, snapshot, history, lineage, monitor, batcher }));
+    ensureBootWatcher(),
+  ]).then(([watchdog, snapshot, history, lineage, monitor, batcher, bootwatcher]) => ({ watchdog, snapshot, history, lineage, monitor, batcher, bootwatcher }));
 }
 
 function ensureMonitor(): Promise<boolean> {
@@ -162,6 +170,24 @@ function ensureMonitor(): Promise<boolean> {
     });
     child.unref();
     console.log('[supervisor] respawned health-monitor');
+    return false; // will report alive on the next poll
+  }).catch(() => false);
+}
+
+/** Seventh sentinel — the boot-watcher (revives the dev server itself). */
+function ensureBootWatcher(): Promise<boolean> {
+  return pgrepAlive('tools/boot-watcher.ts').then((alive) => {
+    if (alive) return true;
+    const now = Date.now();
+    if (now - bootwatchStamp.v < 30_000) return false; // debounce respawns
+    bootwatchStamp.v = now;
+    const child = spawn('bun', [BOOTWATCH_TS], {
+      cwd: '/home/z/my-project',
+      detached: true,
+      stdio: 'ignore',
+    });
+    child.unref();
+    console.log('[supervisor] respawned boot-watcher');
     return false; // will report alive on the next poll
   }).catch(() => false);
 }

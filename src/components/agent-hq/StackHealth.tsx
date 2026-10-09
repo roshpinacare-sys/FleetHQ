@@ -30,6 +30,7 @@ interface FleetHealth {
   lineage_guard?: { at?: string; last_event?: string; head?: string; origin?: string; behind?: number; ahead?: number; last_push?: { at?: string; from?: string; to?: string } | null } | null;
   monitor?: { alive?: boolean; last_ts?: string | null; stale_min?: number | null } | null;
   post_batcher?: { alive?: boolean; at?: string | null; ready_count?: number | null; held_count?: number | null; lineage_root?: string | null; stale_min?: number | null } | null;
+  boot_watcher?: { alive?: boolean; at?: string | null; port_ok?: boolean | null; spawns?: number | null; last_spawn_at?: string | null; stale_min?: number | null } | null;
 }
 
 const L = {
@@ -63,6 +64,9 @@ const L = {
   lastTick: { he: 'תיק-אחרון', en: 'last tick' },
   postBatcher: { he: 'צובר-הפוסטים', en: 'Post batcher' },
   packed: { he: 'ארוזים', en: 'packed' },
+  bootWatcher: { he: 'לב-המשמר', en: 'Boot watcher' },
+  revives: { he: 'הקמות', en: 'revives' },
+  portOk: { he: 'פורט', en: 'port' },
 } as const;
 
 function tr(k: keyof typeof L, lang: Lang): string {
@@ -184,6 +188,12 @@ export default function StackHealth({ lang }: { lang: Lang }) {
                   : (h.post_batcher.stale_min != null && h.post_batcher.stale_min > 60) || (h.post_batcher.held_count ?? 0) > 0 ? 'warn' : 'ok'}
               value={h.post_batcher?.ready_count != null ? `${tr('packed', lang)}=${h.post_batcher.ready_count}/11${h.post_batcher.held_count ? ` · held=${h.post_batcher.held_count}` : ''}` : tr('absent', lang)}
               sub={h.post_batcher?.lineage_root ? `${h.post_batcher.lineage_root.slice(0, 12)}…${h.post_batcher.stale_min != null ? ` · Δ=${h.post_batcher.stale_min}min` : ''}` : undefined} ltr={false} />
+            <Cell label={tr('bootWatcher', lang)}
+              tone={!h.boot_watcher?.alive ? 'bad'
+                : h.boot_watcher.port_ok === false ? 'warn'
+                  : h.boot_watcher.stale_min != null && h.boot_watcher.stale_min > 10 ? 'warn' : 'ok'}
+              value={h.boot_watcher ? `${h.boot_watcher.alive ? tr('alive', lang) : tr('down', lang)} · ${tr('portOk', lang)}=${h.boot_watcher.port_ok == null ? '?' : h.boot_watcher.port_ok ? 'ok' : 'down'}` : tr('absent', lang)}
+              sub={h.boot_watcher?.spawns != null ? `${tr('revives', lang)}=${h.boot_watcher.spawns}${h.boot_watcher.stale_min != null ? ` · Δ=${h.boot_watcher.stale_min}min` : ''}` : undefined} ltr={false} />
             <Cell label={tr('probes', lang)}
               tone={!h.status?.ts ? 'bad'
                 : Date.now() - new Date(h.status.ts).getTime() > 10 * 60_000 ? 'warn'
