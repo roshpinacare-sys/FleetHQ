@@ -180,6 +180,34 @@ export async function GET() {
   const bridgeCount = lastLines(path.join(RECEIPTS, 'host-mem.jsonl'), 500)
     .filter((l) => l.includes('task31-mem-profiler-bridge')).length;
 
+  // shift-history receipt (the office's operational log, compiled by
+  // mini-services/agent-hq/tools/shift-history.ts from the append-only journal)
+  let shiftHistory: { md_at?: string; closed_shifts?: number; last_closed?: { goal?: string; approvals?: number; cancellations?: number; redos?: number } | null } | null = null;
+  try {
+    const mdPath = path.join(RECEIPTS, 'shift-history-latest.md');
+    const mdSt = fs.existsSync(mdPath) ? fs.statSync(mdPath) : null;
+    const histLines = lastLines(path.join(RECEIPTS, 'shift-history-history.jsonl'), 1);
+    let lastClosed: { goal?: string; approvals?: number; cancellations?: number; redos?: number } | null = null;
+    if (histLines.length) {
+      try {
+        const j = JSON.parse(histLines[0]) as { goal?: string; approvals?: number; cancellations?: number; redos?: number };
+        lastClosed = { goal: j.goal, approvals: j.approvals, cancellations: j.cancellations, redos: j.redos };
+      } catch {
+        lastClosed = null;
+      }
+    }
+    const closedCount = fs.existsSync(path.join(RECEIPTS, 'shift-history-history.jsonl'))
+      ? fs.readFileSync(path.join(RECEIPTS, 'shift-history-history.jsonl'), 'utf8').split('\n').filter(Boolean).length
+      : 0;
+    shiftHistory = {
+      md_at: mdSt ? mdSt.mtime.toISOString() : undefined,
+      closed_shifts: closedCount,
+      last_closed: lastClosed,
+    };
+  } catch {
+    shiftHistory = null;
+  }
+
   const allOk =
     manifestChain.ok &&
     rails.ok &&
@@ -200,5 +228,6 @@ export async function GET() {
       ? { at: telem.at ?? null, ok: telem.ok ?? null, error: telem.error ?? null }
       : null,
     unified_bridge: { records: bridgeCount, curve_tail: memCurve },
+    shift_history: shiftHistory,
   });
 }

@@ -88,6 +88,7 @@ function ensureSyncLoop() {
 
 const WATCHDOG_TS = '/home/z/my-project/mini-services/agent-hq/tools/watchdog.ts';
 const SNAPSHOT_TS = '/home/z/my-project/mini-services/agent-hq/tools/telemetry-snapshot.ts';
+const HISTORY_TS = '/home/z/my-project/mini-services/agent-hq/tools/shift-history.ts';
 
 function pgrepAlive(pattern: string): Promise<boolean> {
   return new Promise((resolve) => {
@@ -112,12 +113,14 @@ function ensureNode(label: string, script: string, pattern: string, lastAt: { v:
 
 const watchdogStamp = { v: 0 };
 const snapshotStamp = { v: 0 };
+const historyStamp = { v: 0 };
 
-function ensureSentinels(): Promise<{ watchdog: boolean; snapshot: boolean }> {
+function ensureSentinels(): Promise<{ watchdog: boolean; snapshot: boolean; history: boolean }> {
   return Promise.all([
     ensureNode('shelf-watchdog', WATCHDOG_TS, 'tools/watchdog.ts', watchdogStamp),
     ensureNode('telemetry-snapshot', SNAPSHOT_TS, 'tools/telemetry-snapshot.ts', snapshotStamp),
-  ]).then(([watchdog, snapshot]) => ({ watchdog, snapshot }));
+    ensureNode('shift-history', HISTORY_TS, 'tools/shift-history.ts', historyStamp),
+  ]).then(([watchdog, snapshot, history]) => ({ watchdog, snapshot, history }));
 }
 
 export async function GET() {

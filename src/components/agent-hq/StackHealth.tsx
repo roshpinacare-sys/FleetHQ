@@ -26,6 +26,7 @@ interface FleetHealth {
   seal?: { state?: string; rails_merkle_root?: string; generation?: { parent_broadcast_root?: string; parent_from?: string } } | null;
   books_lineage?: { books?: number; root?: string } | null;
   unified_bridge?: { records: number } | null;
+  shift_history?: { md_at?: string; closed_shifts?: number; last_closed?: { goal?: string; approvals?: number; cancellations?: number; redos?: number } | null } | null;
 }
 
 const L = {
@@ -49,6 +50,8 @@ const L = {
   loading: { he: 'נמדד…', en: 'measuring…' },
   verified: { he: 'אומת מהדיסק בכל-קריאה', en: 're-verified from disk on every call' },
   probes: { he: 'גשושיות', en: 'probes' },
+  shifts: { he: 'יומן-משמרות', en: 'Shift history' },
+  shiftSub: { he: 'משמרת', en: 'shift' },
 } as const;
 
 function tr(k: keyof typeof L, lang: Lang): string {
@@ -147,6 +150,10 @@ export default function StackHealth({ lang }: { lang: Lang }) {
               sub={h.books_lineage ? `${(h.books_lineage.root ?? '').slice(0, 16)}…` : undefined} />
             <Cell label={tr('bridge', lang)} tone={h.unified_bridge && h.unified_bridge.records > 0 ? 'ok' : 'warn'}
               value={`records=${h.unified_bridge?.records ?? 0}`} />
+            <Cell label={tr('shifts', lang)}
+              tone={h.shift_history?.md_at ? (Date.now() - new Date(h.shift_history.md_at).getTime() < 5 * 60_000 ? 'ok' : 'warn') : 'warn'}
+              value={h.shift_history?.md_at ? `closed=${h.shift_history.closed_shifts ?? 0}` : tr('absent', lang)}
+              sub={h.shift_history?.last_closed?.goal ? `${tr('shiftSub', lang)}: ${h.shift_history.last_closed.goal.slice(0, 60)}` : undefined} ltr={false} />
             <Cell label={tr('probes', lang)}
               tone={h.status?.results?.every((r) => r.verdict === 'OK') ? 'ok'
                 : h.status?.results?.some((r) => r.verdict === 'OK') ? 'warn' : 'bad'}
