@@ -214,7 +214,7 @@ if alive 3000 / && alive 3010 / && alive 3011 /; then
   say "office already alive: :3000 reception + :3010 foreman + :3011 gateway"
 else
   say "starting dead services via run-office.sh …"
-  ( cd "$VAULT_ROOT" && nohup bash foreman/run-office.sh >/tmp/sovereign-run-office.log 2>&1 & )
+  ( cd "$VAULT_ROOT" && nohup bash mini-services/agent-hq/run-office.sh >/tmp/sovereign-run-office.log 2>&1 & )
 fi
 
 # ---- 8. honest status ---------------------------------------------------------

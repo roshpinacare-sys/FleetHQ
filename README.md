@@ -37,7 +37,7 @@ Most "agent dashboards" show a spinner and a status word. Fleet HQ shows **the w
 
 | Mode | What runs | What you need |
 |---|---|---|
-| **Demo** (`sim`) | A scripted, clearly-labeled simulated crew performing a full scenario on bundled synthetic books (`foreman/demo-data/`). A `DEMO · SIMULATION` watermark is shown at all times. | Nothing. Zero keys, zero config. |
+| **Demo** (`sim`) | A scripted, clearly-labeled simulated crew performing a full scenario on bundled synthetic books (`mini-services/agent-hq/demo-data/`). A `DEMO · SIMULATION` watermark is shown at all times. | Nothing. Zero keys, zero config. |
 | **Live** (`live`) | Real LLM agents (chief of staff + 5 workers) with real tools operating on your real data books. | An LLM key (see below) + a directory of JSON "books". |
 
 The UI always tells you which mode you are in. The demo exists so anyone can feel the product in 30 seconds — and so public checkouts never ship anyone's real data.
@@ -48,7 +48,7 @@ You need [Bun](https://bun.sh) (foreman) and Node 20+ (web).
 
 ```sh
 # terminal 1 — the foreman (demo crew, no keys needed)
-cd foreman
+cd mini-services/agent-hq
 bun install
 bun run dev                     # listens on :3010
 
@@ -64,9 +64,9 @@ Open **http://localhost:3000** — you'll see the office with the simulated crew
 
 ## Going live
 
-1. **Books.** Point the foreman at a directory of JSON files (fleet state, ledgers, audits, registries — your domain's "books"). Either create `foreman/data/` or export `AGENT_HQ_DATA_DIR=/path/to/your/books`.
+1. **Books.** Point the foreman at a directory of JSON files (fleet state, ledgers, audits, registries — your domain's "books"). Either create `mini-services/agent-hq/data/` or export `AGENT_HQ_DATA_DIR=/path/to/your/books`.
 
-   Book expectations are light: any JSON file with an optional date-ish field (`at`, `asOf`, `generatedAt`, …) gets a heartbeat; optional `ok` / `verdict` top-level fields are surfaced. See `foreman/src/books.ts` for the built-in registry (edit `BOOK_DEFS` to match your domain).
+   Book expectations are light: any JSON file with an optional date-ish field (`at`, `asOf`, `generatedAt`, …) gets a heartbeat; optional `ok` / `verdict` top-level fields are surfaced. See `mini-services/agent-hq/src/books.ts` for the built-in registry (edit `BOOK_DEFS` to match your domain).
 
 2. **LLM — the sovereign brain chain.** Both the foreman and the receptionist walk the SAME failover chain, first live brain wins. Per brain+model cooldown (5 min) after a hard error, so one dead provider never slows the others. Keyless brains need NO signup:
 
@@ -83,9 +83,9 @@ Open **http://localhost:3000** — you'll see the office with the simulated crew
 
 ```sh
 cp .env.example .env.local               # web/reception vault
-cp .env.example foreman/.env             # foreman vault
+cp .env.example mini-services/agent-hq/.env   # foreman vault
 # fill in what you have — even zero keys run the keyless brains
-chmod 600 .env.local foreman/.env        # never commit real keys
+chmod 600 .env.local mini-services/agent-hq/.env  # never commit real keys
 ```
 
    `.env.example` documents every brain and the verified free-model list. The live status bar in the UI shows the chain as it is mounted (e.g. `xai→openrouter→kilo→pollinations`).

@@ -19,7 +19,7 @@ export const TASK_COL: Record<TaskStatus, string> = {
   cancelled: '#52525b',
 };
 
-/** Fallback cast — identical ids/colors to the foreman's CREW (foreman/src/cast.ts).
+/** Fallback cast — identical ids/colors to the foreman's CREW (mini-services/agent-hq/src/cast.ts).
  *  משמש רק לריהוט החדר לפני שהסנאפשוט האמיתי הראשון מגיע. */
 export const CREW_FALLBACK: CrewMember[] = [
   { id: 'aluf',   name: { he: 'אלוף',  en: 'Aluf' },   title: { he: 'ראש-המטה',      en: 'Chief of staff' },        color: '#E0973F', specialty: { he: 'מתכנן את העבודה וחותם סיכומים', en: 'Plans the work, signs the summary' }, books: [], role: 'lead' },

@@ -80,7 +80,7 @@ if bash "$DIR/vault.sh" open >/dev/null 2>&1; then
     chmod 600 "$FHQ_ENV"
   fi
   # verify the deploy actually produced keyed files
-  if deployed_ok "$ROOT/.env.local" || deployed_ok "$ROOT/mini-services/agent-hq/.env" || deployed_ok "$ROOT/foreman/.env" || deployed_ok "$ROOT/.env"; then
+  if deployed_ok "$ROOT/.env.local" || deployed_ok "$ROOT/mini-services/agent-hq/.env" || deployed_ok "$ROOT/.env"; then
     echo "[vault] keys deployed (autonomous unseal OK)"
     exit 0
   fi
