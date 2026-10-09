@@ -20,7 +20,7 @@ export default function Room3D() {
     <div className="relative h-full w-full" dir="rtl">
       <Office3D />
       {/* מפת הקומה — פינה עליונה (התחלת הקריאה בעברית), שקופה ולא חוסמת */}
-      <div className="absolute right-3 top-3 z-10 overflow-hidden rounded-lg border border-amber-400/20 shadow-xl">
+      <div className="absolute right-3 top-3 z-10 overflow-hidden rounded-lg border border-[color:var(--line-strong)] shadow-[0_1px_2px_rgba(0,0,0,0.4)]">
         <MiniMap />
       </div>
       <Controls3D />

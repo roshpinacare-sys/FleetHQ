@@ -85,13 +85,14 @@ export function AlertsStrip({ blocked, openDecisions, errors, lang }: { blocked:
 
 /* ── status strip: real instruments, "—" when unknown ────────────────── */
 
-export function StripItem({ label, value, tone, mono = true }: { label: string; value: string; tone?: Semantic; mono?: boolean }) {
+export function StripItem({ label, value, tone, sub, mono = true }: { label: string; value: string; tone?: Semantic; sub?: string; mono?: boolean }) {
   return (
     <div className="flex min-w-[104px] flex-1 flex-col gap-0.5 px-4 py-3">
       <span className="text-[11px] font-semibold tracking-[0.06em] text-[color:var(--ink-3)]" dir="auto">{label}</span>
       <span className={`flex items-center gap-1.5 text-[15px] font-semibold leading-5 ${mono ? 'font-mono tabular-nums' : ''}`} style={tone ? { color: semanticVar(tone) } : undefined} dir={mono ? 'ltr' : 'auto'}>
         {value}
       </span>
+      {sub && <span className="text-[10.5px] leading-3.5 text-[color:var(--ink-3)]" dir="auto">{sub}</span>}
     </div>
   );
 }
@@ -146,8 +147,14 @@ function goalStatusName(s: Goal['status'], lang: Lang): string {
 
 const COLS: Array<Task['status']> = ['todo', 'doing', 'review', 'blocked', 'done', 'cancelled'];
 
-export function TasksBoard({ lang, tasks, crew }: { lang: Lang; tasks: Task[]; crew: CrewMember[] }) {
+export function TasksBoard({ lang, tasks, crew, focusTask }: { lang: Lang; tasks: Task[]; crew: CrewMember[]; focusTask?: string | null }) {
   const [open, setOpen] = useState<string | null>(null);
+  const focusRef = useRef<HTMLButtonElement | null>(null);
+  useEffect(() => {
+    if (focusTask && focusRef.current) {
+      focusRef.current.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    }
+  }, [focusTask]);
   const crewById = useMemo(() => new Map(crew.map((c) => [c.id, c])), [crew]);
   return (
     <Panel title={t('secTasks', lang)} meta={`${tasks.filter((x) => x.status === 'doing').length} ${t('stripWorking', lang)}`}>
@@ -169,9 +176,18 @@ export function TasksBoard({ lang, tasks, crew }: { lang: Lang; tasks: Task[]; c
                   <div className="sl-col-cards sl-scroll max-h-[420px] overflow-y-auto">
                     {list.map((task) => {
                       const owner = task.assignee ? crewById.get(task.assignee) : undefined;
-                      const expanded = open === task.id;
+                      // a drill-down target (decision → task) stays expanded while focused
+                      const expanded = open === task.id || focusTask === task.id;
+                      const focused = focusTask === task.id;
                       return (
-                        <button key={task.id} onClick={() => setOpen(expanded ? null : task.id)} className="sl-card" aria-expanded={expanded}>
+                        <button
+                          key={task.id}
+                          ref={focused ? focusRef : undefined}
+                          onClick={() => setOpen(expanded ? null : task.id)}
+                          className="sl-card"
+                          aria-expanded={expanded}
+                          style={focused ? { borderColor: 'var(--accent)', background: 'var(--accent-dim)' } : undefined}
+                        >
                           <span className="flex items-start gap-2" dir="auto">
                             {owner && <span className="mt-1 h-2.5 w-2.5 shrink-0 rounded-sm" style={{ backgroundColor: owner.color }} aria-hidden="true" />}
                             <span className="min-w-0 text-[13px] font-medium leading-5 text-[color:var(--ink)]">{task.title}</span>
@@ -189,6 +205,7 @@ export function TasksBoard({ lang, tasks, crew }: { lang: Lang; tasks: Task[]; c
                               {task.why && <span className="block" style={{ color: semanticVar('info') }}>{task.matchBy === 'fit' ? 'FIT' : 'LLM'} · {task.why}</span>}
                               {task.dependsOn.length > 0 && <span className="block">{t('dependsOn', lang)}: <span className="font-mono">{task.dependsOn.join(', ')}</span></span>}
                               {task.summary && <span className="block rounded-md bg-[color:var(--surface-2)] p-1.5">{t('summary', lang)}: {task.summary}</span>}
+                              <span className="block font-mono text-[11px] text-[color:var(--ink-3)]" dir="ltr">{task.id}</span>
                               <span className="block text-[color:var(--ink-3)]">{timeAgo(task.updatedAt, lang)}</span>
                             </span>
                           )}
@@ -252,6 +269,9 @@ export function AgentInspector({ lang, crew, agent, logs, tasks }: { lang: Lang;
         <p className="text-[12px] text-[color:var(--ink-3)]">
           {t('currentTask', lang)}: {task ? <span className="text-[color:var(--ink-2)]">{task.title}</span> : t('noCurrentTask', lang)}
         </p>
+        <p className="text-[11.5px] text-[color:var(--ink-3)]" dir="auto">
+          {t('stateSince', lang)}: {timeAgo(agent.since, lang)}
+        </p>
       </div>
       <div ref={scroller} className="hq-scroll min-h-0 flex-1 overflow-y-auto bg-[color:var(--surface-2)] p-2.5" dir="ltr">
         {logs.length === 0 && <div className="sl-empty !p-6">{t('logEmpty', lang)}</div>}
@@ -269,7 +289,7 @@ export function AgentInspector({ lang, crew, agent, logs, tasks }: { lang: Lang;
 
 /* ── decisions (transparency record — resolved autonomously) ─────────── */
 
-export function DecisionsPanel({ lang, decisions }: { lang: Lang; decisions: Decision[] }) {
+export function DecisionsPanel({ lang, decisions, onOpenTask }: { lang: Lang; decisions: Decision[]; onOpenTask?: (taskId: string) => void }) {
   const open = decisions.filter((d) => d.status === 'open');
   const answered = decisions.filter((d) => d.status === 'answered').slice(-5).reverse();
   return (
@@ -287,6 +307,17 @@ export function DecisionsPanel({ lang, decisions }: { lang: Lang; decisions: Dec
             {d.options.map((o) => (
               <span key={o} className="sl-chip" dir="auto">{o}</span>
             ))}
+            {d.taskId && onOpenTask && (
+              <button
+                onClick={() => onOpenTask(d.taskId as string)}
+                className="sl-chip !border-dashed font-mono !text-[11px]"
+                style={{ color: 'var(--accent)' }}
+                title={t('goToTask', lang)}
+                dir="ltr"
+              >
+                {t('goToTask', lang)} → {d.taskId}
+              </button>
+            )}
           </div>
         </article>
       ))}
@@ -334,16 +365,28 @@ export function ReportsPanel({ lang, reports, limit }: { lang: Lang; reports: Re
 
 /* ── fleet books registry ────────────────────────────────────────────── */
 
-export function FleetBooksPanel({ lang, books, crew, onPreview }: { lang: Lang; books: BookView[]; crew: CrewMember[]; onPreview: (id: string) => void }) {
+export function FleetBooksPanel({ lang, books, crew, onPreview, focusBook }: { lang: Lang; books: BookView[]; crew: CrewMember[]; onPreview: (id: string) => void; focusBook?: string | null }) {
   const crewById = useMemo(() => new Map(crew.map((c) => [c.id, c])), [crew]);
+  const focusRef = useRef<HTMLButtonElement | null>(null);
+  useEffect(() => {
+    if (focusBook && focusRef.current) focusRef.current.scrollIntoView({ block: 'center', behavior: 'smooth' });
+  }, [focusBook]);
   return (
     <div className="sl-scroll max-h-[420px] overflow-y-auto">
       {books.map((b) => {
         const owner = b.owner ? crewById.get(b.owner) : undefined;
         const stale = (b.ageHours ?? 0) > 72;
         const sem: Semantic = b.ok === false ? 'danger' : stale ? 'attention' : 'ok';
+        const focused = focusBook === b.id;
         return (
-          <button key={b.id} onClick={() => onPreview(b.id)} className="sl-row w-full" dir="auto">
+          <button
+            key={b.id}
+            ref={focused ? focusRef : undefined}
+            onClick={() => onPreview(b.id)}
+            className="sl-row w-full"
+            style={focused ? { background: 'var(--accent-dim)', boxShadow: 'inset 2px 0 0 var(--accent)' } : undefined}
+            dir="auto"
+          >
             <span className="h-6 w-1 shrink-0 rounded-full" style={{ backgroundColor: owner?.color ?? 'var(--st-neutral)' }} aria-hidden="true" />
             <span className="min-w-0 flex-1">
               <span className="block truncate text-[13px] font-medium text-[color:var(--ink)]">{b.title[lang]}</span>

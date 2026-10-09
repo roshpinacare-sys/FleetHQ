@@ -28,8 +28,9 @@ import { GitEvidencePanel } from './GitWire';
 import StackHealth from './StackHealth';
 import { ReceptionChat, type PublicStats } from './ReceptionChat';
 import type { AgentView, BookView, CrewMember, Decision, FeedItem, GitPulse, Goal, LogEntry, Report, Snapshot, Task } from './types';
-import { AGENT_SEMANTIC, semanticVar } from '@/components/hq/tokens';
+import { AGENT_SEMANTIC, semanticVar, type Semantic } from '@/components/hq/tokens';
 import { t, stateName, type Lang } from './i18n';
+import { timeAgo } from './panels';
 import { useHq } from '@/lib/hq/store';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
@@ -83,6 +84,23 @@ function Monogram() {
   );
 }
 
+/** Jerusalem clock — isolated so its 1Hz tick re-renders ONLY the clock,
+ * not the whole console tree (the previous shared state re-rendered
+ * every panel every second). */
+function JerusalemClock({ lang }: { lang: Lang }) {
+  const [clock, setClock] = useState('');
+  useEffect(() => {
+    const tick = () =>
+      setClock(new Date().toLocaleTimeString('he-IL', { hour12: false, timeZone: 'Asia/Jerusalem' }));
+    tick();
+    const iv = setInterval(tick, 1000);
+    return () => clearInterval(iv);
+  }, []);
+  return (
+    <span className="hidden font-mono tabular-nums sm:inline" dir="ltr">{clock} {t('jerusalem', lang)}</span>
+  );
+}
+
 export default function AgentHQ() {
   const [lang, setLang] = useState<Lang>('he');
   const [snap, setSnap] = useState<Snapshot>(EMPTY_SNAPSHOT);
@@ -95,8 +113,23 @@ export default function AgentHQ() {
   const [selected, setSelected] = useState<string | null>('aluf');
   const [connected, setConnected] = useState(false);
   const [gotSnapshot, setGotSnapshot] = useState(false);
+  // freshness: ts of the last REAL wire event (any kind). The foreman proves
+  // liveness with a 30s status heartbeat, so this can honestly distinguish
+  // "quiet office" from "wedged socket".
+  const [lastSignalAt, setLastSignalAt] = useState<number | null>(null);
+  // drill-down targets (from the atlas / decisions) — scroll + highlight,
+  // consumed and cleared so the operator can collapse the card again
+  const [focusBook, setFocusBook] = useState<string | null>(null);
+  const [focusTask, setFocusTask] = useState<string | null>(null);
+  useEffect(() => {
+    if (!focusBook && !focusTask) return;
+    const id = window.setTimeout(() => {
+      setFocusBook(null);
+      setFocusTask(null);
+    }, 6000);
+    return () => window.clearTimeout(id);
+  }, [focusBook, focusTask]);
   const [chatOpen, setChatOpen] = useState(false);
-  const [clock, setClock] = useState('');
   const [preview, setPreview] = useState<{ id: string; excerpt: string } | null>(null);
   const [showAllReports, setShowAllReports] = useState(false);
   const socketRef = useRef<Socket | null>(null);
@@ -179,7 +212,10 @@ export default function AgentHQ() {
       useHq.getState().syncConnected(false);
       requestForemanHeal(); // the crew service may have died — self-heal
     });
+    // every real event proves the stream is alive — one shared freshness mark
+    const markEvent = () => setLastSignalAt(Date.now());
     socket.on('snapshot', (s: Snapshot) => {
+      markEvent();
       setSnap(s);
       setGotSnapshot(true);
       setAgents(Object.fromEntries(s.agents.map((a) => [a.id, a])));
@@ -187,10 +223,12 @@ export default function AgentHQ() {
       useHq.getState().syncSnapshot(s); // the 3D room lives on the same reality
     });
     socket.on('agent', (a: AgentView) => {
+      markEvent();
       setAgents((prev) => ({ ...prev, [a.id]: a }));
       useHq.getState().syncAgent(a);
     });
     socket.on('log', ({ agentId, entry }: { agentId: string; entry: LogEntry }) => {
+      markEvent();
       setLogs((prev) => {
         const list = [...(prev[agentId] ?? []), entry];
         return { ...prev, [agentId]: list.slice(-160) };
@@ -198,6 +236,7 @@ export default function AgentHQ() {
       useHq.getState().syncLog(agentId, entry);
     });
     socket.on('task', (task: Task) => {
+      markEvent();
       setSnap((prev) => {
         const tasks = prev.tasks.filter((x) => x.id !== task.id);
         return { ...prev, tasks: [...tasks, task] };
@@ -205,6 +244,7 @@ export default function AgentHQ() {
       useHq.getState().syncTask(task);
     });
     socket.on('decision', (d: Decision) => {
+      markEvent();
       setSnap((prev) => {
         const decisions = prev.decisions.filter((x) => x.id !== d.id);
         return { ...prev, decisions: [...decisions, d] };
@@ -213,30 +253,37 @@ export default function AgentHQ() {
       // no auto-jump: decisions resolve autonomously — the alerts strip surfaces them
     });
     socket.on('report', (r: Report) => {
+      markEvent();
       setSnap((prev) => (prev.reports.some((x) => x.id === r.id) ? prev : { ...prev, reports: [r, ...prev.reports] }));
       useHq.getState().syncReport(r);
     });
     socket.on('feed', (f: FeedItem) => {
+      markEvent();
       setSnap((prev) => ({ ...prev, feed: [...prev.feed.slice(-160), f] }));
       useHq.getState().syncFeed(f);
     });
     socket.on('goal', (g: Goal) => {
+      markEvent();
       setSnap((prev) => ({ ...prev, goal: g }));
       useHq.getState().syncGoal(g);
     });
     socket.on('books', (books: BookView[]) => {
+      markEvent();
       setSnap((prev) => ({ ...prev, books }));
       useHq.getState().syncBooks(books);
     });
     socket.on('status', (status: Snapshot['status']) => {
+      markEvent();
       setSnap((prev) => ({ ...prev, status }));
       useHq.getState().syncStatus(status);
     });
     socket.on('git', (g: GitPulse) => {
+      markEvent();
       setSnap((prev) => ({ ...prev, git: g }));
       useHq.getState().syncGit(g);
     });
     socket.on('bubble', ({ agentId, text }: { agentId: string; text: string }) => {
+      markEvent();
       setBubbles((prev) => ({ ...prev, [agentId]: { text, ts: Date.now() } }));
       useHq.getState().syncBubble(agentId, text); // real speech → the 3D avatars speak it
       setTimeout(() => setBubbles((prev) => {
@@ -251,15 +298,6 @@ export default function AgentHQ() {
       socketRef.current = null;
     };
   }, [requestForemanHeal]);
-
-  // ---- clock (Jerusalem) — client-only, never rendered on the server -------------------
-  useEffect(() => {
-    const tick = () =>
-      setClock(new Date().toLocaleTimeString('he-IL', { hour12: false, timeZone: 'Asia/Jerusalem' }));
-    tick();
-    const iv = setInterval(tick, 1000);
-    return () => clearInterval(iv);
-  }, []);
 
   // ---- derived reality ----------------------------------------------------------------
   const openDecisionCount = snap.decisions.filter((d) => d.status === 'open').length;
@@ -302,9 +340,18 @@ export default function AgentHQ() {
   // unknown-aware instrument values: "—" until the first snapshot lands
   const u = '—';
   const crewTotal = gotSnapshot ? snap.crew.length : null;
-  const systemSem = !connected ? 'danger' : sim ? 'attention' : 'ok';
+  // truth about freshness: the stream proves itself with heartbeats; when the
+  // socket is open but no event has arrived for >75s (>2 missed heartbeats),
+  // the data on screen is possibly frozen — say so instead of "live".
+  const STALE_MS = 75_000;
+  const stale = connected && gotSnapshot && lastSignalAt !== null && Date.now() - lastSignalAt > STALE_MS;
+  const freshnessLabel = gotSnapshot && lastSignalAt !== null
+    ? `${t('lastUpdate', lang)}: ${timeAgo(lastSignalAt, lang)}`
+    : undefined;
+  const systemSem: Semantic = !connected ? 'danger' : stale ? 'attention' : sim ? 'attention' : 'ok';
   const systemLabel = !connected
     ? gotSnapshot ? t('socketDown', lang) : t('stripConnecting', lang)
+    : stale ? t('stripStale', lang)
     : sim ? t('stripSim', lang) : t('stripLive', lang);
 
   return (
@@ -337,7 +384,7 @@ export default function AgentHQ() {
           </div>
 
           <div className="ms-auto flex items-center gap-2.5 text-[12px] text-[color:var(--ink-2)]">
-            <span className="hidden font-mono tabular-nums sm:inline" dir="ltr">{clock} {t('jerusalem', lang)}</span>
+            <JerusalemClock lang={lang} />
             <button onClick={() => setLang(rtl ? 'en' : 'he')} className="sl-btn sl-btn-ghost !min-h-[36px] !px-3 !py-1 !text-[12.5px]">
               {rtl ? 'EN' : 'עברית'}
             </button>
@@ -385,7 +432,7 @@ export default function AgentHQ() {
             {/* status strip — the real instruments */}
             <section className="sl-panel mb-4" aria-label={t('stripSystem', lang)}>
               <div className="flex flex-wrap items-stretch divide-x divide-[color:var(--line)] rtl:divide-x-reverse">
-                <StripItem label={t('stripSystem', lang)} value={systemLabel} tone={systemSem} mono={false} />
+                <StripItem label={t('stripSystem', lang)} value={systemLabel} tone={systemSem} mono={false} sub={freshnessLabel} />
                 <StripItem label={t('stripCrew', lang)} value={crewTotal === null ? u : `${workingCount}/${crewTotal} ${t('stripWorking', lang)}`} tone={workingCount > 0 ? 'working' : 'neutral'} mono={false} />
                 <StripItem label={t('stripTasks', lang)} value={gotSnapshot ? String(openTasks) : u} tone={blockedTasks > 0 ? 'danger' : undefined} />
                 <StripItem label={t('stripBooks', lang)} value={gotSnapshot ? String(snap.books.length) : u} />
@@ -401,7 +448,7 @@ export default function AgentHQ() {
               {/* left: work + evidence */}
               <div className="flex min-w-0 flex-col gap-4">
                 <div id="sec-tasks" className="scroll-mt-20">
-                  <TasksBoard lang={lang} tasks={snap.tasks} crew={snap.crew} />
+                  <TasksBoard lang={lang} tasks={snap.tasks} crew={snap.crew} focusTask={focusTask} />
                 </div>
                 <div id="sec-journal" className="scroll-mt-20">
                   <Panel title={t('secJournal', lang)} meta={`${snap.feed.length}`}>
@@ -462,7 +509,14 @@ export default function AgentHQ() {
 
                 <div id="sec-decisions" className="scroll-mt-20">
                   <Panel title={t('secDecisions', lang)} meta={openDecisionCount > 0 ? `${openDecisionCount}` : undefined}>
-                    <DecisionsPanel lang={lang} decisions={snap.decisions} />
+                    <DecisionsPanel
+                      lang={lang}
+                      decisions={snap.decisions}
+                      onOpenTask={(taskId) => {
+                        setFocusTask(taskId);
+                        scrollToSection('sec-tasks');
+                      }}
+                    />
                   </Panel>
                 </div>
 
@@ -482,7 +536,7 @@ export default function AgentHQ() {
 
                 <div id="sec-fleet" className="scroll-mt-20">
                   <Panel title={t('fleet', lang)} meta={`${snap.books.length}`}>
-                    <FleetBooksPanel lang={lang} books={snap.books} crew={snap.crew} onPreview={openBookPreview} />
+                    <FleetBooksPanel lang={lang} books={snap.books} crew={snap.crew} onPreview={openBookPreview} focusBook={focusBook} />
                   </Panel>
                 </div>
               </aside>
@@ -545,11 +599,17 @@ export default function AgentHQ() {
                 <NetworkAtlas
                   lang={lang}
                   books={snap.books}
+                  ready={gotSnapshot}
                   opsDone={snap.status.opsDone}
                   commits={snap.git?.available ? snap.git.commits.length : 0}
                   reports={snap.reports.length}
                   busy={workingCount}
-                  onOpenTab={() => {
+                  onOpenBook={(bookId) => {
+                    setFocusBook(bookId);
+                    setView('ops');
+                    scrollToSection('sec-fleet');
+                  }}
+                  onOpenFleet={() => {
                     setView('ops');
                     scrollToSection('sec-fleet');
                   }}

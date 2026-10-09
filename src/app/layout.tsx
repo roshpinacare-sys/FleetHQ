@@ -13,11 +13,11 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-// Heebo carries the Hebrew glyphs for the Fleet World HUD (the console uses it too)
+// Heebo carries the Hebrew glyphs for the whole console (design law: 400–700)
 const heebo = Heebo({
   variable: "--font-heebo",
   subsets: ["hebrew", "latin"],
-  weight: ["400", "500", "600", "700", "800"],
+  weight: ["400", "500", "600", "700"],
 });
 
 // JetBrains Mono — instrument readouts, git hashes, log lines

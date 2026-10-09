@@ -141,27 +141,20 @@ export const T = {
   atlasOffice: { he: 'המשרד', en: 'Office' },
   atlasNetwork: { he: 'הרשת', en: 'Network' },
   atlasViewHint: {
-    he: 'הרשת נפתחת מעצמה ככל שהמשרד מפתח את המציאות — מחוז נפתח כשהספר שלו טרי',
-    en: 'The network opens itself as the office develops the reality — a district opens when its book is fresh',
+    he: 'מודל-על של הטופולוגיה האמיתית — כל מחוז הוא ספר אמיתי, צבעו הוא טריותו הנמדדת. קליק על מחוז פותח את הספר ברישום',
+    en: 'A topology model of the real system — every district is a real book, its color is measured freshness. Click a district to open it in the registry',
   },
   atlasHq: { he: 'מפקדת הצי', en: 'FLEET HQ' },
   atlasTerritory: { he: 'שטח נפתח', en: 'territory open' },
   atlasLive: { he: 'חי', en: 'LIVE' },
   atlasOpen: { he: 'פתוח', en: 'OPEN' },
   atlasSealed: { he: 'אטום', en: 'SEALED' },
-  atlasLocked: { he: 'נעול — הצוות עובד עליו', en: 'Sealed — the crew is on it' },
   atlasEmpty: {
     he: 'הרשת נבנית — ברגע שהספרים ייטענו המחוזות ייפתחו אחד אחרי השני',
     en: 'The network is forming — once the books load, districts open one by one',
   },
   atlasHours: { he: 'שע׳ מאז פעימה', en: 'h since heartbeat' },
-  atlasFrontier: { he: 'החזית הבאה', en: 'Next frontier' },
-  // ---- the city & the office economy (the autonomy layer of the atlas) ----
-  atlasCity: { he: 'העיר שצומחת מהעבודה', en: 'The city that grows from the work' },
-  atlasCityHint: {
-    he: 'כל מבנה נולד ממחוז אמיתי — חי: מואר ופועל · פתוח: דולק · אטום: סגרי בטון',
-    en: 'Every building is born from a real district — live: lit & working · open: lit · sealed: dark stub',
-  },
+  // ---- the office economy (honest readout of the atlas) ----
   econTitle: { he: 'כלכלת המפקדה', en: 'HQ ECONOMY' },
   econProd: { he: 'ייצור · משימות שהושלמו', en: 'production · ops done' },
   econCirc: { he: 'מחזור · קומיטים אמיתיים', en: 'circulation · real commits' },
@@ -215,6 +208,12 @@ export const T = {
   branchLabel: { he: 'ענף', en: 'branch' },
   tasksEmpty: { he: 'הלוח ריק — המפעיל האוטונומי מתכנן את הסבב הבא', en: 'Board is empty — the autonomous operator is planning the next round' },
   waitingFirstSnapshot: { he: 'ממתין לנתונים ראשוניים מהמשרד…', en: 'Waiting for the first snapshot from the office…' },
+  // ---- freshness truth (Task 44) ----
+  stripStale: { he: 'זרימה שקטה — הנתונים עלולים להיות קפואים', en: 'Stream quiet — data may be frozen' },
+  lastUpdate: { he: 'עדכון אחרון', en: 'last update' },
+  stateSince: { he: 'במצב זה מאז', en: 'in this state since' },
+  goToTask: { he: 'למשימה', en: 'open task' },
+  gitWireCap: { he: '40 הקומיטים האחרונים', en: 'last 40 commits' },
   socketDown: { he: 'החיבור למשרד נפל — מנסה להתחבר מחדש', en: 'Connection to the office dropped — reconnecting' },
   officeViewHint: { he: 'החדר החי — לחיצה על דמות פותחת את המסך שלה', en: 'The live room — click a figure to open their monitor' },
   autonomyLine: {

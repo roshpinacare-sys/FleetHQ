@@ -31,6 +31,9 @@ export function GitEvidencePanel({ lang, git }: { lang: Lang; git?: GitPulse }) 
           <span className="sl-dot sl-dot-live" style={{ backgroundColor: 'var(--st-ok)' }} aria-hidden="true" />
           {t('gitLive', lang)}
         </span>
+        <span className="text-[11.5px] text-[color:var(--ink-3)]" dir="auto">
+          {t('lastUpdate', lang)}: {timeAgo(git.lastFetch, lang)} · {t('gitWireCap', lang)}
+        </span>
         {git.repoLabel && <span className="sl-chip font-mono" dir="ltr">{git.repoLabel}</span>}
         {git.branch && (
           <span className="sl-chip font-mono" dir="ltr">
