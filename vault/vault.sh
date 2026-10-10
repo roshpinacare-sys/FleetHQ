@@ -26,10 +26,10 @@ KDF="-pbkdf2 -iter 200000 -salt"
 
 # sovereignty v2: if no explicit passphrase, unwrap via the wrap registry
 # (session pass → wraps → legacy credential) — see vaultlib.sh
-# BUGFIX (2026-10-10): the unwrapped pass MUST be exported — `openssl -pass
-# env:VAR` reads the process ENVIRONMENT, not shell variables. Unattended
-# `vault.sh seal|open` used to die with "No environment variable
-# VAULT_PASSPHRASE" (worked only when the operator exported it by hand).
+# T-47 (agent-2): EXPORT is mandatory — openssl -pass env: reads the child
+# ENVIRONMENT; a plain shell assignment is invisible to it. This exact bug
+# made the autonomous unwrap path fail with "WRONG PASSPHRASE" while the
+# same passphrase succeeded when passed explicitly. Measured 2026-10-09.
 if [ -z "${VAULT_PASSPHRASE:-}" ] && [ -f "$DIR/vaultlib.sh" ]; then
   # shellcheck source=vaultlib.sh
   source "$DIR/vaultlib.sh" >/dev/null 2>&1 || true
@@ -48,6 +48,23 @@ case "$cmd" in
     if ! grep -qE "^[A-Z_][A-Z0-9_]*=.+" "$KEYS"; then
       echo "REFUSING to seal: keys.env has ZERO valued slots (empty seal would erase the real keys)"
       exit 1
+    fi
+    # T-47 (agent-2): SLOT-REGRESSION GUARD — measured live 2026-10-09: a machine
+    # with a thin local keys.env re-sealed over an 18-slot authority (→3 slots).
+    # A seal may never carry FEWER valued slots than the current authority seal
+    # unless VAULT_REGRESSION_CONFIRM=1 (honest, explicit override).
+    if [ -f "$ENC" ]; then
+      TMPG="$(mktemp)"
+      if openssl enc -d -"$CIPHER" $KDF -in "$ENC" -out "$TMPG" -pass env:VAULT_PASSPHRASE 2>/dev/null; then
+        AUTH_N="$(grep -cE '^[A-Za-z_][A-Za-z0-9_]*=.+' "$TMPG" || true)"
+        NEW_N="$(grep -cE '^[A-Za-z_][A-Za-z0-9_]*=.+' "$KEYS" || true)"
+        if [ "${AUTH_N:-0}" -gt 0 ] && [ "${NEW_N:-0}" -lt "$AUTH_N" ] && [ "${VAULT_REGRESSION_CONFIRM:-0}" != "1" ]; then
+          echo "REFUSING to seal: $NEW_N valued slots < authority $AUTH_N — would erase real keys."
+          echo "Union-merge first, or override honestly with VAULT_REGRESSION_CONFIRM=1"
+          rm -f "$TMPG"; exit 1
+        fi
+      fi
+      rm -f "$TMPG"
     fi
     openssl enc -"$CIPHER" $KDF -in "$KEYS" -out "$ENC" -pass env:VAULT_PASSPHRASE
     chmod 600 "$ENC" "$KEYS"
@@ -76,6 +93,9 @@ case "$cmd" in
     merge_env() {
       src="$1"; dst="$2"
       [ -f "$src" ] || return 0
+      # T-47: standalone-layout guard — create the parent dir so deploy NEVER
+      # aborts `open` mid-flow on machines without the FleetHQ tree.
+      mkdir -p "$(dirname "$dst")" 2>/dev/null || true
       if [ ! -f "$dst" ]; then cp "$src" "$dst"; chmod 600 "$dst"; return 0; fi
       awk -F= '
         FNR==NR { if ($0 ~ /^[A-Za-z_][A-Za-z0-9_]*=/ && length(substr($0, index($0,"=")+1)) > 0) want[$1]=$0; next }
@@ -89,6 +109,21 @@ case "$cmd" in
     merge_env "$KEYS" "$ROOT/.env.local"
     merge_env "$KEYS" "$ROOT/mini-services/agent-hq/.env"
     chmod 600 "$ROOT/.env.local" "$ROOT/mini-services/agent-hq/.env" 2>/dev/null || true
+    # T-57: גשר-custody-Steem — שסלוטי-הכספת ← מועמדי-האימוץ-החוקיים-של-המנוע (CI_*).
+    # המנוע-שופט-מול-השרשרת-ברגע-האימוץ; הכספת-רק-מאכילה. אפס-מפתחות-עוזבים-את-המכונה.
+    STEEM_ENV="$ROOT/steem/mini-services/saos-engine/.env"
+    if [ -d "$(dirname "$STEEM_ENV")" ]; then
+      M="$(mktemp)"
+      awk -F= '
+        /^HEAD_CORNER_MASTER=/ { print "CI_HEADCORNER_CRED=" substr($0, index($0,"=")+1) }
+        /^STEEM_POSTING_WIF_A=/ { print "CI_STEEM_POSTING_WIF=" substr($0, index($0,"=")+1) }
+        /^STEEM_ACTIVE_WIF_A=/  { print "CI_STEEM_ACTIVE_WIF=" substr($0, index($0,"=")+1); print "CI_SA_HEAD_ACTIVE=" substr($0, index($0,"=")+1) }
+        /^STEEM_ACCOUNT=/       { print "SAOS_ACCOUNT=" substr($0, index($0,"=")+1) }
+      ' "$KEYS" > "$M"
+      merge_env "$M" "$STEEM_ENV"
+      rm -f "$M"
+      echo "deployed → steem custody bridge (saos-engine/.env · CI_* · 600)"
+    fi
     echo "deployed → .env.local + mini-services/agent-hq/.env (merged, 600, gitignored)"
     ;;
   status)

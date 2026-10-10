@@ -66,13 +66,40 @@ if [ ! -d "$PVT/.git" ]; then
   [ -n "$ok" ] || { say "private repo: could not clone with any credential"; exit 1; }
 fi
 mkdir -p "$PVT/wraps" "$PVT/ssh-tool"
+# SEAL-REGRESSION GUARD (Task 48 incident): push-vaults copies the PUBLIC seal
+# over the private one. After the cloud's T-57 rekey, the private home carries
+# the LARGER canonical seal (23 slots) while this machine holds a smaller local
+# seal (12 slots). Copying a SMALLER ciphertext over a BIGGER one can only be a
+# downgrade (ciphertext grows with slots under the same cipher), and an
+# unreadable-bigger seal must never be clobbered by a readable-smaller one.
+# Law: never copy a strictly-smaller keys.env.enc over a strictly-bigger one.
+if [ -f "$VAULT_DIR/keys.env.enc" ] && [ -f "$PVT/keys.env.enc" ]; then
+  src_sz=$(stat -c%s "$VAULT_DIR/keys.env.enc"); dst_sz=$(stat -c%s "$PVT/keys.env.enc")
+  if [ "$src_sz" -lt "$dst_sz" ]; then
+    say "private repo: refusing seal regression (public seal $src_sz bytes < private seal $dst_sz bytes) — the private seal stays canonical"
+  else
+    if cmp -s "$VAULT_DIR/keys.env.enc" "$PVT/keys.env.enc"; then
+      : # identical seals — nothing to sync
+    else
+      cp -f "$VAULT_DIR/keys.env.enc" "$PVT/" && say "private repo: keys.env.enc synced from public ($src_sz bytes)"
+    fi
+  fi
+else
+  cp -f "$VAULT_DIR/keys.env.enc" "$PVT/" 2>/dev/null
+fi
 # hygiene: a previous era committed plaintext identity/ credentials in this
 # private repo — the scan guard below blocks pushes while they exist, so
 # remove them from HEAD and disk (the live PAT is vaulted elsewhere)
 ( cd "$PVT" && git rm -rq --cached identity 2>/dev/null; rm -rf identity; printf 'identity/\n' >> .gitignore; sort -u .gitignore -o .gitignore ) || true
-cp -f "$VAULT_DIR/keys.env.enc" "$PVT/" 2>/dev/null
+# (keys.env.enc sync moved above the hygiene block — SEAL-REGRESSION GUARD)
 [ -f "$VAULT_DIR/ssh-keys.tar.enc" ] && cp -f "$VAULT_DIR/ssh-keys.tar.enc" "$PVT/"
-[ -d "$WRAPS_DIR" ] && cp -f "$WRAPS_DIR/"*.enc "$PVT/wraps/" 2>/dev/null
+# wraps: NO-CLOBBER sync — a wrap registered elsewhere (e.g. by the cloud crew
+# under a newer P) must never be overwritten by this machine's stale wrap;
+# only fill wraps the target does not have yet.
+[ -d "$WRAPS_DIR" ] && for w in "$WRAPS_DIR/"*.enc; do
+  [ -f "$w" ] || continue
+  [ -f "$PVT/wraps/$(basename "$w")" ] || cp -f "$w" "$PVT/wraps/" 2>/dev/null
+done
 cp -f "$VAULT_DIR/vault.sh" "$VAULT_DIR/vaultlib.sh" "$VAULT_DIR/wrap.sh" "$VAULT_DIR/boot-sovereign.sh" "$VAULT_DIR/auto-unseal.sh" "$VAULT_DIR/README.md" "$PVT/" 2>/dev/null
 mkdir -p "$PVT/ssh-tool" && cp -f "$VAULT_DIR/ssh/tool/git-ssh-shim.mjs" "$VAULT_DIR/ssh/tool/package.json" "$PVT/ssh-tool/" 2>/dev/null
 [ -f "$ROOT/SOVEREIGNTY.md" ] && cp -f "$ROOT/SOVEREIGNTY.md" "$PVT/"
@@ -81,7 +108,7 @@ cd "$PVT"
 if scan_secrets "$PVT"; then :; else say "private repo: secret scan hit — aborting"; exit 1; fi
 git add -A
 if git diff --cached --quiet; then say "private repo: already up to date"; else
-  git commit -q -m "sovereign vault v2: wrap registry + rekey + ssh-keys tar + boot kit (ciphertext only; plaintext identity/ removed from HEAD)"
+  git commit -q -m "push-vaults sync $(date -u +%Y-%m-%dT%H:%MZ) from $(hostname): tooling + seals (seal-regression guard active — smaller seals never overwrite bigger ones)"
   PVC=""
   for c in $VAULT_CANDIDATES; do
     git fetch -q "https://x-access-token:${c}@github.com/${VAULT_REPO}.git" '+refs/heads/main:refs/remotes/origin/main' 2>/dev/null || continue
