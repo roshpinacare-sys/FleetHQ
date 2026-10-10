@@ -160,9 +160,17 @@ export class AgentBrain {
   }
 
   private setTarget(t: NavTarget) {
-    if (this.target && this.target.kind === t.kind &&
-        Math.abs(this.target.x - t.x) < 4 && Math.abs(this.target.y - t.y) < 4 && this.arrived === false) {
-      return; // אותו יעד — המשך
+    // Same target as before → keep the current motion state. Re-syncing the
+    // same target (every snapshot re-fires syncState) must NOT re-arm the
+    // walk: an agent standing on his target would flip arrived→false and pace
+    // in place forever (measured live: walk=1 for minutes against the wall).
+    if (
+      this.target &&
+      this.target.kind === t.kind &&
+      Math.abs(this.target.x - t.x) < 4 &&
+      Math.abs(this.target.y - t.y) < 4
+    ) {
+      return; // same destination — arrived stays arrived, en-route stays en-route
     }
     this.target = t;
     this.arrived = false;
