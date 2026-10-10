@@ -42,7 +42,7 @@ if git diff --cached --quiet; then say "FleetHQ: vault already up to date"; else
     fi
   done < <(git diff --cached --name-only)
   [ "$BAD" = 0 ] || { say "FleetHQ: staged tree FAILED the secret scan — aborting push"; exit 1; }
-  git commit -q -m "sovereign vault v2: wrap-registry trust model (master pass P + credential wraps), boot-sovereign one-command restoration, SSH deploy keys (never-expiring tier), gateway failover hardening" && say "FleetHQ: committed"
+  git commit -q -m "push-vaults (FleetHQ mirror) $(date -u +%Y-%m-%dT%H:%MZ): vault tooling + seals refresh from the self-home (seal-regression guard active)" && say "FleetHQ: committed"
 fi
 # push with an explicit authenticated URL (no credential helper exists on a
 # fresh machine); rebase over whatever the cloud crew pushed meanwhile
