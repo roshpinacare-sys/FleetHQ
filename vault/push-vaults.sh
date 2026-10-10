@@ -91,8 +91,16 @@ fi
 # private repo — the scan guard below blocks pushes while they exist, so
 # remove them from HEAD and disk (the live PAT is vaulted elsewhere)
 ( cd "$PVT" && git rm -rq --cached identity 2>/dev/null; rm -rf identity; printf 'identity/\n' >> .gitignore; sort -u .gitignore -o .gitignore ) || true
-# (keys.env.enc sync moved above the hygiene block — SEAL-REGRESSION GUARD)
-[ -f "$VAULT_DIR/ssh-keys.tar.enc" ] && cp -f "$VAULT_DIR/ssh-keys.tar.enc" "$PVT/"
+# tooling + doctrine: DIRECTION-REVERSED (Task 48 incident — the reverse copy
+# downgraded the private home's newer SOVEREIGNTY §8 and auto-unseal). The
+# private repo is the vault's SELF-home: its tooling is canonical and is
+# mirrored INTO the public repo, never the other way.
+for f in vault.sh vaultlib.sh wrap.sh boot-sovereign.sh auto-unseal.sh README.md; do
+  [ -f "$PVT/$f" ] && cp -f "$PVT/$f" "$VAULT_DIR/$f"
+done
+[ -f "$PVT/SOVEREIGNTY.md" ] && cp -f "$PVT/SOVEREIGNTY.md" "$ROOT/SOVEREIGNTY.md"
+# authored-in-FleetHQ notes stay one-way into the private home (no clobber)
+[ -f "$ROOT/sovereign/ROAST.md" ] && { [ -f "$PVT/sovereign/ROAST.md" ] || { mkdir -p "$PVT/sovereign" && cp -f "$ROOT/sovereign/ROAST.md" "$PVT/sovereign/"; }; }
 # wraps: NO-CLOBBER sync — a wrap registered elsewhere (e.g. by the cloud crew
 # under a newer P) must never be overwritten by this machine's stale wrap;
 # only fill wraps the target does not have yet.
@@ -100,10 +108,13 @@ fi
   [ -f "$w" ] || continue
   [ -f "$PVT/wraps/$(basename "$w")" ] || cp -f "$w" "$PVT/wraps/" 2>/dev/null
 done
-cp -f "$VAULT_DIR/vault.sh" "$VAULT_DIR/vaultlib.sh" "$VAULT_DIR/wrap.sh" "$VAULT_DIR/boot-sovereign.sh" "$VAULT_DIR/auto-unseal.sh" "$VAULT_DIR/README.md" "$PVT/" 2>/dev/null
 mkdir -p "$PVT/ssh-tool" && cp -f "$VAULT_DIR/ssh/tool/git-ssh-shim.mjs" "$VAULT_DIR/ssh/tool/package.json" "$PVT/ssh-tool/" 2>/dev/null
-[ -f "$ROOT/SOVEREIGNTY.md" ] && cp -f "$ROOT/SOVEREIGNTY.md" "$PVT/"
-[ -f "$ROOT/sovereign/ROAST.md" ] && mkdir -p "$PVT/sovereign" && cp -f "$ROOT/sovereign/ROAST.md" "$PVT/sovereign/"
+[ -f "$VAULT_DIR/ssh-keys.tar.enc" ] && [ -f "$PVT/ssh-keys.tar.enc" ] || { [ -f "$VAULT_DIR/ssh-keys.tar.enc" ] && cp -f "$VAULT_DIR/ssh-keys.tar.enc" "$PVT/"; }
+# ssh-keys.tar.enc: same seal-regression law as keys.env.enc
+if [ -f "$VAULT_DIR/ssh-keys.tar.enc" ] && [ -f "$PVT/ssh-keys.tar.enc" ]; then
+  s=$(stat -c%s "$VAULT_DIR/ssh-keys.tar.enc"); d=$(stat -c%s "$PVT/ssh-keys.tar.enc")
+  [ "$s" -lt "$d" ] && say "private repo: refusing ssh-keys seal regression ($s < $d) — private stays canonical" || { cmp -s "$VAULT_DIR/ssh-keys.tar.enc" "$PVT/ssh-keys.tar.enc" || cp -f "$VAULT_DIR/ssh-keys.tar.enc" "$PVT/"; }
+fi
 cd "$PVT"
 if scan_secrets "$PVT"; then :; else say "private repo: secret scan hit — aborting"; exit 1; fi
 git add -A
