@@ -508,3 +508,145 @@ law; the type gate stays armed). Domain's own clone cannot be restored in this
 sandbox (no credentials) — the inventory shows the gap instead of hiding it.
 Nameplate size could take one more step on real-GPU screens. The stuck-law's
 1.5s window is tuned for software-GL; real-GPU tuning is unmeasured here.
+
+## Task 47 — human-grade office & sovereign runtime (measured, root-caused, delivered)
+
+**Method:** every defect below was reproduced in the live scene (Playwright +
+SwiftShader through the :81 gateway), root-caused in code or in the loaded GLB
+data, fixed at the root, and re-measured. Screenshots: `.shots/task47/`
+(before/ before=baseline, mid2/mid3=intermediate, after=final).
+
+### V1 — CRITICAL: the crew was half-broken at the skeleton level (Gate A)
+Three stacked root causes, all measured live:
+1. **Node-name sanitization** — GLTFLoader strips `:` from node names; the live
+   female skeleton is `mixamorigHips` while every Xbot clip track targets
+   `mixamorig:Hips` → PropertyBinding bound NOTHING on the females (measured:
+   live LeftArm quaternions ≈ identity; "No target node found" warnings).
+   The two female agents had never been animated by any clip — the baseline
+   "scarecrow" poses were pure T-pose. Fix: rename `mixamorig:` → `mixamorig`
+   during clip adaptation.
+2. **Axis-convention mismatch (hips translation)** — Xbot is born Y-up
+   cm-scale (Armature scale 0.01, hips bind `[0, 104, 2]`); Michelle is Z-up
+   (Character rot +90°X, hips bind `[0, −0.5, −102.6]`). Xbot's hips
+   translation values land her at world y≈0 (measured `hipsWorldY −0.008`).
+   Fix: remap the hips translation track `(x,y,z)→(x,z,−y)` for her clips.
+3. **Scale-system-agnostic sit solve** — the old procedural sit wrote
+   guessed Eulers onto mixamorig bone-local axes → "scarecrow arms".
+   Replaced by `src/lib/hq/pose.ts`: a world-space pose solver that samples
+   each chain's rest direction from the skeleton itself and maps it to
+   anatomical targets (arms forward-down to the keyboard, head pitched to the
+   monitor, thighs/shins bent by real chair geometry: pelvis 0.62 → knee 0.50
+   → ankle 0.10). The hips target is computed via the parent-rotated local
+   up-axis and the world/local ratio — no axis or unit assumptions.
+   **Guard-bug found by live algebra:** the first k-guard tested
+   `upLocal.y ≠ 0`, which disabled the fix for exactly the one rig (Z-up)
+   that needs it — corrected to guard the denominator.
+
+### V2 — CRITICAL: the task board read as a window (Gate B)
+Measured causes: 5.75×3.12 m wall-sized panel; floating 0.4 m off the wall
+with floor visible under it; `meshBasicMaterial toneMapped=false`
+(lighting-independent glow); dark cork texture with bright cards = "city at
+night". Fixed at the root: 3.2×1.7 m furniture with a real body (0.09 m
+depth) touching the wall inner face, header title strip, marker tray, wall
+clips, lit `meshStandardMaterial` with gentle emissive for legibility.
+
+### V3 — HIGH: camera presets never showed their subjects (Gate B)
+The `wall`/`git` presets used yaw≈π — the camera was placed NORTH of its
+target (inside/behind the north wall), the room-bounds clamp pressed it
+against the wall, and the view degenerated (the board was never in frame in
+any baseline shot). The `podium` view was blocked by the west SKYLINE PLANE
+placed at x=−4.2 — INSIDE the room (west wall inner face −9.76). The
+`reception` preset framed the flame instead of the counter. Also, camera
+transitions used the renderer's 0.05 s clamp → at ~0.8 fps a preset change
+crawled 15+ wall seconds (measured mid-flight after 4.5 s). Fixed: south-of-
+target yaws for wall subjects, skyline moved 4.2 m outside the wall, wall-
+clock exponential camera smoothing, recomposed targets for all 7 presets
+(each re-shot and inspected).
+
+### V4 — HIGH: the library was rendered in the wrong half of the room
+`Library` drew shelves from a local constant at x=210 (WEST, overlapping the
+git-wall zone) while the contract, colliders, sign and camera defined the
+library at x=1390 (EAST) — measured: empty east wall with a floating sign,
+cluttered west. Also: shelves were SOLID boxes with the books placed inside
+them (invisible), and the instanced books mesh was frustum-culled by its
+1×1×1 base-geometry bounds (books had never been visible in any recorded
+screenshot). Fixed: single source of truth (`SHELVES` from the contract,
+flush against both walls), hollow bookcases (back/sides/top/planks), books
+visible (`frustumCulled=false`), library lamp light, rotated east ship
+(rot=−π/2) with its opening facing the room.
+
+### V5 — MEDIUM: synchronized loop + crawling transitions (Gate A)
+Every action started at t=0 (the whole crew breathed in unison; `brain.t`
+was never used) and action-weight crossfades used the clamped render dt —
+measured at SwiftShader: a sit transition crawled 30+ wall seconds and every
+screenshot caught a half-standing mid-blend (hip weights blended
+walk 0.5 / idle 0.4 / sit 0.1 minutes after arrival). Fixed: deterministic
+per-agent phase offsets for every looping clip (FNV-1a of id), wall-clock
+exponential weight convergence, additive typing/breathing layers over the
+sit base (the old weights half-unfolded the sit pose when typing started).
+
+### V6 — MEDIUM: darkness and giant plates (Gate B/E)
+Interior fog (#1a1512, 14→38) ate the far half of a 20×12.5 m room (measured
+black walls at overview/git distance); ceiling near-black; crew nameplates
+1.7×0.53 m with depthTest=false dominated every view. Fixed: fog pushed to
+22→60, ceiling lightened, hemisphere/ambient raised, a soft eastern fill
+light added (measured: the east half was black-on-black), nameplates −40%,
+agent plate scale reduced.
+
+### R1 — CRITICAL: the UI server owned the autonomous runtime (Gate D)
+The foreman (:3010) and gateway (:3011) were spawned as children of the Next
+server by `/api/foreman/health` — closing/restarting the UI killed the crew.
+Fixed with a dedicated runtime owner:
+- `mini-services/agent-hq/tools/runtime-supervisor.ts` — detached
+  session-leader (SID==PID), stdlib-only: process liveness (signal-0) +
+  port probes, restart with debounce/backoff, capped per-service logs
+  (`receipts/runtime/*.log`), journaled takeovers
+  (`receipts/runtime-supervisor.jsonl`), heartbeat state file. The foreman
+  runs `bun index.ts` (NO --hot — the Task 45 hot-reload lesson).
+- `/api/foreman/health` is now a REPORTER: it plants the supervisor once
+  (the sanctioned-tree way to survive the sandbox reaper) and otherwise only
+  reads its heartbeat and reports ports + sentinels.
+**Isolation proof (live):** `kill -9` the Next server → the supervisor
+reparented to PPID 1 and survived; the foreman kept working and its
+front-house guard revived the UI (the executor revived the UI, never the
+reverse); `kill -9` the foreman → supervisor respawned it in ~5 s
+(restarts 1→2 in the journal) with `floor-takeover` + `durable-resume`
+journal entries — no duplicate unsafe execution, no false completion.
+
+### R2 — HIGH: durable task state did not survive a sandbox reset (Gate E)
+`Domain/` is gitignored and local-only; a platform reset erases it. Fixed
+with a git-backed mirror: `office.ts` writes the SAME scrubbed durable
+snapshot (the canary-tested boundary) to `receipts/office-state-mirror.json`
+(throttled 60 s, forced on boot-restore and shutdown); on boot, if the local
+file is missing but the mirror exists, the state is adopted with a
+`cold-boot-restore` journal entry and the primary file is re-seeded.
+**Live proof:** removed `office-tasks.json`, killed the foreman → supervisor
+respawn → `cold-boot-restore` + `durable-resume` journaled, primary file
+restored (21 tasks). The mirror rides the lineage-guard's existing
+commit/push cycle, so the state now survives even the machine.
+
+### S1 — Security (Gate G)
+Suite grew 75 → **79 assertions** (all green): new group J sweeps the two new
+repo-traveling surfaces — the live `office-state-mirror.json` (schema +
+no credential-shaped markers + no remote identity) and the runtime
+supervisor journal.
+
+### Validation record (Task 47)
+eslint clean · app `tsc --noEmit` 0 errors · foreman `tsc` = 37 pre-existing
+(0 new) · security-regression **79/79** · recovery-law **23/23** ·
+smoke-truth **ALL GREEN** · live lifecycle: 4 real patrol tasks observed
+end-to-end on the socket (doing → review/approved → done; one honest rescue
+reassignment by the lead), with work-animation weights captured during real
+execution (workAmt 0.34→1.0→0) and post-fix seated poses verified by crop
+inspection + hips/knee world-height probes · interaction: real click on a
+figure opens the agent control screen; click on the board opens the task
+board panel · render metrics after: 348 draw calls, 232K triangles, 0
+console errors.
+
+**Deferred, with reasons:** production build remains platform-forbidden
+(dev-only law; the type gate stays armed). SwiftShader ≈0.8–1 fps is a
+software-rendering constant, not an office regression — real-GPU numbers
+unmeasured here. The pose solver's aesthetic margins (foot pitch, finger
+pose — rigs ship without useful finger bones) are documented as remaining
+polish. `domain-sync`/Domain clone still requires credentials the sandbox
+does not hold (unchanged, honestly reported by the fleet inventory).

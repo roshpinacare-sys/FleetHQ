@@ -12,8 +12,10 @@
 export function Atmosphere() {
   return (
     <group>
-      <hemisphereLight args={['#6b6156', '#2b2620', 2.1]} />
-      <ambientLight intensity={0.74} color="#8a7f72" />
+      {/* Task 47: הירחייה והאמביינט הוגבהו מעט + מילוי-מזרחי חלש — נמדד חי
+       *  שחצי-החדר המזרחי (ספרייה/קבלה) היה שחור-על-שחור בכל תצפית */}
+      <hemisphereLight args={['#6b6156', '#2b2620', 2.55]} />
+      <ambientLight intensity={0.92} color="#8a7f72" />
       {/* אור ירח מהמערב — צללים ארוכים */}
       <directionalLight
         position={[-9, 6.5, 1.5]}
@@ -29,6 +31,8 @@ export function Atmosphere() {
         shadow-camera-far={30}
         shadow-bias={-0.0004}
       />
+      {/* מילוי-השתקפות מהמזרח — רך, בלי צללים; מרים את האזור המזרחי מהבור */}
+      <directionalLight position={[8.5, 5.2, 2.5]} intensity={0.85} color="#cfc4b2" />
       {/* זרקור מרכזי חם מעל הלהבה */}
       <spotLight
         position={[0, 3.35, 0.6]}
@@ -43,7 +47,7 @@ export function Atmosphere() {
         shadow-bias={-0.0003}
       />
       {/* אור מילוי מהדרום (קבלה) */}
-      <pointLight position={[0, 2.6, 4.6]} intensity={0.55} color="#ffcf9e" distance={9} decay={2} />
+      <pointLight position={[0, 2.6, 4.6]} intensity={1.1} color="#ffcf9e" distance={10} decay={2} />
     </group>
   );
 }
