@@ -25,7 +25,7 @@ import * as THREE from 'three';
 import * as SkeletonUtils from 'three/examples/jsm/utils/SkeletonUtils.js';
 import { to3 } from '@/lib/hq/contract';
 import { makeBlobShadowTexture, makeBubbleTexture, makeNameplate } from '@/lib/hq/textures';
-import { makeSitClip, makeTypeClipAdditive, makeBreatheClip, makeIdleStandClip, solveSit } from '@/lib/hq/pose';
+import { makeSitClip, makeTypeClipAdditive, makeBreatheClip, makeIdleStandClip, makeStandClip, solveSit, solveStand } from '@/lib/hq/pose';
 import { useHq } from '@/lib/hq/store';
 import { bus, agentVisualFresh, ROOM_STALE_MS } from '@/lib/hq/world';
 import { STATE_COLORS } from '@/lib/hq/protocol';
@@ -184,7 +184,7 @@ function buildPoseClips(tpl: THREE.Object3D, prefix: string, targetH: number, se
   const out: ClipLib = {};
   const scale = targetH / rawHeight(tpl);
   const pose = solveSit(tpl, { seatY, scale });
-  console.info('hq-crew] pose v8 ' + (prefix || 'rpm') + ' scale=' + scale.toFixed(3) + ' hips=[' + pose.hips.toArray().map((v) => v.toFixed(2)).join(',') + '] restWorldY=' + pose.restWorldY.toFixed(3) + ' rawH=' + rawHeight(tpl).toFixed(3) + ' solved=' + pose.solved.length + ' missing=' + pose.missing.length);
+  console.info('hq-crew] pose v9 ' + (prefix || 'rpm') + ' scale=' + scale.toFixed(3) + ' hips=[' + pose.hips.toArray().map((v) => v.toFixed(2)).join(',') + '] restWorldY=' + pose.restWorldY.toFixed(3) + ' rawH=' + rawHeight(tpl).toFixed(3) + ' solved=' + pose.solved.length + ' missing=' + pose.missing.length);
   const sit = makeSitClip(prefix, pose);
   if (sit) out.sit = sit;
   if (Object.keys(pose.q).length) {
@@ -192,6 +192,12 @@ function buildPoseClips(tpl: THREE.Object3D, prefix: string, targetH: number, se
   }
   out.breathe = makeBreatheClip(prefix);
   out.idleProc = makeIdleStandClip(prefix);
+  // Task 51 — קליפ-עמידה פתור (מרחב-עולם): הידיים לאורך-הגוף בכל ריג —
+  // החלפה-מלאה של ה-T-pose של הבטיחות הישן כשהריטרגט נכשל
+  const standPose = solveStand(tpl);
+  const stand = makeStandClip(prefix, standPose);
+  if (stand) out.stand = stand;
+  if (standPose.missing.length) console.warn('[hq-crew] stand solver missing bones:', standPose.missing.join(','));
   if (pose.missing.length) console.warn('[hq-crew] pose solver missing bones:', pose.missing.join(','));
   return out;
 }
@@ -225,8 +231,10 @@ function buildCrewAssets(maleGltf: { scene: THREE.Object3D }, femaleGltf: { scen
   // נקבה — ריג mixamorig זהה: הקליפים המקוריים עובדים ישירות אחרי תיקון-השם
   // (שלד-חי ללא נקודתיים — ראה dropMissingBones). הקידומת 'mixamorig' בלי ":'"
   const female: ClipLib = buildPoseClips(femaleTpl, 'mixamorig', FEMALE_H, SEAT_Y, 7);
-  if (idle) female.idle = dropMissingBones(idle.clone());
-  if (!female.idle) female.idle = female.idleProc; // רשת-ביטחון — אף דמות לא T-פוזה
+  // Task 51 (נמדד בזום): ה-idle המרוטרגט של Xbot משכיב את מיש'ל על-הגב —
+  // רוטציית-אגן Y-up על bind Z-up. הקליפ הפתור 'stand' (מרחב-עולם) הוא ה-idle
+  // שלה — עמידה טבעית עם ידיים לאורך-הגוף, מהמסלקת ולא מהריטרגט.
+  female.idle = female.stand ?? female.idleProc;
   if (walk) female.walk = dropMissingBones(walk.clone());
   if (run) female.run = dropMissingBones(run.clone());
   if (agree) female.agree = dropMissingBones(filterClipTracks(agree, isHeadBone));
@@ -260,17 +268,28 @@ function buildCrewAssets(maleGltf: { scene: THREE.Object3D }, femaleGltf: { scen
     // משחזרים ידנית (חוק-תבנית-נקייה)
     restoreBindPose(srcGltf.scene);
     restoreBindPose(maleGltf.scene);
-    if (!male.idle) male.idle = male.idleProc; // רשת-ביטחון
+    if (!male.idle) male.idle = male.stand ?? male.idleProc; // רשת-ביטחון
   }
   return { maleTpl, femaleTpl, male, female };
 }
 
 // ─────────────── צביעה ───────────────
+/**
+ * Task 51 — חוק-הגוון (נגד-ה"מומיות", נמדד בפרוב .probe/hq-probe.mjs):
+ * הישן צבע את כל הגוף בגוון-עור אחיד עם lerp 0.85 — מחק את הטקסטורה
+ * והפקיד את השיער בגוון-עור (‎/Head|Body/i מצא גם את Wolf3D_Headwear —
+ * התוצאה: ראש+גוף+שיער באותו צבע שטוח = דמויות-מומיה). החוק החדש:
+ * הטקסטורה נשארת הזהות, כל גוון הוא tint עדין (≤0.35 עור, ≤0.55 בגדים),
+ * שיער/זקן = צבע-שיער (נבדק לפני Head — "Headwear" מכיל "Head"),
+ * וראוות-חיים: roughness עור 0.62–0.66 במקום 0.7–1.0.
+ */
 function recolor(root: THREE.Object3D, color: string, female: boolean, seed: number) {
   const crew = new THREE.Color(color);
   const dark = crew.clone().multiplyScalar(0.42);
   const skinTones = ['#f0c8a0', '#c89868', '#8a5c3a', '#e8b48a'];
   const skin = new THREE.Color(skinTones[seed % skinTones.length]);
+  const skinBody = skin.clone().multiplyScalar(0.9); // גוף מעט כהה מהפנים — עומק, לא עטיפה
+  const shoeTone = new THREE.Color('#4a4136');
   const hairCols = ['#1a1a1a', '#3a2a1a', '#6b4a2a', '#4a4a4a'];
   const hair = new THREE.Color(hairCols[seed % hairCols.length]);
   root.traverse((o) => {
@@ -280,18 +299,19 @@ function recolor(root: THREE.Object3D, color: string, female: boolean, seed: num
     mesh.material = (Array.isArray(mesh.material) ? mesh.material.map((m) => m.clone()) : (mats[0].clone() as THREE.Material)) as THREE.Material;
     const apply = (m: THREE.MeshStandardMaterial) => {
       if (female) {
-        // מיצ'ל — מאריג יחיד: גוון כללי לכיוון צבע הסוכן
-        m.color.lerp(crew, 0.4);
+        // מיצ'ל — מאריג טקסטורי יחיד: הטקסטורה היא הזהות, tint עדין לכיוון צבע הסוכן
+        m.color.lerp(crew, 0.16);
         return;
       }
       const n = mesh.name;
-      if (/Outfit_Top/i.test(n)) { m.color.copy(crew); m.roughness = 0.75; }
-      else if (/Outfit_Bottom/i.test(n)) { m.color.copy(dark); }
-      else if (/Outfit_Footwear/i.test(n)) { m.color.set('#241d16'); }
-      else if (/Beard/i.test(n)) { m.color.copy(hair); }
-      else if (/Head|Body/i.test(n) && !/Teeth/i.test(n)) { m.color.lerp(skin, 0.85); }
+      if (/Beard|Headwear/i.test(n)) { m.color.copy(hair); m.roughness = 0.72; } // קודם — "Headwear" מכיל "Head"
+      else if (/Outfit_Top/i.test(n)) { m.color.lerp(crew, 0.62); m.roughness = 0.78; }
+      else if (/Outfit_Bottom/i.test(n)) { m.color.lerp(dark, 0.62); m.roughness = 0.82; }
+      else if (/Outfit_Footwear/i.test(n)) { m.color.lerp(shoeTone, 0.7); m.roughness = 0.85; }
+      else if (/^Mesh$/i.test(n)) { m.color.copy(hair); } // שיער RPM (מש-גורף)
       else if (/Teeth|Eye/i.test(n)) { /* ללא שינוי */ }
-      else if (/^Mesh$/i.test(n)) { m.color.copy(hair); } // שיער RPM
+      else if (/Head/i.test(n)) { m.color.lerp(skin, 0.28); m.roughness = Math.min(m.roughness, 0.64); }
+      else if (/Body/i.test(n)) { m.color.lerp(skinBody, 0.34); m.roughness = Math.min(m.roughness, 0.66); }
     };
     (Array.isArray(mesh.material) ? mesh.material : [mesh.material]).forEach((m) => {
       if ((m as THREE.MeshStandardMaterial).isMeshStandardMaterial) apply(m as THREE.MeshStandardMaterial);
@@ -341,6 +361,12 @@ function HumanAgent({ id, assets }: { id: string; assets: CrewAssets }) {
     const h = Math.max(0.01, box.max.y - box.min.y);
     const s = (female ? FEMALE_H : MALE_H) / h;
     clone.scale.setScalar(s);
+    // Task 51 — חוק-מגע-קרקע (נגד-ה"מרחוף"): אחרי נרמול-הגובה, אם מנוחת
+    // התבנית לא מציבה את הסוליות על y=0 הדמות כולה מרחפת/שקועה. מדידה
+    // דטרמיניסטית והזזת-שורש בלבד — פתרון-הישיבה במרחב-העולם נשאר תקף
+    // (ההזזה אחידה לכל-העצמות ולא משנה את מנוחת-העצמות עצמה).
+    const grounded = new THREE.Box3().setFromObject(clone);
+    if (Math.abs(grounded.min.y) > 0.005) clone.position.y -= grounded.min.y;
     recolor(clone, color, female, id.charCodeAt(0) + id.length);
     clone.traverse((o) => {
       const m = o as THREE.Mesh;

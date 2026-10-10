@@ -1,12 +1,38 @@
-# FleetHQ — Design System: "Ops Slate"
+# FleetHQ — Design System: "Daylight Slate"
 
 The single source of truth for FleetHQ's interface. Decided after the evidence audit
 (`docs/fleethq-product-audit.md`) and the reference study (Linear, GitHub, Factory, n8n
 on styles.refero.design). **One coherent language: Factory-grade operations surfaces,
 Linear restraint, GitHub's developer clarity for git evidence.**
 
-The office scene (2D + 3D) keeps its own theatrical atmosphere — it is a *place*.
-Everything outside the scene is an *instrument*: flat, calm, precise.
+> ## 0. שיא הקידמה — what "the peak of progress" means here (owner directive, Task 51)
+>
+> The owner asked: *what is the peak of progress, so we can understand what we represent?*
+> Answer, written as four testable laws — the office represents a **sovereign autonomous
+> AI operations room**, and the world's real peak-of-progress rooms (mission control,
+> trading floors, modern research HQs) share four measurable traits:
+>
+> 1. **Daylight honesty (אור = כנות).** Nothing hides in shadow. A dark room hides
+>    information; a bright one *is* the information. Measured law: the office scene
+>    must render at **mean luminance ≥ 85/255** in every architectural viewpoint
+>    (Task 51 baseline: 22–35 — a noir club, replaced). Night only exists outside
+>    the windows, as a deliberate scene choice — never as a rendering default.
+> 2. **Living presence (נוכחות חיה).** Humans, not mannequins: textured skin that
+>    keeps its texture (tints ≤ 0.35, never flat overwrites), hair that is hair
+>    (the Wolf3D_Headwear→skin regex bug — measured, fixed), per-agent phase,
+>    breathing/typing/walking bound to measured truth.
+> 3. **Real-time digital twin.** Every pixel bound to measured truth (freshness law,
+>    Task 46) — animation ≠ activity; the room shows the foreman's real state.
+> 4. **Precision instruments.** The chrome stays an instrument: light surfaces,
+>    hairlines, one accent, one status legend. The *place* is daylight; the
+>    *instruments* are calm. Light theme is the default; the night palette remains
+>    available as `html.dark` (next-themes, user's choice).
+>
+> These four are measurable — the Task 51 probe (`.probe/hq-probe.mjs`) records
+> luminance/material/animation numbers before and after every visual change.
+
+The office scene (2D + 3D) is a *place*: bright, clear, alive. Everything outside the
+scene is an *instrument*: flat, calm, precise.
 
 ---
 
@@ -24,30 +50,37 @@ Everything outside the scene is an *instrument*: flat, calm, precise.
 ## 2. Color tokens
 
 Defined in `src/app/globals.css` as CSS custom properties; mirrored in
-`src/components/hq/tokens.ts` for typed access.
+`src/components/hq/tokens.ts` for typed access. **Light is the default
+(Task 51, Daylight Slate); the previous night palette lives under `html.dark`
+(next-themes class strategy, header toggle).** Every value below is the light
+default — the `.dark` block mirrors it with the original night values.
 
-| Role | Token | Value | Usage |
+| Role | Token | Value (light default) | Usage |
 |---|---|---|---|
-| Canvas | `--bg` | `#0b0b0e` | page background |
-| Surface-1 | `--surface` | `#131318` | panels |
-| Surface-2 | `--surface-2` | `#1a1a21` | nested rows, inputs |
-| Hairline | `--line` | `rgba(255,255,255,.08)` | all borders |
-| Ink | `--ink` | `#e6e6ea` | primary text |
-| Ink-2 | `--ink-2` | `#a1a1ab` | secondary text |
-| Ink-3 | `--ink-3` | `#6b6b76` | meta, timestamps |
-| **Accent** | `--accent` | `#e05fd0` | interactive/active only (brand continuity, desaturated magenta) |
-| Accent-dim | `--accent-dim` | `rgba(224,95,208,.14)` | active tab/row fill |
+| Canvas | `--bg` | `#f3f1ec` | page background (warm paper) |
+| Surface-1 | `--surface` | `#ffffff` | panels |
+| Surface-2 | `--surface-2` | `#ebe8e1` | nested rows, inputs |
+| Surface-3 | `--surface-3` | `#e2ded4` | hover fills |
+| Hairline | `--line` | `rgba(28,24,18,.11)` | all borders |
+| Ink | `--ink` | `#201d18` | primary text |
+| Ink-2 | `--ink-2` | `#57534a` | secondary text |
+| Ink-3 | `--ink-3` | `#8b867b` | meta, timestamps |
+| **Accent** | `--accent` | `#c94fbe` | interactive/active only (brand continuity, desaturated magenta) |
+| Accent-dim | `--accent-dim` | `rgba(201,79,190,.12)` | active tab/row fill |
 
 ### Semantic status law (the ONE legend)
 
-| Semantic | Token | Value | Means (across agents, tasks, goals, feed, health) |
+Values are the light-default set (darkened for light-surface contrast); the
+night set keeps the original brighter hues.
+
+| Semantic | Token | Light value | Means (across agents, tasks, goals, feed, health) |
 |---|---|---|---|
-| working | `--st-working` | `#d9a441` | running / doing / thinking / reading / writing / checking — real work in flight |
-| ok | `--st-ok` | `#46c98a` | done / resolved / verified / live-healthy |
-| attention | `--st-attention` | `#e0b34d` | review / degraded / stale / waiting-on-operator |
-| danger | `--st-danger` | `#e5615e` | blocked / error / broken |
-| neutral | `--st-neutral` | `#8a8a95` | idle / queued / cancelled / disconnected |
-| info | `--st-info` | `#9a8ec8` | planning / metadata-only events |
+| working | `--st-working` | `#a8741c` | running / doing / thinking / reading / writing / checking — real work in flight |
+| ok | `--st-ok` | `#14855c` | done / resolved / verified / live-healthy |
+| attention | `--st-attention` | `#b58216` | review / degraded / stale / waiting-on-operator |
+| danger | `--st-danger` | `#cc423e` | blocked / error / broken |
+| neutral | `--st-neutral` | `#716d64` | idle / queued / cancelled / disconnected |
+| info | `--st-info` | `#6f62ab` | planning / metadata-only events |
 
 Agent-state → semantic mapping (written once in `tokens.ts`):
 `thinking/reading/checking/writing → working` · `idle → neutral` · `walking → neutral` ·

@@ -132,29 +132,53 @@
    the scene markup itself. prefers-reduced-motion honored everywhere. */
 
 :root {
-  /* surfaces + ink */
+  /* surfaces + ink — DAYLIGHT SLATE (Task 51: the console is an instrument in
+     daylight; the night palette survives one block below under html.dark) */
+  --bg: #f3f1ec;
+  --surface: #ffffff;
+  --surface-2: #ebe8e1;
+  --surface-3: #e2ded4;
+  --line: rgba(28, 24, 18, 0.11);
+  --line-strong: rgba(28, 24, 18, 0.2);
+  --ink: #201d18;
+  --ink-2: #57534a;
+  --ink-3: #8b867b;
+  /* the ONE accent — brand continuity, desaturated, interactive states only */
+  --accent: #c94fbe;
+  --accent-ink: #ffffff;
+  --accent-dim: rgba(201, 79, 190, 0.12);
+  /* semantic status law — the single legend (darkened for light-surface contrast) */
+  --st-working: #a8741c;
+  --st-ok: #14855c;
+  --st-attention: #b58216;
+  --st-danger: #cc423e;
+  --st-neutral: #716d64;
+  --st-info: #6f62ab;
+  /* radii */
+  --r-panel: 12px;
+  --r-row: 8px;
+}
+
+/* Night palette — user's choice via the header toggle (next-themes, html.dark) */
+.dark {
   --bg: #0b0b0e;
   --surface: #131318;
   --surface-2: #1a1a21;
+  --surface-3: #22222b;
   --line: rgba(255, 255, 255, 0.08);
   --line-strong: rgba(255, 255, 255, 0.14);
   --ink: #e6e6ea;
   --ink-2: #a1a1ab;
   --ink-3: #6b6b76;
-  /* the ONE accent — brand continuity, desaturated, interactive states only */
   --accent: #e05fd0;
   --accent-ink: #17050f;
   --accent-dim: rgba(224, 95, 208, 0.13);
-  /* semantic status law — the single legend */
   --st-working: #d9a441;
   --st-ok: #46c98a;
   --st-attention: #e0b34d;
   --st-danger: #e5615e;
   --st-neutral: #8a8a95;
   --st-info: #9a8ec8;
-  /* radii */
-  --r-panel: 12px;
-  --r-row: 8px;
 }
 
 html, body { background: var(--bg); }
@@ -221,13 +245,13 @@ html, body { background: var(--bg); }
   white-space: nowrap;
   transition: border-color 160ms ease, background 160ms ease, color 160ms ease;
 }
-.sl-btn:hover { border-color: var(--line-strong); background: #20202a; }
+.sl-btn:hover { border-color: var(--line-strong); background: var(--surface-3); }
 .sl-btn-accent {
   background: var(--accent);
   border-color: transparent;
   color: var(--accent-ink);
 }
-.sl-btn-accent:hover { background: #e97bda; border-color: transparent; }
+.sl-btn-accent:hover { background: #d668cb; border-color: transparent; }
 .sl-btn-ghost { background: transparent; color: var(--ink-2); }
 .sl-btn-ghost:hover { color: var(--ink); background: var(--surface-2); }
 .sl-btn:focus-visible, .sl-seg button:focus-visible, button:focus-visible, a:focus-visible {
@@ -273,7 +297,7 @@ html, body { background: var(--bg); }
   transition: background 160ms ease;
 }
 .sl-row:last-child { border-bottom: 0; }
-.sl-row:hover { background: rgba(255, 255, 255, 0.03); }
+.sl-row:hover { background: rgba(28, 24, 18, 0.035); }
 button.sl-row { width: 100%; text-align: start; }
 
 /* ── alerts strip — exists only when intervention is needed ────────── */
@@ -343,8 +367,8 @@ button.sl-row { width: 100%; text-align: start; }
   font-size: 10.5px;
   font-weight: 600;
   line-height: 1.4;
-  color: var(--ink);
-  background: #050508;
+  color: #f2efe9;
+  background: #2a2721;
   border: 1px solid var(--line-strong);
   border-radius: 6px;
   white-space: nowrap;
@@ -355,11 +379,11 @@ button.sl-row { width: 100%; text-align: start; }
 .sl-tip:hover::after { opacity: 1; }
 
 /* ── scrollbar (neutral, thin) ─────────────────────────────────────── */
-.sl-scroll { scrollbar-width: thin; scrollbar-color: rgba(255, 255, 255, 0.18) transparent; }
+.sl-scroll { scrollbar-width: thin; scrollbar-color: rgba(28, 24, 18, 0.22) transparent; }
 .sl-scroll::-webkit-scrollbar { width: 7px; height: 7px; }
 .sl-scroll::-webkit-scrollbar-track { background: transparent; }
-.sl-scroll::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.14); border-radius: 999px; }
-.sl-scroll::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.26); }
+.sl-scroll::-webkit-scrollbar-thumb { background: rgba(28, 24, 18, 0.18); border-radius: 999px; }
+.sl-scroll::-webkit-scrollbar-thumb:hover { background: rgba(28, 24, 18, 0.3); }
 
 /* ── feed row entrance (kept: it marks NEW events, 160ms, no springs) ─ */
 .sl-feed-in { animation: sl-feed-kf 0.16s ease-out both; }
@@ -392,7 +416,7 @@ button.sl-row { width: 100%; text-align: start; }
   font-weight: 700;
   transition: background 160ms ease, opacity 160ms ease;
 }
-.hq-btn-accent:not(:disabled):hover { background: #e97bda; }
+.hq-btn-accent:not(:disabled):hover { background: #d668cb; }
 .hq-btn-accent:disabled { opacity: 0.45; cursor: not-allowed; }
 .hq-btn-ghost {
   display: inline-flex;
@@ -435,11 +459,11 @@ button.sl-row { width: 100%; text-align: start; }
 @keyframes hq-pop { from { opacity: 0; transform: scale(0.7) translateY(6px); } to { opacity: 1; transform: scale(1) translateY(0); } }
 
 /* scrollbar — neutral */
-.hq-scroll { scrollbar-width: thin; scrollbar-color: rgba(255, 255, 255, 0.16) transparent; }
+.hq-scroll { scrollbar-width: thin; scrollbar-color: rgba(28, 24, 18, 0.2) transparent; }
 .hq-scroll::-webkit-scrollbar { width: 7px; height: 7px; }
 .hq-scroll::-webkit-scrollbar-track { background: transparent; }
-.hq-scroll::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.14); border-radius: 999px; }
-.hq-scroll::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.26); }
+.hq-scroll::-webkit-scrollbar-thumb { background: rgba(28, 24, 18, 0.16); border-radius: 999px; }
+.hq-scroll::-webkit-scrollbar-thumb:hover { background: rgba(28, 24, 18, 0.28); }
 
 /* git wire dashes (scene svg) */
 @keyframes hq-dash-kf { to { stroke-dashoffset: -40; } }
