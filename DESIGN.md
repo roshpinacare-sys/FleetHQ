@@ -176,3 +176,33 @@ follow the foreman's `station` field. Decorative motion (dust, sparks, halo,
 pulsing frames, rotating hologram rings, volumetric shafts, bloom/grain) was
 removed; lighting was consolidated 28→5 fixtures (emissive materials replace
 local point lights), native MSAA replaced the post-processing chain.
+
+## §10 — Animation truth & freshness law (Task 46)
+
+The state→motion contract (§9a) is necessary but not sufficient: a loop that
+keeps playing on a frozen snapshot is a lie. Two laws now bind the room:
+
+**Freshness overlay** — `agentVisualFresh(state, fresh)`: the scene computes
+`fresh = connected && now − lastSignalAt < ROOM_STALE_MS (75s, same window as
+the console's metric bar)`. When fresh is false: no work animation, no one-shot
+gestures, and every nameplate reads "truth stale — unknown" in attention amber.
+A disconnected office looks disconnected — never productive.
+
+**Lifecycle & resources** — each figure ticks its own movement brain per frame
+(`brain.update(dtNav, dtAnim)`): navigation advances with wall-clock time
+(capped 1s — the 0.05s render clamp divided walking speed ~25× at a low frame
+rate), cosmetics keep the stability clamp. Navigation laws: same-destination
+re-syncs never re-arm a walk; wall-station targets sit outside the collision
+shell; step = min(speed·dt, remaining distance) — exact arrival at any frame
+rate; an agent that stops closing distance for 1.5s stops honestly (stuck law)
+instead of pacing forever. On unmount: materials disposed, mixer uncacheRoot,
+gesture timers guarded. A broken scene asset trips the scene error boundary →
+an honest failure panel, never a silent black canvas; a failed retarget falls
+back to a calm procedural idle (presence, never work).
+
+**Durable execution** — task records persist to `Domain/agents/office-tasks.json`
+(atomic, scrubbed); a restart reconciles interrupted work honestly (requeued
+with a recovery note, bounded attempts, parked for reconciliation at two
+interruptions) and a single-flight floor lock (liveness = the process, not the
+paper) keeps exactly one foreman dispatching. Every takeover and recovery
+decision lands in the journal.

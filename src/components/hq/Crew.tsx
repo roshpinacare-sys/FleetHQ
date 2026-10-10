@@ -459,11 +459,11 @@ function HumanAgent({ id, assets }: { id: string; assets: CrewAssets }) {
       <group ref={inner} onClick={focus}>
         <primitive object={model} />
         {/* שלט שם — מרחף מעל הראש (Task 46: מוגדל לקריאות בנקודות-התצפית) */}
-        <sprite position={[0, 2.12, 0]} scale={[1.5, 0.47, 1]}>
+        <sprite position={[0, 2.14, 0]} scale={[1.7, 0.53, 1]}>
           <spriteMaterial map={plate.tex} transparent depthWrite={false} depthTest={false} />
         </sprite>
         {/* בועת דיבור */}
-        <sprite position={[0, 2.62, 0]} scale={[1.5, 0.43, 1]}>
+        <sprite position={[0, 2.74, 0]} scale={[1.7, 0.49, 1]}>
           <spriteMaterial map={bubble.tex} transparent depthWrite={false} depthTest={false} />
         </sprite>
       </group>

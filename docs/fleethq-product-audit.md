@@ -369,3 +369,142 @@ limitation, not a product defect; real-GPU rendering was verified in Task 43).
 (dev-only :3000 law; `ignoreBuildErrors:false` keeps the gate armed for the
 first legitimate build). Task-state persistence across foreman restarts
 remains prerequisite foreman-architecture work (unchanged from Task 44).
+
+## Task 46 — prove the office is alive (durable execution · animation truth · security red team · fleet identity)
+
+**Method:** every claim below was measured against the live stack (socket probes,
+Playwright sessions through the :81 gateway, kill-injection on the foreman, and
+repeatable bun tools). No claim rests on a report.
+
+### F1 — CRITICAL: the crew never moved (Gate A violation, fixed)
+`AgentBrain.update()` had **no caller anywhere** — walk/sit/work weights were
+permanently 0, the whole crew froze standing at spawn points while the console
+reported real work ("3/6 בעבודה"). Probes proved `t` frozen at the constructor's
+random phase while frames rendered. **Fix:** each figure ticks its own brain in
+its `useFrame`. Verified live: `sitAmt 0.46→0.96` on all sitters, `aluf` stands
+at his wall anchor (station=wall), and during real execution a working agent
+(yarden, wire state `checking`) showed `work 0.13` typing weight, transitioning
+honestly when the wire state changed.
+
+### F2 — HIGH: navigation could never arrive (three stacked defects, fixed)
+1. **Re-sync re-armed the walk** — every snapshot re-fired `syncState`; the
+   same-target guard only held while `arrived===false`, so an agent standing on
+   his target flipped back to "walking" (measured: walk=1 for minutes).
+2. **The wall station was geometrically unreachable** — target sat 7 plan-units
+   from the wall face against a 24-unit collision shell; arrival radius 8 could
+   never be met. Targets moved outside the shell (+ a 1.5s stuck law: an agent
+   that stops closing distance stops honestly instead of pacing forever).
+3. **The render clamp divided walking speed by ~25** — navigation advanced with
+   the 0.05s mixer-stability clamp; at the sandbox's ~0.8fps software GL a 6.6s
+   crossing took 160+ wall seconds (measured: 18 plan-units in 6s vs 528
+   expected). Navigation now uses wall-clock time (capped 1s); cosmetics keep
+   the clamp. 4. **Overshoot oscillation** — a full 88-unit wall-clock step
+   overshoots the 8-unit arrival radius; step is now `min(speed·dt, distance)`.
+   Final probe: `x:740 y:222 walk:0 arrived:true` — exact convergence.
+
+### F3 — CRITICAL: durable task state + crash recovery (Gate B, implemented & exercised)
+Tasks lived only in memory: a restart silently erased every task and
+interrupted work simply vanished. Implemented (uses the existing Domain paper
+trail — no new database):
+- **`Domain/agents/office-tasks.json`** — atomic (tmp+rename), serialized,
+  scrubbed at the persistence boundary; tasks, retry/rescue metadata, decisions,
+  reports, goal, id cursor.
+- **Boot reconciliation** — `doing` → requeued with an explicit recovery note
+  (attempts bounded; 2 interruptions park the task `blocked` for the lead's
+  rescue path — never a loop, never a fake completion); `review` resumes;
+  open decisions are closed honestly ("restart before resolution"); a goal cut
+  mid-planning fails honestly; `nextId` resumes past the max id seen. The law
+  is a pure function (`reconcileRecoveredTask`) proven by
+  `tools/recovery-law.ts` (23/23).
+- **Single-flight floor lock** (`office-lock.json` + 15s heartbeat) — hardened
+  after the live kill-test exposed the first version's flaw: a *dead* peer's
+  still-fresh lock (≤40s window) wedged the supervisor's fast resurrection in
+  standby forever. Liveness is now the **process** (signal-0 probe), not the
+  paper; every takeover is journaled (`floor-takeover`, reason dead-peer /
+  stale-heartbeat).
+- **Kill-injection evidence (3 cycles):** kill -9 mid-`doing` → supervisor
+  resurrection → `durable-resume` journal entry (requeued with recovery note,
+  attempts+1) → takeover of the dead peer → re-dispatch through the authorized
+  path → task completed honestly. No false completion at any point; the
+  recovered task (t4) later reached `done` through the normal review gate.
+
+### F4 — HIGH: the fleet inventory wore a false identity (Gate D, fixed)
+`Domain/` is **not an independent repository** in this sandbox (no `.git`; git
+resolves upward to FleetHQ). The inventory, the learning wire and the git pulse
+all walked up and presented **FleetHQ's branch/head/ahead/behind under the
+"Domain" label** — two rows, one repo. Fixed with an independent-repository law
+(`rev-parse --show-toplevel` must equal the directory itself):
+- `gitfleet`: a work-tree subdirectory is honestly `unavailable` with the
+  reason on the record and **zero foreign numbers** (no ahead/behind/dirty).
+- `gitlearn`: same-worktree labels are deduped out loud
+  ("[הערת-עצמאות] … נלמד פעם אחת").
+- `gitpulse`: the wire reads the FleetHQ repo labeled `FleetHQ · קוד המשרד`
+  (the history it always showed WAS FleetHQ's); a subdirectory source returns
+  no history rather than a foreign one.
+- `domain-sync.sh`: preflight refuses a non-independent dir instead of lying
+  "fetch failed (offline?)".
+- Analysis freshness (`learnedAt`) flows on the git wire and renders in
+  GitEvidencePanel ("נותח לפני …", honest `—` until measured).
+- Authorized roster (unchanged truth): **2** — Domain + FleetHQ per FLEET-BINDING;
+  in this sandbox 1 measures, 1 is honestly unavailable (books dir, no clone —
+  restore requires credentials the sandbox does not hold; documented, not hidden).
+
+### F5 — Security red team (Gate C)
+The Task 45 suite (50) grew to **75 assertions**, all green, synthetic
+canaries only:
+- **G — durable persistence boundary:** task/decision/report records heading
+  into the restart artifact are canaried (title/description/summary/why/
+  question/answer/body) — redacted at the boundary, ids/enums untouched,
+  multi-line bodies uncorrupted.
+- **H — live fleet law:** no remote URL, no `x-access-token` anywhere in the
+  inventory; a non-independent dir reports zero foreign numbers; `up-to-date`
+  only with full proof (clean + measured 0/0); the wire label names the repo
+  actually read.
+- **I — live socket boundary:** a real snapshot + a real `book:preview` ack
+  carry no credential-shaped marker. The generic `sk-` marker was tightened to
+  a token shape (`sk-[A-Za-z0-9_-]{16,}`) after a live false positive
+  ("pre-Task-42" in a commit subject is not a credential).
+- Residual risks (unchanged + new): browser devtools sees everything the wire
+  sees (server-side minimization remains the law); the secret-pattern list is
+  pattern-based — novel secret shapes need new patterns; the durable file is
+  local (Domain is local-only until the clone is restored).
+
+### F6 — visual & robustness polish (Gate E)
+- Lighting: measured 52–60% dead-black (luma<16) at overview → hemisphere
+  1.5→2.1, ambient 0.52→0.74, exposure 1.12→1.35 → **26.5%**, healthy lit band,
+  darkness only at ceiling/floor vignettes. No new fixtures, no bloom/neon.
+- Nameplates +67% then +13% (5–9px → 10–14px Hebrew name text at crew preset).
+- **Scene failure boundary:** a broken asset/GLB now trips a scene error
+  boundary → `sceneFailed` → an honest actionable failure panel instead of a
+  silent black canvas.
+- Procedural idle fallback: a failed retarget no longer leaves a frozen T-pose
+  (calm synthesized breathing clip, presence only — never "work").
+- Resource lifecycle: per-agent materials disposed + mixer uncacheRoot on
+  unmount; gesture timers guarded by an alive flag.
+- Freshness law in the room: a stale snapshot or dropped socket stops all work
+  animation and marks nameplates "truth stale — unknown" (amber) — a looping
+  typing animation on a frozen snapshot is a lie.
+
+### F7 — operational findings during the task (recorded, honest)
+- The lineage guard's autostash cycle **swallowed the uncommitted working tree
+  twice** during this task (stash "lineage-guard autostash"); work was
+  recovered from the stash and committed immediately — the guard cannot eat
+  committed work. Lesson recorded: commit early when the guard is live.
+- The foreman went zombie after the edit storm (socket served snapshots, zero
+  journal writes for 50min) — full restart per the Task 45 law restored
+  dispatch; pending tasks (t80/t84) then completed through the normal gate.
+- Hot-reload across many edits remains untrustworthy for BOTH tiers.
+
+**Validation record (Task 46):** eslint clean · app `tsc --noEmit` 0 errors ·
+foreman `tsc -p tsconfig.json` = 37 pre-existing (0 new; the Task 45-c
+`sanitizePublicText(ex, 2400)` arity error fixed) · security-regression **75/75**
+· recovery-law **23/23** · smoke-truth **ALL GREEN** (12) · gitfleet-probe
+truthful · live browser sessions (Playwright via :81): brains probed
+(sit/work/walk), execution animation captured during real task state, 0 console
+errors, screenshots in `.shots/task46/` (before/after/final).
+
+**Deferred, with reasons:** production build remains platform-forbidden (dev-only
+law; the type gate stays armed). Domain's own clone cannot be restored in this
+sandbox (no credentials) — the inventory shows the gap instead of hiding it.
+Nameplate size could take one more step on real-GPU screens. The stuck-law's
+1.5s window is tuned for software-GL; real-GPU tuning is unmeasured here.
