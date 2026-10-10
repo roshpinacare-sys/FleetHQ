@@ -25,7 +25,7 @@ import * as THREE from 'three';
 import * as SkeletonUtils from 'three/examples/jsm/utils/SkeletonUtils.js';
 import { to3 } from '@/lib/hq/contract';
 import { makeBlobShadowTexture, makeBubbleTexture, makeNameplate } from '@/lib/hq/textures';
-import { makeSitClip, makeTypeClipAdditive, makeBreatheClip, makeIdleStandClip, makeStandClip, solveSit, solveStand } from '@/lib/hq/pose';
+import { makeSitClip, makeTypeClipAdditive, makeBreatheClip, makeIdleStandClip, makeStandClip, solveSit, solveStand, makeLookClip, makeTalkClip, makeSipClip, makeThinkClip, makeWriteClip, makeLeanClip, makePointClip } from '@/lib/hq/pose';
 import { useHq } from '@/lib/hq/store';
 import { bus, agentVisualFresh, ROOM_STALE_MS } from '@/lib/hq/world';
 import { STATE_COLORS } from '@/lib/hq/protocol';
@@ -184,7 +184,7 @@ function buildPoseClips(tpl: THREE.Object3D, prefix: string, targetH: number, se
   const out: ClipLib = {};
   const scale = targetH / rawHeight(tpl);
   const pose = solveSit(tpl, { seatY, scale });
-  console.info('hq-crew] pose v9 ' + (prefix || 'rpm') + ' scale=' + scale.toFixed(3) + ' hips=[' + pose.hips.toArray().map((v) => v.toFixed(2)).join(',') + '] restWorldY=' + pose.restWorldY.toFixed(3) + ' rawH=' + rawHeight(tpl).toFixed(3) + ' solved=' + pose.solved.length + ' missing=' + pose.missing.length);
+  console.info('hq-crew] pose v10 ' + (prefix || 'rpm') + ' scale=' + scale.toFixed(3) + ' hips=[' + pose.hips.toArray().map((v) => v.toFixed(2)).join(',') + '] restWorldY=' + pose.restWorldY.toFixed(3) + ' rawH=' + rawHeight(tpl).toFixed(3) + ' solved=' + pose.solved.length + ' missing=' + pose.missing.length);
   const sit = makeSitClip(prefix, pose);
   if (sit) out.sit = sit;
   if (Object.keys(pose.q).length) {
@@ -197,6 +197,20 @@ function buildPoseClips(tpl: THREE.Object3D, prefix: string, targetH: number, se
   const standPose = solveStand(tpl);
   const stand = makeStandClip(prefix, standPose);
   if (stand) out.stand = stand;
+  // Task 52 — ספריית-החיים: מחוות פתורות-מרחב (ALL GATES PASS בשני הריגים —
+  // .probe/life-probe.mjs): מבט-סביב, דיבור, לגימה, חשיבה, כתיבה, הישענות,
+  // הצבעה. בסיס-ישיבה למחוות-הכיסא; בסיס-עמידה ללגימה/הצבעה.
+  try {
+    out.look = makeLookClip(prefix, tpl, pose, seed);
+    out.talk = makeTalkClip(prefix, tpl, pose, seed);
+    out.think = makeThinkClip(prefix, tpl, pose, seed);
+    out.write = makeWriteClip(prefix, tpl, pose, seed);
+    out.lean = makeLeanClip(prefix, tpl, pose);
+    out.sip = makeSipClip(prefix, tpl, standPose);
+    out.point = makePointClip(prefix, tpl, standPose);
+  } catch (e) {
+    console.warn('[hq-crew] life-library build failed (graceful — room keeps base motion):', e);
+  }
   if (standPose.missing.length) console.warn('[hq-crew] stand solver missing bones:', standPose.missing.join(','));
   if (pose.missing.length) console.warn('[hq-crew] pose solver missing bones:', pose.missing.join(','));
   return out;
@@ -348,6 +362,42 @@ export function Crew() {
 
 const GENDER_OF: Record<string, 'male' | 'female'> = { aluf: 'male', gal: 'male', erez: 'male', tamar: 'female', shachar: 'female', yarden: 'male' };
 
+/** RNG דטרמיניסטי-לסוכן — לוח-החיים לא מסונכרן בין-הסוכנים ולא רנדומלי-בין-טעינות */
+function mulberry32(seed: number) {
+  let a = seed >>> 0;
+  return () => {
+    a |= 0; a = (a + 0x6d2b79f5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+interface FaceParts {
+  eyeL: THREE.Object3D | null;
+  eyeR: THREE.Object3D | null;
+  mouthMesh: THREE.Mesh | null;
+  mouthOpen: number;
+  mouthSmile: number;
+}
+
+function findFaceParts(root: THREE.Object3D): FaceParts {
+  const out: FaceParts = { eyeL: null, eyeR: null, mouthMesh: null, mouthOpen: -1, mouthSmile: -1 };
+  root.traverse((o) => {
+    if (o.name === 'EyeLeft') out.eyeL = o;
+    else if (o.name === 'EyeRight') out.eyeR = o;
+    const m = o as THREE.Mesh;
+    if (m.isMesh && m.morphTargetDictionary) {
+      if (m.morphTargetDictionary.mouthOpen !== undefined) {
+        out.mouthMesh = m;
+        out.mouthOpen = m.morphTargetDictionary.mouthOpen;
+        out.mouthSmile = m.morphTargetDictionary.mouthSmile ?? -1;
+      }
+    }
+  });
+  return out;
+}
+
 function HumanAgent({ id, assets }: { id: string; assets: CrewAssets }) {
   const female = GENDER_OF[id] === 'female';
   const crew = useHq((s) => s.snap.crew.find((c) => c.id === id));
@@ -376,6 +426,11 @@ function HumanAgent({ id, assets }: { id: string; assets: CrewAssets }) {
   }, [female, assets, color, id]);
 
   const lib = female ? assets.female : assets.male;
+  // פנים (עיניים/פה) — ref ולא memo: השעון משנה סיבובי-עיניים בכל פריים
+  // (אובייקטים חיים של שלד — לא מצב-ריאקטיבי)
+  const faceRef = useRef<FaceParts | null>(null);
+  if (faceRef.current === null) faceRef.current = findFaceParts(model);
+  const face = faceRef.current;
   const plate = useMemo(() => makeNameplate(crew?.name.he ?? id, crew?.title.he ?? '', color), [crew, color]);
   const bubble = useMemo(() => bubbleOf(id), [id]);
   const shadowTex = useMemo(() => makeBlobShadowTexture(), []);
@@ -400,6 +455,10 @@ function HumanAgent({ id, assets }: { id: string; assets: CrewAssets }) {
       const base = name === 'idle' ? 1 : 0;
       act.setEffectiveWeight(base);
       if (act.loop === THREE.LoopRepeat) act.time = phaseOf(id, name.length * 31 + 7) * clip.duration;
+      // Task 52 — סנכרון-פסיעה: המוח הולך 88 יח'/שנ' ≈ 1.1 מ'/שנ'; מחזור-הליכה
+      // אנושי בקצב הזה ≈ 1.28שנ'. בלי-זה הקליפ מנבנה בקצב-משלו והרגליים
+      // מחליקות על הרצפה (moonwalk — נראה מגוחך, לא מקצועי).
+      if (name === 'walk') act.timeScale = Math.min(1.5, Math.max(0.72, clip.duration / 1.28));
       a[name] = act;
     }
     actions.current = a;
@@ -428,9 +487,13 @@ function HumanAgent({ id, assets }: { id: string; assets: CrewAssets }) {
   const group = useRef<THREE.Group>(null);
   const inner = useRef<THREE.Group>(null);
   const shadowRef = useRef<THREE.Mesh>(null);
-  const curWeight = useRef<Record<string, number>>({ idle: 1, walk: 0, sit: 0, type: 0 });
+  const curWeight = useRef<Record<string, number>>({ idle: 1, walk: 0, sit: 0, type: 0, write: 0, think: 0, talk: 0 });
   const lastGesture = useRef<{ name: string; until: number }>({ name: '', until: 0 });
   const lastBubbleTxt = useRef('');
+  const sayUntil = useRef(0);
+  const rng = useRef(mulberry32(2166136261 ^ (id.charCodeAt(0) << 8) ^ id.length));
+  const micro = useRef<{ next: number; active: null | { name: string; until: number } }>({ next: 3, active: null });
+  const eyes = useRef({ next: 1.5, tx: 0, ty: 0 });
 
   useFrame((state, dtRaw) => {
     const dt = Math.min(dtRaw, 0.05);
@@ -478,7 +541,21 @@ function HumanAgent({ id, assets }: { id: string; assets: CrewAssets }) {
     w.idle = Math.max(0, 1 - walkT) * (1 - sitSettled);
     w.walk = walkT * (1 - sitSettled * 0.85);
     w.sit = sitT;
-    w.type = workT;
+    // Task 52 — חוזה-העבודה המפורט: מצב-הפורמן קובע איזו אנימציית-עבודה
+    // נראית (בדיקה=הקלדה · כתיבה=כתיבת-יד · חשיבה/קריאה=יד-אל-הסנטר),
+    // הכל בחוק-הטריות (סנאפשוט-ישן = אפס עבודה):
+    const st = useHq.getState().snap.agents.find((a) => a.id === id);
+    const now = state.clock.getElapsedTime();
+    const workState = fresh ? st?.state ?? 'idle' : 'idle';
+    const isChecking = workState === 'checking';
+    const isWriting = workState === 'writing';
+    const isThinking = workState === 'thinking' || workState === 'reading';
+    w.type = workT * (isChecking ? 1 : isThinking ? 0.28 : 0);
+    w.write = workT * (isWriting ? 1 : 0);
+    w.think = workT * (isThinking ? 1 : 0);
+    // דיבור — בועה חיה + לא בהליכה + לא בעבודה-מרוכזת: הזרועות מדברות
+    const talking = fresh && now < sayUntil.current && walkT < 0.4 && workT < 0.4;
+    w.talk = talking ? 0.85 : 0;
     const setW = (name: string, v: number) => {
       const act = actions.current[name];
       if (!act) return;
@@ -491,11 +568,12 @@ function HumanAgent({ id, assets }: { id: string; assets: CrewAssets }) {
     setW('walk', w.walk);
     setW('sit', w.sit);
     setW('type', w.type);
+    setW('write', w.write);
+    setW('think', w.think);
+    setW('talk', w.talk);
     setW('breathe', 1); // קיום בסיסי — תמיד (אדיטיבי, עדין)
 
     // מחוות חד-פעמיות לפי החוזה — רק כשהאמת טרייה (חוק-הטריות)
-    const st = useHq.getState().snap.agents.find((a) => a.id === id);
-    const now = state.clock.getElapsedTime();
     const gesture = st ? agentVisualFresh(st.state, fresh).gesture : 'none';
     if (gesture === 'agree' && lastGesture.current.name !== 'agree' && now - lastGesture.current.until > 6) {
       const act = actions.current['agree'];
@@ -510,6 +588,73 @@ function HumanAgent({ id, assets }: { id: string; assets: CrewAssets }) {
       setTimeout(() => { if (!alive.current) return; const a2 = actions.current['shake']; a2?.stop(); a2?.setEffectiveWeight(0); }, 1600);
     }
 
+    // ─── Task 52: לוח-החיים — מיקרו-מחוות קשובות-הקשר ───
+    // סוכן פנוי אף-פעם לא פסלון: מבט-סביב, הישענות, לגימה, הצבעה-אל-הלוח.
+    // הפיזור דטרמיניסטי-לסוכן (rng מה-id) — החדר לא זז במקה. המחוות אינן
+    // עבודה ולא נספרות ככאלה — הן חיים; העבודה מגיעה מהפורמן בלבד.
+    const m = micro.current;
+    if (m.active && now > m.active.until) {
+      const act = actions.current[m.active.name];
+      act?.stop();
+      act?.setEffectiveWeight(0);
+      m.active = null;
+      m.next = now + 6 + rng.current() * 12;
+    }
+    if (!m.active && now > m.next && walkT < 0.35 && now > lastGesture.current.until + 0.5 && w.talk < 0.3) {
+      const onCoffee = brain.station === 'coffee';
+      const seated = sitT > 0.5;
+      const working = workT > 0.35;
+      let pick: string | null = null;
+      if (onCoffee && !working) pick = rng.current() < 0.75 ? 'sip' : 'look';
+      else if (seated && !working) {
+        const r = rng.current();
+        pick = r < 0.4 ? 'look' : r < 0.6 ? 'lean' : r < 0.74 ? 'sip' : null;
+      } else if (!seated && !working) {
+        pick = brain.station === 'wall' && rng.current() < 0.55 ? 'point' : 'look';
+      }
+      if (pick && actions.current[pick]) {
+        const act = actions.current[pick]!;
+        act.reset();
+        act.setLoop(THREE.LoopOnce, 1);
+        act.clampWhenFinished = false;
+        act.setEffectiveWeight(0.92);
+        act.play();
+        m.active = { name: pick, until: now + act.getClip().duration + 0.2 };
+      } else {
+        m.next = now + 5 + rng.current() * 8;
+      }
+    }
+
+    // ─── Task 52: פנים חיות (ריג RPM בלבד — מיש'ל חסרת מורפים) ───
+    // עיניים: סקאדות-מבט קטנות כל 1.6–5.8שנ' (העיניים משועבדות לראש —
+    // הרוטציה המקומית מוסיפה מבט-עדין מעל תנועת-הראש).
+    if (faceRef.current && faceRef.current.eyeL && faceRef.current.eyeR) {
+      const es = eyes.current;
+      es.next -= dt;
+      if (es.next <= 0) {
+        es.next = 1.6 + rng.current() * 4.2;
+        es.tx = (rng.current() - 0.5) * 0.3;
+        es.ty = (rng.current() - 0.5) * 0.16;
+      }
+      const kE = 1 - Math.exp(-dt * 10);
+      const eyeL = faceRef.current.eyeL;
+      const eyeR = faceRef.current.eyeR;
+      eyeL.rotation.y += (es.tx - eyeL.rotation.y) * kE;
+      eyeR.rotation.y += (es.tx - eyeR.rotation.y) * kE;
+      eyeL.rotation.x += (es.ty - eyeL.rotation.x) * kE;
+      eyeR.rotation.x += (es.ty - eyeR.rotation.x) * kE;
+    }
+    // פה: מורפים mouthOpen/mouthSmile — דיבור נראה כשהבועה חיה, חיוך-קל
+    // כשהאמת טרייה (לעולם לא בכשל).
+    const fparts = faceRef.current;
+    if (fparts && fparts.mouthMesh && fparts.mouthOpen >= 0 && fparts.mouthMesh.morphTargetInfluences) {
+      const infl = fparts.mouthMesh.morphTargetInfluences;
+      const targetOpen = w.talk > 0.4 ? 0.16 + 0.42 * Math.abs(Math.sin(now * 10.7)) * Math.abs(Math.sin(now * 3.1)) : 0;
+      const targetSmile = fresh && st?.state !== 'error' ? 0.2 : 0;
+      infl[fparts.mouthOpen] += (targetOpen - infl[fparts.mouthOpen]!) * (1 - Math.exp(-dt * 14));
+      if (fparts.mouthSmile >= 0) infl[fparts.mouthSmile] += (targetSmile - infl[fparts.mouthSmile]!) * (1 - Math.exp(-dt * 6));
+    }
+
     // נשימה עדינה במנוחה
     void now;
 
@@ -521,7 +666,11 @@ function HumanAgent({ id, assets }: { id: string; assets: CrewAssets }) {
     const logs = useHq.getState().snap.logs[id] || [];
     const say = [...logs].reverse().find((l) => l.kind === 'say' && Date.now() - l.ts < 14000);
     const txt = say?.text ?? '';
-    if (txt !== lastBubbleTxt.current) { lastBubbleTxt.current = txt; bubble.set(txt); }
+    if (txt !== lastBubbleTxt.current) {
+      lastBubbleTxt.current = txt;
+      bubble.set(txt);
+      if (txt) sayUntil.current = now + 7.5; // הזרועות והפה מדברים בבורסטים, לא כל-14שנ'
+    }
 
     // צל מגע — עוקב אחרי הרגליים
     if (shadowRef.current) {
