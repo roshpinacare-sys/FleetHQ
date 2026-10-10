@@ -34,7 +34,13 @@ PLACEHOLDER_VALUES = {"change-me", "change-me-strong", "unused",
 GENERATE_LOCAL = {"LF_PG_PASSWORD", "LF_NEXTAUTH_SECRET", "LF_SALT",
                   "LF_ENCRYPTION_KEY", "LITELLM_MASTER_KEY"}
 # free-lane keys with a designed public value (verified live: api.llm7.io/v1)
-DESIGNED_DEFAULT = {"LLM7_API_KEY": "unused"}
+# Task 48: the web-research lanes are OPTIONAL — designed default "unused" so a
+# keyless machine still boots the autonomy plane; real values win from the
+# office vault deploy when present (TAVILY_MCP_URL carries an embedded key and
+# is treated as a secret by every scanner).
+DESIGNED_DEFAULT = {"LLM7_API_KEY": "unused",
+                    "TAVILY_API_KEY_1": "unused", "TAVILY_API_KEY_2": "unused",
+                    "TAVILY_MCP_URL": "unused", "JINA_API_KEY": "unused"}
 
 # documented aliases: sovereign-stack key → office vault key candidates
 ALIASES: dict[str, list[str]] = {

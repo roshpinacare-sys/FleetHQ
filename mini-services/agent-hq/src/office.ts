@@ -25,6 +25,7 @@ import { GitWire, resolveGitSource } from './gitpulse';
 import { collectGitLearning, type GitLearning } from './gitlearn';
 import { collectRepoFleet, type RepoFleetView } from './gitfleet';
 import { sanitizePublicText, scrubSecrets, jaccard } from './security';
+import { readPage, searchStatus, webSearch } from './search';
 
 const MAX_STEPS = 8;
 const TASK_TIMEOUT_MS = 4 * 60_000;
@@ -1124,6 +1125,7 @@ export class Office {
       ...(Object.keys(this.memory.economy).length ? { economy: { ...this.memory.economy } } : {}),
     };
     const gitPulse = this.gitPulseWithFleet();
+    const research = searchStatus();
     return {
       v: 1,
       status,
@@ -1137,6 +1139,7 @@ export class Office {
       ...(this.goal ? { goal: sanitizeEmitPayload('goal', this.goal) as Goal } : {}),
       books: sanitizeEmitPayload('books', this.books) as BookView[],
       git: gitPulse ? (sanitizeEmitPayload('git', gitPulse) as GitPulse) : undefined,
+      search: research,
     };
   }
 
@@ -1499,7 +1502,9 @@ export class Office {
           // NOT work — one honest nudge, then the review sees the gap on record.
           if (toolCalls === 0 && !evidenceNudged) {
             evidenceNudged = true;
-            history.push({ role: 'user', content: 'עבודה בלי עדות אינה עבודה: בצעי לפחות קריאת-כלים אחת אמיתית (read_book / measure / cross_check / git_report) ורק אז סיימי עם done.' });
+            const research = searchStatus();
+            const lanes = `${research.search ? ' / web_search' : ''}${research.reader ? ' / read_page' : ''}`;
+            history.push({ role: 'user', content: `עבודה בלי עדות אינה עבודה: בצעי לפחות קריאת-כלים אחת אמיתית (read_book / measure / cross_check / git_report${lanes}) ורק אז סיימי עם done.` });
             this.log(task.assignee!, 'error', 'done without tool evidence → evidence nudge');
             continue;
           }
@@ -1666,6 +1671,27 @@ export class Office {
         const d = this.gitLearn?.digest ?? 'git learning unavailable';
         this.log(agentId, 'result', d.slice(0, 900));
         return d;
+      }
+      case 'web_search': {
+        // Task 48: the sovereign web-research lane (vault-sealed Tavily keys).
+        // Absent lane → an honest refusal, never a fabricated result.
+        const q = safe(args.query);
+        if (!q) return 'ERROR: web_search needs a query';
+        this.setState(agentId, 'reading', `מחפשת ברשת: ${q}`, 'library', taskId);
+        this.log(agentId, 'tool', `web_search(${q})`);
+        const out = await webSearch(q, 5);
+        this.log(agentId, 'result', out.slice(0, 500).replace(/\n+/g, ' '));
+        return out;
+      }
+      case 'read_page': {
+        // Task 48: Jina reader — public http(s) URLs only (SSRF guard inside).
+        const url = safe(args.url);
+        if (!url) return 'ERROR: read_page needs a url';
+        this.setState(agentId, 'reading', `קוראת דף: ${url}`, 'library', taskId);
+        this.log(agentId, 'tool', `read_page(${url})`);
+        const page = await readPage(url);
+        this.log(agentId, 'result', page.slice(0, 400).replace(/\n+/g, ' '));
+        return page;
       }
       default:
         this.log(agentId, 'error', `unknown tool ${tool}`);
@@ -1949,6 +1975,14 @@ export class Office {
 
 function workerSystemPrompt(crew: CrewMember, task: Task, books: BookView[], goalText?: string): string {
   const myBooks = books.filter((b) => crew.books.includes(b.id));
+  // Task 48: the research tools are advertised ONLY when their vault lanes are
+  // actually deployed into this runtime — the prompt never lies about abilities.
+  const research = searchStatus();
+  const researchTools =
+    (research.search ? ' | web_search{"query"}' : '') + (research.reader ? ' | read_page{"url"}' : '');
+  const researchNote = research.search
+    ? ' — web_search מחפשת ברשת הפתוחה (Tavily) ו-read_page קוראת דף ציבורי (Jina); השתמשי בהן כשהמשימה צריכה עובדות חוץ — ותמיד צטטי מקור'
+    : '';
   return (
     `אתה ${crew.name.he} (${crew.title.he}) במפקדת הצי — חדר הפעולה של צי סוכנים אמיתי. ` +
     `התמחותך: ${crew.specialty.he}. בבעלותך הספרים: ${crew.books.join(', ') || '(כללי)'}. ` +
@@ -1956,7 +1990,7 @@ function workerSystemPrompt(crew: CrewMember, task: Task, books: BookView[], goa
     (goalText ? `\nהיעד הכללי של המשמרת — המשימה שלך חייבת לקדם אותו: "${goalText}"\n` : '') +
     `\n\nהמשימה שלך עכשיו: "${task.title}" — ${task.description ?? '(ללא תיאור נוסף)'}\n` +
     (task.summary?.startsWith('[redo') ? `הערת ראש-המטה מהסבב הקודם: ${task.summary}\n` : '') +
-    `\nכלים (כלי אחד לכל הודעה): list_books | read_book{"id"} | measure{"id","path"} | cross_check{"a","b"} | git_report | write_report{"title","body"} | message{"to","text"} | ask_operator{"question","options","context"} — git_report מחזיר סיכום מטא-דאטה נוקה מסודות של זרם הקומיטים (השתמשי בו כדי ללמוד מהגיט), ask_operator שואל את המפעיל האוטונומי של המפקדה כשחסרה הכרעה\n` +
+    `\nכלים (כלי אחד לכל הודעה): list_books | read_book{"id"} | measure{"id","path"} | cross_check{"a","b"} | git_report | write_report{"title","body"} | message{"to","text"} | ask_operator{"question","options","context"}${researchTools} — git_report מחזיר סיכום מטא-דאטה נוקה מסודות של זרם הקומיטים (השתמשי בו כדי ללמוד מהגיט), ask_operator שואל את המפעיל האוטונומי של המפקדה כשחסרה הכרעה${researchNote}\n` +
     `חוקים: עבוד רק מנתונים אמיתיים שקראת בפועל. אסור להמציא מספרים או מסקנות. ` +
     `אסור לסיים בלי לפחות קריאת-כלים אחת אמיתית, וה-result הסופי חייב לכלול לפחות שני נתונים מדודים (מספר/תאריך/גיל-ספר) שקראת מהספרים. ` +
     `ריבונות: התקשורת שלך עוברת דרך השער הריבוני המקומי (SOVEREIGN GATEWAY) — החלפת מוחים בזמן 429/שגיאה היא אוטומטית ואינה עניינך; אל תעצרי ואל תתנצלי על תקלות רשת. חסכוניות: קראי רק את הספרים הדרושות למשימה — קונטקסט קטן = משרד חי יותר. ` +

@@ -215,10 +215,24 @@ function syntaxCheck(files: string[]): { ok: boolean; errors: string[]; count: n
 }
 
 // ---- secret scan on the outgoing added lines --------------------------------
+// Inventory law: this list MUST track the actual credential inventory the vault
+// carries (kept in lockstep with vault/push-vaults.sh). Task 48 added the
+// platform/web-research shapes that 47-b had extended only in push-vaults.
 const SECRET_RES = [
   /sk-[A-Za-z0-9]{20,}/,
+  /sk-or-v1-[A-Za-z0-9-]{20,}/,
+  /sk-ant-[A-Za-z0-9_-]{20,}/,
+  /xai-[A-Za-z0-9]{20,}/,
+  /gsk_[A-Za-z0-9]{20,}/,
   /ghp_[A-Za-z0-9]{30,}/,
   /github_pat_[A-Za-z0-9_]{20,}/,
+  /glpat-[A-Za-z0-9_-]{20,}/,
+  /sbp_[A-Za-z0-9]{20,}/,
+  /vck_[A-Za-z0-9]{20,}/,
+  /rnd_[A-Za-z0-9]{20,}/,
+  /tvly-[A-Za-z0-9_-]{20,}/,
+  /jina_[A-Za-z0-9_-]{20,}/,
+  /[0-9a-f]{32}\.[A-Za-z0-9_-]{20,}/, // dotted key shape (32-hex id . suffix)
   /AKIA[0-9A-Z]{16}/,
   /xox[baprs]-[A-Za-z0-9-]{10,}/,
   /BEGIN [A-Z ]*PRIVATE KEY/,

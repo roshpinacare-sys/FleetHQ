@@ -17,7 +17,7 @@ scan_secrets() { # $1 = dir to scan (tracked candidate files only)
   # source lines cannot trigger it (bare pattern names are not values)
   local dir="$1" hits=0 f
   while IFS= read -r -d '' f; do
-    if grep -qEi 'sk-or-v1-[A-Za-z0-9-]{20,}|xai-[A-Za-z0-9]{20,}|ghp_[A-Za-z0-9]{30,}|github_pat_[A-Za-z0-9_]{30,}|gsk_[A-Za-z0-9]{20,}|AIza[A-Za-z0-9_-]{30,}|AKIA[0-9A-Z]{16}|glpat-[A-Za-z0-9_-]{20,}|sbp_[A-Za-z0-9]{20,}|vck_[A-Za-z0-9]{20,}|rnd_[A-Za-z0-9]{20,}|-----BEGIN (RSA|OPENSSH|EC|DSA) PRIVATE|5[KJ][1-9A-HJ-NP-Za-km-z]{50}' "$f" 2>/dev/null; then
+    if grep -qEi 'sk-or-v1-[A-Za-z0-9-]{20,}|xai-[A-Za-z0-9]{20,}|ghp_[A-Za-z0-9]{30,}|github_pat_[A-Za-z0-9_]{30,}|gsk_[A-Za-z0-9]{20,}|AIza[A-Za-z0-9_-]{30,}|AKIA[0-9A-Z]{16}|glpat-[A-Za-z0-9_-]{20,}|sbp_[A-Za-z0-9]{20,}|vck_[A-Za-z0-9]{20,}|rnd_[A-Za-z0-9]{20,}|tvly-[A-Za-z0-9_-]{20,}|jina_[A-Za-z0-9_-]{20,}|[0-9a-f]{32}\.[A-Za-z0-9_-]{20,}|-----BEGIN (RSA|OPENSSH|EC|DSA) PRIVATE|5[KJ][1-9A-HJ-NP-Za-km-z]{50}' "$f" 2>/dev/null; then
       say "SECRET-PATTERN HIT: $f"; hits=$((hits+1))
     fi
   done < <(find "$dir" -type f -not -path '*/.git/*' -print0)
@@ -37,7 +37,7 @@ if git diff --cached --quiet; then say "FleetHQ: vault already up to date"; else
   while IFS= read -r f; do
     [ -f "$f" ] || continue
     case "$f" in *.enc) continue ;; esac
-    if grep -qEi 'sk-or-v1-[A-Za-z0-9-]{20,}|xai-[A-Za-z0-9]{20,}|ghp_[A-Za-z0-9]{30,}|github_pat_[A-Za-z0-9_]{30,}|gsk_[A-Za-z0-9]{20,}|AIza[A-Za-z0-9_-]{30,}|AKIA[0-9A-Z]{16}|glpat-[A-Za-z0-9_-]{20,}|sbp_[A-Za-z0-9]{20,}|vck_[A-Za-z0-9]{20,}|rnd_[A-Za-z0-9]{20,}|-----BEGIN (RSA|OPENSSH|EC|DSA) PRIVATE|5[KJ][1-9A-HJ-NP-Za-km-z]{50}' "$f" 2>/dev/null; then
+    if grep -qEi 'sk-or-v1-[A-Za-z0-9-]{20,}|xai-[A-Za-z0-9]{20,}|ghp_[A-Za-z0-9]{30,}|github_pat_[A-Za-z0-9_]{30,}|gsk_[A-Za-z0-9]{20,}|AIza[A-Za-z0-9_-]{30,}|AKIA[0-9A-Z]{16}|glpat-[A-Za-z0-9_-]{20,}|sbp_[A-Za-z0-9]{20,}|vck_[A-Za-z0-9]{20,}|rnd_[A-Za-z0-9]{20,}|tvly-[A-Za-z0-9_-]{20,}|jina_[A-Za-z0-9_-]{20,}|[0-9a-f]{32}\.[A-Za-z0-9_-]{20,}|-----BEGIN (RSA|OPENSSH|EC|DSA) PRIVATE|5[KJ][1-9A-HJ-NP-Za-km-z]{50}' "$f" 2>/dev/null; then
       say "SECRET HIT in staged file: $f"; BAD=1
     fi
   done < <(git diff --cached --name-only)
