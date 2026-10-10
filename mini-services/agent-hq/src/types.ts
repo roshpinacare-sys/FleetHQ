@@ -202,6 +202,14 @@ export interface RepoFleetView {
   syncState: RepoSyncState;
 }
 
+export interface SearchCapabilityView {
+  search: boolean; // at least one Tavily lane configured
+  reader: boolean; // Jina reader lane configured
+  searchLanes: number; // how many Tavily keys are live in env
+  calls: number; // measured lifetime calls across lanes
+  successes: number; // measured lifetime successes
+}
+
 export interface Snapshot {
   v: 1;
   status: ForemanStatus;
@@ -215,4 +223,5 @@ export interface Snapshot {
   goal?: Goal;
   books: BookView[];
   git?: GitPulse;
+  search?: SearchCapabilityView;
 }
