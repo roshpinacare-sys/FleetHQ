@@ -157,22 +157,25 @@ export interface OfficeMats {
 
 export function useOfficeMaterials(): OfficeMats {
   return useMemo(() => {
-    const concrete = new THREE.MeshStandardMaterial({ map: makeConcreteTexture(), roughness: 0.42, metalness: 0.06, envMapIntensity: 0.7 });
-    const wood = new THREE.MeshStandardMaterial({ map: makeWoodTexture(), roughness: 0.5, metalness: 0.05, envMapIntensity: 0.8 });
-    const woodDark = new THREE.MeshStandardMaterial({ color: '#2b2015', roughness: 0.62, metalness: 0.04 });
-    const wall = new THREE.MeshStandardMaterial({ map: makeWallTexture('#37322c'), roughness: 0.92, metalness: 0 });
-    const wallDark = new THREE.MeshStandardMaterial({ color: '#241f1b', roughness: 0.85, metalness: 0.02 });
+    // Task 51 (daylight): every surface re-tuned to the Daylight Slate law —
+    // the noir palette (walls #37322c, wood #2b2015, ceiling #3a332b) measured
+    // mean-luma 22–35/255. Light, warm, legible: אור = כנות.
+    const concrete = new THREE.MeshStandardMaterial({ map: makeConcreteTexture(), roughness: 0.5, metalness: 0.04, envMapIntensity: 0.85 });
+    const wood = new THREE.MeshStandardMaterial({ map: makeWoodTexture(), roughness: 0.55, metalness: 0.04, envMapIntensity: 0.9 });
+    const woodDark = new THREE.MeshStandardMaterial({ color: '#b3916a', roughness: 0.6, metalness: 0.03 });
+    const wall = new THREE.MeshStandardMaterial({ map: makeWallTexture('#eae3d7'), roughness: 0.94, metalness: 0 });
+    const wallDark = new THREE.MeshStandardMaterial({ color: '#a89e90', roughness: 0.86, metalness: 0.02 });
     const metal = new THREE.MeshStandardMaterial({ map: makeBrushedMetalTexture(), color: '#b9bdc4', roughness: 0.34, metalness: 0.88, envMapIntensity: 1.1 });
-    const marble = new THREE.MeshStandardMaterial({ map: makeMarbleTexture(), roughness: 0.22, metalness: 0.1, envMapIntensity: 1.2 });
-    const fabric = new THREE.MeshStandardMaterial({ map: makeFabricTexture('#3a3d42'), roughness: 0.94, metalness: 0 });
-    const fabricTeal = new THREE.MeshStandardMaterial({ map: makeFabricTexture('#2e4a44'), roughness: 0.94, metalness: 0 });
-    const carpet = new THREE.MeshStandardMaterial({ map: makeCarpetTexture('#55432f'), roughness: 0.98, metalness: 0 });
+    const marble = new THREE.MeshStandardMaterial({ map: makeMarbleTexture(), roughness: 0.24, metalness: 0.08, envMapIntensity: 1.2 });
+    const fabric = new THREE.MeshStandardMaterial({ map: makeFabricTexture('#d8d4ca'), roughness: 0.94, metalness: 0 });
+    const fabricTeal = new THREE.MeshStandardMaterial({ map: makeFabricTexture('#5c847b'), roughness: 0.94, metalness: 0 });
+    const carpet = new THREE.MeshStandardMaterial({ map: makeCarpetTexture('#c6b99e'), roughness: 0.98, metalness: 0 });
     const glass = new THREE.MeshPhysicalMaterial({
-      color: '#cfe4de', transparent: true, opacity: 0.16, roughness: 0.06, metalness: 0,
-      envMapIntensity: 1.6, side: THREE.DoubleSide, depthWrite: false,
+      color: '#dfeef0', transparent: true, opacity: 0.2, roughness: 0.06, metalness: 0,
+      envMapIntensity: 1.7, side: THREE.DoubleSide, depthWrite: false,
     });
     const brass = new THREE.MeshStandardMaterial({ color: '#a67c3d', roughness: 0.32, metalness: 0.9, envMapIntensity: 1.2 });
-    const glowWarm = new THREE.MeshStandardMaterial({ color: '#ffe9c4', emissive: '#ffd9a0', emissiveIntensity: 2.6, toneMapped: false });
+    const glowWarm = new THREE.MeshStandardMaterial({ color: '#fff3da', emissive: '#ffd9a0', emissiveIntensity: 2.2, toneMapped: false });
     const screenDark = new THREE.MeshStandardMaterial({ color: '#0a0c10', roughness: 0.18, metalness: 0.4 });
     return { concrete, wood, woodDark, wall, wallDark, metal, marble, fabric, fabricTeal, carpet, glass, brass, glowWarm, screenDark };
   }, []);
@@ -181,7 +184,7 @@ export function useOfficeMaterials(): OfficeMats {
 // ─────────────── שטיח ───────────────
 function FloorRug() {
   const carpet = useMemo(() => {
-    const t = makeCarpetTexture('#584431');
+    const t = makeCarpetTexture('#cabfa6');
     t.repeat.set(1, 1); // גבול אחד — בלי חריצים
     return t;
   }, []);
@@ -313,10 +316,10 @@ function Ceiling({ mats }: { mats: OfficeMats }) {
   const [fx, fz] = to3(FLAME[0], FLAME[1]);
   return (
     <group position-y={WALL_H}>
-      {/* עיטוף כהה — Task 47: הובהר מעט (היה #1a1714 ונעלם בחושך בכל תצפית) */}
+      {/* עיטוף בהיר — Task 51: תקרת יום (הייתה #3a332b ונעלמה בחושך) */}
       <mesh rotation-x={Math.PI / 2} position-y={0.02}>
         <planeGeometry args={[W, H]} />
-        <meshStandardMaterial color="#3a332b" roughness={0.95} />
+        <meshStandardMaterial color="#f1ede4" roughness={0.95} />
       </mesh>
       {/* גיאת אור היקפית — פסים אמיסיביים לאורך הקירות */}
       {([
@@ -369,7 +372,7 @@ function Plant({ px, py, mats }: { px: number; py: number; mats: OfficeMats }) {
       {leaves.map((l, i) => (
         <mesh key={i} position={l.pos} rotation={[l.r * 0.5, l.r * 2, l.r]} castShadow>
           <coneGeometry args={[l.s * 0.36, l.s * 1.7, 6]} />
-          <meshStandardMaterial color={i % 2 ? '#2f4a2c' : '#3b5c36'} roughness={0.8} />
+          <meshStandardMaterial color={i % 2 ? '#4a7a42' : '#578a4c'} roughness={0.8} />
         </mesh>
       ))}
     </group>

@@ -6,9 +6,10 @@
 // one-truth socket. Zero ≠ unknown: before the first snapshot every
 // instrument reads "—", never a fabricated 0.
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
 import dynamic from 'next/dynamic';
 import io, { type Socket } from 'socket.io-client';
+import { useTheme } from 'next-themes';
 import { Office } from './Office';
 import { NetworkAtlas } from './Network';
 import {
@@ -98,6 +99,25 @@ function JerusalemClock({ lang }: { lang: Lang }) {
   }, []);
   return (
     <span className="hidden font-mono tabular-nums sm:inline" dir="ltr">{clock} {t('jerusalem', lang)}</span>
+  );
+}
+
+/** Task 51 (Daylight Slate): light is the default; night is the user's choice.
+ * Uses next-themes' class strategy (html.dark) — no flash, persisted. */
+function ThemeToggle({ lang }: { lang: Lang }) {
+  const { resolvedTheme, setTheme } = useTheme();
+  // hydration-safe mounted flag (no setState-in-effect — lint law)
+  const mounted = useSyncExternalStore(() => () => {}, () => true, () => false);
+  const dark = mounted && resolvedTheme === 'dark';
+  return (
+    <button
+      onClick={() => setTheme(dark ? 'light' : 'dark')}
+      className="sl-btn sl-btn-ghost !min-h-[36px] !w-[36px] !px-0 !py-1 !text-[14px]"
+      aria-label={lang === 'he' ? (dark ? 'מצב אור יום' : 'מצב לילה') : dark ? 'Daylight mode' : 'Night mode'}
+      title={lang === 'he' ? (dark ? 'מצב אור יום' : 'מצב לילה') : dark ? 'Daylight mode' : 'Night mode'}
+    >
+      {mounted ? (dark ? '☀' : '☾') : '·'}
+    </button>
   );
 }
 
@@ -385,6 +405,7 @@ export default function AgentHQ() {
 
           <div className="ms-auto flex items-center gap-2.5 text-[12px] text-[color:var(--ink-2)]">
             <JerusalemClock lang={lang} />
+            <ThemeToggle lang={lang} />
             <button onClick={() => setLang(rtl ? 'en' : 'he')} className="sl-btn sl-btn-ghost !min-h-[36px] !px-3 !py-1 !text-[12.5px]">
               {rtl ? 'EN' : 'עברית'}
             </button>

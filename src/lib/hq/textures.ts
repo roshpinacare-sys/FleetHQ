@@ -44,8 +44,10 @@ function finish(c: HTMLCanvasElement, repeat?: [number, number], aniso = 8): THR
 /** בטון מלוטש עם חריצי התפר — רצפת האולם */
 export function makeConcreteTexture(): THREE.CanvasTexture {
   const [c, ctx] = makeCanvas(1024, 1024);
+  // Task 51 (daylight): light limestone floor — the dark #35322e slab made the
+  // whole room read as a night club (measured mean-luma 22-35/255).
   const g = ctx.createLinearGradient(0, 0, 1024, 1024);
-  g.addColorStop(0, '#35322e'); g.addColorStop(0.5, '#3b3833'); g.addColorStop(1, '#322f2b');
+  g.addColorStop(0, '#d9d3c6'); g.addColorStop(0.5, '#cfc9bb'); g.addColorStop(1, '#d5cfc1');
   ctx.fillStyle = g; ctx.fillRect(0, 0, 1024, 1024);
   // כתמי שחיקה רכים
   for (let i = 0; i < 90; i++) {
@@ -57,7 +59,7 @@ export function makeConcreteTexture(): THREE.CanvasTexture {
     ctx.fillStyle = rg; ctx.beginPath(); ctx.arc(x, y, r, 0, 7); ctx.fill();
   }
   // חריצי התפר בגריד 4×4
-  ctx.strokeStyle = 'rgba(0,0,0,0.36)'; ctx.lineWidth = 3;
+  ctx.strokeStyle = 'rgba(60,50,38,0.13)'; ctx.lineWidth = 3;
   for (let i = 0; i <= 4; i++) {
     ctx.beginPath(); ctx.moveTo((i * 256), 0); ctx.lineTo(i * 256, 1024); ctx.stroke();
     ctx.beginPath(); ctx.moveTo(0, i * 256); ctx.lineTo(1024, i * 256); ctx.stroke();
@@ -70,18 +72,19 @@ export function makeConcreteTexture(): THREE.CanvasTexture {
   return finish(c, [6, 6]);
 }
 
-/** אגוז כהה מוברש — משטחי שולחנות ודלפקים */
+/** אלון בהיר מוברש — משטחי שולחנות ודלפקים */
 export function makeWoodTexture(): THREE.CanvasTexture {
   const [c, ctx] = makeCanvas(1024, 512);
+  // Task 51 (daylight): light oak — desks read as furniture, not shadows
   const g = ctx.createLinearGradient(0, 0, 0, 512);
-  g.addColorStop(0, '#4a3524'); g.addColorStop(1, '#3a2819');
+  g.addColorStop(0, '#c9a878'); g.addColorStop(1, '#b8946a');
   ctx.fillStyle = g; ctx.fillRect(0, 0, 1024, 512);
   // סיבי עץ
   for (let i = 0; i < 140; i++) {
     const y = Math.random() * 512;
     const w = 0.6 + Math.random() * 2.2;
-    const a = 0.05 + Math.random() * 0.12;
-    ctx.strokeStyle = Math.random() > 0.5 ? `rgba(20,12,6,${a})` : `rgba(120,86,50,${a * 0.7})`;
+    const a = 0.05 + Math.random() * 0.1;
+    ctx.strokeStyle = Math.random() > 0.5 ? `rgba(96,64,32,${a})` : `rgba(240,220,180,${a * 0.8})`;
     ctx.lineWidth = w;
     ctx.beginPath(); ctx.moveTo(0, y);
     for (let x = 0; x <= 1024; x += 64) ctx.lineTo(x, y + Math.sin(x * 0.01 + i) * 3.2);
@@ -91,7 +94,7 @@ export function makeWoodTexture(): THREE.CanvasTexture {
   for (let i = 0; i < 5; i++) {
     const x = Math.random() * 1024, y = Math.random() * 512;
     for (let r = 14; r > 2; r -= 3) {
-      ctx.strokeStyle = `rgba(18,10,5,${0.16 + Math.random() * 0.1})`;
+      ctx.strokeStyle = `rgba(110,72,36,${0.14 + Math.random() * 0.09})`;
       ctx.lineWidth = 1.6;
       ctx.beginPath(); ctx.ellipse(x, y, r * 2.1, r, 0, 0, 7); ctx.stroke();
     }
@@ -135,15 +138,15 @@ export function makeBrushedMetalTexture(): THREE.CanvasTexture {
   return finish(c, [2, 2]);
 }
 
-/** שיש כהה — משטח קבלה */
+/** שיש בהיר — משטח קבלה */
 export function makeMarbleTexture(): THREE.CanvasTexture {
   const [c, ctx] = makeCanvas(1024, 512);
   const g = ctx.createLinearGradient(0, 0, 1024, 512);
-  g.addColorStop(0, '#23241f'); g.addColorStop(1, '#2c2d27');
+  g.addColorStop(0, '#eceae4'); g.addColorStop(1, '#e2dfd7');
   ctx.fillStyle = g; ctx.fillRect(0, 0, 1024, 512);
   // ורידים
   for (let i = 0; i < 26; i++) {
-    ctx.strokeStyle = `rgba(${190 + Math.random() * 40},${180 + Math.random() * 40},${150},${0.05 + Math.random() * 0.12})`;
+    ctx.strokeStyle = `rgba(${120 + Math.random() * 40},${116 + Math.random() * 40},${105 + Math.random() * 30},${0.06 + Math.random() * 0.1})`;
     ctx.lineWidth = 0.8 + Math.random() * 2.4;
     let x = Math.random() * 1024, y = Math.random() * 512;
     ctx.beginPath(); ctx.moveTo(x, y);
@@ -196,43 +199,37 @@ export function makeBlindsTexture(): THREE.CanvasTexture {
   return finish(c, [3, 1]);
 }
 
-/** קו רקיע לילה — נוף עיר מחלונות הדרום והמזרח */
+/** קו רקיע יום — נוף עיר מחלונות הדרום והמערב (Task 51: daylight honesty) */
 export function makeSkylineTexture(): THREE.CanvasTexture {
   const [c, ctx] = makeCanvas(2048, 512);
-  // שמיים
+  // שמיים יום
   const sky = ctx.createLinearGradient(0, 0, 0, 512);
-  sky.addColorStop(0, '#0b0d16'); sky.addColorStop(0.55, '#141827'); sky.addColorStop(0.8, '#2a2436'); sky.addColorStop(1, '#402f38');
+  sky.addColorStop(0, '#a9cbe0'); sky.addColorStop(0.5, '#cfe0ea'); sky.addColorStop(0.8, '#e9e9e0'); sky.addColorStop(1, '#f4efe0');
   ctx.fillStyle = sky; ctx.fillRect(0, 0, 2048, 512);
-  // כוכבים
-  for (let i = 0; i < 220; i++) {
-    const a = 0.25 + Math.random() * 0.6;
-    ctx.fillStyle = `rgba(255,255,240,${a})`;
-    ctx.fillRect(Math.random() * 2048, Math.random() * 240, 1.4, 1.4);
-  }
-  // ירח
-  const mg = ctx.createRadialGradient(1560, 90, 8, 1560, 90, 90);
-  mg.addColorStop(0, 'rgba(255,244,214,0.95)'); mg.addColorStop(0.25, 'rgba(255,238,190,0.5)'); mg.addColorStop(1, 'rgba(255,238,190,0)');
-  ctx.fillStyle = mg; ctx.beginPath(); ctx.arc(1560, 90, 90, 0, 7); ctx.fill();
-  ctx.fillStyle = '#fff6dc'; ctx.beginPath(); ctx.arc(1560, 90, 26, 0, 7); ctx.fill();
-  // קו בניינים רחוק
+  // שמש — הילה רכה במקום ירח
+  const mg = ctx.createRadialGradient(1560, 110, 20, 1560, 110, 220);
+  mg.addColorStop(0, 'rgba(255,252,236,0.98)'); mg.addColorStop(0.2, 'rgba(255,244,206,0.55)'); mg.addColorStop(1, 'rgba(255,244,206,0)');
+  ctx.fillStyle = mg; ctx.beginPath(); ctx.arc(1560, 110, 220, 0, 7); ctx.fill();
+  ctx.fillStyle = '#fffdf2'; ctx.beginPath(); ctx.arc(1560, 110, 34, 0, 7); ctx.fill();
+  // קו בניינים רחוק — הזגה אטמוספרית
   let x = 0;
   while (x < 2048) {
     const w = 40 + Math.random() * 110, h = 90 + Math.random() * 190;
-    ctx.fillStyle = '#11131f';
+    ctx.fillStyle = 'rgba(158,178,190,0.85)';
     ctx.fillRect(x, 512 - h - 60, w, h + 60);
     x += w + 4 + Math.random() * 26;
   }
-  // קו בניינים קרוב + חלונות
+  // קו בניינים קרוב + זכוכית משקפת
   x = -20;
   while (x < 2048) {
     const w = 60 + Math.random() * 130, h = 130 + Math.random() * 230;
-    ctx.fillStyle = '#191c2b';
+    ctx.fillStyle = '#8ea2b0';
     ctx.fillRect(x, 512 - h, w, h);
     for (let wx = x + 8; wx < x + w - 8; wx += 14) {
       for (let wy = 512 - h + 10; wy < 500; wy += 18) {
         if (Math.random() < 0.42) {
-          const warm = Math.random() > 0.25;
-          ctx.fillStyle = warm ? `rgba(255,190,110,${0.35 + Math.random() * 0.55})` : `rgba(180,220,255,${0.3 + Math.random() * 0.5})`;
+          const bright = Math.random() > 0.25;
+          ctx.fillStyle = bright ? `rgba(228,242,250,${0.5 + Math.random() * 0.45})` : `rgba(120,150,170,${0.4 + Math.random() * 0.4})`;
           ctx.fillRect(wx, wy, 7, 9);
         }
       }

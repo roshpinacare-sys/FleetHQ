@@ -379,3 +379,114 @@ export function makeIdleStandClip(prefix: string): THREE.AnimationClip {
   ];
   return new THREE.AnimationClip('idle-proc', 3.4, tracks);
 }
+
+// ─────────────── מסלקת-עמידה (Task 51, נמדד) ───────────────
+/**
+ * הבעיה שנמדדה: ה-idle המרוטרגט של Xbot על מיש'ל (ריג Z-up) משכיב אותה
+ * על-הגב על הרצפה — רוטציית-האגן של הקליפ נולדה במוסכמת Y-up ואילו
+ * ה-bind שלה Z-up (‎+90°X‎): הפרש-המוסכמות = החשיבה לאורך-ציר-אחד שלמה.
+ * הישיבה ניצלת כי המסלקה כופה רוטציות מפורשות; העמידה נשענת על הריטרגט.
+ *
+ * התיקון — אותה משמעת של solveSit, לעמידה: זרועות לאורך-הגוף (כיוון
+ * לפי סימן-ה-x של הכתף מול הירכיים — נמדד מהתבנית, לא מנוחש), גב
+ * כמעט-זקוף, מבט-קדימה. ללא רצועת-הירכיים — מנוחת-ה-bind כבר עומדת.
+ * הרגליים נשארות במנוחה (ישרות ב-bind של שני-הריגים).
+ */
+export function solveStand(root: THREE.Object3D): PoseMap {
+  const bones = collectBones(root);
+  const saved: { b: THREE.Bone; q: THREE.Quaternion; p: THREE.Vector3 }[] = [];
+  for (const b of Object.values(bones)) saved.push({ b, q: b.quaternion.clone(), p: b.position.clone() });
+  root.updateMatrixWorld(true);
+  try {
+    return solveStandInner(bones, root);
+  } finally {
+    for (const s of saved) { s.b.quaternion.copy(s.q); s.b.position.copy(s.p); }
+    root.updateMatrixWorld(true);
+  }
+}
+
+function solveStandInner(bones: Bones, root: THREE.Object3D): PoseMap {
+  const rest: Record<string, THREE.Vector3> = {};
+  const sample = (n: string, c: string) => {
+    const d = restDir(bones, n, c);
+    if (d) rest[n] = d;
+  };
+  sample('Spine', 'Spine1');
+  sample('Neck', 'Head');
+  sample('Head', 'HeadTop_End');
+  sample('LeftArm', 'LeftForeArm');
+  sample('LeftForeArm', 'LeftHand');
+  sample('RightArm', 'RightForeArm');
+  sample('RightForeArm', 'RightHand');
+
+  const solved: string[] = [];
+  const missing: string[] = [];
+  const out: Record<string, THREE.Quaternion> = {};
+
+  // גב כמעט-זקוף (0.02 rad קדימה — נינוח, לא נוקשה)
+  if (rest['Spine']) {
+    const q = aimBone(bones, 'Spine', 'Spine1', new THREE.Vector3(0, Math.cos(0.02), Math.sin(0.02)));
+    if (q) { out['Spine'] = q; solved.push('Spine'); }
+  } else missing.push('Spine');
+  // מבט-קדימה (0.05 rad מטה — עדין)
+  if (rest['Head']) {
+    const q = aimBone(bones, 'Head', 'HeadTop_End', new THREE.Vector3(0, Math.cos(0.05), Math.sin(0.05)));
+    if (q) { out['Head'] = q; solved.push('Head'); }
+  } else missing.push('Head');
+
+  // זרועות לאורך-הגוף — כיוון לפי סימן-ה-x של הכתף מול הירכיים (מדידה, לא הנחה)
+  const hb = bones['Hips'];
+  for (const side of ['Left', 'Right'] as const) {
+    const arm = `${side}Arm`, fore = `${side}ForeArm`, hand = `${side}Hand`;
+    if (!hb || !bones[arm] || !rest[arm]) { missing.push(arm); continue; }
+    hb.updateWorldMatrix(true, false);
+    const hp = V(); hb.getWorldPosition(hp);
+    bones[arm].updateWorldMatrix(true, false);
+    const ap = V(); bones[arm].getWorldPosition(ap);
+    const sgn = Math.sign(ap.x - hp.x) || 1;
+    // זרוע: כמעט-אנכית-מטה, מעט הצידה ומעט קדימה
+    const upperDir = new THREE.Vector3(sgn * 0.12, -0.93, 0.1);
+    const qArm = aimBone(bones, arm, fore, upperDir);
+    if (qArm) { out[arm] = qArm; solved.push(arm); }
+    // מרפק: ממשיך מטה, כפיפה עדינה
+    if (rest[fore]) {
+      const foreDir = new THREE.Vector3(sgn * 0.05, -0.97, 0.06);
+      const qFore = aimBone(bones, fore, hand, foreDir);
+      if (qFore) { out[fore] = qFore; solved.push(fore); }
+    } else missing.push(fore);
+  }
+
+  const hips = bones['Hips'];
+  const hipsRest = hips ? hips.position.clone() : new THREE.Vector3(0, 0.9, 0);
+  return { q: out, hips: hipsRest, restWorldY: 0, solved, missing };
+}
+
+/** קליפ-עמידה ממפת-התנוחה: התנוחה הפתורה בשלושה מפתחות + נשימה-זעירה —
+ *  עמידה טבעית בכל ריג, בלי T-pose ובלי ריטרגט. Spine/Head מקבלים רק את
+ *  רצועת-הנשימה (רצועה-כפולה-לאותו-נכס אסורה — PropertyMixer יתנגש). */
+export function makeStandClip(prefix: string, pose: PoseMap): THREE.AnimationClip | null {
+  if (!Object.keys(pose.q).length) return null;
+  const times = [0, 2.2, 4.4];
+  const tracks: THREE.KeyframeTrack[] = [];
+  const q = (x: number, y = 0, z = 0) => new THREE.Quaternion().setFromEuler(new THREE.Euler(x, y, z));
+  const nudge = (base: THREE.Quaternion, x: number, z: number) =>
+    base.clone().multiply(q(x, 0, z)).toArray();
+  for (const [bone, quat] of Object.entries(pose.q)) {
+    if (bone === 'Spine' || bone === 'Head') continue; // להלן — עם נשימה-זעירה
+    const a = quat.toArray();
+    tracks.push(new THREE.QuaternionKeyframeTrack(trackName(bone, prefix, '.quaternion'), times, [...a, ...a, ...a]));
+  }
+  const spine = pose.q['Spine'];
+  if (spine) {
+    tracks.push(new THREE.QuaternionKeyframeTrack(trackName('Spine', prefix, '.quaternion'), times, [
+      ...nudge(spine, 0, 0.008), ...nudge(spine, 0.012, -0.008), ...nudge(spine, 0, 0.008),
+    ]));
+  }
+  const head = pose.q['Head'];
+  if (head) {
+    tracks.push(new THREE.QuaternionKeyframeTrack(trackName('Head', prefix, '.quaternion'), times, [
+      ...nudge(head, 0.01, 0), ...nudge(head, -0.008, 0), ...nudge(head, 0.01, 0),
+    ]));
+  }
+  return new THREE.AnimationClip('stand', 4.4, tracks);
+}
