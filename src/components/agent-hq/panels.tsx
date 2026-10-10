@@ -147,6 +147,14 @@ function goalStatusName(s: Goal['status'], lang: Lang): string {
 
 const COLS: Array<Task['status']> = ['todo', 'doing', 'review', 'blocked', 'done', 'cancelled'];
 
+/** Task 52 — משך-עבודה נמדד: שניות קצרות כשניות, אחרת דקות ושניות */
+function fmtDur(ms: number): string {
+  const s = Math.max(0, Math.round(ms / 1000));
+  if (s < 90) return `${s}s`;
+  const m = Math.floor(s / 60);
+  return `${m}m${s % 60 ? ` ${s % 60}s` : ''}`;
+}
+
 export function TasksBoard({ lang, tasks, crew, focusTask }: { lang: Lang; tasks: Task[]; crew: CrewMember[]; focusTask?: string | null }) {
   const [open, setOpen] = useState<string | null>(null);
   const focusRef = useRef<HTMLButtonElement | null>(null);
@@ -198,12 +206,23 @@ export function TasksBoard({ lang, tasks, crew, focusTask }: { lang: Lang; tasks
                               <span className="truncate">{truncate(task.why, 64)}</span>
                             </span>
                           )}
+                          {/* Task 52 — משך-המשימה הנמדד: חי בזמן-ריצה, נמדד אחרת */}
+                          {task.status === 'doing' && task.startedAt ? (
+                            <span className="mt-1 block font-mono text-[10.5px] tabular-nums" style={{ color: semanticVar('attention') }} dir="ltr">
+                              {t('taskElapsed', lang)} {fmtDur(Date.now() - task.startedAt)}
+                            </span>
+                          ) : task.durationMs != null ? (
+                            <span className="mt-1 block font-mono text-[10.5px] tabular-nums text-[color:var(--ink-3)]" dir="ltr">
+                              {t('taskDuration', lang)}: {fmtDur(task.durationMs)}
+                            </span>
+                          ) : null}
                           {expanded && (
                             <span className="mt-2 block space-y-1.5 border-t border-[color:var(--line)] pt-2 text-[12px] leading-4 text-[color:var(--ink-2)]" dir="auto">
                               {task.description && <span className="block">{task.description}</span>}
                               {owner && <span className="block">{t('assignee', lang)}: <span style={{ color: owner.color }}>{owner.name[lang]}</span></span>}
                               {task.why && <span className="block" style={{ color: semanticVar('info') }}>{task.matchBy === 'fit' ? 'FIT' : 'LLM'} · {task.why}</span>}
                               {task.dependsOn.length > 0 && <span className="block">{t('dependsOn', lang)}: <span className="font-mono">{task.dependsOn.join(', ')}</span></span>}
+                              {task.durationMs != null && <span className="block">{t('taskDuration', lang)}: <span className="font-mono tabular-nums" dir="ltr">{fmtDur(task.durationMs)}</span></span>}
                               {task.summary && <span className="block rounded-md bg-[color:var(--surface-2)] p-1.5">{t('summary', lang)}: {task.summary}</span>}
                               <span className="block font-mono text-[11px] text-[color:var(--ink-3)]" dir="ltr">{task.id}</span>
                               <span className="block text-[color:var(--ink-3)]">{timeAgo(task.updatedAt, lang)}</span>

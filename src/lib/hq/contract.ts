@@ -302,6 +302,7 @@ export const INTERACTABLES: Interactable[] = [
 export const STATION_NAV: Record<Station, number> = {
   desk: DESKS.erez.x, // לא בשימוש ישיר — כל סוכן הולך לשולחן שלו
   wall: TASK_WALL.cx, podium: PODIUM.x + 140, library: LIBRARY_TABLE[0], offstage: FLAME[0],
+  coffee: COFFEE.x, // Task 52 — הפסקת-קפה (המוח מפרק לעמדה מערבית לבר)
 };
 
 

@@ -11,7 +11,7 @@
  */
 import {
   PLAN_W, PLAN_H, SCALE,
-  DESKS, LEAD_TABLE, TASK_WALL, PODIUM, LIBRARY_TABLE, FLAME,
+  DESKS, LEAD_TABLE, TASK_WALL, PODIUM, LIBRARY_TABLE, FLAME, COFFEE,
   resolveCircle,
 } from './contract';
 import type { AgentState, Station } from './protocol';
@@ -170,6 +170,11 @@ export class AgentBrain {
     } else if (station === 'library') {
       const s = spreadOf(this.id);
       this.setTarget({ x: LIBRARY_TABLE[0] - 50 + s * 100, y: LIBRARY_TABLE[1] + 45 + s * 30, face: -0.35, kind: 'stand' });
+    } else if (station === 'coffee') {
+      // Task 52 — הפסקת-קפה: עמדת-עמידה מערבית לבר, פנים מזרחה אל הדלפק,
+      // מפוזרות-דטרמיניסטית (לא שניים באותה נקודה)
+      const s = spreadOf(this.id);
+      this.setTarget({ x: COFFEE.x - 85 - s * 24, y: COFFEE.y - 60 + s * 55, face: Math.PI / 2, kind: 'stand' });
     } else {
       const s = spreadOf(this.id);
       this.setTarget({ x: FLAME[0] - 120 + s * 60, y: FLAME[1] + s * 50, face: 0, kind: 'offstage' });
