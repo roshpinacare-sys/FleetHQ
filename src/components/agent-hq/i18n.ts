@@ -55,6 +55,8 @@ export const T = {
   taskBlocked: { he: 'חסום', en: 'Blocked' },
   taskCancelled: { he: 'בוטל', en: 'Cancelled' },
   assignee: { he: 'מבצע', en: 'Assignee' },
+  taskElapsed: { he: 'רץ כבר', en: 'running' },
+  taskDuration: { he: 'משך עבודה', en: 'work time' },
   dependsOn: { he: 'תלוי ב', en: 'Depends on' },
   summary: { he: 'סיכום', en: 'Summary' },
   noTasks: { he: 'הלוח ריק — המפעיל האוטונומי יתכנן את הסיור הבא', en: 'The wall is empty — the autonomous operator will plan the next patrol' },

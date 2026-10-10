@@ -3,7 +3,9 @@ export type AgentState =
   | 'idle' | 'thinking' | 'reading' | 'checking' | 'writing'
   | 'walking' | 'waiting_user' | 'blocked' | 'done' | 'error';
 
-export type Station = 'desk' | 'wall' | 'podium' | 'library' | 'offstage';
+/** Task 52: 'coffee' — תחנת הפסקה אמיתית (בר הקפה): הפסקה מתויגת-כנה,
+ *  לעולם לא מוצגת כעבודה (חוק-הכנות). */
+export type Station = 'desk' | 'wall' | 'podium' | 'library' | 'offstage' | 'coffee';
 
 export interface CrewMember {
   id: string;
@@ -47,6 +49,9 @@ export interface Task {
   createdBy: string;
   createdAt: number;
   updatedAt: number;
+  /** Task 52 — measured duration: when real execution started, and how long it ran */
+  startedAt?: number;
+  durationMs?: number;
 }
 
 export interface Decision {

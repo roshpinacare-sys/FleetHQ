@@ -384,7 +384,19 @@ async function callBrain(b: Brain, model: string, messages: ChatMessage[], maxTo
     (err as Error & { status?: number }).status = res.status;
     throw err;
   }
-  const json = (await res.json()) as {
+  // ROOT-FIX (Task 52, measured live): the body read used to run WITHOUT a
+  // timeout — a stalled upstream socket left res.json() pending FOREVER, and
+  // because the office runs one LLM call at a time (enqueue chain), that one
+  // stuck read silenced the whole office: journal stopped mid-shift, every
+  // agent sat idle for 50+ minutes while the process looked perfectly alive.
+  // The header fetch was capped; the body must be capped with the same law.
+  const json = (await withTimeout(
+    res.json() as Promise<{
+      choices?: Array<{ message?: { content?: string } }>;
+      usage?: { prompt_tokens?: number; completion_tokens?: number };
+    }>,
+    20_000,
+  )) as {
     choices?: Array<{ message?: { content?: string } }>;
     usage?: { prompt_tokens?: number; completion_tokens?: number };
   };
@@ -514,8 +526,26 @@ async function chatRaw(messages: ChatMessage[], maxTokens: number, meta?: { agen
   throw lastErr ?? new Error('NO_LLM');
 }
 
+/**
+ * ROOT-FIX (Task 52, measured live): every chat call runs inside the
+ * single-flight enqueue chain — if ANY call never settles, the whole office's
+ * LLM pipeline deadlocks silently (the measured silence: journal stopped at
+ * 15:34:57, six agents idle for ~56 minutes, process healthy). Each enqueued
+ * call now carries a HARD CAP: whatever happens, the slot settles within
+ * CHAT_HARD_CAP_MS and the office keeps living. A leaked hung promise still
+ * holds its own socket, but it can no longer hold the floor.
+ */
+const CHAT_HARD_CAP_MS = 110_000;
+
 export async function chat(messages: ChatMessage[], _maxTokens = 900, meta?: { agent?: string; phase?: string }): Promise<ChatResult> {
-  return enqueue(() => chatRaw(messages, _maxTokens, meta));
+  return enqueue(() =>
+    Promise.race([
+      chatRaw(messages, _maxTokens, meta),
+      new Promise<never>((_, rej) =>
+        setTimeout(() => rej(new Error('llm hard cap exceeded (office must never silence)')), CHAT_HARD_CAP_MS),
+      ),
+    ]),
+  );
 }
 
 /** Extract a JSON object-or-array from a model reply that may include prose or fences. */

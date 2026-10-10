@@ -490,3 +490,227 @@ export function makeStandClip(prefix: string, pose: PoseMap): THREE.AnimationCli
   }
   return new THREE.AnimationClip('stand', 4.4, tracks);
 }
+
+// ═══════════════════ Task 52: ספריית-החיים — פותר-מחוות במרחב-העולם ═══════════════════
+/**
+ * "בובות-מומיה" נמדדו חי: הצוות התנייד (ישיבה/הקלדה/נשימה/הליכה) אבל אף
+ * פעם לא עשה כלום אחר — אפס מבט-סביב, אפס מחוות-דיבור, אפס לגימה.
+ *
+ * החוק שנמדד (סריקת-צירים חיה, .probe/life-probe.mjs): אולרי-אוילר על
+ * עצמות-זרוע אינם מגיבים כמקובל — Y הוא פיתול-סביב-העצם (אפס תנועה
+ * נראית), Z מניף אחורה, ו-X חיובי הוא כפיפת-מרפק אל הפה בשני-הריגים.
+ * לכן כל מחוות-הגוף נפתרות במרחב-העולם — אותה משמעת של solveSit/aimBone
+ * (כיוון-מנוחה מהתבנית, setFromUnitVectors, עיבוד מלמעלה-למטה) — ומומרות
+ * לדלתות-אדיטיביות: delta = base⁻¹ × solved. המיקסר מחשב base × delta
+ * ומקבל בדיוק את התנוחה הפתורה, מעל כל בסיס חי (ישיבה/עמידה), בלי
+ * קפיצה בכניסה/יציאה (המסגרת הראשונה והאחרונה = אפס-היסט).
+ */
+const qE = (x: number, y = 0, z = 0) => new THREE.Quaternion().setFromEuler(new THREE.Euler(x, y, z));
+
+interface GestureStage {
+  /** שרשרות-כיוון: [עצם, צאצא, כיוון-יעד במרחב-המודל אחרי-הבסיס] */
+  aims?: Array<[string, string, THREE.Vector3]>;
+  /** הטיית-ראש נוספת (אוילר-X מקומי, מעל הבסיס) */
+  headTiltX?: number;
+}
+
+/**
+ * פותר רצף-שלבים של מחווה מעל תנוחת-בסיס ומחזיר דלתות-אדיטיביות לכל עצם.
+ * כל שלב: מציב את הבסיס, פותר כל שרשרת עם 2 מעברי-כיוון (התכנסות שנמדדה
+ * ב-solveSit), ומחשב delta = base⁻¹ × solved לכל עצם-שנגעה.
+ */
+function solveGesture(
+  root: THREE.Object3D,
+  base: PoseMap,
+  stages: GestureStage[],
+  opts: { firstZero: boolean; lastZero: boolean },
+): { times: number[]; deltas: Map<string, THREE.Quaternion[]> } {
+  const bones = collectBones(root);
+  const saved: { b: THREE.Bone; q: THREE.Quaternion }[] = [];
+  for (const b of Object.values(bones)) saved.push({ b, q: b.quaternion.clone() });
+  const applyBase = () => {
+    for (const [b, q] of Object.entries(base.q)) bones[b]?.quaternion.copy(q);
+    root.updateMatrixWorld(true);
+  };
+  const baseLocalOf = (b: string) => base.q[b]?.clone() ?? new THREE.Quaternion();
+  const allBones = new Set<string>();
+  try {
+    applyBase();
+    const perStage: Record<string, THREE.Quaternion>[] = [];
+    for (const st of stages) {
+      applyBase();
+      const local: Record<string, THREE.Quaternion> = {};
+      if (st.aims) {
+        for (let pass = 0; pass < 2; pass++) {
+          for (const [bone, child, dir] of st.aims) {
+            const q = aimBone(bones, bone, child, dir);
+            if (q && pass === 1) local[bone] = q;
+          }
+        }
+        for (const [bone] of st.aims) allBones.add(bone);
+      }
+      if (st.headTiltX !== undefined) {
+        // delta אוילר ישיר — מורכב מעל הבסיס (base × tilt = הטיה יחסית)
+        allBones.add('Head');
+        local['Head'] = baseLocalOf('Head').clone().multiply(qE(st.headTiltX, 0, 0));
+      }
+      perStage.push(local);
+    }
+    const deltas = new Map<string, THREE.Quaternion[]>();
+    const n = stages.length;
+    for (let i = 0; i < n; i++) {
+      const zero = (i === 0 && opts.firstZero) || (i === n - 1 && opts.lastZero);
+      for (const bone of allBones) {
+        if (!deltas.has(bone)) deltas.set(bone, []);
+        if (zero) deltas.get(bone)!.push(new THREE.Quaternion());
+        else {
+          const solved = perStage[i][bone];
+          deltas.get(bone)!.push(solved ? baseLocalOf(bone).invert().multiply(solved) : new THREE.Quaternion());
+        }
+      }
+    }
+    return { times: stages.map((_, i) => i), deltas };
+  } finally {
+    for (const s of saved) s.b.quaternion.copy(s.q);
+    root.updateMatrixWorld(true);
+  }
+}
+
+/** מרנדר את תוצאת-הפותר לקליפ אדיטיבי; dt בין-שלבים אחיד (הפאזה בצד-המיקסר). */
+function gestureClip(
+  prefix: string,
+  name: string,
+  solved: { times: number[]; deltas: Map<string, THREE.Quaternion[]> },
+  dur: number,
+): THREE.AnimationClip {
+  const n = solved.times.length;
+  const times = solved.times.map((i) => (i / Math.max(1, n - 1)) * dur);
+  const tracks: THREE.KeyframeTrack[] = [];
+  for (const [bone, qs] of solved.deltas) {
+    const vals = qs.flatMap((q) => q.toArray());
+    tracks.push(new THREE.QuaternionKeyframeTrack(trackName(bone, prefix, '.quaternion'), times, vals));
+  }
+  return new THREE.AnimationClip(name, dur, tracks, THREE.AdditiveAnimationBlendMode);
+}
+
+/** עזר: כיוון מנקודת-עצם אל נקודת-יעד (מרחב-מודל, מנורמל) */
+function dirTo(bones: Bones, from: string, target: THREE.Vector3): THREE.Vector3 {
+  const b = bones[from];
+  const p = new THREE.Vector3();
+  b.getWorldPosition(p);
+  return target.clone().sub(p).normalize();
+}
+
+const dir = (x: number, y: number, z: number) => new THREE.Vector3(x, y, z).normalize();
+
+/** מבט-סביב חי — הסוכן סורק את החדר (ראש: ימינה/מטה/שמאלה, עדין). */
+export function makeLookClip(prefix: string, root: THREE.Object3D, base: PoseMap, seed = 1): THREE.AnimationClip {
+  const ph = (seed % 7) * 0.09 - 0.27;
+  const stages: GestureStage[] = [
+    { aims: [['Head', 'HeadTop_End', dir(0.34 + ph, 0.93, 0.12)]] },
+    { aims: [['Head', 'HeadTop_End', dir(-0.2 + ph * 0.5, 0.85, 0.42)]] },
+    { aims: [['Head', 'HeadTop_End', dir(-0.38 + ph, 0.9, 0.1)]] },
+  ];
+  const s = solveGesture(root, base, [{}, ...stages, {}], { firstZero: true, lastZero: true });
+  return gestureClip(prefix, 'look', s, 3.3);
+}
+
+/** מחוות-דיבור — שתי הזרועות מדברות (כפות חיות, מרפקים כפופים-מעט) כשהבועה פעילה. */
+export function makeTalkClip(prefix: string, root: THREE.Object3D, base: PoseMap, seed = 1): THREE.AnimationClip {
+  const ph = (seed % 5) * 0.06;
+  const wave = (k: number, flip: number): GestureStage => ({
+    aims: [
+      ['RightArm', 'RightForeArm', dir(0.3 * flip, -0.25 - k * 0.1, 0.9)],
+      ['RightForeArm', 'RightHand', dir(0.15 * flip, 0.45 + k * 0.25, 0.85)],
+      ['LeftArm', 'LeftForeArm', dir(-0.3 * flip, -0.3, 0.88)],
+      ['LeftForeArm', 'LeftHand', dir(-0.12 * flip, 0.38 + (1 - k) * 0.2, 0.87)],
+    ],
+  });
+  const stages: GestureStage[] = [
+    {}, wave(0.1 + ph, 1), wave(0.7 + ph, 1), wave(0.35 + ph, 1), wave(0.85 + ph, 1), wave(0.2 + ph, 1), {},
+  ];
+  return gestureClip(prefix, 'talk', solveGesture(root, base, stages, { firstZero: true, lastZero: true }), 2.4);
+}
+
+/** לגימת-קפה (חד-פעמי) — היד הימנית מרימה אל הפה, לגימה, חזרה.
+ *  כיווני-המטרה נגזרים מהגיאומטריה החיה: המרפק מכוון את היד אל נקודת-הפה
+ *  (ראש + מעט קדימה-מטה) — אין אולרים, אין ניחושי-צירים. */
+export function makeSipClip(prefix: string, root: THREE.Object3D, base: PoseMap): THREE.AnimationClip {
+  const stages: GestureStage[] = [];
+  const sipAt = (k: number): GestureStage => ({
+    aims: [
+      // זרוע: מהמנוחה חצי-הדרך אל הפה (כיוון המשך מהכתף אל המרווח שלפני-החזה)
+      ['RightArm', 'RightForeArm', dir(0.26, 0.02 - 0.34 * k, 0.9)],
+      // מרפק: היד אל הפה (אנכי-יותר — מכסה גם זרועות-קצרות)
+      ['RightForeArm', 'RightHand', dir(0.06, 0.74 * k + 0.08, 0.68)],
+    ],
+    headTiltX: 0.09 * k,
+  });
+  for (const k of [0, 0.55, 1, 0.9, 1, 0.35]) stages.push(sipAt(k));
+  stages.unshift({}); stages.push({});
+  return gestureClip(prefix, 'sip', solveGesture(root, base, stages, { firstZero: true, lastZero: true }), 3.6);
+}
+
+/** חשיבה-נראית — יד אל הסנטר, ראש מורם-מעט, החזקה עם נשימה (לולאה). */
+export function makeThinkClip(prefix: string, root: THREE.Object3D, base: PoseMap, seed = 1): THREE.AnimationClip {
+  const ph = (seed % 6) * 0.04;
+  const thinkAt = (k: number, sway: number): GestureStage => ({
+    aims: [
+      ['RightArm', 'RightForeArm', dir(0.26, -0.15 - 0.2 * k, 0.92)],
+      ['RightForeArm', 'RightHand', dir(0.05, 0.62 * k + 0.08, 0.78 - 0.1 * k)],
+      ['LeftArm', 'LeftForeArm', dir(-0.3, -0.35 - 0.15 * k, 0.88)],
+      ['LeftForeArm', 'LeftHand', dir(-0.05, 0.3 * k + 0.05, 0.9)],
+    ],
+    headTiltX: -0.08 * k + sway,
+  });
+  const stages: GestureStage[] = [
+    {}, thinkAt(0.55, 0), thinkAt(1 + ph, 0.01), thinkAt(0.95 + ph, -0.01), thinkAt(1 + ph, 0.01), thinkAt(0.4, 0), {},
+  ];
+  return gestureClip(prefix, 'think', solveGesture(root, base, stages, { firstZero: true, lastZero: true }), 4.4);
+}
+
+/** כתיבה ביד — תנועת-יד קצרה ומהירה מעל השולחן (שונה מהקלדה: יד-אחת שולטת). */
+export function makeWriteClip(prefix: string, root: THREE.Object3D, base: PoseMap, seed = 1): THREE.AnimationClip {
+  const ph = (seed % 4) * 0.05;
+  const writeAt = (sx: number, sy: number): GestureStage => ({
+    aims: [
+      ['RightArm', 'RightForeArm', dir(0.24, -0.5, 0.84)],
+      ['RightForeArm', 'RightHand', dir(0.05 + sx, -0.42 + sy, 0.86)],
+    ],
+    headTiltX: 0.07,
+  });
+  const stages: GestureStage[] = [
+    {}, writeAt(0, 0), writeAt(0.1 + ph, -0.06), writeAt(-0.06, 0.05), writeAt(0.09 - ph, -0.04), writeAt(-0.05, 0.06), writeAt(0.04, 0), {},
+  ];
+  return gestureClip(prefix, 'write', solveGesture(root, base, stages, { firstZero: true, lastZero: true }), 1.6);
+}
+
+/** הישענות-מנוחה (חד-פעמי) — נשען אחורה, מותח את הזרועות החוצה, חוזר.
+ *  עמוד-השדרה נפתר עם כיוון-יעד אחורה (שלילי מול נטיית-הישיבה הקדימה). */
+export function makeLeanClip(prefix: string, root: THREE.Object3D, base: PoseMap): THREE.AnimationClip {
+  const leanAt = (k: number): GestureStage => ({
+    aims: [
+      ['Spine', 'Spine1', dir(0, Math.cos(0.14 * k), -Math.sin(0.14 * k))], // אחורה
+      ['RightArm', 'RightForeArm', dir(0.92 * k + 0.1, 0.25 * k, -0.2 * k + 0.3)],
+      ['LeftArm', 'LeftForeArm', dir(-0.92 * k - 0.1, 0.25 * k, -0.2 * k + 0.3)],
+      ['RightForeArm', 'RightHand', dir(0.9 * k + 0.1, 0.3 * k, 0.2)],
+      ['LeftForeArm', 'LeftHand', dir(-0.9 * k - 0.1, 0.3 * k, 0.2)],
+    ],
+    headTiltX: -0.06 * k,
+  });
+  const stages: GestureStage[] = [{}, leanAt(0.5), leanAt(1), leanAt(0.9), leanAt(0.3), {}];
+  return gestureClip(prefix, 'lean', solveGesture(root, base, stages, { firstZero: true, lastZero: true }), 4.3);
+}
+
+/** הצבעה אל הלוח (חד-פעמי) — זרוע-ימין מושטת קדימה-מעלה, ראש עוקב. */
+export function makePointClip(prefix: string, root: THREE.Object3D, base: PoseMap): THREE.AnimationClip {
+  const pointAt = (k: number): GestureStage => ({
+    aims: [
+      ['RightArm', 'RightForeArm', dir(0.1 * k, 0.32 * k + 0.1, 0.95)],
+      ['RightForeArm', 'RightHand', dir(0.05, 0.12 * k, 0.99)],
+      ['Head', 'HeadTop_End', dir(0.05 * k, 0.98, 0.2 * k)],
+    ],
+  });
+  const stages: GestureStage[] = [{}, pointAt(0.6), pointAt(1), pointAt(0.94), pointAt(0.3), {}];
+  return gestureClip(prefix, 'point', solveGesture(root, base, stages, { firstZero: true, lastZero: true }), 2.7);
+}

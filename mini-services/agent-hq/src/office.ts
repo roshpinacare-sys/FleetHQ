@@ -42,6 +42,18 @@ const MAX_LOG = 160;
 // (2026-10-10) — idle gaps read as a dead room; production shifts are
 // first-class citizens below.
 const PATROL_COOLDOWN_MS = 2 * 60_000;
+// ---- Task 52: רמת-הפעילות (measured live) ----
+// המדידה: אחרי-המשמרת כל-6-הסוכנים ישבו idle עד 56 דקות — החדר נראה מת.
+// החוק החדש: פנוי ≠ פסלון. עובד פנוי יוצא (מתוזמן, מתויג-כנה) להפסקת-קפה
+// אמיתית בבר — הליכה, לגימה, חזרה — והחדר נשאר חי גם בין-משמרות. זו
+// הפסקה, לעולם לא עבודה: אפס אנימציית-הקלדה ואפס ספירת-ops על הפסקה.
+const BREAK_IDLE_MIN_MS = 70_000; // פנוי לפחות כמה זמן לפני הפסקה
+const BREAK_STAGGER_MS = 150_000; // פיזור דטרמיניסטי-לסוכן מעל המינימום
+const BREAK_STAY_MS = 24_000; // כמה זמן עומדים בבר
+const BREAK_WALK_MS = 4_500; // משך-הליכה משוער שולחן↔בר (המוח הולך בקצב אמיתי)
+// תקורה-מקבילה: עד-כמה עובדים מריצים משימות במקביל (היה 1-התחלה/טיק —
+// עם rt.running לכל-סוכן; העלאת-המקביליות משלשת את התפוקה הנראית).
+const MAX_WORKER_STARTS_PER_TICK = 2;
 // REVIEW DISCIPLINE (hardened after the t34 incident): an off-goal task is
 // cancelled and REPLACED in one step — never bounced in a redo loop, never
 // silently approved. Aligned tasks get at most MAX_REDOS bounded redos.
@@ -353,6 +365,9 @@ interface AgentRuntime {
   logs: LogEntry[];
   running: boolean;
   pendingAnswer?: { option?: string; text?: string };
+  /** Task 52 break choreography — honest, labeled, never counted as work */
+  onBreak: boolean;
+  breakTaken: number;
 }
 
 export class Office {
@@ -413,6 +428,9 @@ export class Office {
       this.agents.set(c.id, {
         view: { id: c.id, state: 'idle', activity: '', station: c.role === 'lead' ? 'wall' : 'desk', since: Date.now() },
         logs: [],
+        running: false,
+        onBreak: false,
+        breakTaken: 0,
       });
     }
     this.status = {
@@ -1311,6 +1329,7 @@ export class Office {
   dispatch() {
     if (this.status.backend === 'sim') return; // sim drives itself
     this.maybePatrol();
+    this.maybeBreak(); // Task 52: idle ≠ statue — honest coffee breaks keep the room alive
     // lead rescue duty: a blocked task gets one reassignment to a fresh worker
     const blockedTask = [...this.tasks.values()].find((t) => t.status === 'blocked' && !this.rescued.has(t.id));
     const leadRt = this.agents.get(LEAD)!;
@@ -1324,17 +1343,23 @@ export class Office {
       void this.leadReview(inReview.id);
       return;
     }
-    // dispatch ready tasks
+    // dispatch ready tasks — up to MAX_WORKER_STARTS_PER_TICK starts per tick
+    // (per-agent rt.running still serializes each agent; parallel workers on
+    // DIFFERENT desks triple the visible throughput without changing the room's
+    // readability law — each desk remains one-agent-one-task)
+    let starts = 0;
     for (const t of this.tasks.values()) {
+      if (starts >= MAX_WORKER_STARTS_PER_TICK) break;
       if (t.status !== 'todo' || !t.assignee) continue;
       const depsDone = t.dependsOn.every((d) => this.tasks.get(d)?.status === 'done');
       if (!depsDone) continue;
       const rt = this.agents.get(t.assignee);
       if (rt && !rt.running && rt.view.state !== 'waiting_user') {
         void this.runWorker(t.id);
-        return; // one dispatch per tick keeps the room readable
+        starts++;
       }
     }
+    if (starts > 0) return;
     // goal completion
     if (this.goal && this.goal.status === 'active') {
       const real = [...this.tasks.values()].filter((t) => t.status !== 'cancelled');
@@ -1366,6 +1391,60 @@ export class Office {
     if ([...this.agents.values()].some((rt) => rt.running)) return;
     this.patrolPending = true;
     void this.operatorShift();
+  }
+
+  // ---- Task 52: break choreography (honest, labeled, never work) ---------------------------
+  /**
+   * נמדד-חי: אחרי-סגירת-משמרת כל-הסוכנים ישבו פסלונים (idle 3383s מול העיניים
+   * של הבעלים). החוק החדש: עובד שנפנה יוצא להפסקת-קפה אמיתית — הליכה אל הבר
+   * (מזרח-דרום), עמידה ולגימה, חזרה לשולחן. הפיזור בין-הסוכנים דטרמיניסטי
+   * מה-id (החדר לא יוצא להפסקה במקה). ההפסקה מתויגת 'הפסקת קפה' ולעולם לא
+   * נספרת כעבודה — אפס אנימציית-הקלדה, אפס ops. משימה שמגיעה בזמן-הפסקה
+   * גוברת: runWorker מציב running=true וההפסקה מנותקת-עצמאית בלי לגרור
+   * את הסוכן מהמקלדת.
+   */
+  private breakHash(id: string): number {
+    let h = 2166136261;
+    for (let i = 0; i < id.length; i++) {
+      h ^= id.charCodeAt(i);
+      h = Math.imul(h, 16777619);
+    }
+    return (h >>> 0) % 1000;
+  }
+
+  private maybeBreak() {
+    if (this.status.backend === 'sim') return;
+    const now = Date.now();
+    for (const [id, rt] of this.agents) {
+      if (id === LEAD || rt.running || rt.onBreak) continue;
+      if (rt.view.station !== 'desk' || rt.view.state !== 'idle') continue;
+      const idleFor = now - rt.view.since;
+      // פיזור דטרמיניסטי: לכל סוכן סף-יציאה משלו מעל המינימום — החדר נשאר מאוכלס
+      const threshold = BREAK_IDLE_MIN_MS + (this.breakHash(id) / 1000) * BREAK_STAGGER_MS;
+      if (idleFor < threshold) continue;
+      void this.takeBreak(id);
+    }
+  }
+
+  private async takeBreak(id: string) {
+    const rt = this.agents.get(id)!;
+    if (rt.running || rt.onBreak) return;
+    rt.onBreak = true;
+    try {
+      this.setState(id, 'walking', 'יוצא להפסקת קפה', 'coffee');
+      await sleep(BREAK_WALK_MS);
+      if (rt.running || rt.view.station !== 'coffee' || rt.view.state !== 'walking') return; // a task grabbed him mid-walk — work wins
+      this.setState(id, 'idle', 'הפסקת קפה — לגימה ורענון', 'coffee');
+      if (this.breakHash(id + 'b') % 3 === 0) this.bubble(id, 'לגימה מהירה — וחוזרים לעבודה.');
+      await sleep(BREAK_STAY_MS);
+      if (rt.running || rt.view.station !== 'coffee') return;
+      this.setState(id, 'walking', 'חוזר מההפסקה', 'desk');
+      await sleep(BREAK_WALK_MS);
+      if (!rt.running) this.setState(id, 'idle', '', 'desk');
+    } finally {
+      rt.onBreak = false;
+      rt.breakTaken++;
+    }
   }
 
   private async operatorShift() {
@@ -1470,7 +1549,7 @@ export class Office {
     const crew = crewOf(task.assignee!);
     if (!rt || !crew || rt.running) return;
     rt.running = true;
-    this.patchTask(taskId, { status: 'doing' });
+    this.patchTask(taskId, { status: 'doing', startedAt: Date.now() });
     const startedAt = Date.now();
     try {
       this.setState(task.assignee, 'walking', `הולך לשולחן · ${task.title}`, 'desk', taskId);
@@ -1537,7 +1616,7 @@ export class Office {
           history.push({ role: 'user', content: 'המשך: בצע צעד אחד (כלי או done).' });
         }
       }
-      this.patchTask(taskId, { status: 'review', summary: finalSummary.slice(0, 400) });
+      this.patchTask(taskId, { status: 'review', summary: finalSummary.slice(0, 400), durationMs: Date.now() - startedAt });
       this.setState(task.assignee!, 'walking', 'מביא לביקורת ראש-המטה', 'wall', taskId);
       this.bubble(task.assignee!, 'המשימה שלי מוכנה לביקורת.');
       this.setState(task.assignee!, 'idle', '', 'desk');

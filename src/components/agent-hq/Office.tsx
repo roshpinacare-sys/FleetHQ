@@ -62,6 +62,7 @@ const STATIONS: Record<Exclude<Station, 'desk'>, { x: number; y: number }> = {
   podium: { x: 180, y: 300 },
   library: { x: 1050, y: 352 },
   offstage: { x: 590, y: 640 },
+  coffee: { x: 1105, y: 610 }, // Task 52 — בר הקפה (הפסקות מתויגות-כנה)
 };
 
 // the front desk — עמית receives visitors at the south-WEST (the Hebrew "start" side)
