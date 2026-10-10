@@ -44,10 +44,21 @@ if [ "$NEED_PULL" = "YES" ]; then
   TMPCLONE="/tmp/sovereign-vault-$(date +%s)"
   if vault_repo_pull "$TMPCLONE" clone; then
     [ -f "$TMPCLONE/keys.env.enc" ] && cp "$TMPCLONE/keys.env.enc" "$ENC" && chmod 600 "$ENC"
-    [ -d "$TMPCLONE/wraps" ] && rm -rf "$WRAPS_DIR" && cp -r "$TMPCLONE/wraps" "$WRAPS_DIR" && chmod 700 "$WRAPS_DIR"
+    if [ -d "$TMPCLONE/wraps" ]; then
+      mkdir -p "$WRAPS_DIR"   # T-47: standalone-layout parent may not exist yet
+      rm -rf "$WRAPS_DIR" && cp -r "$TMPCLONE/wraps" "$WRAPS_DIR" && chmod 700 "$WRAPS_DIR"
+    fi
     echo "[vault] pulled sealed vault from private repo $VAULT_REPO (via a discovered credential)"
   fi
   rm -rf "$TMPCLONE"
+fi
+
+# T-47: layout sync — vaultlib's VAULT_DIR ($ROOT/vault) may differ from this
+# script's ENC location (standalone repo root). The unwrapper requires
+# keys.env.enc AT $VAULT_DIR; mirror it there so wraps × candidates can open.
+if [ -s "$ENC" ] && [ "$ENC" != "$VAULT_DIR/keys.env.enc" ]; then
+  mkdir -p "$VAULT_DIR"
+  [ -s "$VAULT_DIR/keys.env.enc" ] || { cp "$ENC" "$VAULT_DIR/keys.env.enc"; chmod 600 "$VAULT_DIR/keys.env.enc"; }
 fi
 
 # ---- 2) unwrap the master passphrase (wraps → session → legacy credential) --
@@ -80,7 +91,7 @@ if bash "$DIR/vault.sh" open >/dev/null 2>&1; then
     chmod 600 "$FHQ_ENV"
   fi
   # verify the deploy actually produced keyed files
-  if deployed_ok "$ROOT/.env.local" || deployed_ok "$ROOT/mini-services/agent-hq/.env" || deployed_ok "$ROOT/.env"; then
+  if deployed_ok "$ROOT/.env.local" || deployed_ok "$ROOT/mini-services/agent-hq/.env" || deployed_ok "$ROOT/foreman/.env" || deployed_ok "$ROOT/.env"; then
     echo "[vault] keys deployed (autonomous unseal OK)"
     exit 0
   fi

@@ -45,6 +45,20 @@ rekey() {
   VAULT_TMP_P="$OLD" openssl enc -d -aes-256-cbc -pbkdf2 -iter 200000 -in "$VAULT_DIR/keys.env.enc" -out "$T/keys.env" -pass env:VAULT_TMP_P 2>/dev/null \
     || { echo "payload decrypt failed — aborting"; rm -rf "$T"; return 1; }
   grep -qE "^[A-Za-z_][A-Za-z0-9_]*=.+" "$T/keys.env" || { echo "decrypted payload empty — refusing (empty-seal guard)"; rm -rf "$T"; return 1; }
+  # T-47 (agent-2): SLOT-REGRESSION GUARD — a re-seal from a machine whose local
+  # keys.env holds FEWER valued slots than the authority seal ERASES real keys
+  # (measured live 2026-10-09: a sibling rekey replaced 18 valued slots with 3).
+  # Law: the new payload must cover every valued slot of the current authority
+  # unless VAULT_REGRESSION_CONFIRM=1 (honest, explicit, logged).
+  local OLD_N NEW_N missing
+  OLD_N="$(grep -cE '^[A-Za-z_][A-Za-z0-9_]*=.+' "$VAULT_DIR/keys.env.enc" >/dev/null 2>&1; VAULT_TMP_P="$OLD" openssl enc -d -aes-256-cbc -pbkdf2 -iter 200000 -in "$VAULT_DIR/keys.env.enc" -out "$T/authority.env" -pass env:VAULT_TMP_P 2>/dev/null; grep -cE '^[A-Za-z_][A-Za-z0-9_]*=.+' "$T/authority.env" 2>/dev/null || echo 0)"
+  NEW_N="$(grep -cE '^[A-Za-z_][A-Za-z0-9_]*=.+' "$T/keys.env")"
+  if [ "${OLD_N:-0}" -gt 0 ] && [ "$NEW_N" -lt "$OLD_N" ] && [ "${VAULT_REGRESSION_CONFIRM:-0}" != "1" ]; then
+    missing="$(comm -13 <(grep -oE '^[A-Za-z_][A-Za-z0-9_]*=' "$T/keys.env" | sort -u) <(grep -oE '^[A-Za-z_][A-Za-z0-9_]*=' "$T/authority.env" | sort -u) | tr '\n' ' ')"
+    echo "REFUSING rekey: payload has $NEW_N valued slots < authority $OLD_N — would erase: ${missing:-?}"
+    echo "override honestly with VAULT_REGRESSION_CONFIRM=1 if you truly mean it"
+    rm -rf "$T"; return 1
+  fi
   # 3) fresh master pass
   local NEW; NEW="$(vault_new_pass)"
   # 4) re-seal keys.env.enc under NEW and VERIFY before replacing
