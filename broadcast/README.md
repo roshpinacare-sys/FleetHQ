@@ -29,3 +29,25 @@ This directory is the boundary between **measured local truth** and any
 bun mini-services/agent-hq/tools/post-batcher.ts
 # → 11 packages + index.json in staging/ (bounded to the newest 30)
 ```
+
+## OWNER RELEASE — 2026-10-10 (recorded verbatim from the owner's directive)
+
+The owner released the broadcast lane: "להפעיל הכל שיוכלו לעשות הכל בלי חסימות"
+— full activity without blockages, sent to all agents as one.
+
+What this releases:
+1. The drafts in `staging/` are no longer terminal artifacts — they are the
+   feed of an ACTIVE broadcast pipeline.
+2. The `dryrun-sign` gate is now the REQUIRED next step, not an indefinite
+   wait — and every part before the signature must run unattended.
+
+What is measured-honest about the remaining step on THIS machine:
+- Signing a public Steem/Blurt transaction requires the posting/active WIFs.
+  The custody bridge (vault.sh §T-57) deploys them to
+  `steem/mini-services/saos-engine/.env` — a path that exists on the SAOS
+  machine, not here. Until those keys land in the runtime env, the executor
+  MUST fail-closed with this exact reason (no key material may ever be
+  invented, imported from plaintext, or guessed).
+- Everything else — draft generation, compaction, lineage anchoring, secret
+  scanning — runs live here on every batch (post-batcher, 30-min cadence).
+
