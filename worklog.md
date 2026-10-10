@@ -503,3 +503,6 @@ Work Log (הכל נמדד):
 
 Stage Summary:
 - FleetHQ עברה מ"משחק עם פאנלים מקצועיים" ל"מכשיר-תפעולי מרחבי": אין-שחקן, יש-במאי; אין-קוסמטיקה, יש-היררכיית-תאורה; אין-שחור-שקט, יש-אמת-מוכנות; אין-ירוק-מזויף בגיט, יש-מלאי-כנה-עם-unknown מפורש; וכל-בייט-החוצה עובר שער-אחד עם רגרסיה-מוכחת. Task 46+: לשקול התמדת-משימות-חוצה-הפעלות (דרישת-קדם-מתועדת) ולבדוק GPU אמיתי.
+
+---
+T-52b (trace 1a12416dcba85e31): public ciphertext home synced — keys.env.enc re-sealed 3→7 slots (GitLab/Supabase/Vercel/Render infra tokens added; all verified live pre-seal). Same P — wraps untouched. See private fleet-vault MANIFEST seals[0] for the sha256 pin.
