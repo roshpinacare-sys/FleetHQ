@@ -149,7 +149,10 @@ export class AgentBrain {
       }
     } else if (station === 'wall') {
       const sx = TASK_WALL.cx + (this.id === 'aluf' ? -60 : 60);
-      this.setTarget({ x: sx, y: TASK_WALL.cy + 118, face: Math.PI, kind: 'stand' });
+      // 170 (was 118): the target must sit OUTSIDE the collision shell (r=24
+      // plan-units) a wall collider casts, or the agent can never arrive and
+      // paces in place forever (measured live).
+      this.setTarget({ x: sx, y: TASK_WALL.cy + 170, face: Math.PI, kind: 'stand' });
     } else if (station === 'podium') {
       this.setTarget({ x: PODIUM.x + 62, y: PODIUM.y - 20, face: -Math.PI / 2, kind: 'stand' });
     } else if (station === 'library') {
@@ -176,6 +179,10 @@ export class AgentBrain {
     this.arrived = false;
   }
 
+  /** stuck detector: closing-distance bookkeeping (see update) */
+  private lastD = Number.POSITIVE_INFINITY;
+  private stuckT = 0;
+
   update(dt: number) {
     this.t += dt;
     const tgt = this.target;
@@ -185,16 +192,30 @@ export class AgentBrain {
       const spd = 88; // יחידות/שנ' ≈ 1.1 מ'/שנ'
       if (d < 8) {
         this.arrived = true;
+        this.stuckT = 0;
         if (tgt.face !== undefined) this.yawTarget = tgt.face;
       } else {
-        const nx = dx / d, ny = dy / d;
-        const p = resolveCircle(this.x + nx * spd * dt, this.y + ny * spd * dt, 0.3 / SCALE);
-        this.x = p.x; this.y = p.y;
-        this.yawTarget = Math.atan2(nx, ny);
-        this.walkAmt = Math.min(1, this.walkAmt + dt * 5);
+        // STUCK LAW (Task 46): moving but not closing the distance for 1.5s
+        // means the geometry (collision shell) will not let him arrive —
+        // stopping honestly beats pacing in place forever.
+        if (d > this.lastD - 1) this.stuckT += dt;
+        else this.stuckT = 0;
+        this.lastD = d;
+        if (this.stuckT > 1.5) {
+          this.arrived = true;
+          this.stuckT = 0;
+          if (tgt.face !== undefined) this.yawTarget = tgt.face;
+        } else {
+          const nx = dx / d, ny = dy / d;
+          const p = resolveCircle(this.x + nx * spd * dt, this.y + ny * spd * dt, 0.3 / SCALE);
+          this.x = p.x; this.y = p.y;
+          this.yawTarget = Math.atan2(nx, ny);
+          this.walkAmt = Math.min(1, this.walkAmt + dt * 5);
+        }
       }
     } else {
       this.walkAmt = Math.max(0, this.walkAmt - dt * 6);
+      this.stuckT = 0;
     }
     // ישיבה/עבודה לפי החוזה הדטרמיניסטי
     const seated = this.arrived && tgt?.kind === 'seat';
