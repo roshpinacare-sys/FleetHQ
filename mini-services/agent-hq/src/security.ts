@@ -25,6 +25,11 @@ const SECRET_PATTERNS: RegExp[] = [
   /ghu_[A-Za-z0-9]{20,}/g,
   /github_pat_[A-Za-z0-9_]{18,}/g,
   /glpat-[A-Za-z0-9_-]{16,}/g,
+  /tvly-[A-Za-z0-9_-]{16,}/g,
+  /jina_[A-Za-z0-9_-]{16,}/g,
+  // dotted key shape (32-hex id . suffix) — e.g. unidentified provider keys in
+  // the vault; the 32-hex prefix keeps ordinary dotted text out of scope
+  /\b[0-9a-f]{32}\.[A-Za-z0-9_-]{20,}\b/g,
   /AKIA[0-9A-Z]{16}/g,
   /Bearer\s+[A-Za-z0-9._~+/-]{18,}/gi,
   /(?:api[_-]?key|apikey|access[_-]?token|auth[_-]?token|secret|password|passphrase)\s*[:=]\s*[^\s"']{8,}/gi,

@@ -45,11 +45,22 @@ import { collectRepoFleet } from '../mini-services/agent-hq/src/gitfleet';
 // Length note: the gate's plain `sk-` floor is 28 chars (a shorter token would
 // be a false positive in production text), so the synthetic sk- fake is 32
 // chars. Everything else mirrors the mission's dummy shapes.
+// SCANNER-COEXISTENCE LAW: the new shapes below are BUILT BY CONCATENATION so
+// this source file never contains a value-shaped literal — the vault/lineage
+// scanners are value-shaped (≥20 chars after the prefix) and a static fixture
+// would fail-closed every future push against the suite's own test strings.
+// Runtime values stay ≥16 after the prefix so the scrub gate still fires.
+const tavilyFake = `tvly-dev-${'0'.repeat(8)}fake${'0'.repeat(3)}`; // 19 after prefix (scrub 16+ ✓, scanner 20+ ✗)
+const jinaFake = `jina_${'0'.repeat(8)}fake${'0'.repeat(4)}`; // 16 after prefix
+const dottedFake = `${'abcdef0123456789'.repeat(2)}.${'1_'}${'FAKE'.repeat(5)}`; // 32hex.22-suffix
 const SYNTHETIC: Array<{ label: string; value: string }> = [
   { label: 'github-pat', value: 'ghp_0000000000000000000000000000000000fake' },
   { label: 'openai-sk', value: 'sk-0000fake0000fake0000fake0000fake' },
   { label: 'aws-akia', value: 'AKIA0000000000000FAKE' },
   { label: 'xai-key', value: 'xai-0000fake0000fake0000' },
+  { label: 'tavily-key', value: tavilyFake },
+  { label: 'jina-key', value: jinaFake },
+  { label: 'dotted-key', value: dottedFake },
   { label: 'password', value: 'password=hunter2fake123' },
   { label: 'bearer', value: 'Bearer faketoken0000000000000000' },
 ];
@@ -66,6 +77,10 @@ const LIVE_MARKERS: Array<{ name: string; hit: (body: string) => boolean }> = [
   { name: 'xoxb-', hit: (b) => b.includes('xoxb-') },
   { name: 'BEGIN RSA PRIVATE KEY', hit: (b) => b.includes('BEGIN RSA PRIVATE KEY') },
   { name: 'AKIA', hit: (b) => b.includes('AKIA') },
+  { name: 'tvly-<token>', hit: (b) => /tvly-[A-Za-z0-9-]{16,}/.test(b) },
+  { name: 'jina_<token>', hit: (b) => /jina_[A-Za-z0-9_-]{16,}/.test(b) },
+  { name: 'tavilyApiKey=', hit: (b) => b.includes('tavilyApiKey=') },
+  { name: '<32hex>.<suffix>', hit: (b) => /\b[0-9a-f]{32}\.[A-Za-z0-9_-]{20,}\b/.test(b) },
 ];
 const markerHits = (body: string) => LIVE_MARKERS.filter((m) => m.hit(body));
 
