@@ -183,8 +183,19 @@ export class AgentBrain {
   private lastD = Number.POSITIVE_INFINITY;
   private stuckT = 0;
 
-  update(dt: number) {
-    this.t += dt;
+  /**
+   * @param dtNav  wall-clock-true delta (capped at 1s) — NAVIGATION ONLY.
+   *        The renderer's dt clamp (0.05s) exists for mixer/lerp stability,
+   *        but at a low frame rate it silently divided the walking speed by
+   *        ~25: a 6-second crossing took 160 wall-clock seconds and the room
+   *        looked like it paces forever (measured live). Position must advance
+   *        with real time; the motion is kinematic (straight step + circle
+   *        resolve), stable at large steps by construction.
+   * @param dtAnim cosmetic delta (≤0.05s) — breathing phase, weight lerps,
+   *        yaw smoothing.
+   */
+  update(dtNav: number, dtAnim: number) {
+    this.t += dtAnim;
     const tgt = this.target;
     if (tgt && !this.arrived) {
       const dx = tgt.x - this.x, dy = tgt.y - this.y;
@@ -195,10 +206,10 @@ export class AgentBrain {
         this.stuckT = 0;
         if (tgt.face !== undefined) this.yawTarget = tgt.face;
       } else {
-        // STUCK LAW (Task 46): moving but not closing the distance for 1.5s
-        // means the geometry (collision shell) will not let him arrive —
-        // stopping honestly beats pacing in place forever.
-        if (d > this.lastD - 1) this.stuckT += dt;
+        // STUCK LAW (Task 46): moving but not closing the distance for 1.5
+        // wall-clock seconds means the geometry (collision shell) will not
+        // let him arrive — stopping honestly beats pacing forever.
+        if (d > this.lastD - 1) this.stuckT += dtNav;
         else this.stuckT = 0;
         this.lastD = d;
         if (this.stuckT > 1.5) {
@@ -207,26 +218,26 @@ export class AgentBrain {
           if (tgt.face !== undefined) this.yawTarget = tgt.face;
         } else {
           const nx = dx / d, ny = dy / d;
-          const p = resolveCircle(this.x + nx * spd * dt, this.y + ny * spd * dt, 0.3 / SCALE);
+          const p = resolveCircle(this.x + nx * spd * dtNav, this.y + ny * spd * dtNav, 0.3 / SCALE);
           this.x = p.x; this.y = p.y;
           this.yawTarget = Math.atan2(nx, ny);
-          this.walkAmt = Math.min(1, this.walkAmt + dt * 5);
+          this.walkAmt = Math.min(1, this.walkAmt + dtAnim * 5);
         }
       }
     } else {
-      this.walkAmt = Math.max(0, this.walkAmt - dt * 6);
+      this.walkAmt = Math.max(0, this.walkAmt - dtAnim * 6);
       this.stuckT = 0;
     }
     // ישיבה/עבודה לפי החוזה הדטרמיניסטי
     const seated = this.arrived && tgt?.kind === 'seat';
-    this.sitAmt += ((seated ? 1 : 0) - this.sitAmt) * Math.min(1, dt * 3.2);
+    this.sitAmt += ((seated ? 1 : 0) - this.sitAmt) * Math.min(1, dtAnim * 3.2);
     const working = seated && agentVisual(this.state).work;
-    this.workAmt += ((working ? 1 : 0) - this.workAmt) * Math.min(1, dt * 2.6);
+    this.workAmt += ((working ? 1 : 0) - this.workAmt) * Math.min(1, dtAnim * 2.6);
     // החלקת yaw בקשת הקצרה
     let dyaw = (this.yawTarget - this.yaw) % (Math.PI * 2);
     if (dyaw > Math.PI) dyaw -= Math.PI * 2;
     if (dyaw < -Math.PI) dyaw += Math.PI * 2;
-    this.yaw += dyaw * Math.min(1, dt * 6);
+    this.yaw += dyaw * Math.min(1, dtAnim * 6);
   }
 }
 

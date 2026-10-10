@@ -364,7 +364,9 @@ function HumanAgent({ id, assets }: { id: string; assets: CrewAssets }) {
     // interpolated HERE, once per frame per agent — without it walkAmt/sitAmt/
     // workAmt stay 0 forever and the whole crew freezes standing (the exact
     // "static characters with status labels" defect this task forbids).
-    brain.update(dt);
+    // Navigation gets wall-clock time (the 0.05s render clamp divided walking
+    // speed by ~25 at a low frame rate); cosmetics keep the stable clamp.
+    brain.update(Math.min(dtRaw, 1.0), dt);
     const g = group.current;
     if (!g) return;
 
