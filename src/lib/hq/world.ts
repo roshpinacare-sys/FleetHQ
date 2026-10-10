@@ -218,7 +218,12 @@ export class AgentBrain {
           if (tgt.face !== undefined) this.yawTarget = tgt.face;
         } else {
           const nx = dx / d, ny = dy / d;
-          const p = resolveCircle(this.x + nx * spd * dtNav, this.y + ny * spd * dtNav, 0.3 / SCALE);
+          // never step PAST the target: at a low frame rate a full wall-clock
+          // step (88u) overshoots the 8-unit arrival radius and the agent
+          // oscillates around the target forever (measured live: d cycled
+          // ~56->31 without ever dipping below 8). Step = min(speed*dt, d).
+          const step = Math.min(spd * dtNav, d);
+          const p = resolveCircle(this.x + nx * step, this.y + ny * step, 0.3 / SCALE);
           this.x = p.x; this.y = p.y;
           this.yawTarget = Math.atan2(nx, ny);
           this.walkAmt = Math.min(1, this.walkAmt + dtAnim * 5);
