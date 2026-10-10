@@ -283,6 +283,63 @@ export function sanitizeEmitPayload(event: string, payload: unknown): unknown {
   }
 }
 
+// ---- THE PERSISTENCE GATE (Task 46) ------------------------------------------------------
+// The durable file is part of the recovery path, so every free-text field of
+// every record that lands there is scrubbed again at this boundary — a secret
+// that slipped into memory must not survive into a restart artifact. Exported
+// so the security regression suite (tools/security-regression.ts §G) can prove
+// the boundary holds with synthetic canaries.
+
+export function scrubDurableTask(t: Task): Task {
+  return {
+    ...t,
+    title: scrubSecrets(t.title),
+    ...(t.description ? { description: scrubSecrets(t.description) } : {}),
+    ...(t.summary ? { summary: scrubSecrets(t.summary) } : {}),
+    ...(t.why ? { why: scrubSecrets(t.why) } : {}),
+  };
+}
+
+export function scrubDurableDecision(d: Decision): Decision {
+  return {
+    ...d,
+    question: scrubSecrets(d.question),
+    ...(d.answer?.text ? { answer: { ...d.answer, text: scrubSecrets(d.answer.text) } } : {}),
+  };
+}
+
+export function scrubDurableReport(r: Report): Report {
+  return { ...r, title: scrubSecrets(r.title), body: scrubSecrets(r.body) };
+}
+
+/**
+ * The reconciliation law for one recovered task (pure — proven by
+ * tools/recovery-law.ts). A task interrupted mid-execution (doing) is:
+ *   · requeued to todo with an explicit recovery note while attempts < 2 —
+ *     these tasks are read-only analysis, so re-execution is safe;
+ *   · parked as blocked for the lead's rescue path once interrupted twice —
+ *     bounded, on the record, never a silent loop, never a fake completion.
+ * Every other status is restored as-is.
+ */
+export function reconcileRecoveredTask(
+  task: Task,
+  attempts: number,
+): { task: Task; requeued: boolean; parked: boolean } {
+  if (task.status !== 'doing') return { task, requeued: false, parked: false };
+  if (attempts >= 2) {
+    return {
+      task: { ...task, status: 'blocked', summary: '[recovery: interrupted twice by restarts — parked for reconciliation]' },
+      requeued: false,
+      parked: true,
+    };
+  }
+  return {
+    task: { ...task, status: 'todo', summary: '[recovery: foreman restart interrupted execution — requeued]' },
+    requeued: true,
+    parked: false,
+  };
+}
+
 interface AgentRuntime {
   view: AgentView;
   logs: LogEntry[];
@@ -320,6 +377,18 @@ export class Office {
   private patrolIdx = 0;
   private planFailures = 0;
   opsDone = 0;
+  // ---- DURABLE TASK STATE (Task 46) -------------------------------------------------------
+  // Tasks used to live ONLY in memory: a foreman restart silently erased every
+  // task and a task that was mid-execution simply vanished. Recovery law:
+  //   · task records survive restarts (atomic JSON in the Domain data dir —
+  //     the same fail-soft paper-trail home as the journal and office memory)
+  //   · interrupted work is NEVER reported complete and NEVER silently repeated
+  //   · a single-flight lock (office-lock.json + heartbeat) keeps two foreman
+  //     processes from dispatching the same work in parallel
+  private durableQueue: Promise<void> = Promise.resolve();
+  private lockTimer?: ReturnType<typeof setInterval>;
+  /** true when another live foreman holds the floor (single-flight lock) */
+  standby = false;
   // ---- event journal (the office's paper trail) -------------------------------------------
   // Every log line, task transition and goal event is appended to an append-only
   // journal inside the Domain data repo — the repo domain-sync.sh commits to git.
@@ -366,8 +435,15 @@ export class Office {
         completion_chars: u.completion_chars,
       }),
     );
+    // SINGLE-FLIGHT FLOOR (Task 46): another live foreman → this office serves
+    // as a read-only standby (no dispatcher, no patrol, no execution).
+    this.standby = !(await this.acquireFloor());
     const avail = await llmAvailable();
     const mem = await this.loadMemory();
+    // DURABLE RECOVERY before the dispatcher can touch anything: task records
+    // from the previous run are restored and interrupted work is reconciled
+    // with explicit recovery notes — never fake completions.
+    await this.recoverDurable();
     if (avail.ok) {
       this.status = {
         backend: 'live',
@@ -400,6 +476,38 @@ export class Office {
       this.log(LEAD, 'text', 'no LLM provider → sim crew (demo)');
       this.feedPush('system', 'DEMO — צוות מדומה פועל (הוגדר בכנות)');
     }
+    if (this.standby) {
+      this.status = {
+        backend: 'live',
+        llmProvider: avail.ok ? avail.provider : 'none',
+        message: {
+          he: 'מצב המתנה — פורמן אחר מחזיק ברצפה (נעילת-ריצה יחידה)',
+          en: 'Standby — another foreman holds the floor (single-flight lock)',
+        },
+        startedAt: this.startedAt,
+        opsDone: 0,
+      };
+      this.emit('status', this.status);
+      this.log(LEAD, 'text', 'standby: another foreman holds the floor — read-only window');
+      // a standby office stays a truthful read window: heartbeat, books, git
+      // wire and fleet inventory stay live; the DISPATCHER and the patrol
+      // scheduler never start — exactly one foreman may execute at a time.
+      this.heartbeat = setInterval(() => this.emit('status', this.status), 30_000);
+      this.booksTimer = setInterval(() => this.refreshBooks(), 5 * 60_000);
+      this.gitWire = new GitWire(
+        resolveGitSource(process.env.AGENT_HQ_FLEET_DIR ?? '/home/z/my-project'),
+        (p) => this.emit('git', this.decoratePulse(p)),
+        (cs) => {
+          for (const c of cs) this.feedPush('git', `commit ${c.hash} — ${c.subject.slice(0, 110)}`);
+        },
+      );
+      this.gitWire.start();
+      void this.refreshGitLearning();
+      this.gitLearnTimer = setInterval(() => void this.refreshGitLearning(), 10 * 60_000);
+      void this.refreshRepoFleet();
+      this.repoFleetTimer = setInterval(() => void this.refreshRepoFleet(), 60_000);
+      return;
+    }
     this.emit('status', this.status);
     this.dispatcher = setInterval(() => this.dispatch(), 2200);
     // liveness heartbeat: a quiet office must still prove it is alive. Without
@@ -407,10 +515,14 @@ export class Office {
     // socket" — every instrument would render a frozen snapshot as current.
     this.heartbeat = setInterval(() => this.emit('status', this.status), 30_000);
     this.booksTimer = setInterval(() => this.refreshBooks(), 5 * 60_000);
-    // the git wire: the fleet's real commit stream (metadata only, public repo)
+    // the git wire: the fleet's real commit stream (metadata only, public repo).
+    // TRUTH FIX (Task 46): the wire now reads the FleetHQ repo itself — the
+    // history it always showed WAS FleetHQ's; the old source pointed at the
+    // Domain data dir (not an independent clone) and mislabeled it. Labels now
+    // match the repository they actually read.
     this.gitWire = new GitWire(
-      resolveGitSource(process.env.AGENT_HQ_DATA_DIR ?? '/home/z/my-project/Domain'),
-      (p) => this.emit('git', this.repoFleet ? { ...p, fleet: this.repoFleet } : p),
+      resolveGitSource(process.env.AGENT_HQ_FLEET_DIR ?? '/home/z/my-project'),
+      (p) => this.emit('git', this.decoratePulse(p)),
       (cs) => {
         for (const c of cs) this.feedPush('git', `commit ${c.hash} — ${c.subject.slice(0, 110)}`);
       },
@@ -436,7 +548,221 @@ export class Office {
     if (this.booksTimer) clearInterval(this.booksTimer);
     if (this.gitLearnTimer) clearInterval(this.gitLearnTimer);
     if (this.repoFleetTimer) clearInterval(this.repoFleetTimer);
-    this.gitWire.stop();
+    this.gitWire?.stop();
+    this.releaseFloor();
+    this.persistDurable();
+  }
+
+  // ---- single-flight floor (Task 46) -----------------------------------------------------
+
+  private lockFile(): string {
+    return join(this.dataDir(), 'agents', 'office-lock.json');
+  }
+
+  /** Acquire the execution floor (Task 46, hardened after the live kill-test):
+   *  · a LIVE peer (fresh heartbeat AND a process that actually exists) → false
+   *    (standby)
+   *  · our own pid → takeover (hot reload restarts the office in-process)
+   *  · a dead pid or a stale heartbeat → takeover, on the record. The original
+   *    heartbeat-only rule wedged crash recovery: the supervisor resurrects the
+   *    foreman within seconds, while the killed process's lock can still look
+   *    "fresh" for up to 40s — the fresh instance sat in standby forever and
+   *    the recovered task never dispatched. Liveness is now the process, not
+   *    the paper. */
+  private async acquireFloor(): Promise<boolean> {
+    try {
+      const raw = await readFile(this.lockFile(), 'utf8').catch(() => null);
+      if (raw) {
+        const prev = JSON.parse(raw) as { pid?: number; heartbeatAt?: number; releasedAt?: number };
+        const freshHeartbeat = typeof prev.heartbeatAt === 'number' && Date.now() - prev.heartbeatAt < 40_000 && !prev.releasedAt;
+        const peerAlive = typeof prev.pid === 'number' && prev.pid > 0 && prev.pid !== process.pid && this.pidAlive(prev.pid);
+        if (freshHeartbeat && peerAlive) return false;
+        if (prev.pid && prev.pid !== process.pid) {
+          this.journal({
+            ts: Date.now(),
+            type: 'recovery',
+            event: 'floor-takeover',
+            prevPid: prev.pid,
+            prevHeartbeatAt: prev.heartbeatAt ?? null,
+            prevAlive: peerAlive,
+            reason: peerAlive ? 'stale-heartbeat' : 'dead-peer',
+          });
+        }
+      }
+      await this.writeFloor();
+      this.lockTimer = setInterval(() => void this.writeFloor(), 15_000);
+      return true;
+    } catch {
+      return true;
+    }
+  }
+
+  /** True when the pid exists (signal 0 never delivers — it only probes). */
+  private pidAlive(pid: number): boolean {
+    try {
+      process.kill(pid, 0);
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  private async writeFloor() {
+    try {
+      await mkdir(join(this.dataDir(), 'agents'), { recursive: true });
+      await writeFile(this.lockFile(), JSON.stringify({ pid: process.pid, startedAt: this.startedAt, heartbeatAt: Date.now() }), 'utf8');
+    } catch {
+      // fail-soft — never block the office on its own lock
+    }
+  }
+
+  private releaseFloor() {
+    if (this.lockTimer) clearInterval(this.lockTimer);
+    void writeFile(this.lockFile(), JSON.stringify({ pid: process.pid, releasedAt: Date.now() }), 'utf8').catch(() => {});
+  }
+
+  // ---- durable task state (Task 46) --------------------------------------------------------
+
+  private durableFile(): string {
+    return join(this.dataDir(), 'agents', 'office-tasks.json');
+  }
+
+  /** Persist the operational state that must survive a restart — atomic,
+   *  serialized, and scrubbed again at this boundary (the file is part of the
+   *  recovery path, so the secret gate runs on every free-text field). */
+  private persistDurable() {
+    this.durableQueue = this.durableQueue.then(() => this.persistDurableWrite()).catch(() => {});
+  }
+
+  private async persistDurableWrite() {
+    try {
+      const state = {
+        v: 1 as const,
+        savedAt: Date.now(),
+        nextId: this.nextId,
+        tasks: [...this.tasks.values()].map(scrubDurableTask),
+        taskAttempts: Object.fromEntries(this.taskAttempts),
+        reviewAttempts: Object.fromEntries(this.reviewAttempts),
+        rescued: [...this.rescued],
+        decisions: [...this.decisions.values()].map(scrubDurableDecision),
+        reports: this.reports.slice(0, 60).map(scrubDurableReport),
+        ...(this.goal ? { goal: { ...this.goal, text: scrubSecrets(this.goal.text) } } : {}),
+      };
+      const tmp = `${this.durableFile()}.tmp`;
+      await mkdir(join(this.dataDir(), 'agents'), { recursive: true });
+      await writeFile(tmp, JSON.stringify(state), 'utf8');
+      await rename(tmp, this.durableFile());
+    } catch {
+      // fail-soft: durability never blocks the office (the journal is the deeper trail)
+    }
+  }
+
+  /** Boot-time reconciliation (the Gate-B law):
+   *  · doing  → requeued to todo with an explicit recovery note, bounded by
+   *    the persisted attempts (these are read-only analysis tasks — safe to
+   *    re-run; two interruptions park the task blocked for the lead's rescue)
+   *  · review → restored as review (the review gate re-runs, idempotent)
+   *  · todo/blocked/done/cancelled → restored as-is
+   *  · a goal left mid-planning by death → failed honestly (planning is not
+   *    resumable; the patrol re-arms after cooldown)
+   *  · open decisions at death → answered with an honest restart note
+   *  · nextId resumes past the highest id seen — no collisions */
+  private async recoverDurable() {
+    try {
+      const raw = await readFile(this.durableFile(), 'utf8');
+      const d = JSON.parse(raw) as {
+        v?: number;
+        savedAt?: number;
+        nextId?: number;
+        tasks?: Task[];
+        taskAttempts?: Record<string, number>;
+        reviewAttempts?: Record<string, number>;
+        rescued?: string[];
+        decisions?: Decision[];
+        reports?: Report[];
+        goal?: Goal;
+      };
+      if (!d || d.v !== 1 || !Array.isArray(d.tasks)) return;
+      let requeued = 0;
+      let parked = 0;
+      let resumed = 0;
+      for (const t of d.tasks) {
+        if (!t || typeof t.id !== 'string' || typeof t.title !== 'string') continue;
+        const task: Task = { ...t, dependsOn: Array.isArray(t.dependsOn) ? t.dependsOn : [] };
+        if (task.status === 'doing') {
+          const attempts = (d.taskAttempts?.[task.id] ?? 0) as number;
+          const r = reconcileRecoveredTask(task, attempts);
+          this.tasks.set(task.id, r.task);
+          this.emit('task', r.task);
+          this.taskAttempts.set(task.id, attempts + 1);
+          if (r.parked) parked++;
+          else if (r.requeued) requeued++;
+        } else {
+          if (task.status === 'review') resumed++;
+          this.tasks.set(task.id, task);
+          this.emit('task', task);
+        }
+      }
+      for (const [k, v] of Object.entries(d.taskAttempts ?? {})) if (typeof v === 'number') this.taskAttempts.set(k, v);
+      for (const [k, v] of Object.entries(d.reviewAttempts ?? {})) if (typeof v === 'number') this.reviewAttempts.set(k, v);
+      for (const id of d.rescued ?? []) if (typeof id === 'string') this.rescued.add(id);
+      for (const dec of d.decisions ?? []) {
+        if (!dec || typeof dec.id !== 'string') continue;
+        if (dec.status === 'open') {
+          // nothing may keep waiting on a process that no longer exists
+          dec.status = 'answered';
+          dec.answer = { text: 'הפורמן הופעל מחדש לפני שההכרעה נפתרה — נסגרה בכנות (recovery)', ts: this.startedAt };
+          this.journal({ ts: this.startedAt, type: 'decision', event: 'recovery-closed', id: dec.id });
+        }
+        this.decisions.set(dec.id, dec);
+        this.emit('decision', dec);
+      }
+      for (const r of d.reports ?? []) {
+        if (!r || typeof r.id !== 'string' || typeof r.title !== 'string') continue;
+        this.reports.push(r);
+      }
+      this.reports = this.reports.slice(0, 60);
+      if (d.goal && typeof d.goal.id === 'string') {
+        if (d.goal.status === 'planning') {
+          d.goal = { ...d.goal, status: 'failed', updatedAt: this.startedAt };
+          this.feedPush('system', 'משמרת שנקטעה בתכנון עקב הפעלה-מחדש — נסגרה בכנות (recovery)');
+        }
+        this.goal = d.goal;
+        this.emit('goal', d.goal);
+      }
+      // id cursor: never collide with a pre-restart id
+      const maxId = (s: string, prefix: string) => {
+        if (!s.startsWith(prefix)) return 0;
+        return Number(s.slice(prefix.length)) || 0;
+      };
+      for (const id of [
+        ...d.tasks.map((t) => t.id),
+        ...(d.decisions ?? []).map((x) => x.id),
+        ...(d.reports ?? []).map((x) => x.id),
+        ...(d.goal ? [d.goal.id] : []),
+      ])
+        this.nextId = Math.max(this.nextId, maxId(String(id), 't') , maxId(String(id), 'd'), maxId(String(id), 'r'), maxId(String(id), 'g'));
+      this.nextId = Math.max(this.nextId, d.nextId ?? 0);
+      if (requeued || parked || resumed || this.tasks.size) {
+        this.journal({
+          ts: Date.now(),
+          type: 'recovery',
+          event: 'durable-resume',
+          tasks: this.tasks.size,
+          requeued,
+          parked,
+          reviewResumed: resumed,
+          savedAt: d.savedAt ?? null,
+        });
+        this.feedPush(
+          'system',
+          `שחזור לאחר הפעלה-מחדש: ${this.tasks.size} משימות שוחזרו · ${requeued} הוחזרו לתור · ${parked} הועברו לפיוס`,
+        );
+        this.persistDurable();
+      }
+    } catch {
+      // first boot / unreadable file — a fresh state is the honest state
+    }
   }
 
   // ---- sovereign memory & learning --------------------------------------------------
@@ -495,6 +821,10 @@ export class Office {
     } catch {
       this.gitLearn = undefined;
     }
+    // analysis freshness rides the git wire the UI already receives (honest
+    // age — never faked; absent until measured)
+    const pulse = this.gitWire?.pulse;
+    if (pulse) this.emit('git', { ...this.decoratePulse(pulse), learnedAt: this.gitLearn?.ts });
   }
 
   /** Truthful sync/health inventory of the authorized repos (gitfleet.ts).
@@ -511,14 +841,22 @@ export class Office {
     }
     // put the refreshed inventory on the wire the UI already receives
     const pulse = this.gitWire?.pulse;
-    if (pulse) this.emit('git', this.repoFleet ? { ...pulse, fleet: this.repoFleet } : pulse);
+    if (pulse) this.emit('git', this.decoratePulse(pulse));
   }
 
   /** The git pulse plus the cached fleet inventory (when measured). */
   private gitPulseWithFleet(): GitPulse | undefined {
     const pulse = this.gitWire?.pulse;
     if (!pulse) return undefined;
-    return this.repoFleet ? { ...pulse, fleet: this.repoFleet } : pulse;
+    return this.decoratePulse(pulse);
+  }
+
+  /** Attach the measured fleet inventory + learning timestamp to a raw pulse. */
+  private decoratePulse(pulse: GitPulse): GitPulse {
+    const out: GitPulse = { ...pulse };
+    if (this.repoFleet) out.fleet = this.repoFleet;
+    if (this.gitLearn) out.learnedAt = this.gitLearn.ts;
+    return out;
   }
 
   /** The office economy: honest credits for honest, reviewed work. */
@@ -644,6 +982,7 @@ export class Office {
     this.tasks.set(task.id, task);
     this.emit('task', task);
     this.journal({ ts: task.createdAt, type: 'task', event: 'add', id: task.id, title: scrubSecrets(task.title).slice(0, 140), status: task.status, assignee: task.assignee ?? null });
+    this.persistDurable();
     this.feedPush('task', `משימה חדשה: ${task.title}`, task.assignee);
     return task;
   }
@@ -654,6 +993,7 @@ export class Office {
     const next = { ...t, ...patch, updatedAt: Date.now() };
     this.tasks.set(id, next);
     this.emit('task', next);
+    this.persistDurable();
     if (patch.status || patch.assignee) {
       this.journal({
         ts: next.updatedAt,
@@ -694,6 +1034,7 @@ export class Office {
     d.status = 'answered';
     d.answer = { ...(option ? { option } : {}), ...(text ? { text } : {}), ts: Date.now() };
     this.emit('decision', d);
+    this.persistDurable();
     this.feedPush('decision', `המפעיל האוטונומי הכריע: ${option ?? text ?? ''}`, d.agentId);
     const rt = this.agents.get(d.agentId);
     if (rt) {
@@ -708,6 +1049,7 @@ export class Office {
     this.reports.unshift(rep);
     this.reports = this.reports.slice(0, 60);
     this.emit('report', rep);
+    this.persistDurable();
     this.feedPush('report', `דוח חדש בספרייה: ${rep.title}`, rep.author);
     this.setState(rep.author, 'walking', 'מניח את הדוח בספרייה', 'library');
     setTimeout(() => {
@@ -761,6 +1103,7 @@ export class Office {
     this.goal = { id: this.id('g'), text: clean, status: 'planning', progress: 0, createdAt: Date.now(), updatedAt: Date.now(), origin: 'commander' };
     this.emit('goal', this.goal);
     this.journal({ ts: this.goal.createdAt, type: 'goal', event: 'set', id: this.goal.id, text: scrubSecrets(clean).slice(0, 200), origin: 'commander' });
+    this.persistDurable();
     this.feedPush('user', clean);
     this.planFailures = 0;
     void this.leadPlan(clean);
@@ -772,6 +1115,7 @@ export class Office {
     const before = this.goal.status;
     this.goal = { ...this.goal, ...patch, updatedAt: Date.now() };
     this.emit('goal', this.goal);
+    this.persistDurable();
     if (patch.status && patch.status !== before) {
       this.journal({ ts: this.goal.updatedAt, type: 'goal', event: 'status', id: this.goal.id, status: this.goal.status, text: scrubSecrets(this.goal.text).slice(0, 200) });
     }
@@ -1011,6 +1355,7 @@ export class Office {
       this.goal = { id: this.id('g'), text, status: 'planning', progress: 0, createdAt: Date.now(), updatedAt: Date.now(), origin: 'patrol' };
       this.emit('goal', this.goal);
       this.journal({ ts: this.goal.createdAt, type: 'goal', event: 'set', id: this.goal.id, text: scrubSecrets(text).slice(0, 200), origin: 'patrol' });
+      this.persistDurable();
       this.feedPush(
         'goal',
         invented

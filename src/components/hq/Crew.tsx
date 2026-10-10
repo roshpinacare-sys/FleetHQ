@@ -19,7 +19,7 @@ import * as SkeletonUtils from 'three/examples/jsm/utils/SkeletonUtils.js';
 import { to3 } from '@/lib/hq/contract';
 import { makeBlobShadowTexture, makeBubbleTexture, makeNameplate } from '@/lib/hq/textures';
 import { useHq } from '@/lib/hq/store';
-import { bus, agentVisual } from '@/lib/hq/world';
+import { bus, agentVisualFresh, ROOM_STALE_MS } from '@/lib/hq/world';
 import { STATE_COLORS } from '@/lib/hq/protocol';
 
 const MALE_URL = '/models/humans/readyplayer.me.glb';
@@ -133,6 +133,29 @@ function makeTypeClip(prefix: string): THREE.AnimationClip {
   return new THREE.AnimationClip('type', 0.7, tracks);
 }
 
+/**
+ * קליפ idle פרוצדורלי — נשימה עדינה. זהו רשת-הביטחון כשקליפ-ה-retarget של
+ * ה-idle חסר (כשל-ריטרגינג): אף סוכן לא נשאר T-פוזה קפואה בלי שום תנועה.
+ * זה לא "פעילות" — זו נוכחות בסיסית בלבד (העבודה מגיעה רק מהחוזה).
+ */
+function makeIdleClip(prefix: string): THREE.AnimationClip {
+  const b = (n: string) => prefix + n;
+  const q = (x: number, y = 0, z = 0) => new THREE.Quaternion().setFromEuler(new THREE.Euler(x, y, z));
+  const times = [0, 1.6, 3.2];
+  const tracks: THREE.KeyframeTrack[] = [
+    new THREE.QuaternionKeyframeTrack(b('Spine') + '.quaternion', times, [
+      ...q(0.02, 0, 0.012).toArray(), ...q(0.045, 0, -0.012).toArray(), ...q(0.02, 0, 0.012).toArray(),
+    ]),
+    new THREE.QuaternionKeyframeTrack(b('LeftForeArm') + '.quaternion', times, [
+      ...q(-0.3, 0, 0).toArray(), ...q(-0.35, 0, 0).toArray(), ...q(-0.3, 0, 0).toArray(),
+    ]),
+    new THREE.QuaternionKeyframeTrack(b('RightForeArm') + '.quaternion', times, [
+      ...q(-0.3, 0, 0).toArray(), ...q(-0.35, 0, 0).toArray(), ...q(-0.3, 0, 0).toArray(),
+    ]),
+  ];
+  return new THREE.AnimationClip('idle-proc', 3.2, tracks);
+}
+
 // ─────────────── בניית ספריית הקליפים ───────────────
 function buildCrewAssets(maleGltf: { scene: THREE.Object3D }, femaleGltf: { scene: THREE.Object3D }, srcGltf: { scene: THREE.Object3D; animations: THREE.AnimationClip[] }): CrewAssets {
   const maleTpl = SkeletonUtils.clone(maleGltf.scene);
@@ -151,6 +174,7 @@ function buildCrewAssets(maleGltf: { scene: THREE.Object3D }, femaleGltf: { scen
   // נקבה — ריג mixamorig זהה: הקליפים המקוריים (מקודמת mixamorig:) עובדים ישירות
   const female: ClipLib = {};
   if (idle) female.idle = dropMissingBones(idle.clone());
+  if (!female.idle) female.idle = makeIdleClip('mixamorig:'); // רשת-ביטחון — אף דמות לא T-פוזה
   if (walk) female.walk = dropMissingBones(walk.clone());
   if (run) female.run = dropMissingBones(run.clone());
   if (agree) female.agree = dropMissingBones(filterClipTracks(agree, isHeadBone));
@@ -188,6 +212,7 @@ function buildCrewAssets(maleGltf: { scene: THREE.Object3D }, femaleGltf: { scen
     tryRetarget(run, 'run', true);
     if (agree) tryRetarget(filterClipTracks(agree, isHeadBone), 'agree');
     if (shake) tryRetarget(filterClipTracks(shake, isHeadBone), 'shake');
+    if (!male.idle) male.idle = makeIdleClip(''); // רשת-ביטחון — אף דמות לא T-פוזה
 
     const mh = hipsOf(maleTpl, '');
     if (mh) {
@@ -290,6 +315,7 @@ function HumanAgent({ id, assets }: { id: string; assets: CrewAssets }) {
   // מיקסר
   const mixer = useMemo(() => new THREE.AnimationMixer(model), [model]);
   const actions = useRef<Record<string, THREE.AnimationAction>>({});
+  const alive = useRef(true);
   useEffect(() => {
     const a: Record<string, THREE.AnimationAction> = {};
     for (const [name, clip] of Object.entries(lib)) {
@@ -303,6 +329,25 @@ function HumanAgent({ id, assets }: { id: string; assets: CrewAssets }) {
     return () => { mixer.stopAllAction(); };
   }, [mixer, lib, model]);
 
+  // ניקוי-משאבים מלא בהורדה (Task 46): חומרים משובטים + המיקסר + דגל-חיים
+  // שמונע מ-timer-ים של מחוות לגעת במיקסר אחרי-שהדמות הורדה
+  useEffect(() => {
+    alive.current = true;
+    const mats: THREE.Material[] = [];
+    model.traverse((o) => {
+      const m = o as THREE.Mesh;
+      if (m.isMesh) {
+        const arr = Array.isArray(m.material) ? m.material : [m.material];
+        for (const mm of arr) mats.push(mm as THREE.Material);
+      }
+    });
+    return () => {
+      alive.current = false;
+      for (const m of mats) m.dispose();
+      mixer.uncacheRoot(model);
+    };
+  }, [mixer, model]);
+
   const group = useRef<THREE.Group>(null);
   const inner = useRef<THREE.Group>(null);
   const shadowRef = useRef<THREE.Mesh>(null);
@@ -315,6 +360,11 @@ function HumanAgent({ id, assets }: { id: string; assets: CrewAssets }) {
     const brains = useHq.getState().brains;
     const brain = brains.get(id);
     if (!brain) return;
+    // THE TICK (Gate A fix, Task 46): the brain's movement/sit/work state is
+    // interpolated HERE, once per frame per agent — without it walkAmt/sitAmt/
+    // workAmt stay 0 forever and the whole crew freezes standing (the exact
+    // "static characters with status labels" defect this task forbids).
+    brain.update(dt);
     const g = group.current;
     if (!g) return;
 
@@ -323,11 +373,17 @@ function HumanAgent({ id, assets }: { id: string; assets: CrewAssets }) {
     g.position.set(x, 0, z);
     if (inner.current) inner.current.rotation.y = brain.yaw;
 
-    // משקולות פעולה — מהחוזה הדטרמיניסטי (agentVisual), לא החלטות פרטיות
+    // משקולות פעולה — מהחוזה הדטרמיניסטי (agentVisual) עם חוק-הטריות:
+    // סנאפשוט ישן/ניתוק = אפס עבודה. הנפשה ≠ פעילות (Task 46 Gate A).
+    const bridge = useHq.getState();
+    const fresh =
+      bridge.connected &&
+      bridge.lastSignalAt !== null &&
+      Date.now() - bridge.lastSignalAt < ROOM_STALE_MS;
     const w = curWeight.current;
     const walkT = brain.walkAmt;
     const sitT = brain.sitAmt;
-    const workT = sitT * brain.workAmt;
+    const workT = fresh ? sitT * brain.workAmt : 0;
     w.idle = Math.max(0.08, 1 - walkT - sitT);
     w.walk = walkT;
     w.sit = sitT * (1 - workT * 0.55);
@@ -345,28 +401,31 @@ function HumanAgent({ id, assets }: { id: string; assets: CrewAssets }) {
     setW('sit', w.sit);
     setW('type', w.type);
 
-    // מחוות חד-פעמיות לפי החוזה (השלמה → הסכמה · כשל → ניעור ראש)
+    // מחוות חד-פעמיות לפי החוזה — רק כשהאמת טרייה (חוק-הטריות)
     const st = useHq.getState().snap.agents.find((a) => a.id === id);
     const now = state.clock.getElapsedTime();
-    const gesture = st ? agentVisual(st.state).gesture : 'none';
+    const gesture = st ? agentVisualFresh(st.state, fresh).gesture : 'none';
     if (gesture === 'agree' && lastGesture.current.name !== 'agree' && now - lastGesture.current.until > 6) {
       const act = actions.current['agree'];
       if (act) { act.reset(); act.setLoop(THREE.LoopOnce, 1); act.clampWhenFinished = true; act.setEffectiveWeight(0.9); act.play(); }
       lastGesture.current = { name: 'agree', until: now + 1.6 };
-      setTimeout(() => { const a2 = actions.current['agree']; a2?.stop(); a2?.setEffectiveWeight(0); }, 1800);
+      setTimeout(() => { if (!alive.current) return; const a2 = actions.current['agree']; a2?.stop(); a2?.setEffectiveWeight(0); }, 1800);
     }
     if (gesture === 'shake' && lastGesture.current.name !== 'shake' && now - lastGesture.current.until > 6) {
       const act = actions.current['shake'];
       if (act) { act.reset(); act.setLoop(THREE.LoopOnce, 1); act.clampWhenFinished = true; act.setEffectiveWeight(0.9); act.play(); }
       lastGesture.current = { name: 'shake', until: now + 1.4 };
-      setTimeout(() => { const a2 = actions.current['shake']; a2?.stop(); a2?.setEffectiveWeight(0); }, 1600);
+      setTimeout(() => { if (!alive.current) return; const a2 = actions.current['shake']; a2?.stop(); a2?.setEffectiveWeight(0); }, 1600);
     }
 
     // נשימה עדינה במנוחה
     void now;
 
-    // שלט שם + בועה
-    plate.set(st?.activity || '', STATE_COLORS[st?.state || 'idle']);
+    // שלט שם + בועה — כשהאמת ישנה השלט אומר "לא ידוע" בצבע-תשומת-הלב,
+    // לעולם לא ממשיך להציג פעילות שלא נמדדה
+    const lang = useHq.getState().lang;
+    const activityText = fresh ? (st?.activity || '') : lang === 'he' ? 'האמת לא טרייה — לא ידוע' : 'truth stale — unknown';
+    plate.set(activityText, fresh ? STATE_COLORS[st?.state || 'idle'] : '#b45309');
     const logs = useHq.getState().snap.logs[id] || [];
     const say = [...logs].reverse().find((l) => l.kind === 'say' && Date.now() - l.ts < 14000);
     const txt = say?.text ?? '';
@@ -397,12 +456,12 @@ function HumanAgent({ id, assets }: { id: string; assets: CrewAssets }) {
       </mesh>
       <group ref={inner} onClick={focus}>
         <primitive object={model} />
-        {/* שלט שם — מרחף מעל הראש */}
-        <sprite position={[0, 2.06, 0]} scale={[0.9, 0.28, 1]}>
+        {/* שלט שם — מרחף מעל הראש (Task 46: מוגדל לקריאות בנקודות-התצפית) */}
+        <sprite position={[0, 2.12, 0]} scale={[1.5, 0.47, 1]}>
           <spriteMaterial map={plate.tex} transparent depthWrite={false} depthTest={false} />
         </sprite>
         {/* בועת דיבור */}
-        <sprite position={[0, 2.42, 0]} scale={[1.15, 0.33, 1]}>
+        <sprite position={[0, 2.62, 0]} scale={[1.5, 0.43, 1]}>
           <spriteMaterial map={bubble.tex} transparent depthWrite={false} depthTest={false} />
         </sprite>
       </group>

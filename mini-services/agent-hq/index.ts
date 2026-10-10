@@ -46,7 +46,7 @@ io.on('connection', (socket) => {
     if (!id || !ack) return;
     const ex = excerptBook(String(id), 2400);
     // the excerpt crosses to a browser client — it passes the gate like every emit
-    ack(ex ? { ok: true, id, excerpt: sanitizePublicText(ex, 2400) } : { ok: false, error: 'book not found' });
+    ack(ex ? { ok: true, id, excerpt: sanitizePublicText(ex) } : { ok: false, error: 'book not found' });
   });
 
   socket.on('books:refresh', () => office.refreshBooks());

@@ -63,6 +63,15 @@ function hotPathsFromNameOnly(out: string[]): string[] {
     .map(([p, n]) => `${p}×${n}`);
 }
 
+/** The repo root for a directory, or '' when there is none (fail-soft). */
+async function toplevel(dir: string): Promise<string> {
+  try {
+    return (await run(dir, ['rev-parse', '--show-toplevel'])).trim();
+  } catch {
+    return '';
+  }
+}
+
 async function learnRepo(label: string, dir: string, branch: string): Promise<GitRepoLearning> {
   const base: GitRepoLearning = {
     label,
@@ -76,6 +85,11 @@ async function learnRepo(label: string, dir: string, branch: string): Promise<Gi
   };
   try {
     await run(dir, ['rev-parse', '--is-inside-work-tree']);
+    // INDEPENDENCE (Task 46): a subdirectory of another work tree is not a
+    // repository — studying it would double-read a foreign history under
+    // this label. Honest absence instead.
+    const top = await toplevel(dir);
+    if (!top || top !== dir) return base;
     const countLines = async (args: string[]) => {
       const out = await run(dir, args);
       return out.split('\n').filter((l) => l.trim()).length;
@@ -98,11 +112,29 @@ async function learnRepo(label: string, dir: string, branch: string): Promise<Gi
   }
 }
 
-/** Collect the learning digest for the office's repos. Never throws. */
+/** Collect the learning digest for the office's repos. Never throws.
+ *  INDEPENDENCE (Task 46): two labels that resolve to the SAME work tree are
+ *  ONE repository — it is studied once and the alias is said out loud, never
+ *  double-counted as two fleets. */
 export async function collectGitLearning(
   repos: Array<{ label: string; dir: string; branch?: string }>,
 ): Promise<GitLearning> {
-  const learned = await Promise.all(repos.map((r) => learnRepo(r.label, r.dir, r.branch ?? 'main')));
+  const byTop = new Map<string, { label: string; dir: string; branch?: string }>();
+  const aliases: string[] = [];
+  const unique: Array<{ label: string; dir: string; branch?: string }> = [];
+  for (const r of repos) {
+    const top = await toplevel(r.dir);
+    if (top) {
+      const prev = byTop.get(top);
+      if (prev) {
+        aliases.push(`${r.label} → ${prev.label}`);
+        continue;
+      }
+      byTop.set(top, r);
+    }
+    unique.push(r);
+  }
+  const learned = await Promise.all(unique.map((r) => learnRepo(r.label, r.dir, r.branch ?? 'main')));
   const parts: string[] = [];
   for (const r of learned) {
     if (!r.available) {
@@ -112,6 +144,9 @@ export async function collectGitLearning(
     const subj = r.lastSubjects.length ? r.lastSubjects.slice(0, 6).map((s) => `"${s}"`).join(', ') : '—';
     const hot = r.hotPaths.length ? r.hotPaths.join(', ') : '—';
     parts.push(`[${r.label}] 24h:${r.commits24h} 7d:${r.commits7d} · נושאים: ${subj} · אזורים חמים: ${hot}`);
+  }
+  if (aliases.length) {
+    parts.push(`[הערת-עצמאות] ${aliases.join(' · ')} — אותו עץ-עבודה, נלמד פעם אחת`);
   }
   return { repos: learned, digest: parts.join('\n').slice(0, 1400), ts: Date.now() };
 }

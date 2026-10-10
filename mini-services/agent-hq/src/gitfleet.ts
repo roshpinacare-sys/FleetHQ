@@ -19,7 +19,7 @@
 // ============================================================================
 
 import { execFile } from 'child_process';
-import { stat } from 'fs/promises';
+import { stat, realpath } from 'fs/promises';
 import { join } from 'path';
 import { scrubSecrets, stripControl } from './security';
 
@@ -129,6 +129,23 @@ async function fleetRepo(label: string, dir: string, branch: string): Promise<Re
   } catch (e) {
     note(e); // syncState stays 'unreachable', available stays false
     return view;
+  }
+  // INDEPENDENCE LAW (Task 46): a directory that is merely a SUBDIRECTORY of
+  // another repository is not a repository. Walking up the tree would present
+  // a foreign repo's branch/head/ahead/behind under this row's label — the
+  // exact "similarly named directories" confusion a fleet inventory must
+  // never ship. A work-tree subdirectory is honestly unavailable until it has
+  // its own clone again.
+  {
+    const top = await run(dir, ['rev-parse', '--show-toplevel']).catch(() => '');
+    const realDir = await realpath(dir).catch(() => dir);
+    if (!top || top.trim() !== realDir) {
+      view.lastSyncError = top
+        ? 'not an independent repository — this directory lives inside another work tree'
+        : 'no repository root resolved at this path';
+      view.syncState = 'unreachable';
+      return view;
+    }
   }
   view.available = true;
   view.syncState = 'unknown'; // no proof yet — stays unknown until measured

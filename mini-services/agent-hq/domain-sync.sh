@@ -50,6 +50,15 @@ export GIT_ASKPASS="$ASKPASS"
 
 sync_once() {
   cd "$DATA_DIR" || { log "no data dir $DATA_DIR"; return 1; }
+  # INDEPENDENCE PREFLIGHT (Task 46): the data dir must be its OWN repository.
+  # A plain directory inside another work tree (rev-parse walks up!) can never
+  # be committed here — saying "fetch failed (offline?)" would be a lie.
+  local top
+  top="$(git rev-parse --show-toplevel 2>/dev/null || true)"
+  if [ -z "$top" ] || [ "$top" != "$(pwd -P)" ]; then
+    log "not an independent repository — memory stays local-only (restore the Domain clone to resume git sync)"
+    return 1
+  fi
   # keep the clone fresh; rebase our local commits on top if the wire moved
   git fetch origin main >/dev/null 2>&1 || { log "fetch failed (offline?)"; return 1; }
   local behind

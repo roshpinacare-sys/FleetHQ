@@ -85,6 +85,19 @@ export function agentVisual(state: AgentState): AgentVisual {
   }
 }
 
+/** חוק-הטריות (Task 46): סוכן שהאמת שלו ישנה או שהחיבור נותק — לא ייראה
+ *  פרודוקטיבי. לולאת-הקלדה שממשיכה לרוץ על סנאפשוט קפוא היא שקר; כש-fresh
+ *  === false העבודה והמחוות נעצרות ונשארת רק השלווה הכנה. המצב המוצג בשלט
+ *  יסומן "לא ידוע" — לעולם לא ירוק. */
+export function agentVisualFresh(state: AgentState, fresh: boolean): AgentVisual {
+  const v = agentVisual(state);
+  if (fresh) return v;
+  return { ...v, work: false, gesture: 'none' };
+}
+
+/** חלון-הטריות של החדר — זהה לחלון של פס-המדדים ב-AgentHQ (75 שניות). */
+export const ROOM_STALE_MS = 75_000;
+
 // ─────────────── מוח סוכן ───────────────
 /**
  * מתורגם מ-AgentView של הפורמן לתנועה במרחב.

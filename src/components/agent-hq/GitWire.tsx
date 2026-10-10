@@ -122,6 +122,14 @@ export function GitEvidencePanel({ lang, git }: { lang: Lang; git?: GitPulse }) 
           <span className="text-[10px] font-normal" dir="auto">
             {lang === 'he' ? 'גיט קריאה-בלבד · בלי fetch/push' : 'read-only git · no fetch/push'}
           </span>
+          {/* analysis freshness — measured age of the learning wire, honest «—» until measured */}
+          <span className="text-[10px] font-normal ms-auto" dir="auto" title={lang === 'he' ? 'טריות הניתוח (זרם הלמידה)' : 'Analysis freshness (learning wire)'}>
+            {git?.learnedAt
+              ? lang === 'he'
+                ? `נותח לפני ${timeAgo(git.learnedAt, lang)}`
+                : `analyzed ${timeAgo(git.learnedAt, lang)} ago`
+              : '—'}
+          </span>
         </div>
       </div>
       <div className="sl-scroll max-h-[124px] overflow-y-auto">

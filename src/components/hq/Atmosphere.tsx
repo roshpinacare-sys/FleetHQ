@@ -12,8 +12,8 @@
 export function Atmosphere() {
   return (
     <group>
-      <hemisphereLight args={['#6b6156', '#2b2620', 1.5]} />
-      <ambientLight intensity={0.52} color="#8a7f72" />
+      <hemisphereLight args={['#6b6156', '#2b2620', 2.1]} />
+      <ambientLight intensity={0.74} color="#8a7f72" />
       {/* אור ירח מהמערב — צללים ארוכים */}
       <directionalLight
         position={[-9, 6.5, 1.5]}

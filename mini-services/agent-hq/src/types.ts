@@ -167,6 +167,9 @@ export interface GitPulse {
   branch?: string;
   commits: CommitView[]; // newest first, capped
   lastFetch: number;
+  /** When the learning/analysis wire last measured these repos (gitlearn.ts ts).
+   *  Optional — absent means "analysis freshness not measured yet", never faked. */
+  learnedAt?: number;
   /** The truthful per-repo sync/health inventory (gitfleet.ts, read-only).
    *  Optional for backward compatibility — null-free honesty inside each row. */
   fleet?: RepoFleetView[];
