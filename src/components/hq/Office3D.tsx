@@ -48,19 +48,18 @@ export function Office3D() {
         antialias: true,
         powerPreference: 'high-performance',
         toneMapping: THREE.ACESFilmicToneMapping,
-        toneMappingExposure: 1.35,
+        toneMappingExposure: 1.12,
       }}
       onCreated={({ gl, scene, camera }) => {
         gl.shadowMap.type = THREE.PCFSoftShadowMap;
-        // Task 47: the previous fog (#1a1512, 14→38) ate the far half of a
-        // 20×12.5m room into a black void at overview/git distance (measured
-        // in baseline shots). Interior fog now only whispers at ~3x room depth.
-        scene.fog = new THREE.Fog('#241e18', 22, 60);
+        // Task 51 (אור-יום): הערפל הפנימי בצבע-אור-יום — לילה נשאר רק בחלונות.
+        // הישן (#241e18, 22→60) בלע בחצי-החדר הרחוק לתוך-שחור (מדד-בסיס 51).
+        scene.fog = new THREE.Fog('#ddd6c8', 26, 62);
         // debug hook (dev): window.__hq
         (window as unknown as Record<string, unknown>).__hq = { gl, scene, camera };
       }}
     >
-      <color attach="background" args={['#171310']} />
+      <color attach="background" args={['#ddd6c8']} />
       <SceneErrorBoundary>
         <SuspenseBoundary>
           <Architecture />

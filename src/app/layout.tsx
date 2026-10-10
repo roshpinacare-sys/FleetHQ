@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono, Heebo, JetBrains_Mono } from "next/font/google";
+import { ThemeProvider } from "next-themes";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 
@@ -43,7 +44,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#0b0b0e",
+  themeColor: "#f3f1ec",
   width: "device-width",
   initialScale: 1,
 };
@@ -59,8 +60,12 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} ${heebo.variable} ${jetbrains.variable} antialiased bg-background text-foreground`}
         style={{ fontFamily: "var(--font-heebo), var(--font-geist-sans), system-ui, sans-serif" }}
       >
-        {children}
-        <Toaster />
+        {/* Task 51 (Daylight Slate): light by default — the night palette lives
+            under html.dark, user's choice via the header toggle. */}
+        <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false} disableTransitionOnChange>
+          {children}
+          <Toaster />
+        </ThemeProvider>
       </body>
     </html>
   );
