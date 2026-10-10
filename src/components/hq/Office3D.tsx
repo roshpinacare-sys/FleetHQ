@@ -52,7 +52,10 @@ export function Office3D() {
       }}
       onCreated={({ gl, scene, camera }) => {
         gl.shadowMap.type = THREE.PCFSoftShadowMap;
-        scene.fog = new THREE.Fog('#1a1512', 14, 38);
+        // Task 47: the previous fog (#1a1512, 14→38) ate the far half of a
+        // 20×12.5m room into a black void at overview/git distance (measured
+        // in baseline shots). Interior fog now only whispers at ~3x room depth.
+        scene.fog = new THREE.Fog('#241e18', 22, 60);
         // debug hook (dev): window.__hq
         (window as unknown as Record<string, unknown>).__hq = { gl, scene, camera };
       }}

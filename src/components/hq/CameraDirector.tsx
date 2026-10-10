@@ -174,7 +174,13 @@ export function CameraDirector() {
   const first = useRef(true);
 
   useFrame((_, dtRaw) => {
-    const dt = Math.min(dtRaw, 0.05);
+    // Task 47: WALL-CLOCK dt — the previous 0.05s clamp (a mixer-stability
+    // guard) silently divided the transition rate at a low frame rate: at
+    // ~0.8fps a 1s preset change crawled for 15+ wall seconds (measured live:
+    // the podium preset was still mid-flight 4.5s after the keypress).
+    // Exponential decay 1-exp(-dt*k) is unconditionally stable, so the only
+    // cap is a tab-switch guard.
+    const dt = Math.min(dtRaw, 0.5);
     const instant = director.reducedMotion || first.current;
     const kPos = instant ? 1 : 1 - Math.exp(-dt * 3.2);
     const kLook = instant ? 1 : 1 - Math.exp(-dt * 4.2);

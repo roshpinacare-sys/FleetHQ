@@ -76,9 +76,13 @@ export function Architecture() {
         )),
       )}
 
-      {/* ── קו רקיע בחוץ (מערב + דרום) ── */}
+      {/* ── קו רקיע בחוץ (מערב + דרום) ──
+       *  Task 47 ROOT CAUSE (תצפית-דוכן): מטוס-השמיים המערבי הוצב ב-x=-4.2 —
+       *  בתוך-החדר (פנים-קיר מערבי = -9.76)! הוא חתך את שליש-החדר המערבי,
+       *  נראה מקרוב כ"קיר-חלונות מטושטש" וחסם את תצפית הדוכן לגמרי. עכשיו
+       *  4.2מ' מחוץ-לקיר, כמו המטוס הדרומי. */}
       <group>
-        <mesh position={[-4.2, 3.4, 0]} rotation-y={Math.PI / 2}>
+        <mesh position={[-14.2, 3.4, 0]} rotation-y={Math.PI / 2}>
           <planeGeometry args={[34, 12]} />
           <meshBasicMaterial map={skyline} toneMapped={false} fog={false} />
         </mesh>
@@ -309,10 +313,10 @@ function Ceiling({ mats }: { mats: OfficeMats }) {
   const [fx, fz] = to3(FLAME[0], FLAME[1]);
   return (
     <group position-y={WALL_H}>
-      {/* עיטוף כהה */}
+      {/* עיטוף כהה — Task 47: הובהר מעט (היה #1a1714 ונעלם בחושך בכל תצפית) */}
       <mesh rotation-x={Math.PI / 2} position-y={0.02}>
         <planeGeometry args={[W, H]} />
-        <meshStandardMaterial color="#1a1714" roughness={0.95} />
+        <meshStandardMaterial color="#3a332b" roughness={0.95} />
       </mesh>
       {/* גיאת אור היקפית — פסים אמיסיביים לאורך הקירות */}
       {([

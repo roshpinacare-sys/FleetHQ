@@ -58,8 +58,8 @@ export const DESKS: Record<string, DeskSpot> = {
 
 /** שולחן ראש-המטה — שולחן עגול מזרחי (חוק RTL: ראשון מימין) */
 export const LEAD_TABLE = { x: 1220, y: 560, r: 1.15 };
-/** עמדת עמידה של אלוף מול לוח המשימות */
-export const LEAD_WALL_SPOT: [number, number] = [860, 210];
+/** עמדת עמידה של אלוף מול לוח המשימות (מול הלוח המוקטן — כ-1.1מ' מלוח) */
+export const LEAD_WALL_SPOT: [number, number] = [860, 180];
 
 export const FLAME: [number, number] = [800, 545];
 export const RECEPTION: { x: number; y: number; face: number } = { x: 800, y: 882, face: 0 }; // פונה דרום (לכניסה)
@@ -67,15 +67,23 @@ export const PODIUM: { x: number; y: number; face: number } = { x: 310, y: 430, 
 export const LIBRARY_TABLE: [number, number] = [1170, 275];
 export const COFFEE: { x: number; y: number } = { x: 1472, y: 780 };
 
-/** לוח המשימות — קיר צפון מרכזי (יחידות תוכנית) */
-export const TASK_WALL: { cx: number; cy: number; w: number; h: number } = { cx: 800, cy: 52, w: 460, h: 250 };
+/** לוח המשימות — קיר צפון מרכזי (יחידות תוכנית).
+ * Task 47: 3.2מ' × 1.7מ' — רהיט אמיתי, לא קיר-שלם: לוח בגודל קיר עם תחתית
+ * בגובה-רצפה נראה כמו חלון/מסך-ענק (נמדד בצילומי-בסיס). המרכז בגובה 1.62מ'
+ * וכמעט צמוד לפנים-הקיר (cy קטן = מוצמד). */
+export const TASK_WALL: { cx: number; cy: number; w: number; h: number } = { cx: 800, cy: 30, w: 256, h: 136 };
+/** גובה מרכז לוח המשימות במטרים */
+export const TASK_WALL_Y = 1.62;
+/** עומק מסגרת הלוח (מ') — קובע את המרווח מפנים-הקיר */
+export const TASK_WALL_DEPTH = 0.09;
 /** קיר הגיט — מסך ענק צפון-מערבי */
 export const GIT_WALL: { cx: number; cy: number; w: number; h: number } = { cx: 310, cy: 52, w: 380, h: 210 };
-/** ספרייה — מדפים לאורך קיר צפון-מזרח (חוק RTL: הספרייה מזרח) */
+/** ספרייה — מדפים במזרח (חוק RTL: הספרייה מזרח). Task 47: שורה אחת צמודת
+ *  קיר-צפון (היתה 1.1מ' מרחפת ממנו) + ספינה צמודת קיר-מזרח (היתה 0.37מ'
+ *  מרחפת). המדפים הם מקור-האמת גם להתנגשויות וגם לציור. */
 export const SHELVES: { x: number; y: number; rot: number; len: number }[] = [
-  { x: 1390, y: 120, rot: 0, len: 300 },  // לאורך הקיר הצפוני
-  { x: 1390, y: 330, rot: 0, len: 300 },
-  { x: 1538, y: 430, rot: Math.PI / 2, len: 240 }, // לאורך הקיר המזרחי
+  { x: 1390, y: 34, rot: 0, len: 280 },                 // צמוד קיר צפון (מזרח)
+  { x: 1568, y: 430, rot: -Math.PI / 2, len: 240 },     // צמוד קיר מזרח — גב הספרייה ב-x=9.76 (עם rot=-π/2 הגב המקומי -z פונה +x אל הקיר)
 ];
 export const BOOK_SHELF_POS = to3(1390, 120);
 
@@ -111,53 +119,64 @@ const podium3 = to3(PODIUM.x, PODIUM.y);
 const reception3 = to3(RECEPTION.x, RECEPTION.y);
 
 export const CAMERA_PRESETS: CameraPreset[] = [
+  // Task 47 recomposition — every preset was re-shot from the live scene and
+  // reframed to show its actual subject with office context (the previous
+  // angles produced a black void at git, a wall of glass at podium, and a
+  // reception view whose counter was outside the frame; measured live).
   {
     id: 'overview', label: { he: 'תצפית כללית', en: 'Overview' },
-    target: [flame3[0], 0.9, flame3[1]],
-    yaw: Math.PI * 0.86, pitch: 0.62, dist: 9.2, minDist: 5, maxDist: 12,
+    target: [flame3[0], 0.85, flame3[1]],
+    yaw: Math.PI * 0.86, pitch: 0.58, dist: 8.6, minDist: 4.5, maxDist: 12,
   },
   {
     id: 'crew', label: { he: 'אזור הצוות', en: 'Crew desks' },
     target: [arcCenter3[0], 0.85, arcCenter3[1]],
-    yaw: Math.PI, pitch: 0.44, dist: 5.2, minDist: 2.6, maxDist: 8,
+    yaw: Math.PI, pitch: 0.42, dist: 5.0, minDist: 2.6, maxDist: 8,
   },
   {
     id: 'wall', label: { he: 'לוח המשימות', en: 'Task board' },
+    // Task 47 ROOT CAUSE: the old yaw≈π placed the camera NORTH of the
+    // target (inside/behind the north wall) where the room-bounds clamp
+    // pressed it against the board — the view degenerated and the board was
+    // never in frame (measured: baseline wall preset shows the room, not the
+    // board). A wall-mounted subject needs the camera SOUTH of it: yaw≈0.
     target: [taskWall3[0], 1.5, taskWall3[1]],
-    yaw: Math.PI, pitch: 0.16, dist: 5.6, minDist: 2.4, maxDist: 8,
+    yaw: 0.16, pitch: 0.1, dist: 4.4, minDist: 2.4, maxDist: 8,
   },
   {
     id: 'git', label: { he: 'קיר הגיט', en: 'Git wall' },
-    target: [gitWall3[0], 1.45, gitWall3[1]],
-    yaw: Math.PI * 0.94, pitch: 0.14, dist: 5.4, minDist: 2.4, maxDist: 8,
+    target: [gitWall3[0], 1.5, gitWall3[1]],
+    yaw: -0.2, pitch: 0.12, dist: 4.8, minDist: 2.4, maxDist: 8,
   },
   {
     id: 'podium', label: { he: 'דוכן ההחלטות', en: 'Decisions' },
-    target: [podium3[0], 1.1, podium3[1]],
-    yaw: Math.PI / 2, pitch: 0.3, dist: 4.4, minDist: 2.2, maxDist: 7,
+    target: [podium3[0], 0.95, podium3[1]],
+    yaw: Math.PI / 2, pitch: 0.24, dist: 4.0, minDist: 2.2, maxDist: 7,
   },
   {
     id: 'library', label: { he: 'הספרייה', en: 'Library' },
-    target: [to3(1290, 300)[0], 1.0, to3(1290, 300)[1]],
-    yaw: -Math.PI / 2, pitch: 0.26, dist: 4.6, minDist: 2.2, maxDist: 7,
+    // Task 47: המצלמה דרומית למדפים ומביטה צפונה — הפנים של המדפים והספרים
+    // פונים דרומה (אל-תוך-החדר); ממזרח הם מראים רק קצה-אלון כהה (נמדד)
+    target: [to3(1390, 150)[0], 1.4, to3(1390, 150)[1]],
+    yaw: 0.32, pitch: 0.14, dist: 4.4, minDist: 2.2, maxDist: 7,
   },
   {
     id: 'reception', label: { he: 'קבלה', en: 'Reception' },
-    target: [reception3[0], 1.1, reception3[1]],
-    yaw: 0, pitch: 0.3, dist: 4.4, minDist: 2.2, maxDist: 7,
+    target: [reception3[0], 1.05, reception3[1]],
+    yaw: Math.PI, pitch: 0.16, dist: 3.4, minDist: 2.2, maxDist: 7,
   },
 ];
 
 /** מיקוד בלחיצה על ישות — מרחק/גובה לפי סוג התחנה (המצלמה ניצבת בין מרכז החדר ליעד) */
 export const FOCUS_PRESETS: Record<string, { dist: number; pitch: number }> = {
-  desk: { dist: 2.6, pitch: 0.34 },
-  wall: { dist: 4.8, pitch: 0.16 },
-  podium: { dist: 3.6, pitch: 0.28 },
-  library: { dist: 3.4, pitch: 0.24 },
-  git: { dist: 5.0, pitch: 0.14 },
-  reception: { dist: 3.4, pitch: 0.3 },
-  flame: { dist: 4.2, pitch: 0.3 },
-  lead: { dist: 3.4, pitch: 0.36 },
+  desk: { dist: 2.5, pitch: 0.3 },
+  wall: { dist: 3.8, pitch: 0.1 },
+  podium: { dist: 3.4, pitch: 0.24 },
+  library: { dist: 3.4, pitch: 0.2 },
+  git: { dist: 4.4, pitch: 0.12 },
+  reception: { dist: 3.0, pitch: 0.18 },
+  flame: { dist: 4.0, pitch: 0.28 },
+  lead: { dist: 3.2, pitch: 0.32 },
 };
 
 // ─────────────── מתקני תאורה (מטרים, מרחב 3D) ───────────────

@@ -348,6 +348,39 @@ async function probe(url: string): Promise<{ ok: boolean; note: string; body: st
 }
 
 // ============================================================================
+// J — the git-backed mirror boundary (Task 47): the durable task state now
+// also lands in receipts/office-state-mirror.json (committed by the lineage
+// guard), and the runtime supervisor journals to receipts/runtime-supervisor.
+// Both are REPO-TRAVELING surfaces — they get the same live canary sweep.
+// ============================================================================
+{
+  const { readFileSync, existsSync } = await import('fs');
+  const mirror = '/home/z/my-project/receipts/office-state-mirror.json';
+  if (existsSync(mirror)) {
+    try {
+      const body = readFileSync(mirror, 'utf8');
+      const parsed = JSON.parse(body) as { v?: number; tasks?: unknown[] };
+      must(parsed.v === 1 && Array.isArray(parsed.tasks), 'J live mirror parses as the durable schema (v=1, tasks[])');
+      const hits = markerHits(body);
+      must(hits.length === 0, `J live mirror: no credential-shaped markers (${hits.length}/${LIVE_MARKERS.length} found${hits.length ? ': ' + hits.map((h) => h.name).join(',') + ' — INSPECT SERVER-SIDE, body not printed' : ''})`);
+      must(!body.includes('x-access-token'), 'J live mirror never carries the credential-bearing remote identity');
+    } catch {
+      must(false, 'J live mirror is valid JSON');
+    }
+  } else {
+    must(true, 'J live mirror absent in this environment (skip — nothing travels)');
+  }
+  const supJournal = '/home/z/my-project/receipts/runtime-supervisor.jsonl';
+  if (existsSync(supJournal)) {
+    const body = readFileSync(supJournal, 'utf8');
+    const hits = markerHits(body);
+    must(hits.length === 0, `J runtime supervisor journal: no credential-shaped markers (${hits.length}/${LIVE_MARKERS.length})`);
+  } else {
+    must(true, 'J runtime supervisor journal absent (skip)');
+  }
+}
+
+// ============================================================================
 // compact PASS/FAIL table + honest exit
 // ============================================================================
 console.log(`security-regression against :${NEXT_PORT} — ${checks.length} assertions`);

@@ -105,6 +105,13 @@ export const ROOM_STALE_MS = 75_000;
  */
 export interface NavTarget { x: number; y: number; face?: number; kind: 'seat' | 'stand' | 'offstage' }
 
+/** פאזה דטרמיניסטית לפי id — לפיזור-עמדות בין סוכנים באותה תחנה */
+function spreadOf(id: string): number {
+  let h = 5381;
+  for (let i = 0; i < id.length; i++) h = (h * 33) ^ id.charCodeAt(i);
+  return ((h >>> 0) % 1000) / 1000; // 0..1
+}
+
 export class AgentBrain {
   id: string;
   x: number; y: number;
@@ -148,17 +155,24 @@ export class AgentBrain {
         this.setTarget({ x: d.seat[0], y: d.seat[1], face: d.face, kind: 'seat' });
       }
     } else if (station === 'wall') {
-      const sx = TASK_WALL.cx + (this.id === 'aluf' ? -60 : 60);
-      // 170 (was 118): the target must sit OUTSIDE the collision shell (r=24
-      // plan-units) a wall collider casts, or the agent can never arrive and
-      // paces in place forever (measured live).
-      this.setTarget({ x: sx, y: TASK_WALL.cy + 170, face: Math.PI, kind: 'stand' });
+      // Task 47: פיזור-עמדות — כמה סוכנים באותה תחנה נערמו בנקודה אחת
+      // בדיוק (נמדד חי: שני סוכנים על 1170,354). אלוף עוגן קבוע; השאר
+      // מתפזרים דטרמיניסטית לפי ה-id.
+      const s = spreadOf(this.id);
+      const sx = this.id === 'aluf'
+        ? TASK_WALL.cx - 90
+        : TASK_WALL.cx - 60 + s * 150;
+      const sy = TASK_WALL.cy + 140 + (this.id === 'aluf' ? 0 : s * 50);
+      this.setTarget({ x: sx, y: sy, face: Math.PI, kind: 'stand' });
     } else if (station === 'podium') {
-      this.setTarget({ x: PODIUM.x + 62, y: PODIUM.y - 20, face: -Math.PI / 2, kind: 'stand' });
+      const s = spreadOf(this.id);
+      this.setTarget({ x: PODIUM.x + 50 + s * 30, y: PODIUM.y - 30 + s * 24, face: -Math.PI / 2, kind: 'stand' });
     } else if (station === 'library') {
-      this.setTarget({ x: LIBRARY_TABLE[0], y: LIBRARY_TABLE[1] + 60, face: -0.35, kind: 'stand' });
+      const s = spreadOf(this.id);
+      this.setTarget({ x: LIBRARY_TABLE[0] - 50 + s * 100, y: LIBRARY_TABLE[1] + 45 + s * 30, face: -0.35, kind: 'stand' });
     } else {
-      this.setTarget({ x: FLAME[0] - 120, y: FLAME[1], face: 0, kind: 'offstage' });
+      const s = spreadOf(this.id);
+      this.setTarget({ x: FLAME[0] - 120 + s * 60, y: FLAME[1] + s * 50, face: 0, kind: 'offstage' });
     }
   }
 
@@ -233,11 +247,13 @@ export class AgentBrain {
       this.walkAmt = Math.max(0, this.walkAmt - dtAnim * 6);
       this.stuckT = 0;
     }
-    // ישיבה/עבודה לפי החוזה הדטרמיניסטי
+    // ישיבה/עבודה לפי החוזה הדטרמיניסטי — התכנסות בזמן-שעון (התקצר-זמן
+    // של הרנדרר חילק את קצב-ההתכנסות ב-10+ בכלי-חלש; הצורה האקספוננציאלית
+    // יציבה בכל dt)
     const seated = this.arrived && tgt?.kind === 'seat';
-    this.sitAmt += ((seated ? 1 : 0) - this.sitAmt) * Math.min(1, dtAnim * 3.2);
+    this.sitAmt += ((seated ? 1 : 0) - this.sitAmt) * (1 - Math.exp(-dtAnim * 3.2));
     const working = seated && agentVisual(this.state).work;
-    this.workAmt += ((working ? 1 : 0) - this.workAmt) * Math.min(1, dtAnim * 2.6);
+    this.workAmt += ((working ? 1 : 0) - this.workAmt) * (1 - Math.exp(-dtAnim * 2.6));
     // החלקת yaw בקשת הקצרה
     let dyaw = (this.yawTarget - this.yaw) % (Math.PI * 2);
     if (dyaw > Math.PI) dyaw -= Math.PI * 2;
