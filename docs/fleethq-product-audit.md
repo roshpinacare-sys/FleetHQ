@@ -650,3 +650,65 @@ unmeasured here. The pose solver's aesthetic margins (foot pitch, finger
 pose — rigs ship without useful finger bones) are documented as remaining
 polish. `domain-sync`/Domain clone still requires credentials the sandbox
 does not hold (unchanged, honestly reported by the fleet inventory).
+
+## Task 47-b — continuation: vault refresh + three more measured animation roots + two presets (2026-10-10)
+
+Owner directive: re-examine the delivered work, improve meaningfully, fix every
+bug found, seal the new owner-supplied platform tokens, push.
+
+### F1 — the vault held placeholders, not the new tokens (measured)
+The committed seal (7 slots, T-52b) carried PLACEHOLDER values in the four new
+slot names; sha256 comparison against `upload/apiii.txt` (owner-supplied
+07:01–07:27, after the 04:42 seal) matched none. Fixed: real values sealed
+(roundtrip hash-verified per slot), merge-deployed to `.env.local` +
+`agent-hq/.env`, foreman revived through the runtime supervisor
+(kill−9 → restarts 3→4, crashes 0) and the tokens verified live in its
+environment. The private `fleet-vault` repo was behind (3-slot seal, diverged);
+rebased over the cloud crew's newer history without touching it and pushed the
+new seal (identical sha on both homes). `push-vaults.sh` secret scanner extended
+with the new credential shapes (glpat- / sbp_ / vck_ / rnd_) so scan coverage
+equals the actual credential inventory.
+
+### F2 — chained-aim double-count: horizontal shins on EVERY seated agent (measured)
+Live bone-height probes exposed the root the previous validation missed: the
+sit solver computed each bone's delta against its BIND rest direction but
+applied it on top of the parent's already-aimed rotation — the parent's delta
+was counted twice down the chain. Measured before: ankle 0.42m at knee height
+(male) / 0.326m (female) instead of ~0.10m; hunched head 0.97m. Visibility was
+camera-luck (erez's desk hid it; shachar's exposed it — the "gold banana"
+legs). Fix (pose.ts): deltas sampled from the LIVE partially-posed scene —
+identical to the rest delta for the first bone of a chain, exactly the
+residual for the rest.
+
+### F3 — female walk/idle hips tracks skipped the axis remap (measured)
+`dropMissingBones` gated the hips remap on `tr !== t` (colon-renamed tracks
+only) — but Xbot-authored clips played DIRECTLY by the female rig carry
+colon-less names (GLTFLoader strips colons — the very fix earlier in Task 47),
+so her walk/idle kept raw +101cm in the Y slot: walking sank her hips 13cm
+under the floor, displaced 1m forward (measured hipsY 0.07–0.29 mid-blend).
+The remap now keys on the track name alone.
+
+### F4 — rig proportions: static leg targets overshot the female shin (measured)
+After F2 the female (shin 0.473m > thigh 0.37m — measured from her rig)
+landed the ankle at −0.064m (under the floor). Targets are now derived from
+the measured chain lengths plus seat geometry, with a per-side measured
+iteration (2 passes; her bind responds non-linearly: aim-drop 0.324 produced
+0.576 actual). After, live-measured all six: females ankle +0.062m, males
++0.121m, knees at seat height, heads upright.
+
+### F5 — podium and reception presets were never actually recomposed (measured twice)
+Task 47's own "after" shots show the podium still framed as a back-slab, and
+its reception shot is actually the library with a chat drawer open — the
+reception preset was never re-verified. Fixed from the geometry: podium targets
+the lectern itself (1.12m, yaw = its own rotation, dist 3.0); reception from
+the inside 3/4 NE-elevated (the desk faces the entrance and only ~0.9m of
+floor separates it from the south glass, so any frontal shot clamps into the
+same slab). Re-shot and verified live.
+
+### Environment truth (measured)
+Direct `:3000` access carries no socket (no XTransformPort handling) — all
+live data flows only through the `:81` gateway; early in this session every
+panel read "—" until accessed through the gateway. Git wall verified live
+streaming the new commit `496afad` at the head of the wire. Suites re-run:
+security-regression 79/79 · recovery-law 23/23 · smoke-truth ALL GREEN ·
+eslint clean · tsc 0 errors. Evidence shots: `.shots/task47/after2/`.
