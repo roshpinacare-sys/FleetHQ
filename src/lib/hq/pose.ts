@@ -65,16 +65,31 @@ function restDir(bones: Bones, from: string, to: string): THREE.Vector3 | null {
  * מציב על העצם רוטציה שמכוונת את צאצאה אל targetDir (מרחב-מודל).
  * מעדכן את העצם בפועל (כדי שצאצאות יראו הורה חדש) ומחזיר את הרוטציה-המקומית.
  */
-function aimBone(bones: Bones, name: string, child: string, targetDir: THREE.Vector3, rest: Record<string, THREE.Vector3>): THREE.Quaternion | null {
+function aimBone(bones: Bones, name: string, child: string, targetDir: THREE.Vector3): THREE.Quaternion | null {
   const bone = bones[name];
-  if (!bone) return null;
-  const rd = rest[name];
-  if (!rd) return null;
-  const restWorld = Q();
+  const childBone = bones[child];
+  if (!bone || !childBone) return null;
+  // Task 47-fix (measured live): the source direction is sampled from the LIVE
+  // scene (bone→child NOW), not from the bind-rest map. The chain is solved
+  // top-down and the bone already inherits its parent's new rotation; a delta
+  // computed against the bind rest DOUBLE-COUNTED the parent's aim — measured
+  // result: near-horizontal shins on every seated agent (ankle 0.42m vs knee
+  // 0.47m instead of ~0.10m), a hunched spine (head 0.97m instead of ~1.15m).
+  // The live delta is always the minimal correction: identical to the rest
+  // delta for the FIRST bone of a chain, and exactly the residual difference
+  // for the bones after it.
   bone.updateWorldMatrix(true, false);
+  childBone.updateWorldMatrix(true, false);
+  const pa = V(), pb = V();
+  bone.getWorldPosition(pa);
+  childBone.getWorldPosition(pb);
+  const cur = pb.sub(pa);
+  if (cur.lengthSq() < 1e-10) return null;
+  cur.normalize();
+  const restWorld = Q();
   bone.getWorldQuaternion(restWorld);
-  const qDelta = Q().setFromUnitVectors(rd, targetDir.clone().normalize());
-  const newWorld = qDelta.multiply(restWorld);
+  const qDelta = Q().setFromUnitVectors(cur, targetDir.clone().normalize());
+const newWorld = qDelta.multiply(restWorld);
   const parentWorld = Q();
   if (bone.parent) {
     bone.parent.updateWorldMatrix(true, false);
@@ -174,14 +189,14 @@ function solveSitInner(bones: Bones, root: THREE.Object3D, opts: SitOpts): PoseM
     ['Spine1', 'Spine2', spineTarget],
   ] as const) {
     if (rest[b]) {
-      const q = aimBone(bones, b, c, t, rest);
+      const q = aimBone(bones, b, c, t);
       if (q) { out[b] = q; solved.push(b); }
     } else missing.push(b);
   }
 
   // 2) ראש: מבט-מטה אל הצג (כ-16° מטה)
   if (rest['Head']) {
-    const q = aimBone(bones, 'Head', 'HeadTop_End', new THREE.Vector3(0, Math.cos(0.28), Math.sin(0.28)), rest);
+    const q = aimBone(bones, 'Head', 'HeadTop_End', new THREE.Vector3(0, Math.cos(0.28), Math.sin(0.28)));
     if (q) { out['Head'] = q; solved.push('Head'); }
   } else missing.push('Head');
 
@@ -198,34 +213,86 @@ function solveSitInner(bones: Bones, root: THREE.Object3D, opts: SitOpts): PoseM
     const sgn = Math.sign(ap.x - hp.x) || 1;
     // זרוע: קדימה, מעט הצידה ומטה
     const upperDir = new THREE.Vector3(sgn * 0.22, -0.5, 0.84);
-    const qArm = aimBone(bones, arm, fore, upperDir, rest);
+    const qArm = aimBone(bones, arm, fore, upperDir);
     if (qArm) { out[arm] = qArm; solved.push(arm); }
     // מרפק: ממשיך קדימה-מטה (יד על המקלדת)
     if (rest[fore]) {
       const foreDir = new THREE.Vector3(sgn * 0.08, -0.55, 0.83);
-      const qFore = aimBone(bones, fore, hand, foreDir, rest);
+      const qFore = aimBone(bones, fore, hand, foreDir);
       if (qFore) { out[fore] = qFore; solved.push(fore); }
     } else missing.push(fore);
     void shoulder;
   }
 
-  // 4) רגליים — גיאומטריה של ישיבה אמיתית (אגן 0.66מ' ← כיסא 0.5 + רקמה):
-  //    ירך → ברך: ירידה 0.155 על קדימה 0.39 · ברך → קרסול: ירידה 0.40 על
-  //    קדימה 0.10 — הרגל נשברת בברך והרגליים מגיעות-לרצפה (במטרות הקודמות
-  //    השוק היה כמעט-אופקי והרגליים נשארו מתוחות-קדימה; נמדד חי: ברך 0.66
-  //    מול ירך 0.71)
-  const thigh = new THREE.Vector3(0, -0.37, 0.93);
-  const shin = new THREE.Vector3(0, -0.96, 0.25);
+  // 4) רגליים — גיאומטריה מודעת-מידות (Task 47-fix, נמדד-חי):
+  //    יעדי-הרגל הסטטיים (ירך (0,−0.37,0.93) · שוק (0,−0.96,0.25)) הניחו
+  //    פרופורציות אחידות; הריג-הנקבי שוק-ארוך-מירך (0.473מ' מול 0.37מ' —
+  //    נמדד מהתבנית) — התוצאה: קרסול מתחת-לרצפה (−0.064מ' חי). התיקון:
+  //    הכיוונים נגזרים מאורכי-השרשרת בפועל ומגיאומטריית-המושב —
+  //    ירך seatY · ברך ~seat−0.12 · קרסול ~seat−0.53 (רצפה) — כך הרגל
+  //    נשברת בברך והכף-רגל מגיעה-לרצפה בכל ריג, בלי קבועים-קטלניים.
+  const chainLen = (a: string, b: string): number | null => {
+    const ba = bones[a], bb = bones[b];
+    if (!ba || !bb) return null;
+    ba.updateWorldMatrix(true, false);
+    bb.updateWorldMatrix(true, false);
+    const pa = V(), pb = V();
+    ba.getWorldPosition(pa);
+    bb.getWorldPosition(pb);
+    const d = pb.sub(pa).length();
+    return d > 1e-6 ? d : null;
+  };
+  const lThigh = [
+    chainLen('LeftUpLeg', 'LeftLeg'),
+    chainLen('RightUpLeg', 'RightLeg'),
+  ].filter((v): v is number => v !== null);
+  const lShin = [
+    chainLen('LeftLeg', 'LeftFoot'),
+    chainLen('RightLeg', 'RightFoot'),
+  ].filter((v): v is number => v !== null);
+  const L1 = lThigh.length ? lThigh.reduce((a, b) => a + b, 0) / lThigh.length : 0.42;
+  const L2 = lShin.length ? lShin.reduce((a, b) => a + b, 0) / lShin.length : 0.42;
+  const kneeY = Math.max(0.35, opts.seatY - 0.12);
+  const ankleY = Math.max(0.06, opts.seatY - 0.53);
+  const dThigh = Math.min(0.9, Math.max(0.05, (opts.seatY - kneeY) / L1));
+  const dShin = Math.min(0.985, Math.max(0.05, (kneeY - ankleY) / L2));
   for (const side of ['Left', 'Right'] as const) {
     const up = `${side}UpLeg`, leg = `${side}Leg`, foot = `${side}Foot`;
-    if (rest[up]) {
-      const q = aimBone(bones, up, leg, thigh, rest);
-      if (q) { out[up] = q; solved.push(up); }
-    } else missing.push(up);
-    if (rest[leg]) {
-      const q = aimBone(bones, leg, foot, shin, rest);
-      if (q) { out[leg] = q; solved.push(leg); }
-    } else missing.push(leg);
+    if (!rest[up] || !rest[leg]) { missing.push(up); missing.push(leg); continue; }
+    // מיקום-מדויק לכל צד (Task 47-fix): תגובת-הריג לכיוון-מטרה אינה תמיד
+    // 1:1 (סטיית-bind של מיש'ל: כיוון-ירידה 0.324 הניב ירידה-בפועל 0.576 —
+    // נמדד חי לפני ואחרי). כיוון-חי = נגזרת-כיוונית, ולכן יישוב איטרטיבי
+    // של 2 מעברים (מדוד → תקן-יחסי → כוון-שוב) מתכנס ליעד בסנטימטרים —
+    // הברך נוחתת בגובה-המושב והקרסול על-הרצפה בכל ריג.
+    const targetDropThigh = opts.seatY - kneeY;
+    const targetDropShin = kneeY - ankleY;
+    let dT = dThigh, dS = dShin;
+    const hipB = bones['Hips'], kneeB = bones[leg], ankleB = bones[foot];
+    const measureDrop = (from: THREE.Bone | undefined, to: THREE.Bone | undefined): number | null => {
+      if (!from || !to) return null;
+      from.updateWorldMatrix(true, false);
+      to.updateWorldMatrix(true, false);
+      const a = V(), b = V();
+      from.getWorldPosition(a);
+      to.getWorldPosition(b);
+      return a.y - b.y;
+    };
+    for (let pass = 0; pass < 2; pass++) {
+      aimBone(bones, up, leg, new THREE.Vector3(0, -dT, Math.sqrt(Math.max(0.02, 1 - dT * dT))));
+      const got = measureDrop(hipB, kneeB);
+      if (got === null || Math.abs(got) < 1e-4) break;
+      dT = Math.min(0.9, Math.max(0.05, dT * (targetDropThigh / got)));
+    }
+    const q1 = aimBone(bones, up, leg, new THREE.Vector3(0, -dT, Math.sqrt(Math.max(0.02, 1 - dT * dT))));
+    if (q1) { out[up] = q1; solved.push(up); }
+    for (let pass = 0; pass < 2; pass++) {
+      aimBone(bones, leg, foot, new THREE.Vector3(0, -dS, Math.sqrt(Math.max(0.02, 1 - dS * dS))));
+      const got = measureDrop(kneeB, ankleB);
+      if (got === null || Math.abs(got) < 1e-4) break;
+      dS = Math.min(0.985, Math.max(0.05, dS * (targetDropShin / got)));
+    }
+    const q2 = aimBone(bones, leg, foot, new THREE.Vector3(0, -dS, Math.sqrt(Math.max(0.02, 1 - dS * dS))));
+    if (q2) { out[leg] = q2; solved.push(leg); }
   }
 
   return { q: out, hips: hipsLocal ?? new THREE.Vector3(0, 0.9, 0), restWorldY, solved, missing };

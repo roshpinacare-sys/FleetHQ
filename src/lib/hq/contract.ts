@@ -150,8 +150,15 @@ export const CAMERA_PRESETS: CameraPreset[] = [
   },
   {
     id: 'podium', label: { he: 'דוכן ההחלטות', en: 'Decisions' },
-    target: [podium3[0], 0.95, podium3[1]],
-    yaw: Math.PI / 2, pitch: 0.24, dist: 4.0, minDist: 2.2, maxDist: 7,
+    // Task 47-fix (measured live, twice): yaw π/2 put the camera due-EAST of
+    // the group CENTER — the lectern (offset +0.42/−0.3 inside the group,
+    // front normal rotated 0.42π) was framed as a dark back-slab with the
+    // decision glow strip facing away. The preset now targets the LECTERN
+    // itself at its top (1.12m), from ENE along the lectern's actual front
+    // normal (yaw = its own rotation), slightly elevated so the glow strip,
+    // the mic and the open-decision ring all read in one frame.
+    target: [podium3[0] + 0.42, 1.12, podium3[1] - 0.3],
+    yaw: Math.PI * 0.42, pitch: 0.19, dist: 3.0, minDist: 1.8, maxDist: 7,
   },
   {
     id: 'library', label: { he: 'הספרייה', en: 'Library' },
@@ -162,8 +169,16 @@ export const CAMERA_PRESETS: CameraPreset[] = [
   },
   {
     id: 'reception', label: { he: 'קבלה', en: 'Reception' },
-    target: [reception3[0], 1.05, reception3[1]],
-    yaw: Math.PI, pitch: 0.16, dist: 3.4, minDist: 2.2, maxDist: 7,
+    // Task 47-fix (measured live, twice): yaw π (camera due-NORTH, low pitch)
+    // photographed the desk's tall privacy panel — a black slab filling the
+    // frame, the receptionist invisible behind it. The desk faces SOUTH (the
+    // entrance); there is only ~0.9m of floor between it and the south glass,
+    // so a frontal shot clamps into the same slab. The honest composition is
+    // the inside 3/4: from NE, elevated, looking SW over the desk top — the
+    // work surface, whoever stands at the reception spot, and the glass
+    // entrance all read together.
+    target: [reception3[0] - 0.4, 0.8, reception3[1] + 0.35],
+    yaw: Math.PI * 0.75, pitch: 0.34, dist: 3.4, minDist: 2.2, maxDist: 7,
   },
 ];
 

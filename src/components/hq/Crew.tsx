@@ -93,7 +93,14 @@ function dropMissingBones(clip: THREE.AnimationClip): THREE.AnimationClip {
         tr.name = t.name.replace(/^mixamorig:/, 'mixamorig');
       }
       // hips translation: Y-up(cm) → Z-up(cm) — values remap (x,y,z)→(x,z,−y)
-      if (/^mixamorig(:)?Hips\.position$/.test(t.name) && tr !== t) {
+      // Task 47-fix (נמדד-חי): התנאי הישן (tr !== t) דילג על המיפוי לכל
+      // רצועה שכבר-חסרת-נקודתיים — בדיוק הקליפים שמיש'ל מנגנת ישירות מ-Xbot
+      // (GLTFLoader משליך נקודתיים, שמות-הרצועות לעולם לא נושאים
+      // 'mixamorig:') — התוצאה שנמדדה: הליכה/idle עם ‎+101ס"מ גולמיים
+      // בסלוט-Y → אגן 13ס"מ מתחת-לרצפה ומוסט קדימה-1מ' בזמן הליכה.
+      // המיפוי נקשר עכשיו לשם-הרצועה בלבד; קליפי pose.ts לעולם לא עוברים
+      // דרך הפונקציה הזאת (הם נכתבים ישירות במסגרת שלה).
+      if (/^mixamorig(:)?Hips\.position$/.test(tr.name)) {
         const c = tr.clone();
         const v = c.values;
         for (let i = 0; i < v.length; i += 3) {
