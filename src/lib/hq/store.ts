@@ -42,8 +42,12 @@ interface HqBridgeState {
   lang: Lang;
   /** מראה את מצב החיבור האמיתי של AgentHQ (לתצוגה בלבד — אין כאן חיבור) */
   connected: boolean;
+  /** חותמת-הזמן של אירוע אמיתי אחרון שהגיע מהפורמן (חוק-הטריות של החדר) */
+  lastSignalAt: number | null;
   /** החדר הרכיב פריים אמיתי ראשון (נמדד מהרנדרר — לא הנחה) */
   roomReady: boolean;
+  /** כשל רינדור קטלני בסצנה (נכס/מודל שנפל) — מצב כשל כנה במקום קנבס שחור */
+  sceneFailed: boolean;
   snap: Snapshot;
   brains: Map<string, AgentBrain>;
   ui: UiBindings;
@@ -54,6 +58,8 @@ interface HqBridgeState {
   setPanel(panel: string, agentId?: string): void;
   toast(text: string): void;
   setRoomReady(ready: boolean): void;
+  setSceneFailed(failed: boolean): void;
+  noteSignal(): void;
 
   // ---- הזרמת מציאות (AgentHQ קורא אליהן מתוך מטפלי הסוקט שלו) ----
   syncSnapshot(snap: Snapshot): void;
@@ -103,7 +109,9 @@ export const useHq = create<HqBridgeState>((set, get) => ({
   booted: true,
   lang: 'he',
   connected: false,
+  lastSignalAt: null,
   roomReady: false,
+  sceneFailed: false,
   snap: EMPTY,
   brains: createBrains(),
   ui: {},
@@ -112,6 +120,12 @@ export const useHq = create<HqBridgeState>((set, get) => ({
   bindUi(ui) { set({ ui }); },
 
   setRoomReady(ready) { set({ roomReady: ready }); },
+
+  setSceneFailed(failed) { set({ sceneFailed: failed }); },
+
+  /** כל אירוע אמיתי מהפורמן מעדכן את חותמת-הטריות — החדר מפסיק להראות
+   *  פרודוקטיביות כשהאמת ישנה (חוק ה-Task 46: הנפשה ≠ פעילות) */
+  noteSignal() { set({ lastSignalAt: Date.now() }); },
 
   setLang(l) {
     set({ lang: l });
@@ -143,48 +157,48 @@ export const useHq = create<HqBridgeState>((set, get) => ({
       ? snap.agents
       : crew.map((c) => ({ id: c.id, state: 'idle' as const, activity: '', station: 'desk' as const, since: Date.now() }));
     const next: Snapshot = { ...snap, crew, agents };
-    set({ snap: next });
+    set({ snap: next, lastSignalAt: Date.now() });
     syncBrains(get().brains, agents);
   },
   syncAgent(a) {
     const st = get();
     const agents = upsert(st.snap.agents, a);
-    set({ snap: { ...st.snap, agents } });
+    set({ snap: { ...st.snap, agents }, lastSignalAt: Date.now() });
     syncBrains(st.brains, [a]);
   },
   syncLog(agentId, entry) {
     const st = get();
     const logs = { ...st.snap.logs, [agentId]: [...(st.snap.logs[agentId] || []).slice(-40), entry] };
-    set({ snap: { ...st.snap, logs } });
+    set({ snap: { ...st.snap, logs }, lastSignalAt: Date.now() });
   },
   syncTask(t) {
     const st = get();
-    set({ snap: { ...st.snap, tasks: upsert(st.snap.tasks, t) } });
+    set({ snap: { ...st.snap, tasks: upsert(st.snap.tasks, t) }, lastSignalAt: Date.now() });
     if (t.status === 'done' && t.assignee) st.toast('✓ ' + t.title);
   },
   syncDecision(d) {
     const st = get();
-    set({ snap: { ...st.snap, decisions: upsert(st.snap.decisions, d) } });
+    set({ snap: { ...st.snap, decisions: upsert(st.snap.decisions, d) }, lastSignalAt: Date.now() });
   },
   syncReport(r) {
     const st = get();
-    set({ snap: { ...st.snap, reports: [r, ...st.snap.reports].slice(0, 30) } });
+    set({ snap: { ...st.snap, reports: [r, ...st.snap.reports].slice(0, 30) }, lastSignalAt: Date.now() });
   },
   syncFeed(f) {
     const st = get();
-    set({ snap: { ...st.snap, feed: [...st.snap.feed.slice(-160), f] } });
+    set({ snap: { ...st.snap, feed: [...st.snap.feed.slice(-160), f] }, lastSignalAt: Date.now() });
   },
   syncGoal(g) {
-    set({ snap: { ...get().snap, goal: g } });
+    set({ snap: { ...get().snap, goal: g }, lastSignalAt: Date.now() });
   },
   syncBooks(books) {
-    set({ snap: { ...get().snap, books } });
+    set({ snap: { ...get().snap, books }, lastSignalAt: Date.now() });
   },
   syncStatus(status) {
-    set({ snap: { ...get().snap, status } });
+    set({ snap: { ...get().snap, status }, lastSignalAt: Date.now() });
   },
   syncGit(git) {
-    set({ snap: { ...get().snap, git } });
+    set({ snap: { ...get().snap, git }, lastSignalAt: Date.now() });
   },
   syncConnected(connected) {
     set({ connected });

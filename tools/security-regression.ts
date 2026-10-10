@@ -2,11 +2,11 @@
 // SECURITY-REGRESSION — repeatable proof that the office's secret gate holds
 // ----------------------------------------------------------------------------
 // The doctrine (SECURITY.md) in a test: every boundary that crosses OUT of the
-// office (to the browser, to a model provider) must redact secret-shaped
-// strings and control characters, and must never echo sensitive paths or
-// environment material. This suite proves the NEGATIVE with SYNTHETIC
-// credentials only — every "key" below is clearly fake, so nothing real is
-// ever printed, stored or transmitted by running this file.
+// office (to the browser, to a model provider, to a restart artifact) must
+// redact secret-shaped strings and control characters, and must never echo
+// sensitive paths or environment material. This suite proves the NEGATIVE with
+// SYNTHETIC credentials only — every "key" below is clearly fake, so nothing
+// real is ever printed, stored or transmitted by running this file.
 //
 // What is proven (sections):
 //   A. scrubSecrets/sanitizePublicText fully redact every synthetic credential.
@@ -17,6 +17,13 @@
 //      and that ordinary multi-line content is NOT corrupted by the gate.
 //   F. live HTTP boundaries (:3000/api/foreman/health, /api/fleet-health)
 //      carry no synthetic value and no credential-shaped marker at all.
+//   G. the DURABLE PERSISTENCE gate (Task 46): task/decision/report records
+//      written into the restart-recovery artifact are scrubbed at the boundary.
+//   H. the GIT FLEET law (Task 46): the live inventory never leaks a remote
+//      URL or credential, an unverified repo is honestly unavailable, and a
+//      work-tree subdirectory is never dressed up as an independent repo.
+//   I. the LIVE SOCKET boundary (Task 46): a real snapshot + book preview from
+//      the foreman carry no credential-shaped marker at all.
 //
 // Run: bun run tools/security-regression.ts [nextPort]
 // Exit 0 = all assertions held; exit 1 = the gate is lying somewhere.
@@ -31,7 +38,8 @@ import {
   stripControl,
 } from '../mini-services/agent-hq/src/security';
 import { resolveGitSource, sanitizeCommitField, toCommitView } from '../mini-services/agent-hq/src/gitpulse';
-import { sanitizeEmitPayload } from '../mini-services/agent-hq/src/office';
+import { sanitizeEmitPayload, scrubDurableDecision, scrubDurableReport, scrubDurableTask } from '../mini-services/agent-hq/src/office';
+import { collectRepoFleet } from '../mini-services/agent-hq/src/gitfleet';
 
 // ---- section A fixtures: SYNTHETIC credentials (clearly fake) ---------------
 // Length note: the gate's plain `sk-` floor is 28 chars (a shorter token would
@@ -46,15 +54,20 @@ const SYNTHETIC: Array<{ label: string; value: string }> = [
   { label: 'bearer', value: 'Bearer faketoken0000000000000000' },
 ];
 
-// ---- section F fixtures: generic markers asserted ABSENT from live bodies ---
-const LIVE_MARKERS = [
-  'sk-',
-  'ghp_',
-  'github_pat_',
-  'xoxb-',
-  'BEGIN RSA PRIVATE KEY',
-  'AKIA',
+// ---- section F/I fixtures: credential-shaped markers asserted ABSENT from live bodies ----
+// The generic sk- marker is TOKEN-SHAPED (sk- + 16+ credential chars): a bare
+// "sk-" substring matches ordinary words ("pre-Task-42" in a commit subject
+// tripped the loose marker live) and is not a credential. Everything else is
+// a distinctive prefix that never occurs in ordinary text.
+const LIVE_MARKERS: Array<{ name: string; hit: (body: string) => boolean }> = [
+  { name: 'sk-<token>', hit: (b) => /sk-[A-Za-z0-9_-]{16,}/.test(b) },
+  { name: 'ghp_', hit: (b) => b.includes('ghp_') },
+  { name: 'github_pat_', hit: (b) => b.includes('github_pat_') },
+  { name: 'xoxb-', hit: (b) => b.includes('xoxb-') },
+  { name: 'BEGIN RSA PRIVATE KEY', hit: (b) => b.includes('BEGIN RSA PRIVATE KEY') },
+  { name: 'AKIA', hit: (b) => b.includes('AKIA') },
 ];
+const markerHits = (body: string) => LIVE_MARKERS.filter((m) => m.hit(body));
 
 const failures: string[] = [];
 const checks: Array<{ ok: boolean; what: string }> = [];
@@ -197,11 +210,140 @@ async function probe(url: string): Promise<{ ok: boolean; note: string; body: st
     must(true, `F ${url} reachable (${r.note})`);
     const leaked = SYNTHETIC.filter((s) => r.body.includes(s.value));
     must(leaked.length === 0, `F ${url}: none of the ${SYNTHETIC.length} synthetic values echoed (${leaked.length} found)`);
-    const markerHits = LIVE_MARKERS.filter((m) => r.body.includes(m));
+    const hits = markerHits(r.body);
     must(
-      markerHits.length === 0,
-      `F ${url}: no credential-shaped markers in body (${markerHits.length}/${LIVE_MARKERS.length} markers found${markerHits.length ? `: ${markerHits.join(', ')} — INSPECT SERVER-SIDE, body not printed` : ''})`,
+      hits.length === 0,
+      `F ${url}: no credential-shaped markers in body (${hits.length}/${LIVE_MARKERS.length} markers found${hits.length ? `: ${hits.map((h) => h.name).join(', ')} — INSPECT SERVER-SIDE, body not printed` : ''})`,
     );
+  }
+}
+
+// ============================================================================
+// G — the DURABLE PERSISTENCE gate (Task 46): records that survive a restart
+//     are scrubbed at the boundary — no secret-shaped string survives into a
+//     recovery artifact.
+// ============================================================================
+{
+  const t = scrubDurableTask({
+    id: 't1',
+    title: `plan ${SYNTHETIC[0]!.value}`,
+    description: `context ${SYNTHETIC[1]!.value}`,
+    status: 'todo',
+    dependsOn: [],
+    why: `fit ${SYNTHETIC[3]!.value}`,
+    summary: `result ${SYNTHETIC[5]!.value}`,
+    createdBy: 'aluf',
+    createdAt: 1,
+    updatedAt: 1,
+  });
+  must(!t.title.includes('ghp_0000'), 'G durable task title redacts ghp-shaped text');
+  must(!t.description!.includes('sk-0000fake'), 'G durable task description redacts sk-shaped text');
+  must(!t.why!.includes('xai-0000fake'), 'G durable task why redacts xai-shaped text');
+  must(!t.summary!.includes('faketoken0000000000000000'), 'G durable task summary redacts bearer-shaped text');
+  must(t.id === 't1' && t.status === 'todo' && t.createdAt === 1, 'G ids/enums/numbers pass untouched');
+
+  const d = scrubDurableDecision({
+    id: 'd1',
+    agentId: 'gal',
+    kind: 'question',
+    question: `should I use ${SYNTHETIC[2]!.value}?`,
+    options: ['כן', 'לא'],
+    status: 'answered',
+    answer: { text: `yes ${SYNTHETIC[4]!.value}`, ts: 1 },
+    createdAt: 1,
+  });
+  must(!d.question.includes('AKIA0000000000000FAKE'), 'G durable decision question redacts AKIA-shaped text');
+  must(!d.answer!.text!.includes('hunter2fake123'), 'G durable decision answer redacts password-shaped text');
+
+  const r = scrubDurableReport({ id: 'r1', title: `report ${SYNTHETIC[1]!.value}`, body: `body\n${SYNTHETIC[0]!.value}`, author: 'aluf', ts: 1 });
+  must(!r.title.includes('sk-0000fake'), 'G durable report title redacts sk-shaped text');
+  must(!r.body.includes('ghp_0000'), 'G durable report body redacts ghp-shaped text');
+  must(r.body.includes('\n'), 'G durable report body keeps its newlines (no corruption)');
+}
+
+// ============================================================================
+// H — the GIT FLEET law (Task 46): live inventory, read-only forever
+// ============================================================================
+{
+  const fleet = await collectRepoFleet([
+    { label: 'Domain · ספרי הצי', dir: process.env.AGENT_HQ_DATA_DIR ?? '/home/z/my-project/Domain', branch: 'main' },
+    { label: 'FleetHQ · קוד המשרד', dir: process.env.AGENT_HQ_FLEET_DIR ?? '/home/z/my-project', branch: 'main' },
+  ]);
+  must(fleet.length === 2, 'H the authorized fleet has exactly 2 rows');
+  const serialized = JSON.stringify(fleet);
+  must(!serialized.includes('x-access-token'), 'H fleet rows never echo the credential-bearing remote identity');
+  must(!/https?:\/\//.test(serialized), 'H fleet rows contain no URL at all (remote URLs are never read)');
+  const domain = fleet.find((r) => r.label.startsWith('Domain'))!;
+  const fleethq = fleet.find((r) => r.label.startsWith('FleetHQ'))!;
+  if (domain) {
+    // INDEPENDENCE: a work-tree subdirectory must never wear a foreign repo's numbers
+    if (domain.available === false) {
+      must(domain.syncState === 'unreachable', 'H a non-independent books dir is honestly unavailable');
+      must(domain.ahead === null && domain.behind === null && domain.dirtyCount === null, 'H a non-independent dir reports NO foreign ahead/behind/dirty numbers');
+      must((domain.lastSyncError ?? '').includes('not an independent repository'), 'H the honesty reason is on the record');
+    } else {
+      // if Domain becomes a real clone again, it must measure on its OWN numbers
+      must(typeof domain.head === 'string' && domain.head.length > 0, 'H an independent Domain measures its own head');
+    }
+  } else {
+    must(false, 'H the Domain row exists');
+  }
+  if (fleethq && fleethq.available) {
+    must(fleethq.syncState !== 'up-to-date' || (fleethq.dirtyCount === 0 && fleethq.ahead === 0 && fleethq.behind === 0), 'H up-to-date is only claimed with full proof (clean + 0/0)');
+    if ((fleethq.dirtyCount ?? 0) > 0) {
+      must(fleethq.syncState === 'dirty', 'H a dirty tree never reads as synchronized');
+    }
+  }
+  // identity: the git wire label must name the repo it actually reads
+  const src = resolveGitSource('/home/z/my-project');
+  must(src.label.includes('FleetHQ'), 'H the wire label names the repo actually read (FleetHQ, not Domain)');
+  must(!src.repoUrl.includes('x-access-token'), 'H the wire repoUrl is the public URL, credential-free');
+}
+
+// ============================================================================
+// I — the LIVE SOCKET boundary (Task 46): a real snapshot + book preview
+// ============================================================================
+{
+  const FOREMAN = process.argv[3] || '3010';
+  try {
+    const { io } = await import('socket.io-client');
+    const socket = io(`http://localhost:${FOREMAN}`, { path: '/', transports: ['websocket'], timeout: 8000, reconnection: false });
+    const snap = await new Promise<Record<string, unknown> | null>((resolve) => {
+      const t = setTimeout(() => resolve(null), 10_000);
+      socket.on('snapshot', (s: Record<string, unknown>) => { clearTimeout(t); resolve(s); });
+      socket.on('connect_error', () => { clearTimeout(t); resolve(null); });
+    });
+    if (!snap) {
+      must(false, `I snapshot from :${FOREMAN} received (10s window)`);
+    } else {
+      must(true, `I snapshot from :${FOREMAN} received`);
+      const body = JSON.stringify(snap);
+      const hits = markerHits(body);
+      must(hits.length === 0, `I snapshot: no credential-shaped markers (${hits.length}/${LIVE_MARKERS.length} found${hits.length ? `: ${hits.map((h) => h.name).join(', ')} — INSPECT SERVER-SIDE, body not printed` : ''})`);
+      must(!body.includes('x-access-token'), 'I snapshot never carries the credential-bearing remote identity');
+      // book:preview — the ack path is OUTSIDE the granular emit wrap; prove the gate
+      const books = (snap.books as Array<{ id?: string }>) ?? [];
+      const id = books[0]?.id;
+      if (id) {
+        const preview = await new Promise<Record<string, unknown> | null>((resolve) => {
+          const t2 = setTimeout(() => resolve(null), 8_000);
+          socket.emit('book:preview', { id }, (r: Record<string, unknown>) => { clearTimeout(t2); resolve(r); });
+        });
+        if (!preview) {
+          must(false, 'I book:preview ack received (8s window)');
+        } else {
+          must(true, 'I book:preview ack received');
+          const pbody = JSON.stringify(preview);
+          const pHits = markerHits(pbody);
+          must(pHits.length === 0, `I book preview: no credential-shaped markers (${pHits.length}/${LIVE_MARKERS.length} found${pHits.length ? `: ${pHits.map((h) => h.name).join(', ')} — INSPECT SERVER-SIDE` : ''})`);
+        }
+      } else {
+        must(true, 'I book:preview skipped (no books on the wire — nothing to probe)');
+      }
+    }
+    socket.disconnect();
+  } catch {
+    must(false, 'I socket probe ran (socket.io-client import/connection failed)');
   }
 }
 

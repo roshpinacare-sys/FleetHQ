@@ -7,7 +7,7 @@
  */
 'use client';
 
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { Canvas, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 import { Architecture } from './Architecture';
@@ -48,7 +48,7 @@ export function Office3D() {
         antialias: true,
         powerPreference: 'high-performance',
         toneMapping: THREE.ACESFilmicToneMapping,
-        toneMappingExposure: 1.12,
+        toneMappingExposure: 1.35,
       }}
       onCreated={({ gl, scene, camera }) => {
         gl.shadowMap.type = THREE.PCFSoftShadowMap;
@@ -58,14 +58,16 @@ export function Office3D() {
       }}
     >
       <color attach="background" args={['#171310']} />
-      <SuspenseBoundary>
-        <Architecture />
-        <Stations />
-        <Crew />
-        <CameraDirector />
-        <Atmosphere />
-        <RoomReadiness />
-      </SuspenseBoundary>
+      <SceneErrorBoundary>
+        <SuspenseBoundary>
+          <Architecture />
+          <Stations />
+          <Crew />
+          <CameraDirector />
+          <Atmosphere />
+          <RoomReadiness />
+        </SuspenseBoundary>
+      </SceneErrorBoundary>
     </Canvas>
   );
 }
@@ -74,4 +76,20 @@ export function Office3D() {
 import { Suspense } from 'react';
 function SuspenseBoundary({ children }: { children: React.ReactNode }) {
   return <Suspense fallback={null}>{children}</Suspense>;
+}
+
+/** גבול-כשל סצנה (Task 46): נכס/מודל שנפל בתוך הקנבס מסומן כנה בחנות —
+ *  Room3D מציג מצב-כשל עם פעולה, במקום קנבס שחור שקט. */
+class SceneErrorBoundary extends React.Component<{ children: React.ReactNode }, { failed: boolean }> {
+  state = { failed: false };
+  static getDerivedStateFromError() {
+    return { failed: true };
+  }
+  componentDidCatch(err: Error) {
+    console.error('[hq-scene] scene failure:', err.message);
+    useHq.getState().setSceneFailed(true);
+  }
+  render() {
+    return this.state.failed ? null : this.props.children;
+  }
 }

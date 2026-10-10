@@ -19,6 +19,7 @@
 // UI simply hides the wire.
 
 import { execFile } from 'child_process';
+import { realpath } from 'fs/promises';
 import type { CommitView, GitPulse } from './types';
 import { scrubSecrets, stripControl } from './security';
 
@@ -31,11 +32,24 @@ export interface GitWireSource {
   branch: string;
 }
 
+/** Derive the wire identity from the directory actually read — the label must
+ *  always name the repository whose history is really shown (Task 46 truth
+ *  fix: the data dir pointed at a non-clone books directory and mislabeled
+ *  FleetHQ's commits as "Domain"). */
 export function resolveGitSource(dataDir: string): GitWireSource {
+  const norm = dataDir.replace(/\/+$/, '');
+  if (norm.endsWith('/Domain') || norm === 'Domain') {
+    return {
+      dir: dataDir,
+      label: 'Domain · ספרי הצי',
+      repoUrl: 'https://github.com/roshpinacare-sys/Domain',
+      branch: 'main',
+    };
+  }
   return {
     dir: dataDir,
-    label: 'Domain · ספרי הצי',
-    repoUrl: 'https://github.com/roshpinacare-sys/Domain',
+    label: 'FleetHQ · קוד המשרד',
+    repoUrl: 'https://github.com/roshpinacare-sys/FleetHQ',
     branch: 'main',
   };
 }
@@ -74,6 +88,13 @@ export async function fetchCommits(src: GitWireSource): Promise<CommitView[] | n
   try {
     // sanity: it is a repo (fails fast if not)
     await run(src.dir, ['rev-parse', '--is-inside-work-tree']);
+    // INDEPENDENCE (Task 46): a subdirectory of another repo is NOT this repo —
+    // walking up the tree would present a foreign history under this label.
+    const [top, realDir] = await Promise.all([
+      run(src.dir, ['rev-parse', '--show-toplevel']),
+      realpath(src.dir).catch(() => src.dir),
+    ]);
+    if (!top.trim() || top.trim() !== realDir) return null;
     const fmt = '%h|%aI|%an|%s';
     const out = await run(src.dir, ['log', `--max-count=${MAX_COMMITS}`, '--date=iso-strict', `--format=${fmt}`, src.branch]);
     const commits: CommitView[] = [];
