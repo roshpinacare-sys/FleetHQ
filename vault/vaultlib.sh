@@ -63,6 +63,28 @@ discover_credentials() {
     c="$(printf 'protocol=https\nhost=github.com\n\n' | git credential fill 2>/dev/null | awk -F= '$1=="password" {print $2}')"
     [ -n "$c" ] && add_candidate "$c"
   fi
+  # T-47 (agent-2 · trace 1a121d0d81d8cd21): embedded-remote discovery —
+  # a machine that owns ANY clone of a kingdom repo already holds a valid
+  # credential inside its .git/config remote URL. The vault must open from
+  # Git alone (sovereignty law): scan known clone locations, never print.
+  # normalize: https://[user[:x-access-token]:]TOKEN@github.com/... → TOKEN
+  # (scheme stripped → @github.com tail stripped → path prefix stripped →
+  #  everything before the last ':' stripped); add_candidate filters junk.
+  if command -v git >/dev/null 2>&1; then
+    local scan_dir rd url
+    for scan_dir in "$VAULT_ROOT" "$(dirname "$VAULT_ROOT")" "$HOME" "/home/z/wt"; do
+      [ -d "$scan_dir" ] || continue
+      while IFS= read -r rd; do
+        url="$(git -C "$rd" remote get-url origin 2>/dev/null || true)"
+        case "$url" in
+          https://*@github.com/*)
+            c="$(printf '%s' "$url" | sed -n 's|^https://||; s|@github\.com/.*$||; s|.*/||; s|^[^:]*:||; p')"
+            [ -n "$c" ] && add_candidate "$c"
+            ;;
+        esac
+      done < <(find "$scan_dir" -maxdepth 2 -name .git -type d 2>/dev/null | head -20 | xargs -r -n1 dirname)
+    done
+  fi
 }
 add_candidate() { # dedupe, keep order; REJECT multiline/degenerate entries
   case "$1" in
