@@ -93,7 +93,7 @@ write('status.json', {
 write('agents/sovereign-state.json', {
   at: NOW,
   ok: true,
-  verdict: 'sovereignty: infrastructure live; boot needs one command after sandbox death',
+  verdict: 'sovereignty: infrastructure live; operation continuous (owner release 2026-10-10); boot needs one command after sandbox death',
   houses: {
     public_fleethq: { last_commit: pubCommit, remote_commits: pubCount ? Number(pubCount) : undefined },
     private_fleet_vault: { pushed_via: 'vault/push-vaults.sh', sealed: 'vault/keys.env.enc + wraps registry' },
@@ -102,16 +102,16 @@ write('agents/sovereign-state.json', {
     evening_quota: 'per-family attempt budgets (Task 27)',
     telemetry: 'proactive family re-index from 1h rolling window, adaptive 429 cooldown (Task 28-b)',
     legality: 'routing, not spoofing — no TLS fingerprints, no ToS bending',
+    owner_release: '2026-10-10: full continuous operation, production shifts first-class, broadcast released to the dryrun-sign gate',
   },
   airgap: {
     tier_measured: 'qwen2.5-3b-instruct-q4-k-m (2 cores, 4041MB RAM, no GPU — cgroup-measured)',
     armed_here: false,
-    reason: 'RAM headroom too small to bet the office on; model partially downloaded, resumable',
+    reason: 'RAM headroom too small to bet the office on; model partially downloaded, resumable — a HARDWARE fact, not a policy choice',
   },
   known_gaps: [
     'boot after sandbox death still needs one human-less command: git clone + bash vault/boot-sovereign.sh',
-    'duckai slot waits for a network with DDG access',
-    'local-llm slot waits for real hardware headroom',
+    'public broadcast signing waits for the custody-bridge keys on the SAOS machine — everything before the signature is live here',
   ],
 });
 
@@ -205,8 +205,12 @@ write('agents/capability-matrix.json', {
     'reception (עמית) in Hebrew on :3000',
     'vault: sealed keys + wraps + boot-sovereign (destroy-drill proven)',
     'two git houses pushed (public FleetHQ + private fleet-vault)',
+    'web research lanes: web_search (Tavily ×2 failover) + read_page (Jina, SSRF-guarded) — armed and INVITED by production shifts (owner release 2026-10-10)',
+    'production shifts: network research + content drafting — the office produces, not only audits (owner release 2026-10-10)',
+    'continuous operation: patrol cooldown 2min — constant activation (owner release 2026-10-10)',
   ],
   waiting: [
+    { capability: 'public broadcast signing', needs: 'Steem WIFs via the custody bridge (steem/mini-services/saos-engine/.env) — present on the SAOS machine, absent here; owner release is on record, the dryrun-sign gate is the next step when keys land', since: 'owner release 2026-10-10' },
     { capability: 'air-gapped local brain', needs: 'machine with RAM headroom (llama.cpp + 3B GGUF, kit ready in airgap/)' },
     { capability: 'duckai free bridge', needs: 'network with DDG access (source in mini-services/duckai)' },
     { capability: 'zero-touch boot', needs: 'platform-level git clone + vault/boot-sovereign.sh on respawn' },
@@ -271,7 +275,7 @@ function countLines(rel: string): number | undefined {
 }
 
 const mirror = readJson('receipts/office-state-mirror.json') as
-  | { savedAt?: string; nextId?: number; tasks?: Array<{ status?: string }>; rescued?: unknown; decisions?: Array<{ status?: string }>; reports?: unknown[] }
+  | { savedAt?: string; nextId?: number; tasks?: Array<{ status?: string }>; taskAttempts?: unknown; reviewAttempts?: unknown; rescued?: unknown; decisions?: Array<{ status?: string }>; reports?: unknown[] }
   | undefined;
 const taskStatuses: Record<string, number> = {};
 for (const t of mirror?.tasks ?? []) {
