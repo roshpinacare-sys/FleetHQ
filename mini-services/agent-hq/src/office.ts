@@ -550,7 +550,7 @@ export class Office {
     if (this.repoFleetTimer) clearInterval(this.repoFleetTimer);
     this.gitWire?.stop();
     this.releaseFloor();
-    this.persistDurable();
+    this.persistDurable(true); // shutdown: flush the git-mirror immediately
   }
 
   // ---- single-flight floor (Task 46) -----------------------------------------------------
@@ -627,14 +627,31 @@ export class Office {
     return join(this.dataDir(), 'agents', 'office-tasks.json');
   }
 
+  /**
+   * Task 47 — git-backed mirror of the durable state.
+   * Domain/ is local-only (gitignored): a platform sandbox reset destroys it.
+   * receipts/ lives INSIDE the FleetHQ repo and is committed/pushed by the
+   * lineage guard — a throttled mirror there gives the task state a body that
+   * survives the machine. The payload is the SAME scrubbed durable snapshot
+   * (the secret gate already ran at this boundary — canary-tested).
+   */
+  private mirrorFile(): string | null {
+    const fleet = process.env.AGENT_HQ_FLEET_DIR;
+    if (!fleet) return null; // demo mode — nothing durable to mirror
+    return join(fleet, 'receipts', 'office-state-mirror.json');
+  }
+  private lastMirrorAt = 0;
+
   /** Persist the operational state that must survive a restart — atomic,
    *  serialized, and scrubbed again at this boundary (the file is part of the
-   *  recovery path, so the secret gate runs on every free-text field). */
-  private persistDurable() {
-    this.durableQueue = this.durableQueue.then(() => this.persistDurableWrite()).catch(() => {});
+   *  recovery path, so the secret gate runs on every free-text field).
+   *  forceMirror: write the git-mirror immediately (boot restore, terminal
+   *  transitions) instead of waiting for the 60s throttle. */
+  private persistDurable(forceMirror = false) {
+    this.durableQueue = this.durableQueue.then(() => this.persistDurableWrite(forceMirror)).catch(() => {});
   }
 
-  private async persistDurableWrite() {
+  private async persistDurableWrite(forceMirror = false) {
     try {
       const state = {
         v: 1 as const,
@@ -652,6 +669,17 @@ export class Office {
       await mkdir(join(this.dataDir(), 'agents'), { recursive: true });
       await writeFile(tmp, JSON.stringify(state), 'utf8');
       await rename(tmp, this.durableFile());
+      // git-mirror (throttled — the mirror rides the repo's own commit cycle,
+      // it must not churn the lineage guard on every task event)
+      const mirror = this.mirrorFile();
+      if (mirror && (forceMirror || Date.now() - this.lastMirrorAt > 60_000)) {
+        this.lastMirrorAt = Date.now();
+        try {
+          const mt = `${mirror}.tmp`;
+          await writeFile(mt, JSON.stringify(state), 'utf8');
+          await rename(mt, mirror);
+        } catch { /* fail-soft: the primary file is the source of truth */ }
+      }
     } catch {
       // fail-soft: durability never blocks the office (the journal is the deeper trail)
     }
@@ -668,8 +696,25 @@ export class Office {
    *  · open decisions at death → answered with an honest restart note
    *  · nextId resumes past the highest id seen — no collisions */
   private async recoverDurable() {
+    // Task 47: cold-boot restore — if the local durable file is gone (a wiped
+    // Domain/, e.g. after a platform reset) but the git-mirror in receipts/
+    // survived (committed + pushed by the lineage guard), adopt it FIRST and
+    // journal the restore honestly. The reconciliation law below is unchanged.
+    let raw: string | null = null;
+    let restoredFromMirror = false;
     try {
-      const raw = await readFile(this.durableFile(), 'utf8');
+      raw = await readFile(this.durableFile(), 'utf8');
+    } catch {
+      const mirror = this.mirrorFile();
+      if (mirror) {
+        try {
+          raw = await readFile(mirror, 'utf8');
+          restoredFromMirror = true;
+        } catch { /* no mirror either — honest empty boot */ }
+      }
+    }
+    if (raw === null) return;
+    try {
       const d = JSON.parse(raw) as {
         v?: number;
         savedAt?: number;
@@ -743,6 +788,13 @@ export class Office {
       ])
         this.nextId = Math.max(this.nextId, maxId(String(id), 't') , maxId(String(id), 'd'), maxId(String(id), 'r'), maxId(String(id), 'g'));
       this.nextId = Math.max(this.nextId, d.nextId ?? 0);
+      if (restoredFromMirror) {
+        // honest paper trail: this state came from the git-mirror, not from
+        // the local file — and the local file gets re-seeded from it now
+        this.journal({ ts: Date.now(), type: 'recovery', event: 'cold-boot-restore', source: 'receipts/office-state-mirror.json', tasks: this.tasks.size, savedAt: d.savedAt ?? null });
+        this.feedPush('system', 'שחזור-קור מהמראה המתמיד (receipts) — מצב-המשימות הוחזר לאחר איפוס סביבה');
+        void this.persistDurable(true);
+      }
       if (requeued || parked || resumed || this.tasks.size) {
         this.journal({
           ts: Date.now(),

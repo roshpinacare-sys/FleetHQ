@@ -5,7 +5,14 @@
  * · נקבה — Michelle (ריג mixamorig)
  * · מקור אנימציות — Xbot (idle/walk/run/agree/headShake) על אותו ריג mixamorig;
  *   לזכר הקליפים עוברים SkeletonUtils.retargetClip לשלד ה-RPM.
- * · קליפי ישיבה/הקלדה פרוצדורליים (מפתחות-זמן) — תמיד זמינים.
+ * · ישיבה/הקלדה/נשימה — מסלקת-התנוחות של pose.ts (מרחב-עולם, לא ניחושי-ציר):
+ *   Task 47: קליפ-הישיבה הישן הציב אולרים על צירים-מקומיים של עצמות mixamorig
+ *   והניב דחלילים (ידיים מונפות/פרושות — נמדד בצילומי-בסיס). המסלקה ממפה
+ *   כיווני-מנוחה אמיתיים אל יעדי-תנוחה במרחב-המודל.
+ * · הקלדה ונשימה — קליפים אדיטיביים מעל תנוחת-הבסיס (הישיבה לא "מתקפלת"
+ *   כשמתחילים להקליד — היה באג משקולות).
+ * · חוק-פאזה אישית: כל לולאה מתחילה בפאזה ייחודית לסוכן — הצוות לא זז
+ *   בלולאה-מסונכרנת (היה: כל הפעולות מתחילות ב-t=0 — נשימה משותפת לכולם).
  * · צביעת ביגוד לפי צבע הסוכן בצד הלקוח (שיבוט חומרים).
  * · שלט שם חי + בועת דיבור (מהפיד) + צל מגע.
  */
@@ -18,6 +25,7 @@ import * as THREE from 'three';
 import * as SkeletonUtils from 'three/examples/jsm/utils/SkeletonUtils.js';
 import { to3 } from '@/lib/hq/contract';
 import { makeBlobShadowTexture, makeBubbleTexture, makeNameplate } from '@/lib/hq/textures';
+import { makeSitClip, makeTypeClipAdditive, makeBreatheClip, makeIdleStandClip, solveSit } from '@/lib/hq/pose';
 import { useHq } from '@/lib/hq/store';
 import { bus, agentVisualFresh, ROOM_STALE_MS } from '@/lib/hq/world';
 import { STATE_COLORS } from '@/lib/hq/protocol';
@@ -62,9 +70,40 @@ function stripPrefix(clip: THREE.AnimationClip): THREE.AnimationClip {
   return new THREE.AnimationClip(clip.name, clip.duration, tracks, clip.blendMode);
 }
 
-/** השמטת רצועות עצמות שאינן קיימות ביעד (עיניים וכד') — מונע אזהרות PropertyBinding */
+/**
+ * השמטת רצועות עצמות שאינן קיימות ביעד (עיניים וכד') + שני תיקוני-שורש
+ * (Task 47):
+ * 1. שם-עצם: GLTFLoader מנטרל נקודתיים — שלד מיש'ל חי הוא mixamorigHips
+ *    (בלי ":") בעוד רצועות Xbot מכוונות אל mixamorig:Hips — PropertyBinding
+ *    לא מצא אף עצם והנקבות היו T-pose קפואות (נמדד חי).
+ * 2. מוסכמת-צירים של רצועת-תרגום הירכיים: Xbot נולד Y-up סמ"מ (Armature
+ *    סחוט 0.01, hips bind=(0,104,2)) ומיש'ל נולדה Z-up (Character עם rot
+ *    +90°X, hips bind=(0,−0.5,−102.6)) — ערכי-התרגום של הירכיים חייבים
+ *    מיפוי (x,y,z)→(x,z,−y) או הדמות נופלת לרצפה/חצי-גובה (נמדד חי:
+ *    hipsWorldY≈0 עם idle של Xbot על מיש'ל). רק לרצועת-ההירכיים — לשאר
+ *    העצמות מסגרת-מקומית זהה בין הריגים.
+ */
 function dropMissingBones(clip: THREE.AnimationClip): THREE.AnimationClip {
-  const tracks = clip.tracks.filter((t) => !/LeftEye|RightEye|LeftToeBase|RightToeBase/.test(t.name));
+  const tracks = clip.tracks
+    .filter((t) => !/LeftEye|RightEye|LeftToeBase|RightToeBase/.test(t.name))
+    .map((t) => {
+      let tr = t;
+      if (t.name.startsWith('mixamorig:')) {
+        tr = t.clone();
+        tr.name = t.name.replace(/^mixamorig:/, 'mixamorig');
+      }
+      // hips translation: Y-up(cm) → Z-up(cm) — values remap (x,y,z)→(x,z,−y)
+      if (/^mixamorig(:)?Hips\.position$/.test(t.name) && tr !== t) {
+        const c = tr.clone();
+        const v = c.values;
+        for (let i = 0; i < v.length; i += 3) {
+          const x = v[i], y = v[i + 1], z = v[i + 2];
+          v[i] = x; v[i + 1] = z; v[i + 2] = -y;
+        }
+        return c;
+      }
+      return tr;
+    });
   return new THREE.AnimationClip(clip.name, clip.duration, tracks, clip.blendMode);
 }
 
@@ -74,90 +113,91 @@ function filterClipTracks(clip: THREE.AnimationClip, keep: (name: string) => boo
 }
 const isHeadBone = (n: string) => /Neck|Head/.test(n);
 
-/** קליפ ישיבה פרוצדורלי — ירכיים יורדות לכיסא, רגליים מקופלות */
-function makeSitClip(prefix: string, hipsRestY: number, seatY: number): THREE.AnimationClip {
-  const b = (n: string) => prefix + n;
-  const t = 0.001;
-  const drop = Math.max(0.2, hipsRestY - seatY);
-  const q = (x: number, y = 0, z = 0) => new THREE.Quaternion().setFromEuler(new THREE.Euler(x, y, z));
-  const tracks: THREE.KeyframeTrack[] = [
-    new THREE.VectorKeyframeTrack(b('Hips') + '.position', [t, t + 1], [
-      0, hipsRestY - drop, 0, 0, hipsRestY - drop, 0,
-    ]),
-    new THREE.QuaternionKeyframeTrack(b('LeftUpLeg') + '.quaternion', [t, t + 1], [
-      ...q(-1.42, 0, 0.08).toArray(), ...q(-1.42, 0, 0.08).toArray(),
-    ]),
-    new THREE.QuaternionKeyframeTrack(b('RightUpLeg') + '.quaternion', [t, t + 1], [
-      ...q(-1.42, 0, -0.08).toArray(), ...q(-1.42, 0, -0.08).toArray(),
-    ]),
-    new THREE.QuaternionKeyframeTrack(b('LeftLeg') + '.quaternion', [t, t + 1], [
-      ...q(1.38, 0, 0).toArray(), ...q(1.38, 0, 0).toArray(),
-    ]),
-    new THREE.QuaternionKeyframeTrack(b('RightLeg') + '.quaternion', [t, t + 1], [
-      ...q(1.38, 0, 0).toArray(), ...q(1.38, 0, 0).toArray(),
-    ]),
-    new THREE.QuaternionKeyframeTrack(b('Spine') + '.quaternion', [t, t + 1], [
-      ...q(0.1).toArray(), ...q(0.1).toArray(),
-    ]),
-    new THREE.QuaternionKeyframeTrack(b('LeftArm') + '.quaternion', [t, t + 1], [
-      ...q(-0.42, 0, 0.28).toArray(), ...q(-0.42, 0, 0.28).toArray(),
-    ]),
-    new THREE.QuaternionKeyframeTrack(b('RightArm') + '.quaternion', [t, t + 1], [
-      ...q(-0.42, 0, -0.28).toArray(), ...q(-0.42, 0, -0.28).toArray(),
-    ]),
-    new THREE.QuaternionKeyframeTrack(b('LeftForeArm') + '.quaternion', [t, t + 1], [
-      ...q(-0.5, 0, 0).toArray(), ...q(-0.5, 0, 0).toArray(),
-    ]),
-    new THREE.QuaternionKeyframeTrack(b('RightForeArm') + '.quaternion', [t, t + 1], [
-      ...q(-0.5, 0, 0).toArray(), ...q(-0.5, 0, 0).toArray(),
-    ]),
-  ];
-  return new THREE.AnimationClip('sit', 1.001, tracks);
-}
-
-/** קליפ הקלדה — אמות נעות מול המקלדת */
-function makeTypeClip(prefix: string): THREE.AnimationClip {
-  const b = (n: string) => prefix + n;
-  const q = (x: number, y = 0, z = 0) => new THREE.Quaternion().setFromEuler(new THREE.Euler(x, y, z));
-  const times = [0, 0.14, 0.28, 0.42, 0.56, 0.7];
-  const fl = [-0.72, -0.5, -0.78, -0.55, -0.8, -0.72].map((v) => [...q(v, 0.06).toArray()]).flat();
-  const fr = [-0.55, -0.78, -0.5, -0.8, -0.52, -0.55].map((v) => [...q(v, -0.06).toArray()]).flat();
-  const spineArr = times.flatMap(() => [...q(0.15).toArray()]);
-  const headArr = times.flatMap(() => [...q(0.16).toArray()]);
-  const tracks: THREE.KeyframeTrack[] = [
-    new THREE.QuaternionKeyframeTrack(b('LeftForeArm') + '.quaternion', times, fl),
-    new THREE.QuaternionKeyframeTrack(b('RightForeArm') + '.quaternion', times, fr),
-    new THREE.QuaternionKeyframeTrack(b('Spine') + '.quaternion', times, spineArr),
-    new THREE.QuaternionKeyframeTrack(b('Head') + '.quaternion', times, headArr),
-  ];
-  return new THREE.AnimationClip('type', 0.7, tracks);
-}
-
-/**
- * קליפ idle פרוצדורלי — נשימה עדינה. זהו רשת-הביטחון כשקליפ-ה-retarget של
- * ה-idle חסר (כשל-ריטרגינג): אף סוכן לא נשאר T-פוזה קפואה בלי שום תנועה.
- * זה לא "פעילות" — זו נוכחות בסיסית בלבד (העבודה מגיעה רק מהחוזה).
- */
-function makeIdleClip(prefix: string): THREE.AnimationClip {
-  const b = (n: string) => prefix + n;
-  const q = (x: number, y = 0, z = 0) => new THREE.Quaternion().setFromEuler(new THREE.Euler(x, y, z));
-  const times = [0, 1.6, 3.2];
-  const tracks: THREE.KeyframeTrack[] = [
-    new THREE.QuaternionKeyframeTrack(b('Spine') + '.quaternion', times, [
-      ...q(0.02, 0, 0.012).toArray(), ...q(0.045, 0, -0.012).toArray(), ...q(0.02, 0, 0.012).toArray(),
-    ]),
-    new THREE.QuaternionKeyframeTrack(b('LeftForeArm') + '.quaternion', times, [
-      ...q(-0.3, 0, 0).toArray(), ...q(-0.35, 0, 0).toArray(), ...q(-0.3, 0, 0).toArray(),
-    ]),
-    new THREE.QuaternionKeyframeTrack(b('RightForeArm') + '.quaternion', times, [
-      ...q(-0.3, 0, 0).toArray(), ...q(-0.35, 0, 0).toArray(), ...q(-0.3, 0, 0).toArray(),
-    ]),
-  ];
-  return new THREE.AnimationClip('idle-proc', 3.2, tracks);
+/** פאזה ייחודית-לסוכן — דטרמיניסטית מה-id (הצוות לא זז במקה-מסונכרנת) */
+function phaseOf(id: string, salt: number): number {
+  let h = 2166136261 ^ salt;
+  for (let i = 0; i < id.length; i++) {
+    h ^= id.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  return ((h >>> 0) % 1000) / 1000;
 }
 
 // ─────────────── בניית ספריית הקליפים ───────────────
+/**
+ * חוק-תבנית-נקייה (Task 47): useGLTF מחזיר את אותו אובייקט-גלם מהמטמון
+ * בין-הרכבות — וכל מי שמזיז עצמות (retargetClip מציב את המקור בכל פריים
+ * של כל קליפ ולא משחזר; HMR עלול להשאיר פוזה-אחרונה) מרעיל את כל
+ * השיבוטים-הבאים. נמדד חי: תבנית מיש'ל במטמון נמדדה חצי-שקועה
+ * (restWorldY≈0.60 במקום ‎1.03) — מה ששבש את חישוב-הישיבה.
+ * הפתרון: לכידת מנוחת-ה-bind פעם-אחת לכל סצנה-מטמונת ושחזורה לפני כל
+ * שימוש — שיבוט, מדידה וריטרגינג מתחילים תמיד מאותה מנוחה אמיתית.
+ */
+const bindPoseCache = new WeakMap<THREE.Object3D, { bones: THREE.Bone[]; q: THREE.Quaternion[]; p: THREE.Vector3[] }>();
+
+function preserveBindPose(scene: THREE.Object3D): void {
+  if (bindPoseCache.has(scene)) return;
+  const bones: THREE.Bone[] = [];
+  const q: THREE.Quaternion[] = [];
+  const p: THREE.Vector3[] = [];
+  scene.updateMatrixWorld(true);
+  scene.traverse((o) => {
+    if ((o as THREE.Bone).isBone) {
+      bones.push(o as THREE.Bone);
+      q.push((o as THREE.Bone).quaternion.clone());
+      p.push((o as THREE.Bone).position.clone());
+    }
+  });
+  bindPoseCache.set(scene, { bones, q, p });
+}
+
+function restoreBindPose(scene: THREE.Object3D): void {
+  const saved = bindPoseCache.get(scene);
+  if (!saved) return;
+  for (let i = 0; i < saved.bones.length; i++) {
+    saved.bones[i].quaternion.copy(saved.q[i]);
+    saved.bones[i].position.copy(saved.p[i]);
+  }
+  scene.updateMatrixWorld(true);
+}
+
+/** גובה-גלם של תבנית (לפני נרמול) — לתרגום גובה-ירכיים של המסלקה */
+function rawHeight(root: THREE.Object3D): number {
+  const box = new THREE.Box3().setFromObject(root);
+  return Math.max(0.01, box.max.y - box.min.y);
+}
+
+/**
+ * Task 47 — ספריית-הקליפים נבנית מהמסלקה (pose.ts):
+ * sit = תנוחה שנפתרה במרחב-העולם (לא אולרים על צירים-מקומיים);
+ * type/breathe = אדיטיביים מעל תנוחת-הבסיס (לא מתחרים במשקולות);
+ * idle-proc = רשת-ביטחון לעמידה-חיה אם ריטרגינג ה-idle נכשל.
+ */
+function buildPoseClips(tpl: THREE.Object3D, prefix: string, targetH: number, seatY: number, seed: number): ClipLib {
+  const out: ClipLib = {};
+  const scale = targetH / rawHeight(tpl);
+  const pose = solveSit(tpl, { seatY, scale });
+  console.info('hq-crew] pose v8 ' + (prefix || 'rpm') + ' scale=' + scale.toFixed(3) + ' hips=[' + pose.hips.toArray().map((v) => v.toFixed(2)).join(',') + '] restWorldY=' + pose.restWorldY.toFixed(3) + ' rawH=' + rawHeight(tpl).toFixed(3) + ' solved=' + pose.solved.length + ' missing=' + pose.missing.length);
+  const sit = makeSitClip(prefix, pose);
+  if (sit) out.sit = sit;
+  if (Object.keys(pose.q).length) {
+    out.type = makeTypeClipAdditive(prefix, seed);
+  }
+  out.breathe = makeBreatheClip(prefix);
+  out.idleProc = makeIdleStandClip(prefix);
+  if (pose.missing.length) console.warn('[hq-crew] pose solver missing bones:', pose.missing.join(','));
+  return out;
+}
+
 function buildCrewAssets(maleGltf: { scene: THREE.Object3D }, femaleGltf: { scene: THREE.Object3D }, srcGltf: { scene: THREE.Object3D; animations: THREE.AnimationClip[] }): CrewAssets {
+  // חוק-תבנית-נקייה: לכוד את מנוחת-ה-bind בהרכבה הראשונה, לפני כל מוטציה
+  preserveBindPose(maleGltf.scene);
+  preserveBindPose(femaleGltf.scene);
+  preserveBindPose(srcGltf.scene);
+  restoreBindPose(maleGltf.scene);
+  restoreBindPose(femaleGltf.scene);
+  restoreBindPose(srcGltf.scene);
+
   const maleTpl = SkeletonUtils.clone(maleGltf.scene);
   maleTpl.updateMatrixWorld(true);
   const femaleTpl = SkeletonUtils.clone(femaleGltf.scene);
@@ -171,25 +211,22 @@ function buildCrewAssets(maleGltf: { scene: THREE.Object3D }, femaleGltf: { scen
   const agree = find(/^agree$/i);
   const shake = find(/^headShake$/i);
 
-  // נקבה — ריג mixamorig זהה: הקליפים המקוריים (מקודמת mixamorig:) עובדים ישירות
-  const female: ClipLib = {};
+  // גובה-מושב: כיסא 0.495מ' — מרכז-האגן של יושב אמיתי נמצא ~0.12מ' מעל
+ //  פני-המושב (0.62); ב-0.52 האגן שוקע בכיסא והרגליים מתמשכות קדימה (נמדד)
+  const SEAT_Y = 0.62;
+
+  // נקבה — ריג mixamorig זהה: הקליפים המקוריים עובדים ישירות אחרי תיקון-השם
+  // (שלד-חי ללא נקודתיים — ראה dropMissingBones). הקידומת 'mixamorig' בלי ":'"
+  const female: ClipLib = buildPoseClips(femaleTpl, 'mixamorig', FEMALE_H, SEAT_Y, 7);
   if (idle) female.idle = dropMissingBones(idle.clone());
-  if (!female.idle) female.idle = makeIdleClip('mixamorig:'); // רשת-ביטחון — אף דמות לא T-פוזה
+  if (!female.idle) female.idle = female.idleProc; // רשת-ביטחון — אף דמות לא T-פוזה
   if (walk) female.walk = dropMissingBones(walk.clone());
   if (run) female.run = dropMissingBones(run.clone());
   if (agree) female.agree = dropMissingBones(filterClipTracks(agree, isHeadBone));
   if (shake) female.shake = dropMissingBones(filterClipTracks(shake, isHeadBone));
 
-  // מציאת עצם הירכיים לגובה ישיבה
-  const hipsOf = (root: THREE.Object3D, prefix: string) => root.getObjectByName(prefix + 'Hips');
-  const fh = hipsOf(femaleTpl, 'mixamorig:');
-  if (fh) {
-    female.sit = makeSitClip('mixamorig:', fh.position.y, 0.52);
-    female.type = makeTypeClip('mixamorig:');
-  }
-
   // זכר — retarget מ-Xbot ל-RPM
-  const male: ClipLib = {};
+  const male: ClipLib = buildPoseClips(maleTpl, '', MALE_H, SEAT_Y, 3);
   const srcMesh = findSkinnedMesh(srcGltf.scene);
   const maleMesh = findSkinnedMesh(maleTpl);
   if (srcMesh && maleMesh) {
@@ -212,13 +249,11 @@ function buildCrewAssets(maleGltf: { scene: THREE.Object3D }, femaleGltf: { scen
     tryRetarget(run, 'run', true);
     if (agree) tryRetarget(filterClipTracks(agree, isHeadBone), 'agree');
     if (shake) tryRetarget(filterClipTracks(shake, isHeadBone), 'shake');
-    if (!male.idle) male.idle = makeIdleClip(''); // רשת-ביטחון — אף דמות לא T-פוזה
-
-    const mh = hipsOf(maleTpl, '');
-    if (mh) {
-      male.sit = makeSitClip('', mh.position.y, 0.52);
-      male.type = makeTypeClip('');
-    }
+    // retargetClip מציב את המקור והיעד בפוזת-הפריים-האחרון ולא משחזר —
+    // משחזרים ידנית (חוק-תבנית-נקייה)
+    restoreBindPose(srcGltf.scene);
+    restoreBindPose(maleGltf.scene);
+    if (!male.idle) male.idle = male.idleProc; // רשת-ביטחון
   }
   return { maleTpl, femaleTpl, male, female };
 }
@@ -314,20 +349,29 @@ function HumanAgent({ id, assets }: { id: string; assets: CrewAssets }) {
 
   // מיקסר
   const mixer = useMemo(() => new THREE.AnimationMixer(model), [model]);
+  // debug hook (dev): live per-agent mixers for browser probing
+  useEffect(() => {
+    const w = window as unknown as Record<string, unknown>;
+    w.__hqMixers = { ...((w.__hqMixers as Record<string, THREE.AnimationMixer>) ?? {}), [id]: mixer };
+  }, [id, mixer]);
   const actions = useRef<Record<string, THREE.AnimationAction>>({});
   const alive = useRef(true);
   useEffect(() => {
     const a: Record<string, THREE.AnimationAction> = {};
+    // חוק-פאזה (Task 47): כל לולאה מתחילה בפאזה ייחודית-לסוכן — בלי זה כל
+    // הצוות נושם/מהלך במקה-מסונכרנת (כל הפעולות היו מתחילות ב-t=0).
     for (const [name, clip] of Object.entries(lib)) {
       if (!clip) continue;
       const act = mixer.clipAction(clip, model);
       act.play();
-      act.setEffectiveWeight(name === 'idle' ? 1 : 0);
+      const base = name === 'idle' ? 1 : 0;
+      act.setEffectiveWeight(base);
+      if (act.loop === THREE.LoopRepeat) act.time = phaseOf(id, name.length * 31 + 7) * clip.duration;
       a[name] = act;
     }
     actions.current = a;
     return () => { mixer.stopAllAction(); };
-  }, [mixer, lib, model]);
+  }, [mixer, lib, model, id]);
 
   // ניקוי-משאבים מלא בהורדה (Task 46): חומרים משובטים + המיקסר + דגל-חיים
   // שמונע מ-timer-ים של מחוות לגעת במיקסר אחרי-שהדמות הורדה
@@ -357,6 +401,13 @@ function HumanAgent({ id, assets }: { id: string; assets: CrewAssets }) {
 
   useFrame((state, dtRaw) => {
     const dt = Math.min(dtRaw, 0.05);
+    // Task 47: 墙钟插值 — the 0.05s clamp (mixer-stability) divided the
+    // weight-crossfade rate at a low frame rate: a sit transition that should
+    // take ~0.3s crawled for 30+ wall seconds on SwiftShader and every
+    // screenshot caught a half-standing mid-blend (measured: hips blended
+    // walk 0.5 / idle 0.4 / sit 0.1 minutes after arrival). The exponential
+    // form is unconditionally stable at any dt.
+    const dtW = Math.min(dtRaw, 0.25);
     const brains = useHq.getState().brains;
     const brain = brains.get(id);
     if (!brain) return;
@@ -377,6 +428,8 @@ function HumanAgent({ id, assets }: { id: string; assets: CrewAssets }) {
 
     // משקולות פעולה — מהחוזה הדטרמיניסטי (agentVisual) עם חוק-הטריות:
     // סנאפשוט ישן/ניתוק = אפס עבודה. הנפשה ≠ פעילות (Task 46 Gate A).
+    // Task 47: הקלדה ונשימה אדיטיביות — הישיבה נשארת הבסיס המלא (היתה
+    // "מתקפלת" לחצי-ישיבה בגלל חלוקת-משקל ישנה); idle רק כשעומדים.
     const bridge = useHq.getState();
     const fresh =
       bridge.connected &&
@@ -385,23 +438,27 @@ function HumanAgent({ id, assets }: { id: string; assets: CrewAssets }) {
     const w = curWeight.current;
     const walkT = brain.walkAmt;
     const sitT = brain.sitAmt;
-    const workT = fresh ? sitT * brain.workAmt : 0;
-    w.idle = Math.max(0.08, 1 - walkT - sitT);
-    w.walk = walkT;
-    w.sit = sitT * (1 - workT * 0.55);
+    const workT = fresh ? brain.workAmt : 0;
+    // Task 47: בישיבה — שה-idle/walk לא ימשכו את התנוחה חזרה אל-עמידה
+    // (ב-8% שיורי הרגליים נשארו חצי-פשוטות; ריבוע מחשל את ההכרעה)
+    const sitSettled = sitT * sitT;
+    w.idle = Math.max(0, 1 - walkT) * (1 - sitSettled);
+    w.walk = walkT * (1 - sitSettled * 0.85);
+    w.sit = sitT;
     w.type = workT;
     const setW = (name: string, v: number) => {
       const act = actions.current[name];
       if (!act) return;
       const target = Math.min(1, Math.max(0, v));
       const cur = act.getEffectiveWeight();
-      const nw = cur + (target - cur) * Math.min(1, dt * 7);
+      const nw = cur + (target - cur) * (1 - Math.exp(-dtW * 9));
       act.setEffectiveWeight(nw);
     };
     setW('idle', w.idle);
     setW('walk', w.walk);
     setW('sit', w.sit);
     setW('type', w.type);
+    setW('breathe', 1); // קיום בסיסי — תמיד (אדיטיבי, עדין)
 
     // מחוות חד-פעמיות לפי החוזה — רק כשהאמת טרייה (חוק-הטריות)
     const st = useHq.getState().snap.agents.find((a) => a.id === id);
@@ -458,13 +515,14 @@ function HumanAgent({ id, assets }: { id: string; assets: CrewAssets }) {
       </mesh>
       <group ref={inner} onClick={focus}>
         <primitive object={model} />
-        {/* שלט שם — מרחף מעל הראש (Task 46: מוגדל לקריאות בנקודות-התצפית) */}
-        <sprite position={[0, 2.14, 0]} scale={[1.7, 0.53, 1]}>
-          <spriteMaterial map={plate.tex} transparent depthWrite={false} depthTest={false} />
+        {/* שלט שם — Task 47: הוקטן ב-40% (היה 1.7×0.53מ' — כיסה את החדר
+         * בכל תצפית ונראה כפאנל-UI מרחף; נמדד בצילומי-בסיס) */}
+        <sprite position={[0, 2.06, 0]} scale={[1.02, 0.32, 1]}>
+          <spriteMaterial map={plate.tex} transparent depthWrite={false} depthTest={false} opacity={0.96} />
         </sprite>
         {/* בועת דיבור */}
-        <sprite position={[0, 2.74, 0]} scale={[1.7, 0.49, 1]}>
-          <spriteMaterial map={bubble.tex} transparent depthWrite={false} depthTest={false} />
+        <sprite position={[0, 2.52, 0]} scale={[1.02, 0.3, 1]}>
+          <spriteMaterial map={bubble.tex} transparent depthWrite={false} depthTest={false} opacity={0.96} />
         </sprite>
       </group>
     </group>

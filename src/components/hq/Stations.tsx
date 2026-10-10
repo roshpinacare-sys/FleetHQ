@@ -12,7 +12,8 @@ import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import {
   DESKS, LEAD_TABLE, TASK_WALL, GIT_WALL, PODIUM, LIBRARY_TABLE, RECEPTION, FLAME, COFFEE,
-  NEON_SIGNS, PENDANTS, to3, WALL_H, SCALE,
+  NEON_SIGNS, PENDANTS, SHELVES, TASK_WALL_Y, TASK_WALL_DEPTH,
+  to3, WALL_H, SCALE, PLAN_H, WALL_T,
 } from '@/lib/hq/contract';
 import {
   makeWoodTexture, makeBrushedMetalTexture, makeMarbleTexture, makeFabricTexture,
@@ -324,26 +325,55 @@ function LeadTable({ mats }: { mats: OfficeMats }) {
 }
 
 // ─────────────── לוח המשימות ───────────────
+/** Task 47 — הלוח הוא רהיט תלוי, לא חלון: נמדד חי שהלוח-הקודם (5.75×3.12מ',
+ *  תלוי 0.4מ' לפני הקיר, מתחתיו רצפה חשופה, חומר בסיק-מסך) נקרא "חלון לעיר"
+ *  מכל זווית. התיקון בשורש: גודל רהיט (3.2×1.7מ'), מוצמד לפנים-הקיר בפועל,
+ *  מסגרת עבה עם עומק אמיתי, מגש-מרקרים, כותרת על-הלוח, וחומר מואר-מהחדר
+ *  (משטח סטנדרטי עם הקרנה עדינה — לא בסיק-מסך שאינו מושפע מהתאורה). */
 function TaskWall({ mats }: { mats: OfficeMats }) {
   const focus = useFocus('wall', 'wall');
   const tex = useMemo(() => (taskWallTex ??= makeTaskWallTexture()), []);
   const [x, z] = to3(TASK_WALL.cx, TASK_WALL.cy);
   const w = TASK_WALL.w * SCALE, h = TASK_WALL.h * SCALE;
+  const wallInnerZ = -PLAN_H * SCALE / 2 + WALL_T; // פנים-הקיר הצפוני
+  const d = TASK_WALL_DEPTH;
+  const boardZ = wallInnerZ + d / 2 + 0.012; // הלוח נוגע בקיר בפועל
   return (
-    <group position={[x, 1.62, z]} onClick={focus}>
-      {/* מסגרת עץ */}
+    <group position={[x, TASK_WALL_Y, boardZ]} onClick={focus}>
+      {/* גוף הלוח — עומק אמיתי (לא מישור דק): צד-אחורי נגיע בקיר */}
       <mesh castShadow>
-        <boxGeometry args={[w + 0.16, h + 0.16, 0.07]} />
+        <boxGeometry args={[w + 0.14, h + 0.14, d]} />
         <primitive object={mats.woodDark} attach="material" />
       </mesh>
-      {/* משטח הקנבן */}
-      <mesh position={[0, 0, 0.045]}>
+      {/* משטח הקנבס — חומר מואר מהחדר + הקרנה עדינה לקריאות (לא זוהר-חלון) */}
+      <mesh position={[0, 0, d / 2 + 0.004]}>
         <planeGeometry args={[w, h]} />
-        <meshBasicMaterial map={tex.tex} toneMapped={false} />
+        <meshStandardMaterial map={tex.tex} roughness={0.85} emissive="#ffffff" emissiveMap={tex.tex} emissiveIntensity={0.42} toneMapped={false} />
       </mesh>
-      {/* מנורות תאורה עליונות — גיאומטריה בלבד; הלוח עצמו אמיסיבי */}
-      {[-w * 0.3, w * 0.3].map((lx, i) => (
-        <mesh key={i} position={[lx, h / 2 + 0.28, 0.12]} rotation-x={0.9}>
+      {/* כותרת מותאמת — רצועת-שם על גבי המסגרת */}
+      <mesh position={[0, h / 2 + 0.085, d / 2 + 0.006]}>
+        <boxGeometry args={[w * 0.55, 0.075, 0.018]} />
+        <primitive object={mats.brass} attach="material" />
+      </mesh>
+      <mesh position={[0, h / 2 + 0.085, d / 2 + 0.016]}>
+        <planeGeometry args={[w * 0.5, 0.05]} />
+        <meshBasicMaterial map={useMemo(() => makeSignTexture('לוח המשימות', '#2b2015'), [])} transparent toneMapped={false} depthWrite={false} />
+      </mesh>
+      {/* מגש מרקרים בתחתית — אות-היכר של לובי פיזי */}
+      <mesh position={[0, -h / 2 - 0.045, d / 2 + 0.035]} castShadow>
+        <boxGeometry args={[w * 0.62, 0.03, 0.07]} />
+        <primitive object={mats.woodDark} attach="material" />
+      </mesh>
+      {/* שני דיבוקים/מהדקים בפינות — מחברים את הלוח לקיר בפועל */}
+      {[-1, 1].map((s) => (
+        <mesh key={s} position={[s * (w / 2 - 0.05), 0, d / 2 - 0.01]} rotation-x={Math.PI / 2}>
+          <cylinderGeometry args={[0.014, 0.014, 0.05, 10]} />
+          <primitive object={mats.metal} attach="material" />
+        </mesh>
+      ))}
+      {/* מנורות תאורה עליונות — יושבות על שפת-הלוח (גיאומטריה בלבד) */}
+      {[-w * 0.28, w * 0.28].map((lx, i) => (
+        <mesh key={i} position={[lx, h / 2 + 0.1, 0.02]} rotation-x={0.9}>
           <cylinderGeometry args={[0.045, 0.065, 0.12, 12]} />
           <primitive object={mats.metal} attach="material" />
         </mesh>
@@ -358,12 +388,14 @@ function GitWall({ mats }: { mats: OfficeMats }) {
   const tex = useMemo(() => (gitWireTex ??= makeGitWireTexture()), []);
   const [x, z] = to3(GIT_WALL.cx, GIT_WALL.cy);
   const w = GIT_WALL.w * SCALE, h = GIT_WALL.h * SCALE;
-  // מסגרת רגועה — היא מסגרת מכשיר, לא ניאון; אין פעימה
+  const wallInnerZ = -PLAN_H * SCALE / 2 + WALL_T;
+  // Task 47: מוצמד לקיר בפועל (היה תלוי 0.4מ' לפניו), מסגרת חיה-מעט שנקראת
+  // מרחוק (היה שחור-על-שחור — נמדד: התצפית הציגה חלל ריק)
   return (
-    <group position={[x, 1.55, z]} onClick={focus}>
+    <group position={[x, 1.55, wallInnerZ + 0.045]} onClick={focus}>
       <mesh>
-        <boxGeometry args={[w + 0.12, h + 0.12, 0.06]} />
-        <meshStandardMaterial color="#0f1410" emissive="#2c6a4b" emissiveIntensity={0.85} roughness={0.45} toneMapped={false} />
+        <boxGeometry args={[w + 0.12, h + 0.12, 0.07]} />
+        <meshStandardMaterial color="#101812" emissive="#2c6a4b" emissiveIntensity={1.35} roughness={0.45} toneMapped={false} />
       </mesh>
       <mesh position={[0, 0, 0.04]}>
         <planeGeometry args={[w, h]} />
@@ -436,7 +468,11 @@ function color_of_decision() { return '#e07b54'; }
 // ─────────────── הספרייה ───────────────
 function Library({ mats }: { mats: OfficeMats }) {
   const focus = useFocus('library', 'library');
-  const SHELF = [{ x: 210, y: 120, rot: 0, len: 300 }, { x: 210, y: 330, rot: 0, len: 300 }, { x: 62, y: 430, rot: Math.PI / 2, len: 240 }];
+  // Task 47 — תיקון-שורש: המדפים צוירו מהגדרה-מקומית בצד המערבי (x=210)
+  // בעוד החוזה, ההתנגשויות, השלט ונקודת-המצלמה מגדירים את הספרייה במזרח
+  // (x=1390) — התוצאה הנמדדת: מדפים צמודי-קיר-הגיט במערב, קיר-מזרח ריק
+  // עם שלט מרחף. מעכשיו מקור-אמת אחד: SHELVES מהחוזה.
+  const SHELF = SHELVES;
   const books = useMemo(() => {
     // ספרים אינסטנסיים — צבעוניים, חלקם זוהרים (דוחות). מיקומים במרחב עולם.
     const arr: { m: THREE.Matrix4; col: THREE.Color }[] = [];
@@ -446,6 +482,9 @@ function Library({ mats }: { mats: OfficeMats }) {
       const n = Math.floor((s.len * SCALE) / 0.045);
       const [sx, sz] = to3(s.x, s.y);
       const dir = s.rot === 0 ? [1, 0] : [0, 1];
+      // הספרים יושבים על המדף, מעט לפני-הגב (הפתיחה תמיד ב-local +z אחרי
+      // תיקון-הכיוון של ספינת-הקיר-המזרחי ל-rot=-π/2)
+      const face = 0.07;
       for (let i = 0; i < n; i++) {
         for (let row = 0; row < 4; row++) {
           if (Math.random() < 0.12) continue;
@@ -453,7 +492,7 @@ function Library({ mats }: { mats: OfficeMats }) {
           dummy.position.set(
             sx + dir[0] * along,
             0.35 + row * 0.34,
-            sz + dir[1] * along + (s.rot === 0 ? 0.06 + Math.random() * 0.02 : 0.07),
+            sz + dir[1] * along + face + (Math.random() - 0.5) * 0.015,
           );
           dummy.rotation.set(0, s.rot, (Math.random() - 0.5) * 0.08);
           dummy.scale.set(0.028 + Math.random() * 0.012, 0.24 + Math.random() * 0.05, 0.2);
@@ -483,25 +522,48 @@ function Library({ mats }: { mats: OfficeMats }) {
   const reportCount = useHq((s) => s.snap.reports.length);
   return (
     <group onClick={focus}>
-      {/* ספרים אינסטנסיים — מרחב עולם אחד */}
-      <instancedMesh ref={instRef} args={[undefined, undefined, books.length]} castShadow>
+      {/* ספרים אינסטנסיים — מרחב עולם אחד.
+       *  Task 47 ROOT CAUSE: frustumCulled — כדור-החסם של instancedMesh
+       *  מחושב מהגיאומטריה-הבסיס בלבד (קוביה 1×1×1 בראשית), והספרים
+       *  מפוזרים לאורך הקירות — כל הרשת הייתה מוסלקת מחוץ-למסך והספרים
+       *  מעולם לא נראו. כיבוי הסלקה לרשת הזו בלבד. */}
+      <instancedMesh ref={instRef} args={[undefined, undefined, books.length]} castShadow frustumCulled={false}>
         <boxGeometry args={[1, 1, 1]} />
         <meshStandardMaterial roughness={0.75} />
       </instancedMesh>
       {SHELF.map((s, si) => {
         const [x, z] = to3(s.x, s.y);
         const len = s.len * SCALE;
+        // Task 47 ROOT CAUSE: המדף נבנה כקופסה מלאה — הספרים הוצבו בתוכה
+        // ולא ניתן היה לראותם מאף זוית (הספרייה נראתה קורת-עץ שחורה; נמדד
+        // בצילומי-ביניים ובסופיות). עכשיו: ספרייה אמיתית — גב פאנל, צדדים,
+        // גג-תחתית ומדפים — הפתוחה אל-תוך-החדר (הפתיחה ב-local +z).
+        const D = 0.34, H = 2.1, T = 0.03;
         return (
           <group key={si} position={[x, 0, z]} rotation-y={s.rot}>
-            {/* מסגרת מדף */}
-            <mesh position={[0, 1.05, 0.02]} castShadow receiveShadow>
-              <boxGeometry args={[len, 2.1, 0.34]} />
+            {/* גב */}
+            <mesh position={[0, H / 2, -D / 2 + T / 2]} castShadow receiveShadow>
+              <boxGeometry args={[len, H, T]} />
               <primitive object={mats.woodDark} attach="material" />
             </mesh>
+            {/* צדדים */}
+            {[-1, 1].map((sd) => (
+              <mesh key={sd} position={[(sd * len) / 2 - sd * T / 2, H / 2, 0]} castShadow>
+                <boxGeometry args={[T, H, D]} />
+                <primitive object={mats.wood} attach="material" />
+              </mesh>
+            ))}
+            {/* גג + תחתית */}
+            {[H - T / 2, T / 2].map((yy, i2) => (
+              <mesh key={i2} position={[0, yy, 0]} castShadow receiveShadow>
+                <boxGeometry args={[len, T, D]} />
+                <primitive object={mats.wood} attach="material" />
+              </mesh>
+            ))}
             {/* מדפים פנימיים */}
             {[0.35, 0.69, 1.03, 1.37].map((yy, ri) => (
-              <mesh key={ri} position={[0, yy + 0.12, 0.04]}>
-                <boxGeometry args={[len - 0.08, 0.02, 0.26]} />
+              <mesh key={ri} position={[0, yy + 0.12, 0.0]} castShadow receiveShadow>
+                <boxGeometry args={[len - 2 * T, 0.02, D - 0.04]} />
                 <primitive object={mats.wood} attach="material" />
               </mesh>
             ))}
@@ -524,6 +586,9 @@ function Library({ mats }: { mats: OfficeMats }) {
           <sphereGeometry args={[0.05, 12, 10]} />
           <meshStandardMaterial color="#ffe9c4" emissive="#ffd9a0" emissiveIntensity={2.4} toneMapped={false} />
         </mesh>
+        {/* מקור-האור של מנורת-הקריאה — Task 47: המדפים היו שחורים בתצפית
+         *  (נמדד) ; מנורה אמיתית מאירה את סביבתה */}
+        <LibraryLamp />
         {/* דוחות מונחים על השולחן — מספרם = דוחות אמיתיים בספרייה */}
         {Array.from({ length: Math.min(reportCount, 4) }).map((_, i) => (
           <mesh key={i} position={[-0.4 + i * 0.22, 0.795, 0.1 - i * 0.06]} rotation-y={i * 0.4}>
@@ -533,9 +598,15 @@ function Library({ mats }: { mats: OfficeMats }) {
         ))}
         <Chair seatColor="#4a3a26" mats={mats} />
       </group>
-      <Billboard position={[...to3(1390, 120), 2.4]} tex={useMemo(() => makeSignTexture('הספרייה', '#a78bfa'), [])} scale={[1.15, 0.26]} />
+      <Billboard position={[...to3(1390, 150), 2.4]} tex={useMemo(() => makeSignTexture('הספרייה', '#a78bfa'), [])} scale={[1.15, 0.26]} />
     </group>
   );
+}
+
+/** מנורת-קריאה חמה — אור מקומי יחיד לאזור-הספרייה (מרוסן: מרחק 6) */
+function LibraryLamp() {
+  const [lx, lz] = to3(LIBRARY_TABLE[0], LIBRARY_TABLE[1]);
+  return <pointLight position={[lx + 0.3, 1.05, lz - 0.2]} intensity={6} distance={6} decay={2} color="#ffd9a0" />;
 }
 
 // ─────────────── קבלה ───────────────
@@ -545,10 +616,11 @@ function Reception({ mats }: { mats: OfficeMats }) {
   const [x, z] = to3(RECEPTION.x, RECEPTION.y);
   return (
     <group position={[x, 0, z]} onClick={focus}>
-      {/* דלפק מעוקל (מקורב ב-3 קופסאות) */}
+      {/* דלפק מעוקל (מקורב ב-3 קופסאות) — Task 47: חזית עץ חיה במקום קיר-כהה
+       *  שנבלע בחושך (נמדד: הדלפק היה מסה שחורה בתצפית-קבלה) */}
       <mesh position={[0, 0.56, 0]} castShadow receiveShadow>
         <boxGeometry args={[3.1, 1.1, 0.72]} />
-        <primitive object={mats.wallDark} attach="material" />
+        <primitive object={mats.wood} attach="material" />
       </mesh>
       <mesh position={[0, 1.13, 0]} castShadow receiveShadow>
         <boxGeometry args={[3.3, 0.06, 0.86]} />

@@ -206,3 +206,59 @@ with a recovery note, bounded attempts, parked for reconciliation at two
 interruptions) and a single-flight floor lock (liveness = the process, not the
 paper) keeps exactly one foreman dispatching. Every takeover and recovery
 decision lands in the journal.
+
+## §11 — Task 47 laws: human motion, honest furniture, sovereign runtime
+
+**Motion laws (Gate A)**
+1. **No axis or unit assumptions.** A rig's bone-local frames and armature
+   scale are DATA, not conventions. All procedural poses are solved in world
+   space from measured rest directions (`src/lib/hq/pose.ts`); hips targets
+   are expressed along the parent-rotated local up-axis with a world/local
+   ratio. Never write Euler guesses onto mixamorig bones (measured
+   scarecrow result).
+2. **Clip adaptation law.** Every foreign clip passes a name fix
+   (`mixamorig:` → `mixamorig` — GLTFLoader sanitizes colons) and, for the
+   hips translation track only, an axis remap when the source and target
+   armature conventions differ (Xbot Y-up cm ↔ Michelle Z-up cm).
+3. **Clean-template law.** The GLTF cache is shared between mounts and
+   `retargetClip` does not restore the poses it samples. Bind pose is
+   captured once per cached scene and restored before every clone,
+   measurement, and retarget. A poisoned template poisons every agent.
+4. **Wall-clock convergence.** Cosmetics may keep the render clamp for
+   mixer stability, but any state that must CONVERGE (action weights,
+   sit/work amounts, camera transitions) uses wall-clock exponential decay —
+   stable at any dt. Measured otherwise: 30-second crossfades at ~1 fps.
+5. **No synchronized chorus.** Every looping action starts at a
+   deterministic per-agent phase (FNV-1a of id). Identical clips at equal
+   weights with equal phases are a defect.
+6. **Additive overlays, not weight fights.** Typing and breathing are
+   additive clips over the base pose; the sit pose never "half-unfolds"
+   because typing started.
+
+**Furniture & space laws (Gate B)**
+7. **A board is furniture.** Wall-mounted information surfaces have body
+   depth, touch the wall, carry a title and a physical affordance (tray,
+   clips), and are lit by the room (lit material + gentle emissive), never
+   `meshBasicMaterial` slabs floating off the wall.
+8. **One source of spatial truth.** Positions of recurring objects come from
+   `contract.ts` constants shared by drawing, colliders, signage and camera
+   presets. A local copy that drifts (the west-drawn library) is a defect
+   class.
+9. **Instanced meshes need explicit bounds** (`frustumCulled=false` for
+   world-spread instances) — the default bounds come from the base geometry
+   and silently hide everything (measured: books never visible).
+10. **Sky/exterior planes live outside the walls.** A backdrop placed inside
+    the room becomes a blurry wall that blocks cameras (measured: podium
+    view).
+
+**Runtime laws (Gate D/E)**
+11. **The UI is a client.** The executor is owned by a detached
+    session-leader supervisor (`tools/runtime-supervisor.ts`, PPID→1),
+    never by the web server. The health endpoint plants it once and then
+    only reports. Process liveness beats paperwork (signal-0).
+12. **Durable state travels in git.** The scrubbed task state is mirrored
+    into `receipts/` (committed by the lineage guard) and restored on
+    cold boot with a journal entry. A gitignored directory is not durable
+    storage.
+13. **The foreman runs without --hot.** Recovery is a supervisor restart,
+    not a hot reload (Task 45 lesson, now enforced by the spawner).
