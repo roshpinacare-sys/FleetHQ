@@ -1,6 +1,12 @@
 #!/usr/bin/env node
 // retro.mjs — מחזור-השיפור-העצמי של המשרד (office self-improvement loop)
 // Lane: zai-11d · owner mandate trace 1a12c9d6f5df1b95 (חקר / זיקוק / תכנון / ביצוע)
+// Deed lane: zai-13c · owner mandate trace 1a12d186d2f8b86d ("make everything smarter,
+//   self-training, self-checking") — the office's FIRST self-proposal executed:
+//   E1 spread-regime (PROPOSALS/2026-10-11-research-e1-spread-regime.md,
+//   executableBy: next-retro = this cycle) is now `builtin-e1-spread-regime`
+//   (read-only/verify/doc-only) + the research layer now consumes the fleet's
+//   declared work (Sandbox ops/office/work-orders.json, open-P1s → WO- items).
 //
 // Zero deps. Node >= 18. Plain node (workflows run node, not bun).
 //
@@ -52,7 +58,7 @@ const hasFlag = (f) => args.includes(f);
 const REPO = resolve(argOf('--root', resolve(HERE, '..')));
 
 const PROTOCOL = 'SAOS-OFFICE-RETRO/1';
-const LANE = 'office-retro (zai-11d)';
+const LANE = 'office-retro (zai-11d · E1-deed zai-13c)';
 const OWNER_MANDATE = 'trace 1a12c9d6f5df1b95 — חקר/זיקוק/תכנון/ביצוע';
 const LAWS = [
   'retro לא משדר, לא חותם, לא נוגע בכסף/מפתחות/STASIS',
@@ -184,6 +190,11 @@ function tryJson(text) {
 const REGISTRY_URL = 'https://raw.githubusercontent.com/roshpinacare-sys/Zip/main/sovereign/bus-registry.json';
 const GATES_URL = 'https://raw.githubusercontent.com/roshpinacare-sys/Zip/main/sovereign/GATE-STATUS.json';
 const DIGEST_URL = 'https://roshpinacare-sys.github.io/FleetHQ/digest.json';
+// zai-13c deed — the fleet's declared work + the spread-regime law
+const WORK_ORDERS_URL = 'https://raw.githubusercontent.com/roshpinacare-sys/Sandbox/main/ops/office/work-orders.json';
+const E1_GRID_URL = 'https://roshpinacare-sys.github.io/Domain/dex/grid.json'; // the same feed the bus measures (domain-dex-grid)
+const E1_REGIME_BPS = 93.5; // spread-regime law — baseline research E1 2026-10-11 (ECONOMIC-PLAN §2.2, steemBps)
+const E1_STALE_HOURS = 24;  // source older than this → honest STALE verdict, never a fake live one
 
 // Embedded fallback snapshot of bus-registry.json (schema roshpinacare.fleet-bus-registry/1,
 // measured live by zai-11c @ 2026-10-11T20:35Z — 16/16 URLs verified 200 that day).
@@ -409,6 +420,67 @@ async function fetchDigest() {
   };
 }
 
+// ─── zai-13c: work-orders (the fleet's declared work) + E1 spread-regime verdict ───
+const WO_RESOLVED_STATES = ['resolved', 'done', 'closed', 'completed', 'complete'];
+const isWoResolved = (s) => WO_RESOLVED_STATES.includes(String(s || '').toLowerCase());
+// 13-a/13-b add `status` fields in parallel; a missing status counts as OPEN (honest default).
+function workOrderCounts(orders) {
+  const list = Array.isArray(orders) ? orders : [];
+  let open = 0, resolved = 0, openP1 = 0;
+  for (const o of list) {
+    if (isWoResolved(o.status)) resolved++;
+    else { open++; if (String(o.priority).toUpperCase() === 'P1') openP1++; }
+  }
+  return { total: list.length, open, resolved, openP1 };
+}
+
+async function fetchWorkOrders(token) {
+  // anonymous first (Sandbox raw is public by design), token only as graceful retry
+  let r = await fetchText(WORK_ORDERS_URL, { timeoutMs: 10000 });
+  if (!r.ok && token) r = await fetchText(WORK_ORDERS_URL, { timeoutMs: 10000, token });
+  if (!r.ok) {
+    const why = r.status ? `HTTP ${r.status}` : clip(r.error || '', 60);
+    return { source: 'unavailable', note: `work-orders לא-נגיש (${why}) — הצווים-המוצהרים של הצי לא-ידועים כעת (כנה, לא-מדומה)`, orders: null, counts: null };
+  }
+  const p = tryJson(r.text);
+  if (!p.ok || !Array.isArray(p.json)) {
+    return { source: 'unavailable', note: `work-orders הגיע אך לא-תקין (${p.ok ? 'shape: לא-מערך' : clip(p.error, 60)}) — לא-ידוע (כנה)`, orders: null, counts: null };
+  }
+  const counts = workOrderCounts(p.json);
+  return { source: 'live-sandbox-raw', note: `work-orders חי (${r.status}, ${r.ms}ms) — ${counts.open} פתוחים · ${counts.resolved} נפתרו · P1 פתוחים: ${counts.openP1}`, orders: p.json, counts };
+}
+
+// E1 deed (zai-13c): verify the spread regime against the 93.5 bps law.
+// PURE function — drilled in selftest with fixtures; the live run only feeds it.
+// value < 93.5 → tightened (PASS) · > → loosened (HOLD) · source stale >24h → honest STALE.
+function spreadVerdict(payload, nowMs, { httpStatus = null, error = null } = {}) {
+  const UNKNOWN = (why) => ({ builtin: 'builtin-e1-spread-regime', verdict: 'UNKNOWN', direction: null, value: null, deltaBps: null, ageHours: null, publishedAt: null, block: `SPREAD-REGIME: לא-ידוע — ${why} (כנה, לא-מדומה)` });
+  if (payload == null) return UNKNOWN(`grid.json לא-נגיש (${error || (httpStatus ? `HTTP ${httpStatus}` : 'סיבה-לא-ידועה')})`);
+  const ms = toMs(payload.publishedAt || null);
+  if (ms == null) return UNKNOWN('grid.json הגיע אך אין-מציין-טריות (publishedAt)');
+  const value = payload.book && typeof payload.book.spreadBps === 'number' && Number.isFinite(payload.book.spreadBps) ? payload.book.spreadBps : null;
+  if (value == null) return UNKNOWN('grid.json בלי book.spreadBps מספרי (רגל-STEEM)');
+  const ageHours = Math.max(0, Math.round(((nowMs - ms) / 3600000) * 10) / 10);
+  const delta = Math.round((value - E1_REGIME_BPS) * 100) / 100;
+  const deltaTxt = `${delta > 0 ? '+' : ''}${delta.toFixed(2)}`;
+  const base = { builtin: 'builtin-e1-spread-regime', value, deltaBps: delta, ageHours, publishedAt: payload.publishedAt };
+  if (ageHours > E1_STALE_HOURS) {
+    return { ...base, verdict: 'STALE', direction: null, source: 'live-pages-stale', block: `SPREAD-REGIME: value=${value}bps · delta=${deltaTxt} vs ${E1_REGIME_BPS} · מקור-מיושן ${ageHours}h (מעל החוק ${E1_STALE_HOURS}h) — אין-פסק-חי (כנה); הערך מוצג לרפרנט בלבד` };
+  }
+  const direction = value < E1_REGIME_BPS ? 'tightened' : value > E1_REGIME_BPS ? 'loosened' : 'flat';
+  const verdict = direction === 'tightened' ? 'PASS' : 'HOLD';
+  const he = direction === 'tightened' ? 'הפיזור הצטמצם — נזילות-צד-הגריד משתפרת' : direction === 'loosened' ? 'הפיזור התרחב — לעקוב בלבד (verify/doc-only)' : 'הפיזור שטוח מול החוק';
+  return { ...base, verdict, direction, source: 'live-pages', block: `SPREAD-REGIME: value=${value}bps · delta=${deltaTxt} vs ${E1_REGIME_BPS} · מקור-בן-${ageHours}h · ${verdict} (${direction}) — ${he}` };
+}
+
+async function fetchE1Verdict(nowMs) {
+  const r = await fetchText(E1_GRID_URL, { timeoutMs: 10000 });
+  if (!r.ok) return spreadVerdict(null, nowMs, { httpStatus: r.status, error: r.error || null });
+  const p = tryJson(r.text);
+  if (!p.ok) return spreadVerdict(null, nowMs, { error: `JSON תקול: ${clip(p.error, 50)}` });
+  return spreadVerdict(p.json, nowMs, { httpStatus: r.status });
+}
+
 // ─────────────────────────────────────────────── STAGE 2 זיקוק — findings → normalized items
 const RISK_RANK = { SAFE: 0, 'MACHINE-PREP': 1, 'OWNER-WORD': 2 };
 const RISK_HE = { SAFE: 'בטוח', 'MACHINE-PREP': 'הכנה-מכונה', 'OWNER-WORD': 'דבר-בעלים' };
@@ -494,15 +566,59 @@ function distillGates(gates) {
   return items;
 }
 
+// zai-13c: the fleet's declared work — open P1s surface as WO- items.
+// Class law: infrastructure fixes with clear acceptance = MACHINE-PREP, unless the
+// text itself declares an owner-word (same regex as the research distiller).
+function distillWorkOrders(wo) {
+  const items = [];
+  if (!wo || !Array.isArray(wo.orders)) return items; // honest-fail: unavailable → zero invented items
+  for (const o of wo.orders) {
+    const oid = String(o.id || '').trim();
+    if (!oid || isWoResolved(o.status)) continue;
+    if (String(o.priority).toUpperCase() !== 'P1') continue; // P2/P3 live in the counts, not the queue
+    const id = /^WO-/i.test(oid) ? oid : `WO-${slugify(oid)}`;
+    // 7-b: distill is a mask boundary — the public file may still name private repos
+    const title = clip(redactPrivateNames(o.title || id), 110);
+    const why = o.why ? clip(redactPrivateNames(o.why), 160) : null;
+    const acceptance = o.acceptance ? clip(redactPrivateNames(o.acceptance), 160) : null;
+    const ownerWord = /(owner[ -]?word|owner[ -]?gate|דבר-בעלים|delegation top-up)/i.test(`${title} ${why || ''} ${acceptance || ''}`);
+    items.push({
+      id,
+      source: 'work-orders.json (Sandbox raw)',
+      title,
+      riskClass: ownerWord ? 'OWNER-WORD' : 'MACHINE-PREP',
+      value: 7, effort: 2,
+      ownerWordRequired: ownerWord,
+      status: 'OPEN',
+      executableBy: ownerWord ? 'owner-only' : 'owner-after-prep',
+      detail: { area: redactPrivateNames(o.area || null), priority: o.priority || null, why, acceptance },
+    });
+  }
+  return items;
+}
+
 function distill(snapshot) {
   const items = [
     ...distillResearch(snapshot.findings),
     ...distillBus(snapshot.bus),
     ...distillGates(snapshot.gates),
+    ...distillWorkOrders(snapshot.workOrders),
   ];
   // dedupe by id (last wins) — deterministic
   const byId = new Map();
   for (const it of items) byId.set(it.id, it);
+  // deed-linkage (zai-13c): a research item that a BUILTINS entry `covers` is marked
+  // EXECUTED honestly — it ran as a built-in this very cycle and is never re-proposed.
+  for (const b of BUILTINS) {
+    if (!b.covers) continue;
+    const it = byId.get(b.covers);
+    if (it && it.status === 'OPEN') {
+      it.status = 'EXECUTED';
+      it.executableBy = b.id;
+      it.detail = { ...(it.detail || {}), executedByBuiltin: b.id, proposalRef: b.proposalRef || null };
+      if (snapshot.e1 && snapshot.e1.block) it.detail.verdict = snapshot.e1.block;
+    }
+  }
   return [...byId.values()];
 }
 
@@ -518,6 +634,10 @@ function rank(items) {
 const BUILTINS = [
   { id: 'builtin-refresh-lane', title: 'רענון קבצי-המסילה: BACKLOG + RETRO-LATEST + retro-state (SAFE: כתיבה למסילה-שלו בלבד)', riskClass: 'SAFE' },
   { id: 'builtin-verify-bus', title: 'אימות-אוטובוס: מדידת כל-הפידים הרשומים + טבלת-בריאות מוטמעת (SAFE: קריאה-בלבד)', riskClass: 'SAFE' },
+  // zai-13c deed — the office's FIRST self-proposal turned into a built-in
+  // (PROPOSALS/2026-10-11-research-e1-spread-regime.md · executableBy: next-retro = this cycle).
+  // The growth law's one new built-in for this round. Read-only/verify/doc-only, forever.
+  { id: 'builtin-e1-spread-regime', title: 'אימות-משטר-הפיזור (E1): grid.json חי מול חוק-93.5bps — פסק-כנה לתיק (SAFE: קריאה-בלבד)', riskClass: 'SAFE', covers: 'research-e1-spread-regime', proposalRef: 'PROPOSALS/2026-10-11-research-e1-spread-regime.md' },
 ];
 
 // execution boundary — the selftest drills this: nothing that is not a SAFE built-in
@@ -627,6 +747,8 @@ function buildBacklog({ snapshot, ranked, executed, proposal, nowMs }) {
   L.push(`- **אוטובוס**: ${bus.counts.green} green · ${bus.counts.amber} amber · ${bus.counts.red} red · ${bus.counts.grey} grey (רישום: ${snapshot.registry.source})`);
   L.push(`- **שערי-בעלים**: ${waiting != null ? `${waiting} WAITING-OWNER` : 'לא-ידוע (מקור-השערים פרטי/לא-נגיש — כנה)'}`);
   L.push(`- **מחקר**: ${snapshot.findings && snapshot.findings.found ? `הממצאים מ-${snapshot.findings.date} — ${snapshot.findings.experiments.length} ניסויים` : 'לא-נמדד (כנה)'}`);
+  L.push(`- **E1 spread-regime (built-in)**: ${snapshot.e1 ? snapshot.e1.block : 'לא-נמדד (כנה)'}`);
+  L.push(`- **צווי-עבודה (work-orders)**: ${snapshot.workOrders && snapshot.workOrders.counts ? `${snapshot.workOrders.counts.open} פתוחים · ${snapshot.workOrders.counts.resolved} נפתרו · P1 פתוחים: ${snapshot.workOrders.counts.openP1}` : 'לא-ידוע (כנה)'}`);
   L.push(`- **פריטים**: ${ranked.length} (SAFE ${risks.SAFE || 0} · MACHINE-PREP ${risks['MACHINE-PREP'] || 0} · OWNER-WORD ${risks['OWNER-WORD'] || 0})`);
   L.push('');
   L.push('## בוצע במחזור זה (SAFE built-ins בלבד — חוק)');
@@ -660,7 +782,7 @@ function buildBacklog({ snapshot, ranked, executed, proposal, nowMs }) {
   return L.join('\n') + '\n';
 }
 
-function buildRetroLatest({ snapshot, ranked, executed, proposal, nowMs }) {
+function buildRetroLatest({ snapshot, ranked, executed, proposal, proposalItem, nowMs }) {
   const bus = snapshot.bus;
   const dig = snapshot.digest;
   const g = snapshot.gates;
@@ -674,6 +796,7 @@ function buildRetroLatest({ snapshot, ranked, executed, proposal, nowMs }) {
   L.push('');
   L.push(`- **רישום-האוטובוס**: ${snapshot.registry.source} — ${clip(snapshot.registry.note, 140)}`);
   L.push(`- **הדיג'סט שלנו**: ${dig && dig.generatedAt ? `חי · generatedAt ${fmtUTC(dig.generatedAt)} (${dig.ageHours}h)` : (dig && dig.note) || 'לא-ידוע'}${dig && dig.reposSeen != null ? ` · repos ${dig.reposSeen}` : ''}${dig && dig.gridVerdict ? ` · grid: ${dig.gridVerdict}` : ''}${dig && dig.hiveVerdict ? ` · hive: ${dig.hiveVerdict}` : ''}`);
+  L.push(`- **צווי-עבודה (work-orders)**: ${snapshot.workOrders && snapshot.workOrders.counts ? `${snapshot.workOrders.counts.open} פתוחים · ${snapshot.workOrders.counts.resolved} נפתרו · P1 פתוחים: ${snapshot.workOrders.counts.openP1} (${snapshot.workOrders.source})` : (snapshot.workOrders && snapshot.workOrders.note) || 'לא-ידוע (כנה)'}`);
   if (F && F.found) {
     L.push(`- **ממצאי-המחקר** (findings-${F.date}, ${F.lane || 'research lane'}):`);
     L.push('');
@@ -696,6 +819,14 @@ function buildRetroLatest({ snapshot, ranked, executed, proposal, nowMs }) {
   L.push('');
   L.push(`ספירה: ${bus.counts.green} green · ${bus.counts.amber} amber · ${bus.counts.red} red · ${bus.counts.grey} grey`);
   L.push('');
+  L.push('### E1 spread-regime — ההצעה-העצמית הראשונה הפכה מעשה (builtin-e1-spread-regime · zai-13c)');
+  L.push('');
+  L.push('```');
+  L.push(snapshot.e1 ? snapshot.e1.block : 'SPREAD-REGIME: לא-נמדד במחזור זה (כנה)');
+  L.push('```');
+  L.push('');
+  L.push(`- חוק-המשטר: spread < ${E1_REGIME_BPS}bps = tightened (PASS) · > = loosened (HOLD) · מקור מיושן >${E1_STALE_HOURS}h = STALE כנה במקום פסק-חי. הרגל-הנמדדת: book.spreadBps (STEEM) מ-dex/grid.json — אותו-פיד שהאוטובוס מודד. read-only/verify/doc-only בלבד · ההצעה שהפכה מעשה: PROPOSALS/2026-10-11-research-e1-spread-regime.md`);
+  L.push('');
   L.push('### מצבי-השערים');
   L.push('');
   if (g && g.gates) {
@@ -714,7 +845,8 @@ function buildRetroLatest({ snapshot, ranked, executed, proposal, nowMs }) {
   L.push('');
   L.push('## 3 · תכנון (ההצעה הראשית)');
   L.push('');
-  if (proposal) L.push(`- הפריט המדורג ראשון: \`${ranked[0].id}\` (${ranked[0].riskClass}) → הצעה מלאה: [PROPOSALS/${proposal.file}](PROPOSALS/${proposal.file})`);
+  const pi = proposalItem || ranked[0] || null;
+  if (proposal && pi) L.push(`- הפריט המדורג ראשון הלא-מבוצע: \`${pi.id}\` (${pi.riskClass}) → הצעה מלאה: [PROPOSALS/${proposal.file}](PROPOSALS/${proposal.file})`);
   else L.push('- אין פריטים — כנה');
   L.push('');
   L.push('## 4 · ביצוע (SAFE בלבד)');
@@ -730,7 +862,7 @@ function buildRetroLatest({ snapshot, ranked, executed, proposal, nowMs }) {
   return L.join('\n') + '\n';
 }
 
-function buildState({ snapshot, ranked, executed, proposal, nowMs }) {
+function buildState({ snapshot, ranked, executed, proposal, proposalItem, nowMs }) {
   return {
     protocol: PROTOCOL,
     lane: LANE,
@@ -743,12 +875,14 @@ function buildState({ snapshot, ranked, executed, proposal, nowMs }) {
       ? { found: true, date: snapshot.findings.date, at: snapshot.findings.at, experiments: snapshot.findings.experiments.map((e) => ({ id: e.id, name: e.name, ok: e.ok })) }
       : { found: false, note: (snapshot.findings && snapshot.findings.note) || 'unknown' },
     bus: { at: snapshot.bus.at, counts: snapshot.bus.counts, feeds: snapshot.bus.feeds.map((f) => ({ id: f.id, status: f.status, ageHours: f.ageHours, httpStatus: f.httpStatus })) },
+    e1: snapshot.e1 || null,
+    workOrders: snapshot.workOrders ? { source: snapshot.workOrders.source, note: snapshot.workOrders.note, counts: snapshot.workOrders.counts } : null,
     gates: snapshot.gates && snapshot.gates.gates
       ? { source: snapshot.gates.source, generatedAt: snapshot.gates.generatedAt || null, gates: snapshot.gates.gates.map((x) => ({ id: x.id, state: x.state })) }
       : { source: 'unavailable', note: (snapshot.gates && snapshot.gates.note) || 'unknown' },
     items: ranked,
     executed,
-    proposal: proposal ? { file: proposal.file, item: ranked[0] ? ranked[0].id : null } : null,
+    proposal: proposal ? { file: proposal.file, item: (proposalItem || ranked[0] || null) ? (proposalItem || ranked[0]).id : null } : null,
   };
 }
 
@@ -758,7 +892,7 @@ function esc(v) {
     .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 }
-function renderIndex({ snapshot, ranked, executed, proposal, nowMs }) {
+function renderIndex({ snapshot, ranked, executed, proposal, proposalItem, nowMs }) {
   const bus = snapshot.bus;
   const g = snapshot.gates;
   const F = snapshot.findings;
@@ -843,6 +977,7 @@ footer{margin-top:44px; border-top:1px solid var(--border); padding-top:16px; co
     ${bus.counts.red ? chip('bad', `${bus.counts.red} אדום`) : ''}
     ${bus.counts.grey ? chip('neutral', `${bus.counts.grey} לא-ידוע`) : ''}
     ${chip('violet', `תור: ${ranked.length} פריטים`)}
+    ${snapshot.workOrders && snapshot.workOrders.counts ? chip('info', `צווים: ${snapshot.workOrders.counts.open} פתוחים · P1: ${snapshot.workOrders.counts.openP1}`) : ''}
     ${g && g.gates ? chip('bad', `${g.gates.filter((x) => x.state === 'WAITING-OWNER').length} שערים ממתינים-לבעלים`) : chip('neutral', 'שערים: לא-ידוע')}
   </div>
 </header>
@@ -878,6 +1013,12 @@ footer{margin-top:44px; border-top:1px solid var(--border); padding-top:16px; co
       <p class="pfoot">לפי id/כותרת-מוקטנת בלבד — בלי-סיכומים ובלי-מפתחות (7-b)</p>` : `<p class="law">${esc((g && g.note) || 'לא-ידוע')} (כנה)</p>`}
     </div>
   </div>
+  <div class="card" style="margin-top:14px">
+    <b>E1 spread-regime — ההצעה-העצמית הראשונה הפכה מעשה (built-in פעיל)</b>
+    <p class="law"><code>${esc(snapshot.e1 ? snapshot.e1.block : 'SPREAD-REGIME: לא-נמדד (כנה)')}</code></p>
+    <p class="pfoot">חוק: &lt;${E1_REGIME_BPS}bps = tightened/PASS · &gt; = loosened/HOLD · מקור מיושן &gt;${E1_STALE_HOURS}h = STALE כנה · read-only/verify/doc-only · deed zai-13c (trace 1a12d186d2f8b86d)</p>
+    ${snapshot.workOrders && snapshot.workOrders.counts ? `<p class="law"><b>צווי-עבודה שהמשרד רואה:</b> ${esc(String(snapshot.workOrders.counts.open))} פתוחים · ${esc(String(snapshot.workOrders.counts.resolved))} נפתרו · P1 פתוחים: ${esc(String(snapshot.workOrders.counts.openP1))} — מקור: work-orders.json (Sandbox raw)</p>` : `<p class="law">צווי-עבודה: ${esc((snapshot.workOrders && snapshot.workOrders.note) || 'לא-ידוע (כנה)')}</p>`}
+  </div>
 </section>
 
 <section>
@@ -894,9 +1035,9 @@ footer{margin-top:44px; border-top:1px solid var(--border); padding-top:16px; co
 <section>
   <div class="sec-head"><div class="sec-num">3</div><h2>תכנון <span class="en">— ההצעה הראשית של המחזור</span></h2></div>
   <div class="card">
-    ${proposal ? `<p><b>${esc(ranked[0] ? clip(ranked[0].title, 100) : '')}</b></p>
+    ${(() => { const pi = proposalItem || ranked[0] || null; return proposal && pi ? `<p><b>${esc(clip(pi.title, 100))}</b></p>
     <p class="law">הצעה מלאה (הקשר · תוכנית · פקודות-אימות · rollback · גבול-דבר-בעלים): <a href="PROPOSALS-latest.md">PROPOSALS/${esc(proposal.file)}</a></p>
-    <p class="law">מקור: <code>${esc(ranked[0] ? ranked[0].id : '')}</code> · מחלקה: ${chip(ranked[0] && ranked[0].riskClass === 'SAFE' ? 'ok' : ranked[0] && ranked[0].riskClass === 'MACHINE-PREP' ? 'violet' : 'bad', ranked[0] ? ranked[0].riskClass : '')}</p>` : '<p class="law">אין פריטים בתור — כנה.</p>'}
+    <p class="law">מקור: <code>${esc(pi.id)}</code> · מחלקה: ${chip(pi.riskClass === 'SAFE' ? 'ok' : pi.riskClass === 'MACHINE-PREP' ? 'violet' : 'bad', pi.riskClass)}</p>` : '<p class="law">אין פריטים בתור — כנה.</p>'; })()}
   </div>
 </section>
 
@@ -954,12 +1095,14 @@ async function runLive() {
   const findings = await fetchFindings(reg.registry, token, nowMs);
   const gates = await fetchGates(token);
   const digest = await fetchDigest();
+  const workOrders = await fetchWorkOrders(token);
+  const e1 = await fetchE1Verdict(nowMs);
   const snapshot = {
     at: new Date(nowMs).toISOString(),
     registry: { source: reg.source, note: reg.note, registry: reg.registry },
-    bus, findings, gates, digest,
+    bus, findings, gates, digest, workOrders, e1,
   };
-  console.log(`חקר: registry=${reg.source} · bus ${bus.counts.green}G/${bus.counts.amber}A/${bus.counts.red}R/${bus.counts.grey}U · findings=${findings.found ? findings.date : 'לא-נמדד'} · gates=${gates.gates ? gates.gates.length + ' ממופים' : 'לא-ידוע'} · digest=${digest.generatedAt ? fmtUTC(digest.generatedAt) : 'לא-ידוע'}`);
+  console.log(`חקר: registry=${reg.source} · bus ${bus.counts.green}G/${bus.counts.amber}A/${bus.counts.red}R/${bus.counts.grey}U · findings=${findings.found ? findings.date : 'לא-נמדד'} · gates=${gates.gates ? gates.gates.length + ' ממופים' : 'לא-ידוע'} · digest=${digest.generatedAt ? fmtUTC(digest.generatedAt) : 'לא-ידוע'} · WO=${workOrders.counts ? `${workOrders.counts.open}פתוחים/${workOrders.counts.resolved}נפתרו/P1:${workOrders.counts.openP1}` : 'לא-ידוע'} · E1=${e1.verdict}`);
 
   // STAGE 2 זיקוק
   const ranked = rank(distill(snapshot));
@@ -967,15 +1110,17 @@ async function runLive() {
   for (const it of ranked) risks[it.riskClass] = (risks[it.riskClass] || 0) + 1;
   console.log(`זיקוק: ${ranked.length} פריטים — SAFE ${risks.SAFE || 0} · MACHINE-PREP ${risks['MACHINE-PREP'] || 0} · OWNER-WORD ${risks['OWNER-WORD'] || 0}`);
 
-  // STAGE 3 תכנון
-  const proposal = ranked.length ? buildProposal(ranked[0], snapshot, nowMs) : null;
-  if (proposal) console.log(`תכנון: הצעה ראשית ← ${ranked[0].id} (${ranked[0].riskClass}) → PROPOSALS/${proposal.file}`);
+  // STAGE 3 תכנון — the proposal goes to the top NON-executed item: an item a built-in
+  // just executed this cycle is marked EXECUTED (deed law) and is never re-proposed.
+  const proposalItem = ranked.find((it) => it.status !== 'EXECUTED') || null;
+  const proposal = proposalItem ? buildProposal(proposalItem, snapshot, nowMs) : null;
+  if (proposal) console.log(`תכנון: הצעה ראשית ← ${proposalItem.id} (${proposalItem.riskClass}) → PROPOSALS/${proposal.file}`);
 
   // STAGE 4 ביצוע (SAFE built-ins only — the law, drilled in selftest)
   const executed = executePlan(ranked);
   console.log(`ביצוע: ${executed.length} built-ins (${executed.map((e) => e.id).join(', ')})`);
 
-  const ctx = { snapshot, ranked, executed, proposal, nowMs };
+  const ctx = { snapshot, ranked, executed, proposal, proposalItem, nowMs };
   const files = {
     [join(REPO, 'office', 'BACKLOG.md')]: buildBacklog(ctx),
     [join(REPO, 'office', 'RETRO-LATEST.md')]: buildRetroLatest(ctx),
@@ -1184,6 +1329,72 @@ function selftest() {
     try { writeLane({ '/tmp/never-write-me-retro-private.txt': 'gate of vault-home details' }); } catch { threw = true; }
     assert(threw, 'writeLane must refuse private-name-bearing content');
     assert(!existsSync('/tmp/never-write-me-retro-private.txt'), 'forbidden file was written');
+  });
+
+  // V15 — E1 deed (zai-13c): spread verdict math — tightened/loosened/stale/unknown
+  vec('E1 spread verdict: 93.48→tightened/PASS · 94.1→loosened/HOLD · stale→honest STALE · dead→UNKNOWN', () => {
+    const now = Date.now();
+    const fresh = (bps) => ({ publishedAt: new Date(now - 2 * 3600000).toISOString(), book: { spreadBps: bps } });
+    const t = spreadVerdict(fresh(93.48), now, {});
+    assert(t.direction === 'tightened' && t.verdict === 'PASS', `93.48 must tighten: ${JSON.stringify(t)}`);
+    assert(Math.abs(t.deltaBps - (-0.02)) < 1e-9, `delta wrong: ${t.deltaBps}`);
+    assert(t.block.includes('SPREAD-REGIME'), 'verdict block missing');
+    const l = spreadVerdict(fresh(94.1), now, {});
+    assert(l.direction === 'loosened' && l.verdict === 'HOLD', `94.1 must loosen: ${JSON.stringify(l)}`);
+    assert(l.block.includes('+0.60'), `loosened delta text wrong: ${l.block}`);
+    const st = spreadVerdict({ publishedAt: new Date(now - 30 * 3600000).toISOString(), book: { spreadBps: 93.48 } }, now, {});
+    assert(st.verdict === 'STALE' && st.direction === null, 'stale source must yield honest STALE, never a live verdict');
+    assert(st.block.includes('מיושן') && st.block.includes('SPREAD-REGIME'), 'stale block must say so honestly');
+    const u = spreadVerdict({ publishedAt: new Date(now - 2 * 3600000).toISOString() }, now, {});
+    assert(u.verdict === 'UNKNOWN', 'missing book.spreadBps must be honest UNKNOWN');
+    const n = spreadVerdict(null, now, { httpStatus: 404 });
+    assert(n.verdict === 'UNKNOWN' && n.block.includes('לא-ידוע'), 'dead source must be honest UNKNOWN');
+  });
+
+  // V16 — zai-13c: work-orders distill — counts, missing-status=open, open-P1 surfacing, owner-word class
+  vec('work-orders: 2 open + 1 resolved → counts; open P1s surface as WO- MACHINE-PREP; missing status = open', () => {
+    const orders = [
+      { id: 'WO-alpha', area: 'A', priority: 'P1', title: 'רפא ריצות אדומות', why: 'עורק-שקט', acceptance: 'ירוק מלא' },
+      { id: 'WO-beta', area: 'B', priority: 'P2', title: 'משהו קטן', status: 'resolved' },
+      { id: 'WO-gamma', area: 'C', priority: 'P1', title: 'פתיחת-מסילה', why: 'דבר-בעלים נדרש כאן', acceptance: 'טקס' },
+      { id: 'delta', area: 'D', priority: 'P1', title: 'בלי קידומת' },
+    ];
+    const wo = { source: 'fixture', note: 'n', orders, counts: workOrderCounts(orders) };
+    assert(wo.counts.open === 3 && wo.counts.resolved === 1 && wo.counts.openP1 === 3, `counts wrong: ${JSON.stringify(wo.counts)}`);
+    const items = distillWorkOrders(wo);
+    const a = items.find((i) => i.id === 'WO-alpha');
+    assert(a && a.riskClass === 'MACHINE-PREP' && a.executableBy === 'owner-after-prep', 'open P1 infra fix must surface MACHINE-PREP');
+    assert(!items.some((i) => i.id === 'WO-beta'), 'resolved order must not surface');
+    const g = items.find((i) => i.id === 'WO-gamma');
+    assert(g && g.riskClass === 'OWNER-WORD' && g.ownerWordRequired, 'owner-word text must classify OWNER-WORD');
+    assert(items.some((i) => i.id === 'WO-delta'), 'missing WO- prefix must be normalized');
+  });
+
+  // V17 — work-orders + E1 honest-fail law: unavailable sources → zero invented items, honest unknown in artifacts
+  vec('honest-fail: work-orders unavailable → no items/no fake counts; E1 dead → honest UNKNOWN in backlog', () => {
+    assert(distillWorkOrders({ source: 'unavailable', note: 'HTTP 404', orders: null, counts: null }).length === 0, 'unavailable must yield zero items');
+    const nowMs = Date.now();
+    const snapshot = { at: 't', registry: { source: 'fallback-embedded', note: 'n', registry: { schema: 'x', feeds: [] } }, bus: { at: 't', counts: { green: 0, amber: 0, red: 0, grey: 0 }, feeds: [] }, findings: { found: false, note: 'n' }, gates: { source: 'unavailable', note: 'n', gates: null }, digest: { source: 'unavailable', note: 'n', generatedAt: null }, workOrders: { source: 'unavailable', note: 'HTTP 404 (כנה)', orders: null, counts: null }, e1: spreadVerdict(null, nowMs, { httpStatus: 404 }) };
+    const backlog = buildBacklog({ snapshot, ranked: rank(distill(snapshot)), executed: executePlan([]), proposal: null, nowMs });
+    assert(backlog.includes('לא-ידוע (כנה)'), 'WO line must be honest-unknown');
+    assert(backlog.includes('SPREAD-REGIME: לא-ידוע'), 'E1 line must be honest-unknown');
+  });
+
+  // V18 — deed-linkage law (zai-13c): the covered research item is marked EXECUTED, never re-proposed
+  vec('deed-linkage: covered E1 item → EXECUTED by builtin + verdict metadata + proposal skips it', () => {
+    const nowMs = Date.now();
+    const findings = { found: true, date: '2026-10-11', at: 't', lane: 't', experiments: [
+      { id: 'E1', name: 'spread-regime', verdict: 'spread tightened (93.48 < 93.5 bps)', ok: true, next: 'track weekly' },
+      { id: 'E2', name: 'feed-divergence', verdict: 'healthy band', ok: true, next: 'escalate if >300 repeats' },
+    ] };
+    const snapshot = { at: new Date(nowMs).toISOString(), registry: { source: 'fallback-embedded', note: 'n', registry: { schema: 'x', feeds: [] } }, bus: { at: 't', counts: { green: 0, amber: 0, red: 0, grey: 0 }, feeds: [] }, findings, gates: { source: 'unavailable', note: 'n', gates: null }, digest: { source: 'unavailable', note: 'n', generatedAt: null }, workOrders: null, e1: spreadVerdict({ publishedAt: new Date(nowMs - 3600000).toISOString(), book: { spreadBps: 93.48 } }, nowMs, {}) };
+    const ranked = rank(distill(snapshot));
+    const e1 = ranked.find((i) => i.id === 'research-e1-spread-regime');
+    assert(e1 && e1.status === 'EXECUTED' && e1.executableBy === 'builtin-e1-spread-regime', `E1 item must be marked EXECUTED: ${JSON.stringify(e1)}`);
+    assert(e1.detail && e1.detail.verdict && e1.detail.verdict.includes('SPREAD-REGIME'), 'E1 item must carry the verdict metadata');
+    const proposalItem = ranked.find((it) => it.status !== 'EXECUTED') || null;
+    assert(proposalItem && proposalItem.id !== 'research-e1-spread-regime', 'executed item must never be re-proposed');
+    assert(ranked.some((i) => i.id === 'research-e2-feed-divergence'), 'other research items still surface');
   });
 
   const passed = results.filter((r) => r.pass).length;
