@@ -2,7 +2,7 @@
 
 - **מזהה**: `WO-unwired-adsmarket-marketing` · **מחלקת-סיכון**: MACHINE-PREP (הכנה-מכונה) · **דבר-בעלים**: לא
 - **מקור**: work-orders.json (Sandbox raw) · **ערך/מאמץ**: 7/2
-- **נוצר**: 2026-10-11 23:53 UTC על-ידי office/retro.mjs (office-retro (zai-11d · E1-deed zai-13c)) · SAOS-OFFICE-RETRO/1
+- **נוצר**: 2026-10-11 23:56 UTC על-ידי office/retro.mjs (office-retro (zai-11d · E1-deed zai-13c)) · SAOS-OFFICE-RETRO/1
 
 ## הקשר נמדד (מה-חקר)
 
@@ -10,7 +10,7 @@
   - console-mirror-status: grey — private-raw — ה-token בסביבה אינו-מוסמך לריפו זה (לא-ידוע, כנה)
 - מחקר (2026-10-11): E1✅ E2✅ E3✅
 - שערים: GATE-STATUS לא-נגיש (HTTP 404) — מצבי-השערים לא-ידועים כעת (מקור-פרטי; כנה, לא-מדומה)
-- דיג'סט: חי מ-2026-10-11 23:06 UTC
+- דיג'סט: חי מ-2026-10-11 23:54 UTC
 
 ## תוכנית (צעדים)
 
