@@ -37,15 +37,31 @@ cleanup() { git worktree remove --force "$WT" >/dev/null 2>&1 || true; }
 trap cleanup EXIT
 git worktree add --detach "$WT" "$BASE" >/dev/null
 
+# the MAIN checkout (not the worktree) holds public/office3d + office/state
+ROOT="$(pwd)"
+
 (
   cd "$WT"
   cp "$DIST_INDEX" index.html
   cp "$DIST_DIGEST" digest.json
   git add index.html digest.json
+  # the living 3D office (whole folder) + the latest captured office-state,
+  # so the published scene self-feeds from ./office-state.json (Pages has no /api)
+  STATE_SRC="$ROOT/office/state/office-state.json"
+  if [ -d "$ROOT/public/office3d" ]; then
+    rm -rf office3d
+    cp -r "$ROOT/public/office3d" office3d
+    [ -f "$STATE_SRC" ] && cp "$STATE_SRC" office3d/office-state.json
+    git add office3d
+  fi
+  if [ -f "$STATE_SRC" ]; then
+    cp "$STATE_SRC" office-state.json
+    git add office-state.json
+  fi
   if git diff --cached --quiet; then
     echo "publish: dist identical to office-pages HEAD — nothing to commit"
   else
-    git commit -q -m "[zai] office-window: daily render $(date -u '+%Y-%m-%dT%H:%M:%SZ')"
+    git commit -q -m "[zai] office-window: daily render + living 3D office $(date -u '+%Y-%m-%dT%H:%M:%SZ')"
   fi
   # drift guard: rebase onto the latest remote tip before pushing (no force-push, ever)
   git fetch origin "+office-pages:refs/remotes/origin/office-pages"
@@ -54,7 +70,7 @@ git worktree add --detach "$WT" "$BASE" >/dev/null
   HEADSHA="$(git rev-parse --short HEAD)"
   SUMMARY_LINES="## office-window publish
 - branch: \`office-pages\` @ \`${HEADSHA}\`
-- files: \`index.html\`, \`digest.json\`
+- files: \`index.html\`, \`digest.json\`, \`office3d/\` (living 3D office), \`office-state.json\`
 - rebase-before-push honored · no force-push · GITHUB_TOKEN only"
   if [ -n "${GITHUB_STEP_SUMMARY:-}" ]; then
     printf '%s\n' "$SUMMARY_LINES" >> "$GITHUB_STEP_SUMMARY"
