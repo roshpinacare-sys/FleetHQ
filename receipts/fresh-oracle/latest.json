@@ -1,6 +1,6 @@
 {
  "schema": "fleet.fresh-oracle/1",
- "at": "2026-10-11T22:17:36.321Z",
+ "at": "2026-10-11T22:17:52.361Z",
  "law": "live page is FRESH only if sha256(live bytes) == sha256(committed deploy-ref bytes); drift/missing = RED",
  "results": [
   {
@@ -43,9 +43,9 @@
    "liveStatus": 200,
    "committedStatus": 200,
    "liveSha16": "e79e93cbb5bd35d6",
-   "committedSha16": "a31d74e9671b88fd",
+   "committedSha16": "e79e93cbb5bd35d6",
    "liveBytes": 50079,
-   "verdict": "DRIFT"
+   "verdict": "MATCH"
   },
   {
    "name": "Domain worlds room",
@@ -61,10 +61,10 @@
  ],
  "summary": {
   "checked": 5,
-  "match": 4,
-  "drift": 1,
+  "match": 5,
+  "drift": 0,
   "missing": 0,
-  "verdict": "STALE-OR-BROKEN"
+  "verdict": "FRESH"
  },
  "method": "https GET live URL + raw.githubusercontent deploy ref → sha256-16 byte equality"
 }
