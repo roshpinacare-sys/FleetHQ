@@ -30,9 +30,16 @@ import { useHq } from '@/lib/hq/store';
 import { bus, agentVisualFresh, ROOM_STALE_MS } from '@/lib/hq/world';
 import { STATE_COLORS } from '@/lib/hq/protocol';
 
-const MALE_URL = '/models/humans/readyplayer.me.glb';
-const FEMALE_URL = '/models/humans/Michelle.glb';
-const SRC_URL = '/models/humans/Xbot.glb';
+/** בסיס-מודלים לפי-הקשר: ב-Domain החדר חי תחת /Domain/office3d/ (המודלים
+ *  ב-/Domain/models/), בסנדבוקס וב-FleetHQ — בשורש. אין ניחוש: נגזר
+ *  מ-location פעם-אחת בטעינת-המודול. */
+const MODEL_BASE =
+  typeof location !== 'undefined' && location.pathname.includes('/office3d/')
+    ? '../models/humans/'
+    : '/models/humans/';
+const MALE_URL = MODEL_BASE + 'readyplayer.me.glb';
+const FEMALE_URL = MODEL_BASE + 'Michelle.glb';
+const SRC_URL = MODEL_BASE + 'Xbot.glb';
 useGLTF.preload(MALE_URL);
 useGLTF.preload(FEMALE_URL);
 useGLTF.preload(SRC_URL);
