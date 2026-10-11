@@ -33,11 +33,11 @@
 | **Project-files** | private | מצבור קבצי עבודה והעלאות | רגועה מ-10-08 |
 | **anchor-baseline** | private | בסיס-ייחוס קפוא לשחזור (baseline 5356dab) | רגועה מ-10-07 |
 | **Defi** | private | מעבדת מחקר DeFi | רגועה מ-10-08 |
-| **Sandbox/sanbox** | pair | ראו כפילויות | — |
+| **Sandbox/sandbox-private** | pair | N4→D2 נפתר T-63 (שינוי-שם בוצע) | 5fb059a2 |
 
 ## כפילויות ודרכי טיפול (תיקון, לא בריחה)
 
-1. **Sandbox ↔ sanbox** (טיפוס כפול): Sandbox = מעבדה ציבורית קאנון. sanbox = פרטי-בעלים 🔴. **הצעה לבעלים** (דורש אישור, לא לבצע לבד): שינוי-שם `sanbox → sandbox-private` לביטול הבלבול + הפניה ב-README.
+1. **Sandbox ↔ sandbox-private** (טיפוס כפול) — ✅ **נפתר T-63 (N4→D2)**: הריבונות ביצעה את שינוי-השם `sanbox → sandbox-private` בכתב-הרשאה של הבעלים (״הריבונות מחליטה״, trace 1a12d4ae2964f45d) — redirect 301 אומת, קבלה ב-README של הריפו, צומת הגרף עודכן. נותר: עדכון-תיעוד רדום בקבצים היסטוריים (הפניות GitHub מכסות).
 2. **Console ↔ SovereignConsole**: Console = ציבורית קאנון; SovereignConsole = מראת DR פרטית. **מדיניות:** סנכרון שבועי אחד-way Console→SovereignConsole (משימת lane), ואז אפס סתירה.
 3. **saos-sovereign-platform ↔ saos-sovereign-foundry**: platform = עותק DR עומד; foundry = חי (פסיקת בעלים). **מדיניות:** foundry המקור; platform מסונכרן ידנית בכל אבן-דרך.
 4. **vault-home ↔ Zip**: vault-home = כספת הקאנון; Zip = חבילות הפצה מוצפנות. שניהם חיים ומוצדקים (הפרדת סוד/פצה).
