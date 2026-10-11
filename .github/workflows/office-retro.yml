@@ -42,7 +42,10 @@ jobs:
 
       - name: Retro cycle (live measurement — research/bus/gates/digest → backlog → proposal)
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # GITHUB_TOKEN cannot read the private Zip raws — registry degrades to the
+          # embedded snapshot and gates render honest-unknown (by design). The owner
+          # may set a read-only FLEET_READ_PAT secret to light the private raws up.
+          GH_TOKEN: ${{ secrets.FLEET_READ_PAT || secrets.GITHUB_TOKEN }}
         run: node office/retro.mjs
 
       - name: Publish retro to office-pages (rebase-first, no force-push, worktree-isolated)
