@@ -19,6 +19,7 @@ import type {
 } from './protocol';
 import { CREW_FALLBACK } from './protocol';
 import { createBrains, type AgentBrain } from './world';
+import type { TruthInfo } from './truth';
 
 export type Lang = 'he' | 'en';
 
@@ -52,6 +53,8 @@ interface HqBridgeState {
   brains: Map<string, AgentBrain>;
   ui: UiBindings;
   toasts: { id: number; text: string }[];
+  /** גשר-האמת: מקורות הנתונים האמיתיים + טריותם (לצ'יפ הכנות בחדר) */
+  truth: TruthInfo | null;
 
   bindUi(ui: UiBindings): void;
   setLang(l: Lang): void;
@@ -73,6 +76,7 @@ interface HqBridgeState {
   syncBooks(books: BookView[]): void;
   syncStatus(status: ForemanStatus): void;
   syncGit(git: GitPulse): void;
+  setTruth(t: TruthInfo): void;
   syncConnected(connected: boolean): void;
   /** בועת דיבור אמיתית מהפורמן — נכנסת כלוג 'say' כדי שהדמות תדבר בחדר */
   syncBubble(agentId: string, text: string): void;
@@ -116,6 +120,7 @@ export const useHq = create<HqBridgeState>((set, get) => ({
   brains: createBrains(),
   ui: {},
   toasts: [],
+  truth: null,
 
   bindUi(ui) { set({ ui }); },
 
@@ -199,6 +204,9 @@ export const useHq = create<HqBridgeState>((set, get) => ({
   },
   syncGit(git) {
     set({ snap: { ...get().snap, git }, lastSignalAt: Date.now() });
+  },
+  setTruth(t) {
+    set({ truth: t });
   },
   syncConnected(connected) {
     set({ connected });
