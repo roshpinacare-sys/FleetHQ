@@ -70,39 +70,39 @@ jobs:
           RUN_ID: ${{ github.run_id }}
           REPO: ${{ github.repository }}
           SHA: ${{ github.sha }}
-        run: node - <<'EOF'
-const fs = require("fs");
-const read = (n) => (fs.existsSync("/tmp/checks/" + n) ? fs.readFileSync("/tmp/checks/" + n, "utf8").trim() : "missing");
-const checks = {};
-for (const c of ["install", "prismaGenerate", "typecheck", "productionBuild"]) checks[c] = read(c);
-const values = Object.values(checks);
-const allPass = values.length === 4 && values.every((v) => v === "pass");
-const anySkipped = values.some((v) => v !== "pass" && v !== "fail");
-const overall = allPass ? "PASS" : anySkipped ? "BLOCKED" : "FAIL";
-const reason = allPass
-  ? "all four checks ran and passed"
-  : anySkipped
-    ? "partial run: a check never executed - skipped is never pass"
-    : "failing checks: " + Object.entries(checks).filter(([, v]) => v === "fail").map(([k]) => k).join(",");
-const receipt = {
-  schema: "office.ci/1",
-  at: new Date().toISOString(),
-  repo: process.env.REPO,
-  sha: (process.env.SHA || "").slice(0, 12),
-  checks,
-  overall,
-  reason,
-  provenance: {
-    runId: process.env.RUN_ID,
-    runUrl: "https://github.com/" + process.env.REPO + "/actions/runs/" + process.env.RUN_ID,
-    sha: process.env.SHA,
-  },
-};
-fs.mkdirSync("receipts/office-ci", { recursive: true });
-fs.writeFileSync("receipts/office-ci/verdict.json", JSON.stringify(receipt, null, 1) + "\n");
-fs.appendFileSync("receipts/office-ci/log.jsonl", JSON.stringify({ at: receipt.at, overall, checks }) + "\n");
-console.log("OFFICE-CI", overall, "-", reason);
-EOF
+        run: |
+          const fs = require("fs");
+          const read = (n) => (fs.existsSync("/tmp/checks/" + n) ? fs.readFileSync("/tmp/checks/" + n, "utf8").trim() : "missing");
+          const checks = {};
+          for (const c of ["install", "prismaGenerate", "typecheck", "productionBuild"]) checks[c] = read(c);
+          const values = Object.values(checks);
+          const allPass = values.length === 4 && values.every((v) => v === "pass");
+          const anySkipped = values.some((v) => v !== "pass" && v !== "fail");
+          const overall = allPass ? "PASS" : anySkipped ? "BLOCKED" : "FAIL";
+          const reason = allPass
+            ? "all four checks ran and passed"
+            : anySkipped
+              ? "partial run: a check never executed - skipped is never pass"
+              : "failing checks: " + Object.entries(checks).filter(([, v]) => v === "fail").map(([k]) => k).join(",");
+          const receipt = {
+            schema: "office.ci/1",
+            at: new Date().toISOString(),
+            repo: process.env.REPO,
+            sha: (process.env.SHA || "").slice(0, 12),
+            checks,
+            overall,
+            reason,
+            provenance: {
+              runId: process.env.RUN_ID,
+              runUrl: "https://github.com/" + process.env.REPO + "/actions/runs/" + process.env.RUN_ID,
+              sha: process.env.SHA,
+            },
+          };
+          fs.mkdirSync("receipts/office-ci", { recursive: true });
+          fs.writeFileSync("receipts/office-ci/verdict.json", JSON.stringify(receipt, null, 1) + "\n");
+          fs.appendFileSync("receipts/office-ci/log.jsonl", JSON.stringify({ at: receipt.at, overall, checks }) + "\n");
+          console.log("OFFICE-CI", overall, "-", reason);
+          EOF
 
       - name: Publish receipt (rebase-then-push x3)
         if: always()
@@ -123,8 +123,8 @@ EOF
         if: always()
         run: |
           node - <<'EOF'
-const fs = require("fs");
-const v = JSON.parse(fs.readFileSync("receipts/office-ci/verdict.json", "utf8"));
-console.log("gate:", v.overall, "-", v.reason, "-", v.provenance.runUrl);
-if (v.overall !== "PASS") process.exit(1);
-EOF
+          const fs = require("fs");
+          const v = JSON.parse(fs.readFileSync("receipts/office-ci/verdict.json", "utf8"));
+          console.log("gate:", v.overall, "-", v.reason, "-", v.provenance.runUrl);
+          if (v.overall !== "PASS") process.exit(1);
+          EOF
