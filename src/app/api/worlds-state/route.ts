@@ -17,6 +17,10 @@ const SRC = {
   dex: `${RAW}/Domain/main/dex/pnl-desk.json`,
   officeState: `${RAW}/FleetHQ/main/office/state/office-state.json`,
   valueScan: `${RAW}/FleetHQ/main/office/state/value-scan.json`,
+  // [zai-14] החיבורים החסרים — קבלות שהיו ללא קורא, עכשיו אוכל
+  connectivity: `${RAW}/FleetHQ/main/office/state/connectivity.json`,
+  bootVerify: `${RAW}/FleetHQ/main/receipts/boot-verify.json`,
+  freshOracle: `${RAW}/FleetHQ/main/receipts/fresh-oracle/latest.json`,
 }
 
 // זהות מדויקת של מדידת-השרשרת — שכפול נאמן של beacon-pulse.yml (מקור-האמת הפומבי)
@@ -77,7 +81,7 @@ async function measureChain(): Promise<{ ok: boolean; error?: string; head?: num
 type Src<T> = { ok: boolean; error?: string; data: T | null }
 
 async function collect(): Promise<Record<string, unknown>> {
-  const [flowR, lhR, bcnR, dexR, officeRaw, vsR, chainR] = await Promise.all([
+  const [flowR, lhR, bcnR, dexR, officeRaw, vsR, chainR, connRaw, bootRaw, oracleRaw] = await Promise.all([
     fetchJson(SRC.flow),
     fetchJson(SRC.lighthouse),
     fetchJson(SRC.beacon),
@@ -85,6 +89,9 @@ async function collect(): Promise<Record<string, unknown>> {
     fetchJson(SRC.officeState),
     fetchJson(SRC.valueScan),
     measureChain(),
+    fetchJson(SRC.connectivity),
+    fetchJson(SRC.bootVerify),
+    fetchJson(SRC.freshOracle),
   ])
 
   // ---- foreman: עדיפות לקובץ המקומי (האפליקציה רצה ב-worktree — הטרי ביותר), raw כגיבוי
@@ -123,6 +130,25 @@ async function collect(): Promise<Record<string, unknown>> {
     honesty: { law: pnl.law ?? null, fills: pnl.lifetime?.fills ?? null, edgePct: pnl.lifetime?.edgePct ?? null },
   } : null
 
+  // ---- [zai-14] connectivity / bootVerify / freshOracle: מקומי-קודם (ה-worktree הכי-טרי), raw כגיבוי
+  const localFirst = async <T,>(localPath: string, raw: { ok: boolean; error?: string; data: T | null }): Promise<Src<T>> => {
+    try {
+      const local = await readFile(path.join(process.cwd(), localPath), 'utf-8')
+      return { ok: true, data: JSON.parse(local) as T }
+    } catch {
+      return raw.ok
+        ? { ok: true, data: raw.data as T }
+        : { ok: false, error: raw.error ?? 'unavailable', data: null }
+    }
+  }
+  const connectivity = await localFirst<Record<string, unknown>>('office/state/connectivity.json', connRaw)
+  const bootVerify = await localFirst<Record<string, unknown>>('receipts/boot-verify.json', bootRaw)
+  const freshOracle = await localFirst<Record<string, unknown>>('receipts/fresh-oracle/latest.json', oracleRaw)
+  // גיל כנה של קבלת-האתחול — stale מוצג כ-stale, לעולם לא מולבש כטרי
+  const bootAgeH = bootVerify.ok && bootVerify.data && typeof (bootVerify.data as { at?: string }).at === 'string'
+    ? Math.round((Date.now() - Date.parse((bootVerify.data as { at: string }).at)) / 3_600_000 * 10) / 10
+    : null
+
   const out = {
     fetchedAt: new Date().toISOString(),
     flow: { ok: flowR.ok, error: flowR.error, data: flowR.data },
@@ -134,6 +160,9 @@ async function collect(): Promise<Record<string, unknown>> {
       : { ok: false, error: 'טרם פורסם — value-scan.yml רץ על הגיט כל 30 דק׳', data: null },
     foreman: { ok: foreman.ok, error: foreman.error, data: foremanWire },
     chain: { ok: chainR.ok, error: chainR.error, data: chainR.ok ? chainR : null },
+    connectivity: { ok: connectivity.ok, error: connectivity.error, data: connectivity.data },
+    bootVerify: { ok: bootVerify.ok, error: bootVerify.error, ageH: bootAgeH, data: bootVerify.data },
+    freshOracle: { ok: freshOracle.ok, error: freshOracle.error, data: freshOracle.data },
   }
   return out
 }
