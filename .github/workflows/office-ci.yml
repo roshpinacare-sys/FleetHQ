@@ -105,25 +105,36 @@ jobs:
           console.log("OFFICE-CI", overall, "-", reason);
           EOF
 
-      - name: Publish receipt (rebase-then-push x6, jittered)
+      - name: Publish receipt (sibling-stand-down + rebase-then-push x6, jittered)
         if: always()
         run: |
           git config user.name "office-ci-bot"
           git config user.email "office-ci-bot@users.noreply.github.com"
+          sibling_stand_down() {
+            # duplicate trigger law: a sibling run of the SAME sha may have
+            # already published the receipt — that is a WIN, not a failure.
+            git fetch -q origin main 2>/dev/null || return 1
+            if git show origin/main:receipts/office-ci/verdict.json 2>/dev/null | grep -q "\"sha\": \"${GITHUB_SHA:0:12}\""; then
+              echo "SIBLING-STAND-DOWN: receipt for $GITHUB_SHA already published — honest exit 0"
+              return 0
+            fi
+            return 1
+          }
           git add receipts/office-ci/
           if git diff --cached --quiet; then echo "no receipt delta"; exit 0; fi
           git commit -m "office-ci receipt: build $(cat /tmp/checks/productionBuild 2>/dev/null || echo unknown), types $(cat /tmp/checks/typecheck 2>/dev/null || echo unknown) [skip ci]"
           ok=0
           # fleet hot-race: twins push receipts continuously — 6 jittered
-          # attempts (sleep 3-9s) absorb the race instead of going RED on a
-          # green build (real lesson: run 38176384995, build passed, receipt
-          # push lost the race 3x and the verdict gate painted it red).
+          # attempts (sleep 3-9s) absorb the race; a rebase conflict on the
+          # shared receipt files means a sibling published → stand down.
           for i in 1 2 3 4 5 6; do
             if git pull --rebase -q origin main && git push -q origin main; then ok=1; echo "PUSH-OK attempt $i"; break; fi
+            git rebase --abort 2>/dev/null || true
+            if sibling_stand_down; then ok=1; break; fi
             sleep $((3 + RANDOM % 7))
             echo "push attempt $i failed, retrying"
           done
-          if [ "$ok" != "1" ]; then echo "PUSH-FAILED after retries"; exit 1; fi
+          if [ "$ok" != "1" ]; then sibling_stand_down || { echo "PUSH-FAILED after retries"; exit 1; }; fi
 
       - name: Verdict gate (red unless PASS)
         if: always()
