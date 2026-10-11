@@ -2,7 +2,7 @@
   "protocol": "SAOS-OFFICE-RETRO/1",
   "lane": "office-retro (zai-11d)",
   "ownerMandate": "trace 1a12c9d6f5df1b95 — חקר/זיקוק/תכנון/ביצוע",
-  "generatedAt": "2026-10-11T21:18:59.694Z",
+  "generatedAt": "2026-10-11T21:20:53.018Z",
   "laws": [
     "retro לא משדר, לא חותם, לא נוגע בכסף/מפתחות/STASIS",
     "תופעות-לוואי: קבצי-המסילה שלו בלבד (office/*)",
@@ -51,12 +51,12 @@
     ]
   },
   "bus": {
-    "at": "2026-10-11T21:18:59.694Z",
+    "at": "2026-10-11T21:20:53.018Z",
     "counts": {
       "green": 13,
       "amber": 2,
-      "red": 1,
-      "grey": 0
+      "red": 0,
+      "grey": 1
     },
     "feeds": [
       {
@@ -140,7 +140,7 @@
       {
         "id": "console-dex-grid",
         "status": "green",
-        "ageHours": 7.6,
+        "ageHours": 7.7,
         "httpStatus": 200
       },
       {
@@ -151,7 +151,7 @@
       },
       {
         "id": "console-mirror-status",
-        "status": "red",
+        "status": "grey",
         "ageHours": null,
         "httpStatus": 404
       }
@@ -178,21 +178,6 @@
       }
     },
     {
-      "id": "bus-console-mirror-status",
-      "source": "bus-registry (A)",
-      "title": "פיד אדום: console-mirror-status — HTTP 404",
-      "riskClass": "MACHINE-PREP",
-      "value": 7,
-      "effort": 1,
-      "ownerWordRequired": false,
-      "status": "OPEN",
-      "executableBy": "next-retro",
-      "detail": {
-        "ageHours": null,
-        "httpStatus": 404
-      }
-    },
-    {
       "id": "bus-domain-dex-grid",
       "source": "bus-registry (B)",
       "title": "פיד מיושן: domain-dex-grid — מיושן: 35h מעל החוק (24h)",
@@ -210,7 +195,7 @@
     {
       "id": "bus-domain-dex-world",
       "source": "bus-registry (B)",
-      "title": "פיד מיושן: domain-dex-world — מיושן: 30h מעל החוק (24h)",
+      "title": "פיד מיושן: domain-dex-world — מיושן: 31h מעל החוק (24h)",
       "riskClass": "MACHINE-PREP",
       "value": 4,
       "effort": 1,

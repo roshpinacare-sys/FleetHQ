@@ -2,14 +2,14 @@
 
 - **מזהה**: `research-e1-spread-regime` · **מחלקת-סיכון**: SAFE (בטוח) · **דבר-בעלים**: לא
 - **מקור**: research/2026-10-11 (E1 spread-regime) · **ערך/מאמץ**: 4/2
-- **נוצר**: 2026-10-11 21:18 UTC על-ידי office/retro.mjs (office-retro (zai-11d)) · SAOS-OFFICE-RETRO/1
+- **נוצר**: 2026-10-11 21:20 UTC על-ידי office/retro.mjs (office-retro (zai-11d)) · SAOS-OFFICE-RETRO/1
 
 ## הקשר נמדד (מה-חקר)
 
-- אוטובוס: 13 green · 2 amber · 1 red · 0 grey — מקור-רישום: fallback-embedded (registry לא-נגיש: HTTP 404 (private-7 פרטי — גם עם-token נדחה) — משתמש ב-snapshot מוטמע (…)
+- אוטובוס: 13 green · 2 amber · 0 red · 1 grey — מקור-רישום: fallback-embedded (registry לא-נגיש: HTTP 404 (private-7 פרטי — גם עם-token נדחה) — משתמש ב-snapshot מוטמע (…)
   - domain-dex-grid: amber — מיושן: 35h מעל החוק (24h)
-  - domain-dex-world: amber — מיושן: 30h מעל החוק (24h)
-  - console-mirror-status: red — HTTP 404
+  - domain-dex-world: amber — מיושן: 31h מעל החוק (24h)
+  - console-mirror-status: grey — private-raw — ה-token בסביבה אינו-מוסמך לריפו זה (לא-ידוע, כנה)
 - מחקר (2026-10-11): E1✅ E2✅ E3✅
 - שערים: GATE-STATUS לא-נגיש (HTTP 404) — מצבי-השערים לא-ידועים כעת (מקור-פרטי; כנה, לא-מדומה)
 - דיג'סט: חי מ-2026-10-11 21:00 UTC

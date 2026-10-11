@@ -60,12 +60,12 @@ footer{margin-top:44px; border-top:1px solid var(--border); padding-top:16px; co
   <h1>מחזור-השיפור-העצמי <span class="accent">של המשרד</span></h1>
   <p class="sub">חקר → זיקוק → תכנון → ביצוע — המשרד צורך את-האינטליגנציה של הצי (ממצאי-מחקר · בריאות-האוטובוס · הדיג'סט · שערי-הבעלים), מזקק תיק-עבודות מדורג, מתכנן את-הראש-ומבצע רק את-מה שבטוח-הוכח. מה שנוגע בכסף/חתימה/STASIS — דבר-בעלים בלבד, לנצח.</p>
   <div class="chips">
-    <span class="chip accent">2026-10-11 21:18 UTC</span>
+    <span class="chip accent">2026-10-11 21:20 UTC</span>
     <span class="chip ok">אוטובוס: 13 ירוק</span>
     <span class="chip warn">2 מיושן</span>
-    <span class="chip bad">1 אדום</span>
     
-    <span class="chip violet">תור: 6 פריטים</span>
+    <span class="chip neutral">1 לא-ידוע</span>
+    <span class="chip violet">תור: 5 פריטים</span>
     <span class="chip neutral">שערים: לא-ידוע</span>
   </div>
 </header>
@@ -78,7 +78,7 @@ footer{margin-top:44px; border-top:1px solid var(--border); padding-top:16px; co
       <tr><th>פיד</th><th>מצב</th><th>גיל</th><th>הערה כנה</th></tr>
       <tr><td>fleethq-digest</td><td><span class="chip ok">green</span></td><td>0.3h</td><td>עודכן לפני 0h</td></tr>
       <tr><td>domain-dex-grid</td><td><span class="chip warn">amber</span></td><td>35.2h</td><td>מיושן: 35h מעל החוק (24h)</td></tr>
-      <tr><td>domain-dex-world</td><td><span class="chip warn">amber</span></td><td>30.5h</td><td>מיושן: 30h מעל החוק (24h)</td></tr>
+      <tr><td>domain-dex-world</td><td><span class="chip warn">amber</span></td><td>30.5h</td><td>מיושן: 31h מעל החוק (24h)</td></tr>
       <tr><td>domain-dex-deposits</td><td><span class="chip ok">green</span></td><td>8.4h</td><td>עודכן לפני 8h</td></tr>
       <tr><td>domain-office-feed</td><td><span class="chip ok">green</span></td><td>2h</td><td>עודכן לפני 2h</td></tr>
       <tr><td>domain-office-data</td><td><span class="chip ok">green</span></td><td>1.7h</td><td>עודכן לפני 2h</td></tr>
@@ -89,11 +89,11 @@ footer{margin-top:44px; border-top:1px solid var(--border); padding-top:16px; co
       <tr><td>sandbox-flow-map</td><td><span class="chip ok">green</span></td><td>0.8h</td><td>עודכן לפני 1h</td></tr>
       <tr><td>sandbox-lessons-ledger</td><td><span class="chip ok">green</span></td><td>7.4h</td><td>עודכן לפני 7h</td></tr>
       <tr><td>domain-status</td><td><span class="chip ok">green</span></td><td>23.3h</td><td>עודכן לפני 23h</td></tr>
-      <tr><td>console-dex-grid</td><td><span class="chip ok">green</span></td><td>7.6h</td><td>עודכן לפני 8h</td></tr>
+      <tr><td>console-dex-grid</td><td><span class="chip ok">green</span></td><td>7.7h</td><td>עודכן לפני 8h</td></tr>
       <tr><td>console-dex-world</td><td><span class="chip ok">green</span></td><td>1.1h</td><td>עודכן לפני 1h</td></tr>
-      <tr><td>console-mirror-status</td><td><span class="chip bad">red</span></td><td>—</td><td>HTTP 404</td></tr>
+      <tr><td>console-mirror-status</td><td><span class="chip neutral">grey</span></td><td>—</td><td>private-raw — ה-token בסביבה אינו-מוסמך לריפו זה (לא-ידוע, כנה)</td></tr>
     </table>
-    <p class="pfoot">מקור-הרישום: fallback-embedded — registry לא-נגיש: HTTP 404 (private-7 פרטי — גם עם-token נדחה) — משתמש ב-snapshot מוטמע (11-c @ 2026-10-11T20:35:00Z) · מדידה 2026-10-11 21:18 UTC</p>
+    <p class="pfoot">מקור-הרישום: fallback-embedded — registry לא-נגיש: HTTP 404 (private-7 פרטי — גם עם-token נדחה) — משתמש ב-snapshot מוטמע (11-c @ 2026-10-11T20:35:00Z) · מדידה 2026-10-11 21:20 UTC</p>
   </div>
   <div class="grid2" style="margin-top:14px">
     <div class="card">
@@ -122,11 +122,10 @@ footer{margin-top:44px; border-top:1px solid var(--border); padding-top:16px; co
     <table>
       <tr><th>#</th><th>id</th><th>כותרת</th><th>מחלקת-סיכון</th><th>דבר-בעלים</th><th>executableBy</th></tr>
       <tr><td>1</td><td><code>research-e1-spread-regime</code></td><td>E1 spread-regime — spread tightened (93.48 &lt; 93.5 bps) — grid-side liquidity im…</td><td><span class="chip ok">SAFE</span></td><td>—</td><td>next-retro</td></tr>
-      <tr><td>2</td><td><code>bus-console-mirror-status</code></td><td>פיד אדום: console-mirror-status — HTTP 404</td><td><span class="chip violet">MACHINE-PREP</span></td><td>—</td><td>next-retro</td></tr>
-      <tr><td>3</td><td><code>bus-domain-dex-grid</code></td><td>פיד מיושן: domain-dex-grid — מיושן: 35h מעל החוק (24h)</td><td><span class="chip violet">MACHINE-PREP</span></td><td>—</td><td>next-retro</td></tr>
-      <tr><td>4</td><td><code>bus-domain-dex-world</code></td><td>פיד מיושן: domain-dex-world — מיושן: 30h מעל החוק (24h)</td><td><span class="chip violet">MACHINE-PREP</span></td><td>—</td><td>next-retro</td></tr>
-      <tr><td>5</td><td><code>research-e2-feed-divergence</code></td><td>E2 feed-divergence — healthy band: divergence 252.14 bps ≤ 300 (feed_above_mark…</td><td><span class="chip violet">MACHINE-PREP</span></td><td>—</td><td>owner-after-prep</td></tr>
-      <tr><td>6</td><td><code>research-e3-rc-census</code></td><td>E3 rc-census — 4 RC-starved accounts (&lt;40%): wog 25.94%, hcsoldier4 8.05%, hcso…</td><td><span class="chip bad">OWNER-WORD</span></td><td>🔒 כן</td><td>owner-only</td></tr>
+      <tr><td>2</td><td><code>bus-domain-dex-grid</code></td><td>פיד מיושן: domain-dex-grid — מיושן: 35h מעל החוק (24h)</td><td><span class="chip violet">MACHINE-PREP</span></td><td>—</td><td>next-retro</td></tr>
+      <tr><td>3</td><td><code>bus-domain-dex-world</code></td><td>פיד מיושן: domain-dex-world — מיושן: 31h מעל החוק (24h)</td><td><span class="chip violet">MACHINE-PREP</span></td><td>—</td><td>next-retro</td></tr>
+      <tr><td>4</td><td><code>research-e2-feed-divergence</code></td><td>E2 feed-divergence — healthy band: divergence 252.14 bps ≤ 300 (feed_above_mark…</td><td><span class="chip violet">MACHINE-PREP</span></td><td>—</td><td>owner-after-prep</td></tr>
+      <tr><td>5</td><td><code>research-e3-rc-census</code></td><td>E3 rc-census — 4 RC-starved accounts (&lt;40%): wog 25.94%, hcsoldier4 8.05%, hcso…</td><td><span class="chip bad">OWNER-WORD</span></td><td>🔒 כן</td><td>owner-only</td></tr>
     </table>
     <p class="pfoot">SAFE = רענון/אימות/תיעוד בלבד · MACHINE-PREP = הכנת-ארטיפקטים לבעלים · OWNER-WORD = כסף/חתימה/מפתחות/STASIS — לעולם לא מבוצע-מכונה.</p>
   </div>
@@ -154,7 +153,7 @@ footer{margin-top:44px; border-top:1px solid var(--border); padding-top:16px; co
 </section>
 
 <footer>
-  נוצר אוטומטית על-ידי המשרד · office-retro (zai-11d) · SAOS-OFFICE-RETRO/1 · trace 1a12c9d6f5df1b95 — חקר/זיקוק/תכנון/ביצוע · ISO 2026-10-11T21:18:59.694Z ·
+  נוצר אוטומטית על-ידי המשרד · office-retro (zai-11d) · SAOS-OFFICE-RETRO/1 · trace 1a12c9d6f5df1b95 — חקר/זיקוק/תכנון/ביצוע · ISO 2026-10-11T21:20:53.018Z ·
   <a href="../index.html">החלון היומי</a> · <a href="BACKLOG.md">BACKLOG</a> · <a href="RETRO-LATEST.md">RETRO-LATEST</a> · <a href="../digest.json">digest.json</a>
 </footer>
 </div>
