@@ -5,7 +5,7 @@
 
 import * as THREE from 'three';
 import { OrbitControls } from '../assets/OrbitControls.js';
-import { ROOM_W, ROOM_D } from './canon.js';
+import { ROOM_W, ROOM_D, BUSINESS_ISLAND } from './canon.js';
 
 export const VIEWS = [
   { id: 'overview', he: 'מבט-על', pos: [7.4, 4.7, 5.1], target: [-0.6, 0.9, -0.9] },
@@ -36,6 +36,7 @@ export class Director {
     this.follow = null; // מזהה סוכן
     this.onView = null;
     this.userMoved = false;
+    this.mode = 'office'; // office | business (exec-15 — אדיטיבי בלבד)
 
     const cancel = () => { this.userMoved = true; this.stopTour(); };
     dom.addEventListener('pointerdown', cancel);
@@ -43,6 +44,12 @@ export class Director {
   }
 
   stopTour() { this.tour = false; if (this.onView) this.onView(null); }
+
+  /** מצב-עולם: המשרד (החדר נעול) או עולם-העסקים (אי פתוח, דיסטנס רחב) */
+  setMode(m) {
+    this.mode = m === 'business' ? 'business' : 'office';
+    this.controls.maxDistance = this.mode === 'business' ? 42 : 13;
+  }
 
   startTour() {
     this.tour = true;
@@ -115,11 +122,19 @@ export class Director {
         this.goView(VIEWS[this.tourIdx]);
       }
     }
-    // תחום-החדר: המצלמה לעולם לא יוצאת מהקירות
+    // תחום-התצפית לפי המצב: המצלמה במשרד לא עוזבת את הקירות;
+    // בעולם-העסקים היא חופשית בתחומי האי (exec-15)
     const P = this.camera.position;
-    P.x = Math.min(9.5, Math.max(-9.5, P.x));
-    P.z = Math.min(5.9, Math.max(-5.9, P.z));
-    P.y = Math.min(3.35, Math.max(0.35, P.y));
+    if (this.mode === 'business') {
+      const B = BUSINESS_ISLAND;
+      P.x = Math.min(B.x + B.r, Math.max(B.x - B.r, P.x));
+      P.z = Math.min(B.r - 2, Math.max(-(B.r - 2), P.z));
+      P.y = Math.min(26, Math.max(0.6, P.y));
+    } else {
+      P.x = Math.min(9.5, Math.max(-9.5, P.x));
+      P.z = Math.min(5.9, Math.max(-5.9, P.z));
+      P.y = Math.min(3.35, Math.max(0.35, P.y));
+    }
     this.controls.update();
   }
 }
