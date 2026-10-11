@@ -30,6 +30,7 @@ const DIGEST = path.resolve(ROOT, argOf("--digest", "office-window/dist/digest.j
 const DIST = path.resolve(ROOT, argOf("--dist", "office-window/dist"));
 
 const FLOW_URL = "https://raw.githubusercontent.com/roshpinacare-sys/Sandbox/main/ops/flow/flow-map.json";
+const RECRUIT_URL = "https://raw.githubusercontent.com/roshpinacare-sys/Domain/main/agents/recruitment.json";
 const DIGEST_LIVE_URL = "https://roshpinacare-sys.github.io/FleetHQ/digest.json";
 const VALUE_MAP_URL = "https://raw.githubusercontent.com/roshpinacare-sys/Sandbox/main/ops/plans/revival-value-map-2026-10-11.md";
 
@@ -94,6 +95,11 @@ try {
 let flow = null;
 try { flow = await fetchJson(FLOW_URL); prov("flow-map.json", FLOW_URL, { generatedAt: flow.generatedAt }); }
 catch (e) { prov("flow-map.json", FLOW_URL, { note: "fetch failed → flags unknown (" + (e && e.message || e) + ")" }); }
+
+// declared consumer of the Domain office's own recruiting artifact (union, not duplication)
+let recruitment = null;
+try { recruitment = await fetchJson(RECRUIT_URL); prov("recruitment.json", RECRUIT_URL, { at: recruitment.at }); }
+catch (e) { prov("recruitment.json", RECRUIT_URL, { note: "fetch failed → office roles unknown" }); }
 
 // self-verify the known ghost target live — measured resolution, never assumed
 const digestLive = await fetchOk(DIGEST_LIVE_URL);
@@ -210,6 +216,12 @@ const potential = {
   } : null,
   openWork,
   recruiting: { roles, claimedLanes: [...claimsByLane.keys()].sort() },
+  officeRecruitment: recruitment ? {
+    at: recruitment.at || null, agent: recruitment.agent || null,
+    rolesCount: Array.isArray(recruitment.roles) ? recruitment.roles.length : "unknown",
+    roles: Array.isArray(recruitment.roles) ? recruitment.roles.slice(0, 10) : [],
+    note: "declared consumer — FleetHQ/potential aggregates the Domain office board (no duplication)"
+  } : null,
   fleet,
   ghostsVerification: ghosts ? {
     measured: ghosts.length,
@@ -273,6 +285,11 @@ const html = `<!doctype html>
 <table><thead><tr><th>תפקיד</th><th>משימה</th><th>ערך צפוי</th><th>חוק</th></tr></thead>
 <tbody>${rows(potential.recruiting.roles.map(r => ({ role: r.role, mission: r.mission, value: r.value, law: r.law })), ["role", "mission", "value", "law"])}</tbody></table>
 <div class="sub">מסלולות תפוסים (write-log): ${esc(potential.recruiting.claimedLanes.join(" · ") || "אין טענות רשומות")}</div>
+${potential.officeRecruitment ? `
+<h3 style="font-size:14px;margin:18px 0 6px;color:var(--ink2)">תפקידי משרד-ה-Domain (צריכה מוצהרת של recruitment.json — איחוד, לא שכפול)</h3>
+<table><thead><tr><th>תקציר</th><th>ערך</th></tr></thead>
+<tbody><tr><td>${esc(String(potential.officeRecruitment.rolesCount))} תפקידים · agent=${esc(potential.officeRecruitment.agent || "unknown")} · at=${esc(potential.officeRecruitment.at || "unknown")}</td>
+<td>${esc((potential.officeRecruitment.roles || []).map(r => typeof r === "string" ? r : (r.role || r.name || JSON.stringify(r).slice(0, 60))).join(" · ") || "ללא תפקידים פתוחים כרגע")}</td></tr></tbody></table>` : `<div class="sub">תפקידי משרד-ה-Domain: לא נמדדו (recruitment.json לא נשלף)</div>`}
 
 <h2>🧱 עבודה פתוחה — מה הפוטנציאל, מה הצעד הראשון</h2>
 <table><thead><tr><th>פריט</th><th>עדות נמדדת</th><th>מקור</th><th>מצב</th><th>ערך צפוי</th><th>צעד ראשון</th></tr></thead>
