@@ -110,11 +110,17 @@ jobs:
           console.log("OFFICE-CI", overall, "-", reason);
           EOF
 
-      - name: Publish receipt (sibling-stand-down + rebase-then-push x6, jittered)
+      - name: Publish receipt (sibling-stand-down + snapshot/re-apply push x8, backoff+jitter)
         if: always()
         run: |
           git config user.name "office-ci-bot"
           git config user.email "office-ci-bot@users.noreply.github.com"
+          # Snapshot THIS run's measured receipt payload before the tree is
+          # touched — the publish re-applies exactly this, never regenerates.
+          SNAP=/tmp/publish-snap
+          rm -rf "$SNAP"; mkdir -p "$SNAP/receipts/office-ci" "$SNAP/office/state"
+          cp -a receipts/office-ci/. "$SNAP/receipts/office-ci/" 2>/dev/null || true
+          cp -a office/state/connectivity.json "$SNAP/office/state/" 2>/dev/null || true
           sibling_stand_down() {
             # duplicate trigger law: a sibling run of the SAME sha may have
             # already published the receipt — that is a WIN, not a failure.
@@ -125,21 +131,44 @@ jobs:
             fi
             return 1
           }
-          git add receipts/office-ci/ office/state/connectivity.json
-          if git diff --cached --quiet; then echo "no receipt delta"; exit 0; fi
-          git commit -m "office-ci receipt: build $(cat /tmp/checks/productionBuild 2>/dev/null || echo unknown), types $(cat /tmp/checks/typecheck 2>/dev/null || echo unknown) [skip ci]"
+          # publish_once: rebuild the commit on top of fresh origin/main.
+          # No rebase → no deterministic conflict: when a sibling (different
+          # sha) already rewrote the shared receipt paths, latest-wins files
+          # (verdict.json, connectivity.json) take this run's fresher
+          # measurement and the append-only log unions both (dedup exact
+          # lines). Push is FF-only; a rejection (origin moved again) retries.
+          publish_once() {
+            mkdir -p receipts/office-ci office/state
+            git show origin/main:receipts/office-ci/verdict.json > receipts/office-ci/verdict.json 2>/dev/null || : > receipts/office-ci/verdict.json
+            git show origin/main:receipts/office-ci/log.jsonl   > receipts/office-ci/log.jsonl   2>/dev/null || : > receipts/office-ci/log.jsonl
+            git show origin/main:office/state/connectivity.json > office/state/connectivity.json 2>/dev/null || : > office/state/connectivity.json
+            cp -a "$SNAP/receipts/office-ci/verdict.json" receipts/office-ci/verdict.json 2>/dev/null || true
+            cat "$SNAP/receipts/office-ci/log.jsonl" >> receipts/office-ci/log.jsonl 2>/dev/null || true
+            cp -a "$SNAP/office/state/connectivity.json" office/state/connectivity.json 2>/dev/null || true
+            awk 'NF && !seen[$0]++' receipts/office-ci/log.jsonl > receipts/office-ci/log.jsonl.tmp && mv receipts/office-ci/log.jsonl.tmp receipts/office-ci/log.jsonl
+            git add receipts/office-ci/ office/state/connectivity.json
+            if git diff --cached --quiet; then return 2; fi
+            git commit -q -m "office-ci receipt: build $(cat /tmp/checks/productionBuild 2>/dev/null || echo unknown), types $(cat /tmp/checks/typecheck 2>/dev/null || echo unknown) [skip ci]" || return 1
+            git push -q origin main
+          }
           ok=0
-          # fleet hot-race: twins push receipts continuously — 6 jittered
-          # attempts (sleep 3-9s) absorb the race; a rebase conflict on the
-          # shared receipt files means a sibling published → stand down.
-          for i in 1 2 3 4 5 6; do
-            if git pull --rebase -q origin main && git push -q origin main; then ok=1; echo "PUSH-OK attempt $i"; break; fi
-            git rebase --abort 2>/dev/null || true
+          # fleet hot-race: siblings push receipts continuously — 8 attempts,
+          # growing backoff + jitter absorb the race. Every attempt re-fetches
+          # and re-applies from the snapshot; never force, never drops history.
+          for i in 1 2 3 4 5 6 7 8; do
+            if ! git fetch -q origin main; then sleep $((2 * i + RANDOM % 4)); continue; fi
             if sibling_stand_down; then ok=1; break; fi
-            sleep $((3 + RANDOM % 7))
-            echo "push attempt $i failed, retrying"
+            git rebase --abort 2>/dev/null || true
+            git merge --abort 2>/dev/null || true
+            git reset -q --hard origin/main
+            publish_once; rc=$?
+            if [ "$rc" = "0" ]; then ok=1; echo "PUSH-OK attempt $i"; break; fi
+            if [ "$rc" = "2" ]; then ok=1; echo "no receipt delta (origin already holds this payload) — honest exit 0"; break; fi
+            if sibling_stand_down; then ok=1; break; fi
+            sleep $((2 * i + RANDOM % 4))
+            echo "push attempt $i failed (rc=$rc), retrying"
           done
-          if [ "$ok" != "1" ]; then sibling_stand_down || { echo "PUSH-FAILED after retries"; exit 1; }; fi
+          if [ "$ok" != "1" ]; then sibling_stand_down || { echo "PUSH-FAILED after retries — verdict honest but unpublished"; exit 1; }; fi
 
       - name: Verdict gate (red unless PASS)
         if: always()

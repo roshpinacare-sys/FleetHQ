@@ -80,31 +80,58 @@ jobs:
           if [ ! -f receipts/office-3d/log.jsonl ]; then echo "no office-3d receipts — nothing to commit"; exit 0; fi
           git config user.name "office-3d-bot"
           git config user.email "office-3d-bot@users.noreply.github.com"
+          # Snapshot THIS run's measured bake receipt before the tree is touched.
+          SNAP=/tmp/publish-snap
+          rm -rf "$SNAP"; mkdir -p "$SNAP/receipts/office-3d"
+          cp -a receipts/office-3d/. "$SNAP/receipts/office-3d/" 2>/dev/null || true
+          local_src=$(grep '"ok":true' "$SNAP/receipts/office-3d/log.jsonl" 2>/dev/null | tail -1 | sed -n 's/.*"sourceSavedAt":\([0-9]*\).*/\1/p')
           sibling_stand_down() {
             # duplicate trigger law: a sibling run of the same bake (same
             # sourceSavedAt of the mirrored office-state) may have already
             # published — that is a WIN, not a failure.
             git fetch -q origin main 2>/dev/null || return 1
-            local_src=$(grep '"ok":true' receipts/office-3d/log.jsonl 2>/dev/null | tail -1 | sed -n 's/.*"sourceSavedAt":\([0-9]*\).*/\1/p')
             if [ -n "$local_src" ] && git show origin/main:receipts/office-3d/log.jsonl 2>/dev/null | grep -q "\"sourceSavedAt\":$local_src"; then
               echo "SIBLING-STAND-DOWN: bake receipt for sourceSavedAt=$local_src already published — honest exit 0"
               return 0
             fi
             return 1
           }
-          # only the receipts travel — public/office-state.json is an untracked feed copy by law
-          git add receipts/office-3d/
-          if git diff --cached --quiet; then echo "no receipt delta"; exit 0; fi
-          git commit -m "office-3d receipt: bake log + latest.json pointer [skip ci]"
+          # publish_once: rebuild the commit on top of fresh origin/main.
+          # No rebase → no deterministic conflict when a sibling run already
+          # rewrote the shared receipt paths: latest.json takes this run's
+          # fresher bake pointer; the append-only log unions both sides
+          # (exact-duplicate lines removed). Push is FF-only; rejection retries.
+          publish_once() {
+            mkdir -p receipts/office-3d
+            git show origin/main:receipts/office-3d/latest.json > receipts/office-3d/latest.json 2>/dev/null || : > receipts/office-3d/latest.json
+            git show origin/main:receipts/office-3d/log.jsonl   > receipts/office-3d/log.jsonl   2>/dev/null || : > receipts/office-3d/log.jsonl
+            cp -a "$SNAP/receipts/office-3d/latest.json" receipts/office-3d/latest.json 2>/dev/null || true
+            cat "$SNAP/receipts/office-3d/log.jsonl" >> receipts/office-3d/log.jsonl 2>/dev/null || true
+            awk 'NF && !seen[$0]++' receipts/office-3d/log.jsonl > receipts/office-3d/log.jsonl.tmp && mv receipts/office-3d/log.jsonl.tmp receipts/office-3d/log.jsonl
+            # only the receipts travel — public/office-state.json is an untracked feed copy by law
+            git add receipts/office-3d/
+            if git diff --cached --quiet; then return 2; fi
+            git commit -q -m "office-3d receipt: bake log + latest.json pointer [skip ci]" || return 1
+            git push -q origin main
+          }
           ok=0
-          for i in 1 2 3 4 5 6; do
-            if git pull --rebase -q origin main && git push -q origin main; then ok=1; echo "PUSH-OK attempt $i"; break; fi
-            git rebase --abort 2>/dev/null || true
+          # fleet hot-race: siblings push receipts continuously — 8 attempts,
+          # growing backoff + jitter absorb the race. Every attempt re-fetches
+          # and re-applies from the snapshot; never force, never drops history.
+          for i in 1 2 3 4 5 6 7 8; do
+            if ! git fetch -q origin main; then sleep $((2 * i + RANDOM % 4)); continue; fi
             if sibling_stand_down; then ok=1; break; fi
-            sleep $((3 + RANDOM % 7))
-            echo "push attempt $i failed, retrying"
+            git rebase --abort 2>/dev/null || true
+            git merge --abort 2>/dev/null || true
+            git reset -q --hard origin/main
+            publish_once; rc=$?
+            if [ "$rc" = "0" ]; then ok=1; echo "PUSH-OK attempt $i"; break; fi
+            if [ "$rc" = "2" ]; then ok=1; echo "no receipt delta (origin already holds this payload) — honest exit 0"; break; fi
+            if sibling_stand_down; then ok=1; break; fi
+            sleep $((2 * i + RANDOM % 4))
+            echo "push attempt $i failed (rc=$rc), retrying"
           done
-          if [ "$ok" != "1" ]; then sibling_stand_down || { echo "PUSH-FAILED after retries"; exit 1; }; fi
+          if [ "$ok" != "1" ]; then sibling_stand_down || { echo "PUSH-FAILED after retries — bake receipt honest but unpublished"; exit 1; }; fi
 
       - name: Honest job summary
         if: always()
