@@ -1,14 +1,18 @@
 /**
  * Office3D.tsx — שורש הקנבס: מרכיב את הסצנה כולה.
- * מוזן מהגשר (store.ts) — AgentHQ מזרים לכאן את המציאות האמיתית של הפורמן.
+ * מוזן מהגשר (store.ts) — AgentHQ מזרים לכאן את המציאות האמיתית של הפורמן
+ * (חי מהסוקט, או מראת-היומן האמיתית — lib/hq/feed.ts).
  * · MSAA מקורי (בלי פוסט-פרוססינג) — חדות-קצוות אמיתית בעלות-ביצועים נמוכה
  * · RoomReadiness מודד את הפריים האמיתי הראשון (לשכבת-ההכנה הכנה)
+ * · Task 11-a — מגבלות-ביצועים: dpr מהודק, ואיכות מסתגלת בניטור-ביצועים
+ *   (PerformanceMonitor → ירידה ב-fps מורידה dpr; התאוששות מעלה בחזרה)
  * · אין שחקן — מצלמת הבמאי בלבד
  */
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { Suspense, useEffect, useState } from 'react';
 import { Canvas, useThree } from '@react-three/fiber';
+import { AdaptiveDpr, PerformanceMonitor } from '@react-three/drei';
 import * as THREE from 'three';
 import { Architecture } from './Architecture';
 import { Stations } from './Stations';
@@ -17,7 +21,8 @@ import { CameraDirector } from './CameraDirector';
 import { Atmosphere } from './Atmosphere';
 import { useHq } from '@/lib/hq/store';
 
-/** מודד את הפריים המורכב האמיתי הראשון (draw-calls > 6) — אמת, לא הנחה */
+/** מודל את הפריים המורכב האמיתי הראשון (draw-calls > 6) — אמת, לא הנחה.
+ *  Task 11-a: גם חושף __hqRoomReady לבודקים חיצוניים (בייק ה-3D נשען על זה). */
 function RoomReadiness() {
   const { gl } = useThree();
   useEffect(() => {
@@ -28,6 +33,7 @@ function RoomReadiness() {
       if (gl.info.render.calls > 6) {
         settled = true;
         useHq.getState().setRoomReady(true);
+        (window as unknown as Record<string, unknown>).__hqRoomReady = true;
         return;
       }
       raf = requestAnimationFrame(check);
@@ -36,6 +42,24 @@ function RoomReadiness() {
     return () => { settled = true; cancelAnimationFrame(raf); };
   }, [gl]);
   return null;
+}
+
+/** Task 11-a — איכות מסתגלת: ניטור fps ממשי; ירידה מתמשכת → dpr 1
+ *  (והסרת-ה-MSAA החדה אינה נדרשת — ה-dpr לבדו מחצי את העומס). */
+function AdaptiveQuality() {
+  const setDpr = useThree((s) => s.setDpr);
+  const [degraded, setDegraded] = useState(false);
+  return (
+    <>
+      <PerformanceMonitor
+        flipflops={4}
+        onFallback={() => setDegraded(true)}
+        onIncline={() => setDpr(1.5)}
+        onDecline={() => { setDpr(1); setDegraded(true); }}
+      />
+      {degraded && <AdaptiveDpr pixelated />}
+    </>
+  );
 }
 
 export function Office3D() {
@@ -73,6 +97,7 @@ export function Office3D() {
           <Crew />
           <CameraDirector />
           <Atmosphere />
+          <AdaptiveQuality />
           <RoomReadiness />
         </SuspenseBoundary>
       </SceneErrorBoundary>
@@ -81,7 +106,6 @@ export function Office3D() {
 }
 
 /** גבול-שגיאה פנימי: כשל נכס יחיד לא ישאיר קנבס שחור ללא הסבר */
-import { Suspense } from 'react';
 function SuspenseBoundary({ children }: { children: React.ReactNode }) {
   return <Suspense fallback={null}>{children}</Suspense>;
 }
