@@ -129,8 +129,8 @@ async function collect(): Promise<Record<string, unknown>> {
     lighthouse: { ok: lhR.ok, error: lhR.error, data: lh ? { generatedAt: lh.generatedAt ?? null, lastPulse: pulseOf(lh), lastKnownAlive: (lh as Record<string, unknown>).lastKnownAlive ?? null } : null },
     beacon: { ok: bcnR.ok, error: bcnR.error, data: bcn ? { generatedAt: bcn.generatedAt ?? null, lastPulse: pulseOf(bcn), lastKnownAlive: (bcn as Record<string, unknown>).lastKnownAlive ?? null } : null },
     dex: { ok: dexR.ok, error: dexR.error, data: dexWire },
-    valueScan: valueR.ok
-      ? { ok: true, data: valueR.data }
+    valueScan: vsR.ok
+      ? { ok: true, data: vsR.data }
       : { ok: false, error: 'טרם פורסם — value-scan.yml רץ על הגיט כל 30 דק׳', data: null },
     foreman: { ok: foreman.ok, error: foreman.error, data: foremanWire },
     chain: { ok: chainR.ok, error: chainR.error, data: chainR.ok ? chainR : null },
