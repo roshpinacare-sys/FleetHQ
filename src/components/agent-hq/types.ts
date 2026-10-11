@@ -115,8 +115,10 @@ export interface ForemanStatus {
    *  'mirror' = the room renders the foreman's REAL journal snapshot
    *  (office-state-mirror.json) frozen at its savedAt — measured reality,
    *  never synthetic (מראה — מציאות נמדדה).
+   *  'static' = exec-14-3d static bundle — public digest feed, zero backend
+   *  (מדיג'סט פומבי; כל מה שלא נמדד מוצג '—' — כנות).
    *  'sim' = explicit demo mode only — DEMO watermark is mandatory (חוק-הכנות). */
-  backend: 'live' | 'sim' | 'mirror';
+  backend: 'live' | 'sim' | 'mirror' | 'static';
   llmProvider: string;
   message: { he: string; en: string };
   startedAt: number;
@@ -173,6 +175,15 @@ export interface RepoFleetView {
   lastFetchAt: number | null; // epoch ms — .git/FETCH_HEAD mtime when present
   lastSyncError: string | null; // sanitized — never a URL, never a secret
   syncState: RepoSyncState;
+  /** exec-14-3d — measured CI pulse of the repo's last run (office digest wire
+   *  carries it; the foreman wire may omit it). Optional — absent means
+   *  "not measured", the wall renders '—', never a fake state. */
+  lastRunStatus?: string | null;
+  lastRunConclusion?: string | null;
+  /** Measured 7-day commit count (capped feeds render "100+"). null = not measured. */
+  commits7d?: number | null;
+  /** True when the 7-day count hit the wire's measurement cap ("100+" = honest cap, not a guess). */
+  commits7dCapped?: boolean | null;
 }
 
 export interface SearchCapabilityView {

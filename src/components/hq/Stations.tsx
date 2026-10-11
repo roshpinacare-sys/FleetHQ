@@ -17,12 +17,13 @@ import {
 } from '@/lib/hq/contract';
 import {
   makeWoodTexture, makeBrushedMetalTexture, makeMarbleTexture, makeFabricTexture,
-  makeMonitorScreen, makeNameplate, makeTaskWallTexture, makeGitWireTexture,
+  makeMonitorScreen, makeNameplate, makeTaskWallTexture,
   makeReceptionScreen, makeSignTexture,
 } from '@/lib/hq/textures';
 import { useHq } from '@/lib/hq/store';
 import { bus } from '@/lib/hq/world';
 import { STATE_COLORS, TASK_COL, type AgentState } from '@/lib/hq/protocol';
+import { GitWallSync, gitBoard } from './GitWallData';
 import { useOfficeMaterials, type OfficeMats } from './Architecture';
 
 // ─────────────── חנויות מסך (מופע יחיד לכל סוכן/לוח) ───────────────
@@ -32,7 +33,6 @@ type Nameplate = ReturnType<typeof makeNameplate>;
 const monitors = new Map<string, Monitor>();
 const nameplates = new Map<string, Nameplate>();
 let taskWallTex: ReturnType<typeof makeTaskWallTexture> | null = null;
-let gitWireTex: ReturnType<typeof makeGitWireTexture> | null = null;
 let receptionTex: ReturnType<typeof makeReceptionScreen> | null = null;
 
 function monitorOf(id: string, name: string, color: string): Monitor {
@@ -72,9 +72,7 @@ export function StationSync() {
       const c = crew.find((x) => x.id === t.assignee);
       return { id: t.id, title: t.title, status: t.status, assignee: c?.name.he, color: c?.color };
     }));
-    // קיר גיט
-    if (!gitWireTex) gitWireTex = makeGitWireTexture();
-    gitWireTex.set(st.snap.git?.commits || []);
+    // קיר הגיט מוזן ב-GitWallSync (exec-14-3d: קיר-אמת פר-ספר + טיק-טריות)
     // קבלה
     if (!receptionTex) receptionTex = makeReceptionScreen();
     const s = st.snap.status;
@@ -90,7 +88,6 @@ export function StationSync() {
     monitors.forEach((m) => m.update(now));
     nameplates.forEach((n) => n.update(now));
     taskWallTex?.update(now);
-    gitWireTex?.update(now);
     receptionTex?.update(now);
   });
   return null;
@@ -142,6 +139,7 @@ export function Stations() {
       <Pendants mats={mats} />
       <Neons />
       <StationSync />
+      <GitWallSync />
     </group>
   );
 }
@@ -387,7 +385,9 @@ function TaskWall({ mats }: { mats: OfficeMats }) {
 // ─────────────── קיר הגיט ───────────────
 function GitWall({ mats }: { mats: OfficeMats }) {
   const focus = useFocus('git', 'git');
-  const tex = useMemo(() => (gitWireTex ??= makeGitWireTexture()), []);
+  // exec-14-3d: קיר-האמת — לוח פר-ספר עם נקודות-מצב סמנטיות + מד-טריות
+  // (הזנה: GitWallSync; ציור: GitWallData.tsx). הקליק נשאר מיקוד-מצלמה + פאנל.
+  const tex = useMemo(() => gitBoard().tex, []);
   const [x, z] = to3(GIT_WALL.cx, GIT_WALL.cy);
   const w = GIT_WALL.w * SCALE, h = GIT_WALL.h * SCALE;
   const wallInnerZ = -PLAN_H * SCALE / 2 + WALL_T;
@@ -401,7 +401,7 @@ function GitWall({ mats }: { mats: OfficeMats }) {
       </mesh>
       <mesh position={[0, 0, 0.04]}>
         <planeGeometry args={[w, h]} />
-        <meshBasicMaterial map={tex.tex} toneMapped={false} />
+        <meshBasicMaterial map={tex} toneMapped={false} />
       </mesh>
     </group>
   );
