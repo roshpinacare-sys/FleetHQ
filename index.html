@@ -49,10 +49,13 @@ section{margin-top:34px}
 }
 .sec-head h2{margin:0; font-size:clamp(1.2rem,3.6vw,1.5rem)}
 .sec-head .en{color:var(--muted); font-weight:400; font-size:.85rem; margin-inline-start:8px}
+html,body{overflow-x:clip}
 .grid2{display:grid; gap:14px; grid-template-columns:1fr}
+.grid2>*{min-width:0}
+section{min-width:0}
 .card{
   background:var(--card); border:1px solid var(--border); border-radius:14px; padding:16px 18px;
-  box-shadow:0 1px 0 rgba(255,255,255,.02) inset;
+  box-shadow:0 1px 0 rgba(255,255,255,.02) inset; min-width:0; max-width:100%;
 }
 .card h3{margin:0 0 10px; font-size:1.02rem}
 .card .meta,.muted{color:var(--muted); font-size:.82rem}
@@ -82,7 +85,7 @@ section{margin-top:34px}
 .reports li:first-child{border-top:none}
 .report-title{font-weight:600; font-size:.92rem}
 .report-excerpt{color:var(--muted); font-size:.8rem; margin-top:2px}
-.tablewrap{overflow-x:auto; -webkit-overflow-scrolling:touch}
+.tablewrap{overflow-x:auto; -webkit-overflow-scrolling:touch; max-width:100%}
 table{width:100%; border-collapse:collapse; font-size:.86rem; min-width:640px}
 th{color:var(--muted); text-align:start; font-weight:600; padding:8px 10px; border-bottom:1px solid var(--border); white-space:nowrap}
 td{padding:9px 10px; border-bottom:1px solid rgba(34,48,63,.55); vertical-align:top}
@@ -125,7 +128,7 @@ footer .stamp{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; 
   <h1><span class="accent">מפקדת הצי</span> — המשרד החי</h1>
   <p class="sub">משרד סוכנים אוטונומי שחי בגיט: ראש-מטה מתכנן, חמישה עובדים מבצעים מול ספרי-נתונים אמיתיים, וכל צעד נרשם כקבלה. הדף הזה הוא חלון-הראווה של המשרד — נבנה אוטומטית מהקבצים עצמם, בלי ממשק-שליטה ובלי מספרים מומצאים.</p>
   <div class="chips">
-    <span class="chip accent">הונדש: 2026-10-11 21:00 UTC</span>
+    <span class="chip accent">הונדש: 2026-10-11 21:26 UTC</span>
     <span class="chip neutral">צילום-מצב סטטי · נבנה מחדש מדי יום</span>
     <span class="chip neutral">קריא-בלבד · חלון, לא הגה</span>
     <a class="chip neutral" href="https://github.com/roshpinacare-sys/FleetHQ" rel="noopener" style="text-decoration:none">GitHub · FleetHQ</a>
@@ -217,17 +220,17 @@ footer .stamp{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; 
             <div class="task-why">התאמה: Intelligence expertise</div>
           </li>
           <li>
-            <div class="task-top"><span class="chip ok">בוצע</span> <span class="assignee">גל (Gal)</span> <span class="muted">2026-10-10 16:17 UTC · לפני 28 שע׳</span></div>
+            <div class="task-top"><span class="chip ok">בוצע</span> <span class="assignee">גל (Gal)</span> <span class="muted">2026-10-10 16:17 UTC · לפני 29 שע׳</span></div>
             <div class="task-title">סיור שגרה: צלב בין שני ספרי צי ודווח על פערים שנמצאו</div>
             <div class="task-why">התאמה: ספרי הדקס, המסחר וההגיון הפנימי</div>
           </li>
           <li>
-            <div class="task-top"><span class="chip ok">בוצע</span> <span class="assignee">שחר (Shachar)</span> <span class="muted">2026-10-10 16:08 UTC · לפני 28 שע׳</span></div>
+            <div class="task-top"><span class="chip ok">בוצע</span> <span class="assignee">שחר (Shachar)</span> <span class="muted">2026-10-10 16:08 UTC · לפני 29 שע׳</span></div>
             <div class="task-title">סיור שגרה: סרוק את ספרי הצי ודווח מה ישן או דורש בדיקה</div>
             <div class="task-why">התאמה: מדדים, מפקד ולמידה של הצי</div>
           </li>
           <li>
-            <div class="task-top"><span class="chip ok">בוצע</span> <span class="assignee">גל (Gal)</span> <span class="muted">2026-10-10 16:01 UTC · לפני 28 שע׳</span></div>
+            <div class="task-top"><span class="chip ok">בוצע</span> <span class="assignee">גל (Gal)</span> <span class="muted">2026-10-10 16:01 UTC · לפני 29 שע׳</span></div>
             <div class="task-title">סקירת פנקס הכלכלה — מגמות וחובות</div>
             <div class="task-why">התאמה: ספרי הדקס, המסחר וההגיון הפנימי</div>
           </li>
@@ -261,7 +264,7 @@ footer .stamp{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; 
             <span class="dot worker"></span>
             <span class="crew-name">גל <span class="en">Gal</span></span>
             <span class="crew-role">מפעיל-שוק · ספרי-שוק וסחירות</span>
-            <span class="crew-stat">31 בוצעו · 0 פתוחות · פעילות אחרונה לפני 28 שע׳</span>
+            <span class="crew-stat">31 בוצעו · 0 פתוחות · פעילות אחרונה לפני 29 שע׳</span>
           </li><li>
             <span class="dot worker"></span>
             <span class="crew-name">ארז <span class="en">Erez</span></span>
@@ -281,7 +284,7 @@ footer .stamp{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; 
             <span class="dot worker"></span>
             <span class="crew-name">ירדן <span class="en">Yarden</span></span>
             <span class="crew-role">מהנדס-תשתית · רישום · מתזמנים · אוטובוס-תיאום</span>
-            <span class="crew-stat">11 בוצעו · 0 פתוחות · פעילות אחרונה לפני 31 שע׳</span>
+            <span class="crew-stat">11 בוצעו · 0 פתוחות · פעילות אחרונה לפני 32 שע׳</span>
           </li>
         <li>
           <span class="dot amit"></span>
@@ -304,22 +307,22 @@ footer .stamp{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; 
           </li>
           <li>
             <div class="report-title">סיכום מבצע — סיור שגרה: צלב בין שני ספרי צי ודווח על פערים שנמצאו</div>
-            <div class="meta">אלוף (Aluf) · 2026-10-10 16:17 UTC · לפני 28 שע׳ · <a href="https://github.com/roshpinacare-sys/FleetHQ/blob/main/receipts/office-state-mirror.json" rel="noopener">הטקסט המלא במראת-המצב</a></div>
+            <div class="meta">אלוף (Aluf) · 2026-10-10 16:17 UTC · לפני 29 שע׳ · <a href="https://github.com/roshpinacare-sys/FleetHQ/blob/main/receipts/office-state-mirror.json" rel="noopener">הטקסט המלא במראת-המצב</a></div>
             <div class="report-excerpt">- סיור שגרה: סרוק את ספרי הצי ודווח מה ישן או דורש בדיקה: [אושר בכנות לאחר 2 עידונים — הערת ראש-המטה: סרוק בפועל את ספרי הצי והחזר רשימה של פריטים יש…</div>
           </li>
           <li>
             <div class="report-title">סיור שגרה: צלב(book) between dex-book, fills-ledger, market-grid, truth-history</div>
-            <div class="meta">גל (Gal) · 2026-10-10 16:17 UTC · לפני 28 שע׳ · <a href="https://github.com/roshpinacare-sys/FleetHQ/blob/main/receipts/office-state-mirror.json" rel="noopener">הטקסט המלא במראת-המצב</a></div>
+            <div class="meta">גל (Gal) · 2026-10-10 16:17 UTC · לפני 29 שע׳ · <a href="https://github.com/roshpinacare-sys/FleetHQ/blob/main/receipts/office-state-mirror.json" rel="noopener">הטקסט המלא במראת-המצב</a></div>
             <div class="report-excerpt">**Cross-check report — 4 books, all 3.2h old, timestamp 2026-10-10T13:01:09.536Z** **1. Block height alignment — CLEAN** - eth-mainnet: dex-book=2616…</div>
           </li>
           <li>
             <div class="report-title">סיכום מבצע — סיור שגרה: סרוק את ספרי הצי ודווח מה ישן או דורש בדיקה</div>
-            <div class="meta">אלוף (Aluf) · 2026-10-10 16:08 UTC · לפני 28 שע׳ · <a href="https://github.com/roshpinacare-sys/FleetHQ/blob/main/receipts/office-state-mirror.json" rel="noopener">הטקסט המלא במראת-המצב</a></div>
+            <div class="meta">אלוף (Aluf) · 2026-10-10 16:08 UTC · לפני 29 שע׳ · <a href="https://github.com/roshpinacare-sys/FleetHQ/blob/main/receipts/office-state-mirror.json" rel="noopener">הטקסט המלא במראת-המצב</a></div>
             <div class="report-excerpt">- סיור שגרה: סרוק את ספרי הצי ודווח מה ישן או דורש בדיקה: [אושר בכנות לאחר 2 עידונים — הערת ראש-המטה: סרוק בפועל את ספרי הצי והחזר רשימה של פריטים יש…</div>
           </li>
           <li>
             <div class="report-title">סיכום מבצע — סיור כלכלה: עבור על פנקס הכלכלה ודווח על מגמות וחובות פתוחים</div>
-            <div class="meta">אלוף (Aluf) · 2026-10-10 16:02 UTC · לפני 28 שע׳ · <a href="https://github.com/roshpinacare-sys/FleetHQ/blob/main/receipts/office-state-mirror.json" rel="noopener">הטקסט המלא במראת-המצב</a></div>
+            <div class="meta">אלוף (Aluf) · 2026-10-10 16:02 UTC · לפני 29 שע׳ · <a href="https://github.com/roshpinacare-sys/FleetHQ/blob/main/receipts/office-state-mirror.json" rel="noopener">הטקסט המלא במראת-המצב</a></div>
             <div class="report-excerpt">- סיור שגרה: סרוק את ספרי הצי ודווח מה ישן או דורש בדיקה: [אושר בכנות לאחר 2 עידונים — הערת ראש-המטה: סרוק בפועל את ספרי הצי והחזר רשימה של פריטים יש…</div>
           </li>
           <li>
@@ -338,7 +341,7 @@ footer .stamp{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; 
       <ul class="decisions">
         
           <li>
-            <div class="task-top"><span class="chip violet">הכרעה לפי-מדיניות</span> <span class="muted">2026-10-10 14:12 UTC · לפני 30 שע׳</span></div>
+            <div class="task-top"><span class="chip violet">הכרעה לפי-מדיניות</span> <span class="muted">2026-10-10 14:12 UTC · לפני 31 שע׳</span></div>
             <div class="task-title">שאלה: Where is the Learning Summary file?</div>
             <div class="task-why">הכרעה: learning-summary.md — מדיניות המפעיל האוטונומי: הנתיב הבטוח — המשך</div>
           </li>
@@ -363,37 +366,37 @@ footer .stamp{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; 
         <tbody><tr>
       <td><a href="https://github.com/roshpinacare-sys/Domain" rel="noopener">Domain</a></td>
       <td><span class="chip info">ציבורי</span></td>
-      <td><span class="chip info">בריצה</span> <span class="run-name">pages build and deployment</span><br><span class="muted">2026-10-11 21:00 UTC · לפני פחות מדקה</span></td>
+      <td><span class="chip info">בריצה</span> <span class="run-name">pages build and deployment</span><br><span class="muted">2026-10-11 21:00 UTC · לפני 25 דק׳</span></td>
       <td class="num">100+</td>
       <td>2026-10-11 21:00 UTC</td>
     </tr><tr>
       <td><a href="https://github.com/roshpinacare-sys/FleetHQ" rel="noopener">FleetHQ</a></td>
       <td><span class="chip info">ציבורי</span></td>
-      <td><span class="chip info">בריצה</span> <span class="run-name">office-window</span><br><span class="muted">2026-10-11 21:00 UTC · לפני פחות מדקה</span></td>
+      <td><span class="chip info">בריצה</span> <span class="run-name">office-window</span><br><span class="muted">2026-10-11 21:00 UTC · לפני 25 דק׳</span></td>
       <td class="num">100+</td>
       <td>2026-10-11 21:00 UTC</td>
     </tr><tr>
       <td><a href="https://github.com/roshpinacare-sys/Sandbox" rel="noopener">Sandbox</a></td>
       <td><span class="chip info">ציבורי</span></td>
-      <td><span class="chip ok">הצלחה</span> <span class="run-name">artery-grid</span><br><span class="muted">2026-10-11 20:59 UTC · לפני פחות מדקה</span></td>
+      <td><span class="chip ok">הצלחה</span> <span class="run-name">artery-grid</span><br><span class="muted">2026-10-11 20:59 UTC · לפני 26 דק׳</span></td>
       <td class="num">100+</td>
       <td>2026-10-11 20:59 UTC</td>
     </tr><tr>
       <td><a href="https://github.com/roshpinacare-sys/TruthRail" rel="noopener">TruthRail</a></td>
       <td><span class="chip info">ציבורי</span></td>
-      <td><span class="chip ok">הצלחה</span> <span class="run-name">exposure-gate</span><br><span class="muted">2026-10-11 20:56 UTC · לפני 4 דק׳</span></td>
+      <td><span class="chip ok">הצלחה</span> <span class="run-name">exposure-gate</span><br><span class="muted">2026-10-11 20:56 UTC · לפני 29 דק׳</span></td>
       <td class="num">100+</td>
       <td>2026-10-11 20:56 UTC</td>
     </tr><tr>
       <td><a href="https://github.com/roshpinacare-sys/saos-runtime" rel="noopener">saos-runtime</a></td>
       <td><span class="chip info">ציבורי</span></td>
-      <td><span class="chip info">בריצה</span> <span class="run-name">sovereign-runtime</span><br><span class="muted">2026-10-11 20:39 UTC · לפני 21 דק׳</span></td>
+      <td><span class="chip info">בריצה</span> <span class="run-name">sovereign-runtime</span><br><span class="muted">2026-10-11 20:39 UTC · לפני 46 דק׳</span></td>
       <td class="num">38</td>
       <td>2026-10-11 20:52 UTC</td>
     </tr><tr>
       <td><a href="https://github.com/roshpinacare-sys/Console" rel="noopener">Console</a></td>
       <td><span class="chip info">ציבורי</span></td>
-      <td><span class="chip ok">הצלחה</span> <span class="run-name">pages build and deployment</span><br><span class="muted">2026-10-11 20:44 UTC · לפני 16 דק׳</span></td>
+      <td><span class="chip ok">הצלחה</span> <span class="run-name">pages build and deployment</span><br><span class="muted">2026-10-11 20:44 UTC · לפני 41 דק׳</span></td>
       <td class="num">100+</td>
       <td>2026-10-11 20:44 UTC</td>
     </tr><tr>
@@ -416,14 +419,14 @@ footer .stamp{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; 
       <td>2026-10-11 19:28 UTC</td>
     </tr><tr class="private-row"><td colspan="5" class="muted">ריפואים-פרטיים: לא-ידוע — שמותיהם אינם נמנים ציבורית (מדיניות-חשיפה 7-b)</td></tr></tbody>
       </table></div>
-      <p class="meta">נמדד 2026-10-11 21:00 UTC · לפני פחות מדקה · מצב-טוקן: טוקן-קריאה · 1 קריאות נכשלו (רשומות ב-digest.json — מוצג לא-ידוע, לא ירוק-מזויף) · <a href="https://roshpinacare-sys.github.io/FleetHQ/digest.json" rel="noopener">digest.json למכונות</a></p>
+      <p class="meta">נמדד 2026-10-11 21:00 UTC · לפני 25 דק׳ · מצב-טוקן: טוקן-קריאה · 1 קריאות נכשלו (רשומות ב-digest.json — מוצג לא-ידוע, לא ירוק-מזויף) · <a href="https://roshpinacare-sys.github.io/FleetHQ/digest.json" rel="noopener">digest.json למכונות</a></p>
     </div>
 
     <div class="card">
       <h3>🎯 פסק-הגריד האחרון (grid-beat)</h3>
       
         <p><span class="chip ok">ARMED-STABLE</span> <span class="muted">HIVE:</span> <span class="chip warn">ARMED-WAITING</span></p>
-        <p class="meta">פורסם: 2026-10-10 10:08 UTC · לפני 34 שע׳ · מנוע: saos-dex/1.1 grid-beat · R24 external flow + R99 HIVE leg · real=כן · armed=כן</p>
+        <p class="meta">פורסם: 2026-10-10 10:08 UTC · לפני 35 שע׳ · מנוע: saos-dex/1.1 grid-beat · R24 external flow + R99 HIVE leg · real=כן · armed=כן</p>
         
         <p class="meta">חוסם-HIVE: rc-gated (mana=1.79e+8 &lt; floor=3.00e+8 — regen budget, honest skip)</p>
       
@@ -450,7 +453,7 @@ footer .stamp{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; 
         <li><span>Blurt probe</span><b><span class="chip ok">תקין</span></b></li>
         <li><span>צומת-Blurt</span><b>https://blurt-rpc.saboin.com</b></li>
       </ul>
-      <p class="meta">Hive: 2026-10-11 15:18 UTC · לפני 5 שע׳ · https://api.hive.blog · שידור=אסור · מפתחות=לא · Blurt: 2026-10-11 15:18 UTC · לפני 5 שע׳ · חיים 1/4</p>
+      <p class="meta">Hive: 2026-10-11 15:18 UTC · לפני 6 שע׳ · https://api.hive.blog · שידור=אסור · מפתחות=לא · Blurt: 2026-10-11 15:18 UTC · לפני 6 שע׳ · חיים 1/4</p>
       <p class="meta">בדיקות Stage-0: קריאה בלבד — אפס מפתחות, אפס שידור.</p>
     </div>
   </div>
@@ -490,7 +493,7 @@ footer .stamp{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; 
   </section>
 
   <footer>
-    <div>נוצר אוטומטית על ידי המשרד · <span class="stamp">2026-10-11T21:00:56.472Z</span></div>
+    <div>נוצר אוטומטית על ידי המשרד · <span class="stamp">2026-10-11T21:26:01.391Z</span></div>
     <div style="margin-top:6px">מקורות: receipts/office-state-mirror.json + office-window/dist/digest.json + office-window/dist/3d/ (נמדד בזמן-הבנייה) · אין-JS, אין-עוקבים, אין-סודות</div>
   </footer>
 
