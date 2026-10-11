@@ -287,6 +287,11 @@ async function measureFeed(feed, nowMs, token) {
   const token2 = isPrivateRaw(feed) ? token : undefined;
   const r = await fetchText(feed.url, { timeoutMs: 10000, token: token2 });
   if (!r.ok) {
+    // 7-b honesty nuance: private-raw that answers 404/403 is "cannot judge" (grey),
+    // not "public producer broken" (red) — red stays reserved for public producers.
+    if (isPrivateRaw(feed) && (r.status === 404 || r.status === 403)) {
+      return { ...base, status: 'grey', httpStatus: r.status, ageHours: null, freshness: null, reason: token ? 'private-raw — ה-token בסביבה אינו-מוסמך לריפו זה (לא-ידוע, כנה)' : 'private-raw ללא-token — לא-ידוע (כנה)', privateRaw: base.privateRaw };
+    }
     if (isPrivateRaw(feed) && !token) {
       return { ...base, status: 'grey', httpStatus: r.status, ageHours: null, freshness: null, reason: 'private-raw ללא-token — לא-ידוע (כנה)', privateRaw: base.privateRaw };
     }

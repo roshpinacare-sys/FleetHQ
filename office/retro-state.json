@@ -2,7 +2,7 @@
   "protocol": "SAOS-OFFICE-RETRO/1",
   "lane": "office-retro (zai-11d)",
   "ownerMandate": "trace 1a12c9d6f5df1b95 — חקר/זיקוק/תכנון/ביצוע",
-  "generatedAt": "2026-10-11T21:18:59.694Z",
+  "generatedAt": "2026-10-11T21:20:13.723Z",
   "laws": [
     "retro לא משדר, לא חותם, לא נוגע בכסף/מפתחות/STASIS",
     "תופעות-לוואי: קבצי-המסילה שלו בלבד (office/*)",
@@ -12,10 +12,10 @@
     "כנות: לא-ידוע נשאר לא-ידוע; פיד אדום מודפס אדום"
   ],
   "registry": {
-    "source": "fallback-embedded",
-    "note": "registry לא-נגיש: HTTP 404 (private-7 פרטי — גם עם-token נדחה) — משתמש ב-snapshot מוטמע (11-c @ 2026-10-11T20:35:00Z)",
+    "source": "live-zip",
+    "note": "registry חי מ-private-7 raw (200, 180ms)",
     "feedCount": 16,
-    "fallbackSnapshotOf": "sovereign/bus-registry.json @ 686e0d00 (zai-11c, מקור-פרטי — השם אינו נמנה, 7-b)"
+    "fallbackSnapshotOf": null
   },
   "digest": {
     "source": "pages",
@@ -51,11 +51,11 @@
     ]
   },
   "bus": {
-    "at": "2026-10-11T21:18:59.694Z",
+    "at": "2026-10-11T21:20:13.723Z",
     "counts": {
-      "green": 13,
+      "green": 14,
       "amber": 2,
-      "red": 1,
+      "red": 0,
       "grey": 0
     },
     "feeds": [
@@ -140,7 +140,7 @@
       {
         "id": "console-dex-grid",
         "status": "green",
-        "ageHours": 7.6,
+        "ageHours": 7.7,
         "httpStatus": 200
       },
       {
@@ -151,15 +151,61 @@
       },
       {
         "id": "console-mirror-status",
-        "status": "red",
-        "ageHours": null,
-        "httpStatus": 404
+        "status": "green",
+        "ageHours": 1.9,
+        "httpStatus": 200
       }
     ]
   },
   "gates": {
-    "source": "unavailable",
-    "note": "GATE-STATUS לא-נגיש (HTTP 404) — מצבי-השערים לא-ידועים כעת (מקור-פרטי; כנה, לא-מדומה)"
+    "source": "live-zip",
+    "generatedAt": "2026-10-11T20:40:00Z",
+    "gates": [
+      {
+        "id": "gate-01-steem-active-wif-domain",
+        "state": "WAITING-OWNER"
+      },
+      {
+        "id": "gate-02-actions-billing",
+        "state": "WAITING-OWNER"
+      },
+      {
+        "id": "gate-03-r11-rotation-9-soldiers",
+        "state": "WAITING-OWNER"
+      },
+      {
+        "id": "gate-04-private-16-recovery-meta",
+        "state": "MACHINE-READY"
+      },
+      {
+        "id": "gate-05-stasis-convert",
+        "state": "WAITING-OWNER"
+      },
+      {
+        "id": "gate-06-stasis-transfers",
+        "state": "WAITING-OWNER"
+      },
+      {
+        "id": "gate-07-stasis-votes",
+        "state": "WAITING-OWNER"
+      },
+      {
+        "id": "gate-08-stasis-delegations",
+        "state": "DISSOLVED"
+      },
+      {
+        "id": "gate-09-blurt-ignition",
+        "state": "WAITING-OWNER"
+      },
+      {
+        "id": "gate-10-private-4-vault-db",
+        "state": "WAITING-OWNER"
+      },
+      {
+        "id": "gate-11-saos-agents-distribution",
+        "state": "WAITING-OWNER"
+      }
+    ]
   },
   "items": [
     {
@@ -178,19 +224,19 @@
       }
     },
     {
-      "id": "bus-console-mirror-status",
-      "source": "bus-registry (A)",
-      "title": "פיד אדום: console-mirror-status — HTTP 404",
+      "id": "gate-04-private-16-recovery-meta",
+      "source": "GATE-STATUS",
+      "title": "private-16 vault-chain/recovery-meta.json",
       "riskClass": "MACHINE-PREP",
-      "value": 7,
-      "effort": 1,
-      "ownerWordRequired": false,
+      "value": 8.5,
+      "effort": 2,
+      "ownerWordRequired": true,
+      "proposal": {
+        "kind": "gate",
+        "ref": "sovereign/GATE-STATUS.json#gate-04-private-16-recovery-meta"
+      },
       "status": "OPEN",
-      "executableBy": "next-retro",
-      "detail": {
-        "ageHours": null,
-        "httpStatus": 404
-      }
+      "executableBy": "owner-after-prep"
     },
     {
       "id": "bus-domain-dex-grid",
@@ -210,7 +256,7 @@
     {
       "id": "bus-domain-dex-world",
       "source": "bus-registry (B)",
-      "title": "פיד מיושן: domain-dex-world — מיושן: 30h מעל החוק (24h)",
+      "title": "פיד מיושן: domain-dex-world — מיושן: 31h מעל החוק (24h)",
       "riskClass": "MACHINE-PREP",
       "value": 4,
       "effort": 1,
@@ -236,6 +282,141 @@
         "ok": true,
         "next": "if >300 bps repeats 2× consecutively, escalate to operator brief (peg-door policy ref)"
       }
+    },
+    {
+      "id": "gate-01-steem-active-wif-domain",
+      "source": "GATE-STATUS",
+      "title": "STEEM_ACTIVE_WIF בכספת-Domain",
+      "riskClass": "OWNER-WORD",
+      "value": 10,
+      "effort": 1,
+      "ownerWordRequired": true,
+      "proposal": {
+        "kind": "gate",
+        "ref": "sovereign/GATE-STATUS.json#gate-01-steem-active-wif-domain"
+      },
+      "status": "OPEN",
+      "executableBy": "owner-only"
+    },
+    {
+      "id": "gate-02-actions-billing",
+      "source": "GATE-STATUS",
+      "title": "חיוב-Actions",
+      "riskClass": "OWNER-WORD",
+      "value": 9.5,
+      "effort": 1,
+      "ownerWordRequired": true,
+      "proposal": {
+        "kind": "gate",
+        "ref": "sovereign/GATE-STATUS.json#gate-02-actions-billing"
+      },
+      "status": "OPEN",
+      "executableBy": "owner-only"
+    },
+    {
+      "id": "gate-03-r11-rotation-9-soldiers",
+      "source": "GATE-STATUS",
+      "title": "סבבת-מפתות R11 + 9-חיילים tx_missing_owner_auth (cashmachine, haran, israelnews…",
+      "riskClass": "OWNER-WORD",
+      "value": 9,
+      "effort": 1,
+      "ownerWordRequired": true,
+      "proposal": {
+        "kind": "gate",
+        "ref": "sovereign/GATE-STATUS.json#gate-03-r11-rotation-9-soldiers"
+      },
+      "status": "OPEN",
+      "executableBy": "owner-only"
+    },
+    {
+      "id": "gate-05-stasis-convert",
+      "source": "GATE-STATUS",
+      "title": "STASIS-lane convert",
+      "riskClass": "OWNER-WORD",
+      "value": 8,
+      "effort": 1,
+      "ownerWordRequired": true,
+      "proposal": {
+        "kind": "gate",
+        "ref": "sovereign/GATE-STATUS.json#gate-05-stasis-convert"
+      },
+      "status": "OPEN",
+      "executableBy": "owner-only"
+    },
+    {
+      "id": "gate-06-stasis-transfers",
+      "source": "GATE-STATUS",
+      "title": "STASIS-lane transfers",
+      "riskClass": "OWNER-WORD",
+      "value": 7.5,
+      "effort": 1,
+      "ownerWordRequired": true,
+      "proposal": {
+        "kind": "gate",
+        "ref": "sovereign/GATE-STATUS.json#gate-06-stasis-transfers"
+      },
+      "status": "OPEN",
+      "executableBy": "owner-only"
+    },
+    {
+      "id": "gate-07-stasis-votes",
+      "source": "GATE-STATUS",
+      "title": "STASIS-lane votes",
+      "riskClass": "OWNER-WORD",
+      "value": 7,
+      "effort": 1,
+      "ownerWordRequired": true,
+      "proposal": {
+        "kind": "gate",
+        "ref": "sovereign/GATE-STATUS.json#gate-07-stasis-votes"
+      },
+      "status": "OPEN",
+      "executableBy": "owner-only"
+    },
+    {
+      "id": "gate-09-blurt-ignition",
+      "source": "GATE-STATUS",
+      "title": "Blurt",
+      "riskClass": "OWNER-WORD",
+      "value": 6,
+      "effort": 1,
+      "ownerWordRequired": true,
+      "proposal": {
+        "kind": "gate",
+        "ref": "sovereign/GATE-STATUS.json#gate-09-blurt-ignition"
+      },
+      "status": "OPEN",
+      "executableBy": "owner-only"
+    },
+    {
+      "id": "gate-10-private-4-vault-db",
+      "source": "GATE-STATUS",
+      "title": "private-4",
+      "riskClass": "OWNER-WORD",
+      "value": 5.5,
+      "effort": 1,
+      "ownerWordRequired": true,
+      "proposal": {
+        "kind": "gate",
+        "ref": "sovereign/GATE-STATUS.json#gate-10-private-4-vault-db"
+      },
+      "status": "OPEN",
+      "executableBy": "owner-only"
+    },
+    {
+      "id": "gate-11-saos-agents-distribution",
+      "source": "GATE-STATUS",
+      "title": "saos-agents",
+      "riskClass": "OWNER-WORD",
+      "value": 5,
+      "effort": 1,
+      "ownerWordRequired": true,
+      "proposal": {
+        "kind": "gate",
+        "ref": "sovereign/GATE-STATUS.json#gate-11-saos-agents-distribution"
+      },
+      "status": "OPEN",
+      "executableBy": "owner-only"
     },
     {
       "id": "research-e3-rc-census",
