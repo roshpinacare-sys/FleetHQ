@@ -57,6 +57,40 @@ export interface WorldsPayload {
   valueScan: { ok: boolean; error?: string; data?: ValueScanWire };
   foreman: { ok: boolean; error?: string; data?: ForemanWire };
   chain: { ok: boolean; error?: string; data?: ChainWire };
+  /** [zai-14] חיבוריות‑האורגניזם — מה לא מחובר, נמדד (connectivity-audit) */
+  connectivity?: { ok: boolean; error?: string; data?: ConnectivityWire };
+  /** [zai-14] קבלת‑האתחול האחרונה — עם גיל כנה (stale מוצג כ-stale) */
+  bootVerify?: { ok: boolean; error?: string; ageH?: number | null; data?: BootVerifyWire };
+  /** [zai-14] האורקל‑הטרי העומד — בתים ציבוריים == בתים מחויבים */
+  freshOracle?: { ok: boolean; error?: string; data?: FreshOracleWire };
+}
+
+/** [zai-14] פלט tools/connectivity-audit.mjs */
+export interface ConnectivityWire {
+  schema?: string;
+  generatedAt?: string;
+  verdictHe?: string;
+  graph?: { codeFiles?: number; reachable?: number; trueOrphanCount?: number; libraryCount?: number; scaffoldCount?: number };
+  artifacts?: { scanned?: number; wired?: number; unwired?: { path: string; bytes: number; sha16: string }[] };
+  tools?: { scanned?: number; unwiredCI?: string[] };
+  productSurface?: { routes?: string[] };
+}
+
+/** [zai-14] receipts/boot-verify.json (legacy, מוצג בגילו האמיתי) */
+export interface BootVerifyWire {
+  at?: string;
+  all_ok?: boolean;
+  elapsed_s?: number;
+  checks?: Record<string, unknown>;
+}
+
+/** [zai-14] receipts/fresh-oracle/latest.json */
+export interface FreshOracleWire {
+  schema?: string;
+  at?: string;
+  law?: string;
+  results?: { name: string; verdict: string; liveSha16: string | null; committedSha16: string | null }[];
+  summary?: { checked?: number; match?: number; drift?: number; missing?: number; verdict?: string };
 }
 
 /** הצוות — שיקוף מקומי של המזהים האמיתיים (מקור-האמת: FleetHQ office-state) */

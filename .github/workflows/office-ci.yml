@@ -38,7 +38,7 @@ jobs:
       - name: Init checks
         run: |
           mkdir -p /tmp/checks
-          for c in install prismaGenerate typecheck productionBuild; do
+          for c in install prismaGenerate typecheck productionBuild connectivityAudit; do
             echo "skipped" > "/tmp/checks/$c"
           done
 
@@ -64,6 +64,11 @@ jobs:
         run: |
           if bunx next build --webpack; then echo "pass" > /tmp/checks/productionBuild; else echo "fail" > /tmp/checks/productionBuild; exit 1; fi
 
+      - name: Connectivity audit (the office asks what is NOT connected — zai-14)
+        if: always()
+        run: |
+          if node tools/connectivity-audit.mjs; then echo "pass" > /tmp/checks/connectivityAudit; else echo "fail" > /tmp/checks/connectivityAudit; exit 1; fi
+
       - name: Write receipt (honest, always)
         if: always()
         env:
@@ -75,13 +80,13 @@ jobs:
           const fs = require("fs");
           const read = (n) => (fs.existsSync("/tmp/checks/" + n) ? fs.readFileSync("/tmp/checks/" + n, "utf8").trim() : "missing");
           const checks = {};
-          for (const c of ["install", "prismaGenerate", "typecheck", "productionBuild"]) checks[c] = read(c);
+          for (const c of ["install", "prismaGenerate", "typecheck", "productionBuild", "connectivityAudit"]) checks[c] = read(c);
           const values = Object.values(checks);
-          const allPass = values.length === 4 && values.every((v) => v === "pass");
+          const allPass = values.length === 5 && values.every((v) => v === "pass");
           const anySkipped = values.some((v) => v !== "pass" && v !== "fail");
           const overall = allPass ? "PASS" : anySkipped ? "BLOCKED" : "FAIL";
           const reason = allPass
-            ? "all four checks ran and passed"
+            ? "all five checks ran and passed"
             : anySkipped
               ? "partial run: a check never executed - skipped is never pass"
               : "failing checks: " + Object.entries(checks).filter(([, v]) => v === "fail").map(([k]) => k).join(",");
@@ -120,7 +125,7 @@ jobs:
             fi
             return 1
           }
-          git add receipts/office-ci/
+          git add receipts/office-ci/ office/state/connectivity.json
           if git diff --cached --quiet; then echo "no receipt delta"; exit 0; fi
           git commit -m "office-ci receipt: build $(cat /tmp/checks/productionBuild 2>/dev/null || echo unknown), types $(cat /tmp/checks/typecheck 2>/dev/null || echo unknown) [skip ci]"
           ok=0
