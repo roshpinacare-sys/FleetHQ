@@ -1,9 +1,9 @@
 {
  "schema": "saos.opens-closer.v1",
- "generatedAt": "2026-10-11T22:44:57.728Z",
- "verdictHe": "1 נפלו מעל SLA (domain-pulse 188דק>SLA180) — הוערו: אין",
+ "generatedAt": "2026-10-11T23:45:26.087Z",
+ "verdictHe": "הכל טרי מעל SLA (office-state 69דק, beacon 43דק, lighthouse 37דק, domain-pulse 46דק)",
  "metrics": {
-  "staleCount": 1,
+  "staleCount": 0,
   "dispatchedCount": 0
  },
  "checks": [
@@ -12,7 +12,7 @@
    "url": "https://raw.githubusercontent.com/roshpinacare-sys/FleetHQ/main/office/state/office-state.json",
    "slaMin": 180,
    "stateTs": "2026-10-11T22:36:37.872Z",
-   "ageMin": 8,
+   "ageMin": 69,
    "stale": false,
    "dispatched": false,
    "dispatchStatus": null,
@@ -22,38 +22,36 @@
    "key": "beacon",
    "url": "https://raw.githubusercontent.com/roshpinacare-sys/sovereign-beacon/main/state.json",
    "slaMin": 100,
-   "stateTs": "2026-10-11T22:28:58Z",
-   "ageMin": 16,
+   "stateTs": "2026-10-11T23:02:14Z",
+   "ageMin": 43,
    "stale": false,
    "dispatched": false,
    "dispatchStatus": null,
-   "healNote": "cross-repo — requires owner-scoped credential (recorded as owner action N6, never faked)"
+   "healNote": "cross-repo dispatch via CROSS_REVIVE_PAT secret (owner authority delegated to the sovereignty — T-63 D1, claim 440e40f3)"
   },
   {
    "key": "lighthouse",
    "url": "https://raw.githubusercontent.com/roshpinacare-sys/sovereign-lighthouse/main/state.json",
    "slaMin": 80,
-   "stateTs": "2026-10-11T22:29:02Z",
-   "ageMin": 16,
+   "stateTs": "2026-10-11T23:08:26Z",
+   "ageMin": 37,
    "stale": false,
    "dispatched": false,
    "dispatchStatus": null,
-   "healNote": "cross-repo — requires owner-scoped credential (recorded as owner action N6, never faked)"
+   "healNote": "cross-repo dispatch via CROSS_REVIVE_PAT secret (owner authority delegated to the sovereignty — T-63 D1, claim 440e40f3)"
   },
   {
    "key": "domain-pulse",
    "url": "https://raw.githubusercontent.com/roshpinacare-sys/Domain/main/office/data.json",
    "slaMin": 180,
-   "stateTs": "2026-10-11T19:36:28.562Z",
-   "ageMin": 188,
-   "stale": true,
+   "stateTs": "2026-10-11T22:59:11.387Z",
+   "ageMin": 46,
+   "stale": false,
    "dispatched": false,
    "dispatchStatus": null,
-   "healNote": "cross-repo + writer is the sovereign runtime runner (office-pulse-bot), NOT a GitHub workflow — measured frozen since 19:36Z while runtime heartbeat stays green; recorded as owner action N7 (runtime lane owns the fix)"
+   "healNote": "writer is the sovereign runtime runner (office-pulse-bot), NOT a GitHub workflow — N7 closed by measurement T-62 (runtime lane 40bb19dc); if it freezes again the revival is a runtime-lane dispatch, not a credential gap"
   }
  ],
- "ownerActions": [
-  "N6 — הרשאת-בעלים להערת-נפלים חוצת-ריפואריים (beacon/lighthouse): PAT עם workflow-scope כסוד ב-FleetHQ, או הרצת ה-runtime כותבת-מצבות אלה (מסלול ה-runner, נמדד עצר 19:26Z)"
- ],
+ "ownerActions": [],
  "commitDecision": "commit"
 }
