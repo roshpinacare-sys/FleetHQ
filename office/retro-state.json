@@ -1,8 +1,8 @@
 {
   "protocol": "SAOS-OFFICE-RETRO/1",
-  "lane": "office-retro (zai-11d)",
+  "lane": "office-retro (zai-11d · E1-deed zai-13c)",
   "ownerMandate": "trace 1a12c9d6f5df1b95 — חקר/זיקוק/תכנון/ביצוע",
-  "generatedAt": "2026-10-11T21:20:53.018Z",
+  "generatedAt": "2026-10-11T22:48:16.797Z",
   "laws": [
     "retro לא משדר, לא חותם, לא נוגע בכסף/מפתחות/STASIS",
     "תופעות-לוואי: קבצי-המסילה שלו בלבד (office/*)",
@@ -20,7 +20,7 @@
   "digest": {
     "source": "pages",
     "note": "digest.json חי (200)",
-    "generatedAt": "2026-10-11T21:00:50.702Z",
+    "generatedAt": "2026-10-11T22:31:40.498Z",
     "ageHours": 0.3,
     "reposSeen": 9,
     "degradedEarly": false,
@@ -51,10 +51,10 @@
     ]
   },
   "bus": {
-    "at": "2026-10-11T21:20:53.018Z",
+    "at": "2026-10-11T22:48:16.797Z",
     "counts": {
-      "green": 13,
-      "amber": 2,
+      "green": 15,
+      "amber": 0,
       "red": 0,
       "grey": 1
     },
@@ -67,86 +67,86 @@
       },
       {
         "id": "domain-dex-grid",
-        "status": "amber",
-        "ageHours": 35.2,
+        "status": "green",
+        "ageHours": 9.1,
         "httpStatus": 200
       },
       {
         "id": "domain-dex-world",
-        "status": "amber",
-        "ageHours": 30.5,
+        "status": "green",
+        "ageHours": 2.6,
         "httpStatus": 200
       },
       {
         "id": "domain-dex-deposits",
         "status": "green",
-        "ageHours": 8.4,
+        "ageHours": 9.9,
         "httpStatus": 200
       },
       {
         "id": "domain-office-feed",
         "status": "green",
-        "ageHours": 2,
+        "ageHours": 0.4,
         "httpStatus": 200
       },
       {
         "id": "domain-office-data",
         "status": "green",
-        "ageHours": 1.7,
+        "ageHours": 3.2,
         "httpStatus": 200
       },
       {
         "id": "domain-grid-truth",
         "status": "green",
-        "ageHours": 2.4,
+        "ageHours": 3.8,
         "httpStatus": 200
       },
       {
         "id": "sandbox-probe-hive",
         "status": "green",
-        "ageHours": 6,
+        "ageHours": 7.5,
         "httpStatus": 200
       },
       {
         "id": "sandbox-probe-blurt",
         "status": "green",
-        "ageHours": 6,
+        "ageHours": 7.5,
         "httpStatus": 200
       },
       {
         "id": "sandbox-research-findings",
         "status": "green",
-        "ageHours": 1.1,
+        "ageHours": 2.6,
         "httpStatus": 200
       },
       {
         "id": "sandbox-flow-map",
         "status": "green",
-        "ageHours": 0.8,
+        "ageHours": 0.4,
         "httpStatus": 200
       },
       {
         "id": "sandbox-lessons-ledger",
         "status": "green",
-        "ageHours": 7.4,
+        "ageHours": 8.9,
         "httpStatus": 200
       },
       {
         "id": "domain-status",
         "status": "green",
-        "ageHours": 23.3,
+        "ageHours": 2.2,
         "httpStatus": 200
       },
       {
         "id": "console-dex-grid",
         "status": "green",
-        "ageHours": 7.7,
+        "ageHours": 9.1,
         "httpStatus": 200
       },
       {
         "id": "console-dex-world",
         "status": "green",
-        "ageHours": 1.1,
+        "ageHours": 2.6,
         "httpStatus": 200
       },
       {
@@ -156,6 +156,27 @@
         "httpStatus": 404
       }
     ]
+  },
+  "e1": {
+    "builtin": "builtin-e1-spread-regime",
+    "value": 100,
+    "deltaBps": 6.5,
+    "ageHours": 9.1,
+    "publishedAt": "2026-10-11T13:40:06.612Z",
+    "verdict": "HOLD",
+    "direction": "loosened",
+    "source": "live-pages",
+    "block": "SPREAD-REGIME: value=100bps · delta=+6.50 vs 93.5 · מקור-בן-9.1h · HOLD (loosened) — הפיזור התרחב — לעקוב בלבד (verify/doc-only)"
+  },
+  "workOrders": {
+    "source": "live-sandbox-raw",
+    "note": "work-orders חי (200, 82ms) — 11 פתוחים · 0 נפתרו · P1 פתוחים: 3",
+    "counts": {
+      "total": 11,
+      "open": 11,
+      "resolved": 0,
+      "openP1": 3
+    }
   },
   "gates": {
     "source": "unavailable",
@@ -170,41 +191,65 @@
       "value": 4,
       "effort": 2,
       "ownerWordRequired": false,
-      "status": "OPEN",
-      "executableBy": "next-retro",
+      "status": "EXECUTED",
+      "executableBy": "builtin-e1-spread-regime",
       "detail": {
         "ok": true,
-        "next": "track weekly; correlate with grid-beat placements (private-12 ledger) before claiming causality"
+        "next": "track weekly; correlate with grid-beat placements (private-12 ledger) before claiming causality",
+        "executedByBuiltin": "builtin-e1-spread-regime",
+        "proposalRef": "PROPOSALS/2026-10-11-research-e1-spread-regime.md",
+        "verdict": "SPREAD-REGIME: value=100bps · delta=+6.50 vs 93.5 · מקור-בן-9.1h · HOLD (loosened) — הפיזור התרחב — לעקוב בלבד (verify/doc-only)"
       }
     },
     {
-      "id": "bus-domain-dex-grid",
-      "source": "bus-registry (B)",
-      "title": "פיד מיושן: domain-dex-grid — מיושן: 35h מעל החוק (24h)",
+      "id": "WO-FleetHQ-reds",
+      "source": "work-orders.json (Sandbox raw)",
+      "title": "רפא 5 ריצות-אדומות (48ש) ב-FleetHQ",
       "riskClass": "MACHINE-PREP",
-      "value": 4,
-      "effort": 1,
+      "value": 7,
+      "effort": 2,
       "ownerWordRequired": false,
       "status": "OPEN",
-      "executableBy": "next-retro",
+      "executableBy": "owner-after-prep",
       "detail": {
-        "ageHours": 35.2,
-        "httpStatus": 200
+        "area": "FleetHQ",
+        "priority": "P1",
+        "why": "ריצות-אדומות-חוזרות = עורק-שקט-שנפל — הכל-חייב-לפעול",
+        "acceptance": "ריצה-ירוקה-מלאה + שורת-שורש-בפנקס ops/AGENT-LEDGER.md"
       }
     },
     {
-      "id": "bus-domain-dex-world",
-      "source": "bus-registry (B)",
-      "title": "פיד מיושן: domain-dex-world — מיושן: 31h מעל החוק (24h)",
+      "id": "WO-saos-runtime-reds",
+      "source": "work-orders.json (Sandbox raw)",
+      "title": "רפא 8 ריצות-אדומות (48ש) ב-saos-runtime",
       "riskClass": "MACHINE-PREP",
-      "value": 4,
-      "effort": 1,
+      "value": 7,
+      "effort": 2,
       "ownerWordRequired": false,
       "status": "OPEN",
-      "executableBy": "next-retro",
+      "executableBy": "owner-after-prep",
       "detail": {
-        "ageHours": 30.5,
-        "httpStatus": 200
+        "area": "saos-runtime",
+        "priority": "P1",
+        "why": "ריצות-אדומות-חוזרות = עורק-שקט-שנפל — הכל-חייב-לפעול",
+        "acceptance": "ריצה-ירוקה-מלאה + שורת-שורש-בפנקס ops/AGENT-LEDGER.md"
+      }
+    },
+    {
+      "id": "WO-unwired-dex-mirror",
+      "source": "work-orders.json (Sandbox raw)",
+      "title": "dex-mirror: לשקף גם onramp/showcase/relay (הפער בן-528ש׳)",
+      "riskClass": "MACHINE-PREP",
+      "value": 7,
+      "effort": 2,
+      "ownerWordRequired": false,
+      "status": "OPEN",
+      "executableBy": "owner-after-prep",
+      "detail": {
+        "area": "Domain/dex",
+        "priority": "P1",
+        "why": "מפקד-הנכסים (private-7 sovereign/UNWIRED-ASSETS-2026-10-11.md) מדד: העותקים ב-Domain קפואים מ-2026-09-19 (527.8ש׳) בזמן שהמקור ב-Console טרי (10-11T20:14Z) — a…",
+        "acceptance": "FILES += dex/onramp.json, dex/showcase.json, dex/relay.json (מקור Console/dex) · ריצה חיה מורידה את גילי ה-3 ל-<48ש׳ · office-feed mirror.stale48=false בריצה ה…"
       }
     },
     {
@@ -250,10 +295,18 @@
       "title": "אימות-אוטובוס: מדידת כל-הפידים הרשומים + טבלת-בריאות מוטמעת (SAFE: קריאה-בלבד)",
       "riskClass": "SAFE",
       "ownerWordRequired": false
+    },
+    {
+      "id": "builtin-e1-spread-regime",
+      "title": "אימות-משטר-הפיזור (E1): grid.json חי מול חוק-93.5bps — פסק-כנה לתיק (SAFE: קריאה-בלבד)",
+      "riskClass": "SAFE",
+      "covers": "research-e1-spread-regime",
+      "proposalRef": "PROPOSALS/2026-10-11-research-e1-spread-regime.md",
+      "ownerWordRequired": false
     }
   ],
   "proposal": {
-    "file": "2026-10-11-research-e1-spread-regime.md",
-    "item": "research-e1-spread-regime"
+    "file": "2026-10-11-wo-fleethq-reds.md",
+    "item": "WO-FleetHQ-reds"
   }
 }
