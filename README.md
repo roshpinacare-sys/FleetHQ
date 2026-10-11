@@ -35,6 +35,12 @@ Not a wall of terminal text. Not a fake dashboard. A place.
 
 ---
 
+### ♻️ מחזור-השיפור-העצמי של המשרד (Task 11-d)
+
+פעם בשבוע (חמישי 07:43 UTC) המשרד מריץ **חקר → זיקוק → תכנון → ביצוע**: צורך את-האינטליגנציה של הצי (ממצאי-מחקר · בריאות-פידים · שערי-בעלים · הדיג'סט), מזקק תיק-עבודות מדורג לפי מחלקות-סיכון (SAFE / MACHINE-PREP / OWNER-WORD), מתכנן את-הראש כהצעה רשמית — ומבצע **רק** את-מה שבטוח-הוכח (רענון תיק-העבודות + אימות-אוטובוס). כסף/חתימה/מפתחות/STASIS — דבר-בעלים בלבד, לנצח. חי: [retro/index.html](https://roshpinacare-sys.github.io/FleetHQ/retro/index.html).
+
+---
+
 ## Why it's different
 
 Most "agent dashboards" show a spinner and a status word. Fleet HQ shows **the work itself**:
