@@ -1,12 +1,12 @@
 {
  "schema": "fleet-graph/1.0",
- "updatedAt": "2026-10-11T21:47:17.243Z",
+ "updatedAt": "2026-10-11T22:15:20.022Z",
  "authority": "הנחיית בעלים trace 1a12c57bccbf89bd — שחרור-במקום-ארכוב · מקשה אחת · הכל משתמש בהכל (trace 1a12c8edcc32d7bd) — למקסם יעילות של הקיים, לא לשרוף",
  "summary": {
   "nodes": 26,
   "edges": 27,
-  "live": 16,
-  "policy": 10,
+  "live": 17,
+  "policy": 9,
   "armed": 1,
   "queued": 0,
   "reposActive24h": "26/26"
@@ -294,11 +294,11 @@
    "from": "Adsmarket",
    "to": "Domain",
    "artifact": "marketing content (kit)",
-   "mode": "FLEET-ROLES §6 feeding rule + freshness gate",
+   "mode": "T-60 product-activation — canon static (kit untouched), serving surface public Pages",
    "cadence": "per-campaign",
    "slaMinutes": 0,
-   "status": "policy",
-   "evidence": "Adsmarket מזין, Domain מציג — תוכן נמדד"
+   "status": "live",
+   "evidence": "commit a4e2aa25 on Domain (base e1b10a32) ships marketing/index.html + marketing/products.json; Pages /Domain/marketing/ HTTP 200 measured post-push; local claims-guard PASS (0 forbidden glyphs, 0 own-network dead links, 12 links checked, 10 receipt mentions); canon intact: Adsmarket README role declaration + claims-guard.yml unchanged at HEAD"
   },
   {
    "from": "Defi",
