@@ -27,6 +27,7 @@ import {
 } from './panels';
 import { GitEvidencePanel } from './GitWire';
 import StackHealth from './StackHealth';
+import VeritasPanel from './VeritasPanel';
 import { ReceptionChat, type PublicStats } from './ReceptionChat';
 import type { AgentView, BookView, CrewMember, Decision, FeedItem, GitPulse, Goal, LogEntry, Report, Snapshot, Task } from './types';
 import { AGENT_SEMANTIC, semanticVar, type Semantic } from '@/components/hq/tokens';
@@ -479,6 +480,9 @@ export default function AgentHQ() {
                 <StripItem label={t('stripLlm', lang)} value={snap.status.llmProvider && snap.status.llmProvider !== '…' ? snap.status.llmProvider : u} mono={false} />
               </div>
             </section>
+
+            {/* veritas gate + recruitment — live no-forgery verdicts, evidence-bound roles */}
+            <VeritasPanel lang={lang} />
 
             {/* main grid */}
             <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,1fr)_390px]">
