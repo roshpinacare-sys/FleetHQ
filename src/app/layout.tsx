@@ -1,32 +1,23 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono, Heebo, JetBrains_Mono } from "next/font/google";
+import { GeistSans } from "geist/font/sans";
+import { GeistMono } from "geist/font/mono";
 import { ThemeProvider } from "next-themes";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
-
-// Heebo carries the Hebrew glyphs for the whole console (design law: 400–700)
-const heebo = Heebo({
-  variable: "--font-heebo",
-  subsets: ["hebrew", "latin"],
-  weight: ["400", "500", "600", "700"],
-});
-
-// JetBrains Mono — instrument readouts, git hashes, log lines
-const jetbrains = JetBrains_Mono({
-  variable: "--font-jetbrains",
-  subsets: ["latin"],
-  weight: ["400", "500", "700"],
-});
+// SELF-HOSTED FONTS (build-time zero-network law): next/font/google fetched
+// fonts from Google at build time and the runner's flaky network turned it
+// into 38 resolve errors (office-3d bake RED, 2026-10-11T21:27Z). The geist
+// package ships the same variable names (--font-geist-sans/--font-geist-mono);
+// Heebo + JetBrains Mono ship via @fontsource with identical CSS var contract
+// defined below — same glyphs, same weights, zero build-time fetches.
+import "@fontsource/heebo/400.css";
+import "@fontsource/heebo/500.css";
+import "@fontsource/heebo/600.css";
+import "@fontsource/heebo/700.css";
+import "@fontsource/jetbrains-mono/400.css";
+import "@fontsource/jetbrains-mono/500.css";
+import "@fontsource/jetbrains-mono/700.css";
 
 export const metadata: Metadata = {
   title: "מפקדת הצי · Fleet HQ — חדר הפעולה של הסוכנים",
@@ -57,7 +48,7 @@ export default function RootLayout({
   return (
     <html lang="he" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${heebo.variable} ${jetbrains.variable} antialiased bg-background text-foreground`}
+        className={`${GeistSans.variable} ${GeistMono.variable} antialiased bg-background text-foreground`}
         style={{ fontFamily: "var(--font-heebo), var(--font-geist-sans), system-ui, sans-serif" }}
       >
         {/* Task 51 (Daylight Slate): light by default — the night palette lives
