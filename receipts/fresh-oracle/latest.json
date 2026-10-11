@@ -1,7 +1,7 @@
 {
  "schema": "fleet.fresh-oracle/1",
- "at": "2026-10-11T22:30:15.624Z",
- "law": "live page is FRESH only if sha256(live bytes) == sha256(committed deploy-ref bytes); drift/missing = RED",
+ "at": "2026-10-11T22:35:36.600Z",
+ "law": "FRESH only if sha256(live bytes) == sha256(committed deploy-ref bytes); DRIFT=RED (200-with-different-bytes); UNREACHABLE=UNKNOWN (network, retried once, reason kept) — never faked green",
  "results": [
   {
    "name": "FleetHQ window",
@@ -9,9 +9,11 @@
    "source": "FleetHQ@office-pages:index.html",
    "liveStatus": 200,
    "committedStatus": 200,
-   "liveSha16": "9e0b065b9f6319b7",
-   "committedSha16": "9e0b065b9f6319b7",
-   "liveBytes": 37351,
+   "liveError": null,
+   "committedError": null,
+   "liveSha16": "97e606dd8b1a43f6",
+   "committedSha16": "97e606dd8b1a43f6",
+   "liveBytes": 37418,
    "verdict": "MATCH"
   },
   {
@@ -20,9 +22,11 @@
    "source": "FleetHQ@office-pages:potential.html",
    "liveStatus": 200,
    "committedStatus": 200,
-   "liveSha16": "c7d63b422f559850",
-   "committedSha16": "c7d63b422f559850",
-   "liveBytes": 11953,
+   "liveError": null,
+   "committedError": null,
+   "liveSha16": "0af730865c58fa2a",
+   "committedSha16": "0af730865c58fa2a",
+   "liveBytes": 18917,
    "verdict": "MATCH"
   },
   {
@@ -31,9 +35,11 @@
    "source": "FleetHQ@office-pages:potential.json",
    "liveStatus": 200,
    "committedStatus": 200,
-   "liveSha16": "92b2230e6248eae5",
-   "committedSha16": "92b2230e6248eae5",
-   "liveBytes": 15130,
+   "liveError": null,
+   "committedError": null,
+   "liveSha16": "e8d0aaaece8badc1",
+   "committedSha16": "e8d0aaaece8badc1",
+   "liveBytes": 25418,
    "verdict": "MATCH"
   },
   {
@@ -42,6 +48,8 @@
    "source": "Domain@main:index.html",
    "liveStatus": 200,
    "committedStatus": 200,
+   "liveError": null,
+   "committedError": null,
    "liveSha16": "9521b6fe01d4468d",
    "committedSha16": "9521b6fe01d4468d",
    "liveBytes": 53531,
@@ -53,6 +61,8 @@
    "source": "Domain@main:office3d/index.html",
    "liveStatus": 200,
    "committedStatus": 200,
+   "liveError": null,
+   "committedError": null,
    "liveSha16": "722160b1a3236eb4",
    "committedSha16": "722160b1a3236eb4",
    "liveBytes": 2214,
@@ -64,6 +74,8 @@
    "source": "Domain@main:marketing/index.html",
    "liveStatus": 200,
    "committedStatus": 200,
+   "liveError": null,
+   "committedError": null,
    "liveSha16": "0a1a21f70dc98ae5",
    "committedSha16": "0a1a21f70dc98ae5",
    "liveBytes": 18409,
@@ -75,6 +87,8 @@
    "source": "Domain@main:marketing/products.json",
    "liveStatus": 200,
    "committedStatus": 200,
+   "liveError": null,
+   "committedError": null,
    "liveSha16": "d4f000e323d99c46",
    "committedSha16": "d4f000e323d99c46",
    "liveBytes": 6399,
@@ -86,6 +100,7 @@
   "match": 7,
   "drift": 0,
   "missing": 0,
+  "unreachable": 0,
   "verdict": "FRESH"
  },
  "method": "https GET live URL + raw.githubusercontent deploy ref → sha256-16 byte equality"
