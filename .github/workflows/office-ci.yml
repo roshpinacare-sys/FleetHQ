@@ -71,6 +71,7 @@ jobs:
           REPO: ${{ github.repository }}
           SHA: ${{ github.sha }}
         run: |
+          node - <<'EOF'
           const fs = require("fs");
           const read = (n) => (fs.existsSync("/tmp/checks/" + n) ? fs.readFileSync("/tmp/checks/" + n, "utf8").trim() : "missing");
           const checks = {};
