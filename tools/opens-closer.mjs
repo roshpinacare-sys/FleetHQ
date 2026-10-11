@@ -11,11 +11,33 @@ const REPO = process.env.GITHUB_REPOSITORY || `${ORG}/FleetHQ`;
 const TOKEN = process.env.GITHUB_TOKEN || '';
 const NOW = new Date().toISOString();
 
+// T-61→R31: the watchlist is now THE NINE LIVING FEEDS of the 3D office room
+// (Domain/office3d/v2/index.html const FEEDS) + the two cross-repo lighthouses.
+// Room caps come from FRESH_MIN in the room; slaMin here = cap + 30min grace
+// (measured scheduler lag on this account runs 20–40min — the grace absorbs it
+// without lying: a feed past cap+grace IS stale, same verdict the room draws).
+// tsKey per feed = the exact key the room itself reads (index.html lines ~959-1002);
+// orders is a bare array (no ts) — honesty law: ts = max(resolvedAt) = last
+// measured resolution (a ledger quiet for days IS stale, never faked fresh).
 const targets = [
+  // FleetHQ (same repo — self-heal via dispatch is lawful here)
   { key: 'office-state', url: RAW + 'FleetHQ/main/office/state/office-state.json', tsKey: 'capturedAt', slaMin: 180, selfHealWorkflow: 'office-heartbeat.yml', healNote: 'same-repo dispatch, GITHUB_TOKEN' },
   { key: 'beacon', url: RAW + 'sovereign-beacon/main/state.json', tsKey: 'at', slaMin: 100, selfHealWorkflow: 'beacon-pulse.yml', selfHealRepo: 'sovereign-beacon', crossRepo: true, healNote: 'cross-repo dispatch via CROSS_REVIVE_PAT secret (owner authority delegated to the sovereignty — T-63 D1, claim 440e40f3)' },
   { key: 'lighthouse', url: RAW + 'sovereign-lighthouse/main/state.json', tsKey: 'at', slaMin: 80, selfHealWorkflow: 'lighthouse-pulse.yml', selfHealRepo: 'sovereign-lighthouse', crossRepo: true, healNote: 'cross-repo dispatch via CROSS_REVIVE_PAT secret (owner authority delegated to the sovereignty — T-63 D1, claim 440e40f3)' },
   { key: 'domain-pulse', url: RAW + 'Domain/main/office/data.json', tsKey: 'generatedAt', slaMin: 180, selfHealWorkflow: null, healNote: 'writer is the sovereign runtime runner (office-pulse-bot), NOT a GitHub workflow — N7 closed by measurement T-62 (runtime lane 40bb19dc); if it freezes again the revival is a runtime-lane dispatch, not a credential gap' },
+  // R31 (trace 1a12d4daf2926fd5): the remaining SEVEN room feeds of the 3D office
+  // (Domain/office3d/v2/index.html const FEEDS) — the blind-spot closure: with
+  // only office-state+pulse watched, the ledger could say "all fresh" while five
+  // room feeds were stale. slaMin = room FRESH_MIN cap + 30min grace (measured
+  // scheduler lag 20-40min). live/grid wire the new cross-repo heal — their
+  // producer workflows are measured-dispatchable (office-artery.yml / grid-doctor.yml).
+  { key: 'live', url: RAW + 'Domain/main/agents/office-live.json', tsKey: 'generatedAt', slaMin: 180, selfHealWorkflow: 'office-artery.yml', selfHealRepo: 'Domain', crossRepo: true, healNote: 'cross-repo dispatch via CROSS_REVIVE_PAT (Domain/office-artery.yml, measured dispatchable) — T-63 D1 authority' },
+  { key: 'grid', url: RAW + 'Domain/main/agents/grid-truth.json', tsKey: 'generatedAt', slaMin: 125, selfHealWorkflow: 'grid-doctor.yml', selfHealRepo: 'Domain', crossRepo: true, healNote: 'cross-repo dispatch via CROSS_REVIVE_PAT (Domain/grid-doctor.yml, measured dispatchable) — T-63 D1 authority' },
+  { key: 'recruit', url: RAW + 'Domain/main/agents/recruitment.json', tsKey: 'at', slaMin: 1660, selfHealWorkflow: null, healNote: 'cross-repo room feed; producer workflow name not yet measured — recorded honestly, no guessed dispatch' },
+  { key: 'ventures', url: RAW + 'Domain/main/agents/ventures.json', tsKey: 'at', slaMin: 1660, selfHealWorkflow: null, healNote: 'cross-repo room feed; producer workflow name not yet measured — recorded honestly, no guessed dispatch' },
+  { key: 'products', url: RAW + 'Domain/main/marketing/products.json', tsKey: 'generatedAt', slaMin: 2910, selfHealWorkflow: null, healNote: 'cross-repo room feed; producer workflow name not yet measured — recorded honestly, no guessed dispatch' },
+  { key: 'orders', url: RAW + 'Sandbox/main/ops/office/work-orders.json', tsKey: '@max-resolvedAt', slaMin: 240, selfHealWorkflow: null, healNote: 'cross-repo room feed (bare array, honesty law: ts = max(resolvedAt) = last measured resolution); writer is the Sandbox engine, not a workflow' },
+  { key: 'integrity', url: RAW + 'Sandbox/main/ops/integrity/verdict.json', tsKey: 'at', slaMin: 125, selfHealWorkflow: null, healNote: 'cross-repo room feed (Sandbox selfcheck verdict); producer workflow name not yet measured — recorded honestly, no guessed dispatch' },
 ];
 
 const ageMin = (ts) => { const t = Date.parse(ts); return isNaN(t) ? null : Math.max(0, Math.round((Date.now() - t) / 60000)); };
@@ -27,7 +49,11 @@ for (const t of targets) {
     const r = await fetch(t.url, { headers: { 'User-Agent': 'saos-opens-closer' } });
     if (r.ok) {
       const j = await r.json();
-      c.stateTs = j[t.tsKey] || j.capturedAt || j.generatedAt || null;
+      if (t.tsKey === '@max-resolvedAt' && Array.isArray(j)) {
+        const tsList = j.map(x => x && (x.resolvedAt || x.resolved_at)).filter(Boolean).map(s => Date.parse(s)).filter(n => !isNaN(n));
+        c.stateTs = tsList.length ? new Date(Math.max(...tsList)).toISOString() : null;
+        if (!c.stateTs) c.dispatchStatus = 'array with zero resolvedAt — honest unknown';
+      } else c.stateTs = j[t.tsKey] || j.capturedAt || j.generatedAt || j.at || null;
       c.ageMin = ageMin(c.stateTs);
       c.stale = c.ageMin === null ? null : c.ageMin > t.slaMin;
     } else c.dispatchStatus = `state fetch HTTP ${r.status}`;
@@ -69,7 +95,7 @@ const out = {
     : 'no checks',
   metrics: { staleCount: staleOnes.length, dispatchedCount: dispatchedOnes.length },
   checks,
-  ownerActions: [], // N6 CLOSED (T-63 D1): cross-repo revival runs on CROSS_REVIVE_PAT; a missing secret is reported per-check as 'no CROSS_REVIVE_PAT' — never faked
+  ownerActions: [], // N6 CLOSED (T-63 D1): cross-repo revival runs on CROSS_REVIVE_PAT; a missing secret is reported per-check as 'no CROSS_REVIVE_PAT' — never faked. R31: all 9 room feeds are now watched; live/grid heal via the same law
 };
 
 // no-noise law: commit only when meaningful — dispatch happened, stale-count transition, or 4h freshness stamp

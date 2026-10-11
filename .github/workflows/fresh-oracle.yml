@@ -31,6 +31,8 @@ jobs:
           fetch-depth: 1
 
       - name: Run the oracle (byte equality, fail-loud)
+        env:
+          GITHUB_TOKEN: ${{ github.token }} # raises API rate limit for the V-OPS-DOCS existence+age scan (public read-only; same-repo token, no sibling writes)
         run: node tools/fresh-oracle.mjs
 
       - name: Publish receipt (sibling-stand-down + rebase-then-push x6, jittered)
