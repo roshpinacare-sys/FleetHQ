@@ -46,6 +46,10 @@ export const director = {
   focus: null as null | { x: number; z: number; kind: string; id?: string },
   /** העדפת מערכת: תנועה מופחתת → מעברי מצלמה מיידיים */
   reducedMotion: false,
+  /** Task 11-a — סיור-מודרך: המצלמה גולשת בעדינות בין התחנות (stations →
+   *  podium → wall → library), עם הקפה-סרק בין-המעברים. כל קלט מהמשתמש
+   *  מחזיר שליטה מיידית (מבטל את הסיור). false = שליטה ידנית בלבד. */
+  tour: false,
 };
 
 // ─────────────── חוזה מצב→תנועה (דטרמיניסטי) ───────────────
