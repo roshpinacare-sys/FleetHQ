@@ -1,9 +1,9 @@
 {
  "schema": "saos.opens-closer.v1",
- "generatedAt": "2026-10-11T22:34:47.790Z",
- "verdictHe": "1 נפלו מעל SLA (office-state 182דק>SLA180) — הוערו: אין",
+ "generatedAt": "2026-10-11T22:38:51.659Z",
+ "verdictHe": "הכל טרי מעל SLA (office-state 2דק, beacon 10דק, lighthouse 10דק)",
  "metrics": {
-  "staleCount": 1,
+  "staleCount": 0,
   "dispatchedCount": 0
  },
  "checks": [
@@ -11,11 +11,11 @@
    "key": "office-state",
    "url": "https://raw.githubusercontent.com/roshpinacare-sys/FleetHQ/main/office/state/office-state.json",
    "slaMin": 180,
-   "stateTs": "2026-10-11T19:32:43.890Z",
-   "ageMin": 182,
-   "stale": true,
+   "stateTs": "2026-10-11T22:36:37.872Z",
+   "ageMin": 2,
+   "stale": false,
    "dispatched": false,
-   "dispatchStatus": "no GITHUB_TOKEN — not faked",
+   "dispatchStatus": null,
    "healNote": "same-repo dispatch, GITHUB_TOKEN"
   },
   {
@@ -23,7 +23,7 @@
    "url": "https://raw.githubusercontent.com/roshpinacare-sys/sovereign-beacon/main/state.json",
    "slaMin": 100,
    "stateTs": "2026-10-11T22:28:58Z",
-   "ageMin": 6,
+   "ageMin": 10,
    "stale": false,
    "dispatched": false,
    "dispatchStatus": null,
@@ -34,7 +34,7 @@
    "url": "https://raw.githubusercontent.com/roshpinacare-sys/sovereign-lighthouse/main/state.json",
    "slaMin": 80,
    "stateTs": "2026-10-11T22:29:02Z",
-   "ageMin": 6,
+   "ageMin": 10,
    "stale": false,
    "dispatched": false,
    "dispatchStatus": null,
