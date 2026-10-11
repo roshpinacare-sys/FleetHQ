@@ -816,7 +816,10 @@ section{margin-top:34px}
 .sec-head h2{margin:0; font-size:clamp(1.2rem,3.6vw,1.5rem)}
 .sec-head .en{color:var(--muted); font-weight:400; font-size:.85rem; margin-inline-start:8px}
 .card{background:var(--card); border:1px solid var(--border); border-radius:14px; padding:16px 18px;
-  box-shadow:0 1px 0 rgba(255,255,255,.02) inset}
+  box-shadow:0 1px 0 rgba(255,255,255,.02) inset; min-width:0; max-width:100%}
+html,body{overflow-x:clip}
+.grid2>*{min-width:0}
+.tablewrap{overflow-x:auto; -webkit-overflow-scrolling:touch; max-width:100%}
 table{width:100%; border-collapse:collapse; font-size:.86rem}
 th,td{padding:7px 9px; border-bottom:1px solid var(--border); text-align:right; vertical-align:top}
 th{color:var(--muted); font-weight:600; white-space:nowrap}
@@ -848,19 +851,19 @@ footer{margin-top:44px; border-top:1px solid var(--border); padding-top:16px; co
 <section>
   <div class="sec-head"><div class="sec-num">1</div><h2>חקר <span class="en">— הפידים כפי-שנמדדו, עכשיו</span></h2></div>
   <div class="card">
-    <table>
+    <div class="tablewrap"><table>
       <tr><th>פיד</th><th>מצב</th><th>גיל</th><th>הערה כנה</th></tr>
       ${bus.feeds.map(feedRow).join('\n      ')}
-    </table>
+    </table></div>
     <p class="pfoot">מקור-הרישום: ${esc(snapshot.registry.source)} — ${esc(clip(snapshot.registry.note, 130))} · מדידה ${esc(fmtUTC(bus.at))}</p>
   </div>
   <div class="grid2" style="margin-top:14px">
     <div class="card">
       <b>ממצאי-המחקר</b>
-      ${F && F.found ? `<table style="margin-top:8px">
+      ${F && F.found ? `<div class="tablewrap"><table style="margin-top:8px">
         <tr><th>ניסוי</th><th>פסק</th><th>ok</th></tr>
         ${F.experiments.map((e) => `<tr><td><code>${esc(e.id)} ${esc(e.name)}</code></td><td>${esc(clip(e.verdict || '—', 80))}</td><td>${e.ok === false ? '❌' : e.ok ? '✅' : '⏳'}</td></tr>`).join('\n        ')}
-      </table>
+      </table></div>
       <p class="pfoot">findings-${esc(F.date)} · רכבת-המחקר השבועית (Sandbox)</p>` : `<p class="law">לא-נמדד — ${esc((F && F.note) || 'לא-ידוע')} (כנה)</p>`}
     </div>
     <div class="card">
@@ -868,10 +871,10 @@ footer{margin-top:44px; border-top:1px solid var(--border); padding-top:16px; co
       <p class="law">${dig && dig.generatedAt ? `חי · נוצר ${esc(fmtUTC(dig.generatedAt))} (${esc(String(dig.ageHours))}h)` : esc((dig && dig.note) || 'לא-ידוע')}</p>
       ${dig && dig.reposSeen != null ? `<p class="law">ריפואים-נמדדו: ${esc(String(dig.reposSeen))}${dig.gridVerdict ? ` · grid: ${esc(dig.gridVerdict)}` : ''}${dig.hiveVerdict ? ` · hive: ${esc(dig.hiveVerdict)}` : ''}</p>` : ''}
       <b>שערי-הבעלים</b>
-      ${g && g.gates ? `<table style="margin-top:8px">
+      ${g && g.gates ? `<div class="tablewrap"><table style="margin-top:8px">
         <tr><th>שער</th><th>מצב</th></tr>
         ${g.gates.map((x) => `<tr><td>${esc(clip(x.title, 44))}</td><td>${x.state === 'WAITING-OWNER' ? chip('bad', x.state) : x.state === 'MACHINE-READY' ? chip('violet', x.state) : chip('neutral', x.state)}</td></tr>`).join('\n        ')}
-      </table>
+      </table></div>
       <p class="pfoot">לפי id/כותרת-מוקטנת בלבד — בלי-סיכומים ובלי-מפתחות (7-b)</p>` : `<p class="law">${esc((g && g.note) || 'לא-ידוע')} (כנה)</p>`}
     </div>
   </div>
@@ -880,10 +883,10 @@ footer{margin-top:44px; border-top:1px solid var(--border); padding-top:16px; co
 <section>
   <div class="sec-head"><div class="sec-num">2</div><h2>זיקוק <span class="en">— התור המדורג (SAFE קודם · value/effort)</span></h2></div>
   <div class="card">
-    <table>
+    <div class="tablewrap"><table>
       <tr><th>#</th><th>id</th><th>כותרת</th><th>מחלקת-סיכון</th><th>דבר-בעלים</th><th>executableBy</th></tr>
       ${ranked.map(itemRow).join('\n      ')}
-    </table>
+    </table></div>
     <p class="pfoot">SAFE = רענון/אימות/תיעוד בלבד · MACHINE-PREP = הכנת-ארטיפקטים לבעלים · OWNER-WORD = כסף/חתימה/מפתחות/STASIS — לעולם לא מבוצע-מכונה.</p>
   </div>
 </section>
@@ -900,10 +903,10 @@ footer{margin-top:44px; border-top:1px solid var(--border); padding-top:16px; co
 <section>
   <div class="sec-head"><div class="sec-num">4</div><h2>ביצוע <span class="en">— רק SAFE built-ins, אף-פעם לא יותר</span></h2></div>
   <div class="card">
-    <table>
+    <div class="tablewrap"><table>
       <tr><th>id</th><th>פעולה</th></tr>
       ${executed.map((e) => `<tr><td><code>${esc(e.id)}</code></td><td>${esc(e.title)}</td></tr>`).join('\n      ')}
-    </table>
+    </table></div>
     <p class="law"><b>חוק-המחזור:</b> לא משדר · לא חותם · לא כסף · לא מפתחות · לא STASIS · תופעות-הלוואי שלו — קבצי-המסילה שלו בלבד. פריטי-SAFE חדשים מתורגשים כ-<code>executableBy: next-retro</code> — הרפרטואר-הבטוח צומח built-in אחד לכל-מחזור, בכנות.</p>
   </div>
 </section>
