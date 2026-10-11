@@ -1,0 +1,46 @@
+{
+ "schema": "saos.opens-closer.v1",
+ "generatedAt": "2026-10-11T22:34:47.790Z",
+ "verdictHe": "1 נפלו מעל SLA (office-state 182דק>SLA180) — הוערו: אין",
+ "metrics": {
+  "staleCount": 1,
+  "dispatchedCount": 0
+ },
+ "checks": [
+  {
+   "key": "office-state",
+   "url": "https://raw.githubusercontent.com/roshpinacare-sys/FleetHQ/main/office/state/office-state.json",
+   "slaMin": 180,
+   "stateTs": "2026-10-11T19:32:43.890Z",
+   "ageMin": 182,
+   "stale": true,
+   "dispatched": false,
+   "dispatchStatus": "no GITHUB_TOKEN — not faked",
+   "healNote": "same-repo dispatch, GITHUB_TOKEN"
+  },
+  {
+   "key": "beacon",
+   "url": "https://raw.githubusercontent.com/roshpinacare-sys/sovereign-beacon/main/state.json",
+   "slaMin": 100,
+   "stateTs": "2026-10-11T22:28:58Z",
+   "ageMin": 6,
+   "stale": false,
+   "dispatched": false,
+   "dispatchStatus": null,
+   "healNote": "cross-repo — requires owner-scoped credential (recorded as owner action N6, never faked)"
+  },
+  {
+   "key": "lighthouse",
+   "url": "https://raw.githubusercontent.com/roshpinacare-sys/sovereign-lighthouse/main/state.json",
+   "slaMin": 80,
+   "stateTs": "2026-10-11T22:29:02Z",
+   "ageMin": 6,
+   "stale": false,
+   "dispatched": false,
+   "dispatchStatus": null,
+   "healNote": "cross-repo — requires owner-scoped credential (recorded as owner action N6, never faked)"
+  }
+ ],
+ "ownerActions": [],
+ "commitDecision": "commit"
+}
