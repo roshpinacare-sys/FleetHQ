@@ -1,48 +1,30 @@
 {
   "schema": "roshpinacare.fleet-digest/1",
-  "generatedAt": "2026-10-11T19:19:15.068Z",
+  "generatedAt": "2026-10-11T19:22:30.573Z",
   "owner": "roshpinacare-sys",
   "tokenMode": "gh-token",
-  "repoListMode": "user-token",
+  "repoListMode": "token-public-list",
   "note": "All values measured at render time by office-window/fleet-digest.mjs (read-only). Unknown means not measured — never a fake green. Private repo names are masked per exposure policy 7-b.",
   "fleet": {
-    "reposSeen": 26,
+    "reposSeen": 9,
     "publicCount": 9,
-    "privateCount": 17,
-    "rateLimitRemaining": 4685,
+    "privateCount": 0,
+    "rateLimitRemaining": 4975,
     "degradedEarly": false
   },
   "repos": [
     {
-      "name": "private-01",
-      "private": true,
-      "pushedAt": "2026-10-11T19:19:08Z",
-      "defaultBranch": "saos-cockpit",
-      "description": null,
-      "lastRun": {
-        "name": "gitleaks",
-        "status": "completed",
-        "conclusion": "failure",
-        "at": "2026-10-11T19:19:10Z",
-        "url": "https://github.com/roshpinacare-sys/steem/actions/runs/38167505337"
-      },
-      "lastRunReason": null,
-      "commits7d": 100,
-      "commits7dCapped": true,
-      "commitsReason": null
-    },
-    {
       "name": "Domain",
       "private": false,
-      "pushedAt": "2026-10-11T19:18:19Z",
+      "pushedAt": "2026-10-11T19:22:25Z",
       "defaultBranch": "main",
       "description": null,
       "lastRun": {
-        "name": "pages build and deployment",
-        "status": "completed",
-        "conclusion": "success",
-        "at": "2026-10-11T19:18:21Z",
-        "url": "https://github.com/roshpinacare-sys/Domain/actions/runs/38167447584"
+        "name": "exposure-gate",
+        "status": "in_progress",
+        "conclusion": null,
+        "at": "2026-10-11T19:22:27Z",
+        "url": "https://github.com/roshpinacare-sys/Domain/actions/runs/38167738521"
       },
       "lastRunReason": null,
       "commits7d": 100,
@@ -52,15 +34,15 @@
     {
       "name": "FleetHQ",
       "private": false,
-      "pushedAt": "2026-10-11T19:17:31Z",
+      "pushedAt": "2026-10-11T19:21:26Z",
       "defaultBranch": "main",
       "description": "Fleet HQ — a live operations room where real AI agents plan, work and report on your data books in real time. מפקדת הצי",
       "lastRun": {
-        "name": "office-ci",
-        "status": "completed",
-        "conclusion": "failure",
-        "at": "2026-10-11T19:17:32Z",
-        "url": "https://github.com/roshpinacare-sys/FleetHQ/actions/runs/38167390896"
+        "name": "office-window",
+        "status": "in_progress",
+        "conclusion": null,
+        "at": "2026-10-11T19:22:21Z",
+        "url": "https://github.com/roshpinacare-sys/FleetHQ/actions/runs/38167731536"
       },
       "lastRunReason": null,
       "commits7d": 100,
@@ -70,15 +52,15 @@
     {
       "name": "Sandbox",
       "private": false,
-      "pushedAt": "2026-10-11T19:15:29Z",
+      "pushedAt": "2026-10-11T19:21:11Z",
       "defaultBranch": "main",
       "description": null,
       "lastRun": {
-        "name": "sovereign-state",
-        "status": "in_progress",
+        "name": "sovereign-tick",
+        "status": "pending",
         "conclusion": null,
-        "at": "2026-10-11T19:15:16Z",
-        "url": "https://github.com/roshpinacare-sys/Sandbox/actions/runs/38167227296"
+        "at": "2026-10-11T19:21:13Z",
+        "url": "https://github.com/roshpinacare-sys/Sandbox/actions/runs/38167652295"
       },
       "lastRunReason": null,
       "commits7d": 100,
@@ -86,17 +68,35 @@
       "commitsReason": null
     },
     {
-      "name": "private-02",
-      "private": true,
-      "pushedAt": "2026-10-11T19:14:18Z",
+      "name": "saos-agents",
+      "private": false,
+      "pushedAt": "2026-10-11T19:19:51Z",
       "defaultBranch": "main",
-      "description": null,
+      "description": "Self-measuring agent orchestration core: a task graph that cannot be lied to (done-only-via-verified-push), an operator decision queue, append-only worklog telemetry. Zero dependencies. Bun or Node >= 18.",
       "lastRun": {
-        "name": "gitleaks-secret-scan",
+        "name": "gitleaks",
         "status": "completed",
-        "conclusion": "failure",
-        "at": "2026-10-06T11:28:04Z",
-        "url": "https://github.com/roshpinacare-sys/saos-control-center/actions/runs/37456590584"
+        "conclusion": "success",
+        "at": "2026-10-11T19:19:52Z",
+        "url": "https://github.com/roshpinacare-sys/saos-agents/actions/runs/38167552957"
+      },
+      "lastRunReason": null,
+      "commits7d": 14,
+      "commits7dCapped": false,
+      "commitsReason": null
+    },
+    {
+      "name": "sovereign-lighthouse",
+      "private": false,
+      "pushedAt": "2026-10-11T19:19:42Z",
+      "defaultBranch": "main",
+      "description": "מגדלור ריבוני — Sovereign Lighthouse: זיכרון חוץ-מכונה עצמאי (RTL עברית)",
+      "lastRun": {
+        "name": "pages build and deployment",
+        "status": "completed",
+        "conclusion": "success",
+        "at": "2026-10-11T19:19:43Z",
+        "url": "https://github.com/roshpinacare-sys/sovereign-lighthouse/actions/runs/38167543224"
       },
       "lastRunReason": null,
       "commits7d": 100,
@@ -104,21 +104,15 @@
       "commitsReason": null
     },
     {
-      "name": "private-03",
-      "private": true,
-      "pushedAt": "2026-10-11T19:06:56Z",
+      "name": "sovereign-beacon",
+      "private": false,
+      "pushedAt": "2026-10-11T19:19:39Z",
       "defaultBranch": "main",
-      "description": null,
-      "lastRun": {
-        "name": "weave-brain-restore",
-        "status": "completed",
-        "conclusion": "failure",
-        "at": "2026-10-09T18:13:14Z",
-        "url": "https://github.com/roshpinacare-sys/Zip/actions/runs/37971750198"
-      },
-      "lastRunReason": null,
-      "commits7d": 100,
-      "commits7dCapped": true,
+      "description": "Rosh Pina — sovereign lighthouse (out-of-machine console)",
+      "lastRun": null,
+      "lastRunReason": "latest-run-unavailable",
+      "commits7d": 10,
+      "commits7dCapped": false,
       "commitsReason": null
     },
     {
@@ -158,120 +152,6 @@
       "commitsReason": null
     },
     {
-      "name": "private-04",
-      "private": true,
-      "pushedAt": "2026-10-11T16:30:13Z",
-      "defaultBranch": "main",
-      "description": null,
-      "lastRun": {
-        "name": "dex-ci",
-        "status": "completed",
-        "conclusion": "failure",
-        "at": "2026-10-11T16:30:14Z",
-        "url": "https://github.com/roshpinacare-sys/saos-dex/actions/runs/38155727690"
-      },
-      "lastRunReason": null,
-      "commits7d": 100,
-      "commits7dCapped": true,
-      "commitsReason": null
-    },
-    {
-      "name": "sovereign-beacon",
-      "private": false,
-      "pushedAt": "2026-10-11T16:26:49Z",
-      "defaultBranch": "main",
-      "description": "Rosh Pina — sovereign lighthouse (out-of-machine console)",
-      "lastRun": null,
-      "lastRunReason": "latest-run-unavailable",
-      "commits7d": 9,
-      "commits7dCapped": false,
-      "commitsReason": null
-    },
-    {
-      "name": "sovereign-lighthouse",
-      "private": false,
-      "pushedAt": "2026-10-11T16:26:47Z",
-      "defaultBranch": "main",
-      "description": "מגדלור ריבוני — Sovereign Lighthouse: זיכרון חוץ-מכונה עצמאי (RTL עברית)",
-      "lastRun": {
-        "name": "pages build and deployment",
-        "status": "completed",
-        "conclusion": "success",
-        "at": "2026-10-11T16:26:48Z",
-        "url": "https://github.com/roshpinacare-sys/sovereign-lighthouse/actions/runs/38155491900"
-      },
-      "lastRunReason": null,
-      "commits7d": 100,
-      "commits7dCapped": true,
-      "commitsReason": null
-    },
-    {
-      "name": "private-05",
-      "private": true,
-      "pushedAt": "2026-10-11T16:26:44Z",
-      "defaultBranch": "main",
-      "description": null,
-      "lastRun": {
-        "name": "wallet-verify",
-        "status": "completed",
-        "conclusion": "failure",
-        "at": "2026-10-11T16:26:46Z",
-        "url": "https://github.com/roshpinacare-sys/Saosmartwallet/actions/runs/38155489589"
-      },
-      "lastRunReason": null,
-      "commits7d": 17,
-      "commits7dCapped": false,
-      "commitsReason": null
-    },
-    {
-      "name": "saos-agents",
-      "private": false,
-      "pushedAt": "2026-10-11T16:26:41Z",
-      "defaultBranch": "main",
-      "description": "Self-measuring agent orchestration core: a task graph that cannot be lied to (done-only-via-verified-push), an operator decision queue, append-only worklog telemetry. Zero dependencies. Bun or Node >= 18.",
-      "lastRun": {
-        "name": "gitleaks",
-        "status": "completed",
-        "conclusion": "success",
-        "at": "2026-10-11T16:26:43Z",
-        "url": "https://github.com/roshpinacare-sys/saos-agents/actions/runs/38155486234"
-      },
-      "lastRunReason": null,
-      "commits7d": 13,
-      "commits7dCapped": false,
-      "commitsReason": null
-    },
-    {
-      "name": "private-06",
-      "private": true,
-      "pushedAt": "2026-10-11T16:26:38Z",
-      "defaultBranch": "main",
-      "description": null,
-      "lastRun": {
-        "name": "gitleaks-secret-scan",
-        "status": "completed",
-        "conclusion": "failure",
-        "at": "2026-10-06T11:25:50Z",
-        "url": "https://github.com/roshpinacare-sys/Adsmarket/actions/runs/37456340450"
-      },
-      "lastRunReason": null,
-      "commits7d": 12,
-      "commits7dCapped": false,
-      "commitsReason": null
-    },
-    {
-      "name": "private-07",
-      "private": true,
-      "pushedAt": "2026-10-11T16:26:34Z",
-      "defaultBranch": "main",
-      "description": null,
-      "lastRun": null,
-      "lastRunReason": "latest-run-unavailable",
-      "commits7d": 37,
-      "commits7dCapped": false,
-      "commitsReason": null
-    },
-    {
       "name": "Console",
       "private": false,
       "pushedAt": "2026-10-11T16:12:40Z",
@@ -287,180 +167,6 @@
       "lastRunReason": null,
       "commits7d": 100,
       "commits7dCapped": true,
-      "commitsReason": null
-    },
-    {
-      "name": "private-08",
-      "private": true,
-      "pushedAt": "2026-10-11T15:43:16Z",
-      "defaultBranch": "main",
-      "description": null,
-      "lastRun": {
-        "name": "workflow-yaml-guard",
-        "status": "completed",
-        "conclusion": "failure",
-        "at": "2026-10-07T00:57:39Z",
-        "url": "https://github.com/roshpinacare-sys/saos-sovereign-foundry/actions/runs/37554661122"
-      },
-      "lastRunReason": null,
-      "commits7d": 10,
-      "commits7dCapped": false,
-      "commitsReason": null
-    },
-    {
-      "name": "private-09",
-      "private": true,
-      "pushedAt": "2026-10-10T17:47:21Z",
-      "defaultBranch": "main",
-      "description": null,
-      "lastRun": {
-        "name": "sovereign-heart",
-        "status": "completed",
-        "conclusion": "failure",
-        "at": "2026-10-11T19:00:53Z",
-        "url": "https://github.com/roshpinacare-sys/sanbox/actions/runs/38166220368"
-      },
-      "lastRunReason": null,
-      "commits7d": 100,
-      "commits7dCapped": true,
-      "commitsReason": null
-    },
-    {
-      "name": "private-10",
-      "private": true,
-      "pushedAt": "2026-10-10T16:27:51Z",
-      "defaultBranch": "main",
-      "description": null,
-      "lastRun": null,
-      "lastRunReason": "latest-run-unavailable",
-      "commits7d": 84,
-      "commits7dCapped": false,
-      "commitsReason": null
-    },
-    {
-      "name": "private-11",
-      "private": true,
-      "pushedAt": "2026-10-08T09:04:54Z",
-      "defaultBranch": "main",
-      "description": null,
-      "lastRun": {
-        "name": "gitleaks-secret-scan",
-        "status": "completed",
-        "conclusion": "failure",
-        "at": "2026-10-06T11:29:53Z",
-        "url": "https://github.com/roshpinacare-sys/Project-files/actions/runs/37456789181"
-      },
-      "lastRunReason": null,
-      "commits7d": 9,
-      "commits7dCapped": false,
-      "commitsReason": null
-    },
-    {
-      "name": "private-12",
-      "private": true,
-      "pushedAt": "2026-10-08T08:34:50Z",
-      "defaultBranch": "main",
-      "description": null,
-      "lastRun": {
-        "name": "workflow-yaml-guard",
-        "status": "completed",
-        "conclusion": "failure",
-        "at": "2026-10-06T11:28:51Z",
-        "url": "https://github.com/roshpinacare-sys/saos-sovereign-platform/actions/runs/37456675673"
-      },
-      "lastRunReason": null,
-      "commits7d": 20,
-      "commits7dCapped": false,
-      "commitsReason": null
-    },
-    {
-      "name": "private-13",
-      "private": true,
-      "pushedAt": "2026-10-08T07:44:14Z",
-      "defaultBranch": "main",
-      "description": null,
-      "lastRun": {
-        "name": "gitleaks-secret-scan",
-        "status": "completed",
-        "conclusion": "failure",
-        "at": "2026-10-06T11:50:48Z",
-        "url": "https://github.com/roshpinacare-sys/Defi/actions/runs/37459125652"
-      },
-      "lastRunReason": null,
-      "commits7d": 92,
-      "commits7dCapped": false,
-      "commitsReason": null
-    },
-    {
-      "name": "private-14",
-      "private": true,
-      "pushedAt": "2026-10-08T07:34:46Z",
-      "defaultBranch": "main",
-      "description": null,
-      "lastRun": {
-        "name": "workflow-yaml-guard",
-        "status": "completed",
-        "conclusion": "failure",
-        "at": "2026-10-06T11:26:46Z",
-        "url": "https://github.com/roshpinacare-sys/roshpina/actions/runs/37456445834"
-      },
-      "lastRunReason": null,
-      "commits7d": 10,
-      "commits7dCapped": false,
-      "commitsReason": null
-    },
-    {
-      "name": "private-15",
-      "private": true,
-      "pushedAt": "2026-10-08T06:34:45Z",
-      "defaultBranch": "main",
-      "description": null,
-      "lastRun": {
-        "name": "workflow-yaml-guard",
-        "status": "completed",
-        "conclusion": "failure",
-        "at": "2026-10-06T11:24:46Z",
-        "url": "https://github.com/roshpinacare-sys/Sdk/actions/runs/37456218928"
-      },
-      "lastRunReason": null,
-      "commits7d": 11,
-      "commits7dCapped": false,
-      "commitsReason": null
-    },
-    {
-      "name": "private-16",
-      "private": true,
-      "pushedAt": "2026-10-08T05:56:51Z",
-      "defaultBranch": "main",
-      "description": null,
-      "lastRun": {
-        "name": "workflow-yaml-guard",
-        "status": "completed",
-        "conclusion": "failure",
-        "at": "2026-10-06T11:22:53Z",
-        "url": "https://github.com/roshpinacare-sys/saos-jummper/actions/runs/37456012378"
-      },
-      "lastRunReason": null,
-      "commits7d": 11,
-      "commits7dCapped": false,
-      "commitsReason": null
-    },
-    {
-      "name": "private-17",
-      "private": true,
-      "pushedAt": "2026-10-07T20:47:52Z",
-      "defaultBranch": "main",
-      "description": null,
-      "lastRun": {
-        "name": "workflow-yaml-guard",
-        "status": "completed",
-        "conclusion": "failure",
-        "at": "2026-10-06T11:30:46Z",
-        "url": "https://github.com/roshpinacare-sys/anchor-baseline/actions/runs/37456894321"
-      },
-      "lastRunReason": null,
-      "commits7d": 8,
-      "commits7dCapped": false,
       "commitsReason": null
     }
   ],
@@ -527,5 +233,10 @@
       "headBlock": 64395692
     }
   },
-  "errors": []
+  "errors": [
+    {
+      "call": "/user/repos?per_page=100&sort=pushed",
+      "error": "http 403: Resource not accessible by integration"
+    }
+  ]
 }
