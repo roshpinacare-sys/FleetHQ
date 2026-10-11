@@ -7,6 +7,12 @@
 //   executableBy: next-retro = this cycle) is now `builtin-e1-spread-regime`
 //   (read-only/verify/doc-only) + the research layer now consumes the fleet's
 //   declared work (Sandbox ops/office/work-orders.json, open-P1s → WO- items).
+// Profit lane: zai-14c · owner mandate trace 1a12d502a99b7021 ("ודא-רווחיות") —
+//   the office LEARNS PROFITABILITY: research layer consumes Sandbox
+//   receipts/profit-oracle-latest.json (zai-14b's daily oracle) DEFENSIVELY
+//   (any fetch/parse/shape failure → honest unavailable, zero invented data);
+//   LOSS / delta < -0.5% → one doc-only SAFE backlog item `profit-guard-loss`.
+//   Research-layer wiring only — NO new BUILTIN (one-per-cycle law; E1 was this cycle's).
 //
 // Zero deps. Node >= 18. Plain node (workflows run node, not bun).
 //
@@ -195,6 +201,10 @@ const WORK_ORDERS_URL = 'https://raw.githubusercontent.com/roshpinacare-sys/Sand
 const E1_GRID_URL = 'https://roshpinacare-sys.github.io/Domain/dex/grid.json'; // the same feed the bus measures (domain-dex-grid)
 const E1_REGIME_BPS = 93.5; // spread-regime law — baseline research E1 2026-10-11 (ECONOMIC-PLAN §2.2, steemBps)
 const E1_STALE_HOURS = 24;  // source older than this → honest STALE verdict, never a fake live one
+// zai-14c — the office learns profitability (defensive consumption of zai-14b's daily oracle;
+// 14b may not have landed yet — any failure is honest unavailable, never invented data)
+const PROFIT_ORACLE_URL = 'https://raw.githubusercontent.com/roshpinacare-sys/Sandbox/main/receipts/profit-oracle-latest.json';
+const PROFIT_GUARD_DELTA_FLOOR = -0.5; // delta < -0.5% → doc-only loss note (task law, LOSS-verdict fires regardless)
 
 // Embedded fallback snapshot of bus-registry.json (schema roshpinacare.fleet-bus-registry/1,
 // measured live by zai-11c @ 2026-10-11T20:35Z — 16/16 URLs verified 200 that day).
@@ -481,6 +491,77 @@ async function fetchE1Verdict(nowMs) {
   return spreadVerdict(p.json, nowMs, { httpStatus: r.status });
 }
 
+// ─── zai-14c: profit-oracle consumption (the office learns profitability) ───
+// DEFENSIVE by law: 14b's receipt may not exist yet — ANY fetch/parse/shape failure
+// → {unavailable:true, reason} honest note, ZERO invented data. Pure parse is drilled
+// in selftest with fixtures; fetchProfitOracle is the only network touch.
+const profitNum = (v) => {
+  if (typeof v === 'number' && Number.isFinite(v)) return v;
+  if (typeof v === 'string' && v.trim() !== '' && Number.isFinite(Number(v))) return Number(v);
+  return null;
+};
+function parseProfitOracle(res) {
+  if (!res || !res.ok) {
+    const why = res ? (res.error ? `רשת: ${clip(res.error, 60)}` : `HTTP ${res.status}`) : 'no-response';
+    return { unavailable: true, source: 'unavailable', note: `profit-oracle לא-נגיש (${why}) — כנה, לא-מדומה (14b עשוי שלא להיות באוויר עדיין)` };
+  }
+  const p = tryJson(res.text);
+  if (!p.ok) return { unavailable: true, source: 'unavailable', note: `profit-oracle הגיע אך JSON תקול (${clip(p.error, 60)}) — כנה` };
+  const j = p.json;
+  if (!j || typeof j !== 'object' || Array.isArray(j)) {
+    return { unavailable: true, source: 'unavailable', note: 'profit-oracle לא-אובייקט — צורה לא-מוכרת, כנה' };
+  }
+  const netWorthSbdEquiv = profitNum(j.netWorthSbdEquiv ?? j.netWorthSbd ?? j.netWorth);
+  const deltaVsPriorPct = profitNum(j.deltaVsPriorPct ?? j.deltaPct ?? j.deltaVsPrior);
+  const verdict = typeof j.verdict === 'string' && ['PROFIT', 'FLAT', 'LOSS'].includes(j.verdict.trim().toUpperCase()) ? j.verdict.trim().toUpperCase() : null;
+  const gridVerdict = (typeof j.gridVerdict === 'string' && j.gridVerdict.trim()) || (j.grid && typeof j.grid.verdict === 'string' && j.grid.verdict.trim()) || null;
+  const at = (typeof j.at === 'string' && j.at) || (typeof j.generatedAt === 'string' && j.generatedAt) || null;
+  if (netWorthSbdEquiv == null && deltaVsPriorPct == null && !verdict && !gridVerdict && !at) {
+    return { unavailable: true, source: 'unavailable', note: 'profit-oracle הגיע אך אף-שדה-מוכר לא נמצא (netWorthSbdEquiv/deltaVsPriorPct/verdict/gridVerdict/at) — צורה לא-מוכרת, כנה' };
+  }
+  return {
+    unavailable: false, source: 'live-sandbox-raw',
+    note: `profit-oracle חי (${res.status}${at ? `, at ${fmtUTC(at)}` : ''}) — המשרד לומד-רווחיות`,
+    netWorthSbdEquiv, deltaVsPriorPct, verdict, gridVerdict, at,
+  };
+}
+async function fetchProfitOracle(token) {
+  // anonymous first (Sandbox raw is public by design), token only as graceful retry
+  let r = await fetchText(PROFIT_ORACLE_URL, { timeoutMs: 10000 });
+  if (!r.ok && token) r = await fetchText(PROFIT_ORACLE_URL, { timeoutMs: 10000, token });
+  return parseProfitOracle(r);
+}
+// guard law (zai-14c): verdict==LOSS OR delta < -0.5% → ONE doc-only SAFE backlog item.
+// doc-only: "publish honest loss note in retro" — never an execution, never an owner-word.
+function distillProfit(po) {
+  if (!po || po.unavailable) return []; // defensive: unavailable → zero invented items
+  const fire = po.verdict === 'LOSS' || (typeof po.deltaVsPriorPct === 'number' && po.deltaVsPriorPct < PROFIT_GUARD_DELTA_FLOOR);
+  if (!fire) return [];
+  const fields = `verdict=${po.verdict || 'לא-ידוע'} · delta=${po.deltaVsPriorPct == null ? 'לא-ידוע' : `${po.deltaVsPriorPct > 0 ? '+' : ''}${po.deltaVsPriorPct}%`} · netWorth=${po.netWorthSbdEquiv == null ? 'לא-ידוע' : `${po.netWorthSbdEquiv} SBD-equiv`}`;
+  return [{
+    id: 'profit-guard-loss',
+    source: 'profit-oracle-latest.json (Sandbox raw)',
+    title: clip(redactPrivateNames(`פרסום-הערת-הפסד כנה ב-retro (doc-only) — profit-oracle: ${fields}`), 140),
+    riskClass: 'SAFE', value: 8, effort: 1, ownerWordRequired: false,
+    status: 'OPEN', executableBy: 'next-retro',
+    detail: {
+      verdict: po.verdict || null, deltaVsPriorPct: po.deltaVsPriorPct ?? null, netWorthSbdEquiv: po.netWorthSbdEquiv ?? null, at: po.at || null,
+      guard: `verdict==LOSS או delta < ${PROFIT_GUARD_DELTA_FLOOR}% → doc-only: פרסום-הערת-הפסד כנה ב-retro`,
+    },
+  }];
+}
+function profitSummary(po) {
+  if (!po) return 'לא-נמדד במחזור זה (כנה)';
+  if (po.unavailable) return `לא-זמין — ${po.note}`;
+  const parts = [];
+  if (po.verdict) parts.push(`verdict=${po.verdict}`);
+  if (po.deltaVsPriorPct != null) parts.push(`delta=${po.deltaVsPriorPct > 0 ? '+' : ''}${po.deltaVsPriorPct}% מול-המדידה-הקודמת`);
+  if (po.netWorthSbdEquiv != null) parts.push(`שווי-נקי=${po.netWorthSbdEquiv} SBD-equiv`);
+  if (po.gridVerdict) parts.push(`grid=${po.gridVerdict}`);
+  if (po.at) parts.push(`at=${fmtUTC(po.at)}`);
+  return parts.length ? parts.join(' · ') : 'הגיע אך בלי שדות-מוכרים — כנה';
+}
+
 // ─────────────────────────────────────────────── STAGE 2 זיקוק — findings → normalized items
 const RISK_RANK = { SAFE: 0, 'MACHINE-PREP': 1, 'OWNER-WORD': 2 };
 const RISK_HE = { SAFE: 'בטוח', 'MACHINE-PREP': 'הכנה-מכונה', 'OWNER-WORD': 'דבר-בעלים' };
@@ -603,6 +684,7 @@ function distill(snapshot) {
     ...distillBus(snapshot.bus),
     ...distillGates(snapshot.gates),
     ...distillWorkOrders(snapshot.workOrders),
+    ...distillProfit(snapshot.profit), // zai-14c — the office learns profitability
   ];
   // dedupe by id (last wins) — deterministic
   const byId = new Map();
@@ -749,6 +831,7 @@ function buildBacklog({ snapshot, ranked, executed, proposal, nowMs }) {
   L.push(`- **מחקר**: ${snapshot.findings && snapshot.findings.found ? `הממצאים מ-${snapshot.findings.date} — ${snapshot.findings.experiments.length} ניסויים` : 'לא-נמדד (כנה)'}`);
   L.push(`- **E1 spread-regime (built-in)**: ${snapshot.e1 ? snapshot.e1.block : 'לא-נמדד (כנה)'}`);
   L.push(`- **צווי-עבודה (work-orders)**: ${snapshot.workOrders && snapshot.workOrders.counts ? `${snapshot.workOrders.counts.open} פתוחים · ${snapshot.workOrders.counts.resolved} נפתרו · P1 פתוחים: ${snapshot.workOrders.counts.openP1}` : 'לא-ידוע (כנה)'}`);
+  L.push(`- **רווחיות (profit-oracle)**: ${profitSummary(snapshot.profit)}${distillProfit(snapshot.profit).length ? ' · 🔔 פריט `profit-guard-loss` נפתח (doc-only)' : ''}`);
   L.push(`- **פריטים**: ${ranked.length} (SAFE ${risks.SAFE || 0} · MACHINE-PREP ${risks['MACHINE-PREP'] || 0} · OWNER-WORD ${risks['OWNER-WORD'] || 0})`);
   L.push('');
   L.push('## בוצע במחזור זה (SAFE built-ins בלבד — חוק)');
@@ -797,6 +880,7 @@ function buildRetroLatest({ snapshot, ranked, executed, proposal, proposalItem, 
   L.push(`- **רישום-האוטובוס**: ${snapshot.registry.source} — ${clip(snapshot.registry.note, 140)}`);
   L.push(`- **הדיג'סט שלנו**: ${dig && dig.generatedAt ? `חי · generatedAt ${fmtUTC(dig.generatedAt)} (${dig.ageHours}h)` : (dig && dig.note) || 'לא-ידוע'}${dig && dig.reposSeen != null ? ` · repos ${dig.reposSeen}` : ''}${dig && dig.gridVerdict ? ` · grid: ${dig.gridVerdict}` : ''}${dig && dig.hiveVerdict ? ` · hive: ${dig.hiveVerdict}` : ''}`);
   L.push(`- **צווי-עבודה (work-orders)**: ${snapshot.workOrders && snapshot.workOrders.counts ? `${snapshot.workOrders.counts.open} פתוחים · ${snapshot.workOrders.counts.resolved} נפתרו · P1 פתוחים: ${snapshot.workOrders.counts.openP1} (${snapshot.workOrders.source})` : (snapshot.workOrders && snapshot.workOrders.note) || 'לא-ידוע (כנה)'}`);
+  L.push(`- **רווחיות (profit-oracle, zai-14c — המשרד לומד-רווחיות)**: ${profitSummary(snapshot.profit)}${distillProfit(snapshot.profit).length ? ' · 🔔 `profit-guard-loss` (SAFE, doc-only)' : ''}`);
   if (F && F.found) {
     L.push(`- **ממצאי-המחקר** (findings-${F.date}, ${F.lane || 'research lane'}):`);
     L.push('');
@@ -876,6 +960,15 @@ function buildState({ snapshot, ranked, executed, proposal, proposalItem, nowMs 
       : { found: false, note: (snapshot.findings && snapshot.findings.note) || 'unknown' },
     bus: { at: snapshot.bus.at, counts: snapshot.bus.counts, feeds: snapshot.bus.feeds.map((f) => ({ id: f.id, status: f.status, ageHours: f.ageHours, httpStatus: f.httpStatus })) },
     e1: snapshot.e1 || null,
+    profit: snapshot.profit ? {
+      unavailable: !!snapshot.profit.unavailable,
+      source: snapshot.profit.source || null, note: snapshot.profit.note || null,
+      netWorthSbdEquiv: snapshot.profit.netWorthSbdEquiv ?? null,
+      deltaVsPriorPct: snapshot.profit.deltaVsPriorPct ?? null,
+      verdict: snapshot.profit.verdict || null,
+      gridVerdict: snapshot.profit.gridVerdict || null,
+      at: snapshot.profit.at || null,
+    } : null,
     workOrders: snapshot.workOrders ? { source: snapshot.workOrders.source, note: snapshot.workOrders.note, counts: snapshot.workOrders.counts } : null,
     gates: snapshot.gates && snapshot.gates.gates
       ? { source: snapshot.gates.source, generatedAt: snapshot.gates.generatedAt || null, gates: snapshot.gates.gates.map((x) => ({ id: x.id, state: x.state })) }
@@ -978,6 +1071,7 @@ footer{margin-top:44px; border-top:1px solid var(--border); padding-top:16px; co
     ${bus.counts.grey ? chip('neutral', `${bus.counts.grey} לא-ידוע`) : ''}
     ${chip('violet', `תור: ${ranked.length} פריטים`)}
     ${snapshot.workOrders && snapshot.workOrders.counts ? chip('info', `צווים: ${snapshot.workOrders.counts.open} פתוחים · P1: ${snapshot.workOrders.counts.openP1}`) : ''}
+    ${snapshot.profit && !snapshot.profit.unavailable ? chip(snapshot.profit.verdict === 'PROFIT' ? 'ok' : snapshot.profit.verdict === 'LOSS' ? 'bad' : 'info', `רווחיות: ${snapshot.profit.verdict || 'נמדד'}`) : chip('neutral', 'רווחיות: לא-זמין עדיין (כנה)')}
     ${g && g.gates ? chip('bad', `${g.gates.filter((x) => x.state === 'WAITING-OWNER').length} שערים ממתינים-לבעלים`) : chip('neutral', 'שערים: לא-ידוע')}
   </div>
 </header>
@@ -1018,6 +1112,12 @@ footer{margin-top:44px; border-top:1px solid var(--border); padding-top:16px; co
     <p class="law"><code>${esc(snapshot.e1 ? snapshot.e1.block : 'SPREAD-REGIME: לא-נמדד (כנה)')}</code></p>
     <p class="pfoot">חוק: &lt;${E1_REGIME_BPS}bps = tightened/PASS · &gt; = loosened/HOLD · מקור מיושן &gt;${E1_STALE_HOURS}h = STALE כנה · read-only/verify/doc-only · deed zai-13c (trace 1a12d186d2f8b86d)</p>
     ${snapshot.workOrders && snapshot.workOrders.counts ? `<p class="law"><b>צווי-עבודה שהמשרד רואה:</b> ${esc(String(snapshot.workOrders.counts.open))} פתוחים · ${esc(String(snapshot.workOrders.counts.resolved))} נפתרו · P1 פתוחים: ${esc(String(snapshot.workOrders.counts.openP1))} — מקור: work-orders.json (Sandbox raw)</p>` : `<p class="law">צווי-עבודה: ${esc((snapshot.workOrders && snapshot.workOrders.note) || 'לא-ידוע (כנה)')}</p>`}
+  </div>
+  <div class="card" style="margin-top:14px">
+    <b>רווחיות — profit-oracle (המשרד לומד-רווחיות · zai-14c)</b>
+    ${(() => { const po = snapshot.profit; if (!po || po.unavailable) return `<p class="law">${esc(profitSummary(po))}</p>`; const cls = po.verdict === 'PROFIT' ? 'ok' : po.verdict === 'LOSS' ? 'bad' : 'info'; return `<p class="law">${chip(cls, po.verdict || 'נמדד')} <code>${esc(profitSummary(po))}</code></p>`; })()}
+    ${distillProfit(snapshot.profit).length ? `<p class="law">🔔 <b>profit-guard-loss</b> נפתח בתור (SAFE · doc-only): פרסום-הערת-הפסד כנה ב-retro — verdict LOSS או delta &lt; ${esc(String(PROFIT_GUARD_DELTA_FLOOR))}%</p>` : ''}
+    <p class="pfoot">מקור: profit-oracle-latest.json (Sandbox raw) · צריכה-מגוננת: כשל/צורה-לא-מוכרת = "לא-זמין" כנה, אפס-נתונים-מומצאים · חוק-השומר: LOSS / delta &lt; ${esc(String(PROFIT_GUARD_DELTA_FLOOR))}% → פריט doc-only אחד (research-layer wiring בלבד — בלי built-in חדש, חוק-אחד-למחזור)</p>
   </div>
 </section>
 
@@ -1097,12 +1197,13 @@ async function runLive() {
   const digest = await fetchDigest();
   const workOrders = await fetchWorkOrders(token);
   const e1 = await fetchE1Verdict(nowMs);
+  const profit = await fetchProfitOracle(token); // zai-14c — defensive; 14b may not have landed yet
   const snapshot = {
     at: new Date(nowMs).toISOString(),
     registry: { source: reg.source, note: reg.note, registry: reg.registry },
-    bus, findings, gates, digest, workOrders, e1,
+    bus, findings, gates, digest, workOrders, e1, profit,
   };
-  console.log(`חקר: registry=${reg.source} · bus ${bus.counts.green}G/${bus.counts.amber}A/${bus.counts.red}R/${bus.counts.grey}U · findings=${findings.found ? findings.date : 'לא-נמדד'} · gates=${gates.gates ? gates.gates.length + ' ממופים' : 'לא-ידוע'} · digest=${digest.generatedAt ? fmtUTC(digest.generatedAt) : 'לא-ידוע'} · WO=${workOrders.counts ? `${workOrders.counts.open}פתוחים/${workOrders.counts.resolved}נפתרו/P1:${workOrders.counts.openP1}` : 'לא-ידוע'} · E1=${e1.verdict}`);
+  console.log(`חקר: registry=${reg.source} · bus ${bus.counts.green}G/${bus.counts.amber}A/${bus.counts.red}R/${bus.counts.grey}U · findings=${findings.found ? findings.date : 'לא-נמדד'} · gates=${gates.gates ? gates.gates.length + ' ממופים' : 'לא-ידוע'} · digest=${digest.generatedAt ? fmtUTC(digest.generatedAt) : 'לא-ידוע'} · WO=${workOrders.counts ? `${workOrders.counts.open}פתוחים/${workOrders.counts.resolved}נפתרו/P1:${workOrders.counts.openP1}` : 'לא-ידוע'} · E1=${e1.verdict} · profit=${profit.unavailable ? `לא-זמין (כנה)` : (profit.verdict || 'שדות-נמדדו')}${profit.unavailable ? '' : ` delta=${profit.deltaVsPriorPct == null ? '?' : profit.deltaVsPriorPct + '%'}`}`);
 
   // STAGE 2 זיקוק
   const ranked = rank(distill(snapshot));
@@ -1395,6 +1496,64 @@ function selftest() {
     const proposalItem = ranked.find((it) => it.status !== 'EXECUTED') || null;
     assert(proposalItem && proposalItem.id !== 'research-e1-spread-regime', 'executed item must never be re-proposed');
     assert(ranked.some((i) => i.id === 'research-e2-feed-divergence'), 'other research items still surface');
+  });
+
+  // V19 — zai-14c profit-oracle DEFENSIVE paths: bad JSON / dead source / unrecognized shape → honest unavailable, zero invented items
+  vec('profit-oracle defensive: bad JSON → unavailable · 404 → unavailable · no-known-shape → unavailable · zero invented items', () => {
+    const bad = parseProfitOracle({ ok: true, status: 200, text: '{not-json-at-all', error: null });
+    assert(bad.unavailable === true && /JSON תקול/.test(bad.note), `bad JSON must be honest unavailable: ${JSON.stringify(bad)}`);
+    const dead = parseProfitOracle({ ok: false, status: 404, text: '404: Not Found', error: null });
+    assert(dead.unavailable === true && /HTTP 404/.test(dead.note), `404 must be honest unavailable: ${JSON.stringify(dead)}`);
+    const netErr = parseProfitOracle({ ok: false, status: 0, text: '', error: 'ECONNREFUSED-mock' });
+    assert(netErr.unavailable === true && /ECONNREFUSED-mock/.test(netErr.note), 'network failure must be honest unavailable with reason');
+    const shape = parseProfitOracle({ ok: true, status: 200, text: JSON.stringify({ hello: 'world', version: 3 }), error: null });
+    assert(shape.unavailable === true && /צורה לא-מוכרת/.test(shape.note), `unrecognized shape must be honest unavailable: ${JSON.stringify(shape)}`);
+    assert(distillProfit(bad).length === 0 && distillProfit(dead).length === 0 && distillProfit(shape).length === 0 && distillProfit(null).length === 0 && distillProfit({ unavailable: true }).length === 0,
+      'unavailable/missing profit must yield zero invented items');
+  });
+
+  // V20 — zai-14c good fixture → fields extracted + surfaced in backlog/retro/state/index
+  vec('profit-oracle good fixture: fields extracted (netWorth/delta/verdict/grid/at) + surfaced in BACKLOG/RETRO/state/index', () => {
+    const po = parseProfitOracle({ ok: true, status: 200, text: JSON.stringify({ schema: 'sandbox/profit-oracle/1', at: '2026-10-12T05:29:00Z', netWorthSbdEquiv: 1234.5, deltaVsPriorPct: 0.42, verdict: 'PROFIT', gridVerdict: 'EDGE-POSITIVE' }), error: null });
+    assert(po.unavailable === false, 'good fixture must parse as available');
+    assert(po.netWorthSbdEquiv === 1234.5 && po.deltaVsPriorPct === 0.42 && po.verdict === 'PROFIT' && po.gridVerdict === 'EDGE-POSITIVE' && po.at === '2026-10-12T05:29:00Z', `fields wrong: ${JSON.stringify(po)}`);
+    assert(!distillProfit(po).length, 'PROFIT must not fire the loss guard');
+    const nowMs = Date.now();
+    const snapshot = { at: new Date(nowMs).toISOString(), registry: { source: 'fallback-embedded', note: 'n', registry: { schema: 'x', feeds: [] } }, bus: { at: 't', counts: { green: 0, amber: 0, red: 0, grey: 0 }, feeds: [] }, findings: { found: false, note: 'n' }, gates: { source: 'unavailable', note: 'n', gates: null }, digest: { source: 'unavailable', note: 'n', generatedAt: null }, workOrders: null, e1: null, profit: po };
+    const ranked = rank(distill(snapshot));
+    assert(!ranked.some((i) => i.id === 'profit-guard-loss'), 'PROFIT fixture must not produce the guard item');
+    const executed = executePlan(ranked);
+    const ctx = { snapshot, ranked, executed, proposal: buildProposal(ranked[0], snapshot, nowMs), nowMs };
+    const dir = mkdtempSync(join(tmpdir(), 'retro-po-'));
+    try {
+      const files = {
+        [join(dir, 'BACKLOG.md')]: buildBacklog(ctx),
+        [join(dir, 'RETRO-LATEST.md')]: buildRetroLatest(ctx),
+        [join(dir, 'retro-state.json')]: JSON.stringify(buildState(ctx), null, 2),
+        [join(dir, 'index.html')]: renderIndex(ctx),
+      };
+      writeLane(files);
+      const backlog = readFileSync(join(dir, 'BACKLOG.md'), 'utf8');
+      assert(backlog.includes('1234.5') && backlog.includes('PROFIT'), 'backlog must surface the profit fields');
+      const state = JSON.parse(readFileSync(join(dir, 'retro-state.json'), 'utf8'));
+      assert(state.profit && state.profit.unavailable === false && state.profit.verdict === 'PROFIT' && state.profit.netWorthSbdEquiv === 1234.5 && state.profit.deltaVsPriorPct === 0.42 && state.profit.gridVerdict === 'EDGE-POSITIVE', 'state must carry the profit fields');
+      const html = readFileSync(join(dir, 'index.html'), 'utf8');
+      assert(html.includes('profit-oracle') && html.includes('PROFIT') && html.includes('1234.5'), 'index must surface the profit block');
+    } finally { rmSync(dir, { recursive: true, force: true }); }
+  });
+
+  // V21 — zai-14c guard law boundaries: LOSS verdict or delta < -0.5% → ONE SAFE doc-only item; healthy → none
+  vec('profit-guard law: LOSS → one SAFE doc-only item · delta -0.8 fires · -0.4/-0.5 boundary + PROFIT/FLAT stay silent', () => {
+    const mk = (v, d) => ({ unavailable: false, source: 'fixture', note: 'n', verdict: v, deltaVsPriorPct: d, netWorthSbdEquiv: 100, gridVerdict: null, at: '2026-10-12T05:29:00Z' });
+    const loss = distillProfit(mk('LOSS', 0.1));
+    assert(loss.length === 1 && loss[0].id === 'profit-guard-loss' && loss[0].riskClass === 'SAFE' && loss[0].ownerWordRequired === false, `LOSS must fire exactly one SAFE guard: ${JSON.stringify(loss)}`);
+    assert(loss[0].executableBy === 'next-retro' && /doc-only/.test(loss[0].title), 'guard must be doc-only next-retro');
+    const deltaFire = distillProfit(mk('FLAT', -0.8));
+    assert(deltaFire.length === 1 && deltaFire[0].id === 'profit-guard-loss', 'delta < -0.5 must fire even when verdict is not LOSS');
+    assert(distillProfit(mk('FLAT', -0.4)).length === 0, 'delta -0.4 must NOT fire');
+    assert(distillProfit(mk('FLAT', -0.5)).length === 0, 'delta exactly -0.5 must NOT fire (strict <)');
+    assert(distillProfit(mk('PROFIT', 1.2)).length === 0, 'PROFIT must not fire');
+    assert(distillProfit(mk(null, null)).length === 0, 'no verdict + no delta must not fire');
   });
 
   const passed = results.filter((r) => r.pass).length;
