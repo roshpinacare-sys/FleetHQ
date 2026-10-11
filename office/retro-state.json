@@ -1,0 +1,455 @@
+{
+  "protocol": "SAOS-OFFICE-RETRO/1",
+  "lane": "office-retro (zai-11d)",
+  "ownerMandate": "trace 1a12c9d6f5df1b95 — חקר/זיקוק/תכנון/ביצוע",
+  "generatedAt": "2026-10-11T21:17:32.692Z",
+  "laws": [
+    "retro לא משדר, לא חותם, לא נוגע בכסף/מפתחות/STASIS",
+    "תופעות-לוואי: קבצי-המסילה שלו בלבד (office/*)",
+    "אפס-סודות בכל-פלט (סורק fail-closed לפני כתיבה)",
+    "שמות-ריפואים-פרטיים ממוסכים private-NN (7-b) — כולל שערים",
+    "שערי-בעלים מוזכרים לפי id/כותרת מוקטנת בלבד",
+    "כנות: לא-ידוע נשאר לא-ידוע; פיד אדום מודפס אדום"
+  ],
+  "registry": {
+    "source": "live-zip",
+    "note": "registry חי מ-private-7 raw (200, 370ms)",
+    "feedCount": 16,
+    "fallbackSnapshotOf": null
+  },
+  "digest": {
+    "source": "pages",
+    "note": "digest.json חי (200)",
+    "generatedAt": "2026-10-11T21:00:50.702Z",
+    "ageHours": 0.3,
+    "reposSeen": 9,
+    "degradedEarly": false,
+    "gridVerdict": "ARMED-STABLE",
+    "hiveVerdict": "ARMED-WAITING",
+    "errors": 1
+  },
+  "findings": {
+    "found": true,
+    "date": "2026-10-11",
+    "at": "2026-10-11T20:13:07.191Z",
+    "experiments": [
+      {
+        "id": "E1",
+        "name": "spread-regime",
+        "ok": true
+      },
+      {
+        "id": "E2",
+        "name": "feed-divergence",
+        "ok": true
+      },
+      {
+        "id": "E3",
+        "name": "rc-census",
+        "ok": true
+      }
+    ]
+  },
+  "bus": {
+    "at": "2026-10-11T21:17:32.692Z",
+    "counts": {
+      "green": 14,
+      "amber": 2,
+      "red": 0,
+      "grey": 0
+    },
+    "feeds": [
+      {
+        "id": "fleethq-digest",
+        "status": "green",
+        "ageHours": 0.3,
+        "httpStatus": 200
+      },
+      {
+        "id": "domain-dex-grid",
+        "status": "amber",
+        "ageHours": 35.1,
+        "httpStatus": 200
+      },
+      {
+        "id": "domain-dex-world",
+        "status": "amber",
+        "ageHours": 30.5,
+        "httpStatus": 200
+      },
+      {
+        "id": "domain-dex-deposits",
+        "status": "green",
+        "ageHours": 8.3,
+        "httpStatus": 200
+      },
+      {
+        "id": "domain-office-feed",
+        "status": "green",
+        "ageHours": 2,
+        "httpStatus": 200
+      },
+      {
+        "id": "domain-office-data",
+        "status": "green",
+        "ageHours": 1.7,
+        "httpStatus": 200
+      },
+      {
+        "id": "domain-grid-truth",
+        "status": "green",
+        "ageHours": 2.3,
+        "httpStatus": 200
+      },
+      {
+        "id": "sandbox-probe-hive",
+        "status": "green",
+        "ageHours": 6,
+        "httpStatus": 200
+      },
+      {
+        "id": "sandbox-probe-blurt",
+        "status": "green",
+        "ageHours": 6,
+        "httpStatus": 200
+      },
+      {
+        "id": "sandbox-research-findings",
+        "status": "green",
+        "ageHours": 1.1,
+        "httpStatus": 200
+      },
+      {
+        "id": "sandbox-flow-map",
+        "status": "green",
+        "ageHours": 0.8,
+        "httpStatus": 200
+      },
+      {
+        "id": "sandbox-lessons-ledger",
+        "status": "green",
+        "ageHours": 7.4,
+        "httpStatus": 200
+      },
+      {
+        "id": "domain-status",
+        "status": "green",
+        "ageHours": 23.3,
+        "httpStatus": 200
+      },
+      {
+        "id": "console-dex-grid",
+        "status": "green",
+        "ageHours": 7.6,
+        "httpStatus": 200
+      },
+      {
+        "id": "console-dex-world",
+        "status": "green",
+        "ageHours": 1.1,
+        "httpStatus": 200
+      },
+      {
+        "id": "console-mirror-status",
+        "status": "green",
+        "ageHours": 1.9,
+        "httpStatus": 200
+      }
+    ]
+  },
+  "gates": {
+    "source": "live-zip",
+    "generatedAt": "2026-10-11T20:40:00Z",
+    "gates": [
+      {
+        "id": "gate-01-steem-active-wif-domain",
+        "state": "WAITING-OWNER"
+      },
+      {
+        "id": "gate-02-actions-billing",
+        "state": "WAITING-OWNER"
+      },
+      {
+        "id": "gate-03-r11-rotation-9-soldiers",
+        "state": "WAITING-OWNER"
+      },
+      {
+        "id": "gate-04-private-16-recovery-meta",
+        "state": "MACHINE-READY"
+      },
+      {
+        "id": "gate-05-stasis-convert",
+        "state": "WAITING-OWNER"
+      },
+      {
+        "id": "gate-06-stasis-transfers",
+        "state": "WAITING-OWNER"
+      },
+      {
+        "id": "gate-07-stasis-votes",
+        "state": "WAITING-OWNER"
+      },
+      {
+        "id": "gate-08-stasis-delegations",
+        "state": "DISSOLVED"
+      },
+      {
+        "id": "gate-09-blurt-ignition",
+        "state": "WAITING-OWNER"
+      },
+      {
+        "id": "gate-10-private-4-vault-db",
+        "state": "WAITING-OWNER"
+      },
+      {
+        "id": "gate-11-saos-agents-distribution",
+        "state": "WAITING-OWNER"
+      }
+    ]
+  },
+  "items": [
+    {
+      "id": "research-e1-spread-regime",
+      "source": "research/2026-10-11 (E1 spread-regime)",
+      "title": "E1 spread-regime — spread tightened (93.48 < 93.5 bps) — grid-side liquidity improving",
+      "riskClass": "SAFE",
+      "value": 4,
+      "effort": 2,
+      "ownerWordRequired": false,
+      "status": "OPEN",
+      "executableBy": "next-retro",
+      "detail": {
+        "ok": true,
+        "next": "track weekly; correlate with grid-beat placements (private-12 ledger) before claiming causality"
+      }
+    },
+    {
+      "id": "gate-04-private-16-recovery-meta",
+      "source": "GATE-STATUS",
+      "title": "private-16 vault-chain/recovery-meta.json",
+      "riskClass": "MACHINE-PREP",
+      "value": 8.5,
+      "effort": 2,
+      "ownerWordRequired": true,
+      "proposal": {
+        "kind": "gate",
+        "ref": "sovereign/GATE-STATUS.json#gate-04-private-16-recovery-meta"
+      },
+      "status": "OPEN",
+      "executableBy": "owner-after-prep"
+    },
+    {
+      "id": "bus-domain-dex-grid",
+      "source": "bus-registry (B)",
+      "title": "פיד מיושן: domain-dex-grid — מיושן: 35h מעל החוק (24h)",
+      "riskClass": "MACHINE-PREP",
+      "value": 4,
+      "effort": 1,
+      "ownerWordRequired": false,
+      "status": "OPEN",
+      "executableBy": "next-retro",
+      "detail": {
+        "ageHours": 35.1,
+        "httpStatus": 200
+      }
+    },
+    {
+      "id": "bus-domain-dex-world",
+      "source": "bus-registry (B)",
+      "title": "פיד מיושן: domain-dex-world — מיושן: 30h מעל החוק (24h)",
+      "riskClass": "MACHINE-PREP",
+      "value": 4,
+      "effort": 1,
+      "ownerWordRequired": false,
+      "status": "OPEN",
+      "executableBy": "next-retro",
+      "detail": {
+        "ageHours": 30.5,
+        "httpStatus": 200
+      }
+    },
+    {
+      "id": "research-e2-feed-divergence",
+      "source": "research/2026-10-11 (E2 feed-divergence)",
+      "title": "E2 feed-divergence — healthy band: divergence 252.14 bps ≤ 300 (feed_above_market)",
+      "riskClass": "MACHINE-PREP",
+      "value": 4,
+      "effort": 2,
+      "ownerWordRequired": false,
+      "status": "OPEN",
+      "executableBy": "owner-after-prep",
+      "detail": {
+        "ok": true,
+        "next": "if >300 bps repeats 2× consecutively, escalate to operator brief (peg-door policy ref)"
+      }
+    },
+    {
+      "id": "gate-01-steem-active-wif-domain",
+      "source": "GATE-STATUS",
+      "title": "STEEM_ACTIVE_WIF בכספת-Domain",
+      "riskClass": "OWNER-WORD",
+      "value": 10,
+      "effort": 1,
+      "ownerWordRequired": true,
+      "proposal": {
+        "kind": "gate",
+        "ref": "sovereign/GATE-STATUS.json#gate-01-steem-active-wif-domain"
+      },
+      "status": "OPEN",
+      "executableBy": "owner-only"
+    },
+    {
+      "id": "gate-02-actions-billing",
+      "source": "GATE-STATUS",
+      "title": "חיוב-Actions",
+      "riskClass": "OWNER-WORD",
+      "value": 9.5,
+      "effort": 1,
+      "ownerWordRequired": true,
+      "proposal": {
+        "kind": "gate",
+        "ref": "sovereign/GATE-STATUS.json#gate-02-actions-billing"
+      },
+      "status": "OPEN",
+      "executableBy": "owner-only"
+    },
+    {
+      "id": "gate-03-r11-rotation-9-soldiers",
+      "source": "GATE-STATUS",
+      "title": "סבבת-מפתות R11 + 9-חיילים tx_missing_owner_auth (cashmachine, haran, israelnews…",
+      "riskClass": "OWNER-WORD",
+      "value": 9,
+      "effort": 1,
+      "ownerWordRequired": true,
+      "proposal": {
+        "kind": "gate",
+        "ref": "sovereign/GATE-STATUS.json#gate-03-r11-rotation-9-soldiers"
+      },
+      "status": "OPEN",
+      "executableBy": "owner-only"
+    },
+    {
+      "id": "gate-05-stasis-convert",
+      "source": "GATE-STATUS",
+      "title": "STASIS-lane convert",
+      "riskClass": "OWNER-WORD",
+      "value": 8,
+      "effort": 1,
+      "ownerWordRequired": true,
+      "proposal": {
+        "kind": "gate",
+        "ref": "sovereign/GATE-STATUS.json#gate-05-stasis-convert"
+      },
+      "status": "OPEN",
+      "executableBy": "owner-only"
+    },
+    {
+      "id": "gate-06-stasis-transfers",
+      "source": "GATE-STATUS",
+      "title": "STASIS-lane transfers",
+      "riskClass": "OWNER-WORD",
+      "value": 7.5,
+      "effort": 1,
+      "ownerWordRequired": true,
+      "proposal": {
+        "kind": "gate",
+        "ref": "sovereign/GATE-STATUS.json#gate-06-stasis-transfers"
+      },
+      "status": "OPEN",
+      "executableBy": "owner-only"
+    },
+    {
+      "id": "gate-07-stasis-votes",
+      "source": "GATE-STATUS",
+      "title": "STASIS-lane votes",
+      "riskClass": "OWNER-WORD",
+      "value": 7,
+      "effort": 1,
+      "ownerWordRequired": true,
+      "proposal": {
+        "kind": "gate",
+        "ref": "sovereign/GATE-STATUS.json#gate-07-stasis-votes"
+      },
+      "status": "OPEN",
+      "executableBy": "owner-only"
+    },
+    {
+      "id": "gate-09-blurt-ignition",
+      "source": "GATE-STATUS",
+      "title": "Blurt",
+      "riskClass": "OWNER-WORD",
+      "value": 6,
+      "effort": 1,
+      "ownerWordRequired": true,
+      "proposal": {
+        "kind": "gate",
+        "ref": "sovereign/GATE-STATUS.json#gate-09-blurt-ignition"
+      },
+      "status": "OPEN",
+      "executableBy": "owner-only"
+    },
+    {
+      "id": "gate-10-private-4-vault-db",
+      "source": "GATE-STATUS",
+      "title": "private-4",
+      "riskClass": "OWNER-WORD",
+      "value": 5.5,
+      "effort": 1,
+      "ownerWordRequired": true,
+      "proposal": {
+        "kind": "gate",
+        "ref": "sovereign/GATE-STATUS.json#gate-10-private-4-vault-db"
+      },
+      "status": "OPEN",
+      "executableBy": "owner-only"
+    },
+    {
+      "id": "gate-11-saos-agents-distribution",
+      "source": "GATE-STATUS",
+      "title": "saos-agents",
+      "riskClass": "OWNER-WORD",
+      "value": 5,
+      "effort": 1,
+      "ownerWordRequired": true,
+      "proposal": {
+        "kind": "gate",
+        "ref": "sovereign/GATE-STATUS.json#gate-11-saos-agents-distribution"
+      },
+      "status": "OPEN",
+      "executableBy": "owner-only"
+    },
+    {
+      "id": "research-e3-rc-census",
+      "source": "research/2026-10-11 (E3 rc-census)",
+      "title": "E3 rc-census — 4 RC-starved accounts (<40%): wog 25.94%, hcsoldier4 8.05%, hcsoldier5 28.55%, hcsoldier6 21.63% — …",
+      "riskClass": "OWNER-WORD",
+      "value": 4,
+      "effort": 2,
+      "ownerWordRequired": true,
+      "status": "OPEN",
+      "executableBy": "owner-only",
+      "detail": {
+        "ok": true,
+        "next": "if starved persists 2× weekly, draft a delegation delta into grids/delegate-plan (owner word gate)"
+      }
+    }
+  ],
+  "executed": [
+    {
+      "id": "builtin-refresh-lane",
+      "title": "רענון קבצי-המסילה: BACKLOG + RETRO-LATEST + retro-state (SAFE: כתיבה למסילה-שלו בלבד)",
+      "riskClass": "SAFE",
+      "ownerWordRequired": false
+    },
+    {
+      "id": "builtin-verify-bus",
+      "title": "אימות-אוטובוס: מדידת כל-הפידים הרשומים + טבלת-בריאות מוטמעת (SAFE: קריאה-בלבד)",
+      "riskClass": "SAFE",
+      "ownerWordRequired": false
+    }
+  ],
+  "proposal": {
+    "file": "2026-10-11-research-e1-spread-regime.md",
+    "item": "research-e1-spread-regime"
+  }
+}
