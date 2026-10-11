@@ -511,11 +511,15 @@ function parseProfitOracle(res) {
   if (!j || typeof j !== 'object' || Array.isArray(j)) {
     return { unavailable: true, source: 'unavailable', note: 'profit-oracle לא-אובייקט — צורה לא-מוכרת, כנה' };
   }
-  const netWorthSbdEquiv = profitNum(j.netWorthSbdEquiv ?? j.netWorthSbd ?? j.netWorth);
-  const deltaVsPriorPct = profitNum(j.deltaVsPriorPct ?? j.deltaPct ?? j.deltaVsPrior);
-  const verdict = typeof j.verdict === 'string' && ['PROFIT', 'FLAT', 'LOSS'].includes(j.verdict.trim().toUpperCase()) ? j.verdict.trim().toUpperCase() : null;
-  const gridVerdict = (typeof j.gridVerdict === 'string' && j.gridVerdict.trim()) || (j.grid && typeof j.grid.verdict === 'string' && j.grid.verdict.trim()) || null;
-  const at = (typeof j.at === 'string' && j.at) || (typeof j.generatedAt === 'string' && j.generatedAt) || null;
+  // defensive field probe: top-level FIRST, then the union-receipt `summary` block
+  // (the house receipt pattern — 14b carries the fields inside summary, measured live 2026-10-11)
+  const s = j.summary && typeof j.summary === 'object' && !Array.isArray(j.summary) ? j.summary : {};
+  const netWorthSbdEquiv = profitNum(j.netWorthSbdEquiv ?? j.netWorthSbd ?? s.netWorthSbdEquiv ?? j.netWorth);
+  const deltaVsPriorPct = profitNum(j.deltaVsPriorPct ?? j.deltaPct ?? s.deltaVsPriorPct ?? j.deltaVsPrior);
+  const verdictRaw = j.verdict ?? s.verdict;
+  const verdict = typeof verdictRaw === 'string' && ['PROFIT', 'FLAT', 'LOSS'].includes(verdictRaw.trim().toUpperCase()) ? verdictRaw.trim().toUpperCase() : null;
+  const gridVerdict = (typeof j.gridVerdict === 'string' && j.gridVerdict.trim()) || (typeof s.gridVerdict === 'string' && s.gridVerdict.trim()) || (j.grid && typeof j.grid.verdict === 'string' && j.grid.verdict.trim()) || null;
+  const at = (typeof j.at === 'string' && j.at) || (typeof j.generatedAt === 'string' && j.generatedAt) || (typeof s.at === 'string' && s.at) || null;
   if (netWorthSbdEquiv == null && deltaVsPriorPct == null && !verdict && !gridVerdict && !at) {
     return { unavailable: true, source: 'unavailable', note: 'profit-oracle הגיע אך אף-שדה-מוכר לא נמצא (netWorthSbdEquiv/deltaVsPriorPct/verdict/gridVerdict/at) — צורה לא-מוכרת, כנה' };
   }
@@ -1517,6 +1521,9 @@ function selftest() {
     const po = parseProfitOracle({ ok: true, status: 200, text: JSON.stringify({ schema: 'sandbox/profit-oracle/1', at: '2026-10-12T05:29:00Z', netWorthSbdEquiv: 1234.5, deltaVsPriorPct: 0.42, verdict: 'PROFIT', gridVerdict: 'EDGE-POSITIVE' }), error: null });
     assert(po.unavailable === false, 'good fixture must parse as available');
     assert(po.netWorthSbdEquiv === 1234.5 && po.deltaVsPriorPct === 0.42 && po.verdict === 'PROFIT' && po.gridVerdict === 'EDGE-POSITIVE' && po.at === '2026-10-12T05:29:00Z', `fields wrong: ${JSON.stringify(po)}`);
+    // 14b's real live shape (union-receipt): fields nested inside `summary`, verdict UNKNOWN (honest null here)
+    const poNested = parseProfitOracle({ ok: true, status: 200, text: JSON.stringify({ at: '2026-10-11T23:50:30.041Z', summary: { netWorthSbdEquiv: 455.32, deltaVsPriorPct: null, gridVerdict: 'EDGE-NEGATIVE-GRID-HOLD', verdict: 'UNKNOWN' } }), error: null });
+    assert(poNested.unavailable === false && poNested.netWorthSbdEquiv === 455.32 && poNested.gridVerdict === 'EDGE-NEGATIVE-GRID-HOLD' && poNested.verdict === null && poNested.deltaVsPriorPct === null && poNested.at === '2026-10-11T23:50:30.041Z', `summary-nested shape (14b live) must extract: ${JSON.stringify(poNested)}`);
     assert(!distillProfit(po).length, 'PROFIT must not fire the loss guard');
     const nowMs = Date.now();
     const snapshot = { at: new Date(nowMs).toISOString(), registry: { source: 'fallback-embedded', note: 'n', registry: { schema: 'x', feeds: [] } }, bus: { at: 't', counts: { green: 0, amber: 0, red: 0, grey: 0 }, feeds: [] }, findings: { found: false, note: 'n' }, gates: { source: 'unavailable', note: 'n', gates: null }, digest: { source: 'unavailable', note: 'n', generatedAt: null }, workOrders: null, e1: null, profit: po };
