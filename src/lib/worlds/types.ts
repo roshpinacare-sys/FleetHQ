@@ -48,6 +48,19 @@ export interface ChainWire {
   treasuryNetSp?: number; delegatedOutSp?: number; receivedInSp?: number;
   balanceSteem?: number;
 }
+/** [T15] רשת-האמת של הקונסולה — המאמת-העצמאי (51 טענות) + שער-האמת-הציבורי */
+export interface VerifyWire {
+  summary?: { total: number; passed: number; failed: number; verdict: string };
+  generatedAt?: string;
+  failures?: { id: string; details?: string }[];
+  truthGate?: {
+    at?: string;
+    verdict?: string;
+    counts?: { pass: number; fail: number; skip: number };
+    redGates?: { gate: string; note?: string; measured?: string }[];
+  };
+}
+
 export interface WorldsPayload {
   fetchedAt: string;
   flow: { ok: boolean; error?: string; data?: FlowDataWire };
@@ -63,6 +76,8 @@ export interface WorldsPayload {
   bootVerify?: { ok: boolean; error?: string; ageH?: number | null; data?: BootVerifyWire };
   /** [zai-14] האורקל‑הטרי העומד — בתים ציבוריים == בתים מחויבים */
   freshOracle?: { ok: boolean; error?: string; data?: FreshOracleWire };
+  /** [T15] רשת-האמת — הגוף בודק-את-עצמו בפומבי; המשרד רואה-זאת */
+  verify?: { ok: boolean; error?: string; data?: VerifyWire };
 }
 
 /** [zai-14] פלט tools/connectivity-audit.mjs */
