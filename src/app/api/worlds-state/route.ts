@@ -154,6 +154,25 @@ async function collect(): Promise<Record<string, unknown>> {
     ? Math.round((Date.now() - Date.parse((bootVerify.data as { at: string }).at)) / 3_600_000 * 10) / 10
     : null
 
+// ---- [T15] רשת-האמת: המאמת-העצמאי (51 טענות מדודות) + שער-האמת של האתר-החי —
+// כשל → צ'יפ-אמבר כנה במשרד; אפס-כשל → המדידה-הירוקה המפורסמת. אפס-המצאות.
+const avData = agentVerifyR.data as { summary?: { total: number; passed: number; failed: number; verdict: string }; generatedAt?: string; results?: { id: string; ok: boolean; details?: string }[] } | null
+const tgData = truthGateR.data as { at?: string; verdict?: string; counts?: { pass: number; fail: number; skip: number }; results?: { gate: string; status: string; note?: string; measured?: string }[] } | null
+const verifyWire = (agentVerifyR.ok || truthGateR.ok) ? {
+  ok: true as const,
+  error: null,
+  data: {
+    summary: avData?.summary ?? null,
+    generatedAt: avData?.generatedAt ?? null,
+    failures: (avData?.results ?? []).filter((r) => !r.ok).map((r) => ({ id: r.id, details: r.details })),
+    truthGate: tgData ? {
+      at: tgData.at ?? null,
+      verdict: tgData.verdict ?? null,
+      counts: tgData.counts ?? null,
+      redGates: (tgData.results ?? []).filter((g) => g.status === 'FAIL').map((g) => ({ gate: g.gate, note: g.note ?? null, measured: g.measured ?? null })),
+    } : null,
+  },
+} : { ok: false as const, error: truthGateR.error ?? agentVerifyR.error ?? 'verify unavailable', data: null }
   const out = {
     fetchedAt: new Date().toISOString(),
     flow: { ok: flowR.ok, error: flowR.error, data: flowR.data },
@@ -181,25 +200,6 @@ export async function GET() {
   try {
     const payload = await collect()
     cache = { at: Date.now(), payload }
-  // ---- [T15] רשת-האמת: המאמת-העצמאי (51 טענות מדודות) + שער-האמת של האתר-החי —
-  // כשל → צ'יפ-אמבר כנה במשרד; אפס-כשל → המדידה-הירוקה המפורסמת. אפס-המצאות.
-  const avData = agentVerifyR.data as { summary?: { total: number; passed: number; failed: number; verdict: string }; generatedAt?: string; results?: { id: string; ok: boolean; details?: string }[] } | null
-  const tgData = truthGateR.data as { at?: string; verdict?: string; counts?: { pass: number; fail: number; skip: number }; results?: { gate: string; status: string; note?: string; measured?: string }[] } | null
-  const verifyWire = (agentVerifyR.ok || truthGateR.ok) ? {
-    ok: true as const,
-    error: null,
-    data: {
-      summary: avData?.summary ?? null,
-      generatedAt: avData?.generatedAt ?? null,
-      failures: (avData?.results ?? []).filter((r) => !r.ok).map((r) => ({ id: r.id, details: r.details })),
-      truthGate: tgData ? {
-        at: tgData.at ?? null,
-        verdict: tgData.verdict ?? null,
-        counts: tgData.counts ?? null,
-        redGates: (tgData.results ?? []).filter((g) => g.status === 'FAIL').map((g) => ({ gate: g.gate, note: g.note ?? null, measured: g.measured ?? null })),
-      } : null,
-    },
-  } : { ok: false as const, error: truthGateR.error ?? agentVerifyR.error ?? 'verify unavailable', data: null }
 
     return NextResponse.json(payload)
   } catch (err) {
