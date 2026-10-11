@@ -1,0 +1,70 @@
+{
+ "schema": "fleet.fresh-oracle/1",
+ "at": "2026-10-11T22:17:36.321Z",
+ "law": "live page is FRESH only if sha256(live bytes) == sha256(committed deploy-ref bytes); drift/missing = RED",
+ "results": [
+  {
+   "name": "FleetHQ window",
+   "liveUrl": "https://roshpinacare-sys.github.io/FleetHQ/",
+   "source": "FleetHQ@office-pages:index.html",
+   "liveStatus": 200,
+   "committedStatus": 200,
+   "liveSha16": "9e0b065b9f6319b7",
+   "committedSha16": "9e0b065b9f6319b7",
+   "liveBytes": 37351,
+   "verdict": "MATCH"
+  },
+  {
+   "name": "FleetHQ potential board",
+   "liveUrl": "https://roshpinacare-sys.github.io/FleetHQ/potential.html",
+   "source": "FleetHQ@office-pages:potential.html",
+   "liveStatus": 200,
+   "committedStatus": 200,
+   "liveSha16": "c7d63b422f559850",
+   "committedSha16": "c7d63b422f559850",
+   "liveBytes": 11953,
+   "verdict": "MATCH"
+  },
+  {
+   "name": "FleetHQ potential data",
+   "liveUrl": "https://roshpinacare-sys.github.io/FleetHQ/potential.json",
+   "source": "FleetHQ@office-pages:potential.json",
+   "liveStatus": 200,
+   "committedStatus": 200,
+   "liveSha16": "92b2230e6248eae5",
+   "committedSha16": "92b2230e6248eae5",
+   "liveBytes": 15130,
+   "verdict": "MATCH"
+  },
+  {
+   "name": "Domain window",
+   "liveUrl": "https://roshpinacare-sys.github.io/Domain/",
+   "source": "Domain@main:index.html",
+   "liveStatus": 200,
+   "committedStatus": 200,
+   "liveSha16": "e79e93cbb5bd35d6",
+   "committedSha16": "a31d74e9671b88fd",
+   "liveBytes": 50079,
+   "verdict": "DRIFT"
+  },
+  {
+   "name": "Domain worlds room",
+   "liveUrl": "https://roshpinacare-sys.github.io/Domain/office3d/",
+   "source": "Domain@main:office3d/index.html",
+   "liveStatus": 200,
+   "committedStatus": 200,
+   "liveSha16": "8a63e64ba55ea125",
+   "committedSha16": "8a63e64ba55ea125",
+   "liveBytes": 1832,
+   "verdict": "MATCH"
+  }
+ ],
+ "summary": {
+  "checked": 5,
+  "match": 4,
+  "drift": 1,
+  "missing": 0,
+  "verdict": "STALE-OR-BROKEN"
+ },
+ "method": "https GET live URL + raw.githubusercontent deploy ref → sha256-16 byte equality"
+}
