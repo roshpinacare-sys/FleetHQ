@@ -92,6 +92,64 @@ function loadDigest() {
 const office = loadOffice();
 const digest = loadDigest();
 
+// ---------------------------------------------------------------- room3d (baked frames — Task 11-a)
+/** מקורות-הפריימים (בסדר-עדיפות, שניהם אמיתיים):
+ *  1. office-window/dist/3d/meta.json — בייק באותה-ריצה (office-3d.yml)
+ *  2. receipts/office-3d/latest.json — מצביע-מחויב מבייק מוצלח קודם
+ *  ה-<img> תמיד מצביע על "3d/<file>" יחסית — הפריימים חיים על ענף
+ *  office-pages (מפורסמים על-ידי office-3d.yml). אין פריימים → "טרם אופה" כנה.
+ *  האפליקציה האינטראקטיבית אינה מוגשת ב-Pages — הקישור מוביל ל-README/הרצה. */
+function loadRoom3D() {
+  const metaSameRun = join(HERE, 'dist', '3d', 'meta.json');
+  const latest = join(REPO, 'receipts', 'office-3d', 'latest.json');
+  for (const p of [metaSameRun, latest]) {
+    if (!existsSync(p)) continue;
+    try {
+      const m = JSON.parse(readFileSync(p, 'utf8'));
+      if (m && m.honest === true && m.mode === 'mirror' && Array.isArray(m.frames) && m.frames.length) {
+        // meta.json = [{preset,label,file}] · latest.json = ["file.png"] — לנרמל לשמות
+        const files = m.frames.map((f) => (typeof f === 'string' ? f : f?.file)).filter((f) => typeof f === 'string');
+        if (!files.length) continue;
+        return { capturedAt: m.capturedAt, sourceSavedAt: m.sourceSavedAt, frames: files, from: existsSync(metaSameRun) && p === metaSameRun ? 'bake-this-run' : 'latest-pointer' };
+      }
+    } catch { /* next source */ }
+  }
+  return null;
+}
+const room3d = loadRoom3D();
+
+function renderRoom3D() {
+  const appUrl = 'https://github.com/roshpinacare-sys/FleetHQ#readme';
+  const runNote = 'האפליקציה האינטראקטיבית (סיור-מצלמה חי, לחיצה על דמויות) רצה מהריפו — bun install · bun run dev · ואז ?view=office';
+  const head = `
+    <div class="card wide">
+      <h3>🏛️ החדר התלת-ממדי — המשרד האמיתי</h3>
+      <p class="meta">החדר כולו ניזון מהפורמן: בפריסה-חיה — מהסוקט ("חי"); כאן — מהיומן האמיתי שהפורמן עצמו כותב (office-state-mirror.json): המציאות הנמדדת של המשרד, קפואה בזמן-השמירה. אין סימולציה ואין המצאה — מה שלא נמדד לא מוצג.</p>
+      <div class="links">
+        <a href="${appUrl}" rel="noopener">🎮 החדר האינטראקטיבי — הרצה מהריפו (README)</a>
+        <a href="https://github.com/roshpinacare-sys/FleetHQ/blob/main/receipts/office-state-mirror.json" rel="noopener">📄 מקור: היומן האמיתי</a>
+      </div>
+      <p class="meta" style="margin-top:8px">${esc(runNote)}</p>
+    </div>`;
+  if (!room3d) {
+    return `${head}
+    <div class="card wide"><div class="unknown">הפריימים טרם אופו בריצה-זו (office-3d טרם רץ או שהבייק האחרון נכשל — ולא מציגים פריימי-מקום). החלון יציג כאן את פריימי-החדר ברגע שהבייק יצליח.</div></div>`;
+  }
+  const figs = room3d.frames.map((f, i) => `
+      <figure class="fig3d">
+        <img src="3d/${esc(f)}" alt="פריים ${i + 1} מהחדר התלת-ממדי של מפקדת הצי" loading="lazy">
+      </figure>`).join('');
+  return `${head}
+    <div class="card wide">
+      ${chip('accent', `אופה: ${fmtUTC(room3d.capturedAt) || 'לא נמדד'}`)}
+      ${chip('info', `מציאות נמדדה מ: ${fmtUTC(room3d.sourceSavedAt) || 'לא נמדד'}`)}
+      ${chip('neutral', `מצב: מראה · ${room3d.frames.length} פריימים`)}
+      <div class="frames">${figs}
+      </div>
+      <p class="meta">כל פריים נלכד מהקנבס האמיתי (headless WebGL) באותן פוזות של מצלמת-הבמאי — לא רנדור-מחדש ולא עריכה. המטא-נתונים: <a href="3d/meta.json" rel="noopener">3d/meta.json</a>.</p>
+    </div>`;
+}
+
 // ---------------------------------------------------------------- chips
 const chip = (cls, label) => `<span class="chip ${cls}">${esc(label)}</span>`;
 
@@ -424,6 +482,13 @@ tr:last-child td{border-bottom:none}
 .kv li{display:flex; justify-content:space-between; gap:12px; padding:7px 0; border-top:1px solid var(--border); font-size:.9rem}
 .kv li:first-child{border-top:none}
 .marketing .card p{font-size:.9rem}
+.frames{display:grid; gap:12px; grid-template-columns:1fr; margin-top:12px}
+.fig3d{margin:0; border:1px solid var(--border); border-radius:10px; overflow:hidden; background:var(--surface)}
+.fig3d img{display:block; width:100%; height:auto}
+@media (min-width:760px){
+  .frames{grid-template-columns:1fr 1fr}
+  .frames .fig3d:first-child{grid-column:1 / -1}
+}
 .links{display:flex; flex-wrap:wrap; gap:10px; margin-top:12px}
 .links a{
   display:inline-block; padding:8px 14px; border:1px solid var(--border); border-radius:10px;
@@ -457,18 +522,23 @@ footer .stamp{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; 
 
 <div class="wrap">
 
+  <section id="room3d" aria-labelledby="h-room3d">
+    <div class="sec-head"><span class="sec-num">1</span><h2 id="h-room3d">החדר התלת-ממדי<span class="en">THE 3D ROOM — real office, baked frames</span></h2></div>
+    ${renderRoom3D()}
+  </section>
+
   <section id="office" aria-labelledby="h-office">
-    <div class="sec-head"><span class="sec-num">1</span><h2 id="h-office">המשרד<span class="en">THE OFFICE — task wall · crew · library · podium</span></h2></div>
+    <div class="sec-head"><span class="sec-num">2</span><h2 id="h-office">המשרד<span class="en">THE OFFICE — task wall · crew · library · podium</span></h2></div>
     ${renderOffice()}
   </section>
 
   <section id="fleet" aria-labelledby="h-fleet">
-    <div class="sec-head"><span class="sec-num">2</span><h2 id="h-fleet">מצב הצי<span class="en">FLEET STATUS — measured network</span></h2></div>
+    <div class="sec-head"><span class="sec-num">3</span><h2 id="h-fleet">מצב הצי<span class="en">FLEET STATUS — measured network</span></h2></div>
     ${renderFleet()}
   </section>
 
   <section id="why" class="marketing" aria-labelledby="h-why">
-    <div class="sec-head"><span class="sec-num">3</span><h2 id="h-why">למה זה שונה<span class="en">WHY IT'S DIFFERENT</span></h2></div>
+    <div class="sec-head"><span class="sec-num">4</span><h2 id="h-why">למה זה שונה<span class="en">WHY IT'S DIFFERENT</span></h2></div>
     <div class="grid2">
       <div class="card">
         <h3>✅ עבודה ניתנת לאימות</h3>
@@ -502,7 +572,7 @@ footer .stamp{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; 
 
   <footer>
     <div>נוצר אוטומטית על ידי המשרד · <span class="stamp">${esc(generatedAt)}</span></div>
-    <div style="margin-top:6px">מקורות: receipts/office-state-mirror.json + office-window/dist/digest.json (נמדד בזמן-הבנייה) · אין-JS, אין-עוקבים, אין-סודות</div>
+    <div style="margin-top:6px">מקורות: receipts/office-state-mirror.json + office-window/dist/digest.json + office-window/dist/3d/ (נמדד בזמן-הבנייה) · אין-JS, אין-עוקבים, אין-סודות</div>
   </footer>
 
 </div>

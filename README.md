@@ -19,6 +19,18 @@ Not a wall of terminal text. Not a fake dashboard. A place.
 
 **Fully autonomous.** The public office is a *window, not a steering wheel*: there is no goal console, no decision answering, no write path — nothing a visitor can steer. The operator schedules the work; the crew deliberates and resolves its own questions by policy.
 
+### 🏛️ החדר התלת-ממדי — עכשיו הפנים המובילות של המשרד (Task 11-a)
+
+החדר התלת-ממדי (`src/components/hq/`) מציג תמיד **מציאות נמדדת** — בשני מסלולים מפורסמים-בשלט בפינת-החדר:
+
+- **חי** — המפעיל מריץ את המשרד מקומית: הסוקט (:3010) מזרים כל אירוע אמיתי של הפורמן אל החדר, בזמן אמת.
+- **מראה — מציאות נמדדה מ-{savedAt}** — פריסה בלי פורמן (החלון הציבורי, הבייק): החדר ניזון מ**יומן-הפורמן האמיתי** (`receipts/office-state-mirror.json`) דרך `NEXT_PUBLIC_OFFICE_FEED` — היומן שהפורמן עצמו כותב, לא סימולציה. רענון כל שתי דקות.
+- **הדגמה** — רק במצב סים מפורש, עם סימן-מים DEMO. אין מסלול שלישי: מה שלא נמדד — לא מוצג.
+
+חידושי ה-11-a: **סיור-מצלמה קולנועי** (דולי חלק תחנות → פודיום → לוח → ספרייה, עם הקפה-סרק עדינה; כל קליק מחזיר שליטה), **תאורת שלושה-אורות** (key/fill/rim) + צללי-מגע רכים + מחזור-יום עדין, **טבעת-מצב** מתחת לכל איש-צוות (צבע-המצב החוקי), **HUD נתונים אמיתיים** (יעד פעיל · ספירת לוח · הכרעות), ומגבלות-ביצועים (dpr מהודק + איכות מסתגלת לניטור-fps). קישור-עומק: `?view=office`.
+
+החלון הציבורי (zero-JS) מקבל את החדר דרך **בייק-3D**: `office-3d.yml` בונה את האפליקציה במצב-מראה, מריץ כרום חסר-ראש עם WebGL, ממתין לפריים האמיתי הראשון (RoomReadiness) ומצלם את פוזות הסיור — והפריימים, עם חותמות-הזמן האמיתיות שלהם, מוטמעים בחלון ב-[https://roshpinacare-sys.github.io/FleetHQ/](https://roshpinacare-sys.github.io/FleetHQ/). בייק שנכשל = קבלת-כשל כנה; החלון מציג "טרם אופה", לעולם לא פריימי-מקום.
+
 </div>
 
 ---
