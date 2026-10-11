@@ -39,6 +39,9 @@ jobs:
       - name: Render office window page (standalone RTL Hebrew page)
         run: node office-window/render.mjs --digest office-window/dist/digest.json --out office-window/dist/index.html
 
+      - name: Potential ledger (measured open work + recruiting board — fail→unknown)
+        run: node tools/potential.mjs --digest office-window/dist/digest.json --dist office-window/dist
+
       - name: Publish dist to office-pages (rebase-first, no force-push)
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

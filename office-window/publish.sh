@@ -58,6 +58,13 @@ ROOT="$(pwd)"
     cp "$STATE_SRC" office-state.json
     git add office-state.json
   fi
+  # potential ledger (measured open work + recruiting board) — additive, optional
+  for PF in potential.json potential.html; do
+    if [ -f "$ROOT/office-window/dist/$PF" ]; then
+      cp "$ROOT/office-window/dist/$PF" "$PF"
+      git add "$PF"
+    fi
+  done
   if git diff --cached --quiet; then
     echo "publish: dist identical to office-pages HEAD — nothing to commit"
   else
