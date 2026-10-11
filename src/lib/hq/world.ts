@@ -16,6 +16,7 @@ import {
 } from './contract';
 import type { AgentState, Station } from './protocol';
 
+
 // ─────────────── אוטובוס אירועים ───────────────
 type BusEvents = {
   focus: { target: { x: number; y: number } | null; kind?: string; id?: string };

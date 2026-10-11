@@ -30,9 +30,9 @@ import { useHq } from '@/lib/hq/store';
 import { bus, agentVisualFresh, ROOM_STALE_MS } from '@/lib/hq/world';
 import { STATE_COLORS } from '@/lib/hq/protocol';
 
-/** בסיס-מודלים לפי-הקשר: ב-Domain החדר חי תחת /Domain/office3d/ (המודלים
- *  ב-/Domain/models/), בסנדבוקס וב-FleetHQ — בשורש. אין ניחוש: נגזר
- *  מ-location פעם-אחת בטעינת-המודול. */
+/** בסיס-מודלים לפי-הקשר (מסלול 11-a/T12 — המנצח במיזוג exec-14): ב-Domain
+ *  החדר חי תחת /Domain/office3d/ (המודלים ב-/Domain/models/), בסנדבוקס וב-FleetHQ
+ *  — בשורש. אין ניחוש: נגזר מ-location פעם-אחת בטעינת-המודול. */
 const MODEL_BASE =
   typeof location !== 'undefined' && location.pathname.includes('/office3d/')
     ? '../models/humans/'
@@ -494,9 +494,6 @@ function HumanAgent({ id, assets }: { id: string; assets: CrewAssets }) {
   const group = useRef<THREE.Group>(null);
   const inner = useRef<THREE.Group>(null);
   const shadowRef = useRef<THREE.Mesh>(null);
-  /** Task 11-a — טבעת-מצב על-הרצפה: החיים בחדר נקראים ממבט-אחת (צבע-המצב
-   *  החוקי מ-STATE_COLORS, פועם בעדינות רק כשהאמת טרייה והסוכן עובד). */
-  const ringRef = useRef<THREE.Mesh>(null);
   const curWeight = useRef<Record<string, number>>({ idle: 1, walk: 0, sit: 0, type: 0, write: 0, think: 0, talk: 0 });
   const lastGesture = useRef<{ name: string; until: number }>({ name: '', until: 0 });
   const lastBubbleTxt = useRef('');
@@ -687,15 +684,6 @@ function HumanAgent({ id, assets }: { id: string; assets: CrewAssets }) {
       shadowRef.current.position.set(x, 0.015, z);
     }
 
-    // טבעת-מצב — צבע חוקי אחד (STATE_COLORS); לא-טרייה = כתום-תשומת-הלב,
-    // עבודה-טרייה = פועם עדין, כל-יתר = קבועה ורגועה
-    if (ringRef.current) {
-      const mat = ringRef.current.material as THREE.MeshBasicMaterial;
-      mat.color.set(fresh ? STATE_COLORS[st?.state || 'idle'] : '#b45309');
-      const working = fresh && w.type + w.write + w.think > 0.35;
-      mat.opacity = working ? 0.5 + 0.24 * Math.abs(Math.sin(now * 2.4)) : 0.42;
-    }
-
     mixer.update(dt);
   });
 
@@ -709,11 +697,6 @@ function HumanAgent({ id, assets }: { id: string; assets: CrewAssets }) {
 
   return (
     <group ref={group}>
-      {/* טבעת-מצב (Task 11-a) — נמוכה מצל-המגע, בלי depthWrite (לא נלחמת ברצפה) */}
-      <mesh ref={ringRef} rotation-x={-Math.PI / 2} position={[0, 0.008, 0]}>
-        <ringGeometry args={[0.5, 0.6, 40]} />
-        <meshBasicMaterial transparent depthWrite={false} opacity={0.42} toneMapped={false} />
-      </mesh>
       {/* צל מגע */}
       <mesh ref={shadowRef} rotation-x={-Math.PI / 2} position={[0, 0.015, 0]}>
         <planeGeometry args={[1.05, 1.05]} />

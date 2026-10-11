@@ -1,0 +1,183 @@
+/* hud.css — HUD מינימלי-עצמאי ל-bundle הסטטי (exec-14-3d).
+   בלי Tailwind — משתני-CSS בלבד, מועתקים מ-DESIGN.md (ערכי-אור, ברירת-מחדל).
+   חוקי-עיצוב: RTL (מאפיינים לוגיים), אפס-ניאון, אפס-צללי-זוהר, צבע-הדגשה
+   אחד #c94fbe, מינימום 44px למטרות-מגע. */
+
+:root {
+  /* Daylight Slate — DESIGN.md §2 (ערכי-אור) */
+  --bg: #f3f1ec;
+  --surface: #ffffff;
+  --surface-2: #ebe8e1;
+  --surface-3: #e2ded4;
+  --line: rgba(28, 24, 18, 0.11);
+  --line-strong: rgba(28, 24, 18, 0.22);
+  --ink: #201d18;
+  --ink-2: #57534a;
+  --ink-3: #8b867b;
+  --accent: #c94fbe;
+  --accent-dim: rgba(201, 79, 190, 0.12);
+  /* חוק-המצב האחד (§2) */
+  --st-working: #a8741c;
+  --st-ok: #14855c;
+  --st-attention: #b58216;
+  --st-danger: #cc423e;
+  --st-neutral: #716d64;
+  --st-info: #6f62ab;
+  --r-panel: 12px;
+  --r-row: 8px;
+}
+
+* { box-sizing: border-box; }
+
+html, body, #root {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'Heebo', ui-sans-serif, system-ui, 'Segoe UI', Roboto, 'Noto Sans Hebrew', Arial, sans-serif;
+  -webkit-text-size-adjust: 100%;
+}
+
+/* הבמה: הקנבס ממלא את המסך */
+.stage { position: fixed; inset: 0; }
+.stage canvas { display: block; }
+
+/* ── פס עליון: זהות + צ'יפ טריות + קישור לחלון-החי ── */
+.hud-top {
+  position: fixed;
+  inset-block-start: 10px;
+  inset-inline: 10px;
+  z-index: 20;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  pointer-events: none;
+}
+.hud-top > * { pointer-events: auto; }
+
+.hud-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-row);
+  padding: 7px 12px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--ink);
+}
+.hud-title .en { color: var(--ink-3); font-weight: 500; margin-inline-start: 6px; font-size: 11px; }
+
+.hud-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 7px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink-2);
+  min-height: 32px;
+}
+.hud-chip .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--st-neutral); flex: none; }
+.hud-chip.tone-ok .dot { background: var(--st-ok); }
+.hud-chip.tone-ok { color: var(--st-ok); }
+.hud-chip.tone-attention .dot { background: var(--st-attention); }
+.hud-chip.tone-attention { color: var(--st-attention); }
+.hud-chip.tone-danger .dot { background: var(--st-danger); }
+.hud-chip.tone-danger { color: var(--st-danger); }
+
+.hud-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-row);
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--accent);
+  text-decoration: none;
+}
+.hud-link:hover { background: var(--accent-dim); }
+.hud-link:focus-visible, .hud-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* ── סרגל נקודות-תצפית (תחתון) ── */
+.hud-deck {
+  position: fixed;
+  inset-block-end: 10px;
+  inset-inline: 10px;
+  z-index: 20;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  pointer-events: none;
+}
+.hud-deck > * { pointer-events: auto; }
+
+.hud-btn {
+  min-height: 44px; /* מטרות-מגע (חוק §5: 44 במגע, 40 שולחן-עבודה) */
+  border: 1px solid var(--line);
+  border-radius: var(--r-row);
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 600;
+  padding: 8px 13px;
+  cursor: pointer;
+  transition: background-color 160ms ease, border-color 160ms ease;
+}
+.hud-btn:hover { background: var(--surface-2); border-color: var(--line-strong); }
+.hud-btn[aria-pressed='true'] { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); }
+.hud-btn-ghost { background: transparent; }
+.hud-btn-ghost:hover { background: var(--surface-2); }
+
+@media (pointer: fine) {
+  .hud-btn { min-height: 40px; }
+}
+
+/* ── שכבת-טעינה (עד הפריים האמיתי הראשון) ── */
+.hud-loader {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  display: grid;
+  place-items: center;
+  background: var(--bg);
+  transition: opacity 500ms ease;
+}
+.hud-loader.done { opacity: 0; pointer-events: none; }
+.hud-loader .box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-panel);
+  background: var(--surface);
+  padding: 22px 30px;
+  text-align: center;
+}
+.hud-loader .bar {
+  width: 220px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--surface-3);
+  overflow: hidden;
+}
+.hud-loader .bar > span { display: block; height: 100%; background: var(--accent); transition: width 200ms ease; }
+.hud-loader .pct { font-size: 12px; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+.hud-loader h1 { margin: 0; font-size: 15px; font-weight: 700; }
+.hud-loader p { margin: 0; font-size: 12px; color: var(--ink-2); }

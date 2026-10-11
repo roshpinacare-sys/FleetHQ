@@ -288,7 +288,7 @@ export function makeSignTexture(text: string, color: string, sub?: string): THRE
 
 type Painter = (ctx: CanvasRenderingContext2D, w: number, h: number) => void;
 
-class DynTex {
+export class DynTex {
   canvas: HTMLCanvasElement;
   ctx: CanvasRenderingContext2D;
   tex: THREE.CanvasTexture;
@@ -482,48 +482,6 @@ export function makeTaskWallTexture(): { tex: THREE.CanvasTexture; set: (tasks: 
       if (sig !== tasks.map((t) => t.id + t.status + (t.assignee || '')).join('|')) { tasks = ts; dyn.markDirty(); }
     },
     update: (now) => dyn.update(now),
-  };
-}
-
-/** קיר הגיט — זרם קומיטים חי על מסך ענק */
-export function makeGitWireTexture(): { tex: THREE.CanvasTexture; set: (commits: { hash: string; subject: string; author: string; ts: number }[]) => void; update: (now: number) => void } {
-  let commits: { hash: string; subject: string; author: string; ts: number }[] = [];
-  let clock = 0;
-  const dyn = new DynTex(1280, 720, (ctx, w, h) => {
-    ctx.fillStyle = '#0a0d0a'; ctx.fillRect(0, 0, w, h);
-    // רשת רקע
-    ctx.strokeStyle = 'rgba(120,200,150,0.07)'; ctx.lineWidth = 1;
-    for (let x = 0; x < w; x += 64) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke(); }
-    for (let y = 0; y < h; y += 64) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke(); }
-    ctx.direction = 'rtl'; ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
-    ctx.fillStyle = '#8fe3ae'; ctx.font = "700 40px 'Heebo',system-ui,sans-serif";
-    ctx.fillText('קיר הגיט · זרם הקומיטים של ספרי הצי', w - 28, 46);
-    ctx.fillStyle = 'rgba(140,230,170,0.6)'; ctx.font = "500 24px ui-monospace,monospace";
-    ctx.textAlign = 'left';
-    ctx.fillText(clock > 0.5 ? '● streaming' : '○ streaming', 28, 46);
-    const list = commits.slice(0, 12);
-    list.forEach((c, i) => {
-      const y = 120 + i * 46;
-      ctx.textAlign = 'left'; ctx.direction = 'ltr';
-      ctx.fillStyle = 'rgba(143,227,174,0.75)'; ctx.font = "500 24px ui-monospace,monospace";
-      ctx.fillText(c.hash.slice(0, 7), 28, y);
-      ctx.fillStyle = 'rgba(220,225,218,0.85)'; ctx.font = "500 26px 'Heebo',system-ui,sans-serif";
-      const subj = c.subject.length > 46 ? c.subject.slice(0, 45) + '…' : c.subject;
-      ctx.fillText(subj, 150, y);
-      ctx.fillStyle = 'rgba(140,146,150,0.6)'; ctx.font = "400 22px 'Heebo',system-ui,sans-serif";
-      ctx.textAlign = 'right';
-      ctx.fillText(c.author, w - 28, y);
-    });
-    if (!list.length) {
-      ctx.textAlign = 'center'; ctx.direction = 'rtl';
-      ctx.fillStyle = 'rgba(150,155,150,0.5)'; ctx.font = "500 30px 'Heebo',system-ui,sans-serif";
-      ctx.fillText('ממתין לזרם…', w / 2, h / 2);
-    }
-  });
-  return {
-    tex: dyn.tex,
-    set: (cs) => { commits = cs; dyn.markDirty(); },
-    update: (now) => { clock = (now / 700) % 2; dyn.update(now); },
   };
 }
 
