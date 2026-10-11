@@ -1,23 +1,22 @@
-# הצעה: E1 spread-regime — spread tightened (93.48 < 93.5 bps) — grid-side liquidity improving
+# הצעה: רפא 5 ריצות-אדומות (48ש) ב-FleetHQ
 
-- **מזהה**: `research-e1-spread-regime` · **מחלקת-סיכון**: SAFE (בטוח) · **דבר-בעלים**: לא
-- **מקור**: research/2026-10-11 (E1 spread-regime) · **ערך/מאמץ**: 4/2
-- **נוצר**: 2026-10-11 21:29 UTC על-ידי office/retro.mjs (office-retro (zai-11d)) · SAOS-OFFICE-RETRO/1
+- **מזהה**: `WO-FleetHQ-reds` · **מחלקת-סיכון**: MACHINE-PREP (הכנה-מכונה) · **דבר-בעלים**: לא
+- **מקור**: work-orders.json (Sandbox raw) · **ערך/מאמץ**: 7/2
+- **נוצר**: 2026-10-11 22:48 UTC על-ידי office/retro.mjs (office-retro (zai-11d · E1-deed zai-13c)) · SAOS-OFFICE-RETRO/1
 
 ## הקשר נמדד (מה-חקר)
 
-- אוטובוס: 14 green · 2 amber · 0 red · 0 grey — מקור-רישום: live-zip (registry חי מ-private-7 raw (200, 425ms))
-  - domain-dex-grid: amber — מיושן: 35h מעל החוק (24h)
-  - domain-dex-world: amber — מיושן: 31h מעל החוק (24h)
+- אוטובוס: 15 green · 0 amber · 0 red · 1 grey — מקור-רישום: fallback-embedded (registry לא-נגיש: HTTP 404 (private-7 פרטי — גם עם-token נדחה) — משתמש ב-snapshot מוטמע (…)
+  - console-mirror-status: grey — private-raw — ה-token בסביבה אינו-מוסמך לריפו זה (לא-ידוע, כנה)
 - מחקר (2026-10-11): E1✅ E2✅ E3✅
-- שערים: gate-01-steem-active-wif-domain=WAITING-OWNER, gate-02-actions-billing=WAITING-OWNER, gate-03-r11-rotation-9-soldiers=WAITING-OWNER, gate-04-private-16-recovery-meta=MACHINE-READY, gate-05-stasis-convert=WAITING-OWNER, gate-06-stasis-transfers=WAITING-OWNER, gate-07-stasis-votes=WAITING-OWNER, gate-08-stasis-delegations=DISSOLVED, gate-09-blurt-ignition=WAITING-OWNER, gate-10-private-4-vault-db=WAITING-OWNER, gate-11-saos-agents-distribution=WAITING-OWNER
-- דיג'סט: חי מ-2026-10-11 21:00 UTC
+- שערים: GATE-STATUS לא-נגיש (HTTP 404) — מצבי-השערים לא-ידועים כעת (מקור-פרטי; כנה, לא-מדומה)
+- דיג'סט: חי מ-2026-10-11 22:31 UTC
 
 ## תוכנית (צעדים)
 
-1. ביצוע במחזור הבא כ-built-in מאושר (`executableBy: next-retro`) — מחזור זה אינו מבצע אותו (חוק: built-in אחד חדש לכל-מחזור).
-2. הפעולה מוגדרת read-only/verify/doc-only בלבד.
-3. הטמעה ב-`BUILTINS` של retro.mjs במחזור הבא עם וקטור-בדיקה.
+1. המכונה מכינה את הארטיפקטים (מסמך/בדיקות/רשימת-צעדים) — לא מבצעת שינוי-מצב.
+2. הביצוע עצמו ממתין להכרעת-בעלים או למחזור הבא עם built-in מאושר.
+3. עדכון ה-BACKLOG במחזור הבא עם תוצאת-ההכנה.
 
 ## פקודות-אימות (חסרות-סודות)
 
