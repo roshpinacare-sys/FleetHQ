@@ -167,20 +167,79 @@ for (const p of PAIRS) {
   console.log(`${verdict.padEnd(11)} ${p.name}  live=${liveSha ?? `HTTP${live.status}${live.error ? "+" + live.error.slice(0, 40) : ""}`}  committed=${committedSha ?? `HTTP${committed.status}${committed.error ? "+" + committed.error.slice(0, 40) : ""}`}`);
 }
 
+/**
+ * V-OPS-DOCS (WO-unwired-sandbox-ops-docs): the continuity backbone — the 6
+ * ops docs in Sandbox/ops/ (FLOW-PLAN / GROWTH-PLAN / OWNER-P0 / RESUME-PACKET /
+ * TOKEN-TRUTH / ESTATE-TRUTH). These are knowledge docs (no live twin), so the
+ * honest check is EXISTENCE + MEASURED AGE (commits API, path-scoped).
+ * Law: MISSING = RED (flips overall + exit 1 — a missing resume packet is a
+ * real break of agent continuity). FRESH ≤7d / AGING ≤30d / STALE >30d are
+ * amber rows: measured truth in the receipt — never faked green, never
+ * exit-flipping (docs age honestly; only their absence is a break).
+ * Dated filenames roll (FLOW-PLAN-2026-10-11.md) → resolved by prefix against
+ * the live directory listing, so a doc's date-roll never reads as MISSING.
+ */
+const OPS_DOC_SPECS = [
+  { name: "FLOW-PLAN", prefix: "FLOW-PLAN-" },
+  { name: "GROWTH-PLAN", prefix: "GROWTH-PLAN-" },
+  { name: "OWNER-P0", prefix: "OWNER-P0-" },
+  { name: "RESUME-PACKET", file: "RESUME-PACKET.md" },
+  { name: "TOKEN-TRUTH", file: "TOKEN-TRUTH.md" },
+  { name: "ESTATE-TRUTH", prefix: "ESTATE-TRUTH-" },
+];
+const OPS_REPO = "Sandbox";
+const OPS_DIR = "ops";
+const apiHeaders = process.env.GITHUB_TOKEN
+  ? { authorization: `Bearer ${process.env.GITHUB_TOKEN}`, "user-agent": "fleet-fresh-oracle/1" }
+  : { "user-agent": "fleet-fresh-oracle/1" };
+
+const opsDocs = [];
+try {
+  const lr = await fetch(`https://api.github.com/repos/${ORG}/${OPS_REPO}/contents/${OPS_DIR}`, { headers: apiHeaders });
+  if (!lr.ok) throw new Error(`contents API HTTP ${lr.status}`);
+  const files = (await lr.json()).filter((f) => f && f.type === "file").map((f) => f.name);
+  for (const spec of OPS_DOC_SPECS) {
+    const fileName = spec.file || files.find((f) => f.startsWith(spec.prefix));
+    if (!fileName) {
+      opsDocs.push({ name: spec.name, verdict: "MISSING" });
+      console.log(`MISSING     ops-doc ${spec.name}  (no file matching ${spec.file ?? spec.prefix + "*"} in ${OPS_REPO}/${OPS_DIR})`);
+      continue;
+    }
+    const [raw, commit] = await Promise.all([
+      fetchBytesRetry(`${RAW}/${OPS_REPO}/main/${OPS_DIR}/${fileName}`),
+      fetch(`https://api.github.com/repos/${ORG}/${OPS_REPO}/commits?path=${OPS_DIR}/${encodeURIComponent(fileName)}&per_page=1`, { headers: apiHeaders })
+        .then((r) => (r.ok ? r.json() : []))
+        .catch(() => []),
+    ]);
+    const at = Array.isArray(commit) && commit[0]?.commit?.committer?.date ? commit[0].commit.committer.date : null;
+    const ageDays = at ? Math.floor((Date.now() - Date.parse(at)) / 86400000) : null;
+    const verdict = !raw.ok ? "UNREACHABLE" : ageDays === null ? "UNKNOWN-AGE" : ageDays <= 7 ? "FRESH" : ageDays <= 30 ? "AGING" : "STALE";
+    opsDocs.push({ name: spec.name, file: fileName, sha16: raw.ok ? sha16(raw.bytes) : null, rawStatus: raw.status, lastCommitAt: at, ageDays, verdict });
+    console.log(`${verdict.padEnd(11)} ops-doc ${spec.name}  file=${fileName}  age=${ageDays === null ? "?" : ageDays + "d"}  sha=${raw.ok ? sha16(raw.bytes) : `HTTP${raw.status}`}`);
+  }
+} catch (e) {
+  opsDocs.push({ name: "OPS-DOCS-SCAN", verdict: "UNREACHABLE", error: String(e?.message ?? e).slice(0, 120) });
+  console.log(`UNREACHABLE ops-docs scan  ${String(e?.message ?? e).slice(0, 80)}`);
+}
+const opsMissing = opsDocs.filter((d) => d.verdict === "MISSING").length;
+
 const match = results.filter((r) => r.verdict === "MATCH").length;
 const drift = results.filter((r) => r.verdict === "DRIFT").length;
 const unreachable = results.filter((r) => r.verdict === "UNREACHABLE").length;
 const missing = 0; // kept in summary for receipt-schema continuity (round-7 receipts)
-// verdict law: FRESH only when every pair byte-matches. DRIFT = RED (real
-// divergence). UNREACHABLE = UNKNOWN (amber — network truth, honest, retried).
-const overall = drift > 0 ? "STALE-OR-BROKEN" : unreachable > 0 ? "UNKNOWN-NETWORK" : "FRESH";
+// verdict law: FRESH only when every pair byte-matches AND no ops doc is
+// MISSING. DRIFT/MISSING = RED (real divergence / broken continuity backbone).
+// UNREACHABLE = UNKNOWN (amber — network truth, honest, retried).
+// ops-doc AGE verdicts are amber rows in the receipt, never exit-flipping.
+const overall = drift > 0 || opsMissing > 0 ? "STALE-OR-BROKEN" : unreachable > 0 ? "UNKNOWN-NETWORK" : "FRESH";
 
 const receipt = {
   schema: "fleet.fresh-oracle/1",
   at: new Date().toISOString(),
-  law: "FRESH only if sha256(live bytes) == sha256(committed deploy-ref bytes); DRIFT=RED (200-with-different-bytes); UNREACHABLE=UNKNOWN (network, retried once, reason kept) — never faked green",
+  law: "FRESH only if sha256(live bytes) == sha256(committed deploy-ref bytes) AND no ops doc MISSING; DRIFT=RED (200-with-different-bytes); UNREACHABLE=UNKNOWN (network, retried once, reason kept); ops-doc age rows are honest amber (MISSING alone flips exit) — never faked green",
   results,
-  summary: { checked: results.length, match, drift, missing, unreachable, verdict: overall },
+  opsDocs,
+  summary: { checked: results.length, match, drift, missing, unreachable, opsDocsMissing: opsMissing, opsDocsStale: opsDocs.filter((d) => d.verdict === "STALE").length, verdict: overall },
   method: "https GET live URL + raw.githubusercontent deploy ref → sha256-16 byte equality",
 };
 
@@ -188,5 +247,5 @@ mkdirSync(OUT_DIR, { recursive: true });
 writeFileSync(join(OUT_DIR, "latest.json"), JSON.stringify(receipt, null, 1) + "\n");
 appendFileSync(join(OUT_DIR, "log.jsonl"), JSON.stringify({ at: receipt.at, overall, match, drift, unreachable }) + "\n");
 
-console.log(`FRESH-ORACLE: ${overall} (${match}/${results.length} MATCH, drift=${drift}, unreachable=${unreachable})`);
-process.exit(drift > 0 ? 1 : 0); // exit red ONLY on real drift; UNKNOWN exits 0-but-amber (the receipt carries the reason)
+console.log(`FRESH-ORACLE: ${overall} (${match}/${results.length} MATCH, drift=${drift}, unreachable=${unreachable}, ops-docs missing=${opsMissing})`);
+process.exit(drift > 0 || opsMissing > 0 ? 1 : 0); // exit red on real drift or missing ops doc; UNKNOWN exits 0-but-amber (the receipt carries the reason)
