@@ -30,13 +30,18 @@ import { useHq } from '@/lib/hq/store';
 import { bus, agentVisualFresh, ROOM_STALE_MS } from '@/lib/hq/world';
 import { STATE_COLORS } from '@/lib/hq/protocol';
 
-/** בסיס-מודלים לפי-הקשר (מסלול 11-a/T12 — המנצח במיזוג exec-14): ב-Domain
- *  החדר חי תחת /Domain/office3d/ (המודלים ב-/Domain/models/), בסנדבוקס וב-FleetHQ
- *  — בשורש. אין ניחוש: נגזר מ-location פעם-אחת בטעינת-המודול. */
+/** בסיס-מודלים לפי-הקשר — נגזר מ-location פעם-אחת, לפי הפריסה בפועל (exec-14
+ *  מיזוג 11-a/T12 + תיקון-פריסה נמדד: ב-office-pages ה-bundle חי ב-/office3d/
+ *  והמודלים לצידו ./models/; ב-Domain — /Domain/office3d/ עם מודלים
+ *  ב-/Domain/models/ ← '../'; באפ-ה-Next — השורש). אין ניחוש, יש מיפוי. */
 const MODEL_BASE =
-  typeof location !== 'undefined' && location.pathname.includes('/office3d/')
-    ? '../models/humans/'
-    : '/models/humans/';
+  typeof location === 'undefined'
+    ? '/models/humans/'
+    : location.pathname.includes('/Domain/office3d')
+      ? '../models/humans/'
+      : location.pathname.includes('/office3d')
+        ? './models/humans/'
+        : '/models/humans/';
 const MALE_URL = MODEL_BASE + 'readyplayer.me.glb';
 const FEMALE_URL = MODEL_BASE + 'Michelle.glb';
 const SRC_URL = MODEL_BASE + 'Xbot.glb';
