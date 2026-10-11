@@ -1,7 +1,7 @@
 # opens-closer.yml — T-61: המרפא העצמי של הצי. GitHub מפיל ריצות מתוכננות (נמדד: office-heartbeat ו-beacon נשתקו אחרי 19:26-19:34Z
 # בעוד value-scan ירה תקין) — אז לא סומכים על תזמון בלבד: כל 30 דק' נמדדת טריות המצבות keyless, מה שנפל מעל SLA מוער
-# (workflow_dispatch באותו ריפו — GITHUB_TOKEN הוא repo-scoped על-פי-עיצוב ונשאר כזה), ומה שחוצה-ריפו נרשם כן כפעולת-בעלים.
-# אפס סודות מעבר ל-GITHUB_TOKEN; אין כוח; כנות: נפילה מוצגת כנפילה, לעולם לא ממולאת.
+# (workflow_dispatch באותו ריפו — GITHUB_TOKEN הוא repo-scoped על-פי-עיצוב ונשאר כזה), ומה שחוצה-ריפו מוער דרך CROSS_REVIVE_PAT
+# (T-63 D1: כתב-הרשאה שהועבר מהבעלים לריבונות — סוד ב-FleetHQ, אף-פעם לא נרשם). כנות: נפילה מוצגת כנפילה, לעולם לא ממולאת.
 name: opens-closer
 
 on:
@@ -29,6 +29,7 @@ jobs:
 
       - name: Measure freshness, revive what fell (keyless, honest)
         env:
+          CROSS_REVIVE_PAT: ${{ secrets.CROSS_REVIVE_PAT }}
           GITHUB_TOKEN: ${{ github.token }}
         run: node tools/opens-closer.mjs
 
