@@ -80,16 +80,31 @@ jobs:
           if [ ! -f receipts/office-3d/log.jsonl ]; then echo "no office-3d receipts — nothing to commit"; exit 0; fi
           git config user.name "office-3d-bot"
           git config user.email "office-3d-bot@users.noreply.github.com"
+          sibling_stand_down() {
+            # duplicate trigger law: a sibling run of the same bake (same
+            # sourceSavedAt of the mirrored office-state) may have already
+            # published — that is a WIN, not a failure.
+            git fetch -q origin main 2>/dev/null || return 1
+            local_src=$(grep '"ok":true' receipts/office-3d/log.jsonl 2>/dev/null | tail -1 | sed -n 's/.*"sourceSavedAt":\([0-9]*\).*/\1/p')
+            if [ -n "$local_src" ] && git show origin/main:receipts/office-3d/log.jsonl 2>/dev/null | grep -q "\"sourceSavedAt\":$local_src"; then
+              echo "SIBLING-STAND-DOWN: bake receipt for sourceSavedAt=$local_src already published — honest exit 0"
+              return 0
+            fi
+            return 1
+          }
           # only the receipts travel — public/office-state.json is an untracked feed copy by law
           git add receipts/office-3d/
           if git diff --cached --quiet; then echo "no receipt delta"; exit 0; fi
           git commit -m "office-3d receipt: bake log + latest.json pointer [skip ci]"
           ok=0
-          for i in 1 2 3; do
+          for i in 1 2 3 4 5 6; do
             if git pull --rebase -q origin main && git push -q origin main; then ok=1; echo "PUSH-OK attempt $i"; break; fi
-            echo "push attempt $i failed, retrying"; sleep 3
+            git rebase --abort 2>/dev/null || true
+            if sibling_stand_down; then ok=1; break; fi
+            sleep $((3 + RANDOM % 7))
+            echo "push attempt $i failed, retrying"
           done
-          if [ "$ok" != "1" ]; then echo "PUSH-FAILED after retries"; exit 1; fi
+          if [ "$ok" != "1" ]; then sibling_stand_down || { echo "PUSH-FAILED after retries"; exit 1; }; fi
 
       - name: Honest job summary
         if: always()
