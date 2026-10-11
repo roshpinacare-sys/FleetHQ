@@ -151,7 +151,7 @@ export function NetworkWorld({ p }: { p: WorldsPayload | null }) {
   const ghosts = Array.isArray(d.ghosts) ? d.ghosts.length : 0;
   const stale = Array.isArray(d.stale) ? d.stale.length : 0;
   const lhAge = p.lighthouse.ok ? p.lighthouse.data?.generatedAt ?? null : null;
-  const missing = d.nodes.filter((n) => n.missing).length;
+  const missing = Array.isArray(d.nodes) ? d.nodes.filter((n) => n.missing).length : 0;
   return (
     <div className="relative h-full w-full">
       <WorldCanvas bg="#e9e2d3" fog={['#e9e2d3', 30, 74]}>
