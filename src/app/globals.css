@@ -3,6 +3,14 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* Self-hosted font vars (build-time zero-network law, see layout.tsx):
+   Heebo carries the Hebrew glyphs (design law 400–700), JetBrains Mono the
+   instrument readouts. Families are registered by @fontsource CSS imports. */
+:root {
+  --font-heebo: "Heebo";
+  --font-jetbrains: "JetBrains Mono";
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
