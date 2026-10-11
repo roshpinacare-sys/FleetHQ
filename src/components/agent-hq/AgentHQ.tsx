@@ -33,6 +33,7 @@ import { AGENT_SEMANTIC, semanticVar, type Semantic } from '@/components/hq/toke
 import { t, stateName, type Lang } from './i18n';
 import { timeAgo } from './panels';
 import { useHq } from '@/lib/hq/store';
+import { OFFICE_FEED_PATH, startMirrorFeed } from '@/lib/hq/feed';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
 // החדר התלת-ממדי — client-only (קנבס WebGL לא רץ על השרת)
@@ -128,6 +129,12 @@ export default function AgentHQ() {
   const [logs, setLogs] = useState<Record<string, LogEntry[]>>({});
   const [bubbles, setBubbles] = useState<Record<string, { text: string; ts: number }>>({});
   const [view, setView] = useState<View>('ops');
+  // Task 11-a — קישור-עומק כנה אל החדר (?view=office / ?view=network):
+  // מופעל אחרי-הרכבה (בלי פער-הידרציה). מנוצל גם לבייק ה-3D הציבורי.
+  useEffect(() => {
+    const v = new URLSearchParams(window.location.search).get('view');
+    if (v === 'office' || v === 'network') setView(v);
+  }, []);
   // Default to the chief of staff so the inspector is NEVER a dead
   // "pick an agent" empty state — the console always has something to show.
   const [selected, setSelected] = useState<string | null>('aluf');
@@ -209,6 +216,15 @@ export default function AgentHQ() {
   }, [scrollToSection]);
 
   // ---- socket wiring (the one truth stream — unchanged contract) --------------------
+  // Task 11-a: כש-NEXT_PUBLIC_OFFICE_FEED מוגדר (פריסה בלי פורמן — חלון/בייק),
+  // גשר-המראה מזריק את יומן-הפורמן האמיתי דרך אותן-דרכים. הסוקט ממשיך לנסות:
+  // אם פורמן חי מתגלה — החי מנצח והמראה נעצרת עד הניתוק הבא.
+  useEffect(() => {
+    const stopMirror = OFFICE_FEED_PATH
+      ? startMirrorFeed(() => socketRef.current?.connected ?? false)
+      : null;
+    return () => { stopMirror?.(); };
+  }, []);
   useEffect(() => {
     requestForemanHeal();
     const socket = io('/?XTransformPort=3010', {

@@ -78,8 +78,10 @@ export function StationSync() {
     // קבלה
     if (!receptionTex) receptionTex = makeReceptionScreen();
     const s = st.snap.status;
+    // Task 11-a — תווית כנה לפי-מסלול: חי / מראה (יומן אמיתי) / הדגמה.
+    // 'mirror' איננו DEMO — לשקר שכזה יש עלות (חוק-הכנות).
     receptionTex.set({
-      mode: s.backend === 'live' ? '● LIVE' : '● DEMO',
+      mode: s.backend === 'live' ? '● LIVE' : s.backend === 'mirror' ? '● MIRROR · מראה' : '● DEMO',
       provider: s.llmProvider,
       ops: s.opsDone,
       goal: st.snap.goal?.text,

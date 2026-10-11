@@ -111,7 +111,12 @@ export interface BookView {
 }
 
 export interface ForemanStatus {
-  backend: 'live' | 'sim';
+  /** 'live' = the real foreman streams over the socket (חי).
+   *  'mirror' = the room renders the foreman's REAL journal snapshot
+   *  (office-state-mirror.json) frozen at its savedAt — measured reality,
+   *  never synthetic (מראה — מציאות נמדדה).
+   *  'sim' = explicit demo mode only — DEMO watermark is mandatory (חוק-הכנות). */
+  backend: 'live' | 'sim' | 'mirror';
   llmProvider: string;
   message: { he: string; en: string };
   startedAt: number;
