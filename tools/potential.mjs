@@ -101,6 +101,23 @@ let recruitment = null;
 try { recruitment = await fetchJson(RECRUIT_URL); prov("recruitment.json", RECRUIT_URL, { at: recruitment.at }); }
 catch (e) { prov("recruitment.json", RECRUIT_URL, { note: "fetch failed → office roles unknown" }); }
 
+// [zai-12] second recruiting source: the LOCAL measurement engine (office-recruit :3041 →
+// receipts/recruitment/live.json) — evidence-bound roles derived from real estate git signals.
+// Union law: both sources surface side-by-side, neither overwrites the other.
+const LOCAL_RECRUIT_PATH = path.join(ROOT, "receipts", "recruitment", "live.json");
+let localRecruitment = null;
+try {
+  localRecruitment = JSON.parse(readFileSync(LOCAL_RECRUIT_PATH, "utf8"));
+  prov("recruitment-live.json", "receipts/recruitment/live.json (local engine)", {
+    at: localRecruitment.generatedAt, sha16: (localRecruitment.sha256 || "").slice(0, 16),
+    roles: localRecruitment.totals ? localRecruitment.totals.roles : null,
+  });
+} catch (e) {
+  prov("recruitment-live.json", "receipts/recruitment/live.json (local engine)", {
+    note: "absent → local recruitment engine has not scanned yet (" + (e && e.code || e && e.message || e) + ")",
+  });
+}
+
 // self-verify the known ghost target live — measured resolution, never assumed
 const digestLive = await fetchOk(DIGEST_LIVE_URL);
 prov("digest-live-check", DIGEST_LIVE_URL, { status: digestLive.status, ok: digestLive.ok });
