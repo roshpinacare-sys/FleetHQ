@@ -1,13 +1,14 @@
 {
   "schema": "fleet-graph/1.0",
-  "updatedAt": "2026-10-11T20:20:00Z",
+  "updatedAt": "2026-10-11T20:55:00Z",
   "authority": "הנחיית בעלים trace 1a12c57bccbf89bd — שחרור-במקום-ארכוב · מקשה אחת · הכל משתמש בהכל (trace 1a12c8edcc32d7bd) — למקסם יעילות של הקיים, לא לשרוף",
   "summary": {
     "nodes": 26,
     "edges": 25,
-    "live": 12,
+    "live": 14,
     "policy": 10,
-    "queued": 3,
+    "armed": 1,
+    "queued": 0,
     "reposActive24h": "26/26"
   },
   "nodes": [
@@ -92,8 +93,8 @@
     {
       "id": "roshpina",
       "vis": "private",
-      "role": "פלטפורמת הערך — מנוע עמלות ורווח",
-      "status": "revival-queued"
+      "role": "פלטפורמת הערך — מנוע עמלות ורווח (חמוש: מלאי נמדד T-58; armed→live = החלטת אירוח)",
+      "status": "revival-armed"
     },
     {
       "id": "Saosmartwallet",
@@ -110,8 +111,8 @@
     {
       "id": "saos-jummper",
       "vis": "private",
-      "role": "נוטריון הוכחות חוצה-שרשרת (Ethereum anchor)",
-      "status": "revival-queued"
+      "role": "נוטריון הוכחות — חי: מסילת עיגון merkle מעל קבלות TruthRail (T-58); עיגון ETH/SOL ממתין למפתחות בעלים",
+      "status": "alive"
     },
     {
       "id": "saos-sovereign-foundry",
@@ -140,8 +141,8 @@
     {
       "id": "Sdk",
       "vis": "private",
-      "role": "SDK הסוכנים — ממשקי הצי",
-      "status": "revival-queued"
+      "role": "SDK הסוכנים — חי: @saos/fleet-sdk keyless + selftest ירוק (T-58)",
+      "status": "alive"
     },
     {
       "id": "Project-files",
@@ -392,32 +393,32 @@
     {
       "from": "roshpina",
       "to": "economics",
-      "artifact": "fee engine revival",
-      "mode": "queued lane",
-      "cadence": "next",
+      "artifact": "fee-engine/state.json + REVIVAL.md (armed snapshot lane)",
+      "mode": "git snapshot (pnl-desk doctrine)",
+      "cadence": "per-cycle (once live)",
       "slaMinutes": 0,
-      "status": "queued",
-      "evidence": "החייאה הכלכלית הבאה בתור (FLEET-ROLES §זרימת ערך)"
+      "status": "armed",
+      "evidence": "מלאי נמדד ומתאים לעץ החי: 114 kernel files/17 דומיינים/12 API routes/11 פאנלים (roshpina 3f887102); G20 מאמת התאמת מלאי; armed→live = החלטת אירוח בלבד"
     },
     {
       "from": "saos-jummper",
       "to": "TruthRail",
-      "artifact": "Ethereum anchor for receipts",
-      "mode": "notary (queued)",
-      "cadence": "next",
-      "slaMinutes": 0,
-      "status": "queued",
-      "evidence": "נוטריון קבלות TruthRail על Ethereum — אמינות → ערך"
+      "artifact": "anchors/truthrail-anchor-latest.json (merkle root d841499f על 16 קבלות, 2 הוכחות)",
+      "mode": "notary produce (private) → public rail publish",
+      "cadence": "per-wave",
+      "slaMinutes": 10080,
+      "status": "live",
+      "evidence": "פרסום ציבורי TruthRail 7e922f33; אימות עצמאי משולש: PY merkle.py ≡ JS SDK ≡ verifier (G19); bytes spot-check=true; ETH/SOL ממתין למפתחות בעלים"
     },
     {
       "from": "Sdk",
       "to": "fleet",
-      "artifact": "unified agent SDK",
-      "mode": "queued lane",
-      "cadence": "next",
+      "artifact": "sdk/ @saos/fleet-sdk — קוראים keyless לכל המשטחים + verifyAnchor עצמאי",
+      "mode": "zero-dep module + honest selftest",
+      "cadence": "always-on (selftest on demand/dispatch)",
       "slaMinutes": 0,
-      "status": "queued",
-      "evidence": "ממשק אחיד לסוכנים חדשים"
+      "status": "live",
+      "evidence": "selftest חי מ-HEAD: passes=21 fails=0 live=6/6 anchor=VERIFIED (G18); fallback chain raw→jsDelivr→API (מדידת T-58: raw CDN lag + private-repo impossibility)"
     }
   ],
   "freshness": [
@@ -492,6 +493,14 @@
       "measuredAgeMin": 232,
       "status": "OK",
       "measuredAt": "2026-10-11T20:06Z"
+    },
+    {
+      "surface": "TruthRail/anchors (notary merkle anchor)",
+      "check": "anchor freshness + independent verify",
+      "slaMinutes": 10080,
+      "measuredAgeMin": 0,
+      "status": "OK",
+      "measuredAt": "2026-10-11T20:55Z (shipped T-58; G19 triple-port verify)"
     }
   ],
   "economics": {
@@ -527,18 +536,18 @@
   "revivalQueue": [
     {
       "repo": "roshpina",
-      "lane": "fee engine",
-      "next": "הפעלת מנוע העמלות — נדרש lane ב-write-log לפני עבודה"
+      "lane": "fee engine — ARMED",
+      "next": "armed→live: החלטת אירוח בלבד (sovereign engine :3044 או runner חוץ); אחר-כך מסילת עמלה ראשונה על D-023"
     },
     {
       "repo": "saos-jummper",
-      "lane": "Ethereum notary",
-      "next": "עיגון קבלות TruthRail חוצה-שרשרת"
+      "lane": "notary — LIVE",
+      "next": "חי: עיגון merkle מעל קבלות TruthRail; הצעד הבא = עיגון חוצה-שרשרת ETH/SOL ברגע שהבעלים מספק מפתח (adapters מוכנים)"
     },
     {
       "repo": "Sdk",
-      "lane": "agent SDK",
-      "next": "ממשק אחיד לסוכנים חדשים — מזעור חיכוך הצטרפות"
+      "lane": "agent SDK — LIVE",
+      "next": "חי: @saos/fleet-sdk ב-selftest ירוק; הצעד הבא = npm-packaging + טביעת סוכנים חדשים על ה-SDK ב-onboarding"
     }
   ],
   "laws": [
