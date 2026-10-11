@@ -28,6 +28,8 @@ jobs:
           fetch-depth: 0
 
       - name: Measure freshness, revive what fell (keyless, honest)
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
         run: node tools/opens-closer.mjs
 
       - name: Commit ledger only when meaningful (no-noise law)
