@@ -1,6 +1,6 @@
 {
  "schema": "fleet.fresh-oracle/1",
- "at": "2026-10-11T22:23:03.988Z",
+ "at": "2026-10-11T22:24:10.591Z",
  "law": "live page is FRESH only if sha256(live bytes) == sha256(committed deploy-ref bytes); drift/missing = RED",
  "results": [
   {
@@ -57,11 +57,33 @@
    "committedSha16": "8a63e64ba55ea125",
    "liveBytes": 1832,
    "verdict": "MATCH"
+  },
+  {
+   "name": "Domain product catalog",
+   "liveUrl": "https://roshpinacare-sys.github.io/Domain/marketing/",
+   "source": "Domain@main:marketing/index.html",
+   "liveStatus": 200,
+   "committedStatus": 200,
+   "liveSha16": "0a1a21f70dc98ae5",
+   "committedSha16": "0a1a21f70dc98ae5",
+   "liveBytes": 18409,
+   "verdict": "MATCH"
+  },
+  {
+   "name": "Domain product data",
+   "liveUrl": "https://roshpinacare-sys.github.io/Domain/marketing/products.json",
+   "source": "Domain@main:marketing/products.json",
+   "liveStatus": 200,
+   "committedStatus": 200,
+   "liveSha16": "d4f000e323d99c46",
+   "committedSha16": "d4f000e323d99c46",
+   "liveBytes": 6399,
+   "verdict": "MATCH"
   }
  ],
  "summary": {
-  "checked": 5,
-  "match": 5,
+  "checked": 7,
+  "match": 7,
   "drift": 0,
   "missing": 0,
   "verdict": "FRESH"

@@ -64,6 +64,22 @@ const PAIRS = [
     committedRef: "main",
     committedPath: "office3d/index.html",
   },
+  // [zai-14 join T-60] the PRODUCT the owner delivers to users — its public
+  // delivery is now verified standing ("באמת לספק למשתמש את המוצר"):
+  {
+    name: "Domain product catalog",
+    repo: "Domain",
+    liveUrl: "https://roshpinacare-sys.github.io/Domain/marketing/",
+    committedRef: "main",
+    committedPath: "marketing/index.html",
+  },
+  {
+    name: "Domain product data",
+    repo: "Domain",
+    liveUrl: "https://roshpinacare-sys.github.io/Domain/marketing/products.json",
+    committedRef: "main",
+    committedPath: "marketing/products.json",
+  },
 ];
 
 const sha16 = (buf) => createHash("sha256").update(buf).digest("hex").slice(0, 16);
