@@ -7,7 +7,7 @@
  */
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Canvas, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 import { Architecture } from './Architecture';
@@ -39,13 +39,19 @@ function RoomReadiness() {
 }
 
 export function Office3D() {
+  // התאמת-ביצועים אמיתית (Task 3D-MOBILE): במסך-קטן/מוחלש — פחות פיקסלים
+  // ובלי צללים. נמדד פעם-אחת בהרכבה (הרכיב רץ לקוח-בלבד).
+  const [lite] = useState(() =>
+    typeof window !== 'undefined' &&
+    (window.matchMedia('(max-width: 820px)').matches ||
+      (navigator.hardwareConcurrency ?? 8) <= 4));
   return (
     <Canvas
-      shadows="soft"
-      dpr={[1, 1.75]}
+      shadows={lite ? false : 'soft'}
+      dpr={lite ? [0.75, 1.25] : [1, 1.75]}
       camera={{ fov: 50, near: 0.1, far: 60, position: [4.4, 4.9, 6.4] }}
       gl={{
-        antialias: true,
+        antialias: !lite,
         powerPreference: 'high-performance',
         toneMapping: THREE.ACESFilmicToneMapping,
         toneMappingExposure: 1.12,

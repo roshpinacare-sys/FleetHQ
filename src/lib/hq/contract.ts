@@ -169,16 +169,13 @@ export const CAMERA_PRESETS: CameraPreset[] = [
   },
   {
     id: 'reception', label: { he: 'קבלה', en: 'Reception' },
-    // Task 47-fix (measured live, twice): yaw π (camera due-NORTH, low pitch)
-    // photographed the desk's tall privacy panel — a black slab filling the
-    // frame, the receptionist invisible behind it. The desk faces SOUTH (the
-    // entrance); there is only ~0.9m of floor between it and the south glass,
-    // so a frontal shot clamps into the same slab. The honest composition is
-    // the inside 3/4: from NE, elevated, looking SW over the desk top — the
-    // work surface, whoever stands at the reception spot, and the glass
-    // entrance all read together.
-    target: [reception3[0] - 0.4, 0.8, reception3[1] + 0.35],
-    yaw: Math.PI * 0.75, pitch: 0.34, dist: 3.4, minDist: 2.2, maxDist: 7,
+    // Task 3D-TRUTH (measured live twice): the welcome screen (sovereign
+    // truth) faces SOUTH-EAST toward the visitor (rotY 0.45, plane normal
+    // local +z). The previous NE composition photographed its back — the
+    // screen was unreadable. The visitor's own angle (SE, eye-height-ish)
+    // reads the screen, the marble top and the glass entrance together.
+    target: [reception3[0] - 0.85, 1.28, reception3[1] + 0.45],
+    yaw: 0.55, pitch: 0.14, dist: 2.9, minDist: 1.8, maxDist: 6,
   },
 ];
 

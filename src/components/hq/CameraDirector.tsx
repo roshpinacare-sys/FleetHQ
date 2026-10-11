@@ -32,7 +32,14 @@ const state = {
   yawTo: Math.PI * 0.86,
   pitchTo: 0.62,
   distTo: 9.2,
+  /** סרט-פעילות אחרונה — לנשימה קולנועית עדינה בזמן-מנוחה */
+  lastInputAt: 0,
 };
+
+/** כל קלט משתמש עוצר את הנשימה הקולנועית */
+function noteInput() {
+  state.lastInputAt = Date.now();
+}
 
 function applyPreset(id: PresetId) {
   const p = CAMERA_PRESETS.find((x) => x.id === id) ?? CAMERA_PRESETS[0];
@@ -55,9 +62,11 @@ function useCameraInput() {
     const pd = (e: PointerEvent) => {
       if (e.button !== 0 && e.pointerType === 'mouse') return;
       dragging = true; moved = 0; lx = e.clientX; ly = e.clientY;
+      noteInput();
     };
     const pm = (e: PointerEvent) => {
       if (!dragging) return;
+      noteInput();
       const dx = e.clientX - lx, dy = e.clientY - ly;
       moved += Math.abs(dx) + Math.abs(dy);
       if (moved > 4) {
@@ -74,6 +83,7 @@ function useCameraInput() {
     window.addEventListener('pointerup', pu);
 
     const wheel = (e: WheelEvent) => {
+      noteInput();
       state.distTo = Math.max(state.minDist, Math.min(state.maxDist, state.distTo + e.deltaY * 0.0035));
     };
     el.addEventListener('wheel', wheel, { passive: true });
@@ -82,6 +92,7 @@ function useCameraInput() {
     let pinch0: number | null = null;
     let dist0 = 0;
     const touchMove = (e: TouchEvent) => {
+      noteInput();
       if (e.touches.length !== 2) return;
       const d = Math.hypot(
         e.touches[0].clientX - e.touches[1].clientX,
@@ -185,6 +196,14 @@ export function CameraDirector() {
     const kPos = instant ? 1 : 1 - Math.exp(-dt * 3.2);
     const kLook = instant ? 1 : 1 - Math.exp(-dt * 4.2);
     first.current = false;
+
+    // נשימה קולנועית (Task 3D-LIVE): אחרי 25 שנ' ללא קלט — סחרור איטי ועדין
+    // סביב נקודת-המבט + נשימת-מרחק זעירה. כל קלט עוצר; reduced-motion מנטרל.
+    if (!instant && !director.focus && state.lastInputAt > 0 && Date.now() - state.lastInputAt > 25_000) {
+      state.yawTo += dt * 0.014; // ~0.8°/שנ' — כמעט לא מורגש, החדר "חי"
+      state.distTo += Math.sin(Date.now() / 9000) * dt * 0.02;
+      state.distTo = Math.max(state.minDist, Math.min(state.maxDist, state.distTo));
+    }
 
     // יעד המבט: מיקוד ישות או נקודת התצפית
     if (director.focus) {

@@ -43,17 +43,50 @@ function RoomStatus({ lang }: { lang: Lang }) {
   const gotSnapshot = useHq((s) => s.snap.agents.length > 0 || s.snap.tasks.length > 0);
   const he = lang === 'he';
   return (
-    <div className="pointer-events-none absolute left-3 bottom-3 z-10 flex items-center gap-2 rounded-lg border border-[color:var(--line)] bg-[color:var(--surface-2)] px-2.5 py-1.5" dir="rtl">
+    <div className="pointer-events-none absolute bottom-3 left-3 z-10 hidden items-center gap-2 rounded-lg border border-[color:var(--line)] bg-[color:var(--surface-2)] px-2.5 py-1.5 sm:flex" dir="rtl">
       <span className="sl-dot" style={{ backgroundColor: !ready ? 'var(--st-neutral)' : connected ? 'var(--st-ok)' : 'var(--st-attention)' }} aria-hidden="true" />
       <span className="text-[11.5px] font-medium text-[color:var(--ink-2)]">
         {!ready
           ? (he ? 'החדר בהכנה…' : 'Preparing the room…')
           : !connected
-            ? (he ? 'מנותק מהפורמן — מציג נתונים אחרונים' : 'Disconnected from foreman — showing last data')
+            ? (he ? 'מנותק ממקור-האמת — מציג נתונים אחרונים' : 'Truth source unreachable — showing last data')
             : gotSnapshot
               ? (he ? 'חי' : 'Live')
               : (he ? 'מחובר — ממתין לסנאפשוט ראשון' : 'Connected — awaiting first snapshot')}
       </span>
+    </div>
+  );
+}
+
+/** צ'יפ מקור-האמת (Task 3D-TRUTH): מאיפה הנתונים + גילם — כנות מלאה,
+ *  בלי ירוק-מזויף: נתונים ישנים מסומנים כישנים, חסר מסומן כחסר. */
+function TruthChip({ lang }: { lang: Lang }) {
+  const truth = useHq((s) => s.truth);
+  const [, force] = useState(0);
+  useEffect(() => {
+    const iv = setInterval(() => force((n) => n + 1), 30_000);
+    return () => clearInterval(iv);
+  }, []);
+  if (!truth || !truth.fetchedAt) return null;
+  const he = lang === 'he';
+  const truthBase = truth.foremanCapturedAt ?? truth.fetchedAt;
+  const ageMin = Math.max(0, Math.round((Date.now() - truthBase) / 60_000));
+  const stale = ageMin >= 30;
+  const parts: string[] = [];
+  if (truth.foremanOk) parts.push(he ? 'פורמן' : 'foreman');
+  if (truth.pulseVerdict) parts.push(`דופק ${truth.pulseVerdict}`);
+  if (truth.treasuryNetSp !== null) parts.push(`${truth.treasuryNetSp.toLocaleString('he-IL', { maximumFractionDigits: 1 })} SP`);
+  const label = parts.length
+    ? (he ? `נתונים אמיתיים · ${parts.join(' · ')} · לפני ${ageMin} דק'` : `measured · ${parts.join(' · ')} · ${ageMin}m ago`)
+    : (he ? 'אין מקור-אמת — החדר ריק מנתונים' : 'no truth source — room shows no data');
+  return (
+    <div
+      className="pointer-events-none absolute right-3 bottom-3 z-10 flex max-w-[58%] items-center gap-2 rounded-lg border border-[color:var(--line)] bg-[color:var(--surface-2)]/95 px-2.5 py-1.5 backdrop-blur sm:max-w-[46%]"
+      dir="rtl"
+      role="status"
+    >
+      <span className="sl-dot" style={{ backgroundColor: stale || !truth.foremanOk ? 'var(--st-attention)' : 'var(--st-ok)' }} aria-hidden="true" />
+      <span className="truncate text-[11.5px] font-medium text-[color:var(--ink-2)]" title={label}>{label}</span>
     </div>
   );
 }
@@ -109,7 +142,7 @@ function PresetDeck({ lang }: { lang: Lang }) {
   const he = lang === 'he';
   return (
     <nav
-      className="pointer-events-auto absolute bottom-3 left-1/2 z-10 flex max-w-[96%] -translate-x-1/2 flex-wrap items-center justify-center gap-1 rounded-xl border border-[color:var(--line)] bg-[color:var(--surface-2)]/92 p-1 shadow-sm backdrop-blur"
+      className="pointer-events-auto absolute bottom-12 left-1/2 z-10 flex max-w-[96%] -translate-x-1/2 flex-nowrap items-center gap-1 overflow-x-auto rounded-xl border border-[color:var(--line)] bg-[color:var(--surface-2)]/92 p-1 shadow-sm backdrop-blur sm:bottom-3"
       dir="rtl"
       aria-label={he ? 'נקודות תצפית בחדר' : 'Room camera presets'}
     >
@@ -124,8 +157,8 @@ function PresetDeck({ lang }: { lang: Lang }) {
             className="sl-chip !border-transparent !bg-transparent !text-[12px] !font-semibold hover:!bg-[color:var(--surface-2)]"
             style={on ? { background: 'var(--accent-dim)', color: 'var(--accent)' } : undefined}
           >
-            <span className="me-1 hidden text-[10px] font-bold text-[color:var(--ink-3)] sm:inline" aria-hidden="true">{i + 1}</span>
-            {p.label[lang]}
+            <span className="me-1 hidden whitespace-nowrap text-[10px] font-bold text-[color:var(--ink-3)] sm:inline" aria-hidden="true">{i + 1}</span>
+            <span className="whitespace-nowrap">{p.label[lang]}</span>
           </button>
         );
       })}
@@ -141,6 +174,7 @@ export function ViewDeck() {
       <PreparingVeil lang={lang} />
       <PresetDeck lang={lang} />
       <RoomStatus lang={lang} />
+      <TruthChip lang={lang} />
     </>
   );
 }
