@@ -437,10 +437,13 @@ section{margin-top:34px}
 }
 .sec-head h2{margin:0; font-size:clamp(1.2rem,3.6vw,1.5rem)}
 .sec-head .en{color:var(--muted); font-weight:400; font-size:.85rem; margin-inline-start:8px}
+html,body{overflow-x:clip}
 .grid2{display:grid; gap:14px; grid-template-columns:1fr}
+.grid2>*{min-width:0}
+section{min-width:0}
 .card{
   background:var(--card); border:1px solid var(--border); border-radius:14px; padding:16px 18px;
-  box-shadow:0 1px 0 rgba(255,255,255,.02) inset;
+  box-shadow:0 1px 0 rgba(255,255,255,.02) inset; min-width:0; max-width:100%;
 }
 .card h3{margin:0 0 10px; font-size:1.02rem}
 .card .meta,.muted{color:var(--muted); font-size:.82rem}
@@ -470,7 +473,7 @@ section{margin-top:34px}
 .reports li:first-child{border-top:none}
 .report-title{font-weight:600; font-size:.92rem}
 .report-excerpt{color:var(--muted); font-size:.8rem; margin-top:2px}
-.tablewrap{overflow-x:auto; -webkit-overflow-scrolling:touch}
+.tablewrap{overflow-x:auto; -webkit-overflow-scrolling:touch; max-width:100%}
 table{width:100%; border-collapse:collapse; font-size:.86rem; min-width:640px}
 th{color:var(--muted); text-align:start; font-weight:600; padding:8px 10px; border-bottom:1px solid var(--border); white-space:nowrap}
 td{padding:9px 10px; border-bottom:1px solid rgba(34,48,63,.55); vertical-align:top}
