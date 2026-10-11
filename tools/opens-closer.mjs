@@ -1,7 +1,7 @@
 // opens-closer.mjs — T-61: the self-healing dispatcher. Measures keyless freshness of the fleet's
 // scheduler-driven states, revives what fell (same-repo workflow_dispatch via GITHUB_TOKEN),
-// publishes an honest ledger. No secrets beyond GITHUB_TOKEN; cross-repo revival is recorded as
-// an owner action (a repo-scoped token must never reach into sibling repos).
+// publishes an honest ledger. Same-repo revival = GITHUB_TOKEN; cross-repo revival = CROSS_REVIVE_PAT
+// (T-63 D1: the owner delegated the credential to the sovereignty — set via sealed box, never logged).
 import { writeFileSync } from 'node:fs';
 
 const ORG = 'roshpinacare-sys';
@@ -13,9 +13,9 @@ const NOW = new Date().toISOString();
 
 const targets = [
   { key: 'office-state', url: RAW + 'FleetHQ/main/office/state/office-state.json', tsKey: 'capturedAt', slaMin: 180, selfHealWorkflow: 'office-heartbeat.yml', healNote: 'same-repo dispatch, GITHUB_TOKEN' },
-  { key: 'beacon', url: RAW + 'sovereign-beacon/main/state.json', tsKey: 'at', slaMin: 100, selfHealWorkflow: null, healNote: 'cross-repo — requires owner-scoped credential (recorded as owner action N6, never faked)' },
-  { key: 'lighthouse', url: RAW + 'sovereign-lighthouse/main/state.json', tsKey: 'at', slaMin: 80, selfHealWorkflow: null, healNote: 'cross-repo — requires owner-scoped credential (recorded as owner action N6, never faked)' },
-  { key: 'domain-pulse', url: RAW + 'Domain/main/office/data.json', tsKey: 'generatedAt', slaMin: 180, selfHealWorkflow: null, healNote: 'cross-repo + writer is the sovereign runtime runner (office-pulse-bot), NOT a GitHub workflow — measured frozen since 19:36Z while runtime heartbeat stays green; recorded as owner action N7 (runtime lane owns the fix)' },
+  { key: 'beacon', url: RAW + 'sovereign-beacon/main/state.json', tsKey: 'at', slaMin: 100, selfHealWorkflow: 'beacon-pulse.yml', selfHealRepo: 'sovereign-beacon', crossRepo: true, healNote: 'cross-repo dispatch via CROSS_REVIVE_PAT secret (owner authority delegated to the sovereignty — T-63 D1, claim 440e40f3)' },
+  { key: 'lighthouse', url: RAW + 'sovereign-lighthouse/main/state.json', tsKey: 'at', slaMin: 80, selfHealWorkflow: 'lighthouse-pulse.yml', selfHealRepo: 'sovereign-lighthouse', crossRepo: true, healNote: 'cross-repo dispatch via CROSS_REVIVE_PAT secret (owner authority delegated to the sovereignty — T-63 D1, claim 440e40f3)' },
+  { key: 'domain-pulse', url: RAW + 'Domain/main/office/data.json', tsKey: 'generatedAt', slaMin: 180, selfHealWorkflow: null, healNote: 'writer is the sovereign runtime runner (office-pulse-bot), NOT a GitHub workflow — N7 closed by measurement T-62 (runtime lane 40bb19dc); if it freezes again the revival is a runtime-lane dispatch, not a credential gap' },
 ];
 
 const ageMin = (ts) => { const t = Date.parse(ts); return isNaN(t) ? null : Math.max(0, Math.round((Date.now() - t) / 60000)); };
@@ -39,17 +39,21 @@ for (const t of targets) {
 let prior = null;
 try { const r = await fetch(RAW + 'FleetHQ/main/office/state/opens-closer.json', { headers: { 'User-Agent': 'saos-opens-closer' } }); if (r.ok) prior = await r.json(); } catch {}
 
-// self-heal: same-repo dispatch only (GITHUB_TOKEN is repo-scoped by design — respect it)
+// self-heal: same-repo via GITHUB_TOKEN; cross-repo via CROSS_REVIVE_PAT (T-63 D1 — the sovereignty's delegated credential).
+// The credential is NEVER logged; its presence is the only thing surfaced.
 for (const c of checks) {
   const t = targets.find(x => x.key === c.key);
   if (!c.stale || !t.selfHealWorkflow) continue;
-  if (!TOKEN) { c.dispatchStatus = 'no GITHUB_TOKEN — not faked'; continue; }
+  const isCross = !!t.crossRepo;
+  const cred = isCross ? (process.env.CROSS_REVIVE_PAT || '') : TOKEN;
+  const repo = isCross ? `${ORG}/${t.selfHealRepo}` : REPO;
+  if (!cred) { c.dispatchStatus = isCross ? 'no CROSS_REVIVE_PAT — not faked (N6 would reopen)' : 'no GITHUB_TOKEN — not faked'; continue; }
   try {
-    const r = await fetch(`${API}/repos/${REPO}/actions/workflows/${t.selfHealWorkflow}/dispatches`, {
-      method: 'POST', headers: { Authorization: `Bearer ${TOKEN}`, Accept: 'application/vnd.github+json' }, body: JSON.stringify({ ref: 'main' }),
+    const r = await fetch(`${API}/repos/${repo}/actions/workflows/${t.selfHealWorkflow}/dispatches`, {
+      method: 'POST', headers: { Authorization: `Bearer ${cred}`, Accept: 'application/vnd.github+json' }, body: JSON.stringify({ ref: 'main' }),
     });
     c.dispatched = r.status === 204;
-    c.dispatchStatus = r.status === 204 ? 'dispatched 204' : `HTTP ${r.status}`;
+    c.dispatchStatus = r.status === 204 ? (isCross ? 'cross-repo dispatched 204 (CROSS_REVIVE_PAT)' : 'dispatched 204') : `HTTP ${r.status}`;
   } catch (e) { c.dispatchStatus = 'dispatch ERR ' + String(e.message).slice(0, 60); }
 }
 
@@ -65,9 +69,7 @@ const out = {
     : 'no checks',
   metrics: { staleCount: staleOnes.length, dispatchedCount: dispatchedOnes.length },
   checks,
-  ownerActions: staleOnes.filter(c => !targets.find(x => x.key === c.key).selfHealWorkflow).length
-    ? ['N6 — הרשאת-בעלים להערת-נפלים חוצת-ריפואריים (beacon/lighthouse): PAT עם workflow-scope כסוד ב-FleetHQ, או הרצת ה-runtime כותבת-מצבות אלה (מסלול ה-runner, נמדד עצר 19:26Z)']
-    : [],
+  ownerActions: [], // N6 CLOSED (T-63 D1): cross-repo revival runs on CROSS_REVIVE_PAT; a missing secret is reported per-check as 'no CROSS_REVIVE_PAT' — never faked
 };
 
 // no-noise law: commit only when meaningful — dispatch happened, stale-count transition, or 4h freshness stamp
