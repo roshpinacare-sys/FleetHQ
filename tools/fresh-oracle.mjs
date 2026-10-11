@@ -127,21 +127,25 @@ for (const p of PAIRS) {
     verdict = liveSha === committedSha ? "MATCH" : "DRIFT";
     if (verdict === "DRIFT") {
       // deploy-lag tolerance (12b's double-measure law): a twin's publish may
-      // be mid-flight — re-measure ONCE after 20s before a final RED.
-      await new Promise((r) => setTimeout(r, 20_000));
-      const [live2, committed2] = await Promise.all([
-        fetchBytes(p.liveUrl),
-        fetchBytes(`${RAW}/${p.repo}/${p.committedRef}/${p.committedPath}`),
-      ]);
-      const l2 = live2.ok ? sha16(live2.bytes) : null;
-      const c2 = committed2.ok ? sha16(committed2.bytes) : null;
-      if (l2 && l2 === c2) {
-        verdict = "MATCH";
-        raceNote = "settled after deploy-lag re-measure (20s) — was mid-publish";
-        results.push({ name: p.name, liveUrl: p.liveUrl, source: `${p.repo}@${p.committedRef}:${p.committedPath}`, liveStatus: live2.status, committedStatus: committed2.status, liveError: null, committedError: null, liveSha16: l2, committedSha16: c2, liveBytes: live2.ok ? live2.bytes.length : null, verdict, note: raceNote });
-        console.log(`${verdict.padEnd(11)} ${p.name}  live=${l2}  committed=${c2}  (settled after re-measure)`);
-        continue;
+      // be mid-flight — re-measure at +20s and +60s before a final RED
+      // (Pages CDN propagation can outlive one short window).
+      for (const wait of [20_000, 60_000]) {
+        await new Promise((r) => setTimeout(r, wait));
+        const [live2, committed2] = await Promise.all([
+          fetchBytes(p.liveUrl),
+          fetchBytes(`${RAW}/${p.repo}/${p.committedRef}/${p.committedPath}`),
+        ]);
+        const l2 = live2.ok ? sha16(live2.bytes) : null;
+        const c2 = committed2.ok ? sha16(committed2.bytes) : null;
+        if (l2 && l2 === c2) {
+          verdict = "MATCH";
+          raceNote = `settled after deploy-lag re-measure (+${wait / 1000}s) — was mid-publish`;
+          results.push({ name: p.name, liveUrl: p.liveUrl, source: `${p.repo}@${p.committedRef}:${p.committedPath}`, liveStatus: live2.status, committedStatus: committed2.status, liveError: null, committedError: null, liveSha16: l2, committedSha16: c2, liveBytes: live2.ok ? live2.bytes.length : null, verdict, note: raceNote });
+          console.log(`${verdict.padEnd(11)} ${p.name}  live=${l2}  committed=${c2}  (settled after +${wait / 1000}s re-measure)`);
+          break;
+        }
       }
+      if (verdict === "MATCH") continue;
     }
   } else {
     verdict = "UNREACHABLE"; // network/4xx-5xx ≠ drift — honest amber, never faked green
