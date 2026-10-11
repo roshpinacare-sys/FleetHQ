@@ -134,6 +134,26 @@ export function BusinessWorld({ p }: { p: WorldsPayload | null }) {
         ) : (
           <span className="sl-chip bg-amber-500/15 text-amber-700">ביקורת-אמת: מדידת-שרשרת לא זמינה כרגע</span>
         )}
+        {p.verify?.data ? (
+          (() => {
+            const v = p.verify!.data!;
+            const s = v.summary;
+            const tg = v.truthGate;
+            const allGreen = !!s && s.verdict === 'ALL_PASS' && (!tg || (tg.redGates?.length ?? 0) === 0);
+            const bits: string[] = [];
+            if (s) bits.push(`מאמת-הרשת ${s.passed}/${s.total} ${s.verdict}`);
+            if (tg) bits.push(`שער-האמת ${tg.verdict ?? '?'}`);
+            if (!allGreen && v.failures?.length) bits.push(`כשלים: ${v.failures.map((f) => f.id).join(', ')}`);
+            if (!allGreen && tg?.redGates?.length) bits.push(tg.redGates.map((g) => `${g.gate} ${g.note ?? ''}`.trim()).join(' · '));
+            return (
+              <span className={`sl-chip ${allGreen ? 'bg-[color:var(--surface-2)]/95' : 'bg-amber-500/15 text-amber-700'}`}>
+                רשת-האמת: {bits.join(' · ') || 'לא ידוע'}
+              </span>
+            );
+          })()
+        ) : (
+          <span className="sl-chip bg-amber-500/15 text-amber-700">רשת-האמת: לא מפורסם עדיין</span>
+        )}
         {p.chain.data?.receivedInSp ? (
           <span className="sl-chip bg-[color:var(--surface-2)]/95">האצלה-נכנסת {p.chain.data.receivedInSp.toFixed(1)} SP</span>
         ) : null}
