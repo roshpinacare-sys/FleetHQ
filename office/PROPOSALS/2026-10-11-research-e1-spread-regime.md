@@ -6,11 +6,12 @@
 
 ## הקשר נמדד (מה-חקר)
 
-- אוטובוס: 14 green · 2 amber · 0 red · 0 grey — מקור-רישום: live-zip (registry חי מ-private-7 raw (200, 180ms))
+- אוטובוס: 13 green · 2 amber · 0 red · 1 grey — מקור-רישום: fallback-embedded (registry לא-נגיש: HTTP 404 (private-7 פרטי — גם עם-token נדחה) — משתמש ב-snapshot מוטמע (…)
   - domain-dex-grid: amber — מיושן: 35h מעל החוק (24h)
   - domain-dex-world: amber — מיושן: 31h מעל החוק (24h)
+  - console-mirror-status: grey — private-raw — ה-token בסביבה אינו-מוסמך לריפו זה (לא-ידוע, כנה)
 - מחקר (2026-10-11): E1✅ E2✅ E3✅
-- שערים: gate-01-steem-active-wif-domain=WAITING-OWNER, gate-02-actions-billing=WAITING-OWNER, gate-03-r11-rotation-9-soldiers=WAITING-OWNER, gate-04-private-16-recovery-meta=MACHINE-READY, gate-05-stasis-convert=WAITING-OWNER, gate-06-stasis-transfers=WAITING-OWNER, gate-07-stasis-votes=WAITING-OWNER, gate-08-stasis-delegations=DISSOLVED, gate-09-blurt-ignition=WAITING-OWNER, gate-10-private-4-vault-db=WAITING-OWNER, gate-11-saos-agents-distribution=WAITING-OWNER
+- שערים: GATE-STATUS לא-נגיש (HTTP 404) — מצבי-השערים לא-ידועים כעת (מקור-פרטי; כנה, לא-מדומה)
 - דיג'סט: חי מ-2026-10-11 21:00 UTC
 
 ## תוכנית (צעדים)
