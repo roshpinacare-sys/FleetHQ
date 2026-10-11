@@ -1,0 +1,130 @@
+# office-ci - the office's own truth artery (zai-code-3, E-series, owner mandate:
+# "the office in fleet is very important - it must serve the network, improve
+# itself and always work"). Honest verdict law: PASS requires install + prisma
+# + typecheck + build to each RUN and PASS; partial = BLOCKED = exit 1; FAIL
+# receipts land too (honesty before comfort). Public repo = free Actions minutes.
+
+name: office-ci
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+  schedule:
+    - cron: "10 4 * * *"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: office-ci
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Init checks
+        run: |
+          mkdir -p /tmp/checks
+          for c in install prismaGenerate typecheck productionBuild; do
+            echo "skipped" > "/tmp/checks/$c"
+          done
+
+      - name: Install (frozen lockfile)
+        if: always()
+        run: |
+          if bun install --frozen-lockfile; then echo "pass" > /tmp/checks/install; else echo "fail" > /tmp/checks/install; exit 1; fi
+
+      - name: Prisma generate
+        if: always()
+        run: |
+          if bunx prisma generate; then echo "pass" > /tmp/checks/prismaGenerate; else echo "fail" > /tmp/checks/prismaGenerate; exit 1; fi
+
+      - name: Typecheck
+        if: always()
+        run: |
+          if bunx tsc --noEmit; then echo "pass" > /tmp/checks/typecheck; else echo "fail" > /tmp/checks/typecheck; exit 1; fi
+
+      - name: Production build
+        if: always()
+        env:
+          NEXT_TELEMETRY_DISABLED: "1"
+        run: |
+          if bunx next build --webpack; then echo "pass" > /tmp/checks/productionBuild; else echo "fail" > /tmp/checks/productionBuild; exit 1; fi
+
+      - name: Write receipt (honest, always)
+        if: always()
+        env:
+          RUN_ID: ${{ github.run_id }}
+          REPO: ${{ github.repository }}
+          SHA: ${{ github.sha }}
+        run: node - <<'EOF'
+const fs = require("fs");
+const read = (n) => (fs.existsSync("/tmp/checks/" + n) ? fs.readFileSync("/tmp/checks/" + n, "utf8").trim() : "missing");
+const checks = {};
+for (const c of ["install", "prismaGenerate", "typecheck", "productionBuild"]) checks[c] = read(c);
+const values = Object.values(checks);
+const allPass = values.length === 4 && values.every((v) => v === "pass");
+const anySkipped = values.some((v) => v !== "pass" && v !== "fail");
+const overall = allPass ? "PASS" : anySkipped ? "BLOCKED" : "FAIL";
+const reason = allPass
+  ? "all four checks ran and passed"
+  : anySkipped
+    ? "partial run: a check never executed - skipped is never pass"
+    : "failing checks: " + Object.entries(checks).filter(([, v]) => v === "fail").map(([k]) => k).join(",");
+const receipt = {
+  schema: "office.ci/1",
+  at: new Date().toISOString(),
+  repo: process.env.REPO,
+  sha: (process.env.SHA || "").slice(0, 12),
+  checks,
+  overall,
+  reason,
+  provenance: {
+    runId: process.env.RUN_ID,
+    runUrl: "https://github.com/" + process.env.REPO + "/actions/runs/" + process.env.RUN_ID,
+    sha: process.env.SHA,
+  },
+};
+fs.mkdirSync("receipts/office-ci", { recursive: true });
+fs.writeFileSync("receipts/office-ci/verdict.json", JSON.stringify(receipt, null, 1) + "\n");
+fs.appendFileSync("receipts/office-ci/log.jsonl", JSON.stringify({ at: receipt.at, overall, checks }) + "\n");
+console.log("OFFICE-CI", overall, "-", reason);
+EOF
+
+      - name: Publish receipt (rebase-then-push x3)
+        if: always()
+        run: |
+          git config user.name "office-ci-bot"
+          git config user.email "office-ci-bot@users.noreply.github.com"
+          git add receipts/office-ci/
+          if git diff --cached --quiet; then echo "no receipt delta"; exit 0; fi
+          git commit -m "office-ci receipt: build $(cat /tmp/checks/productionBuild 2>/dev/null || echo unknown), types $(cat /tmp/checks/typecheck 2>/dev/null || echo unknown) [skip ci]"
+          ok=0
+          for i in 1 2 3; do
+            if git pull --rebase -q origin main && git push -q origin main; then ok=1; echo "PUSH-OK attempt $i"; break; fi
+            echo "push attempt $i failed, retrying"; sleep 3
+          done
+          if [ "$ok" != "1" ]; then echo "PUSH-FAILED after retries"; exit 1; fi
+
+      - name: Verdict gate (red unless PASS)
+        if: always()
+        run: |
+          node - <<'EOF'
+const fs = require("fs");
+const v = JSON.parse(fs.readFileSync("receipts/office-ci/verdict.json", "utf8"));
+console.log("gate:", v.overall, "-", v.reason, "-", v.provenance.runUrl);
+if (v.overall !== "PASS") process.exit(1);
+EOF
