@@ -15,6 +15,7 @@ const targets = [
   { key: 'office-state', url: RAW + 'FleetHQ/main/office/state/office-state.json', tsKey: 'capturedAt', slaMin: 180, selfHealWorkflow: 'office-heartbeat.yml', healNote: 'same-repo dispatch, GITHUB_TOKEN' },
   { key: 'beacon', url: RAW + 'sovereign-beacon/main/state.json', tsKey: 'at', slaMin: 100, selfHealWorkflow: null, healNote: 'cross-repo — requires owner-scoped credential (recorded as owner action N6, never faked)' },
   { key: 'lighthouse', url: RAW + 'sovereign-lighthouse/main/state.json', tsKey: 'at', slaMin: 80, selfHealWorkflow: null, healNote: 'cross-repo — requires owner-scoped credential (recorded as owner action N6, never faked)' },
+  { key: 'domain-pulse', url: RAW + 'Domain/main/office/data.json', tsKey: 'generatedAt', slaMin: 180, selfHealWorkflow: null, healNote: 'cross-repo + writer is the sovereign runtime runner (office-pulse-bot), NOT a GitHub workflow — measured frozen since 19:36Z while runtime heartbeat stays green; recorded as owner action N7 (runtime lane owns the fix)' },
 ];
 
 const ageMin = (ts) => { const t = Date.parse(ts); return isNaN(t) ? null : Math.max(0, Math.round((Date.now() - t) / 60000)); };
