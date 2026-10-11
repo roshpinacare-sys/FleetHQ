@@ -2,16 +2,15 @@
 
 - **מזהה**: `research-e1-spread-regime` · **מחלקת-סיכון**: SAFE (בטוח) · **דבר-בעלים**: לא
 - **מקור**: research/2026-10-11 (E1 spread-regime) · **ערך/מאמץ**: 4/2
-- **נוצר**: 2026-10-11 21:20 UTC על-ידי office/retro.mjs (office-retro (zai-11d)) · SAOS-OFFICE-RETRO/1
+- **נוצר**: 2026-10-11 21:29 UTC על-ידי office/retro.mjs (office-retro (zai-11d)) · SAOS-OFFICE-RETRO/1
 
 ## הקשר נמדד (מה-חקר)
 
-- אוטובוס: 13 green · 2 amber · 0 red · 1 grey — מקור-רישום: fallback-embedded (registry לא-נגיש: HTTP 404 (private-7 פרטי — גם עם-token נדחה) — משתמש ב-snapshot מוטמע (…)
+- אוטובוס: 14 green · 2 amber · 0 red · 0 grey — מקור-רישום: live-zip (registry חי מ-private-7 raw (200, 425ms))
   - domain-dex-grid: amber — מיושן: 35h מעל החוק (24h)
   - domain-dex-world: amber — מיושן: 31h מעל החוק (24h)
-  - console-mirror-status: grey — private-raw — ה-token בסביבה אינו-מוסמך לריפו זה (לא-ידוע, כנה)
 - מחקר (2026-10-11): E1✅ E2✅ E3✅
-- שערים: GATE-STATUS לא-נגיש (HTTP 404) — מצבי-השערים לא-ידועים כעת (מקור-פרטי; כנה, לא-מדומה)
+- שערים: gate-01-steem-active-wif-domain=WAITING-OWNER, gate-02-actions-billing=WAITING-OWNER, gate-03-r11-rotation-9-soldiers=WAITING-OWNER, gate-04-private-16-recovery-meta=MACHINE-READY, gate-05-stasis-convert=WAITING-OWNER, gate-06-stasis-transfers=WAITING-OWNER, gate-07-stasis-votes=WAITING-OWNER, gate-08-stasis-delegations=DISSOLVED, gate-09-blurt-ignition=WAITING-OWNER, gate-10-private-4-vault-db=WAITING-OWNER, gate-11-saos-agents-distribution=WAITING-OWNER
 - דיג'סט: חי מ-2026-10-11 21:00 UTC
 
 ## תוכנית (צעדים)
