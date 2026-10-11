@@ -33,6 +33,11 @@ interface RepoSignal {
   ageHours: number;
   commits7d: number;
   stale: boolean;
+  /** measured vs origin: quiet-but-synced repos are healthy, not dead (16-c audit) */
+  aheadOfOrigin: number | null;
+  behindOrigin: number | null;
+  health: "active" | "dormant-healthy" | "diverged-unpushed" | "diverged-behind" | "archive" | "unknown";
+  isArchive: boolean;
   evidence: string;
 }
 
@@ -87,13 +92,38 @@ async function scanRepo(name: string, now: number): Promise<RepoSignal | null> {
   const ageHours = Math.round(((now - ts) / 3_600_000) * 10) / 10;
   const commits7dRaw = await sh("git rev-list --count --since='7 days ago' HEAD", path);
   const commits7d = Number.parseInt(commits7dRaw || "0", 10) || 0;
+  // measured origin divergence — quiet ≠ dead; diverged ≠ healthy (life-path audit)
+  const aheadRaw = await sh("git rev-list --count origin/main..main 2>/dev/null", path);
+  const behindRaw = await sh("git rev-list --count main..origin/main 2>/dev/null", path);
+  const aheadOfOrigin = /^\d+$/.test(aheadRaw) ? Number.parseInt(aheadRaw, 10) : null;
+  const behindOrigin = /^\d+$/.test(behindRaw) ? Number.parseInt(behindRaw, 10) : null;
+  const stale = now - ts > STALE_REPO_MS;
+  // archive detection: declared archive/baseline repos are quiet BY DESIGN (16-c cartography)
+  let isArchive = false;
+  try {
+    const head = await sh("head -c 2000 README.md 2>/dev/null", path);
+    isArchive = /archive vault|frozen baseline|broadcast archive|deliberate.*archive/i.test(head);
+  } catch {
+    isArchive = false;
+  }
+  let health: RepoSignal["health"];
+  if (aheadOfOrigin === null || behindOrigin === null) health = "unknown";
+  else if (isArchive) health = "archive";
+  else if (!stale) health = "active";
+  else if (aheadOfOrigin === 0 && behindOrigin === 0) health = "dormant-healthy";
+  else if (aheadOfOrigin > 0) health = "diverged-unpushed";
+  else health = "diverged-behind";
   return {
     name,
     lastCommitAt,
     ageHours,
     commits7d,
-    stale: now - ts > STALE_REPO_MS,
-    evidence: `git: last commit ${lastCommitAt}, ${commits7d} commits/7d`,
+    stale,
+    aheadOfOrigin,
+    behindOrigin,
+    health,
+    isArchive,
+    evidence: `git: last commit ${lastCommitAt}, ${commits7d} commits/7d, ahead=${aheadOfOrigin} behind=${behindOrigin}${isArchive ? ", declared archive" : ""} → ${health}`,
   };
 }
 
@@ -166,14 +196,54 @@ function deriveRoles(
   const roles: RoleNeeded[] = [];
 
   const stale = repos.filter((r) => r.stale);
-  if (stale.length > 0) {
+  // true frozen = stale AND diverged (archives & dormant-healthy are quiet by design/health, not sick)
+  const trueFrozen = stale.filter(
+    (r) => r.health === "diverged-unpushed" || r.health === "diverged-behind" || r.health === "unknown",
+  );
+  if (trueFrozen.length > 0) {
     roles.push({
       role: "reviver",
       roleHe: "מחייה-ריפואים",
-      count: stale.length,
-      targets: stale.map((r) => r.name),
-      evidence: stale.map((r) => r.evidence),
-      derivedFrom: "repos frozen >72h must display as frozen (veritas doctrine)",
+      count: trueFrozen.length,
+      targets: trueFrozen.map((r) => r.name),
+      evidence: trueFrozen.map((r) => r.evidence),
+      derivedFrom: "repos frozen >72h AND diverged from origin — must display as frozen (veritas doctrine)",
+    });
+  }
+
+  const dormant = repos.filter((r) => r.health === "dormant-healthy");
+  if (dormant.length > 0) {
+    roles.push({
+      role: "asset-cartographer",
+      roleHe: "ממפה-נכסים",
+      count: dormant.length,
+      targets: dormant.map((r) => r.name),
+      evidence: dormant.map((r) => r.evidence),
+      derivedFrom: "quiet >72h, synced & clean, LIVE mission (platform/console) — assets to map & bridge",
+    });
+  }
+
+  const archives = repos.filter((r) => r.health === "archive");
+  if (archives.length > 0) {
+    roles.push({
+      role: "archive-keeper",
+      roleHe: "שומר-ארכיון",
+      count: archives.length,
+      targets: archives.map((r) => r.name),
+      evidence: archives.map((r) => r.evidence),
+      derivedFrom: "declared archive/baseline — quiet BY DESIGN; guard integrity, do not force work",
+    });
+  }
+
+  const unpushed = repos.filter((r) => r.health === "diverged-unpushed");
+  if (unpushed.length > 0) {
+    roles.push({
+      role: "pusher",
+      roleHe: "דוחף-ריבוני",
+      count: unpushed.length,
+      targets: unpushed.map((r) => `${r.name} (+${r.aheadOfOrigin} unpushed)`),
+      evidence: unpushed.map((r) => r.evidence),
+      derivedFrom: "local commits not on origin — sovereign work waiting for the rail",
     });
   }
 
