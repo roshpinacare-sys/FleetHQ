@@ -1,15 +1,15 @@
 # תיק-העבודות של המשרד (BACKLOG)
 
-> מחזור-השיפור-העצמי · office/retro.mjs · SAOS-OFFICE-RETRO/1 · 2026-10-11 23:53 UTC · trace 1a12c9d6f5df1b95 — חקר/זיקוק/תכנון/ביצוע
+> מחזור-השיפור-העצמי · office/retro.mjs · SAOS-OFFICE-RETRO/1 · 2026-10-11 23:56 UTC · trace 1a12c9d6f5df1b95 — חקר/זיקוק/תכנון/ביצוע
 
 ## סיכום נמדד
 
 - **אוטובוס**: 15 green · 0 amber · 0 red · 1 grey (רישום: fallback-embedded)
 - **שערי-בעלים**: לא-ידוע (מקור-השערים פרטי/לא-נגיש — כנה)
 - **מחקר**: הממצאים מ-2026-10-11 — 3 ניסויים
-- **E1 spread-regime (built-in)**: SPREAD-REGIME: value=100bps · delta=+6.50 vs 93.5 · מקור-בן-10.2h · HOLD (loosened) — הפיזור התרחב — לעקוב בלבד (verify/doc-only)
+- **E1 spread-regime (built-in)**: SPREAD-REGIME: value=100bps · delta=+6.50 vs 93.5 · מקור-בן-10.3h · HOLD (loosened) — הפיזור התרחב — לעקוב בלבד (verify/doc-only)
 - **צווי-עבודה (work-orders)**: 6 פתוחים · 6 נפתרו · P1 פתוחים: 1
-- **רווחיות (profit-oracle)**: at=2026-10-11 23:50 UTC
+- **רווחיות (profit-oracle)**: verdict=FLAT · delta=0% מול-המדידה-הקודמת · שווי-נקי=455.32 SBD-equiv · grid=EDGE-NEGATIVE-GRID-HOLD · at=2026-10-11 23:52 UTC
 - **פריטים**: 4 (SAFE 1 · MACHINE-PREP 2 · OWNER-WORD 1)
 
 ## בוצע במחזור זה (SAFE built-ins בלבד — חוק)
@@ -45,4 +45,4 @@
 - כנות: לא-ידוע נשאר לא-ידוע; פיד אדום מודפס אדום
 
 ---
-*נוצר אוטומטית על-ידי המשרד · SAOS-OFFICE-RETRO/1 · אפס-סודות (סרוק fail-closed) · ISO 2026-10-11T23:53:02.459Z*
+*נוצר אוטומטית על-ידי המשרד · SAOS-OFFICE-RETRO/1 · אפס-סודות (סרוק fail-closed) · ISO 2026-10-11T23:56:36.105Z*
