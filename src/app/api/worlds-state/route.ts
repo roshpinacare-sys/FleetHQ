@@ -20,6 +20,9 @@ const SRC = {
   // [zai-14] החיבורים החסרים — קבלות שהיו ללא קורא, עכשיו אוכל
   connectivity: `${RAW}/FleetHQ/main/office/state/connectivity.json`,
   bootVerify: `${RAW}/FleetHQ/main/receipts/boot-verify.json`,
+  // [T15] רשת-האמת של הקונסולה — המאמת-העצמאי + שער-האמת
+  agentVerify: `${RAW}/Console/main/agent/verify/results.json`,
+  truthGate: `${RAW}/Console/main/truth/latest.json`,
   freshOracle: `${RAW}/FleetHQ/main/receipts/fresh-oracle/latest.json`,
 }
 
@@ -81,7 +84,7 @@ async function measureChain(): Promise<{ ok: boolean; error?: string; head?: num
 type Src<T> = { ok: boolean; error?: string; data: T | null }
 
 async function collect(): Promise<Record<string, unknown>> {
-  const [flowR, lhR, bcnR, dexR, officeRaw, vsR, chainR, connRaw, bootRaw, oracleRaw] = await Promise.all([
+  const [flowR, lhR, bcnR, dexR, officeRaw, vsR, chainR, connRaw, bootRaw, oracleRaw, agentVerifyR, truthGateR] = await Promise.all([
     fetchJson(SRC.flow),
     fetchJson(SRC.lighthouse),
     fetchJson(SRC.beacon),
@@ -92,6 +95,8 @@ async function collect(): Promise<Record<string, unknown>> {
     fetchJson(SRC.connectivity),
     fetchJson(SRC.bootVerify),
     fetchJson(SRC.freshOracle),
+    fetchJson(SRC.agentVerify),
+    fetchJson(SRC.truthGate),
   ])
 
   // ---- foreman: עדיפות לקובץ המקומי (האפליקציה רצה ב-worktree — הטרי ביותר), raw כגיבוי
@@ -163,6 +168,7 @@ async function collect(): Promise<Record<string, unknown>> {
     connectivity: { ok: connectivity.ok, error: connectivity.error, data: connectivity.data },
     bootVerify: { ok: bootVerify.ok, error: bootVerify.error, ageH: bootAgeH, data: bootVerify.data },
     freshOracle: { ok: freshOracle.ok, error: freshOracle.error, data: freshOracle.data },
+    verify: { ok: verifyWire.ok, error: verifyWire.error, data: verifyWire.data },
   }
   return out
 }
@@ -175,6 +181,26 @@ export async function GET() {
   try {
     const payload = await collect()
     cache = { at: Date.now(), payload }
+  // ---- [T15] רשת-האמת: המאמת-העצמאי (51 טענות מדודות) + שער-האמת של האתר-החי —
+  // כשל → צ'יפ-אמבר כנה במשרד; אפס-כשל → המדידה-הירוקה המפורסמת. אפס-המצאות.
+  const avData = agentVerifyR.data as { summary?: { total: number; passed: number; failed: number; verdict: string }; generatedAt?: string; results?: { id: string; ok: boolean; details?: string }[] } | null
+  const tgData = truthGateR.data as { at?: string; verdict?: string; counts?: { pass: number; fail: number; skip: number }; results?: { gate: string; status: string; note?: string; measured?: string }[] } | null
+  const verifyWire = (agentVerifyR.ok || truthGateR.ok) ? {
+    ok: true as const,
+    error: null,
+    data: {
+      summary: avData?.summary ?? null,
+      generatedAt: avData?.generatedAt ?? null,
+      failures: (avData?.results ?? []).filter((r) => !r.ok).map((r) => ({ id: r.id, details: r.details })),
+      truthGate: tgData ? {
+        at: tgData.at ?? null,
+        verdict: tgData.verdict ?? null,
+        counts: tgData.counts ?? null,
+        redGates: (tgData.results ?? []).filter((g) => g.status === 'FAIL').map((g) => ({ gate: g.gate, note: g.note ?? null, measured: g.measured ?? null })),
+      } : null,
+    },
+  } : { ok: false as const, error: truthGateR.error ?? agentVerifyR.error ?? 'verify unavailable', data: null }
+
     return NextResponse.json(payload)
   } catch (err) {
     if (cache) return NextResponse.json(cache.payload)
