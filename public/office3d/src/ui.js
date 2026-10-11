@@ -1,9 +1,12 @@
 /**
  * ui.js — ממשק-הצפייה (ViewDeck v2): שבבי-מצב, רוסטר חי, סרגל-תצפית,
  * טיקר-פיד, כרטיס-סוכן, ובועות-דיבור מוקרנות מהעולם למסך.
+ * exec-15 (אדיטיבי): כפתורי-מצב-עולם, צ'יפ-טריות-דיג'סט, וקיר-האמת.
  */
 
 import { CREW } from './canon.js';
+
+const FRESH_HE = { fresh: 'טרי', aging: 'מתיישן', stale: 'ישן', unknown: 'לא ידוע' };
 
 export class UI {
   constructor({ onFocus, onView, onRosterToggle }) {
@@ -84,6 +87,32 @@ export class UI {
     for (const [, b] of this.viewBtns) b.classList.remove('active');
   }
 
+  // ───── כפתורי-מצב-עולם (exec-15 — אדיטיבי) ─────
+  addModeButtons({ onBusiness, onOffice }) {
+    const inner = this.$('#deckInner');
+    const sep = document.createElement('div');
+    sep.className = 'sep';
+    inner.appendChild(sep);
+    const mk = (id, he, cb) => {
+      const b = document.createElement('button');
+      b.className = 'vbtn';
+      b.textContent = he;
+      b.addEventListener('click', () => {
+        this.setModeActive(id);
+        cb?.();
+      });
+      inner.appendChild(b);
+      return b;
+    };
+    this.bizBtn = mk('business', 'עולם-עסקים', () => onBusiness?.());
+    this.officeBtn = mk('office', 'המשרד', () => onOffice?.());
+  }
+
+  setModeActive(mode) {
+    if (this.bizBtn) this.bizBtn.classList.toggle('active', mode === 'business');
+    if (this.officeBtn) this.officeBtn.classList.toggle('active', mode !== 'business');
+  }
+
   showViewTitle(he) {
     const el = this.$('#viewTitle');
     el.textContent = he;
@@ -157,6 +186,71 @@ export class UI {
     this.$('#card').classList.remove('show');
     this.selected = null;
     this.markSelected();
+  }
+
+  // ───── צ'יפ-טריות-דיג'סט (exec-15) ─────
+  setDigestChip(snap) {
+    const chip = this.$('#chipDigest');
+    const txt = this.$('#digestTxt');
+    if (!chip || !txt) return;
+    if (snap?.available && snap.generatedAt) {
+      const age = Number.isFinite(snap.ageMin) ? `${Math.max(0, Math.round(snap.ageMin))} דק'` : '—';
+      const f = snap.freshness || 'unknown';
+      chip.className = 'chip hideSm ' + (f === 'fresh' ? 'ok' : f === 'aging' ? 'warn' : f === 'stale' ? 'bad' : '');
+      txt.textContent = `דיג׳סט · ${FRESH_HE[f]} · ${age}`;
+      chip.title = `דיג'סט הצי נוצר: ${snap.generatedAt}`;
+    } else {
+      chip.className = 'chip hideSm';
+      txt.textContent = 'דיג׳סט · לא ידוע';
+      chip.title = snap?.error || 'אין חיבור ל-digest.json';
+    }
+  }
+
+  // ───── קיר-האמת (exec-15): 9 שורות-ספרים מהדיג'סט — DOM בלבד ─────
+  setTruthWall(snap) {
+    const wall = this.$('#truthWall');
+    if (!wall) return;
+    const meta = wall.querySelector('#truthWallMeta');
+    const list = wall.querySelector('#truthWallRows');
+    if (!list) return;
+    if (meta) {
+      if (snap?.available && snap.generatedAt) {
+        const age = Number.isFinite(snap.ageMin) ? `${Math.max(0, Math.round(snap.ageMin))} דק'` : '—';
+        meta.textContent = `digest.json · ${FRESH_HE[snap.freshness] || 'לא ידוע'} · ${age}`;
+        meta.className = 'twMeta ' + (snap.freshness || 'unknown');
+      } else {
+        meta.textContent = snap?.error ? 'digest.json · לא ידוע — ' + snap.error : 'digest.json · לא ידוע';
+        meta.className = 'twMeta unknown';
+      }
+    }
+    const repos = snap?.repos || [];
+    if (!snap?.available || !repos.length) {
+      list.innerHTML = '<div class="twRow twFail">אין נתוני-דיג׳סט — הכול לא ידוע. אין כאן ירוק-מזויף.</div>';
+      return;
+    }
+    list.innerHTML = repos.map((r) => {
+      const commits = (typeof r.commits7d === 'number')
+        ? `${r.commits7d}${r.commits7dCapped ? '+' : ''}`
+        : '—';
+      const f = r.runFreshness || 'unknown';
+      const runTxt = r.runStatus === 'completed' && r.runConclusion === 'success' ? 'עברה'
+        : r.runStatus === 'in_progress' ? 'בעבודה'
+        : (r.runConclusion && r.runConclusion !== 'success') ? 'כשל'
+        : '—';
+      return `<div class="twRow">
+        <span class="twDot" style="background:${r.color || '#8a857c'}" title="ריצה אחרונה: ${runTxt}"></span>
+        <span class="twName">${r.name}</span>
+        <span class="twCommits" title="קומיטים ב-7 ימים (מהדיג'סט)">${commits}</span>
+        <span class="twFresh ${f}">${FRESH_HE[f]}</span>
+      </div>`;
+    }).join('');
+  }
+
+  setTruthWallVisible(show) {
+    const wall = this.$('#truthWall');
+    if (!wall) return;
+    wall.classList.toggle('show', !!show);
+    document.body.classList.toggle('truthwall-open', !!show);
   }
 
   // ───── שבבי-מצב ─────

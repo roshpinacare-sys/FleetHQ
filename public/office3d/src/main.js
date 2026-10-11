@@ -1,6 +1,7 @@
 /**
  * main.js — הפעלת המשרד: רנדרר + תאורת-יום, עולם, צוות, מצלמת-במאי,
  * גשר-נתונים אמיתי, וממשק. חוק-אמת: אין ירוק-מזויף; כשל = כנה ומוסבר.
+ * exec-15 (אדיטיבי): גשר-הדיג'סט + עולם-העסקים + שער-הגיוס.
  */
 
 import * as THREE from 'three';
@@ -8,8 +9,11 @@ import { buildWorld } from './world.js';
 import { Crew } from './crew.js';
 import { Director, VIEWS } from './director.js';
 import { DataBridge } from './data.js';
+import { DigestBridge } from './digest.js';
+import { BusinessWorld } from './business.js';
+import { RecruitmentGate } from './gate.js';
 import { UI } from './ui.js';
-import { CREW, ROOM_W, ROOM_D, WALL_H } from './canon.js';
+import { CREW, ROOM_W, ROOM_D, WALL_H, FOG_COLOR } from './canon.js';
 
 // ───────── רנדרר ─────────
 const stage = document.getElementById('stage');
@@ -26,6 +30,8 @@ stage.appendChild(renderer.domElement);
 
 const scene = new THREE.Scene();
 scene.fog = new THREE.Fog('#e6dfcf', 34, 78);
+// רקע-סצנה = צבע-הערפל: בין-כיפת-האולם לכיפת עולם-העסקים לא נראה שחור
+scene.background = new THREE.Color(FOG_COLOR);
 
 const camera = new THREE.PerspectiveCamera(50, innerWidth / innerHeight, 0.1, 160);
 camera.position.set(7.4, 4.7, 5.1);
@@ -73,7 +79,18 @@ const ui = new UI({
     if (id === 'tour') { director.startTour(); ui.setTourActive(); return; }
     if (id === 'stop-tour') { director.stopTour(); return; }
     const v = VIEWS.find((x) => x.id === id);
-    if (v) { director.goView(v); ui.showViewTitle(v.he); }
+    if (!v) return;
+    // בעולם-העסקים, לחיצה על תצפית-אולם מחזירה למשרד קודם (מעבר-חלק אחד)
+    if (currentMode === 'business') {
+      currentMode = 'office';
+      ui.setModeActive('office');
+      document.body.classList.remove('mode-biz');
+      ui.setTruthWallVisible(id === 'gitwall');
+      business.leave(director);
+    }
+    director.goView(v);
+    ui.showViewTitle(v.he);
+    ui.setTruthWallVisible(id === 'gitwall');
   },
   onRosterToggle: () => {},
 });
@@ -88,6 +105,7 @@ const director = new Director(camera, renderer.domElement);
 // ───────── גשר-נתונים ─────────
 const data = new DataBridge();
 let lastBubbleAt = {};
+let currentMode = 'office'; // office | business (exec-15)
 
 data.on((snap) => {
   try {
@@ -164,6 +182,47 @@ function timeAgo(ts) {
   return `${Math.round(min / 60)} שע'`;
 }
 
+// ───────── exec-15: גשר-הדיג'סט + עולם-העסקים + שער-הגיוס ─────────
+const digest = new DigestBridge();
+const business = new BusinessWorld(scene);
+const gate = new RecruitmentGate(scene);
+
+digest.on((snap) => {
+  try {
+    ui.setDigestChip(snap);
+    ui.setTruthWall(snap);
+    business.applyDigest(snap);
+  } catch (err) {
+    console.warn('[office] digest-callback failure (honest):', err?.message || err);
+  }
+});
+
+gate.on(() => { /* השער מרנדר את לוחו בעצמו — המאזין כאן לתאימות-דפוס */ });
+
+// כפתורי-מצב-העולם (עולם-עסקים / המשרד)
+function enterBusiness() {
+  if (currentMode === 'business') return;
+  currentMode = 'business';
+  director.stopTour();
+  business.enter(director);
+  document.body.classList.add('mode-biz');
+  ui.setTruthWallVisible(true);
+  ui.showViewTitle('עולם-העסקים — מטפורות הצי');
+}
+
+function enterOffice() {
+  if (currentMode === 'office') return;
+  currentMode = 'office';
+  director.stopTour();
+  business.leave(director);
+  document.body.classList.remove('mode-biz');
+  ui.setTruthWallVisible(false);
+  ui.showViewTitle('המשרד — מפקדת הצי');
+}
+
+ui.addModeButtons({ onBusiness: enterBusiness, onOffice: enterOffice });
+ui.setModeActive('office');
+
 // ───────── מסך-טעינה ─────────
 const bar = document.querySelector('#bar > i');
 const loadState = document.getElementById('loadState');
@@ -194,6 +253,8 @@ function animate() {
   world.update(elapsed);
   crew.update(dt, elapsed);
   director.update(dt);
+  business.update(elapsed); // exec-15: חיי-האי
+  gate.update(elapsed);     // exec-15: פעימת-השער
 
   // שמש עוקבת-קלות (עומק צל יציב)
   sun.target.position.set(0, 0, 0);
@@ -232,7 +293,7 @@ document.addEventListener('visibilitychange', () => {
 });
 
 // וידוא-הקשר לדיבוג
-window.__office = { scene, camera, renderer, crew, world, data, director };
+window.__office = { scene, camera, renderer, crew, world, data, director, digest, business, gate };
 
 // כשל-גלובלי כנה
 addEventListener('error', (e) => {
@@ -242,6 +303,8 @@ addEventListener('error', (e) => {
   }
 });
 
-// התחלת הגשר
+// התחלת הגשרים
 setLoad(20, 'מתחבר לספרי-הצי…');
 data.start();
+digest.start(); // exec-15: דיג'סט-הצי (ריענון 5 דק')
+gate.start();   // exec-15: potential.json לשער-הגיוס (ריענון 10 דק')
