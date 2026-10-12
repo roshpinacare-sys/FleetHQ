@@ -10,11 +10,14 @@
  *   הכרעות) מה-store בלבד, עם טוקני-העיצוב הקיימים.
  * · סיור: צ'יפ "סיור" מפעיל את מצלמת-הבמאי הקולנועית; כל קלט משתמש מחזיר שליטה.
  * · טוסטים: הודעות אמיתיות בלבד (הגיעו מהפורמן דרך הגשר).
+ * · T19-c (refero): סולם-גופנים ממושמע (11 / 12 / 12.5), מקצב ריווח 4/8,
+ *   פאנל-HUD אחד (.sl-panel — עומק עדין במקום מסגרות-כפולות), memo לחלקים
+ *   היציבים — הכרום רגוע ומקצועי, ההתנהגות ללא-שינוי.
  * אין ג'ויסטיק, אין ריצה, אין WASD, אין מבט-ראשון — הניווט אדריכלי.
  */
 'use client';
 
-import { useEffect, useState } from 'react';
+import { memo, useEffect, useState } from 'react';
 import { bus, director, type PresetId } from '@/lib/hq/world';
 import { CAMERA_PRESETS } from '@/lib/hq/contract';
 import { useHq, type Lang } from '@/lib/hq/store';
@@ -30,7 +33,7 @@ export function selectPreset(id: PresetId) {
 /** Task 11-a — שלט-המסלול בפינת-החדר: מה מוצג כאן, בשפה-אחת וכנה.
  *  חי = סוקט הפורמן · מראה = יומן אמיתי קפוא ב-{savedAt} ·
  *  הדגמה = backend 'sim' מפורש בלבד (סימן-מים חובה) · שגיאת-יומן מוצגת ככשל. */
-function ModeChip({ lang }: { lang: Lang }) {
+const ModeChip = memo(function ModeChip({ lang }: { lang: Lang }) {
   const feedMode = useHq((s) => s.feedMode);
   const feedReady = useHq((s) => s.feedReady);
   const feedSavedAt = useHq((s) => s.feedSavedAt);
@@ -51,20 +54,20 @@ function ModeChip({ lang }: { lang: Lang }) {
       : { text: he ? 'חי — הפורמן בזמן-אמת' : 'Live — the foreman in real time', color: 'var(--st-ok)' };
   return (
     <div
-      className="pointer-events-none absolute end-3 top-3 z-10 flex max-w-[70%] items-center gap-1.5 rounded-lg border border-[color:var(--line)] bg-[color:var(--surface-2)]/92 px-2.5 py-1.5 backdrop-blur"
+      className="sl-panel pointer-events-none absolute end-3 top-3 z-10 flex max-w-[70%] items-center gap-2 px-3 py-2"
       dir="rtl"
       role="status"
     >
       <span className="sl-dot" style={{ backgroundColor: color }} aria-hidden="true" />
-      <span className="text-[11.5px] font-semibold" style={{ color }}>{text}</span>
+      <span className="text-[12px] font-semibold" style={{ color }}>{text}</span>
     </div>
   );
-}
+});
 
 /** Task 11-a — HUD נתונים אמיתיים מינימלי: יעד פעיל + ספירת לוח-המשימות +
  *  הכרעות — הכל מה-store (אותה אמת של הסוקט/המראה), טוקני-עיצוב קיימים.
  *  מה שלא נמדד לא מוצג — אין כאן מספר יבש. */
-function RoomHud({ lang }: { lang: Lang }) {
+const RoomHud = memo(function RoomHud({ lang }: { lang: Lang }) {
   const goal = useHq((s) => s.snap.goal);
   const tasks = useHq((s) => s.snap.tasks);
   const decisions = useHq((s) => s.snap.decisions);
@@ -77,30 +80,30 @@ function RoomHud({ lang }: { lang: Lang }) {
   const answeredD = decisions.length - openD;
   return (
     <div
-      className="pointer-events-none absolute start-3 top-3 z-10 flex max-w-[64%] flex-col gap-1.5"
+      className="pointer-events-none absolute start-3 top-3 z-10 flex max-w-[64%] flex-col gap-2"
       dir="rtl"
       aria-label={he ? 'מדדי-המשרד' : 'Office metrics'}
     >
       {goal && (
-        <div className="rounded-lg border border-[color:var(--line)] bg-[color:var(--surface-2)]/92 px-3 py-2 backdrop-blur">
-          <div className="text-[10.5px] font-bold uppercase tracking-wide text-[color:var(--ink-3)]">{he ? 'היעד הנוכחי' : 'Current goal'}</div>
-          <div className="mt-0.5 line-clamp-2 text-[12.5px] font-semibold leading-5 text-[color:var(--ink)]">{goal.text}</div>
+        <div className="sl-panel px-3 py-2">
+          <div className="text-[11px] font-bold uppercase tracking-wide text-[color:var(--ink-3)]">{he ? 'היעד הנוכחי' : 'Current goal'}</div>
+          <div className="mt-1 line-clamp-2 text-[12.5px] font-semibold leading-5 text-[color:var(--ink)]">{goal.text}</div>
           {typeof goal.progress === 'number' && (
-            <div className="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-[color:var(--line)]">
+            <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-[color:var(--line)]">
               <div className="h-full rounded-full bg-[color:var(--accent)]" style={{ width: `${Math.max(0, Math.min(100, Math.round(goal.progress * 100)))}%` }} />
             </div>
           )}
         </div>
       )}
-      <div className="flex flex-wrap items-center gap-1.5">
-        <span className="rounded-md border border-[color:var(--line)] bg-[color:var(--surface-2)]/92 px-2 py-1 text-[11px] font-semibold text-[color:var(--ink-2)] backdrop-blur">
+      <div className="flex flex-wrap items-center gap-2">
+        <span className="sl-panel px-3 py-2 text-[12px] font-semibold text-[color:var(--ink-2)]">
           {he ? `לוח: ${done} בוצעו · ${active} פתוחות` : `Wall: ${done} done · ${active} open`}
         </span>
-        <span className="rounded-md border border-[color:var(--line)] bg-[color:var(--surface-2)]/92 px-2 py-1 text-[11px] font-semibold text-[color:var(--ink-2)] backdrop-blur">
+        <span className="sl-panel px-3 py-2 text-[12px] font-semibold text-[color:var(--ink-2)]">
           {he ? `הכרעות: ${answeredD} הוכרעו${openD ? ` · ${openD} פתוחות` : ''}` : `Decisions: ${answeredD} resolved${openD ? ` · ${openD} open` : ''}`}
         </span>
         {journal && (journal.rescuedCount != null || journal.reviewRoundsTotal != null) && (
-          <span className="rounded-md border border-[color:var(--line)] bg-[color:var(--surface-2)]/92 px-2 py-1 text-[11px] font-semibold text-[color:var(--ink-3)] backdrop-blur">
+          <span className="sl-panel px-3 py-2 text-[12px] font-semibold text-[color:var(--ink-3)]">
             {he
               ? `יומן: ${journal.rescuedCount ?? '—'} חילוצים · ${journal.reviewRoundsTotal ?? '—'} עידוני-ביקורת`
               : `Journal: ${journal.rescuedCount ?? '—'} rescues · ${journal.reviewRoundsTotal ?? '—'} review rounds`}
@@ -109,33 +112,33 @@ function RoomHud({ lang }: { lang: Lang }) {
       </div>
     </div>
   );
-}
+});
 
 /** טוסטים — הודעות אמיתיות בלבד */
-function RoomToasts() {
+const RoomToasts = memo(function RoomToasts() {
   const toasts = useHq((s) => s.toasts);
   return (
-    <div className="pointer-events-none absolute top-3 left-1/2 z-10 flex w-max max-w-[92%] -translate-x-1/2 flex-col items-center gap-1.5" dir="rtl" aria-live="polite">
+    <div className="pointer-events-none absolute top-3 left-1/2 z-10 flex w-max max-w-[92%] -translate-x-1/2 flex-col items-center gap-2" dir="rtl" aria-live="polite">
       {toasts.map((t) => (
-        <div key={t.id} className="rounded-full border border-[color:var(--line-strong)] bg-[color:var(--surface-2)] px-3.5 py-1.5 text-[12.5px] font-semibold text-[color:var(--ink)] shadow-sm">
+        <div key={t.id} className="sl-panel rounded-full px-4 py-2 text-[12.5px] font-semibold text-[color:var(--ink)]">
           {t.text}
         </div>
       ))}
     </div>
   );
-}
+});
 
 /** מצב-חדר כנה: חיבור + טריות + הכנה — ומסלול-מראה כנה (Task 11-a) */
-function RoomStatus({ lang }: { lang: Lang }) {
+const RoomStatus = memo(function RoomStatus({ lang }: { lang: Lang }) {
   const connected = useHq((s) => s.connected);
   const ready = useHq((s) => s.roomReady);
   const gotSnapshot = useHq((s) => s.snap.agents.length > 0 || s.snap.tasks.length > 0);
   const mirrorReady = useHq((s) => s.feedMode === 'mirror' && s.feedReady);
   const he = lang === 'he';
   return (
-    <div className="pointer-events-none absolute bottom-3 left-3 z-10 hidden items-center gap-2 rounded-lg border border-[color:var(--line)] bg-[color:var(--surface-2)] px-2.5 py-1.5 sm:flex" dir="rtl">
+    <div className="sl-panel pointer-events-none absolute bottom-3 left-3 z-10 hidden items-center gap-2 px-3 py-2 sm:flex" dir="rtl">
       <span className="sl-dot" style={{ backgroundColor: !ready ? 'var(--st-neutral)' : mirrorReady ? 'var(--st-info)' : connected ? 'var(--st-ok)' : 'var(--st-attention)' }} aria-hidden="true" />
-      <span className="text-[11.5px] font-medium text-[color:var(--ink-2)]">
+      <span className="text-[12px] font-medium text-[color:var(--ink-2)]">
         {!ready
           ? (he ? 'החדר בהכנה…' : 'Preparing the room…')
           : mirrorReady
@@ -148,11 +151,11 @@ function RoomStatus({ lang }: { lang: Lang }) {
       </span>
     </div>
   );
-}
+});
 
 /** צ'יפ מקור-האמת (Task 3D-TRUTH): מאיפה הנתונים + גילם — כנות מלאה,
  *  בלי ירוק-מזויף: נתונים ישנים מסומנים כישנים, חסר מסומן כחסר. */
-function TruthChip({ lang }: { lang: Lang }) {
+const TruthChip = memo(function TruthChip({ lang }: { lang: Lang }) {
   const truth = useHq((s) => s.truth);
   const [, force] = useState(0);
   useEffect(() => {
@@ -173,15 +176,15 @@ function TruthChip({ lang }: { lang: Lang }) {
     : (he ? 'אין מקור-אמת — החדר ריק מנתונים' : 'no truth source — room shows no data');
   return (
     <div
-      className="pointer-events-none absolute right-3 bottom-3 z-10 flex max-w-[58%] items-center gap-2 rounded-lg border border-[color:var(--line)] bg-[color:var(--surface-2)]/95 px-2.5 py-1.5 backdrop-blur sm:max-w-[46%]"
+      className="sl-panel pointer-events-none absolute right-3 bottom-3 z-10 flex max-w-[58%] items-center gap-2 px-3 py-2 sm:max-w-[46%]"
       dir="rtl"
       role="status"
     >
       <span className="sl-dot" style={{ backgroundColor: stale || !truth.foremanOk ? 'var(--st-attention)' : 'var(--st-ok)' }} aria-hidden="true" />
-      <span className="truncate text-[11.5px] font-medium text-[color:var(--ink-2)]" title={label}>{label}</span>
+      <span className="truncate text-[12px] font-medium text-[color:var(--ink-2)]" title={label}>{label}</span>
     </div>
   );
-}
+});
 
 /** שכבת-הכנה — נעלמת בפריים האמיתי הראשון */
 function PreparingVeil({ lang }: { lang: Lang }) {
@@ -190,11 +193,11 @@ function PreparingVeil({ lang }: { lang: Lang }) {
   const he = lang === 'he';
   return (
     <div className="pointer-events-none absolute inset-0 z-20 grid place-items-center" dir="rtl" role="status" aria-live="polite">
-      <div className="flex items-center gap-3 rounded-xl border border-[color:var(--line)] bg-[color:var(--surface-2)] px-5 py-3.5 shadow-sm">
+      <div className="sl-panel flex items-center gap-3 px-5 py-3.5">
         <span className="h-4 w-4 animate-spin rounded-full border-2 border-[color:var(--line-strong)] border-t-[color:var(--accent)]" aria-hidden="true" />
         <div>
-          <div className="text-[13px] font-semibold text-[color:var(--ink)]">{he ? 'החדר בהכנה…' : 'Preparing the room…'}</div>
-          <div className="text-[11.5px] text-[color:var(--ink-3)]">{he ? 'טוען דמויות ומקמפל תאורה — זה יימשך רגע' : 'Loading crew and compiling lighting — this takes a moment'}</div>
+          <div className="text-[13.5px] font-semibold text-[color:var(--ink)]">{he ? 'החדר בהכנה…' : 'Preparing the room…'}</div>
+          <div className="text-[12px] text-[color:var(--ink-3)]">{he ? 'טוען דמויות ומקמפל תאורה — זה יימשך רגע' : 'Loading crew and compiling lighting — this takes a moment'}</div>
         </div>
       </div>
     </div>
@@ -202,7 +205,7 @@ function PreparingVeil({ lang }: { lang: Lang }) {
 }
 
 /** סרגל נקודות-התצפית */
-function PresetDeck({ lang }: { lang: Lang }) {
+const PresetDeck = memo(function PresetDeck({ lang }: { lang: Lang }) {
   const [active, setActive] = useState<PresetId>(director.preset);
   const [focusId, setFocusId] = useState<string | null>(null);
 
@@ -240,7 +243,7 @@ function PresetDeck({ lang }: { lang: Lang }) {
   }, []);
   return (
     <nav
-      className="pointer-events-auto absolute bottom-12 left-1/2 z-10 flex max-w-[96%] -translate-x-1/2 flex-nowrap items-center gap-1 overflow-x-auto rounded-xl border border-[color:var(--line)] bg-[color:var(--surface-2)]/92 p-1 shadow-sm backdrop-blur sm:bottom-3"
+      className="sl-panel pointer-events-auto absolute bottom-12 left-1/2 z-10 flex max-w-[96%] -translate-x-1/2 flex-nowrap items-center gap-1 overflow-x-auto p-1 sm:bottom-3"
       dir="rtl"
       aria-label={he ? 'נקודות תצפית בחדר' : 'Room camera presets'}
     >
@@ -273,7 +276,7 @@ function PresetDeck({ lang }: { lang: Lang }) {
       })}
     </nav>
   );
-}
+});
 
 export function ViewDeck() {
   const lang = useHq((s) => s.lang);
