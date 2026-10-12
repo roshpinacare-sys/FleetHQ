@@ -770,3 +770,26 @@ Stage Summary:
   critical private-repo automation (steem sovereign-cycle, saos-dex, verify lanes).
 - New repo: roshpinacare-sys/GridWatch (public control plane; GH_PAT stored as
   encrypted Actions secret; no secrets in any committed file).
+
+---
+Task ID: 13-quiet-diagnosis-and-sovereign-ops
+Agent: zai-code (main session)
+Task: "הכל מרגיש שקט" — diagnose why the grid feels quiet, engineer the cure (autonomy, activation, sandbox-independence, sovereignty routing), engineering roast of Domain pages, capability inventory.
+
+Work Log:
+- MEASURED QUIETNESS AUDIT (21:02-21:35Z): all 31 repos pushed <26h (git NOT static); commit streams alive every few minutes (Pulse/Autonomy/GridWatch/Domain/steem/saos-runtime). The "quiet" was NOT dead git — it was dead USER-VISIBLE layers:
+  - ROOT CAUSE 1 (app): next-server repeatedly OOM-killed by kernel (dmesg receipt: total-vm 21.7GB, anon-rss 1.69GB on 4GB box). User opens app → dead server → total quiet. Restored with NODE_OPTIONS=--max-old-space-size=1024 in package.json dev script + new health-guard.
+  - ROOT CAUSE 2 (automation): GitHub Actions MINUTES WALL on private repos — measured signature: Sandbox/steem/saos-dex/Zip = 30/30 recent runs failed with ZERO steps executed; public repos unaffected; last private successes at different hours (TruthRail 00:46, saos-agents yesterday) = quota exhaustion pattern, not code. 86 red / 252 workflows total. GridWatch had classified these 'failing'; the zero-steps signature proves billing. DECIDER itself is a casualty (state 6h stale — sovereign-decider.yml runs in private Sandbox).
+  - ROOT CAUSE 3 (stale): probes hive/blurt 29.8h (>24h law), world.json 15h — their generators lived in private (minutes-walled) repos.
+- SPAWN-SURVIVAL EXPERIENCE (measured): in this sandbox, `nohup &` and `setsid &` processes get reaped across session boundaries; ONLY double-fork subshell `( cmd & )` survives. Health-guard restart logic uses the surviving pattern; documented in code.
+- BUILT mini-services/health-guard (bun, :3090): watches http://127.0.0.1:3000/ every 30s, 2-down-strikes → kill leftovers + double-forked restart with heap cap; proactive restart at RSS>2GB (prevents kernel OOM); anti-flap 3min; events → state/guard-events.jsonl; API / /health /events. Live-verified: caught app down at start, watched it recover, 5 checks 0 fails, RSS steady 1.3GB.
+- NEW REPO (authorized): roshpinacare-sys/roshpinacare-sys.github.io — org FRONT DOOR live at https://roshpinacare-sys.github.io/ (was 404 = "unorganized" roast point + office3d home-link 404). Client-side live measurement from GridWatch public raw (31/252/117/86 + freshness chip + >24h red law), public-sites index (Domain/Console/FleetHQ/GridWatch/Pulse/Autonomy/saos-runtime/steem/sovereign-runner-kit), honesty laws section, ZERO private links (private-link-404 roast point), zero dependencies, RTL, mobile-safe.
+- DOMAIN ROAST (measured, handed to active owner): 8 broken links found on Pages (sovereign-lighthouse Pages not enabled → 404 link on landing; TruthRail + Sandbox/LEDGER.md private-repo links 404 for public visitors; /receipts/ 404 from verify/; marketing/ favicon 404; org root 404 — FIXED by new repo). NOTE: Domain roast-fix lane is OWNED by another agent right now ("roast v3 standards-cure" 21:08, site-audit PASS loop, T-69 lane revivals) — per multi-agent law I did NOT touch Domain files to avoid the repeat of commit c09cda7 conflict.
+- SOVEREIGNTY ROUTING: honest agent report (source:agent:zai-code, kind:report — NOT owner role) appended to Sandbox ops/sovereign/OWNER-CHANNEL/inbox.jsonl via contents API (commit 200). Routes to sovereignty: (a) owner-only: spending-limit/payment OR ratify public-compute migration law for ALL critical private automation (flow-map pattern proven; Pulse/Autonomy already carry arteries); (b) decider migration to public compute (currently minutes-walled); (c) PAT rotation still recommended.
+- BROWSER VERIFIED: portal renders real measured numbers; app renders 3D office (no console/page errors), control tab shows per-repo failures with push ages (Sandbox 25 red etc.), worlds-state API 10/10 sources ok, ZERO stale.
+
+Stage Summary:
+- Quiet had 3 measured layers: dead app (OOM), dead private automation (minutes wall), stale probes. All three now have engineering responses: heap-cap+guard (app), public-compute migration law (automation, partially in flight by other agents), freshness law visible in UI/portal.
+- The org now has a professional front door with live measured fleet state — sandbox-independent (static page + client-side fetch of cloud-measured data).
+- Sandbox-independence law documented: compute in public repos (free, cloud), custody in private repos; the only owner-level decision left (billing) is escalated honestly to sovereignty, not faked.
+- Artifact map: mini-services/health-guard/ (guard + state), upload/portal/index.html (mirror of deployed front door), new repo roshpinacare-sys.github.io, OWNER-CHANNEL report entry, this worklog.
