@@ -95,7 +95,7 @@ footer a{color:var(--dim)}
   <!-- ══ שלב 2 · מפתח-גישה טכני (חד-פעמי) ══ -->
   <section id="vaultSetup" class="card hidden" aria-labelledby="h-vault">
     <h2 id="h-vault">התקנה חד-פעמית: מפתח-גישה טכני <span class="en">one-time vault</span></h2>
-    <p class="note" style="margin-top:0">כדיי לרשום פקודות ללוח-בגיט, הדף צריך מפתח-גישה טכני (GitHub, רשות-כתיבה-ל-Sandbox). הדבק אותו פעם-אחת: הוא יוצפן מקומית (AES-GCM) עם מפתח-המנהל ויישמר <b>רק במחשב הזה</b>. מהפעם-הבאה — מפתח-המנהל לבדו פותח-הכל. הדף אף-פעם לא מציג-או משדר את המפתח לשום-כתובת פרט-ל-GitHub.</p>
+    <p class="note" style="margin-top:0">כדי לרשום פקודות ללוח-בגיט, הדף צריך מפתח-גישה טכני (GitHub, רשות-כתיבה-ל-Sandbox). הדבק אותו פעם-אחת: הוא יוצפן מקומית (AES-GCM) עם מפתח-המנהל ויישמר <b>רק במחשב הזה</b>. מהפעם-הבאה — מפתח-המנהל לבדו פותח-הכל. הדף אף-פעם לא מציג-או משדר את המפתח לשום-כתובת פרט-ל-GitHub.</p>
     <label for="ghToken">מפתח-גישה טכני (GitHub · repo: Sandbox)</label>
     <input type="password" id="ghToken" autocomplete="off" spellcheck="false" placeholder="ghp_… / github_pat_…">
     <div class="row" style="margin-top:14px">
@@ -321,42 +321,64 @@ async function loadBoard() {
   }
 }
 
+/* secret-paste guard (infosec law): a directive is published to a public board.
+   if it looks like key/token material it is refused locally and NEVER sent. */
+const SECRET_SHAPES = [
+  /5[HJK][1-9A-Za-z]{49}/,            // chain WIF private key
+  /ghp_[A-Za-z0-9]{20,}/,             // GitHub classic token
+  /github_pat_[A-Za-z0-9_]{20,}/,     // GitHub fine-grained token
+  /sk-[A-Za-z0-9]{20,}/,              // AI API key
+  /AIza[A-Za-z0-9_-]{20,}/            // Google API key
+];
+function containsSecret(s) { return SECRET_SHAPES.some((re) => re.test(s)); }
+
 async function postDirective() {
   const text = $("dText").value.trim();
   if (!text) { setMsg("msg3", "כתוב-הוראה לפני-רישום", "err"); return; }
+  if (containsSecret(text)) {
+    setMsg("msg3", "זוהה-חומר-סודי-בשדה-ההוראה (מפתח/טוקן) — הפקודה-לא-נרשמה-ולא-נשלחה-לשום-מקום. הסר-אותו: לוח-הפקודות פומבי.", "err");
+    return;
+  }
   if (!TOKEN) { setMsg("msg3", "אין-מפתח-גישה-טכני בכספת-המקומית — התקנה-חד-פעמים נדרשת לכתיבה.", "err"); return; }
   setMsg("msg3", "מרישם-ללוח…", "info");
   $("sendBtn").disabled = true;
   try {
-    const g = await fetch("https://api.github.com/repos/" + REPO + "/contents/" + BOARD_PATH + "?ref=main",
-      { headers: { Authorization: "Bearer " + TOKEN, Accept: "application/vnd.github+json" } });
-    if (!g.ok) { setMsg("msg3", "קריאת-הלוח-לפני-כתיבה נכשלה: HTTP " + g.status + " — לא-נשמר-כלום.", "err"); return; }
-    const meta = await g.json();
-    const board = JSON.parse(new TextDecoder().decode(unb64(meta.content)));
-    const now = new Date().toISOString().replace(/\.\d+Z$/, "Z");
-    const d = {
-      id: "DIR-" + now.replace(/[-:T]/g, "").slice(0, 12) + "-" + Math.random().toString(16).slice(2, 6),
-      at: now, from: "owner", channel: "office-operator-console",
-      priority: $("dPrio").value, text,
-      status: "OPEN", ackAt: null, ackBy: null, evidence: []
-    };
-    board.directives.push(d);
-    board.updatedAt = now;
-    const body = {
-      message: "[owner-directive] " + d.id + " (P" + d.priority.slice(1) + ") מצ'אט-המנהל — operator console",
-      content: btoa(unescape(encodeURIComponent(JSON.stringify(board, null, 1) + "\n"))),
-      sha: meta.sha, branch: "main"
-    };
-    const p = await fetch("https://api.github.com/repos/" + REPO + "/contents/" + BOARD_PATH,
-      { method: "PUT", headers: { Authorization: "Bearer " + TOKEN, Accept: "application/vnd.github+json", "Content-Type": "application/json" }, body: JSON.stringify(body) });
-    if (!p.ok) {
+    for (let attempt = 1; attempt <= 2; attempt++) {
+      const g = await fetch("https://api.github.com/repos/" + REPO + "/contents/" + BOARD_PATH + "?ref=main",
+        { headers: { Authorization: "Bearer " + TOKEN, Accept: "application/vnd.github+json" } });
+      if (!g.ok) { setMsg("msg3", "קריאת-הלוח-לפני-כתיבה נכשלה: HTTP " + g.status + " — לא-נשמר-כלום.", "err"); return; }
+      const meta = await g.json();
+      const board = JSON.parse(new TextDecoder().decode(unb64(meta.content)));
+      const now = new Date().toISOString().replace(/\.\d+Z$/, "Z");
+      const d = {
+        id: "DIR-" + now.replace(/[-:T]/g, "").slice(0, 12) + "-" + Math.random().toString(16).slice(2, 6),
+        at: now, from: "owner", channel: "office-operator-console",
+        priority: $("dPrio").value, text,
+        status: "OPEN", ackAt: null, ackBy: null, evidence: []
+      };
+      board.directives.push(d);
+      board.updatedAt = now;
+      const body = {
+        message: "[owner-directive] " + d.id + " (P" + d.priority.slice(1) + ") מצ'אט-המנהל — operator console",
+        content: btoa(unescape(encodeURIComponent(JSON.stringify(board, null, 1) + "\n"))),
+        sha: meta.sha, branch: "main"
+      };
+      const p = await fetch("https://api.github.com/repos/" + REPO + "/contents/" + BOARD_PATH,
+        { method: "PUT", headers: { Authorization: "Bearer " + TOKEN, Accept: "application/vnd.github+json", "Content-Type": "application/json" }, body: JSON.stringify(body) });
+      if (p.ok) {
+        $("dText").value = "";
+        setMsg("msg3", "הפקודה " + d.id + " נרשמה-ללוח ✓ — קבלת-ACK תופיע-כאן תוך-עד-30 דק' (עורק-ההכרעה).", "ok");
+        await loadBoard();
+        return;
+      }
+      if ((p.status === 409 || p.status === 422) && attempt < 2) {
+        setMsg("msg3", "הלוח-השתנה-במקביל (עורק-ההכרעה כותב-ACK) — קורא-מחדש-ומנסה-שוב…", "info");
+        continue;
+      }
       const t = await p.text();
       setMsg("msg3", "הכתיבה-נכשלה: HTTP " + p.status + " — " + t.slice(0, 140).replace(/[<>&]/g, "") + " · הפקודה-לא-נרשמה (כנות).", "err");
       return;
     }
-    $("dText").value = "";
-    setMsg("msg3", "הפקודה " + d.id + " נרשמה-ללוח ✓ — קבלת-ACK תופיע-כאן תוך-עד-30 דק' (עורק-ההכרעה).", "ok");
-    await loadBoard();
   } catch (e) {
     setMsg("msg3", "שגיאה: " + String(e && e.message || e).slice(0, 140) + " — כנות, ללא-טענת-הצלחה.", "err");
   } finally { $("sendBtn").disabled = false; }
