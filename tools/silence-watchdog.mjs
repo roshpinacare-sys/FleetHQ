@@ -9,6 +9,15 @@
 //
 //   voices (actions-scope):
 //     · origin/{repo}        — HEAD commit age via anonymous GitHub API
+//     · divergence/{repo}    — origin divergence per repo: ahead/behind. In the
+//                              sandbox measured directly (fetch + rev-list
+//                              HEAD...origin/main); on Actions heard through
+//                              git from the sandbox's own honest receipt
+//                              (receipts/push-queue.json, written by the flush
+//                              beat every 15min). Alarms: ahead > 10 for more
+//                              than 1h (push-queue stuck — persistence proven
+//                              from the receipt's git history, not assumed) or
+//                              behind > 20 (silent fork drift).
 //     · sandbox-ledger       — age of receipts/silence-ledger.json AT ORIGIN
 //                              (the sandbox voice heard through git; stuck
 //                              without PAT = honest alarm, that is the point)
@@ -69,7 +78,54 @@ for (const repo of ["FleetHQ", "Domain", "Console"]) {
   else addVoice(`origin/${repo}`, null, 240, { error: "origin-unreachable" });
 }
 
-// ---- 2. sandbox voice heard through git (origin silence-ledger receipt) ----
+// ---- 2. origin divergence (the push-queue voice) ----
+// Source per repo: direct git where the estate clone exists (sandbox), the
+// flush beat's queue receipt through git everywhere else (Actions). The 1h
+// persistence rule is proven from the receipt's OWN git history — the newest
+// queue receipt committed ≥60min ago must show the same ahead>10 — a shallow
+// checkout or a first-day queue reports persistence-unknown honestly instead
+// of guessing.
+const ESTATE = "/home/z/estate";
+const queueOf = (raw) => { try { return JSON.parse(raw); } catch { return null; } };
+const queueRows = (q) => (q && Array.isArray(q.repos) ? q.repos : []).map((r) => ({ repo: String(r.name || "").split("/")[1], ahead: Number(r.ahead) || 0, behind: Number(r.behind) || 0 }));
+const persistedQueue = () => {
+  const cutoff = new Date(now - 60 * 60_000).toISOString();
+  const sha = gitOrigin(["log", "-1", "--format=%H", "--before=" + cutoff, "--", "receipts/push-queue.json"]);
+  if (!sha) return { q: null, why: "queue-history-unavailable" };
+  const q = queueOf(gitOrigin(["show", `${sha}:receipts/push-queue.json`]));
+  return q ? { q, why: "ok" } : { q: null, why: "queue-history-unreadable" };
+};
+const persistence = persistedQueue();
+for (const repo of ["FleetHQ", "Domain", "Console"]) {
+  const localDir = `${ESTATE}/${repo}`;
+  let ahead = null, behind = null, source = null, atMs = null;
+  let isRepo = false;
+  try { execFileSync("git", ["-C", localDir, "rev-parse", "--git-dir"], { timeout: 8000, stdio: ["ignore", "ignore", "ignore"] }); isRepo = true; } catch {}
+  if (isRepo) {
+    source = "local-git";
+    if (gitOk(["-C", localDir, "fetch", "-q", "origin", "main"])) {
+      const ab = gitOrigin(["-C", localDir, "rev-list", "--left-right", "--count", "HEAD...origin/main"]);
+      if (ab) { const [a, b] = ab.split(/\s+/).map(Number); ahead = a || 0; behind = b || 0; atMs = now; }
+    }
+  } else {
+    source = "push-queue-receipt (via git)";
+    const q = tips["FleetHQ"] ? queueOf(gitOrigin(["show", "refs/wd/FleetHQ:receipts/push-queue.json"])) : null;
+    const row = queueRows(q).find((r) => r.repo === repo);
+    if (row) { ahead = row.ahead; behind = row.behind; atMs = q.at ? new Date(q.at).getTime() : null; }
+  }
+  const detail = { source, ahead, behind };
+  if (ahead == null) detail.error = "divergence-unmeasurable";
+  addVoice(`divergence/${repo}`, atMs, 75, detail);
+  if (ahead == null) continue;
+  if (behind > 20) ledger.alarms.push(`divergence/${repo}: silent fork drift — behind ${behind} > 20 (measured via ${source})`);
+  if (ahead > 10) {
+    const oldRow = queueRows(persistence.q).find((r) => r.repo === repo);
+    if (oldRow && oldRow.ahead > 10) ledger.alarms.push(`divergence/${repo}: push-queue stuck — ahead ${ahead} > 10 for >1h (was ${oldRow.ahead} at ${persistence.q.at})`);
+    else detail.note = `ahead ${ahead} > 10, persistence unknown (${persistence.why}) — stuck-alarm needs 1h of queue history`;
+  }
+}
+
+// ---- 3. sandbox voice heard through git (origin silence-ledger receipt) ----
 try {
   const raw = tips["FleetHQ"] ? gitOrigin(["show", "refs/wd/FleetHQ:receipts/silence-ledger.json"]) : "";
   const local = raw ? JSON.parse(raw) : null;
@@ -78,7 +134,7 @@ try {
   addVoice("sandbox-ledger (via git)", null, 180, { error: "receipt-unreachable" });
 }
 
-// ---- 3. live Pages truth ----
+// ---- 4. live Pages truth ----
 const pickTs = (j) => {
   for (const k of ["producedAt", "publishedAt", "at", "checkedAt"]) if (j && j[k]) return new Date(j[k]).getTime();
   return null;
@@ -105,6 +161,17 @@ try {
 ledger.summary = ledger.alarms.length === 0 ? "ALL VISIBLE VOICES ALIVE" : `${ledger.alarms.length} ALARM(S): ${ledger.alarms.join(" · ")}`;
 console.log(`SILENCE-WATCHDOG: ${ledger.summary}`);
 
+// runbook lane: every alarm class carries its one-page runbook (docs/runbooks/
+// — the issue body points the responder at the exact page, no memory needed).
+const runbooksFor = (alarms) => {
+  const classes = new Set(["silence"]);
+  if (alarms.some((a) => /push-queue|divergence|flush/i.test(a))) classes.add("flush-stuck");
+  if (alarms.some((a) => /site-audit|BROKEN/i.test(a))) classes.add("site-broken");
+  if (alarms.some((a) => /pages\/money|veritas|stale/i.test(a))) classes.add("veritas-stale");
+  if (alarms.some((a) => /key|census|drift-key/i.test(a))) classes.add("keys-drift");
+  return [...classes];
+};
+
 // ---- receipt (always) ----
 const RECEIPT = "receipts/silence-watchdog.json";
 mkdirSync("receipts", { recursive: true });
@@ -119,7 +186,8 @@ const nextAlarms = JSON.stringify(ledger.alarms);
 const ISSUE_TITLE = "🚨 SILENCE ALARM — a voice of the organism stopped";
 const ghCli = (args) => execFileSync("gh", args, { encoding: "utf8", timeout: 30000 });
 const table = ledger.voices.map((v) => `| ${v.name} | ${v.lastActivity || "—"} | ${v.ageMin ?? "—"}m | ${v.verdict} |`).join("\n");
-const body = `Measured at ${ledger.at} (actions-scope, public truth only).\n\n| voice | last activity | age | verdict |\n|---|---|---|---|\n${table}\n\n**Summary:** ${ledger.summary}\n\n_This issue is managed by silence-watchdog (every 15min). It closes itself when every visible voice recovers. Meta-law: if THIS issue stops updating, the watchdog itself is dead — that too is an alarm._`;
+const runbookLines = runbooksFor(ledger.alarms).map((c) => `Runbook: docs/runbooks/${c}.md`).join("\n");
+const body = `Measured at ${ledger.at} (actions-scope, public truth only).\n\n| voice | last activity | age | verdict |\n|---|---|---|---|\n${table}\n\n**Summary:** ${ledger.summary}\n\n${runbookLines}\n\n_This issue is managed by silence-watchdog (every 15min). It closes itself when every visible voice recovers. Meta-law: if THIS issue stops updating, the watchdog itself is dead — that too is an alarm._`;
 
 try {
   const open = JSON.parse(ghCli(["issue", "list", "--state", "open", "--search", "SILENCE ALARM in:title", "--json", "number,title"]));

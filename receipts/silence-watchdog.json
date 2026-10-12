@@ -1,0 +1,111 @@
+{
+ "schema": "silence.watchdog/1",
+ "at": "2026-10-12T22:43:24.045Z",
+ "scope": "actions",
+ "voices": [
+  {
+   "name": "origin/FleetHQ",
+   "lastActivity": "2026-10-12T22:22:23.000Z",
+   "ageMin": 21,
+   "maxSilenceMin": 240,
+   "verdict": "alive",
+   "detail": {
+    "subject": "opens-closer: measured freshness ledger + revival dispatches [skip ci]"
+   }
+  },
+  {
+   "name": "origin/Domain",
+   "lastActivity": "2026-10-12T22:41:36.000Z",
+   "ageMin": 2,
+   "maxSilenceMin": 240,
+   "verdict": "alive",
+   "detail": {
+    "subject": "office-orders-twin: engine-sync law encoded — WO P1 fires when office/"
+   }
+  },
+  {
+   "name": "origin/Console",
+   "lastActivity": "2026-10-12T22:33:28.000Z",
+   "ageMin": 10,
+   "maxSilenceMin": 240,
+   "verdict": "alive",
+   "detail": {
+    "subject": "grid-beat: 6 placed (steem 6 / hive 0) · 6 cancelled · 2026-10-12T22:3"
+   }
+  },
+  {
+   "name": "divergence/FleetHQ",
+   "lastActivity": "2026-10-12T22:43:24.045Z",
+   "ageMin": 0,
+   "maxSilenceMin": 75,
+   "verdict": "alive",
+   "detail": {
+    "source": "local-git",
+    "ahead": 73,
+    "behind": 0,
+    "note": "ahead 73 > 10, persistence unknown (queue-history-unavailable) — stuck-alarm needs 1h of queue history"
+   }
+  },
+  {
+   "name": "divergence/Domain",
+   "lastActivity": "2026-10-12T22:43:24.045Z",
+   "ageMin": 0,
+   "maxSilenceMin": 75,
+   "verdict": "alive",
+   "detail": {
+    "source": "local-git",
+    "ahead": 10,
+    "behind": 0
+   }
+  },
+  {
+   "name": "divergence/Console",
+   "lastActivity": "2026-10-12T22:43:24.045Z",
+   "ageMin": 0,
+   "maxSilenceMin": 75,
+   "verdict": "alive",
+   "detail": {
+    "source": "local-git",
+    "ahead": 3,
+    "behind": 1
+   }
+  },
+  {
+   "name": "sandbox-ledger (via git)",
+   "lastActivity": null,
+   "ageMin": null,
+   "maxSilenceMin": 180,
+   "verdict": "no-data",
+   "detail": {
+    "localSummary": ""
+   }
+  },
+  {
+   "name": "pages/money",
+   "lastActivity": "2026-10-12T17:12:39.577Z",
+   "ageMin": 331,
+   "maxSilenceMin": 240,
+   "verdict": "SILENT-ALARM",
+   "detail": {
+    "url": "dex/money.json"
+   }
+  },
+  {
+   "name": "pages/site-audit",
+   "lastActivity": "2026-10-12T22:30:26.063Z",
+   "ageMin": 13,
+   "maxSilenceMin": 360,
+   "verdict": "alive",
+   "detail": {
+    "verdict": "findings:1",
+    "at": "2026-10-12T22:30:26.063Z"
+   }
+  }
+ ],
+ "alarms": [
+  "sandbox-ledger (via git): no data (cannot prove alive)",
+  "pages/money: silent 331min (limit 240)",
+  "pages/site-audit: LIVE SITE BROKEN (1 findings at 2026-10-12T22:30:26.063Z)"
+ ],
+ "summary": "3 ALARM(S): sandbox-ledger (via git): no data (cannot prove alive) · pages/money: silent 331min (limit 240) · pages/site-audit: LIVE SITE BROKEN (1 findings at 2026-10-12T22:30:26.063Z)"
+}
