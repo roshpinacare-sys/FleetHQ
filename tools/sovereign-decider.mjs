@@ -25,17 +25,47 @@ const jget = async (name, url, tsKey) => {
     return j;
   } catch (e) { sense[name] = { ok: false, err: String(e.message).slice(0, 50) }; return null; }
 };
-const [valueScan, gridTruth, officeState, decisionsPrev, openCloser] = await Promise.all([
+const [valueScan, gridTruth, officeState, decisionsPrev, openCloser, gridHealth] = await Promise.all([
   jget('valueScan', RAW + 'FleetHQ/main/office/state/value-scan.json', 'generatedAt'),
   jget('gridTruth', RAW + 'Domain/main/agents/grid-truth.json', 'generatedAt'),
   jget('officeState', RAW + 'FleetHQ/main/office/state/office-state.json', 'capturedAt'),
   jget('decisionsPrev', RAW + 'FleetHQ/main/office/state/sovereign-decisions.json', 'generatedAt'),
   jget('openCloser', RAW + 'FleetHQ/main/office/state/opens-closer.json', 'generatedAt'),
+  jget('gridHealth', RAW + 'GridWatch/main/state/fleet-health.json', 'generatedAt'),
 ]);
 
 // ---------- POLICY v1 (codified decision rules over measured state) ----------
 const decisions = [];
 const add = (d) => decisions.push({ ...d, policy: POLICY, decidedAt: d.decidedAt || NOW, by: 'sovereign-decider' });
+
+// P0 — fleet health (GridWatch control plane): silent workflow failures become visible sovereign decisions
+if (gridHealth?.totals) {
+  const t = gridHealth.totals;
+  const redRepos = (gridHealth.repos || []).filter(r => r.health === 'red');
+  const billing = (gridHealth.repos || []).flatMap(r => r.workflows || []).filter(w => w.class === 'billing-blocked');
+  const exhausted = (gridHealth.alerts || []).filter(a => /exhausted/.test(a.note || ''));
+  add({
+    id: 'auto-fleet-health', area: 'operations',
+    title: billing.length
+      ? `חסימת-חיוב GitHub (${billing.length} workflows לא מתחילים) + ${t.red} אדומים — החיוב של הבעלים; השאר בריפוי-עצמי`
+      : t.red > 0
+        ? `${t.red} workflows אדומים ב-${redRepos.length} ריפואים (מתוך ${t.workflows}) — GridWatch מרפא אוטונומית; סטריקים חוזרים = טריאז' הנדסי`
+        : `הצי ירוק — ${t.workflows} workflows ב-${t.repos} ריפואים נמדדו תקינים`,
+    status: billing.length ? 'delegated' : (t.red > 0 ? 'watch' : 'clear'),
+    evidence: { source: 'GridWatch/state/fleet-health.json', measuredAt: gridHealth.generatedAt, totals: t, billingWorkflows: billing.map(w => w.name), redRepos: redRepos.map(r => r.name), alertCount: (gridHealth.alerts || []).length, remediations: (gridHealth.remediations || []).length },
+    law: billing.length
+      ? 'חסימת-חיוב = החלטת-בעלים (מכסה/חיוב GitHub) — הריבונות מדווחת בכנות, לא מזייפת ריפוי; שאר האדומים: GridWatch מנסה ריפוי-הפיך (dispatch-retry, max 3) ואז מסמן לטריאז'
+      : 'ריפוי-עצמי בתוך-מעטפת (הפיך+מדוד בלבד); סטריקים ≥3 לא מנוסים שוב — מנותבים לטריאז\' הנדסי',
+  });
+} else {
+  add({
+    id: 'auto-fleet-health', area: 'operations',
+    title: 'מישור-הבקרה (GridWatch) לא נמדד בסבב זה — נקודת-עיוורון מדודה',
+    status: 'watch',
+    evidence: { source: 'GridWatch/state/fleet-health.json', sense: sense.gridHealth },
+    law: 'אמת לפני נוחות: אין-נתון = זה מה שנאמר; לא ממציאים בריאות',
+  });
+}
 
 // P1 — treasury floor watch (grid-truth alerts): underfloor SP/treasury = arming waves must respect floors
 if (gridTruth?.alerts) {
