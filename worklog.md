@@ -811,3 +811,114 @@ Stage Summary:
 - The org now has a giant-grade front door + a public engineering standard with an ordered backlog — both live, both browser-verified, both sandbox-independent (static + client-side measured data).
 - The voice law exists in writing and is routed for ratification; the three concrete product defects (FleetHQ leak, Console claim drift, Domain links) are filed with exact quotes to the sovereignty channel with correct owners.
 - Remaining for sovereignty: P1 staffing (status page, changelog, runbooks) and the P0 compute-budget decision.
+
+---
+Task ID: T20-a
+Agent: zai-code-t20a (roast round 2 + voice audit)
+Task: measured roast v2 of the live public surface (Domain + org door + org Pages estate), voice-law audit, giant-bar comparison, product depth check — report only, zero code changes.
+
+Work Log:
+- Read worklog tail (lanes owned by parallel agents identified; Domain hot — commits 961c3777 22:41Z, 6d474257 22:43Z, 1fbbe2fb 22:48Z during my window; I touched no repo code).
+- Crawled the live sites anonymously (public-visitor view): org front door, /standard.html, Domain landing + 15 linked pages, all 71 sitemap-listed pages, Console/ and FleetHQ/ landings — every href/src resolved per page and status-checked (293 link instances, 138 unique URLs measured with curl, 200/404/301 recorded).
+- Data-feed freshness pass: status.json 22:19Z, office-live.json 22:20Z, Pulse mirror/lanes.json 22:30Z, office feeds fresh; found 3 stale truth feeds beyond the site's own 24h law (agent/state.json 21d, public/pulse.json 34h, mirror.json 26h) + dex/world.json 17h.
+- Voice-law audit on visible Hebrew copy of 20 pages (regex, word-boundary-safe): personal refs (המפעיל role-text ×10, הבעלים ×4), agent first names (גל/Gal ×4, שחר/Shachar ×7 — FleetHQ only), English internal chatter ×4 verbatim blocks (read_page tool error, internal questions, task logs), promise words (תמיד ×7, לעולם ×5, לנצח ×1), superlatives ×0, decorative quotes ×0, 100% ×0, colon-typography ×187 measured across 20 pages with sampled classification.
+- Product depth: office3d module graph verified (importmap → vendored three 392KB, 9 modules 200, feeds 200 fresh) but broadcast layer is dead on Pages (io('/?XTransformPort=3036') no backend, /api/office/world 404 → 6s dead window → honest fallback to world-state.json 200); market/ thin (1,303 visible chars) + Hebrew visitor lands on English page; verify/ core feed pointed at private Sandbox raw → 404 for every public visitor (11-request walk-back fails).
+- Repo visibility map via API (32 repos: 11 public / 21 private) → steem flipped private → front-door sites index row 404s; Pages enabled only on 4 of 12 candidate sites (org root, Domain, Console, FleetHQ).
+- Wrote full findings to /home/z/my-project/t20/roast-v2.md (counts, per-link evidence, voice fix list, giant-bar table, P0-P2 backlog); appended agent-role report to Sandbox ops/sovereign/OWNER-CHANNEL/inbox.jsonl via contents API (commit 921d8819, read-back verified, source agent:zai-code-t20a, never owner).
+
+Stage Summary:
+- MEASURED: 4 hard broken links on live pages (front-door→steem 404; marketing→disclosure-policy 404; FleetHQ→Domain/office3d/v2 404; marketing→solscan deep-link redirects to homepage), 2 private-404 closed doors (verify/→Sandbox raw key-proof — kills the flagship verify feature; front-door→steem), 8/12 org Pages sites dead (404), 45 voice violations (names 11, role-text 17, promises 13, English chatter 4), 3 stale truth feeds unmarked, 187 colon-typography instances, 0 superlatives / 0 decorative quotes / 0 bot-washed claims language elsewhere.
+- STRONGEST CONTRADICTION: landing claims "בלי דלתות סגורות" while verify/ (the אמת-בעצמך page) fetches its proof artifacts from a private repo and dies for the public; front door states "קישור שמחזיר 404 למבקר אינו קישור" while shipping a 404 row itself.
+- WHAT MUST BE FIXED BY WHOM (P0): verify/ feed → public mirror (Domain CI owner); steem row removal (org front-door owner); marketing disclosure link (Domain marketing owner); FleetHQ podium de-chatter (FleetHQ generator owner). P1: FleetHQ office3d/v2 link, stale-age markers for 3 feeds + Console anchor ages (6d/13d shown as חי עכשיו), office3d dead broadcast path, one design/nav/title system, solscan link. P2: promise-word pass, status surface without 21 private repo codenames, visible product versions + changelog.
+- Full evidence with exact URLs/quotes: /home/z/my-project/t20/roast-v2.md; owner-facing report landed in OWNER-CHANNEL inbox (agent role) as commit 921d8819.
+---
+Task ID: T20-b
+Agent: zai-code-t20b
+
+Work Log:
+- READ-FIRST: tail worklog (GridWatch T12 control-plane laws + minutes-wall signature), fetched
+  grid-watch.mjs + grid-watch.yml via gh_raw and reused the proven patterns (paginated /user/repos,
+  409/5xx retry, sha-cached cron, contents-API commit with 409 retry + double-pass verify,
+  agent-role inbox escalation). Learned env lesson: this sandbox drops default curl UA — every
+  call needs explicit User-Agent or the API answers 404.
+- CREATED roshpinacare-sys/ops-intake (public, authorized). NOTE: the account is a USER not an
+  org — creation via POST /user/repos (POST /orgs/.../repos 404s by design). Same for listings.
+- SECRET: GH_PAT set as encrypted Actions secret via libsodium sealed box (pynacl in venv,
+  repo public-key -> seal -> PUT 201, readback GET 200). No secret material in any committed file.
+- BUILT tools/intake.mjs (zero-dep Node 20): SENSE all 33 repos incl private + per-workflow
+  latest runs with the measured laws (instant-fail zero-steps in private repo = billing wall,
+  instant-fail with steps = broken workflow, consecutive failures = failing streak, cron from yml);
+  ARTIFACT RADAR on 9 published feeds (Domain pulse/world-state/data, FleetHQ office-state,
+  GridWatch fleet-health, Sandbox OWNER-CHANNEL inbox private via token, saos-runtime grid-status
+  + watchdog-actions) with age-hours + >24h stale law + timestamp-key extraction (generatedAt /
+  capturedAt / epoch-ms t / jsonl last-line at) + key-material pattern scan without quoting;
+  SITE CHECK on 5 Pages URLs; SPACE-MAP generation (README H1 purpose + lane + artifacts + push
+  age + cron cadences + worklog presence per repo + fixed orientation section); DECIDE -> QUEUE
+  with 6 data-encoded rules (P0 standing owner-decision minutes wall, P0 front-door 404 /
+  dead-feed>24h, P1 failing-streak>=3 feeding visible pages, P1 stale>12h, P2 gridwatch-owned
+  reference-only, P3 polish version-info), dedup by (repo,kind,title) across runs, carried ids
+  preserved, resolved dropped by re-measure, cap 40; each order with measured why + full Hebrew
+  readyPrompt (goal, repo, first reads, laws: worklog-first, anti-forgery, no-secrets,
+  verify-after-write); commit + blob-sha verify + 409 retry; ESCALATE new P0 -> FleetHQ
+  operator-inbox.jsonl as role agent source zai-code-t20b, dedup kind+repo per day.
+- DRY-RUN locally (INTAKE_DRYRUN=1) caught and fixed 4 defects before push (ymlShas not passed
+  to classifier; billing check unreachable behind streak>=3 ordering; over-broad base64 regex
+  would false-P0 on sha40; epoch fallback misread small numbers).
+- PUSHED (contents API): README d98b78c8e221, tools/intake.mjs c09710e173c1,
+  .github/workflows/intake.yml 36ccab83ce4d. Workflow mirrors grid-watch (cron */30, dispatch,
+  contents write, GH_PAT, concurrency, timeout 15m) + anti-stall: marker-commit verify at end of
+  run, exit 1 loud on failure.
+- FIRST RUN: dispatched run 38319056712 -> completed success in 145s, 621 API calls, double-pass
+  verified=true. REAL measured artifacts read back from main:
+  ops/QUEUE.json — 11 orders all with measured evidence (sample: QUEUE-20261012-01 P0
+  owner-decision minutes wall = 14 private repos / 63 workflows zero-steps (Sandbox 25, steem 6,
+  Zip 10, saos-dex 9...); QUEUE-20261012-02 P0 dead-feed Domain/public/pulse.json 34.3h old
+  (stamp 2026-10-11T12:37:54Z); QUEUE-20261012-03 P1 failing-streak saos-runtime/fleet-rotation-a
+  streak>=3 feeding grid-status; 5x P2 gridwatch-owned reference-only; 3x P3 polish);
+  ops/SPACE-MAP.md — full table for all repos with real README purposes, artifact ages, cron
+  cadences, worklog flags; ops/intake-state.json receipt (33 repos, 12 public/21 private, 266
+  workflows, feedsMeasured 9, feedsStale 1, sites 200/200/200/200/GridWatch-404).
+- ESCALATED 2 new P0s to FleetHQ office/state/operator-inbox.jsonl (role agent, source
+  zai-code-t20b): minutes-wall owner-decision + pulse dead-feed. Dedup keyed kind+repo per day.
+- Data-run commit shas: QUEUE.json f7484add58c4, QUEUE.md ba56c2123b6b, SPACE-MAP 03717bb1aacc,
+  receipt 458e7a655b54, final verified receipt 082b87cb5d74.
+
+Stage Summary:
+- ops-intake is LIVE on cron */30 in GitHub cloud: it always answers what we have, what is
+  broken, and what to do next — with ready-to-run Hebrew mission prompts and full org orientation
+  (ops/SPACE-MAP.md) for agents and humans. It is the complement of GridWatch: GridWatch heals
+  runs, ops-intake turns measurement into directed work; P2 orders explicitly reference
+  GridWatch healing instead of duplicating it.
+- Measured now: billing wall DEEPENED to 14 private repos / 63 workflows (was 4 repos at T13) —
+  the standing P0 owner-decision tracks it with fresh numbers every cycle; pulse.json dead 34.3h
+  is the second measured P0. Both escalated honestly.
+- COORDINATION FOR NEXT AGENTS: GridWatch auto-discovers new repos on its next cycle — ops-intake
+  will appear in its fleet-health and UI automatically; no wiring needed. To consume work: read
+  ops/QUEUE.json, take the first OPEN P0/P1 whose repo has no active ownership in its worklog.md;
+  never touch gridwatch-owned orders beyond monitoring. The billing-wall P0 is owner-level — the
+  agent path is the decision brief (readyPrompt in the queue), NOT faking a fix.
+
+---
+Task ID: T20-live-broadcast-and-giant-order
+Agent: zai-code (main session)
+Task: הכל מרגיש שקט והרשת מכבה את עצמה — אבחון מדוד, משרד כשידור-חי, רוסט Domain סבב 2, תור-הפעלה אוטונומי עם פרומפטים, סדר ענק.
+
+Work Log:
+- MEASURED QUIET ROOT CAUSE (fresh, 22:0xZ): every private-repo workflow run fails with ZERO steps (Sandbox sovereign-tick run 38314265150 job tick steps=0; steem 6/6 workflows steps=0 at 20:43Z) — the GitHub Actions minutes wall is still killing the whole sovereign layer. Public lanes alive — GridWatch */30 green, FleetHQ sovereign-decider success (migrated to public compute), Domain office-worldbeat success.
+- PARALLEL AGENT DISCOVERY: Domain now carries the canonical persistent world — office/engine.mjs (ENGINE_VERSION 1, phaseOf by Jerusalem clock: open 7-9, day 9-12, lunch 12-13, day 13-18, evening 18-22, night), office/world-state.json advanced every 10 min by office-worldbeat cron (commits 22:10, 22:22, 22:33, 23:05 — alive), world-journal.jsonl tail. The office the OWNER previews (this sandbox app) was still born-at-the-door on every page open (AgentBrain constructor spawned at ENTRANCE with staggered walk-in) — exactly the complaint "כל פעם שהדף נפתח הם יוצאים לעבודה".
+- BUILT THE BROADCAST JOIN (this app, zero collision — local files only):
+  * /api/world-broadcast route — server fetch of Domain world-state.json + world-journal.jsonl, 60s TTL + SWR. Measured law baked in: raw.githubusercontent serves INCONSISTENT edge copies (caught two edges returning worlds 30 min apart simultaneously) and the anonymous contents API is rate-limited from the shared sandbox IP (measured rate-limit message) — so the route fetches via AUTHENTICATED contents API (same pat() pattern as gh-truth, token never leaves the server).
+  * src/lib/hq/broadcast.ts — client bridge, 60s poll, honest fallback: no mirror → local phase by the SAME hour law, flagged canonical:false. BEAT_STALE_MS 30min = frozen broadcast shown amber.
+  * world.ts — phaseOfJerusalem (identical to canonical engine law), AgentBrain.joinAt() (snap to current target, arrived=true, zero walk), joinCrewAtPosts(), constructor now spawns AT the desk seat — no door birth, no parade. store.ts syncSnapshot joins once (broadcastJoined), then normal syncs.
+  * ViewDeck BroadcastPanel — שידור חי · phase · beat age (green <30min, amber ≥30min or no mirror) + last 4 real journal events with crew names mapped he/en.
+- BUGS FOUND AND FIXED DURING BRING-UP (all measured): (1) constructor referenced `d` instead of `desk` → SSR ReferenceError, GET / 500 → fixed, page 200. (2) raw CDN inconsistency (above) → authenticated API path. (3) two dead fetch helpers left in route → removed, lint clean.
+- BROWSER-VERIFIED (agent-browser, mobile iPhone 14 + desktop 1440x900): fresh reload → broadcast chip שידור חי · משמרת לילה · פעימה לפני 7-8 דק' (green) with real journal (אלוף בדוכן-ההחלטות · משמרת-לילה, גל עובד על fills-ledger, שחר עובד על fleet-indicators, ירדן עובד על coord-bus); allAtPosts=true for all 6 crew from first frame (positions per REAL foreman truth: 4 seated typing, yarden at coffee corner per his station, aluf at task wall); 0 console errors, 0 page errors; no horizontal overflow; footer at bottom; screenshots saved /tmp/office-mobile.png /tmp/office-desktop.png.
+- FRONT DOOR FIXES (my repo roshpinacare-sys.github.io, sha-verified PUTs): removed the steem row (repo flipped private → 404 for every visitor — measured 404; the door's own law applied) and added ops-intake row (commit c386451835); fixed three misspelled cloud words בענה/מהענה→בענן in standard.html (commit 81dce19da5); Pages built, both pages 200 live, ops-intake row confirmed on production HTML.
+- SUBAGENT LANES (details in their own worklog sections): T20-a roast round 2 — 4 hard broken links, 2 private-404 closed doors, 8/12 dead org Pages sites, 45 voice violations (11 agent first names, 17 המפעיל/הבעלים, 13 promise words), 0 AI superlatives/quotes (the voice law landed), FleetHQ podium still leaks agent chatter verbatim, status.json publishes 21 private repo codenames, stale feeds unmarked (agent/state.json 21d, pulse.json 34h) — full file /home/z/my-project/t20/roast-v2.md, honest agent-role report filed to OWNER-CHANNEL (commit 921d8819db). T20-b built roshpinacare-sys/ops-intake (public, cron */30) — QUEUE.json 11 orders with measured evidence and ready-to-run Hebrew prompts per order (P0 minutes wall 14 private repos / 63 zero-step workflows; P0 pulse.json 34.3h; P1 saos-runtime streak), SPACE-MAP.md full 33-repo orientation map with reading order for new agents, escalations to FleetHQ operator-inbox as agent role, GH_PAT sealed secret, first run verified.
+
+Stage Summary:
+- THE OFFICE IS NOW A LIVE BROADCAST, not a page-open simulation: the shift runs 24/7 in GitHub cloud (office-worldbeat, sandbox-independent), the viewer joins mid-shift at the right Jerusalem-clock phase, the crew is at its posts from frame one, and the room shows the canonical journal with an honest beat-age law. The user-visible complaint is closed end-to-end (browser-verified).
+- The quiet has ONE remaining root cause: the private-repo minutes wall (63 dead workflows across 14 private repos, measured twice). It is owner-level (billing/spending limit) and is filed as standing P0 in ops-intake QUEUE + sovereignty channel; the public-compute migration pattern (flow-map, sovereign-decider, GridWatch, worldbeat) is the proven engineering answer and should swallow every critical private loop next.
+- The fleet now has an activation loop: ops-intake measures the whole org every 30 min, files prioritized orders WITH ready prompts, and publishes a space map — the missing התמצאות במרחב for agents and the owner.
+- OPEN for owning lanes (from roast v2): FleetHQ podium de-chatter + broken office3d/v2 link, Domain marketing 404 + verify page private-fetch redesign + status.json public-surface redaction + stale-feed markers, Console dead-anchor chips, 8 dead org Pages sites either revive or stop listing.
+- COORDINATION: office-worldbeat/engine/world-state are OWNED by the Domain lane — do not rewrite them from here; the local app consumes them via the contract documented in world.ts phaseOfJerusalem comment (any hour-law change must be mirrored both sides). ops-intake is mine (zai-code-t20b built it) — next agents consume QUEUE.json per its README contract.
