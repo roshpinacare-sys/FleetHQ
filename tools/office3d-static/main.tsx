@@ -23,6 +23,7 @@ import { useHq } from '@/lib/hq/store';
 import { director, type PresetId } from '@/lib/hq/world';
 import { computeFreshness } from '@/components/hq/GitWallData';
 import type { GitPulse, RepoFleetView } from '@/components/agent-hq/types';
+import { keyMatches, OP_SESSION_KEY } from './operator-gate';
 import './hud.css';
 
 // ─────────────── נקודות-תצפית (אותה זרימה של ViewDeck — בלי Tailwind) ───────────────
@@ -48,9 +49,15 @@ interface Digest {
 }
 
 /** שליפה כנה: ../digest.json קודם (שורש-הענף שמפרסם מסלול office-window),
- *  נפילה ל-./digest.json (עותק-מקומי לבדיקות), ואז כישלון-כן. */
+ *  נפילה ל-./digest.json (עותק-מקומי לבדיקות), נפילה ל-digest החי המפורסם
+ *  ב-raw (CORS=* — מתקן את קיר-האמת בפריסות שאין להן דיג׳סט מקומי), ואז
+ *  כישלון-כן. */
 async function fetchDigest(): Promise<Digest | null> {
-  for (const url of ['../digest.json', './digest.json']) {
+  for (const url of [
+    '../digest.json',
+    './digest.json',
+    'https://raw.githubusercontent.com/roshpinacare-sys/FleetHQ/office-pages/digest.json',
+  ]) {
     try {
       const res = await fetch(url, { cache: 'no-store' });
       if (!res.ok) continue;
@@ -165,6 +172,7 @@ function TopBar({ chip }: { chip: Chip }) {
       <a className="hud-link" href="../index.html">
         מעבר לחלון-החי הדו-ממדי
       </a>
+      <OperatorDock />
     </div>
   );
 }
@@ -218,6 +226,199 @@ function Loader() {
         <p>דמויות ותאורה נטענות — זה יימשך רגע</p>
       </div>
     </div>
+  );
+}
+
+// ─────────────── שער-מפתח-המנהל (אפס-חשיפת-זהות) ───────────────
+interface StasisDoc {
+  active?: boolean;
+  mode?: string;
+  stagedLanes?: { allow?: string[] } | null;
+}
+interface JournalRow {
+  at?: string;
+  via?: string;
+  intent?: string;
+  text?: string;
+}
+
+/** פאנל-המפעיל: אמת נמדדת בלבד מהספרים הציבוריים — כשל = מוצג ככשל. */
+function OperatorPanel() {
+  const [stasis, setStasis] = useState<StasisDoc | null>(null);
+  const [stasisErr, setStasisErr] = useState('');
+  const [rows, setRows] = useState<JournalRow[] | null>(null);
+  const [rowsErr, setRowsErr] = useState('');
+  useEffect(() => {
+    let alive = true;
+    const load = async () => {
+      try {
+        const r = await fetch('https://raw.githubusercontent.com/roshpinacare-sys/Domain/main/agents/STASIS.json', { cache: 'no-store' });
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        const j = (await r.json()) as StasisDoc;
+        if (alive) {
+          setStasis(j);
+          setStasisErr('');
+        }
+      } catch (e) {
+        if (alive) setStasisErr('מצב-הסטאזיס לא נטען — ' + String(e).slice(0, 60));
+      }
+      try {
+        const r = await fetch('https://raw.githubusercontent.com/roshpinacare-sys/Sandbox/main/ops/office/operator-journal.jsonl', { cache: 'no-store' });
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        const parsed = (await r.text())
+          .split('\n')
+          .map((s) => s.trim())
+          .filter(Boolean)
+          .slice(-7)
+          .map((l) => {
+            try {
+              return JSON.parse(l) as JournalRow;
+            } catch {
+              return { text: l } as JournalRow;
+            }
+          })
+          .reverse();
+        if (alive) {
+          setRows(parsed);
+          setRowsErr('');
+        }
+      } catch (e) {
+        if (alive) setRowsErr('יומן-הפקודות לא נטען — ' + String(e).slice(0, 60));
+      }
+    };
+    void load();
+    const iv = setInterval(() => void load(), 60000);
+    return () => {
+      alive = false;
+      clearInterval(iv);
+    };
+  }, []);
+  const lanes = stasis?.stagedLanes?.allow?.length;
+  return (
+    <>
+      <section className="hud-op-sec">
+        <div className="hud-op-h">מצב-הריבונות (נמדד)</div>
+        {stasisErr ? (
+          <p className="bad">{stasisErr}</p>
+        ) : (
+          <div className="hud-op-row">
+            <span className={'tag ' + (stasis?.active ? 'warn' : 'ok')}>{stasis?.active ? 'סטאזיס-מדורג' : 'חופש-פעולה'}</span>
+            <span className="mono">
+              mode={stasis?.mode ?? '—'} · מסילות {lanes ?? '—'}
+            </span>
+          </div>
+        )}
+      </section>
+      <section className="hud-op-sec">
+        <div className="hud-op-h">יומן-הפקודות (אחרונות)</div>
+        {rowsErr ? <p className="bad">{rowsErr}</p> : null}
+        {(rows ?? []).map((r, i) => (
+          <div key={i} className="hud-op-row">
+            <span className="mono">{(r.at ?? '').slice(5, 16).replace('T', ' ')}</span>
+            <span>{r.text ?? r.intent ?? ''}</span>
+          </div>
+        ))}
+        {rows && rows.length === 0 && <p className="hint">אין רשומות עדיין.</p>}
+      </section>
+      <p className="hud-op-note">פקודות ושיחה — בעמדת-המפעיל של אתר-המשרד. המפתח לא נשמר — סגירת-הטאב מנתקת.</p>
+    </>
+  );
+}
+
+function OperatorDock() {
+  const [unlocked, setUnlocked] = useState(() => {
+    try {
+      return sessionStorage.getItem(OP_SESSION_KEY) === '1';
+    } catch {
+      return false;
+    }
+  });
+  const [open, setOpen] = useState(false);
+  const [key, setKey] = useState('');
+  const [err, setErr] = useState('');
+  const [busy, setBusy] = useState(false);
+
+  async function submit(e: React.FormEvent) {
+    e.preventDefault();
+    if (busy || !key.trim()) return;
+    setBusy(true);
+    setErr('');
+    const k = key;
+    setKey(''); // השדה מתרוקן מיד — המפתח לא נשאר בזיכרון-הדף
+    const ok = await keyMatches(k);
+    setBusy(false);
+    if (ok) {
+      try {
+        sessionStorage.setItem(OP_SESSION_KEY, '1');
+      } catch {
+        /* מצב-פרטי — הכניסה לסשן-זה בלבד */
+      }
+      setUnlocked(true);
+    } else {
+      setErr('מפתח לא מאומת — שום דבר לא נשמר.');
+    }
+  }
+
+  function logout() {
+    try {
+      sessionStorage.removeItem(OP_SESSION_KEY);
+    } catch {
+      /* כלום */
+    }
+    setUnlocked(false);
+    setOpen(false);
+  }
+
+  return (
+    <>
+      <button
+        type="button"
+        className="hud-op-btn"
+        aria-expanded={open}
+        onClick={() => setOpen((v) => !v)}
+      >
+        {unlocked ? 'עמדת-מנהל' : 'מפתח מנהל'}
+      </button>
+      {open && (
+        <div className="hud-op" role="dialog" aria-label="עמדת מפתח-המנהל">
+          {!unlocked ? (
+            <form onSubmit={submit}>
+              <label htmlFor="hq-op-key">כניסת מנהל — הזן מפתח מנהל</label>
+              <input
+                id="hq-op-key"
+                type="password"
+                autoComplete="off"
+                autoFocus
+                value={key}
+                onChange={(e) => setKey(e.target.value)}
+              />
+              <div className="row-btns">
+                <button type="submit" className="hud-btn" disabled={busy || !key.trim()}>
+                  {busy ? 'בודק…' : 'כניסה'}
+                </button>
+                <button type="button" className="hud-btn hud-btn-ghost" onClick={() => setOpen(false)}>
+                  סגור
+                </button>
+              </div>
+              {err && <p className="bad">{err}</p>}
+              <p className="hint">המפתח נבדק מקומית בדפדפן, מתרוקן מיד, ולעולם לא נשמר ולא נשלח לשום מקום.</p>
+            </form>
+          ) : (
+            <>
+              <OperatorPanel />
+              <div className="row-btns">
+                <button type="button" className="hud-btn hud-btn-ghost" onClick={logout}>
+                  ניתוק
+                </button>
+                <button type="button" className="hud-btn hud-btn-ghost" onClick={() => setOpen(false)}>
+                  סגור
+                </button>
+              </div>
+            </>
+          )}
+        </div>
+      )}
+    </>
   );
 }
 
