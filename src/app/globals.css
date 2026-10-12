@@ -3,14 +3,6 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* Self-hosted font vars (build-time zero-network law, see layout.tsx):
-   Heebo carries the Hebrew glyphs (design law 400–700), JetBrains Mono the
-   instrument readouts. Families are registered by @fontsource CSS imports. */
-:root {
-  --font-heebo: "Heebo";
-  --font-jetbrains: "JetBrains Mono";
-}
-
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -129,393 +121,79 @@
   }
 }
 
-/* ═══════════════════════════════════════════════════════════════════
-   FLEET HQ — "OPS SLATE" design system (DESIGN.md is the law)
-   ═══════════════════════════════════════════════════════════════════
-   The console is an instrument: flat surfaces, hairlines, one quiet
-   accent, semantic status colors. No glow, no aurora, no particles,
-   no odometers — information is the decoration.
-   The office scene (Office.tsx / hq/*) keeps its own
-   life: the hq-* scene utilities below stay for it, color comes from
-   the scene markup itself. prefers-reduced-motion honored everywhere. */
-
+/* ─────────────── משטר-הצבע של המשרד החי (חוק אור-היום, Task 51) ───────────────
+   אור = כנות: משטחים בהירים וחמים, דיו כהה-חם, אקסנט ענבר-אדמה. אין כחול. */
 :root {
-  /* surfaces + ink — DAYLIGHT SLATE (Task 51: the console is an instrument in
-     daylight; the night palette survives one block below under html.dark) */
-  --bg: #f3f1ec;
-  --surface: #ffffff;
-  --surface-2: #ebe8e1;
-  --surface-3: #e2ded4;
-  --line: rgba(28, 24, 18, 0.11);
-  --line-strong: rgba(28, 24, 18, 0.2);
-  --ink: #201d18;
-  --ink-2: #57534a;
-  --ink-3: #8b867b;
-  /* the ONE accent — brand continuity, desaturated, interactive states only */
-  --accent: #c94fbe;
-  --accent-ink: #ffffff;
-  --accent-dim: rgba(201, 79, 190, 0.12);
-  /* semantic status law — the single legend (darkened for light-surface contrast) */
-  --st-working: #a8741c;
-  --st-ok: #14855c;
-  --st-attention: #b58216;
-  --st-danger: #cc423e;
-  --st-neutral: #716d64;
-  --st-info: #6f62ab;
-  /* radii */
-  --r-panel: 12px;
-  --r-row: 8px;
+  --surface: #f2ecdf;
+  --surface-2: #fffaf0;
+  --ink: #2a2520;
+  --ink-2: #5d5548;
+  --ink-3: #8a8172;
+  --line: #e3dac7;
+  --line-strong: #cfc4ac;
+  --accent: #b4691e;
+  --accent-dim: rgba(180, 105, 30, 0.14);
+  /* עומק עדין (refero): צל רך אחד לפאנלים — במקום מסגרות-קשות כפולות */
+  --shadow-soft: 0 1px 2px rgba(28, 24, 18, 0.04), 0 8px 24px rgba(28, 24, 18, 0.06);
+  --st-working: #d946ef;
+  --st-ok: #10b981;
+  --st-attention: #f59e0b;
+  --st-danger: #fb7185;
+  --st-neutral: #8a8f98;
+  --st-info: #14b8a6;
 }
 
-/* Night palette — user's choice via the header toggle (next-themes, html.dark) */
-.dark {
-  --bg: #0b0b0e;
-  --surface: #131318;
-  --surface-2: #1a1a21;
-  --surface-3: #22222b;
-  --line: rgba(255, 255, 255, 0.08);
-  --line-strong: rgba(255, 255, 255, 0.14);
-  --ink: #e6e6ea;
-  --ink-2: #a1a1ab;
-  --ink-3: #6b6b76;
-  --accent: #e05fd0;
-  --accent-ink: #17050f;
-  --accent-dim: rgba(224, 95, 208, 0.13);
-  --st-working: #d9a441;
-  --st-ok: #46c98a;
-  --st-attention: #e0b34d;
-  --st-danger: #e5615e;
-  --st-neutral: #8a8a95;
-  --st-info: #9a8ec8;
+/* נקודת-מדדים */
+.sl-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 9999px;
+  flex: none;
 }
 
-html, body { background: var(--bg); }
-
-/* ── panel ─────────────────────────────────────────────────────────── */
-.sl-panel {
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: var(--r-panel);
-}
-.sl-panel-head {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1rem;
-  border-bottom: 1px solid var(--line);
-  min-height: 44px;
-}
-.sl-panel-title { font-size: 13.5px; font-weight: 600; color: var(--ink); }
-.sl-panel-meta { margin-inline-start: auto; font-size: 12px; color: var(--ink-3); font-variant-numeric: tabular-nums; }
-
-/* ── chip ──────────────────────────────────────────────────────────── */
+/* צ'יפ בסיס לסרגל-החדר (ViewDeck דורס לפי-צורך) */
 .sl-chip {
   display: inline-flex;
   align-items: center;
-  gap: 0.375rem;
-  border-radius: 999px;
-  border: 1px solid var(--line);
-  background: var(--surface-2);
-  padding: 0.25rem 0.625rem;
-  font-size: 12px;
-  font-weight: 500;
-  line-height: 1.4;
-  white-space: nowrap;
-  color: var(--ink-2);
+  gap: 0.25rem;
+  border-radius: 9999px;
+  border: 1px solid transparent;
+  padding: 0.3rem 0.7rem;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.15s ease, color 0.15s ease;
 }
-.sl-chip b, .sl-chip strong { color: var(--ink); font-weight: 600; font-variant-numeric: tabular-nums; }
 
-/* ── status dot ────────────────────────────────────────────────────── */
-.sl-dot {
-  display: inline-block;
-  width: 7px;
-  height: 7px;
-  border-radius: 999px;
-  flex-shrink: 0;
-}
-.sl-dot-live { animation: sl-pulse-kf 2s ease-in-out infinite; }
-@keyframes sl-pulse-kf { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
-
-/* ── buttons ───────────────────────────────────────────────────────── */
-.sl-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.375rem;
-  min-height: 40px;
-  padding: 0.375rem 0.875rem;
-  border-radius: var(--r-row);
+/* פאנל-HUD אחד לכל שכבת-הכרום (T19-c · refero): פינה אחידה 12px, קו-שערה אחד,
+   עומק עדין — הפאנלים נבדלים ברקע ובצל, לא במסגרות-כבדות */
+.sl-panel {
   border: 1px solid var(--line);
-  background: var(--surface-2);
-  color: var(--ink);
-  font-size: 13px;
-  font-weight: 600;
-  white-space: nowrap;
-  transition: border-color 160ms ease, background 160ms ease, color 160ms ease;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--surface-2) 94%, transparent);
+  box-shadow: var(--shadow-soft);
+  backdrop-filter: blur(8px);
 }
-.sl-btn:hover { border-color: var(--line-strong); background: var(--surface-3); }
-.sl-btn-accent {
-  background: var(--accent);
-  border-color: transparent;
-  color: var(--accent-ink);
+
+/* גלילה מעודנת — כל רשימה ארוכה בממשק המשרד */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--line-strong) transparent;
 }
-.sl-btn-accent:hover { background: #d668cb; border-color: transparent; }
-.sl-btn-ghost { background: transparent; color: var(--ink-2); }
-.sl-btn-ghost:hover { color: var(--ink); background: var(--surface-2); }
-.sl-btn:focus-visible, .sl-seg button:focus-visible, button:focus-visible, a:focus-visible {
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+*::-webkit-scrollbar-thumb {
+  background: var(--line-strong);
+  border-radius: 8px;
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* הקנבס של המשרד — מיקוד מקלדת ברור ונגישות */
+.hq-canvas:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
-}
-.sl-btn:disabled { opacity: 0.45; cursor: not-allowed; }
-
-/* ── segmented view switch (flat underline law) ────────────────────── */
-.sl-seg { display: inline-flex; align-items: stretch; gap: 0.125rem; }
-.sl-seg button {
-  position: relative;
-  min-height: 40px;
-  padding: 0.375rem 0.875rem;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--ink-2);
-  border-radius: var(--r-row);
-  transition: color 160ms ease, background 160ms ease;
-  white-space: nowrap;
-}
-.sl-seg button:hover { color: var(--ink); background: var(--surface-2); }
-.sl-seg button[data-active='true'] { color: var(--ink); background: var(--surface-2); }
-.sl-seg button[data-active='true']::after {
-  content: '';
-  position: absolute;
-  inset-inline: 0.5rem;
-  bottom: 2px;
-  height: 2px;
-  border-radius: 999px;
-  background: var(--accent);
-}
-
-/* ── rows / tables ─────────────────────────────────────────────────── */
-.sl-row {
-  display: flex;
-  align-items: center;
-  gap: 0.625rem;
-  padding: 0.5rem 0.75rem;
-  border-bottom: 1px solid var(--line);
-  font-size: 13px;
-  min-height: 40px;
-  transition: background 160ms ease;
-}
-.sl-row:last-child { border-bottom: 0; }
-.sl-row:hover { background: rgba(28, 24, 18, 0.035); }
-button.sl-row { width: 100%; text-align: start; }
-
-/* ── alerts strip — exists only when intervention is needed ────────── */
-.sl-alerts {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  padding: 0.625rem 0.875rem;
-  border: 1px solid rgba(229, 97, 94, 0.35);
-  background: rgba(229, 97, 94, 0.07);
-  border-radius: var(--r-panel);
-}
-.sl-alert {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 12.5px;
-  font-weight: 600;
-  color: var(--ink);
-}
-
-/* ── empty / unknown state ─────────────────────────────────────────── */
-.sl-empty {
-  display: grid;
-  place-items: center;
-  padding: 2rem 1rem;
-  text-align: center;
-  color: var(--ink-3);
-  font-size: 13px;
-  line-height: 1.6;
-}
-
-/* ── kanban board ──────────────────────────────────────────────────── */
-.sl-board { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(180px, 1fr); gap: 0.75rem; overflow-x: auto; align-items: start; }
-.sl-col { display: flex; flex-direction: column; border: 1px solid var(--line); border-radius: var(--r-row); background: var(--surface-2); min-width: 0; align-self: start; }
-.sl-col-head {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 0.625rem;
-  border-bottom: 1px solid var(--line);
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--ink-2);
-}
-.sl-col-cards { display: flex; flex-direction: column; gap: 0.5rem; padding: 0.5rem; min-height: 2.5rem; }
-.sl-card {
-  width: 100%;
-  text-align: start;
-  border: 1px solid var(--line);
-  border-radius: var(--r-row);
-  background: var(--surface);
-  padding: 0.625rem 0.75rem;
-  transition: border-color 160ms ease;
-}
-.sl-card:hover { border-color: var(--line-strong); }
-
-/* ── pure-CSS tooltip via data-t ───────────────────────────────────── */
-.sl-tip { position: relative; }
-.sl-tip::after {
-  content: attr(data-t);
-  position: absolute;
-  inset-inline-end: 8px;
-  top: -26px;
-  z-index: 20;
-  padding: 3px 8px;
-  font-size: 10.5px;
-  font-weight: 600;
-  line-height: 1.4;
-  color: #f2efe9;
-  background: #2a2721;
-  border: 1px solid var(--line-strong);
-  border-radius: 6px;
-  white-space: nowrap;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 160ms ease 200ms;
-}
-.sl-tip:hover::after { opacity: 1; }
-
-/* ── scrollbar (neutral, thin) ─────────────────────────────────────── */
-.sl-scroll { scrollbar-width: thin; scrollbar-color: rgba(28, 24, 18, 0.22) transparent; }
-.sl-scroll::-webkit-scrollbar { width: 7px; height: 7px; }
-.sl-scroll::-webkit-scrollbar-track { background: transparent; }
-.sl-scroll::-webkit-scrollbar-thumb { background: rgba(28, 24, 18, 0.18); border-radius: 999px; }
-.sl-scroll::-webkit-scrollbar-thumb:hover { background: rgba(28, 24, 18, 0.3); }
-
-/* ── feed row entrance (kept: it marks NEW events, 160ms, no springs) ─ */
-.sl-feed-in { animation: sl-feed-kf 0.16s ease-out both; }
-@keyframes sl-feed-kf { from { opacity: 0; } to { opacity: 1; } }
-
-/* ═══════════════════════════════════════════════════════════════════
-   OFFICE SCENE UTILITIES — kept for Office.tsx / hq/* /
-   ReceptionChat.tsx. Color comes from the scene markup; these only
-   carry motion + the shared glass/button skins (restyled flat).
-   ═══════════════════════════════════════════════════════════════════ */
-
-/* glass skin — flat surface, no blur, no neon edge */
-.hq-glass {
-  border-radius: var(--r-panel);
-  border: 1px solid var(--line);
-  background: var(--surface);
-}
-
-/* buttons used inside the scene + reception chat */
-.hq-btn-accent {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  min-height: 44px;
-  border-radius: var(--r-row);
-  border: 1px solid transparent;
-  background: var(--accent);
-  color: var(--accent-ink);
-  font-weight: 700;
-  transition: background 160ms ease, opacity 160ms ease;
-}
-.hq-btn-accent:not(:disabled):hover { background: #d668cb; }
-.hq-btn-accent:disabled { opacity: 0.45; cursor: not-allowed; }
-.hq-btn-ghost {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.375rem;
-  min-height: 40px;
-  border-radius: var(--r-row);
-  border: 1px solid var(--line);
-  background: transparent;
-  font-weight: 600;
-  color: var(--ink-2);
-  transition: border-color 160ms ease, color 160ms ease, background 160ms ease;
-}
-.hq-btn-ghost:hover { color: var(--ink); background: var(--surface-2); border-color: var(--line-strong); }
-
-/* crew movement between stations */
-.agent-move {
-  transition: transform 1.7s cubic-bezier(0.22, 0.8, 0.28, 1);
-  will-change: transform;
-}
-@keyframes hq-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-2.2px); } }
-.agent-bob { animation: hq-bob 1.5s ease-in-out infinite; }
-
-/* pulsing lamps/dots (scene life) */
-@keyframes hq-pulse-kf { 0%, 100% { opacity: 1; } 50% { opacity: 0.45; } }
-.hq-pulse { animation: hq-pulse-kf 1.6s ease-in-out infinite; }
-
-/* expanding life ring (working desk) */
-.hq-ring { transform-box: fill-box; transform-origin: center; animation: hq-ring-kf 1.9s ease-out infinite; }
-.hq-ring-late { animation-delay: 0.95s; }
-@keyframes hq-ring-kf { 0% { transform: scale(0.5); opacity: 0.75; } 100% { transform: scale(2.8); opacity: 0; } }
-
-/* slow radial breathing for light pools */
-@keyframes hq-pool-kf { 0%, 100% { opacity: 0.75; } 50% { opacity: 1; } }
-.hq-pool { animation: hq-pool-kf 5.2s ease-in-out infinite; }
-
-/* speech bubbles */
-.hq-bubble { animation: hq-pop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1); }
-@keyframes hq-pop { from { opacity: 0; transform: scale(0.7) translateY(6px); } to { opacity: 1; transform: scale(1) translateY(0); } }
-
-/* scrollbar — neutral */
-.hq-scroll { scrollbar-width: thin; scrollbar-color: rgba(28, 24, 18, 0.2) transparent; }
-.hq-scroll::-webkit-scrollbar { width: 7px; height: 7px; }
-.hq-scroll::-webkit-scrollbar-track { background: transparent; }
-.hq-scroll::-webkit-scrollbar-thumb { background: rgba(28, 24, 18, 0.16); border-radius: 999px; }
-.hq-scroll::-webkit-scrollbar-thumb:hover { background: rgba(28, 24, 18, 0.28); }
-
-/* git wire dashes (scene svg) */
-@keyframes hq-dash-kf { to { stroke-dashoffset: -40; } }
-.hq-dash { animation: hq-dash-kf 2.2s linear infinite; }
-
-/* kettle steam */
-@keyframes hq-steam-kf { 0% { opacity: 0.15; transform: translateY(2px); } 50% { opacity: 0.6; } 100% { opacity: 0.15; transform: translateY(-4px); } }
-.hq-steam { animation: hq-steam-kf 2.8s ease-in-out infinite; }
-
-/* selection ring spin (scene svg) */
-.hq-spin { transform-box: fill-box; transform-origin: center; animation: hq-spin-kf 7s linear infinite; }
-@keyframes hq-spin-kf { to { transform: rotate(360deg); } }
-
-/* blinking terminal cursor on live monitors */
-@keyframes hq-blink-kf { 0%, 49% { opacity: 0.85; } 50%, 100% { opacity: 0; } }
-.hq-blink { animation: hq-blink-kf 1.05s step-end infinite; }
-
-/* panel cut (used by the reception drawer) */
-@keyframes hq-page-enter-kf { from { opacity: 0; } to { opacity: 1; } }
-.hq-page-enter { animation: hq-page-enter-kf 0.2s ease-out both; }
-
-/* typing dots in the reception chat */
-@keyframes guide-dot-kf { 0%, 60%, 100% { transform: translateY(0); opacity: 0.4; } 30% { transform: translateY(-3px); opacity: 1; } }
-.guide-dot { animation: guide-dot-kf 1.1s ease-in-out infinite; }
-@keyframes guide-rise-kf { from { opacity: 0; transform: translateY(14px) scale(0.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
-.guide-rise { animation: guide-rise-kf 0.28s cubic-bezier(0.34, 1.4, 0.64, 1); }
-.hq-dot-flash i { display: inline-block; animation: guide-dot-kf 1.1s ease-in-out infinite; }
-.hq-dot-flash i:nth-child(2) { animation-delay: 0.15s; }
-.hq-dot-flash i:nth-child(3) { animation-delay: 0.3s; }
-
-/* JetBrains Mono carries every instrument readout */
-.hq-root .font-mono, .hq-root code, .hq-root pre {
-  font-family: var(--font-jetbrains), ui-monospace, SFMono-Regular, monospace;
-}
-
-/* keep content above nothing — the atmosphere layer is gone */
-.hq-root > header, .hq-root > main, .hq-root > footer { position: relative; z-index: 1; }
-
-@media (prefers-reduced-motion: reduce) {
-  .hq-pulse, .hq-ring, .hq-ring-late, .hq-blink, .hq-bob,
-  .hq-pool, .hq-steam, .hq-dash, .hq-spin, .agent-bob,
-  .hq-bubble, .hq-page-enter, .hq-dot-flash i, .guide-dot,
-  .sl-dot-live, .sl-feed-in {
-    animation: none !important;
-    transition: none;
-  }
 }
