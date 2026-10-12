@@ -166,7 +166,9 @@ const TruthChip = memo(function TruthChip({ lang }: { lang: Lang }) {
   const he = lang === 'he';
   const truthBase = truth.foremanCapturedAt ?? truth.fetchedAt;
   const ageMin = Math.max(0, Math.round((Date.now() - truthBase) / 60_000));
-  const stale = ageMin >= 30;
+  // סף-החיות מוצדק: מקור-הפורמן מתעדכן בקצב של ~30–60 דק' (ריתמת-workflow נמדדת);
+  // 90 דק' = 2×ריתמה — מעבר לזה זה באמת מיושן. 30 דק' סימנו "STALE" גם נתון-טרי.
+  const stale = ageMin >= 90;
   const parts: string[] = [];
   if (truth.foremanOk) parts.push(he ? 'פורמן' : 'foreman');
   if (truth.pulseVerdict) parts.push(`דופק ${truth.pulseVerdict}`);

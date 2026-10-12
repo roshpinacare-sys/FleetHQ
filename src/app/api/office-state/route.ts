@@ -34,7 +34,8 @@ interface SourceBox<T> {
 
 interface Payload {
   fetchedAt: string;
-  foreman: SourceBox<ForemanRaw>;
+  /** חוזה-הגשר: `state` (פורמן) + קופסת-הטריות הכללית */
+  foreman: SourceBox<ForemanRaw> & { state?: ForemanRaw };
   pulse: SourceBox<OfficePulseRaw>;
   beacon: SourceBox<BeaconRaw>;
   git: { ok: boolean; error?: string; commits?: CommitViewWire[]; fetchedAt?: string; ageMs?: number };
@@ -84,7 +85,8 @@ export async function GET() {
 
   const payload: Payload = {
     fetchedAt: new Date().toISOString(),
-    foreman: box(foreman),
+    // חוזה-ה-wire של הגשר (truth-bridge): `state` לפורמן, `data` לשאר — אסור לשבור
+    foreman: { ...box(foreman), state: foreman.data ?? undefined },
     pulse: box(pulse),
     beacon: box(beacon),
     git: commits
