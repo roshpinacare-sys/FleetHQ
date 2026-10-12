@@ -148,7 +148,7 @@ async function pushReceipts(): Promise<{ ok: boolean; attempts: number; note: st
   if (!st.out.trim()) return { ok: true, attempts: 0, note: "no receipt delta" };
   git(["commit", "-m", "[selfcheck] standing loop receipts: security+connectivity+fresh-oracle [skip ci]"]);
   for (let i = 1; i <= 3; i++) {
-    const pull = git(["pull", "--rebase", "origin", "main"]);
+    const pull = git(["-c", "rebase.autoStash=true", "pull", "--rebase", "-X", "theirs", "origin", "main"]);
     if (pull.code !== 0) {
       git(["rebase", "--abort"]);
       await new Promise((r) => setTimeout(r, 3000 + Math.floor(Math.random() * 5000)));
