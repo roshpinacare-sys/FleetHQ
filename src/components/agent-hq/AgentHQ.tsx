@@ -28,6 +28,7 @@ import {
 import { GitEvidencePanel } from './GitWire';
 import StackHealth from './StackHealth';
 import VeritasPanel from './VeritasPanel';
+import OperatorGate from './OperatorGate';
 import { ReceptionChat, type PublicStats } from './ReceptionChat';
 import type { AgentView, BookView, CrewMember, Decision, FeedItem, GitPulse, Goal, LogEntry, Report, Snapshot, Task } from './types';
 import { AGENT_SEMANTIC, semanticVar, type Semantic } from '@/components/hq/tokens';
@@ -483,6 +484,9 @@ export default function AgentHQ() {
 
             {/* veritas gate + recruitment — live no-forgery verdicts, evidence-bound roles */}
             <VeritasPanel lang={lang} />
+
+            {/* operator channel — owner steers the autonomy (admin key gated, receipted) */}
+            <OperatorGate lang={lang} />
 
             {/* main grid */}
             <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,1fr)_390px]">
