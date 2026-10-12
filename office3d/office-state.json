@@ -1,54 +1,55 @@
 {
-  "capturedAt": "2026-10-12T10:08:43.259Z",
+  "capturedAt": "2026-10-12T15:25:14.162Z",
   "connected": true,
   "backend": "live",
-  "statusHe": "צוות חי — זיכרון שוחזר מהגיט (68 משמרות, 20 לקחים)",
+  "statusHe": "צוות חי — זיכרון שוחזר מהגיט (70 משמרות, 20 לקחים)",
   "mode": null,
   "agents": [
     {
       "id": "aluf",
-      "state": "idle",
-      "activity": "",
+      "state": "thinking",
+      "activity": "מתכנן את היעד…",
       "station": "wall",
-      "since": 1791799620926,
-      "taskId": "t1622"
+      "since": 1791818658709,
+      "taskId": "t1637"
     },
     {
       "id": "gal",
       "state": "idle",
-      "activity": "הפסקת קפה — לגימה ורענון",
-      "station": "coffee",
-      "since": 1791799738981
+      "activity": "",
+      "station": "desk",
+      "since": 1791818709919,
+      "taskId": "t1637"
     },
     {
       "id": "erez",
-      "state": "idle",
-      "activity": "הפסקת קפה — לגימה ורענון",
-      "station": "coffee",
-      "since": 1791799736781
+      "state": "reading",
+      "activity": "קורא dex-book",
+      "station": "library",
+      "since": 1791818740652,
+      "taskId": "t1657"
     },
     {
       "id": "tamar",
       "state": "idle",
       "activity": "",
       "station": "desk",
-      "since": 1791799703641,
-      "taskId": "t1622"
+      "since": 1791818670297
     },
     {
       "id": "shachar",
       "state": "idle",
       "activity": "",
       "station": "desk",
-      "since": 1791799727856,
-      "taskId": "t1622"
+      "since": 1791818637270,
+      "taskId": "t1637"
     },
     {
       "id": "yarden",
       "state": "idle",
       "activity": "הפסקת קפה — לגימה ורענון",
       "station": "coffee",
-      "since": 1791799747783
+      "since": 1791818738647
     }
   ],
   "tasks": [
@@ -2249,30 +2250,95 @@
       "startedAt": 1791799432643,
       "summary": "סיור שגרה הושלם. נמצאו 4 ספרים ישנים/דורשים בדיקה: fleet-census (84.9ש׳), econ-book/curation-book/money-ledger (158-164ש׳ כל אחד), pulse-book advisory triage (187.9ש׳ STALE), learning-summary (39.2ש׳ תקין). מדדים קריטיים: F1 DECLINE 6/9, F4 DECLINE 71/76, F9 HELD 0 receipts.",
       "durationMs": 120670
+    },
+    {
+      "id": "t1637",
+      "title": "Collect recent news on autonomous agents",
+      "description": "Use web_search to gather the latest news articles and reports on autonomous agents, ensuring coverage of major developments and emerging trends. Reference truth-history for contextual background.",
+      "status": "done",
+      "assignee": "shachar",
+      "dependsOn": [],
+      "why": "intelligence expertise",
+      "matchBy": "llm",
+      "createdBy": "aluf",
+      "createdAt": 1791818363323,
+      "updatedAt": 1791818479743,
+      "startedAt": 1791818364370,
+      "summary": "",
+      "durationMs": 97641
+    },
+    {
+      "id": "t1657",
+      "title": "ייצור תוכן: גבשי דוח מצב-שוטף מהספרים הטריים לפרסום-עתידי והגישי לשער-הביקורת",
+      "status": "doing",
+      "description": "ייצור תוכן: גבשי דוח מצב-שוטף מהספרים הטריים לפרסום-עתידי והגישי לשער-הביקורת",
+      "assignee": "erez",
+      "dependsOn": [],
+      "why": "ביקורות, טענות וחוזי יכולת",
+      "matchBy": "fit",
+      "createdBy": "aluf",
+      "createdAt": 1791818721816,
+      "updatedAt": 1791818721817,
+      "startedAt": 1791818721817
     }
   ],
   "books": 22,
   "memory": null,
   "counts": {
     "agent": 8,
-    "task": 0,
-    "log": 2,
-    "feed": 0,
+    "task": 2,
+    "log": 13,
+    "feed": 2,
     "decision": 0,
     "report": 0,
-    "goal": 0,
-    "bubble": 2
+    "goal": 2,
+    "bubble": 3
   },
   "feed": [
     {
-      "kind": "bubble:yarden",
-      "text": "לגימה מהירה — וחוזרים לעבודה.",
-      "at": 1791799747784
+      "kind": "bubble:erez",
+      "text": " mqdesh et dex-book.",
+      "at": 1791818740652
     },
     {
-      "kind": "bubble:gal",
+      "kind": "bubble:yarden",
       "text": "לגימה מהירה — וחוזרים לעבודה.",
-      "at": 1791799738982
+      "at": 1791818738647
+    },
+    {
+      "kind": "bubble:erez",
+      "text": "מ מח paycheck.",
+      "at": 1791818731497
+    },
+    {
+      "kind": "goal",
+      "text": "{\"id\":\"g1655\",\"text\":\"ייצור תוכן: גבשי דוח מצב-שוטף מהספרים הטריים לפרסום-עתידי והגישי לשער-הביקורת\",\"status\":\"active\",\"progress\":0.94,\"createdAt\":1791818657808,\"updatedAt\":1791818723144,\"origin\":\"pat",
+      "at": 1791818723144
+    },
+    {
+      "kind": "task",
+      "text": "doing: ייצור תוכן: גבשי דוח מצב-שוטף מהספרים הטריים לפרסום-עתידי והגישי לשער-הביקורת",
+      "at": 1791818721819
+    },
+    {
+      "kind": "goal",
+      "text": "{\"id\":\"g1655\",\"text\":\"ייצור תוכן: גבשי דוח מצב-שוטף מהספרים הטריים לפרסום-עתידי והגישי לשער-הביקורת\",\"status\":\"active\",\"progress\":0.05,\"createdAt\":1791818657808,\"updatedAt\":1791818721817,\"origin\":\"pat",
+      "at": 1791818721819
+    },
+    {
+      "kind": "system",
+      "text": "לא התקבלה תוכנית מיושרת-יעד — הראש-המטה מקצה את היעד עצמו לארז (התאמת FIT)",
+      "at": 1791818721819
+    },
+    {
+      "kind": "task",
+      "text": "משימה חדשה: ייצור תוכן: גבשי דוח מצב-שוטף מהספרים הטריים לפרסום-עתידי והגישי לשער-הביקורת",
+      "at": 1791818721819
+    },
+    {
+      "kind": "task",
+      "text": "todo: ייצור תוכן: גבשי דוח מצב-שוטף מהספרים הטריים לפרסום-עתידי והגישי לשער-הביקורת",
+      "at": 1791818721819
     }
   ],
   "reports": [],
