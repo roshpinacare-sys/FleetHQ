@@ -14,19 +14,11 @@
 
 שלב 2 — **ההצתה-הריבונית (פקודה-אחת):**
 
-```bash
-git clone https://github.com/roshpinacare-sys/fleet-vault
-cd fleet-vault && bash sovereign/bootstrap.sh      # מסילת-הצי המלאה: 22 ריפוים + כספת-שרשרות + משמורת-חיה + קבלה
-bash vault/boot-sovereign.sh                        # מסילת-המשרד: wrap-registry → מפתחות-מוח → SSH anchor → שירותים
-```
+פתיחת-הכספת ושיקום-השירותים — מפעיל-בלבד, נוהל-מאובטח-שאינו-מתועד-כאן.
 
-> **עדכון 2026-10-08 (sovereign-audit, R284):** v2 = wrap-registry — אין plaintext-זהות
-> ב-HEAD. ה-credential של רגע-החיבור מתגלה אוטומטית (env / upload / git-credentials /
-> gh / SSH deploy key) ופותח את ה-wrap של סיסמת-האב. הוכח חי בסבב-זה: מכונה-טרייה
-> (HOME ריק) → clone אחד → **22/22 ריפוים · משרד נפתח · כספת-שרשרות pin-match ·
-> 26 מפתחות חיים נמדדו על השרשרת · קבלה נדחפה · 9/9 ירוק ב-verify**.
+> **עדכון 2026-10-08 (sovereign-audit, R284):** v2 = wrap-registry — אין plaintext-זהות ב-HEAD. פתיחת-הכספת ושיקום-השירותים — מפעיל-בלבד, נוהל-מאובטח-שאינו-מתועד-כאן.
 
-מה זה עושה: מתקין את זהות-הגיט של הצי (PAT מה-keyring) → משכפל/מעדכן את כל 22
+מה זה עושה: מתקין את זהות-הגיט של הצי → משכפל/מעדכן את כל 22
 הריפוים לפי MANIFEST → פותח את מפתחות-המשרד (FleetHQ auto-unseal) → פותח את
 כספת-השרשרות (steem repo) → **מודד משמורת חיה מול steem/hive/blurt** → דוחף קבלה
 ל-TruthRail → משמיד כל בייט-פענוח זמני. אימות: `bash sovereign/verify.sh`.
