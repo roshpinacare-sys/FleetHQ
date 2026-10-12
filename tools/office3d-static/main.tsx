@@ -172,6 +172,10 @@ function TopBar({ chip }: { chip: Chip }) {
       <a className="hud-link" href="../index.html">
         מעבר לחלון-החי הדו-ממדי
       </a>
+      {/* T19-c — כניסת-המנהל המקצועית: עמוד-פקודות נפרד (noindex), כניסה מקומית בלבד */}
+      <a className="hud-link" href="./operator.html" title="עמדת-מנהל — ערוץ-הפקודות" aria-label="עמדת-מנהל">
+        מנהל
+      </a>
       <OperatorDock />
     </div>
   );
