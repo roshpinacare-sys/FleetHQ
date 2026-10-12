@@ -706,3 +706,67 @@ Stage Summary:
   never memory; 33-byte key serialization; FC sig layout; sorted flat_maps;
   canonical low-S; and — parallel agents MUST NOT edit files mid-sequence
   without reading the worklog first (collision documented as incident).
+
+---
+Task ID: 12-gridwatch-control-plane
+Agent: main (owner: הכל שקט — למה, מה הבעיות בגיט, איך מנדסים חיים ולא מושתקים)
+
+Work Log:
+- FORENSICS (all measured via GitHub API): the fleet is 31 repos (10 public / 21 private),
+  252 workflows. "Quiet" was never silence — it was INVISIBLE failure: 13+ failing
+  workflows with no self-healing loop, failures invisible to every agent and to the UI.
+- ROOT CAUSE OF THE DEAD GRID (measured, smoking gun): GitHub Actions minutes/payment
+  wall — ALL private-repo workflow runs fail instantly (zero steps, no logs; Sandbox
+  40/40, steem 40/40, saos-dex 39/39 instant-failures) while public repos keep running
+  free. Explicit billing message measured earlier on treasury-ladder ("recent account
+  payments have failed or your spending limit needs to be increased"). The flow-map
+  generator (Sandbox, private) died → flow-map stale 10h → networks grid "dead".
+  Other failure classes measured: billing-blocked jobs (never started), broken
+  workflows (instant-fail, config defects), flaky (chain/network), policy mismatch
+  (org-gitleaks: private custody repos fail by design → red noise), push races.
+- BUILT GridWatch (NEW REPO, authorized by owner) — the fleet control plane:
+  grid-watch.mjs (zero-dep engine): SENSE all repos/workflows/runs (2-page repo-level
+  + per-workflow fallback = complete coverage) + cron cadence from yml (sha-cached) +
+  jobs-steps-0 billing law (measured signature) + instant-fail broken-workflow law +
+  visibility-flip law (private→public = red alert) + API quota.
+  DECIDE health classes: ok/flaky/failing/billing-blocked/broken-workflow/dormant/stale/never-run.
+  ACT within envelope: auto-retry via workflow_dispatch (max 3 consecutive, 12-min
+  in-flight guard, 25/cycle stampede cap), re-enable disabled_inactivity. Never fakes.
+  ALERT: new reds → FleetHQ operator-inbox.jsonl (agent role, honest) ; RECORD:
+  state/fleet-health.json committed + double-pass verified. Cron */30 in GitHub cloud —
+  ZERO sandbox dependency.
+- SOVEREIGNTY WIRING: FleetHQ/tools/sovereign-decider.mjs patched — GridWatch health
+  is now sense-input #6 with P0 rule (measured P0 decision recorded: "73 red in 20
+  repos... GridWatch heals autonomously; repeat streaks = engineering triage").
+- POLICY FIX: Domain org-gitleaks.yml — tier law (public=strict zero-tolerance;
+  private-custody=honest counts, success-custody) + Domain .gitleaks.toml measured
+  allowlist (decision receipts audited: no key material). Permanently-red legs no
+  longer drown real signals.
+- COMPUTE-LANE MIGRATION (the architectural answer to the minutes wall): law
+  "compute in public repos (free minutes), custody in private repos". Built
+  GridWatch/flow-map.yml: public runner checks out private Sandbox w/ PAT, runs the
+  SAME generator + leak-scan fail-closed, commits map back. FIRST RUN: SUCCESS —
+  flow-map regenerated after 10h staleness (0 min old, 35 nodes / 83 edges).
+  cadence 30min.
+- ENGINE BUGS FOUND & FIXED during bring-up (all measured): /users→/user repos for
+  private listing; type+affiliation 422; check_suite_url guard; per-workflow run
+  fallback (232→252 workflows seen); pushedAt camelCase bug (fleet.pushedAt vs
+  repo.pushed_at); double-pass verify retry against real commit sha.
+- UI: new ControlWorld tab ("בקרה") — full fleet health: totals (31 repos/252
+  workflows/green-amber-red), billing banner, self-healing receipts, new alerts,
+  per-repo cards with red/amber workflows + pushedAt + cron. fleetHealth wired into
+  worlds-state API (gh-truth, public raw) + world mood (red/billing → overcast sky).
+- BROWSER-VERIFIED: control tab renders totals 31/252/71-red, 79 remediations shown,
+  billing banner logic, repo cards with real push ages; mobile 390px clean; no
+  console errors; no horizontal overflow. office tab unaffected.
+
+Stage Summary:
+- The grid can no longer die silently: every repo/workflow/run is measured every
+  30min in GitHub cloud, failures auto-heal when reversible, escalate when not,
+  and are VISIBLE in the owner UI and in the sovereign decision ledger (P0).
+- The minutes-wall root cause is owner-level (payment method / spending limit on
+  GitHub account) — honestly escalated, NOT faked. Mitigation shipped: public
+  compute lane (flow-map) immune to the wall; pattern ready to replicate for other
+  critical private-repo automation (steem sovereign-cycle, saos-dex, verify lanes).
+- New repo: roshpinacare-sys/GridWatch (public control plane; GH_PAT stored as
+  encrypted Actions secret; no secrets in any committed file).

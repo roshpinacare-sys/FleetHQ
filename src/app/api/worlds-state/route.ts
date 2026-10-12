@@ -10,7 +10,7 @@
 import { NextResponse } from 'next/server';
 import { fetchTruth, ageMs } from '@/lib/gh-truth';
 import type {
-  BeaconWire, ChainWire, DecisionsWire, DexWire, FlowDataWire, ForemanWire,
+  BeaconWire, ChainWire, DecisionsWire, DexWire, FleetHealthWire, FlowDataWire, ForemanWire,
   LighthouseWire, ValueScanWire, VerifyWire, WorldsPayload,
 } from '@/lib/worlds/types';
 
@@ -118,7 +118,7 @@ async function measureChain(): Promise<ChainWire | null> {
 }
 
 export async function GET() {
-  const [flow, lh, beacon, dex, vs, dec, foreman, chainRaw, verifyRaw] = await Promise.all([
+  const [flow, lh, beacon, dex, vs, dec, foreman, chainRaw, verifyRaw, fleetHealth] = await Promise.all([
     fetchTruth<FlowDataWire>('Sandbox', 'ops/flow/flow-map.json', { ttlMs: TTL_MS }),
     fetchTruth<LighthouseWire>('sovereign-lighthouse', 'state.json', { ttlMs: TTL_MS }),
     fetchTruth<BeaconWire>('sovereign-beacon', 'state.json', { ttlMs: TTL_MS }),
@@ -128,6 +128,8 @@ export async function GET() {
     fetchTruth<ForemanWire>('FleetHQ', 'office/state/office-state.json', { ttlMs: TTL_MS }),
     measureChain(),
     fetchVerify(),
+    // [T-watch] מישור-הבקרה — GridWatch ריפו ציבורי; TTL 120s (ה-watch עצמו רץ כל 30 דק')
+    fetchTruth<FleetHealthWire>('GridWatch', 'state/fleet-health.json', { ttlMs: 120_000 }),
   ]);
 
   const chain = chainRaw
@@ -147,6 +149,7 @@ export async function GET() {
     verify: verifyRaw
       ? { ok: true, data: verifyRaw, fetchedAt: new Date().toISOString(), ageMs: 0 }
       : { ok: false, error: 'not-published-yet' },
+    fleetHealth: box(fleetHealth),
   };
 
   return NextResponse.json(payload, { headers: { 'x-worlds-cache': 'swr' } });

@@ -15,8 +15,9 @@ import { NetworkWorld } from './NetworkWorld';
 import { BusinessWorld } from './BusinessWorld';
 import { ParallelWorld } from './ParallelWorld';
 import { RecruitmentBoard } from './RecruitmentBoard';
+import { ControlWorld } from './ControlWorld';
 
-type WorldId = 'office' | 'network' | 'business' | 'parallel' | 'recruit';
+type WorldId = 'office' | 'network' | 'business' | 'parallel' | 'recruit' | 'control';
 
 const TABS: { id: WorldId; label: string; hint: string }[] = [
   { id: 'office', label: 'משרד', hint: 'חדר-הפיקוד התלת-ממדי' },
@@ -24,6 +25,7 @@ const TABS: { id: WorldId; label: string; hint: string }[] = [
   { id: 'business', label: 'עסקים', hint: 'אולם-האוצרה + ביקורת-אמת' },
   { id: 'parallel', label: 'מקביל', hint: 'גן-הנפש — מטאפורות של מדידות' },
   { id: 'recruit', label: 'גיוס·ערך', hint: 'הלולאה: מה הפוטנציאל · מה פתוח · מה נותן ערך' },
+  { id: 'control', label: 'בקרה', hint: 'מישור-הבקרה: בריאות הצי כולו, כישלונות שקטים גלויים, ריפוי-עצמי מתועד' },
 ];
 
 export function WorldDeck() {
@@ -86,6 +88,8 @@ export function WorldDeck() {
           <BusinessWorld p={data} />
         ) : active === 'parallel' ? (
           <ParallelWorld p={data} />
+        ) : active === 'control' ? (
+          <ControlWorld p={data} />
         ) : (
           <RecruitmentBoard p={data} />
         )}
