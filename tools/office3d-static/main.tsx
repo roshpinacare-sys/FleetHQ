@@ -267,7 +267,7 @@ function OperatorPanel() {
         if (alive) setStasisErr('מצב-הסטאזיס לא נטען — ' + String(e).slice(0, 60));
       }
       try {
-        const r = await fetch('https://raw.githubusercontent.com/roshpinacare-sys/Sandbox/main/ops/office/operator-journal.jsonl', { cache: 'no-store' });
+        const r = await fetch('https://raw.githubusercontent.com/roshpinacare-sys/Sandbox/main/ops/office/operator-journal.jsonl?ts=' + Date.now(), { cache: 'no-store' });
         if (!r.ok) throw new Error('HTTP ' + r.status);
         const parsed = (await r.text())
           .split('\n')
