@@ -1,8 +1,8 @@
 {
-  "capturedAt": "2026-10-12T16:11:03.191Z",
+  "capturedAt": "2026-10-12T19:38:56.281Z",
   "connected": true,
   "backend": "live",
-  "statusHe": "צוות חי — זיכרון שוחזר מהגיט (72 משמרות, 20 לקחים)",
+  "statusHe": "צוות חי — זיכרון שוחזר מהגיט (1 משמרות, 1 לקחים)",
   "mode": null,
   "agents": [
     {
@@ -10,15 +10,15 @@
       "state": "idle",
       "activity": "",
       "station": "wall",
-      "since": 1791821462832,
+      "since": 1791833880243,
       "taskId": "t1638"
     },
     {
       "id": "gal",
-      "state": "idle",
-      "activity": "",
+      "state": "walking",
+      "activity": "חוזר מההפסקה",
       "station": "desk",
-      "since": 1791821443552,
+      "since": 1791833962769,
       "taskId": "t1638"
     },
     {
@@ -26,30 +26,30 @@
       "state": "idle",
       "activity": "הפסקת קפה — לגימה ורענון",
       "station": "coffee",
-      "since": 1791821476680
+      "since": 1791833949773
     },
     {
       "id": "tamar",
       "state": "idle",
       "activity": "",
       "station": "desk",
-      "since": 1791821428290,
-      "taskId": "t1638"
+      "since": 1791833892425
     },
     {
       "id": "shachar",
-      "state": "idle",
-      "activity": "",
-      "station": "desk",
-      "since": 1791821409585,
+      "state": "walking",
+      "activity": "יוצא להפסקת קפה",
+      "station": "coffee",
+      "since": 1791833962878,
       "taskId": "t1638"
     },
     {
       "id": "yarden",
       "state": "idle",
-      "activity": "הפסקת קפה — לגימה ורענון",
-      "station": "coffee",
-      "since": 1791821487685
+      "activity": "",
+      "station": "desk",
+      "since": 1791833836761,
+      "taskId": "t1638"
     }
   ],
   "tasks": [
@@ -1912,7 +1912,7 @@
       "createdAt": 1791763287322,
       "updatedAt": 1791763473693,
       "startedAt": 1791763380145,
-      "summary": "Syzygy Audit: fleet-roster vs fleet-census Cross-Check\n\nCross-check completed between fleet-roster (SAOS-FLEET-ROSTER/1, asOf 2026-10-04T22:06:00Z) and fleet-census (asOf 2026-10-08T21:06:44.486Z).\n\nKEY FINDINGS:\n\n1. HEARTBEAT GAP: 95.01 hours — fleet-roster is materially staler than fleet-census.\n\n2. AGENT ROSTER MISMATCH:\n   - fleet-roster lists 12 steemFleet agents: cashmachine, haran, israelne",
+      "summary": "Syzygy Audit: fleet-roster vs fleet-census Cross-Check\n\nCross-check completed between fleet-roster (SAOS-FLEET-ROSTER/1, asOf 2026-10-04T22:06:00Z) and fleet-census (asOf 2026-10-08T21:06:44.486Z).\n\nKEY FINDINGS:\n\n1. HEARTBEAT GAP: 95.01 hours — fleet-roster is materially staler than fleet-census.\n\n2. AGENT ROSTER MISMATCH:\n   - fleet-roster lists 12 steemFleet agents: acct-01, acct-02, israelne",
       "durationMs": 67338
     },
     {
@@ -2261,20 +2261,20 @@
       "why": "מדדים, מפקד ולמידה של הצי",
       "matchBy": "fit",
       "createdBy": "aluf",
-      "createdAt": 1791821177934,
-      "updatedAt": 1791821441778,
-      "startedAt": 1791821337911,
-      "summary": "סיור שגרה הושלם. ספרי צי ישנים/דורשים בדיקה:\n\n1. econ-book.json — 158 שעות (6.6 ימים) — סטטוס DECLINE במדד F1 Population Health\n2. curation-book.json — 164.4 שעות (6.85 ימים) — סטטוס DECLINE במדד F1 Population Health\n3. money-ledger.json — 158 שעות (6.6 ימים) — סטטוס DECLINE במדד F1 Population Health\n4. fleet-census.json — 91 שעות (3.8 ימים) — ספר מפקד צי ישן\n5. sovereign-state.json — 91 שעות (3.8",
-      "durationMs": 71674
+      "createdAt": 1791833601824,
+      "updatedAt": 1791833860007,
+      "startedAt": 1791833733961,
+      "summary": "סיור שגרה הושלם. ארבעת ספרי הצי הראשיים: fleet-indicators (32.5 שעות), fleet-census (94.4 שעות), pulse-book (7.1 שעות), learning-summary (48.7 שעות) — כולם מתחת ל-30 יום (720 שעות). ממצאים דורשי בדיקה: 1) fleet-indicators מראה 3 מדדים בירידה (DECLINE): F1 Population Health 6/9 ספרים טריים (שבירה 7/9), F4 Governance Conformity 71/76 CRs נשפטו (שבירה 100%), F9 Autonomy Receipts 0/7 ימים (שבירה ≥5). ",
+      "durationMs": 87571
     }
   ],
   "books": 22,
   "memory": null,
   "counts": {
-    "agent": 4,
+    "agent": 5,
     "task": 0,
     "log": 1,
-    "feed": 1,
+    "feed": 0,
     "decision": 0,
     "report": 0,
     "goal": 0,
@@ -2282,14 +2282,9 @@
   },
   "feed": [
     {
-      "kind": "bubble:yarden",
+      "kind": "bubble:gal",
       "text": "לגימה מהירה — וחוזרים לעבודה.",
-      "at": 1791821487685
-    },
-    {
-      "kind": "system",
-      "text": "לקח חדש נרשם בזיכרון המשרד: ספרי צי ישנים (84-187 שעות) דורשים תחזוקה מחזורית קבועה",
-      "at": 1791821471686
+      "at": 1791833938769
     }
   ],
   "reports": [],
