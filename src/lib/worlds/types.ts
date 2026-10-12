@@ -99,6 +99,30 @@ export interface WorldsPayload {
   chain: SourceBox<ChainWire>;
   decisions: SourceBox<DecisionsWire>;
   verify: SourceBox<VerifyWire>;
+  /** [T-watch] מישור-הבקרה — בריאות הצי כולו (GridWatch) */
+  fleetHealth?: SourceBox<FleetHealthWire>;
+}
+
+/** [T-watch] מישור-הבקרה — GridWatch/state/fleet-health.json (הצי רואה את עצמו) */
+export interface FleetWorkflowWire {
+  name: string; state?: string; cron?: string | null;
+  health: 'ok' | 'amber' | 'red'; class?: string | null; note?: string;
+  streak?: number; lastRunAt?: string | null; lastConclusion?: string | null; lastEvent?: string | null;
+}
+export interface FleetRepoWire {
+  name: string; private?: boolean; pushedAt?: string;
+  health: 'ok' | 'amber' | 'red';
+  counts: { workflows: number; green: number; amber: number; red: number };
+  workflows: FleetWorkflowWire[];
+}
+export interface FleetAlertWire { key?: string; level?: string; repo?: string; workflow?: string | null; class?: string; note?: string; at?: string }
+export interface FleetRemediationWire { at?: string; repo?: string; workflow?: string; action?: string; class?: string; attempt?: number; http?: number }
+export interface FleetHealthWire {
+  generatedAt?: string; version?: number; cadenceMin?: number;
+  totals?: { repos: number; public: number; private: number; workflows: number; green: number; amber: number; red: number };
+  repos: FleetRepoWire[];
+  alerts?: FleetAlertWire[];
+  remediations?: FleetRemediationWire[];
 }
 
 /** [T15] רשת-האמת של הקונסולה — המאמת-העצמאי + שער-האמת-הציבורי */
@@ -165,6 +189,14 @@ export function deriveWorldMood(p: WorldsPayload | null): WorldMood {
   } else {
     score += 1; reasons.push('מקור הפורמן לא זמין');
   }
+  const flowFresh = (p?.flow.data?.generatedAt && Date.now() - Date.parse(p.flow.data.generatedAt) < 6 * 3600_000);
+  if (!flowFresh && p?.flow.ok) { score += 1; reasons.push('מפת-הזרימה עתיקה'); }
+  const fh = p?.fleetHealth?.data;
+  if (fh?.totals) {
+    if (fh.totals.red > 0) { score += 2; reasons.push(`${fh.totals.red} workflows אדומים בצי`); }
+    const billing = (fh.repos ?? []).flatMap((r) => r.workflows).some((w) => w.class === 'billing-blocked');
+    if (billing) { score += 2; reasons.push('חסימת-חיוב GitHub — jobs לא מתחילים'); }
+  } else if (p?.fleetHealth && !p.fleetHealth.ok) { reasons.push('מישור-הבקרה (GridWatch) לא זמין'); }
   const sky = score >= 3 ? 'overcast' : score >= 1 ? 'cloudy' : 'clear';
   const he = sky === 'clear' ? 'שמיים בהירים' : sky === 'cloudy' ? 'עננים מתקבצים' : 'שמיים כבדים';
   return { sky, he, reasons };
