@@ -19,6 +19,14 @@
  * workflow: capture a live foreman window (READ-ONLY socket) + push the
  * office mirror/state. GitHub is storage; the compute is HERE.
  *
+ * FLUSH DURABILITY (2026-10-13, trace 26-b→26-c-2): vault-home/flush.sh (the
+ * auto-drain of every unpushed commit the moment a valid credential exists)
+ * was fired only from a stale in-memory scheduler — HEAD had NO flush wiring
+ * (git log -S flush on this path = zero commits), so the next wipe/reboot
+ * would have booted a scheduler that never flushes again and the push-queue
+ * would pile silently. The beat now lives HERE, in git, where the wipe
+ * cannot reach it: cadence :09/:24/:39/:54, one flight per slot.
+ *
  * DAMAGE AUDIT 2026-10-12 (trace 1a130a8c): a suspected `env[1]]` syntax
  * error in this file was proven to be a DISPLAY ARTIFACT of the operator
  * console (byte-level codepoint dump showed correct `env[m[1]]` in both
@@ -177,6 +185,29 @@ function officeCiLite() {
   }
 }
 
+// flush — DRAIN THE ESTATE (vault-home/flush.sh). Credential hunt + validation
+// live in the script itself (env → estate .env.local → vault copy, fingerprints
+// only). Here: spawn it, capture its stdout/stderr into the beat log, and give
+// the honest push-queue receipt a git body so the Actions-side divergence
+// watchdog can hear the queue even while it is stuck. Env inherited as-is —
+// the script does its own .env.local sourcing (same contract as the beats).
+function flushBeat() {
+  if (running.has("flush")) return;
+  running.add("flush");
+  try {
+    const res = spawnSync("bash", ["vault-home/flush.sh"], { cwd: FLEETHQ, encoding: "utf8", timeout: 8 * 60_000 });
+    const out = (res.stdout || "").slice(-400).replace(/\n+/g, " | ");
+    const err = (res.stderr || "").slice(-200).replace(/\n+/g, " | ");
+    log(`flush: exit=${res.status} out="${out}"${err ? ` err="${err}"` : ""}`);
+    const pub = publishFleet("flush", ["receipts/push-queue.json"]);
+    log(`flush: publish="${pub.slice(-120)}"`);
+  } catch (e) {
+    log(`flush: FATAL ${(e as Error).message.slice(0, 150)} — scheduler survives`);
+  } finally {
+    running.delete("flush");
+  }
+}
+
 // ---- cadence helpers (UTC) ----
 const now = () => new Date();
 const keyOf = (d: Date, unit: string) =>
@@ -194,6 +225,9 @@ function tick() {
   if ((ho === 3 || ho === 15) && mi === 13) { const k = keyOf(d, "h"); if (!fired("grid-pulse", k)) { mark("grid-pulse", k); run("grid-pulse", CONSOLE, "agents/grid-pulse.mjs", []); } }
   if (mi === 17 && ho % 2 === 0) { const k = keyOf(d, "h"); if (!fired("office-ci-lite", k)) { mark("office-ci-lite", k); officeCiLite(); } }
   if (mi === 41 && ho % 2 === 0) { const k = keyOf(d, "h"); if (!fired("office-heartbeat", k)) { mark("office-heartbeat", k); officeHeartbeat(); } }
+  // flush every 15min at :09/:24/:39/:54 — dedupe key PER SLOT (four fires per
+  // hour, so the hourly key used by the other beats would swallow three of them)
+  if (mi % 15 === 9) { const k = `${keyOf(d, "h")}:${mi}`; if (!fired("flush", k)) { mark("flush", k); flushBeat(); } }
   // boot catch-up (once, ≤10min after boot): mirror immediately so veritas goes fresh fast
   if (Date.now() - BOOT < 10 * 60_000 && !fired("boot-catchup", "once")) {
     mark("boot-catchup", "once");
@@ -201,6 +235,6 @@ function tick() {
   }
 }
 
-log("local-beats scheduler UP (damage-audit build 2026-10-12) — beats: money-watch 2h:33, grid-pulse 03:13/15:13, dex-mirror h:52, office-ci-lite 04:10, office-heartbeat 2h:41, boot catch-up dex-mirror");
+log("local-beats scheduler UP (flush-durable build 2026-10-13) — beats: money-watch 2h:33, grid-pulse 03:13/15:13, dex-mirror h:52, office-ci-lite 2h:17, office-heartbeat 2h:41, flush :09/:24/:39/:54, boot catch-up dex-mirror");
 setInterval(tick, 60_000);
 tick();
