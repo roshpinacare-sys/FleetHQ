@@ -1,36 +1,36 @@
 {
  "schema": "silence.ledger/1",
- "at": "2026-10-12T22:17:15.988Z",
+ "at": "2026-10-12T22:18:02.837Z",
  "voices": [
   {
    "name": "repo/FleetHQ",
    "kind": "repo",
-   "lastActivity": "2026-10-12T22:17:03.000Z",
+   "lastActivity": "2026-10-12T22:17:58.000Z",
    "ageMin": 0,
    "maxSilenceMin": 180,
    "verdict": "alive",
    "detail": {
-    "subject": "[selfcheck] standing loop receipts: security+connectivity+fresh-oracle [skip ci]",
-    "divergence": "ahead:57 behind:0"
+    "subject": "office-ci-lite: local heartbeat · 2026-10-12T22:17:58Z",
+    "divergence": "ahead:62 behind:0"
    }
   },
   {
    "name": "repo/Domain",
    "kind": "repo",
    "lastActivity": "2026-10-12T22:11:20.000Z",
-   "ageMin": 6,
+   "ageMin": 7,
    "maxSilenceMin": 180,
    "verdict": "alive",
    "detail": {
     "subject": "boot-catchup-dex-mirror: local beat · 2026-10-12T22:11:20Z",
-    "divergence": "ahead:10 behind:3"
+    "divergence": "ahead:10 behind:4"
    }
   },
   {
    "name": "repo/Console",
    "kind": "repo",
    "lastActivity": "2026-10-12T22:02:30.000Z",
-   "ageMin": 15,
+   "ageMin": 16,
    "maxSilenceMin": 180,
    "verdict": "alive",
    "detail": {
@@ -41,7 +41,7 @@
   {
    "name": "port/console:3000",
    "kind": "service",
-   "lastActivity": "2026-10-12T22:17:15.988Z",
+   "lastActivity": "2026-10-12T22:18:02.837Z",
    "ageMin": 0,
    "maxSilenceMin": 0,
    "verdict": "alive"
@@ -49,7 +49,7 @@
   {
    "name": "port/fleethq:3002",
    "kind": "service",
-   "lastActivity": "2026-10-12T22:17:15.988Z",
+   "lastActivity": "2026-10-12T22:18:02.837Z",
    "ageMin": 0,
    "maxSilenceMin": 0,
    "verdict": "alive"
@@ -57,7 +57,7 @@
   {
    "name": "port/foreman",
    "kind": "service",
-   "lastActivity": "2026-10-12T22:17:15.988Z",
+   "lastActivity": "2026-10-12T22:18:02.837Z",
    "ageMin": 0,
    "maxSilenceMin": 0,
    "verdict": "alive"
@@ -65,7 +65,7 @@
   {
    "name": "port/gateway",
    "kind": "service",
-   "lastActivity": "2026-10-12T22:17:15.988Z",
+   "lastActivity": "2026-10-12T22:18:02.837Z",
    "ageMin": 0,
    "maxSilenceMin": 0,
    "verdict": "alive"
@@ -73,7 +73,7 @@
   {
    "name": "port/selfcheck",
    "kind": "service",
-   "lastActivity": "2026-10-12T22:17:15.988Z",
+   "lastActivity": "2026-10-12T22:18:02.837Z",
    "ageMin": 0,
    "maxSilenceMin": 0,
    "verdict": "alive"
@@ -81,7 +81,7 @@
   {
    "name": "port/recruit",
    "kind": "service",
-   "lastActivity": "2026-10-12T22:17:15.988Z",
+   "lastActivity": "2026-10-12T22:18:02.837Z",
    "ageMin": 0,
    "maxSilenceMin": 0,
    "verdict": "alive"
@@ -89,7 +89,7 @@
   {
    "name": "port/boot-verifier",
    "kind": "service",
-   "lastActivity": "2026-10-12T22:17:15.988Z",
+   "lastActivity": "2026-10-12T22:18:02.837Z",
    "ageMin": 0,
    "maxSilenceMin": 0,
    "verdict": "alive"
@@ -98,7 +98,7 @@
    "name": "beat/money-watch",
    "kind": "beat",
    "lastActivity": "2026-10-12T20:33:52.071Z",
-   "ageMin": 103,
+   "ageMin": 104,
    "maxSilenceMin": 130,
    "verdict": "alive"
   },
@@ -106,7 +106,7 @@
    "name": "beat/dex-mirror",
    "kind": "beat",
    "lastActivity": "2026-10-12T21:53:00.497Z",
-   "ageMin": 24,
+   "ageMin": 25,
    "maxSilenceMin": 70,
    "verdict": "alive"
   },
@@ -121,8 +121,8 @@
   {
    "name": "beat/office-ci-lite",
    "kind": "beat",
-   "lastActivity": "2026-10-12T20:18:11.955Z",
-   "ageMin": 119,
+   "lastActivity": "2026-10-12T22:17:59.556Z",
+   "ageMin": 0,
    "maxSilenceMin": 130,
    "verdict": "alive"
   },
@@ -130,7 +130,7 @@
    "name": "beat/office-heartbeat",
    "kind": "beat",
    "lastActivity": "2026-10-12T20:42:14.384Z",
-   "ageMin": 95,
+   "ageMin": 96,
    "maxSilenceMin": 130,
    "verdict": "alive"
   },
@@ -146,6 +146,17 @@
    }
   },
   {
+   "name": "post/steem/headcorner",
+   "kind": "post",
+   "lastActivity": "2026-10-12T21:51:12.000Z",
+   "ageMin": 27,
+   "maxSilenceMin": 2880,
+   "verdict": "alive",
+   "detail": {
+    "lastCreated": "2026-10-12T21:51:12"
+   }
+  },
+  {
    "name": "post/steem/hcsoldier5",
    "kind": "post",
    "lastActivity": "2026-10-12T22:02:39.000Z",
@@ -157,21 +168,10 @@
    }
   },
   {
-   "name": "post/steem/headcorner",
-   "kind": "post",
-   "lastActivity": "2026-10-12T21:51:12.000Z",
-   "ageMin": 26,
-   "maxSilenceMin": 2880,
-   "verdict": "alive",
-   "detail": {
-    "lastCreated": "2026-10-12T21:51:12"
-   }
-  },
-  {
    "name": "post/steem/cashmachine",
    "kind": "post",
    "lastActivity": "2026-10-12T03:08:30.000Z",
-   "ageMin": 1149,
+   "ageMin": 1150,
    "maxSilenceMin": 2880,
    "verdict": "alive",
    "detail": {
@@ -182,7 +182,7 @@
    "name": "post/steem/hcsoldier6",
    "kind": "post",
    "lastActivity": "2026-10-12T04:37:12.000Z",
-   "ageMin": 1060,
+   "ageMin": 1061,
    "maxSilenceMin": 2880,
    "verdict": "alive",
    "detail": {
@@ -214,12 +214,12 @@
   {
    "name": "post/hive/cashmachine",
    "kind": "post",
-   "lastActivity": null,
-   "ageMin": null,
+   "lastActivity": "2026-10-02T15:24:48.000Z",
+   "ageMin": 14813,
    "maxSilenceMin": 2880,
-   "verdict": "no-data",
+   "verdict": "SILENT-ALARM",
    "detail": {
-    "lastCreated": "api-error: fetch failed"
+    "lastCreated": "2026-10-02T15:24:48"
    }
   },
   {
@@ -249,9 +249,9 @@
   "beat/grid-pulse: no data (cannot prove alive)",
   "post/hive/hcsoldier4: no data (cannot prove alive)",
   "post/hive/headcorner: no data (cannot prove alive)",
-  "post/hive/cashmachine: no data (cannot prove alive)",
+  "post/hive/cashmachine: silent 14813min (limit 2880)",
   "post/hive/hcsoldier5: no data (cannot prove alive)",
   "post/hive/hcsoldier6: no data (cannot prove alive)"
  ],
- "summary": "6 ALARM(S): beat/grid-pulse: no data (cannot prove alive) · post/hive/hcsoldier4: no data (cannot prove alive) · post/hive/headcorner: no data (cannot prove alive) · post/hive/cashmachine: no data (cannot prove alive) · post/hive/hcsoldier5: no data (cannot prove alive) · post/hive/hcsoldier6: no data (cannot prove alive)"
+ "summary": "6 ALARM(S): beat/grid-pulse: no data (cannot prove alive) · post/hive/hcsoldier4: no data (cannot prove alive) · post/hive/headcorner: no data (cannot prove alive) · post/hive/cashmachine: silent 14813min (limit 2880) · post/hive/hcsoldier5: no data (cannot prove alive) · post/hive/hcsoldier6: no data (cannot prove alive)"
 }
