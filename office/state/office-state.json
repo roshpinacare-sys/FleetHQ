@@ -1,55 +1,55 @@
 {
-  "capturedAt": "2026-10-12T15:25:14.162Z",
+  "capturedAt": "2026-10-12T16:11:03.191Z",
   "connected": true,
   "backend": "live",
-  "statusHe": "צוות חי — זיכרון שוחזר מהגיט (70 משמרות, 20 לקחים)",
+  "statusHe": "צוות חי — זיכרון שוחזר מהגיט (72 משמרות, 20 לקחים)",
   "mode": null,
   "agents": [
     {
       "id": "aluf",
-      "state": "thinking",
-      "activity": "מתכנן את היעד…",
+      "state": "idle",
+      "activity": "",
       "station": "wall",
-      "since": 1791818658709,
-      "taskId": "t1637"
+      "since": 1791821462832,
+      "taskId": "t1638"
     },
     {
       "id": "gal",
       "state": "idle",
       "activity": "",
       "station": "desk",
-      "since": 1791818709919,
-      "taskId": "t1637"
+      "since": 1791821443552,
+      "taskId": "t1638"
     },
     {
       "id": "erez",
-      "state": "reading",
-      "activity": "קורא dex-book",
-      "station": "library",
-      "since": 1791818740652,
-      "taskId": "t1657"
+      "state": "idle",
+      "activity": "הפסקת קפה — לגימה ורענון",
+      "station": "coffee",
+      "since": 1791821476680
     },
     {
       "id": "tamar",
       "state": "idle",
       "activity": "",
       "station": "desk",
-      "since": 1791818670297
+      "since": 1791821428290,
+      "taskId": "t1638"
     },
     {
       "id": "shachar",
       "state": "idle",
       "activity": "",
       "station": "desk",
-      "since": 1791818637270,
-      "taskId": "t1637"
+      "since": 1791821409585,
+      "taskId": "t1638"
     },
     {
       "id": "yarden",
       "state": "idle",
       "activity": "הפסקת קפה — לגימה ורענון",
       "station": "coffee",
-      "since": 1791818738647
+      "since": 1791821487685
     }
   ],
   "tasks": [
@@ -2252,93 +2252,44 @@
       "durationMs": 120670
     },
     {
-      "id": "t1637",
-      "title": "Collect recent news on autonomous agents",
-      "description": "Use web_search to gather the latest news articles and reports on autonomous agents, ensuring coverage of major developments and emerging trends. Reference truth-history for contextual background.",
+      "id": "t1638",
+      "title": "סיור שגרה: סרוק את ספרי הצי ודווח מה ישן או דורש בדיקה",
+      "description": "סיור שגרה: סרוק את ספרי הצי ודווח מה ישן או דורש בדיקה",
       "status": "done",
       "assignee": "shachar",
       "dependsOn": [],
-      "why": "intelligence expertise",
-      "matchBy": "llm",
-      "createdBy": "aluf",
-      "createdAt": 1791818363323,
-      "updatedAt": 1791818479743,
-      "startedAt": 1791818364370,
-      "summary": "",
-      "durationMs": 97641
-    },
-    {
-      "id": "t1657",
-      "title": "ייצור תוכן: גבשי דוח מצב-שוטף מהספרים הטריים לפרסום-עתידי והגישי לשער-הביקורת",
-      "status": "doing",
-      "description": "ייצור תוכן: גבשי דוח מצב-שוטף מהספרים הטריים לפרסום-עתידי והגישי לשער-הביקורת",
-      "assignee": "erez",
-      "dependsOn": [],
-      "why": "ביקורות, טענות וחוזי יכולת",
+      "why": "מדדים, מפקד ולמידה של הצי",
       "matchBy": "fit",
       "createdBy": "aluf",
-      "createdAt": 1791818721816,
-      "updatedAt": 1791818721817,
-      "startedAt": 1791818721817
+      "createdAt": 1791821177934,
+      "updatedAt": 1791821441778,
+      "startedAt": 1791821337911,
+      "summary": "סיור שגרה הושלם. ספרי צי ישנים/דורשים בדיקה:\n\n1. econ-book.json — 158 שעות (6.6 ימים) — סטטוס DECLINE במדד F1 Population Health\n2. curation-book.json — 164.4 שעות (6.85 ימים) — סטטוס DECLINE במדד F1 Population Health\n3. money-ledger.json — 158 שעות (6.6 ימים) — סטטוס DECLINE במדד F1 Population Health\n4. fleet-census.json — 91 שעות (3.8 ימים) — ספר מפקד צי ישן\n5. sovereign-state.json — 91 שעות (3.8",
+      "durationMs": 71674
     }
   ],
   "books": 22,
   "memory": null,
   "counts": {
-    "agent": 8,
-    "task": 2,
-    "log": 13,
-    "feed": 2,
+    "agent": 4,
+    "task": 0,
+    "log": 1,
+    "feed": 1,
     "decision": 0,
     "report": 0,
-    "goal": 2,
-    "bubble": 3
+    "goal": 0,
+    "bubble": 1
   },
   "feed": [
     {
-      "kind": "bubble:erez",
-      "text": " mqdesh et dex-book.",
-      "at": 1791818740652
-    },
-    {
       "kind": "bubble:yarden",
       "text": "לגימה מהירה — וחוזרים לעבודה.",
-      "at": 1791818738647
-    },
-    {
-      "kind": "bubble:erez",
-      "text": "מ מח paycheck.",
-      "at": 1791818731497
-    },
-    {
-      "kind": "goal",
-      "text": "{\"id\":\"g1655\",\"text\":\"ייצור תוכן: גבשי דוח מצב-שוטף מהספרים הטריים לפרסום-עתידי והגישי לשער-הביקורת\",\"status\":\"active\",\"progress\":0.94,\"createdAt\":1791818657808,\"updatedAt\":1791818723144,\"origin\":\"pat",
-      "at": 1791818723144
-    },
-    {
-      "kind": "task",
-      "text": "doing: ייצור תוכן: גבשי דוח מצב-שוטף מהספרים הטריים לפרסום-עתידי והגישי לשער-הביקורת",
-      "at": 1791818721819
-    },
-    {
-      "kind": "goal",
-      "text": "{\"id\":\"g1655\",\"text\":\"ייצור תוכן: גבשי דוח מצב-שוטף מהספרים הטריים לפרסום-עתידי והגישי לשער-הביקורת\",\"status\":\"active\",\"progress\":0.05,\"createdAt\":1791818657808,\"updatedAt\":1791818721817,\"origin\":\"pat",
-      "at": 1791818721819
+      "at": 1791821487685
     },
     {
       "kind": "system",
-      "text": "לא התקבלה תוכנית מיושרת-יעד — הראש-המטה מקצה את היעד עצמו לארז (התאמת FIT)",
-      "at": 1791818721819
-    },
-    {
-      "kind": "task",
-      "text": "משימה חדשה: ייצור תוכן: גבשי דוח מצב-שוטף מהספרים הטריים לפרסום-עתידי והגישי לשער-הביקורת",
-      "at": 1791818721819
-    },
-    {
-      "kind": "task",
-      "text": "todo: ייצור תוכן: גבשי דוח מצב-שוטף מהספרים הטריים לפרסום-עתידי והגישי לשער-הביקורת",
-      "at": 1791818721819
+      "text": "לקח חדש נרשם בזיכרון המשרד: ספרי צי ישנים (84-187 שעות) דורשים תחזוקה מחזורית קבועה",
+      "at": 1791821471686
     }
   ],
   "reports": [],
