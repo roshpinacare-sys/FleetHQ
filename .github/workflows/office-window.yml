@@ -6,7 +6,10 @@ name: office-window
 
 on:
   schedule:
-    - cron: "17 6 * * *"   # daily 06:17 UTC (odd minute — fleet cron hygiene)
+    - cron: "17 6 * * *"   # primary daily 06:17 UTC (odd minute — fleet cron hygiene; NOT guaranteed alone — GitHub drops schedule slots under load, measured)
+    - cron: "41 9 * * *"   # backstop 09:41 UTC — second chance
+    - cron: "3 14 * * *"   # backstop 14:03 UTC — third chance
+    - cron: "29 21 * * *"  # backstop 21:29 UTC — fourth chance
   workflow_dispatch:
 
 permissions:
@@ -62,3 +65,12 @@ jobs:
             echo "- page: https://roshpinacare-sys.github.io/FleetHQ/"
             echo "- rule: unknown stays unknown — never fake green"
           } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Freshness gate — fail loud if the published potential is stale
+        if: always()
+        run: |
+          # Reads the artifact the publish step just pushed (office-pages branch tip —
+          # propagates immediately; Pages CDN lag + its misleading Last-Modified header
+          # are a separate failure domain). Age > 26h = the daily generator dropped its
+          # slots → this run must exit 1 so the freeze is loud, never a silent green.
+          node -e "fetch('https://raw.githubusercontent.com/roshpinacare-sys/FleetHQ/office-pages/potential.json?cb='+Date.now()).then(r=>{if(!r.ok)throw new Error('http '+r.status);return r.json()}).then(p=>{if(!p.generatedAt)throw new Error('generatedAt missing');const h=(Date.now()-Date.parse(p.generatedAt))/36e5;console.log('potential.json age='+h.toFixed(1)+'h (generatedAt '+p.generatedAt+')');if(h>26){console.error('STALE — daily generator dropped its slots; investigate office-window runs');process.exit(1);}}).catch(e=>{console.error('freshness gate probe failed:',e.message);process.exit(1);})"
