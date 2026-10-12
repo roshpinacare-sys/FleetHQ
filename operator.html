@@ -140,6 +140,8 @@ footer a{color:var(--dim)}
       <h2>לוח-הפקודות <span class="en">directive board · Sandbox/ops/sovereign/DIRECTIVES/board.json</span></h2>
       <div class="row"><button class="btn-ghost" id="refreshBtn">רענון</button><span class="note" id="boardMeta"></span></div>
       <div id="boardList" aria-live="polite"></div>
+      <h2 style="margin-top:22px">תיבת-ההוראות <span class="en">OWNER-CHANNEL · inbox.jsonl</span></h2>
+      <div id="inboxList" aria-live="polite"></div>
     </div>
 
   </section>
@@ -296,6 +298,23 @@ async function loadBoard() {
       el.querySelector(".txt").textContent = x.text || "";
       list.appendChild(el);
     }
+    // merged view: OWNER-CHANNEL inbox (the second source the decider reads)
+    try {
+      const inb = await (await fetch(RAW_BASE + "ops/sovereign/OWNER-CHANNEL/inbox.jsonl?cb=" + Date.now(), { cache: "no-store" })).text();
+      const lines = inb.split("\n").map((l) => l.trim()).filter(Boolean).map((l) => { try { return JSON.parse(l); } catch { return null; } }).filter(Boolean).reverse();
+      const box = $("inboxList");
+      if (!lines.length) { box.innerHTML = '<p class="note">התיבה-ריקה.</p>'; }
+      else {
+        box.innerHTML = "";
+        for (const x of lines.slice(0, 10)) {
+          const el = document.createElement("div");
+          el.className = "dir";
+          el.innerHTML = '<div class="meta"><span>' + String(x.at || "").replace(/[<>&]/g, "") + '</span><span class="badge">inbox</span></div><div class="txt"></div>';
+          el.querySelector(".txt").textContent = x.text || "";
+          box.appendChild(el);
+        }
+      }
+    } catch { /* תיבה לא זמינה — כנות שקטה בתצוגה בלבד; ה-decider ידווח כנה */ }
   } catch (e) {
     list.innerHTML = "";
     setMsg("msg3", "קריאת-הלוח נכשלה (רשת/CDN) — נסה רענון. כנות: בלי-המצאות.", "err");
