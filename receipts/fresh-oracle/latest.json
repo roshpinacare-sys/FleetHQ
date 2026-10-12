@@ -1,6 +1,6 @@
 {
  "schema": "fleet.fresh-oracle/1",
- "at": "2026-10-12T17:38:02.630Z",
+ "at": "2026-10-12T17:38:10.671Z",
  "law": "FRESH only if sha256(live bytes) == sha256(committed deploy-ref bytes) AND no ops doc MISSING; DRIFT=RED (200-with-different-bytes); UNREACHABLE=UNKNOWN (network, retried once, reason kept); ops-doc age rows are honest amber (MISSING alone flips exit) — never faked green",
  "results": [
   {
@@ -53,8 +53,7 @@
    "liveSha16": "e6f68a53d5a565a8",
    "committedSha16": "e6f68a53d5a565a8",
    "liveBytes": 59946,
-   "verdict": "MATCH",
-   "note": "settled after deploy-lag re-measure (+60s) — was mid-publish"
+   "verdict": "MATCH"
   },
   {
    "name": "Domain worlds room",
