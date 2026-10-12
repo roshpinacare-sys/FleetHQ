@@ -10,6 +10,7 @@ on:
 
 permissions:
   contents: write
+  actions: write
 
 concurrency:
   group: value-scan
@@ -43,6 +44,29 @@ jobs:
             sleep 3
           done
           if [ "$ok" != "1" ]; then echo "PUSH-FAILED after retries"; exit 1; fi
+
+      - name: Schedule relay — guarded dispatch to opens-closer + sovereign-decider (T-64)
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          relay() {
+            local wf="$1" guard="$2"
+            local last
+            last=$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/$wf/runs?per_page=1" --jq '.workflow_runs[0].created_at' 2>/dev/null || echo "")
+            if [ -z "$last" ]; then
+              gh workflow run "$wf" --ref main && echo "RELAY[$wf]: DISPATCHED (no last run found)" || echo "RELAY[$wf]: FAILED"
+              return
+            fi
+            local age=$(( ($(date +%s) - $(date -d "$last" +%s)) / 60 ))
+            if [ "$age" -ge "$guard" ]; then
+              gh workflow run "$wf" --ref main && echo "RELAY[$wf]: DISPATCHED (last run ${age}min ago >= guard ${guard}min)" || echo "RELAY[$wf]: FAILED"
+            else
+              echo "RELAY[$wf]: SKIPPED (last run ${age}min ago < guard ${guard}min — no-noise)"
+            fi
+          }
+          relay "opens-closer.yml" 15
+          relay "sovereign-decider.yml" 15
 
       - name: Honest job summary
         if: always()
