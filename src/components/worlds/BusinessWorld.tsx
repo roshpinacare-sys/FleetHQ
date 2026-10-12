@@ -42,7 +42,7 @@ function Vault({ fill }: { fill: number }) {
         <meshStandardMaterial color="#b3402f" emissive="#b3402f" emissiveIntensity={0.4} />
       </mesh>
       <LabelSprite height={0.8} position={[0, 6.3, 0]}
-        spec={{ lines: [{ text: 'אוצרה ראשי · headcorner' }], border: 'rgba(90,80,60,0.55)' }} />
+        spec={{ lines: [{ text: 'אוצרה ראשי' }], border: 'rgba(90,80,60,0.55)' }} />
     </group>
   );
 }
