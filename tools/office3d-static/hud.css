@@ -1,7 +1,9 @@
 /* hud.css — HUD מינימלי-עצמאי ל-bundle הסטטי (exec-14-3d).
    בלי Tailwind — משתני-CSS בלבד, מועתקים מ-DESIGN.md (ערכי-אור, ברירת-מחדל).
-   חוקי-עיצוב: RTL (מאפיינים לוגיים), אפס-ניאון, אפס-צללי-זוהר, צבע-הדגשה
-   אחד #c94fbe, מינימום 44px למטרות-מגע. */
+   חוקי-עיצוב (מעודכן T19-c · refero): RTL (מאפיינים לוגיים), אפס-ניאון,
+   אפס-צללי-זוהר, צבע-הדגשה חם אחד (#b88a3a — משפחת-הזהב של המשרד,
+   מיושר מול ערך-האקסנט של האפ הראשי), עומק עדין במקום מסגרות-כפולות,
+   מינימום 44px למטרות-מגע. */
 
 :root {
   /* Daylight Slate — DESIGN.md §2 (ערכי-אור) */
@@ -14,8 +16,12 @@
   --ink: #201d18;
   --ink-2: #57534a;
   --ink-3: #8b867b;
-  --accent: #c94fbe;
-  --accent-dim: rgba(201, 79, 190, 0.12);
+  --accent: #b88a3a;
+  --accent-strong: #9a7230;
+  --accent-dim: rgba(184, 138, 58, 0.12);
+  /* עומק עדין (refero): צל-רך אחד לכרום, הרמה קלה לפאנלים-צפים */
+  --shadow-soft: 0 1px 2px rgba(28, 24, 18, 0.04), 0 6px 16px rgba(28, 24, 18, 0.05);
+  --shadow-lift: 0 2px 6px rgba(28, 24, 18, 0.06), 0 14px 36px rgba(28, 24, 18, 0.12);
   /* חוק-המצב האחד (§2) */
   --st-working: #a8741c;
   --st-ok: #14855c;
@@ -64,9 +70,11 @@ html, body, #root {
   background: var(--surface);
   border: 1px solid var(--line);
   border-radius: var(--r-row);
+  box-shadow: var(--shadow-soft);
   padding: 7px 12px;
   font-size: 12.5px;
   font-weight: 700;
+  letter-spacing: -0.01em;
   color: var(--ink);
 }
 .hud-title .en { color: var(--ink-3); font-weight: 500; margin-inline-start: 6px; font-size: 11px; }
@@ -78,6 +86,7 @@ html, body, #root {
   background: var(--surface);
   border: 1px solid var(--line);
   border-radius: 999px;
+  box-shadow: var(--shadow-soft);
   padding: 7px 12px;
   font-size: 12px;
   font-weight: 600;
@@ -99,6 +108,7 @@ html, body, #root {
   background: var(--surface);
   border: 1px solid var(--line);
   border-radius: var(--r-row);
+  box-shadow: var(--shadow-soft);
   padding: 6px 12px;
   font-size: 12px;
   font-weight: 600;
@@ -140,7 +150,7 @@ html, body, #root {
   transition: background-color 160ms ease, border-color 160ms ease;
 }
 .hud-btn:hover { background: var(--surface-2); border-color: var(--line-strong); }
-.hud-btn[aria-pressed='true'] { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); }
+.hud-btn[aria-pressed='true'] { background: var(--accent-dim); border-color: var(--accent); color: var(--accent-strong); }
 .hud-btn-ghost { background: transparent; }
 .hud-btn-ghost:hover { background: var(--surface-2); }
 
@@ -156,6 +166,7 @@ html, body, #root {
   background: var(--surface);
   border: 1px solid var(--line);
   border-radius: var(--r-row);
+  box-shadow: var(--shadow-soft);
   padding: 6px 12px;
   font: inherit;
   font-size: 12px;
@@ -182,7 +193,7 @@ html, body, #root {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  box-shadow: 0 10px 30px rgba(28, 24, 18, 0.16);
+  box-shadow: var(--shadow-lift);
 }
 .hud-op label { display: block; font-size: 12px; font-weight: 700; color: var(--ink-2); margin-bottom: 6px; }
 .hud-op input[type='password'] {
