@@ -76,6 +76,28 @@ async function raw(path) {
 
 function jparse(s) { try { return JSON.parse(s); } catch { return null; } }
 
+// visibility re-check (fail-closed): a repo published as "public" must be provably
+// public at render time. Anonymous probe (no token): 200 = public; anything else
+// (404 private-or-absent, 403 rate-limit) = not proven → the repo is OMITTED from
+// the public digest and its name is never written anywhere in the artifact.
+async function publiclyVisible(full) {
+  try {
+    const res = await fetch(`https://api.github.com/repos/${full}`, {
+      headers: { 'user-agent': UA, accept: 'application/vnd.github+json' },
+    });
+    if (res.status === 200) return true;
+    if (res.status === 404) return false;
+    // 403 = degraded/rate-limited anonymous view → retry authenticated below
+  } catch { /* fall through */ }
+  if (TOKEN) {
+    try {
+      const res = await fetch(`https://api.github.com/repos/${full}`, { headers: authHeaders(true) });
+      return res.status === 200;
+    } catch { return false; }
+  }
+  return false;
+}
+
 const daysAgoIso = (d) => new Date(Date.now() - d * 86400000).toISOString();
 
 // ---------------------------------------------------------------- repos list
@@ -186,7 +208,7 @@ async function sandboxProbes() {
       const dgp = h.calls && h.calls.dgp && h.calls.dgp.result ? h.calls.dgp.result : {};
       out.hive = {
         status: 'measured',
-        file: `Sandbox probes/hive/${hiveFile}`,
+        file: `probes/hive/${hiveFile}`,
         at: h.at || null,
         ok: !!h.ok,
         degraded: !!h.degraded,
@@ -198,7 +220,7 @@ async function sandboxProbes() {
         chainTime: dgp.time || null,
       };
     } else out.hive = { status: 'unknown', reason: `probes/hive/${hiveFile} unreadable` };
-  } else out.hive = { status: 'unknown', reason: 'no probe file listed in Sandbox probes/hive' };
+  } else out.hive = { status: 'unknown', reason: 'probe listing unavailable (probes/hive)' };
 
   const blurtFile = await latestProbeDir('probes/blurt');
   if (blurtFile) {
@@ -209,7 +231,7 @@ async function sandboxProbes() {
       const used = nodes.find((n) => n && n.node === b.node_used) || {};
       out.blurt = {
         status: 'measured',
-        file: `Sandbox probes/blurt/${blurtFile}`,
+        file: `probes/blurt/${blurtFile}`,
         at: b.at || null,
         ok: !!b.ok,
         readOnly: !!b.read_only,
@@ -220,7 +242,7 @@ async function sandboxProbes() {
         headBlock: typeof used.head_block_number === 'number' ? used.head_block_number : null,
       };
     } else out.blurt = { status: 'unknown', reason: `probes/blurt/${blurtFile} unreadable` };
-  } else out.blurt = { status: 'unknown', reason: 'no probe file listed in Sandbox probes/blurt' };
+  } else out.blurt = { status: 'unknown', reason: 'probe listing unavailable (probes/blurt)' };
   return out;
 }
 
@@ -230,6 +252,7 @@ const { repos: repoList, mode: listMode } = await listRepos();
 const reposOut = [];
 let privateCount = 0;
 let privateIdx = 0;
+let omittedUnverified = 0;
 let stopEarly = false;
 
 if (Array.isArray(repoList) && repoList.length) {
@@ -238,6 +261,10 @@ if (Array.isArray(repoList) && repoList.length) {
     const full = r.full_name;
     const isPrivate = !!r.private;
     if (isPrivate) { privateIdx += 1; privateCount += 1; }
+    else {
+      // fail-closed: publish as public only what is provably public right now
+      if (!(await publiclyVisible(full))) { omittedUnverified += 1; continue; }
+    }
     const entry = {
       name: isPrivate ? `private-${String(privateIdx).padStart(2, '0')}` : r.name,
       private: isPrivate,
@@ -251,7 +278,11 @@ if (Array.isArray(repoList) && repoList.length) {
       commitsReason: null,
     };
     const run = await latestRun(full);
-    if (run) entry.lastRun = run; else entry.lastRunReason = 'latest-run-unavailable';
+    if (run) {
+      entry.lastRun = isPrivate
+        ? { name: null, status: run.status, conclusion: run.conclusion, at: run.at, url: null }
+        : run;
+    } else entry.lastRunReason = 'latest-run-unavailable';
     const c = await commits7d(full);
     if (c.count !== null) { entry.commits7d = c.count; entry.commits7dCapped = c.capped; }
     else entry.commitsReason = 'commits-unavailable';
@@ -260,6 +291,8 @@ if (Array.isArray(repoList) && repoList.length) {
 }
 
 if (stopEarly) errors.push({ call: 'loop', error: 'GitHub rate limit exhausted — remaining repos marked unknown (honest degradation)' });
+if (omittedUnverified > 0) errors.push({ call: 'visibility-recheck', error: `${omittedUnverified} repo(s) omitted — public visibility not verifiable at render time (names withheld, fail-closed)` });
+
 
 const digest = {
   schema: 'roshpinacare.fleet-digest/1',
@@ -267,11 +300,13 @@ const digest = {
   owner: OWNER,
   tokenMode: TOKEN ? 'gh-token' : 'public-unauthenticated',
   repoListMode: listMode,
-  note: 'All values measured at render time by office-window/fleet-digest.mjs (read-only). Unknown means not measured — never a fake green. Private repo names are masked per exposure policy 7-b.',
+  note: 'All values measured at render time by office-window/fleet-digest.mjs (read-only). Unknown means not measured — never a fake green. Private repo names are masked per exposure policy 7-b. Repos whose public visibility could not be re-verified at render time are omitted (fail-closed).',
   fleet: {
     reposSeen: reposOut.length,
     publicCount: reposOut.filter((r) => !r.private).length,
     privateCount,
+    unverifiedOmitted: omittedUnverified,
+    visibilityRecheck: 'fail-closed',
     rateLimitRemaining: rateRemaining,
     degradedEarly: stopEarly,
   },
@@ -282,8 +317,22 @@ const digest = {
   errors,
 };
 
+// fail-closed scrub (runs after ALL collection): no repo name that is not
+// verified-public may remain in the public artifact — including the error log
+// (/user/repos 403, probe-list 404/403, network failures must not leak names).
+const publicNames = new Set(reposOut.filter((r) => !r.private).map((r) => `${OWNER}/${r.name}`));
+const scrubName = (t) => String(t).replace(new RegExp(`(?<!users/)${OWNER}/[A-Za-z0-9_.-]+`, 'g'), (m) => (publicNames.has(m) ? m : '(unpublished-source)'));
+for (const e of errors) {
+  if (e.call) e.call = scrubName(e.call);
+  if (e.error) e.error = scrubName(e.error);
+}
+
 mkdirSync(dirname(OUT), { recursive: true });
-writeFileSync(OUT, JSON.stringify(digest, null, 2) + '\n');
+// whole-artifact scrub: any OWNER/<name> that is not a verified-public repo
+// (run URLs, error strings, anything forgotten upstream) is redacted before write.
+let outText = JSON.stringify(digest, null, 2) + '\n';
+outText = outText.replace(new RegExp(`(?<!users/)${OWNER}/[A-Za-z0-9_.-]+`, 'g'), (m) => (publicNames.has(m) ? m : '(unpublished-source)'));
+writeFileSync(OUT, outText);
 if (!QUIET) {
   const summary = {
     generatedAt,
