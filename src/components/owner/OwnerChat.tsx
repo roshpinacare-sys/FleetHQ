@@ -8,6 +8,7 @@
  */
 
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { KeyRound, Radio } from 'lucide-react';
 
 type Msg = { id: string; role: string; text: string; createdAt: string };
 type GateState = 'loading' | 'unclaimed' | 'claimed' | 'open';
@@ -131,7 +132,7 @@ export function OwnerChat() {
         aria-expanded={open}
         className="fixed bottom-4 left-4 z-40 flex h-12 min-w-[44px] items-center gap-2 rounded-full border border-[color:var(--line)] bg-[color:var(--surface-2)]/95 px-4 text-[13px] font-semibold text-[color:var(--ink)] shadow-lg backdrop-blur transition hover:brightness-110"
       >
-        <span aria-hidden="true">🎙️</span>
+        <Radio size={15} aria-hidden="true" />
         <span className="hidden sm:inline">צ&apos;אט-מנהל</span>
       </button>
 
@@ -161,11 +162,14 @@ export function OwnerChat() {
 
           {!token ? (
             <div className="flex flex-col gap-2 p-3">
-              <p className="text-[12px] text-[color:var(--ink-2)]">
-                {gate === 'unclaimed'
-                  ? 'קביעה-ראשונה: חובה-המפתח-המקורי של הבעלים (אין-קביעה-חופשית). הסוד נשמר עטוף-hash מקומי-בלבד — לעולם לא נשלח-ולא מפורסם.'
-                  : 'כניסת-מנהל: הדבק את המפתח. הכניסה-מאומתת-קריפטוגרפית; אפס-רמזים-מחוץ-למכשיר-הזה.'}
-              </p>
+              <div className="flex items-start gap-1.5 text-[color:var(--ink-2)]">
+                <KeyRound size={13} className="mt-0.5 shrink-0" aria-hidden="true" />
+                <p className="text-[12px]">
+                  {gate === 'unclaimed'
+                    ? 'כניסת-מנהל: המפתח-המקורי בלבד. אין-קביעה-חופשית; הסוד אינו-נשמר ואינו-נשלח.'
+                    : 'כניסת-מנהל: הדבק את המפתח. אימות-קריפטוגרפי; אפס-רמזים מחוץ-למכשיר-זה.'}
+                </p>
+              </div>
               <input
                 type="password"
                 value={secret}

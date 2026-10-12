@@ -80,7 +80,9 @@ export function checkWif(raw: string): WifCheck {
   const priv = payload.slice(1);
   try {
     const pub33 = Buffer.from(secp.getPublicKey(priv, true));
-    const ck = ripemd160(sha256(pub33)).slice(0, 4);
+    // [T-audit תיקון] סכום-הביקורת של גרפן: ripemd160(pub_buf) ישירות — לפני-כן היה
+    // ripemd160(sha256(pub)) → קידוד-מפתח-שגוי → כל-השוואות-הרשויות חושבו מול-מפתח-לא-תקין.
+    const ck = ripemd160(pub33).slice(0, 4);
     const derivedPub = 'STM' + b58encode(Buffer.concat([pub33, ck]));
     return {
       wifValid: true,
@@ -182,7 +184,8 @@ export async function runKeyfit(raw: string): Promise<KeyfitResult> {
     return { ok: false, wif, bltPub: '', steem: empty, blurt: empty, verdict: 'INVALID-KEY', measuredAt: new Date().toISOString() };
   }
   const pub33 = b58decode(wif.derivedPub.slice(3)).slice(0, 33);
-  const bltPub = 'BLT' + b58encode(Buffer.concat([pub33, ripemd160(sha256(pub33)).slice(0, 4)]));
+  // אותו-תיקון: ripemd160 ישיר (סכמת-גרפן זהה ל-BLURT)
+  const bltPub = 'BLT' + b58encode(Buffer.concat([pub33, ripemd160(pub33).slice(0, 4)]));
   const [steem, blurt] = await Promise.all([
     fitChain(STEEM_NODES, wif.derivedPub, bltPub),
     fitChain(BLURT_NODES, wif.derivedPub, bltPub, 8000),

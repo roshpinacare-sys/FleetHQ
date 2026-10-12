@@ -12,7 +12,6 @@ import { OwnerChat } from '@/components/owner/OwnerChat';
 const LINKS = [
   { href: 'https://github.com/roshpinacare-sys/FleetHQ', label: 'FleetHQ', title: 'מקור הפורמן והמשרד' },
   { href: 'https://roshpinacare-sys.github.io/Domain/', label: 'רשת חיה', title: 'הדף החי של הרשת ב-Domain' },
-  { href: 'https://github.com/roshpinacare-sys/sovereign-beacon', label: 'משואה', title: 'אמת כלכלית מפורסמת (keyless)' },
 ] as const;
 
 export default function Home() {
@@ -60,7 +59,7 @@ export default function Home() {
         style={{ paddingBottom: 'max(0.5rem, env(safe-area-inset-bottom))' }}
       >
         <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 text-[12px] text-[color:var(--ink-3)]">
-          <span>ריבונות אוטונומית · חמישה עולמות חיים · כל מספר נמדד ופורסם · אפס זיופים</span>
+          <span>ריבונות אוטונומית · חמישה עולמות חיים · כל מספר נמדד ומקורו מפורסם</span>
           <span className="font-medium text-[color:var(--ink-2)]">
             אוצרה · מפת-זרימה · גיוס-ערך — מהגיט הפומבי, לעולם לא מהמצאה
           </span>
