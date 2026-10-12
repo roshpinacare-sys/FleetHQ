@@ -1,17 +1,17 @@
 {
  "schema": "silence.ledger/1",
- "at": "2026-10-12T22:51:20.766Z",
+ "at": "2026-10-12T22:51:32.924Z",
  "voices": [
   {
    "name": "repo/FleetHQ",
    "kind": "repo",
-   "lastActivity": "2026-10-12T22:51:20.000Z",
+   "lastActivity": "2026-10-12T22:51:30.000Z",
    "ageMin": 0,
    "maxSilenceMin": 180,
    "verdict": "alive",
    "detail": {
-    "subject": "flush beat wired at HEAD — every-15min drain (:09/:24/:39/:54) with per-slot ded",
-    "divergence": "ahead:100 behind:0"
+    "subject": "runbooks for every alarm class — silence, site-broken, flush-stuck, veritas-stal",
+    "divergence": "ahead:104 behind:0"
    }
   },
   {
@@ -41,7 +41,7 @@
   {
    "name": "port/console:3000",
    "kind": "service",
-   "lastActivity": "2026-10-12T22:51:20.766Z",
+   "lastActivity": "2026-10-12T22:51:32.924Z",
    "ageMin": 0,
    "maxSilenceMin": 0,
    "verdict": "alive"
@@ -49,7 +49,7 @@
   {
    "name": "port/fleethq:3002",
    "kind": "service",
-   "lastActivity": "2026-10-12T22:51:20.766Z",
+   "lastActivity": "2026-10-12T22:51:32.924Z",
    "ageMin": 0,
    "maxSilenceMin": 0,
    "verdict": "alive"
@@ -57,7 +57,7 @@
   {
    "name": "port/foreman",
    "kind": "service",
-   "lastActivity": "2026-10-12T22:51:20.766Z",
+   "lastActivity": "2026-10-12T22:51:32.924Z",
    "ageMin": 0,
    "maxSilenceMin": 0,
    "verdict": "alive"
@@ -65,7 +65,7 @@
   {
    "name": "port/gateway",
    "kind": "service",
-   "lastActivity": "2026-10-12T22:51:20.766Z",
+   "lastActivity": "2026-10-12T22:51:32.924Z",
    "ageMin": 0,
    "maxSilenceMin": 0,
    "verdict": "alive"
@@ -73,7 +73,7 @@
   {
    "name": "port/selfcheck",
    "kind": "service",
-   "lastActivity": "2026-10-12T22:51:20.766Z",
+   "lastActivity": "2026-10-12T22:51:32.924Z",
    "ageMin": 0,
    "maxSilenceMin": 0,
    "verdict": "alive"
@@ -81,7 +81,7 @@
   {
    "name": "port/recruit",
    "kind": "service",
-   "lastActivity": "2026-10-12T22:51:20.766Z",
+   "lastActivity": "2026-10-12T22:51:32.924Z",
    "ageMin": 0,
    "maxSilenceMin": 0,
    "verdict": "alive"
@@ -89,7 +89,7 @@
   {
    "name": "port/boot-verifier",
    "kind": "service",
-   "lastActivity": "2026-10-12T22:51:20.766Z",
+   "lastActivity": "2026-10-12T22:51:32.924Z",
    "ageMin": 0,
    "maxSilenceMin": 0,
    "verdict": "alive"
@@ -98,7 +98,7 @@
    "name": "beat/money-watch",
    "kind": "beat",
    "lastActivity": "2026-10-12T22:34:00.907Z",
-   "ageMin": 17,
+   "ageMin": 18,
    "maxSilenceMin": 130,
    "verdict": "alive"
   },
@@ -106,7 +106,7 @@
    "name": "beat/dex-mirror",
    "kind": "beat",
    "lastActivity": "2026-10-12T21:53:00.497Z",
-   "ageMin": 58,
+   "ageMin": 59,
    "maxSilenceMin": 70,
    "verdict": "alive"
   },
@@ -135,17 +135,6 @@
    "verdict": "alive"
   },
   {
-   "name": "post/steem/acct-00",
-   "kind": "post",
-   "lastActivity": "2026-10-12T21:51:12.000Z",
-   "ageMin": 60,
-   "maxSilenceMin": 2880,
-   "verdict": "alive",
-   "detail": {
-    "lastCreated": "2026-10-12T21:51:12"
-   }
-  },
-  {
    "name": "post/steem/acct-13",
    "kind": "post",
    "lastActivity": "2026-10-12T04:37:12.000Z",
@@ -154,17 +143,6 @@
    "verdict": "alive",
    "detail": {
     "lastCreated": "2026-10-12T04:37:12"
-   }
-  },
-  {
-   "name": "post/steem/acct-11",
-   "kind": "post",
-   "lastActivity": "2026-10-12T03:07:36.000Z",
-   "ageMin": 1184,
-   "maxSilenceMin": 2880,
-   "verdict": "alive",
-   "detail": {
-    "lastCreated": "2026-10-12T03:07:36"
    }
   },
   {
@@ -190,29 +168,29 @@
    }
   },
   {
-   "name": "post/hive/acct-00",
+   "name": "post/steem/acct-11",
    "kind": "post",
-   "lastActivity": null,
-   "ageMin": null,
+   "lastActivity": "2026-10-12T03:07:36.000Z",
+   "ageMin": 1184,
    "maxSilenceMin": 2880,
-   "verdict": "no-data",
+   "verdict": "alive",
    "detail": {
-    "lastCreated": "api-error: fetch failed"
+    "lastCreated": "2026-10-12T03:07:36"
    }
   },
   {
-   "name": "post/hive/acct-13",
+   "name": "post/steem/acct-00",
    "kind": "post",
-   "lastActivity": null,
-   "ageMin": null,
+   "lastActivity": "2026-10-12T21:51:12.000Z",
+   "ageMin": 60,
    "maxSilenceMin": 2880,
-   "verdict": "no-data",
+   "verdict": "alive",
    "detail": {
-    "lastCreated": "no posts"
+    "lastCreated": "2026-10-12T21:51:12"
    }
   },
   {
-   "name": "post/hive/acct-11",
+   "name": "post/hive/acct-12",
    "kind": "post",
    "lastActivity": null,
    "ageMin": null,
@@ -234,7 +212,29 @@
    }
   },
   {
-   "name": "post/hive/acct-12",
+   "name": "post/hive/acct-00",
+   "kind": "post",
+   "lastActivity": "2026-10-10T16:46:51.000Z",
+   "ageMin": 3245,
+   "maxSilenceMin": 2880,
+   "verdict": "SILENT-ALARM",
+   "detail": {
+    "lastCreated": "2026-10-10T16:46:51"
+   }
+  },
+  {
+   "name": "post/hive/acct-11",
+   "kind": "post",
+   "lastActivity": null,
+   "ageMin": null,
+   "maxSilenceMin": 2880,
+   "verdict": "no-data",
+   "detail": {
+    "lastCreated": "no posts"
+   }
+  },
+  {
+   "name": "post/hive/acct-13",
    "kind": "post",
    "lastActivity": null,
    "ageMin": null,
@@ -247,11 +247,11 @@
  ],
  "alarms": [
   "beat/grid-pulse: no data (cannot prove alive)",
-  "post/hive/acct-00: no data (cannot prove alive)",
-  "post/hive/acct-13: no data (cannot prove alive)",
-  "post/hive/acct-11: no data (cannot prove alive)",
+  "post/hive/acct-12: no data (cannot prove alive)",
   "post/hive/acct-01: silent 14847min (limit 2880)",
-  "post/hive/acct-12: no data (cannot prove alive)"
+  "post/hive/acct-00: silent 3245min (limit 2880)",
+  "post/hive/acct-11: no data (cannot prove alive)",
+  "post/hive/acct-13: no data (cannot prove alive)"
  ],
- "summary": "6 ALARM(S): beat/grid-pulse: no data (cannot prove alive) · post/hive/acct-00: no data (cannot prove alive) · post/hive/acct-13: no data (cannot prove alive) · post/hive/acct-11: no data (cannot prove alive) · post/hive/acct-01: silent 14847min (limit 2880) · post/hive/acct-12: no data (cannot prove alive)"
+ "summary": "6 ALARM(S): beat/grid-pulse: no data (cannot prove alive) · post/hive/acct-12: no data (cannot prove alive) · post/hive/acct-01: silent 14847min (limit 2880) · post/hive/acct-00: silent 3245min (limit 2880) · post/hive/acct-11: no data (cannot prove alive) · post/hive/acct-13: no data (cannot prove alive)"
 }
