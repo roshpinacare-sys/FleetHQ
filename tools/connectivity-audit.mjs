@@ -2,8 +2,7 @@
 /**
  * connectivity-audit.mjs — the office asks itself: what is NOT connected?
  *
- * Owner directive (trace 1a12cf8c33f87d71, round 8): "בדוק מה לא מחובר —
- * מרוב שכבות יש מצב שיש לנו דברים איכותיים לשימוש האוטונומיה הריבונית".
+ * Owner directive (trace 1a12…7d71, round 8): [owner-directive] — the office measures and wires what is not connected.
  *
  * Doctrine: measured, not claimed. Every orphan verdict is backed by a
  * real graph walk from real entry points; every artifact claim carries

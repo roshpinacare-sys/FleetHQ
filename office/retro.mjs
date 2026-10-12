@@ -1,13 +1,12 @@
 #!/usr/bin/env node
 // retro.mjs — מחזור-השיפור-העצמי של המשרד (office self-improvement loop)
-// Lane: zai-11d · owner mandate trace 1a12c9d6f5df1b95 (חקר / זיקוק / תכנון / ביצוע)
-// Deed lane: zai-13c · owner mandate trace 1a12d186d2f8b86d ("make everything smarter,
-//   self-training, self-checking") — the office's FIRST self-proposal executed:
+// Lane: zai-11d · owner mandate trace 1a12…1b95 (חקר / זיקוק / תכנון / ביצוע)
+// Deed lane: zai-13c · owner mandate trace 1a12…b86d ([owner-directive] — the standing self-improvement law) — the office's FIRST self-proposal executed:
 //   E1 spread-regime (PROPOSALS/2026-10-11-research-e1-spread-regime.md,
 //   executableBy: next-retro = this cycle) is now `builtin-e1-spread-regime`
 //   (read-only/verify/doc-only) + the research layer now consumes the fleet's
 //   declared work (Sandbox ops/office/work-orders.json, open-P1s → WO- items).
-// Profit lane: zai-14c · owner mandate trace 1a12d502a99b7021 ("ודא-רווחיות") —
+// Profit lane: zai-14c · owner mandate trace 1a12…7021 ("[owner-directive]") —
 //   the office LEARNS PROFITABILITY: research layer consumes Sandbox
 //   receipts/profit-oracle-latest.json (zai-14b's daily oracle) DEFENSIVELY
 //   (any fetch/parse/shape failure → honest unavailable, zero invented data);
@@ -65,7 +64,7 @@ const REPO = resolve(argOf('--root', resolve(HERE, '..')));
 
 const PROTOCOL = 'SAOS-OFFICE-RETRO/1';
 const LANE = 'office-retro (zai-11d · E1-deed zai-13c)';
-const OWNER_MANDATE = 'trace 1a12c9d6f5df1b95 — חקר/זיקוק/תכנון/ביצוע';
+const OWNER_MANDATE = '[owner-directive]';
 const LAWS = [
   'retro לא משדר, לא חותם, לא נוגע בכסף/מפתחות/STASIS',
   'תופעות-לוואי: קבצי-המסילה שלו בלבד (office/*)',
@@ -1114,7 +1113,7 @@ footer{margin-top:44px; border-top:1px solid var(--border); padding-top:16px; co
   <div class="card" style="margin-top:14px">
     <b>E1 spread-regime — ההצעה-העצמית הראשונה הפכה מעשה (built-in פעיל)</b>
     <p class="law"><code>${esc(snapshot.e1 ? snapshot.e1.block : 'SPREAD-REGIME: לא-נמדד (כנה)')}</code></p>
-    <p class="pfoot">חוק: &lt;${E1_REGIME_BPS}bps = tightened/PASS · &gt; = loosened/HOLD · מקור מיושן &gt;${E1_STALE_HOURS}h = STALE כנה · read-only/verify/doc-only · deed zai-13c (trace 1a12d186d2f8b86d)</p>
+    <p class="pfoot">חוק: &lt;${E1_REGIME_BPS}bps = tightened/PASS · &gt; = loosened/HOLD · מקור מיושן &gt;${E1_STALE_HOURS}h = STALE כנה · read-only/verify/doc-only · deed zai-13c (trace 1a12…b86d)</p>
     ${snapshot.workOrders && snapshot.workOrders.counts ? `<p class="law"><b>צווי-עבודה שהמשרד רואה:</b> ${esc(String(snapshot.workOrders.counts.open))} פתוחים · ${esc(String(snapshot.workOrders.counts.resolved))} נפתרו · P1 פתוחים: ${esc(String(snapshot.workOrders.counts.openP1))} — מקור: work-orders.json (Sandbox raw)</p>` : `<p class="law">צווי-עבודה: ${esc((snapshot.workOrders && snapshot.workOrders.note) || 'לא-ידוע (כנה)')}</p>`}
   </div>
   <div class="card" style="margin-top:14px">

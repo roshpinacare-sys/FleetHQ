@@ -1,7 +1,6 @@
 /**
  * office-selfcheck — the office trains and checks itself, standing loop.
- * (zai-14, owner trace 1a12cf8c33f87d71: "מתאמן ובודק את עצמו בלי לסמוך
- * על טענות — יש לנו דרך לאמת" + "הפוך מתיאור למעשים אוטונומית ריבונית")
+ * (zai-14, owner trace 1a12…7d71: [owner-directive] — self-train and self-check without trusting claims; turn descriptions into autonomous sovereign deeds)
  *
  * What it does (every 30 min + once at boot):
  *   1. BOOT: ensures the FleetHQ office app is live (:3002) and the foreman

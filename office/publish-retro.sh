@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # publish-retro.sh — מפרסם את תוצרי מחזור-השיפור-העצמי לענף office-pages של FleetHQ (Pages).
-# Lane: zai-11d (owner mandate trace 1a12c9d6f5df1b95). Mirrors office-window/publish.sh
+# Lane: zai-11d (owner mandate trace 1a12…1b95). Mirrors office-window/publish.sh
 # (10-a's battle-tested pattern — READ IT FIRST was the order; this is that pattern,
 # pointed at the retro lane):
 #   * THROWAWAY GIT WORKTREE — the main checkout never switches branches (a checkout

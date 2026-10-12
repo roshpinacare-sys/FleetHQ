@@ -1,8 +1,6 @@
 // sovereign-decider.mjs — T-63: the sovereignty's standing decision organ.
 //
-// OWNER LAW (trace 1a12d4ae2964f45d): "הריבונות היא הבעלים... הרעיון המרכזי זה שהיא תקבל החלטות
-// מאוד חכמות ואינטילגנטיות בצורה הכי מתקדמת שיש — הפניה אליו כאילו לשלול את רעיון הריבונות.
-// פתור בעזרת הריבונות האוטונומית הכל."
+// OWNER LAW (trace 1a12…f45d): [owner-directive] — the sovereignty decides smartly on its own; deferring to the owner negates sovereignty; solve everything through autonomous sovereignty with full verification.
 //
 // The loop: SENSE (keyless fleet states) → DECIDE (policy v1 below) → ACT (within the authority
 // envelope) → VERIFY (measured evidence, double-pass) → RECORD (this ledger, no-noise commit law).
@@ -95,7 +93,7 @@ const out = {
   schema: 'saos.sovereign-decisions/1',
   generatedAt: NOW,
   policyVersion: POLICY,
-  principle: 'הריבונות מחליטה ומבצעת — הבעלים קבע (trace 1a12d4ae2964f45d) שהמערכת מקבלת החלטות חכמות בעצמה בצורה הכי מתקדמת שיש; הפניה לבעלים = שלילת הריבונות. כל-החלטה: ראיה-מדודה + אימות-כפול. בעלים = בעלים; ריבונות = הגוף שמחליט.',
+  principle: 'הריבונות מחליטה ומבצעת — הבעלים קבע (trace 1a12…f45d) שהמערכת מקבלת החלטות חכמות בעצמה בצורה הכי מתקדמת שיש; הפניה לבעלים = שלילת הריבונות. כל-החלטה: ראיה-מדודה + אימות-כפול. בעלים = בעלים; ריבונות = הגוף שמחליט.',
   authority: {
     execute: ['שינויי-תצורה/מצב הפיכים במסילות מתובעות (claim-first)', 'workflow dispatches באותו-ריפו וחוצי-ריפו דרך כתב-ההרשאה המואצל (CROSS_REVIVE_PAT)', 'ניהול-סודות דרך sealed box (שמות-בלבד בלוגים)', 'תחייה/השבה של מסילות שנפלו', 'מעשי-הכרעה המנותבים לפרוטוקולי-המסילות (SAOS-GRID-PARAMS/1 וכד׳)'],
     gates: ['העברת-כספים על-השרשרת מחוץ למנדט-מסילה חמוש — מנותב למסילה עם נגזרת-מדודה', 'ייצור חומרת-מפתח מעבר להיקף-רוטציה מוגדר', 'פעולה בלתי-הפיכה בלי ראיה מדודה'],
