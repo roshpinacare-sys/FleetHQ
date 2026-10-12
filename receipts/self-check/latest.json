@@ -1,6 +1,6 @@
 {
- "at": "2026-10-12T22:54:48.006Z",
- "finishedAt": "2026-10-12T22:55:25.899Z",
+ "at": "2026-10-12T22:55:29.689Z",
+ "finishedAt": "2026-10-12T22:55:58.540Z",
  "checks": {
   "boot": {
    "app": {
@@ -20,11 +20,42 @@
   "connectivity": {
    "exit": 0,
    "verdictHe": "נמדדו 0 קבצי-קוד יתומים ו-1 ארטיפקטים ללא צרכן",
-   "sha16": "2ae022d8aa25c9e3"
+   "sha16": "052c10457b93aeaa"
   },
   "freshOracle": {
    "exit": 0,
    "verdict": "FRESH"
+  },
+  "silence": {
+   "exit": 0,
+   "summary": "6 ALARM(S): beat/grid-pulse: no data (cannot prove alive) · post/hive/acct-13: no data (cannot prove alive) · post/hive/acct-12: no data (cannot prove alive) · post/hive/acct-11: no data (cannot prove alive) · post/hive/acct-00: silent 3249min (limit 2880) · post/hive/acct-01: silent 14851min (limit 2880)",
+   "alarms": 6
+  },
+  "gitHealth": {
+   "exit": 0,
+   "repos": [
+    {
+     "name": "Console",
+     "attached": true,
+     "ahead": 5,
+     "behind": 0,
+     "fsck": "ok"
+    },
+    {
+     "name": "Domain",
+     "attached": true,
+     "ahead": 16,
+     "behind": 0,
+     "fsck": "ok"
+    },
+    {
+     "name": "FleetHQ",
+     "attached": true,
+     "ahead": 122,
+     "behind": 0,
+     "fsck": "ok"
+    }
+   ]
   },
   "push": {
    "ok": false,
