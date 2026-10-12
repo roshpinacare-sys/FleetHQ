@@ -1,6 +1,6 @@
 {
  "schema": "fleet.fresh-oracle/1",
- "at": "2026-10-12T00:08:45.698Z",
+ "at": "2026-10-12T00:38:46.206Z",
  "law": "FRESH only if sha256(live bytes) == sha256(committed deploy-ref bytes) AND no ops doc MISSING; DRIFT=RED (200-with-different-bytes); UNREACHABLE=UNKNOWN (network, retried once, reason kept); ops-doc age rows are honest amber (MISSING alone flips exit) — never faked green",
  "results": [
   {
@@ -11,9 +11,9 @@
    "committedStatus": 200,
    "liveError": null,
    "committedError": null,
-   "liveSha16": "3a123dacd9f9337d",
-   "committedSha16": "3a123dacd9f9337d",
-   "liveBytes": 37663,
+   "liveSha16": "6c1b069f73d49574",
+   "committedSha16": "6c1b069f73d49574",
+   "liveBytes": 37515,
    "verdict": "MATCH"
   },
   {
@@ -50,8 +50,8 @@
    "committedStatus": 200,
    "liveError": null,
    "committedError": null,
-   "liveSha16": "793467bd80664ba4",
-   "committedSha16": "793467bd80664ba4",
+   "liveSha16": "60871252ddfe69e3",
+   "committedSha16": "60871252ddfe69e3",
    "liveBytes": 57563,
    "verdict": "MATCH"
   },
