@@ -1,6 +1,6 @@
 {
  "schema": "saos.sovereign-decisions/1",
- "generatedAt": "2026-10-12T10:21:59.994Z",
+ "generatedAt": "2026-10-12T10:43:07.185Z",
  "policyVersion": "SOV-POLICY/1",
  "principle": "הריבונות מחליטה ומבצעת — הבעלים קבע (trace 1a12d4ae2964f45d) שהמערכת מקבלת החלטות חכמות בעצמה בצורה הכי מתקדמת שיש; הפניה לבעלים = שלילת הריבונות. כל-החלטה: ראיה-מדודה + אימות-כפול. בעלים = בעלים; ריבונות = הגוף שמחליט.",
  "authority": {
@@ -18,25 +18,25 @@
   ]
  },
  "sense": {
-  "officeState": {
+  "openCloser": {
    "ok": true,
-   "ageMin": 13
-  },
-  "valueScan": {
-   "ok": true,
-   "ageMin": 191
+   "ageMin": 21
   },
   "gridTruth": {
    "ok": true,
-   "ageMin": 61
+   "ageMin": 82
+  },
+  "valueScan": {
+   "ok": true,
+   "ageMin": 21
   },
   "decisionsPrev": {
    "ok": true,
    "ageMin": 21
   },
-  "openCloser": {
+  "officeState": {
    "ok": true,
-   "ageMin": 21
+   "ageMin": 34
   }
  },
  "decisions": [
@@ -208,24 +208,24 @@
    },
    "law": "הגשות-חימוש חייבות לכבד רצפות; הכיוון הריבוני = הכנסה מבנית (fee-engine) לפני הוצאה",
    "policy": "SOV-POLICY/1",
-   "decidedAt": "2026-10-12T10:21:59.994Z",
+   "decidedAt": "2026-10-12T10:43:07.185Z",
    "by": "sovereign-decider"
   },
   {
    "id": "auto-freshness",
    "area": "operations",
-   "title": "טריות הצי: 3 נפלו מעל SLA (office-state 204דק>SLA180, beacon 111דק>SLA100, value-scan 170דק>SLA90) — הוערו: office-state,",
+   "title": "טריות הצי: 1 נפלו מעל SLA (value-scan 191דק>SLA90) — הוערו: value-scan",
    "status": "watch",
    "evidence": {
     "source": "FleetHQ/office/state/opens-closer.json",
     "metrics": {
-     "staleCount": 3,
-     "dispatchedCount": 3
+     "staleCount": 1,
+     "dispatchedCount": 1
     },
     "selfHeal": "same-repo GITHUB_TOKEN + cross-repo CROSS_REVIVE_PAT (D1)"
    },
    "policy": "SOV-POLICY/1",
-   "decidedAt": "2026-10-12T10:21:59.994Z",
+   "decidedAt": "2026-10-12T10:43:07.185Z",
    "by": "sovereign-decider"
   },
   {
@@ -240,7 +240,7 @@
    },
    "law": "אין דריסת-מסילות: למשרד יש לולאת-רטרו משלו; הריבונות מתעדת ומאמתת, לא לוקחת",
    "policy": "SOV-POLICY/1",
-   "decidedAt": "2026-10-12T10:21:59.994Z",
+   "decidedAt": "2026-10-12T10:43:07.185Z",
    "by": "sovereign-decider"
   }
  ],
