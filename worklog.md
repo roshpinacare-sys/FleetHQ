@@ -37,7 +37,7 @@ Task: close operator-dependence holes — fleet must hold everything, acquire mo
 
 Work Log:
 - BLURT hole CLOSED: 10/10 army accounts rotated to GEN-2 active/posting/memo (GEN-1 active from custody backup signed; owner never broadcast). Hand-rolled serializer failed → byte-oracle revealed blurt's account_update = op-id 6 + posting_json_metadata + extra zero (differs from steem!) → official blurtjs library broadcast succeeded (chain_id cd8d90f2… confirmed; rpc.blurt.world dead, blurt-rpc.saboin.com alive). On-chain judged: 10/10 full GEN-2.
-- LEAK DESTROYED (ROT3): headcorner STEEM GEN-2→ROT3 via fresh random seed; owner-signed account_update tx 8edc45ed502c9a6c. Node-oracle (verify_authority) revealed steem tx digest EXCLUDES the tx-extensions byte (184B consensus form). On-chain: 4/4 ROT3 live. Leaked GEN-2 WIFs cryptographically dead.
+- LEAK DESTROYED (ROT3): the fleet-head STEEM key GEN-2→ROT3 via fresh random seed; owner-signed account_update tx 8edc45ed502c9a6c. Node-oracle (verify_authority) revealed steem tx digest EXCLUDES the tx-extensions byte (184B consensus form). On-chain: 4/4 ROT3 live. Leaked GEN-2 WIFs cryptographically dead.
 - Vault re-sealed: KEYS-ZIP-2026-10-08-ROT3.zip.enc (14 accounts; head=ROT3, army=GEN-2 unchanged) + recovery-meta repinned + re-open selftest OK; all decrypted temp material shredded.
 - CI secrets rotated without operator: Domain HEADCORNER_CRED, STEEM_POSTING_WIF, STEEM_ACTIVE_WIF, SA_HEAD_ACTIVE → ROT3 (tweetnacl-sealed, 204×4). SA_FLEET_KEYS (army) + runtime CI_ADOPT (army) untouched-valid.
 - HIVE hole proven operationally lost (held material 0/4 vs live) — documented as unrecoverable, not operator-dependence.
@@ -53,7 +53,7 @@ Task: verify-all-claims zero trust + critical secrets-exposure audit (PAT/wallet
 
 Work Log:
 - Zero-trust self-correction: my steem/hive pubkey law had 2 bugs (double-hash checksum; separate base58 encodings). Corrected + validated 4/4 vs live chain. All earlier key verdicts re-measured with correct math.
-- STEEM headcorner ROT3 custody re-proven 4/4 from git vault (independent math). HIVE wallet measured (0.034 HIVE / 0.003 HBD / 55.812 HP); operator's new hive key file never reached the server (upload empty — filesystem-proven).
+- STEEM fleet-head ROT3 custody re-proven 4/4 from git vault (independent math). HIVE wallet measured (0.034 HIVE / 0.003 HBD / 55.812 HP); operator's new hive key file never reached the server (upload empty — filesystem-proven).
 - CRITICAL AUDIT (operator decree): 6 public repos (Console/Domain/FleetHQ/TruthRail/saos-agents/saos-runtime) — full tree + full history scanned: ZERO secrets. pat.env never committed. recovery-meta only in private repo. Local dirs clean.
 - DISCOVERY: 2018 master passwords STILL LIVE — 9 army accounts rule owner+active+posting+memo on BOTH steem+hive (+tov steem). Absorbed into encrypted git vault via the new key-absorb rail (11 live keys, sha-pinned, roundtrip+independent verify), receipts pushed, plaintext shredded.
 - key-absorb mini-service live: watches upload/, auto-measures vs chains, seals live material, receipts, shreds. Boot runs FleetHQ auto-unseal (verified).
@@ -73,7 +73,7 @@ Work Log:
 - התאום (סוכן-מקביל) בנה על גבי 4e8a677 את v2 (b07550f/bcc5934): wrap-registry (P עטוף ל-credential, אין plaintext ב-HEAD), SSH deploy keys נצחיים, boot-sovereign.sh. איחדתי: bootstrap.sh הפך v2-native (discover_credentials מ-vaultlib), verify.sh v2-aware (8ce7007, 4a9dbe2).
 - **תיקון-קריטי ב-rail של התאום**: auto-unseal לא משך wraps כשהם חסרים (מכונה-טרייה עם חותם-תקין = "keyless" שקרי) → NEED_PULL patch (cb8028c); + set -u unbound VAULT_CANDIDATES (f1b05f1).
 - **חותם-אסור-נפתח**: keys.env.enc של FleetHQ (17:44) לא נפתח ע"י אף credential מתגלה (P/PAT/וריאציות/6 גרסאות-היסטוריה) = מנותק למכונות-טריות. איטום-מחדש: 18 ערכי-מוח חיים (מהפריסה המקומית) עם P מה-wrap-registry → roundtrip+open OK → נדחף לשני הבתים (1ac7c16). הלופ נסגר: wraps→P→open ממכונה-טרייה (הוכח ב-fresh2).
-- ביקורת-סודות על **כל 22 הריפוים** (ראשונה-מסוגה על 16 שמעולם לא נבדקו): **SovereignConsole/upload/pat.env חתוך-בגיט** (4 משתנים = אותו PAT חי, שוכפל ע"י מראת-המצב) + PAT מוטמע ב-3 state.json → נמחק/הוסר (15f4a57); headcorner.txt (WIF גנ-2) נמחק; WIF-מעבדה ב-scripts נמדד מת על 3 השרשראות; שוואים ממוינים (תבניות-עיצוב base64, fixtures של בודק-סודות). 6 הציבוריים נקיים-שוב.
+- ביקורת-סודות על **כל 22 הריפוים** (ראשונה-מסוגה על 16 שמעולם לא נבדקו): **SovereignConsole/upload/pat.env חתוך-בגיט** (4 משתנים = אותו PAT חי, שוכפל ע"י מראת-המצב) + PAT מוטמע ב-3 state.json → נמחק/הוסר (15f4a57); קובץ-מפתח-ראש (גנ-2) נמחק; WIF-מעבדה ב-scripts נמדד מת על 3 השרשראות; שוואים ממוינים (תבניות-עיצוב base64, fixtures של בודק-סודות). 6 הציבוריים נקיים-שוב.
 - תיקוני-סימלינקים (הפלטפורמה אוסרת יצירתם — מתים בכל מכונה-טרייה): SovereignConsole 23 קישורים מוחלטים → תוכן-אמת מ-Zip (4151c75); FleetHQ foreman/data → pointer (aa47d16); Zip r208r fixture → stub מתועד (dd10f5d6).
 - מגדלורים: FLEET-BINDING.md ב-FleetHQ (ציבורי, נקי-מסודות) + SOVEREIGNTY.md פקודה-אחת + FLEET-BINDING מקומי ב-my-project. זהות-גיט של הצי ב-/home/z (.git-credentials). מסילת key-absorb רצה (תאום-כפול חוסל).
 - קבלות: sovereign-audit-20261008.json + 3× sovereign-bootstrap receipts ← TruthRail.
