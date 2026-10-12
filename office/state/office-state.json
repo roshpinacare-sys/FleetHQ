@@ -1,46 +1,47 @@
 {
-  "capturedAt": "2026-10-12T04:46:44.006Z",
+  "capturedAt": "2026-10-12T06:36:34.136Z",
   "connected": true,
   "backend": "live",
-  "statusHe": "צוות חי — זיכרון שוחזר מהגיט (62 משמרות, 20 לקחים)",
+  "statusHe": "צוות חי — זיכרון שוחזר מהגיט (65 משמרות, 20 לקחים)",
   "mode": null,
   "agents": [
     {
       "id": "aluf",
       "state": "idle",
-      "activity": "משגיח מהלוח",
+      "activity": "",
       "station": "wall",
-      "since": 1791780419429,
-      "taskId": "t1574"
+      "since": 1791786988339,
+      "taskId": "t1601"
     },
     {
       "id": "gal",
       "state": "idle",
       "activity": "הפסקת קפה — לגימה ורענון",
       "station": "coffee",
-      "since": 1791780419726
+      "since": 1791787005427,
+      "taskId": "t1601"
     },
     {
       "id": "erez",
       "state": "idle",
       "activity": "הפסקת קפה — לגימה ורענון",
       "station": "coffee",
-      "since": 1791780417525
+      "since": 1791787007628
     },
     {
       "id": "tamar",
-      "state": "idle",
-      "activity": "",
-      "station": "desk",
-      "since": 1791780417415,
-      "taskId": "t1574"
+      "state": "walking",
+      "activity": "יוצא להפסקת קפה",
+      "station": "coffee",
+      "since": 1791787020732,
+      "taskId": "t1601"
     },
     {
       "id": "shachar",
-      "state": "reading",
-      "activity": "קורא pulse-book",
-      "station": "library",
-      "since": 1791780428963,
+      "state": "idle",
+      "activity": "",
+      "station": "desk",
+      "since": 1791786959086,
       "taskId": "t1587"
     },
     {
@@ -48,7 +49,7 @@
       "state": "idle",
       "activity": "הפסקת קפה — לגימה ורענון",
       "station": "coffee",
-      "since": 1791780428526
+      "since": 1791787018631
     }
   ],
   "tasks": [
@@ -2205,75 +2206,58 @@
     {
       "id": "t1587",
       "title": "Research autonomous agent patterns in fleet intelligence books",
-      "status": "doing",
       "description": "Search fleet-indicators, pulse-book, and learning-summary for signals, patterns, and documented cases of autonomous agent behavior and agent-written reports.",
+      "status": "done",
       "assignee": "shachar",
       "dependsOn": [],
       "why": "Intelligence officer owns fleet-indicators, pulse-book, learning-summary",
       "matchBy": "llm",
       "createdBy": "aluf",
       "createdAt": 1791780419429,
-      "updatedAt": 1791780419627,
-      "startedAt": 1791780419627
+      "updatedAt": 1791786636716,
+      "startedAt": 1791786556314,
+      "summary": "",
+      "durationMs": 54414
+    },
+    {
+      "id": "t1601",
+      "title": "מחקר רשת: קראי דף ציבורי רלוונטי לתחומי המשרד וסכמי ממצאים — השתמשי ב-read_page",
+      "description": "מחקר רשת: קראי דף ציבורי רלוונטי לתחומי המשרד וסכמי ממצאים — השתמשי ב-read_page",
+      "status": "done",
+      "assignee": "gal",
+      "dependsOn": [],
+      "why": "ספרי הדקס, המסחר וההגיון הפנימי",
+      "matchBy": "fit",
+      "createdBy": "aluf",
+      "createdAt": 1791786833810,
+      "updatedAt": 1791786930670,
+      "startedAt": 1791786833811,
+      "summary": "Research: market-grid public page summary. Read market-grid (v1.3.0, 7702B, 0.1h old), a public internal-market sovereignty instrument. Measured findings: HBD/HIVE mid 0.055798, bid 0.055779, ask 0.055817, 24h volume 2302.816 HBD / 41156.607 HIVE; SBD/STEEM mid 0.102320, spread 0.75%; SWAP.HIVE last 0.19858. Grid: 10 levels each side, disciplined spacing. Verdict: MARKET-GRID-LIVE, 3 markets read,",
+      "durationMs": 79231
     }
   ],
   "books": 22,
   "memory": null,
   "counts": {
-    "agent": 13,
-    "task": 2,
-    "log": 10,
-    "feed": 2,
+    "agent": 7,
+    "task": 0,
+    "log": 2,
+    "feed": 0,
     "decision": 0,
     "report": 0,
-    "goal": 2,
-    "bubble": 3
+    "goal": 0,
+    "bubble": 2
   },
   "feed": [
     {
       "kind": "bubble:yarden",
       "text": "לגימה מהירה — וחוזרים לעבודה.",
-      "at": 1791780428527
-    },
-    {
-      "kind": "goal",
-      "text": "{\"id\":\"g1585\",\"text\":\"מחקר רשת: חפשי חדשות על סוכנים אוטונומיים וכתבי דוח עם מקורות — השתמשי ב-web_search\",\"status\":\"active\",\"progress\":0.94,\"createdAt\":1791780361299,\"updatedAt\":1791780421826,\"origin",
-      "at": 1791780421826
+      "at": 1791787018631
     },
     {
       "kind": "bubble:gal",
       "text": "לגימה מהירה — וחוזרים לעבודה.",
-      "at": 1791780419726
-    },
-    {
-      "kind": "task",
-      "text": "doing: Research autonomous agent patterns in fleet intelligence books",
-      "at": 1791780419627
-    },
-    {
-      "kind": "bubble:aluf",
-      "text": "התוכנית על הלוח. קדימה לעבודה.",
-      "at": 1791780419431
-    },
-    {
-      "kind": "plan",
-      "text": "תוכנית אושרה: 1 משימות מיושרות-יעד — התאמות: שחר: Intelligence officer owns fleet-indicators, pulse-book, learning-summary",
-      "at": 1791780419431
-    },
-    {
-      "kind": "goal",
-      "text": "{\"id\":\"g1585\",\"text\":\"מחקר רשת: חפשי חדשות על סוכנים אוטונומיים וכתבי דוח עם מקורות — השתמשי ב-web_search\",\"status\":\"active\",\"progress\":0.05,\"createdAt\":1791780361299,\"updatedAt\":1791780419429,\"origin",
-      "at": 1791780419431
-    },
-    {
-      "kind": "task",
-      "text": "משימה חדשה: Research autonomous agent patterns in fleet intelligence books",
-      "at": 1791780419431
-    },
-    {
-      "kind": "task",
-      "text": "todo: Research autonomous agent patterns in fleet intelligence books",
-      "at": 1791780419431
+      "at": 1791787005428
     }
   ],
   "reports": [],
