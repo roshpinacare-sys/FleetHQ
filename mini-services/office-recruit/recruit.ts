@@ -60,6 +60,8 @@ interface RecruitState {
     ciVerdict: string | null;
     ciVerdictAt: string | null;
     freshOracleAgeHours: number | null;
+    operatorDirectives: number;
+    latestOperatorDirectiveAt: string | null;
   };
   rolesNeeded: RoleNeeded[];
   totals: { reposScanned: number; staleRepos: number; roles: number };
@@ -187,13 +189,38 @@ async function scanFreshOracle(now: number): Promise<number | null> {
   }
 }
 
+/** The operator's receipted directives — how the owner steers the autonomy. */
+async function scanOperatorInbox(): Promise<{ count: number; latestAt: string | null; latestText: string | null }> {
+  try {
+    const raw = await readFile(join(FLEETHQ, "office", "state", "operator-inbox.jsonl"), "utf8");
+    const lines = raw.split("\n").filter((l) => l.trim().length > 0);
+    const last = lines.length ? (JSON.parse(lines[lines.length - 1]) as { at?: string; text?: string }) : null;
+    return { count: lines.length, latestAt: last?.at ?? null, latestText: last?.text ?? null };
+  } catch {
+    return { count: 0, latestAt: null, latestText: null };
+  }
+}
+
 function deriveRoles(
   repos: RepoSignal[],
   proposals: string[],
   ci: { verdict: string; at: string } | null,
   freshAgeH: number | null,
+  operator: { count: number; latestAt: string | null; latestText: string | null },
 ): RoleNeeded[] {
   const roles: RoleNeeded[] = [];
+
+  // operator directives are the highest-priority work signal (owner words → fleet hands)
+  if (operator.count > 0) {
+    roles.push({
+      role: "operator-orders-executor",
+      roleHe: "מבצע-הנחיות-מפעיל",
+      count: operator.count,
+      targets: [operator.latestText ? `latest (${operator.latestAt}): ${operator.latestText.slice(0, 120)}` : "directives in inbox"],
+      evidence: ["office/state/operator-inbox.jsonl — receipted owner words", `directives on file: ${operator.count}`],
+      derivedFrom: "operator channel: the owner's directives are the office's first-priority work",
+    });
+  }
 
   const stale = repos.filter((r) => r.stale);
   // true frozen = stale AND diverged (archives & dormant-healthy are quiet by design/health, not sick)
@@ -305,7 +332,8 @@ async function scan(): Promise<RecruitState> {
   const proposals = await scanProposals();
   const ci = await scanCiVerdict();
   const freshAgeH = await scanFreshOracle(now);
-  const roles = deriveRoles(repos, proposals, ci, freshAgeH);
+  const operator = await scanOperatorInbox();
+  const roles = deriveRoles(repos, proposals, ci, freshAgeH, operator);
 
   const state: Omit<RecruitState, "sha256"> = {
     service: "office-recruit",
@@ -316,6 +344,8 @@ async function scan(): Promise<RecruitState> {
       ciVerdict: ci?.verdict ?? null,
       ciVerdictAt: ci?.at ?? null,
       freshOracleAgeHours: freshAgeH,
+      operatorDirectives: operator.count,
+      latestOperatorDirectiveAt: operator.latestAt,
     },
     rolesNeeded: roles,
     totals: {

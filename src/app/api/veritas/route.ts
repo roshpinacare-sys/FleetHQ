@@ -38,6 +38,7 @@ function pickTime(j: Record<string, unknown>): string {
     "savedAt",
     "capturedAt",
     "updatedAt",
+    "publishedAt",
   ]) {
     const v = j[k];
     if (typeof v === "string" && Number.isFinite(Date.parse(v))) return v;
@@ -88,6 +89,9 @@ export async function GET() {
     { source: "recruitment/live.json", path: join(RECEIPTS, "recruitment", "live.json") },
     { source: "office-state-mirror.json", path: join(RECEIPTS, "office-state-mirror.json") },
     { source: "boot-verify.json", path: join(RECEIPTS, "boot-verify.json") },
+    // grid + money sentinel — the profitability lane under the gate's eye (Domain/dex)
+    { source: "dex/grid.json", path: "/home/z/estate/Domain/dex/grid.json" },
+    { source: "dex/money.json", path: "/home/z/estate/Domain/dex/money.json" },
   ];
 
   // office-ci: latest receipt file
