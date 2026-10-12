@@ -148,6 +148,79 @@ html, body, #root {
   .hud-btn { min-height: 40px; }
 }
 
+/* ── שער-מפתח-המנהל (אפס-חשיפת-זהות) ── */
+.hud-op-btn {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-row);
+  padding: 6px 12px;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--accent);
+  cursor: pointer;
+  transition: background-color 160ms ease;
+}
+.hud-op-btn:hover { background: var(--accent-dim); }
+.hud-op-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.hud-op {
+  position: fixed;
+  inset-block-start: 52px;
+  inset-inline-end: 10px;
+  z-index: 40;
+  width: min(350px, calc(100vw - 20px));
+  max-height: min(72vh, 580px);
+  overflow: auto;
+  background: var(--surface);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-panel);
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-shadow: 0 10px 30px rgba(28, 24, 18, 0.16);
+}
+.hud-op label { display: block; font-size: 12px; font-weight: 700; color: var(--ink-2); margin-bottom: 6px; }
+.hud-op input[type='password'] {
+  width: 100%;
+  min-height: 44px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-row);
+  padding: 8px 10px;
+  font: inherit;
+  background: var(--bg);
+  color: var(--ink);
+}
+.hud-op .row-btns { display: flex; gap: 8px; }
+.hud-op .hud-op-sec { display: flex; flex-direction: column; gap: 4px; }
+.hud-op .hud-op-h { font-size: 11.5px; font-weight: 700; color: var(--ink-3); letter-spacing: 0.02em; }
+.hud-op .hud-op-row {
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+  font-size: 12px;
+  color: var(--ink-2);
+  border-bottom: 1px dashed var(--line);
+  padding: 4px 0;
+}
+.hud-op .mono { font-variant-numeric: tabular-nums; color: var(--ink-3); font-size: 11px; flex: none; }
+.hud-op .tag { border-radius: 999px; padding: 2px 8px; font-size: 10.5px; font-weight: 700; flex: none; }
+.hud-op .tag.ok { background: rgba(20, 133, 92, 0.12); color: var(--st-ok); }
+.hud-op .tag.warn { background: rgba(181, 130, 22, 0.14); color: var(--st-attention); }
+.hud-op .bad { color: var(--st-danger); font-size: 12px; margin: 0; }
+.hud-op .hint { color: var(--ink-3); font-size: 11px; margin: 0; }
+.hud-op .hud-op-note {
+  color: var(--ink-3);
+  font-size: 11px;
+  border-top: 1px solid var(--line);
+  padding-top: 8px;
+  margin: 0;
+}
+
 /* ── שכבת-טעינה (עד הפריים האמיתי הראשון) ── */
 .hud-loader {
   position: fixed;

@@ -26,6 +26,7 @@ import * as SkeletonUtils from 'three/examples/jsm/utils/SkeletonUtils.js';
 import { to3 } from '@/lib/hq/contract';
 import { makeBlobShadowTexture, makeBubbleTexture, makeNameplate } from '@/lib/hq/textures';
 import { makeSitClip, makeTypeClipAdditive, makeBreatheClip, makeIdleStandClip, makeStandClip, solveSit, solveStand, makeLookClip, makeTalkClip, makeSipClip, makeThinkClip, makeWriteClip, makeLeanClip, makePointClip } from '@/lib/hq/pose';
+import { applyLifeLayer } from '@/lib/hq/life';
 import { useHq } from '@/lib/hq/store';
 import { bus, agentVisualFresh, ROOM_STALE_MS } from '@/lib/hq/world';
 import { STATE_COLORS } from '@/lib/hq/protocol';
@@ -690,6 +691,10 @@ function HumanAgent({ id, assets }: { id: string; assets: CrewAssets }) {
     }
 
     mixer.update(dt);
+    // מיזוג-החיים (משרד אחד): שכבה פרוצדורלית עדינה אחרי-המיקסר — קפיצת-הילוך,
+    // נטייה, העברת-משקל, נשימה-בראש (מה שנמדד ב-v2 ועבר למקור המוביל).
+    // קוסמטיקה-חיים בלבד — לא עבודה ולא תנוחה; המסלקה והקליפים נותרים החוזה.
+    applyLifeLayer({ inner: inner.current, model, walkT, sitT, phase: phaseOf(id, 991), now, dt });
   });
 
   const focus = (e: { stopPropagation: () => void }) => {
