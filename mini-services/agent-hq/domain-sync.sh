@@ -38,15 +38,16 @@ if [ -z "$PAT" ] && [ -n "$ENV_FILE" ]; then
   PAT="$(sed -n 's/^GITHUB_PAT=//p' "$ENV_FILE" | head -1 | tr -d '\r"')"
 fi
 if [ -z "$PAT" ]; then
-  log "no GITHUB_PAT found — memory stays local-only (books still work)"
-  exit 0
+  log "no GITHUB_PAT env — pushing via the global credential helper (saos-git-cred.sh) if configured"
 fi
 
-ASKPASS="$(mktemp)"
-trap 'rm -f "$ASKPASS"' EXIT
-printf '#!/bin/sh\ncat <<__PAT__\n%s\n__PAT__\n' "$PAT" > "$ASKPASS"
-chmod 700 "$ASKPASS"
-export GIT_ASKPASS="$ASKPASS"
+if [ -n "$PAT" ]; then
+  ASKPASS="$(mktemp)"
+  trap 'rm -f "$ASKPASS"' EXIT
+  printf '#!/bin/sh\ncat <<__PAT__\n%s\n__PAT__\n' "$PAT" > "$ASKPASS"
+  chmod 700 "$ASKPASS"
+  export GIT_ASKPASS="$ASKPASS"
+fi
 
 sync_once() {
   cd "$DATA_DIR" || { log "no data dir $DATA_DIR"; return 1; }
@@ -67,6 +68,23 @@ sync_once() {
     git stash -u >/dev/null 2>&1 || true
     git pull --rebase origin main >/dev/null 2>&1 || { log "pull --rebase failed"; return 1; }
     git stash pop >/dev/null 2>&1 || true
+    # HONESTY GUARD (union law): a stash-pop conflict is not a resolution.
+    # The living local writer holds the freshest memory — resolve conflicts to
+    # its copy (--theirs during stash-apply), keep the stash as backup, and
+    # NEVER commit markers. Fail-loud, fail-clean.
+    local conflicts
+    conflicts=$(git diff --name-only --diff-filter=U 2>/dev/null)
+    if [ -n "$conflicts" ]; then
+      log "stash-pop conflicts on: $(printf '%s ' $conflicts) — resolving to the living local copy (stash kept as backup)"
+      for f in $conflicts; do
+        git checkout --theirs -- "$f" 2>/dev/null || git checkout HEAD -- "$f" 2>/dev/null || true
+      done
+    fi
+    # final gate: marker scan on the book dirs — markers = abort (no garbage push)
+    if grep -rIl '^<<<<<<< ' agents books reports truth 2>/dev/null | head -1 | grep -q .; then
+      log "conflict markers detected in books — aborting commit (fail-loud)"
+      return 1
+    fi
   fi
   # what the office wrote since the last commit
   local changed
