@@ -1,54 +1,55 @@
 {
-  "capturedAt": "2026-10-12T22:57:26.735Z",
+  "capturedAt": "2026-10-12T23:19:46.276Z",
   "connected": true,
   "backend": "live",
-  "statusHe": "צוות חי — זיכרון שוחזר מהגיט (4 משמרות, 3 לקחים)",
+  "statusHe": "צוות חי — זיכרון שוחזר מהגיט (6 משמרות, 4 לקחים)",
   "mode": null,
   "agents": [
     {
       "id": "aluf",
-      "state": "idle",
-      "activity": "",
+      "state": "checking",
+      "activity": "בודק: סיור שגרה: צלב בין שני ספרי צי ודווח על פערים שנמצאו",
       "station": "wall",
-      "since": 1791845822985,
-      "taskId": "t1651"
+      "since": 1791847212883,
+      "taskId": "t1682"
     },
     {
       "id": "gal",
       "state": "idle",
       "activity": "",
       "station": "desk",
-      "since": 1791845844732,
-      "taskId": "t1651"
+      "since": 1791847211547,
+      "taskId": "t1682"
     },
     {
       "id": "erez",
-      "state": "idle",
-      "activity": "",
-      "station": "desk",
-      "since": 1791845758956,
-      "taskId": "t1651"
+      "state": "walking",
+      "activity": "בודק בין-עמיתים · סיור שגרה: צלב בין שני ספרי צי ודווח על ",
+      "station": "library",
+      "since": 1791847214085,
+      "taskId": "t1682"
     },
     {
       "id": "tamar",
       "state": "idle",
       "activity": "",
       "station": "desk",
-      "since": 1791845802906
+      "since": 1791847142438
     },
     {
       "id": "shachar",
       "state": "idle",
       "activity": "",
       "station": "desk",
-      "since": 1791845754484
+      "since": 1791847085201,
+      "taskId": "t1670"
     },
     {
       "id": "yarden",
       "state": "idle",
       "activity": "הפסקת קפה — לגימה ורענון",
       "station": "coffee",
-      "since": 1791845871247
+      "since": 1791847210782
     }
   ],
   "tasks": [
@@ -2281,28 +2282,94 @@
       "startedAt": 1791845479379,
       "summary": "",
       "durationMs": 246152
+    },
+    {
+      "id": "t1670",
+      "title": "סיור שגרה: סרוק את ספרי הצי ודווח מה ישן או דורש בדיקה",
+      "description": "סיור שגרה: סרוק את ספרי הצי ודווח מה ישן או דורש בדיקה",
+      "status": "done",
+      "assignee": "shachar",
+      "dependsOn": [],
+      "why": "מדדים, מפקד ולמידה של הצי",
+      "matchBy": "fit",
+      "createdBy": "aluf",
+      "createdAt": 1791846836130,
+      "updatedAt": 1791846945684,
+      "startedAt": 1791846836131,
+      "summary": "",
+      "durationMs": 74545
+    },
+    {
+      "id": "t1682",
+      "title": "סיור שגרה: צלב בין שני ספרי צי ודווח על פערים שנמצאו",
+      "description": "סיור שגרה: צלב בין שני ספרי צי ודווח על פערים שנמצאו",
+      "status": "review",
+      "assignee": "gal",
+      "dependsOn": [],
+      "why": "ספרי הדקס, המסחר וההגיון הפנימי",
+      "matchBy": "fit",
+      "createdBy": "aluf",
+      "createdAt": 1791847154575,
+      "updatedAt": 1791847211547,
+      "startedAt": 1791847154575,
+      "summary": "סיור שגרה הושלם: צלב dex-book ↔ fills-ledger בוצע. פערים עיקריים: (1) אין מונים מספריים משותפים — מבנים שונים לחלוטין (נתוני שוק חיים מול רשומת ביצועים סגורה). (2) פער גיל ספרים 4.7 שעות (dex-book 6.1h, fills-ledger 10.8h). (3) אין הצלבת מחירים נוכחיים. נתונים מדודים: dex-book heartbeat 2026-10-12T17:10:30.508Z, fills-ledger heartbeat 2026-10-12T12:28:13.514Z, totalRealizedSwaphive 3.466847, count",
+      "durationMs": 56972
     }
   ],
   "books": 22,
   "memory": null,
   "counts": {
-    "agent": 2,
-    "task": 0,
-    "log": 1,
-    "feed": 0,
+    "agent": 11,
+    "task": 1,
+    "log": 7,
+    "feed": 1,
     "decision": 0,
-    "report": 0,
+    "report": 1,
     "goal": 0,
-    "bubble": 1
+    "bubble": 2
   },
   "feed": [
     {
+      "kind": "bubble:gal",
+      "text": "המשימה שלי מוכנה לביקורת.",
+      "at": 1791847211549
+    },
+    {
+      "kind": "task",
+      "text": "review: סיור שגרה: צלב בין שני ספרי צי ודווח על פערים שנמצאו",
+      "at": 1791847211548
+    },
+    {
       "kind": "bubble:yarden",
       "text": "לגימה מהירה — וחוזרים לעבודה.",
-      "at": 1791845871248
+      "at": 1791847210782
+    },
+    {
+      "kind": "log:gal",
+      "text": "סיור שגרה: צלב dex-book ↔ fills-ledger",
+      "at": 1791847202453
+    },
+    {
+      "kind": "report",
+      "text": "דוח חדש בספרייה: סיור שגרה: צלב dex-book ↔ fills-ledger",
+      "at": 1791847202453
+    },
+    {
+      "kind": "report",
+      "text": "סיור שגרה: צלב dex-book ↔ fills-ledger",
+      "at": 1791847202451
     }
   ],
-  "reports": [],
+  "reports": [
+    {
+      "id": "r1685",
+      "title": "סיור שגרה: צלב dex-book ↔ fills-ledger",
+      "body": "**פערים שנמצאו:**\n\n1. **אין מונים מספריים משותפים** — המבנים שונים לחלוטין:\n   - dex-book: נתוני שוק חיים (bid/ask, עומקים, בריכות AMM, מחירי mid)\n   - fills-ledger: רשומת ביצועים סגורה (3 עסקאות ממומשות, סה״כ 3.466847 SWAP.HIVE)\n\n2. **פער גיל ספרים**: dex-book בן 6.1 שעות, fills-ledger בן 10.8 שעות — הפרש 4.7 שעות\n\n3. **אין הצלבת מחירים**: fills-ledger לא מכיל מחירי שוק נוכחיים להשוואה מול dex-book\n\n**נתונים מדודים:**\n- dex-book heartbeat: 2026-10-12T17:10:30.508Z (גיל 6.1h)\n- fills-ledger heartbeat: 2026-10-12T12:28:13.514Z (גיל 10.8h)\n- totalRealizedSwaphive: 3.466847\n- count: 3 עסקאות",
+      "author": "gal",
+      "ts": 1791847202451,
+      "at": 1791847202451
+    }
+  ],
   "decisions": [],
   "lastError": null
 }
