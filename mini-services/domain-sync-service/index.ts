@@ -1,6 +1,6 @@
 // DOMAIN-SYNC-SERVICE — the office memory rail, as a living service.
 //
-// WHY (measured, trace 1a12d7c8cf024cad): the foreman (agent-hq) writes the
+// WHY (measured, trace 1a12…4cad): the foreman (agent-hq) writes the
 // office books into the Domain clone, and domain-sync.sh commits+pushes them —
 // but its bash `loop` mode gets reaped by the sandbox whenever its parent
 // shell exits (died twice: plain nohup AND setsid). Every bun --hot mini

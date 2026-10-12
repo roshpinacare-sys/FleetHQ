@@ -2,7 +2,7 @@
  "schema": "saos.sovereign-decisions/1",
  "generatedAt": "2026-10-12T11:31:18.520Z",
  "policyVersion": "SOV-POLICY/1",
- "principle": "הריבונות מחליטה ומבצעת — הבעלים קבע (trace 1a12d4ae2964f45d) שהמערכת מקבלת החלטות חכמות בעצמה בצורה הכי מתקדמת שיש; הפניה לבעלים = שלילת הריבונות. כל-החלטה: ראיה-מדודה + אימות-כפול. בעלים = בעלים; ריבונות = הגוף שמחליט.",
+ "principle": "הריבונות מחליטה ומבצעת — הבעלים קבע (trace 1a12…f45d) שהמערכת מקבלת החלטות חכמות בעצמה בצורה הכי מתקדמת שיש; הפניה לבעלים = שלילת הריבונות. כל-החלטה: ראיה-מדודה + אימות-כפול. בעלים = בעלים; ריבונות = הגוף שמחליט.",
  "authority": {
   "execute": [
    "שינויי-תצורה/מצב הפיכים במסילות מתובעות (claim-first)",
@@ -128,7 +128,7 @@
    "title": "אישור קיצוח פרמטרים למושל T2",
    "status": "executed",
    "decidedAt": "2026-10-12T00:29:25.281Z",
-   "reasoning": "D3 (היחידה QUESTIONABLE-PARAMS) דרש מדגם ≥20 fills + hysteresis. נמדד: הפרמטרים האטומים (9-c, מנדט-בעלים trace 1a12b258c9776305) עוברים את שומר-הסף fail-closed + selftest 20/20; מדגם 72 fills (grid-public) / 61 postLaw (pnl-desk) ≥ 20. ה-ratification סוגר את הדגל בראיה.",
+   "reasoning": "[owner-directive]",
    "evidence": {
     "validator": "grids/validate-params.mjs grids/state/grid-params.json → OK exit 0 (steem 85% commit, 150/80bps; hive 90%, 200/50bps)",
     "selftest": "grids/params-selftest.mjs → 20 passed, 0 failed",
@@ -148,7 +148,7 @@
    "title": "החלטת-המימון D-023 — escrow ≥1 SBD",
    "status": "armed-conditional → mandate issued",
    "decidedAt": "2026-10-12T00:29:25.281Z",
-   "reasoning": "ההחלטה עצמה (לא ההפניה): D-023 מאושר — ה-escrow (≥1 SBD על מסילת-ה-convert, התשואה המוגדרת-ביותר: edge +40.8% נמדד) יבוצע על-ידי מסילת-ה-convert של saos-dex (המסילות פתוחות לפי הבעלים trace 1a12d295c7da9241 — FULL LIFT). החוכמה: ה-escrow הוא ב-SBD (נמדד: 91.195 ≥ 1 — זמין) ואינו מעמיק את חריגת-רצפת-ה-STEEM (55.2 < 90); ההוצאה מתוזמנת עם סעיפי-שמירה, והריבונות לא חותמת על-השרשרת מחוץ למסילה-החמושה שלה.",
+   "reasoning": "ההחלטה עצמה (לא ההפניה): D-023 מאושר — ה-escrow (≥1 SBD על מסילת-ה-convert, התשואה המוגדרת-ביותר: edge +40.8% נמדד) יבוצע על-ידי מסילת-ה-convert של saos-dex (המסילות פתוחות לפי הבעלים trace 1a12…9241 — FULL LIFT). החוכמה: ה-escrow הוא ב-SBD (נמדד: 91.195 ≥ 1 — זמין) ואינו מעמיק את חריגת-רצפת-ה-STEEM (55.2 < 90); ההוצאה מתוזמנת עם סעיפי-שמירה, והריבונות לא חותמת על-השרשרת מחוץ למסילה-החמושה שלה.",
    "measured": {
     "sbd": 91.195,
     "source": "grid-truth (RPC-measured)",
@@ -156,7 +156,7 @@
     "edge": "+40.8% מדוד על מסילת-ה-convert (value-scan scan-econ-0)"
    },
    "mandate": {
-    "to": "saos-dex convert lane (staged lane open per STASIS full-lift trace 1a12d295c7da9241)",
+    "to": "saos-dex convert lane (staged lane open per STASIS full-lift trace 1a12…9241)",
     "guards": [
      "escrow ≤ 1 SBD ראשוני",
      "קבלת-ביצוע על-השרשרת ל-dex/pnl-desk.json + עדכון פנקס-ההחלטות",

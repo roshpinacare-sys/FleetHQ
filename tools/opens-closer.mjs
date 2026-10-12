@@ -26,7 +26,7 @@ const targets = [
   { key: 'lighthouse', url: RAW + 'sovereign-lighthouse/main/state.json', tsKey: 'at', slaMin: 80, selfHealWorkflow: 'lighthouse-pulse.yml', selfHealRepo: 'sovereign-lighthouse', crossRepo: true, healNote: 'cross-repo dispatch via CROSS_REVIVE_PAT secret (owner authority delegated to the sovereignty — T-63 D1, claim 440e40f3)' },
   { key: 'value-scan', url: RAW + 'FleetHQ/main/office/state/value-scan.json', tsKey: 'generatedAt', slaMin: 90, selfHealWorkflow: 'value-scan.yml', healNote: 'same-repo dispatch, GITHUB_TOKEN (added T-63 — GitHub scheduler drops these runs too, measured 176min vs SLA 90)' },
   { key: 'domain-pulse', url: RAW + 'Domain/main/office/data.json', tsKey: 'generatedAt', slaMin: 180, selfHealWorkflow: null, healNote: 'writer is the sovereign runtime runner (office-pulse-bot), NOT a GitHub workflow — N7 closed by measurement T-62 (runtime lane 40bb19dc); if it freezes again the revival is a runtime-lane dispatch, not a credential gap' },
-  // R31 (trace 1a12d4daf2926fd5): the remaining SEVEN room feeds of the 3D office
+  // R31 (trace 1a12…6fd5): the remaining SEVEN room feeds of the 3D office
   // (Domain/office3d/v2/index.html const FEEDS) — the blind-spot closure: with
   // only office-state+pulse watched, the ledger could say "all fresh" while five
   // room feeds were stale. slaMin = room FRESH_MIN cap + 30min grace (measured
