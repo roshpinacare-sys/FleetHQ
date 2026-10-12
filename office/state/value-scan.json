@@ -1,38 +1,29 @@
 {
  "schema": "worlds.value-scan/1",
- "generatedAt": "2026-10-11T21:41:43.643Z",
+ "generatedAt": "2026-10-12T00:38:58.106Z",
  "verdictHe": "נמדדו 12 הזדמנויות-ערך מראיות חיות (גרף + משרד + שרשרת)",
  "topIds": [
-  "scan-revival-roshpina",
   "scan-revival-saos-jummper",
   "scan-revival-Sdk",
   "scan-econ-0",
-  "scan-econ-1"
+  "scan-econ-1",
+  "scan-econ-2"
  ],
  "metrics": {
-  "revivalLanes": 3,
+  "revivalLanes": 2,
   "econSteps": 6,
-  "policyEdges": 10,
+  "policyEdges": 9,
   "blockedTasks": 1,
-  "errorAgents": 3,
+  "errorAgents": 0,
   "openTasks": 0,
-  "totalTasks": 109,
+  "totalTasks": 111,
   "treasurySp": 2925.6,
   "orphans": 0,
-  "ghosts": 2,
-  "flowNodes": 34,
+  "ghosts": 0,
+  "flowNodes": 35,
   "dexVerdict": "EDGE-NEGATIVE-GRID-HOLD"
  },
  "opportunities": [
-  {
-   "id": "scan-revival-roshpina",
-   "area": "revival",
-   "titleHe": "תחיית roshpina — fee engine — ARMED",
-   "valueHe": "armed→live: החלטת אירוח בלבד (sovereign engine :3044 או runner חוץ); אחר-כך מסילת עמלה ראשונה על D-023",
-   "evidence": "FLEET-GRAPH revivalQueue · repo=roshpina",
-   "source": "FleetHQ GOVERNANCE/FLEET-GRAPH.json",
-   "effort": "L"
-  },
   {
    "id": "scan-revival-saos-jummper",
    "area": "revival",
@@ -106,15 +97,6 @@
    "effort": "M"
   },
   {
-   "id": "scan-policy-Adsmarket-Domain",
-   "area": "flow",
-   "titleHe": "הפעלת קשת Adsmarket→Domain",
-   "valueHe": "marketing content (kit) — קשת מדיניות מוצהרת שיכולה לחיות עכשיו",
-   "evidence": "edge status=policy · FLEET-ROLES §6 feeding rule + freshness gate",
-   "source": "FleetHQ GOVERNANCE/FLEET-GRAPH.json",
-   "effort": "S"
-  },
-  {
    "id": "scan-policy-Defi-saos-dex",
    "area": "flow",
    "titleHe": "הפעלת קשת Defi→saos-dex",
@@ -129,6 +111,24 @@
    "titleHe": "הפעלת קשת vault-home→Zip",
    "valueHe": "key canon → encrypted KEYS-ZIP packages — קשת מדיניות מוצהרת שיכולה לחיות עכשיו",
    "evidence": "edge status=policy · seal+encrypt",
+   "source": "FleetHQ GOVERNANCE/FLEET-GRAPH.json",
+   "effort": "S"
+  },
+  {
+   "id": "scan-policy-vault-home-steem",
+   "area": "flow",
+   "titleHe": "הפעלת קשת vault-home→steem",
+   "valueHe": "custody doctrine (GEN-2 rotation queue) — קשת מדיניות מוצהרת שיכולה לחיות עכשיו",
+   "evidence": "edge status=policy · governance",
+   "source": "FleetHQ GOVERNANCE/FLEET-GRAPH.json",
+   "effort": "S"
+  },
+  {
+   "id": "scan-policy-Console-SovereignConsole",
+   "area": "flow",
+   "titleHe": "הפעלת קשת Console→SovereignConsole",
+   "valueHe": "one-way DR mirror — קשת מדיניות מוצהרת שיכולה לחיות עכשיו",
+   "evidence": "edge status=policy · FLEET-ROLES §2 weekly sync",
    "source": "FleetHQ GOVERNANCE/FLEET-GRAPH.json",
    "effort": "S"
   }
