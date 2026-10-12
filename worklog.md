@@ -505,7 +505,7 @@ Stage Summary:
 - FleetHQ עברה מ"משחק עם פאנלים מקצועיים" ל"מכשיר-תפעולי מרחבי": אין-שחקן, יש-במאי; אין-קוסמטיקה, יש-היררכיית-תאורה; אין-שחור-שקט, יש-אמת-מוכנות; אין-ירוק-מזויף בגיט, יש-מלאי-כנה-עם-unknown מפורש; וכל-בייט-החוצה עובר שער-אחד עם רגרסיה-מוכחת. Task 46+: לשקול התמדת-משימות-חוצה-הפעלות (דרישת-קדם-מתועדת) ולבדוק GPU אמיתי.
 
 ---
-T-52b (trace 1a12416dcba85e31): public ciphertext home synced — keys.env.enc re-sealed 3→7 slots (GitLab/Supabase/Vercel/Render infra tokens added; all verified live pre-seal). Same P — wraps untouched. See private fleet-vault MANIFEST seals[0] for the sha256 pin.
+T-52b (trace 1a12…5e31): public ciphertext home synced — keys.env.enc re-sealed 3→7 slots (GitLab/Supabase/Vercel/Render infra tokens added; all verified live pre-seal). Same P — wraps untouched. See private fleet-vault MANIFEST seals[0] for the sha256 pin.
 
 ---
 Task ID: 46
@@ -595,7 +595,7 @@ Agent: Z.ai Code (main session)
 Task: המשך-48 — בדיקת-דחיפת-הכספות חשפה דו-קיום-חותמות ושני באגי-שורש בעורקי-הסנכרון; תוקנו-מהשורש, דווח-בכנות.
 
 Work Log (הכל נמדד-חי):
-- **גילוי: הענן הקדים (T-57 · trace 1a125590a7fdebad)** — בדיקת-הדחיפה חשפה שצוות-הענן כבר אטם את **אותו קובץ הבעלים** (איפאי.txt) בבית-הפרטי: 7→**23 סלוטים** (TAVILY×2 · MCP-URL · JINA · **IPAI** — אותו מפתח-נקודה-בלתי-מזוהה, גם-הם: "אטום-עד-זיהוי") + intake-custody (רשויות-המפעיל) + ארכיון-intake×7 + גשר-custody→saos-engine. מסקנה-מבצעית: דחיפת-החותם-המקומי-שלי (12) הייתה **מורידה-דרגה** את הכספת-הקנונית.
+- **גילוי: הענן הקדים (T-57 · trace 1a12…ebad)** — בדיקת-הדחיפה חשפה שצוות-הענן כבר אטם את **אותו קובץ הבעלים** (איפאי.txt) בבית-הפרטי: 7→**23 סלוטים** (TAVILY×2 · MCP-URL · JINA · **IPAI** — אותו מפתח-נקודה-בלתי-מזוהה, גם-הם: "אטום-עד-זיהוי") + intake-custody (רשויות-המפעיל) + ארכיון-intake×7 + גשר-custody→saos-engine. מסקנה-מבצעית: דחיפת-החותם-המקומי-שלי (12) הייתה **מורידה-דרגה** את הכספת-הקנונית.
 - **באג-שורש 2 (vault.sh export)** — כבר דווח ב-48; התברר שהענן תיקן-אותו-בעצמו ב-T-47-agent-2 (ב1e62a2: "export-bug in vault.sh open (auto-unwrap never worked!)" + גילוי-remote-מוטמע) — אך **התיקון-מעולם-לא-הגיע-לבית-הציבורי** (הציבורי-נשאר על-גרסת-188-שורות-לפני-הגילוי → discover_credentials החזיר 0-מועמדים → "push failed with every discovered credential"). אומצו הגרסאות-הקנוניות-של-הענן (vault.sh-137 · vaultlib.sh-210) לבית-הציבורי — הגילוי-חי: מועמד-אחד-נמצא, הדחיפה-עברה.
 - **באג-שורש 3 (כיוון-סנכרון-כלים)**: push-vaults העתיק-כלים/תורה **ציבורי→פרטי** והוריד-דרגה את SOVEREIGNTY-§8-של-הענן (−167-שורות) ואת auto-unseal.sh ב-commit-הראשון (e1b7f86). תוקן: **כיוון-הפוך** — בית-העצמי=קנוני, הציבורי-מראה (repair-commit 26a3d5f שיחזר §8 ל-336-שורות; הריצה-הבאה מראה-אותו ל-FleetHQ).
 - **מגן-נסיגת-חותם (חוק-חדש-ב-push-vaults)**: אסור-להעתיק חותם-קטן-מעל-חותם-גדול (ciphertext-גדל-עם-סלוטים); wraps-ב-no-clobber; ssh-keys.tar.enc-באותו-חוק. **הוכח-חי**: "refusing seal regression (public 1568 < private 2016) — the private seal stays canonical" — החותם-הקנוני-של-הענן לא-נגע.
