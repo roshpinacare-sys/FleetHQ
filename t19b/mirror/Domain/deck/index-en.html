@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SAOS · Partner &amp; Investor Deck</title>
+<meta name="description" content="SAOS: sovereignty with receipts. The full deck — every figure measured or anchored on-chain.">
+<link rel="canonical" href="https://roshpinacare-sys.github.io/Domain/deck/index-en.html">
+<meta property="og:title" content="SAOS · Partner &amp; Investor Deck">
+<meta property="og:description" content="SAOS: sovereignty with receipts. The full deck — every figure measured or anchored on-chain.">
+<meta property="og:url" content="https://roshpinacare-sys.github.io/Domain/deck/index-en.html">
+<meta property="og:image" content="https://roshpinacare-sys.github.io/Domain/assets/og-cover.png">
+<meta property="og:site_name" content="SAOS · THE WEAVE">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="en_US">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="alternate" hreflang="he" href="https://roshpinacare-sys.github.io/Domain/deck/">
+<link rel="alternate" hreflang="en" href="https://roshpinacare-sys.github.io/Domain/deck/index-en.html">
+<link rel="stylesheet" href="../assets/site.css">
+<script src="../assets/site.js" defer></script>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2.5 20.5 7v10L12 21.5 3.5 17V7z' fill='none' stroke='%23d4af37' stroke-width='1.6'/%3E%3Ccircle cx='12' cy='9' r='2' fill='%23d4af37'/%3E%3Ccircle cx='8.5' cy='15' r='2' fill='%23a78bfa'/%3E%3Ccircle cx='15.5' cy='15' r='2' fill='%23a78bfa'/%3E%3C/svg%3E">
+<style>
+:root{--bg:#09090b;--panel:#18181b;--panel2:#131316;--border:#27272a;--tx:#fafafa;--mut:#a1a1aa;--dim:#71717a;--gold:#d4af37;--purple:#a78bfa;--green:#22c55e;--red:#ef4444;--yellow:#eab308;
+--mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;--sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;background:var(--bg);color:var(--tx);font-family:var(--sans);overflow:hidden}
+.mono{font-family:var(--mono);direction:ltr;unicode-bidi:isolate}
+.slide{position:absolute;inset:0;display:none;flex-direction:column;justify-content:center;padding:6vh 7vw;overflow:hidden}
+.slide.on{display:flex;animation:in .45s ease both}
+@keyframes in{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.kick{font-family:var(--mono);font-size:12px;color:var(--gold);letter-spacing:.2em;margin-bottom:18px}
+h1{font-size:clamp(34px,5.4vw,60px);font-weight:800;line-height:1.14;letter-spacing:-.01em}
+h2{font-size:clamp(26px,3.8vw,42px);font-weight:800;line-height:1.2;margin-bottom:20px}
+.gold{color:var(--gold)}.green{color:var(--green)}.purple{color:var(--purple)}.red{color:var(--red)}
+.sub{color:var(--mut);font-size:clamp(15px,1.9vw,21px);margin-top:18px;max-width:60ch;line-height:1.6}
+.grid{display:grid;gap:12px;margin-top:26px}
+.g2{grid-template-columns:1fr 1fr}.g3{grid-template-columns:repeat(3,1fr)}.g4{grid-template-columns:repeat(4,1fr)}
+.box{background:var(--panel2);border:1px solid var(--border);border-radius:12px;padding:18px}
+.box .v{font-family:var(--mono);font-size:clamp(19px,2.5vw,30px);font-weight:800}
+.box .l{font-size:12.5px;color:var(--mut);margin-top:5px;line-height:1.45}
+.box h3{font-size:15.5px;margin-bottom:7px}
+.box p{font-size:13px;color:var(--mut);line-height:1.55}
+.badge{font-family:var(--mono);font-size:9.5px;color:var(--green);border:1px solid rgba(34,197,94,.4);border-radius:4px;padding:1px 6px;margin-left:5px}
+table{width:100%;border-collapse:collapse;font-size:13.5px;margin-top:20px}
+th{font-family:var(--mono);font-size:10.5px;color:var(--dim);text-align:left;border-bottom:1px solid var(--border);padding:7px 10px;letter-spacing:.06em}
+td{padding:9px 10px;border-bottom:1px solid #1f1f23;vertical-align:top}
+td.m{font-family:var(--mono);font-size:11.5px;color:var(--mut);direction:ltr;text-align:left}
+td b{font-size:13.5px}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--green);margin-right:7px}
+ul.pts{list-style:none;margin-top:20px}
+ul.pts li{padding:9px 0;border-bottom:1px dashed var(--border);font-size:clamp(14px,1.7vw,17px);color:var(--mut);display:flex;gap:12px;align-items:baseline}
+ul.pts li .m{font-family:var(--mono);color:var(--gold);flex:none;font-size:13px}
+ul.pts li b{color:var(--tx)}
+.quote{font-size:clamp(24px,3.6vw,42px);font-weight:800;line-height:1.35;max-width:24ch}
+.he{font-family:var(--mono);font-size:14px;color:var(--mut);margin-top:20px;direction:rtl;text-align:left}
+.nav{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);display:flex;gap:14px;align-items:center;z-index:50}
+.nav button{background:var(--panel);border:1px solid var(--border);color:var(--mut);width:42px;height:42px;border-radius:10px;font-size:18px;cursor:pointer;font-family:var(--mono)}
+.nav button:hover{color:var(--tx);border-color:var(--gold)}
+.ctr{font-family:var(--mono);font-size:12px;color:var(--dim)}
+.pnum{position:fixed;top:20px;right:26px;font-family:var(--mono);font-size:11px;color:var(--dim);z-index:50}
+.logo{position:fixed;top:16px;left:26px;font-family:var(--mono);font-weight:700;font-size:15px;letter-spacing:.12em;z-index:50;color:var(--tx)}
+.logo .dotg{color:var(--gold)}
+.foot{position:absolute;bottom:26px;left:7vw;font-size:11px;color:var(--dim);font-family:var(--mono)}
+.foot a{color:var(--gold);text-decoration:none}
+.foot a:hover{text-decoration:underline}
+@media print{
+  html,body{overflow:visible;background:#fff}
+  .slide{position:relative;display:flex !important;inset:auto;page-break-after:always;min-height:100vh;animation:none}
+  .nav,.pnum,.logo{display:none}
+  @page{size:A4 landscape;margin:0}
+}
+</style>
+</head>
+<body>
+<header class="nhead sop-float"></header>
+<div class="logo">SAOS<span class="dotg">·</span></div>
+<div class="pnum"><span id="pn">1</span> / 12</div>
+
+<!-- 1 · title -->
+<section class="slide on">
+  <div class="kick">PARTNER DECK · ALL FIGURES MEASURED OR ON-CHAIN</div>
+  <h1>Sovereignty<br><span class="gold">with receipts.</span></h1>
+  <p class="sub">SAOS is a sovereign network that anchors every signature, every claim and every refusal on 8 public chains it does not control. Every number in this deck is measured or anchored on-chain, with a link for independent verification.</p>
+  <div class="foot">github.com/roshpinacare-sys/Console · fact-sheet v3.27 · <a href="index.html">עברית</a></div>
+</section>
+
+<!-- 2 · thesis -->
+<section class="slide">
+  <div class="kick">THE THESIS</div>
+  <div class="quote">"Every agent can claim anything.<br><span class="gold">Only a public chain cannot lie."</span></div>
+  <div class="he">כל סוכן יכול לטעון הכל. רק שרשרת ציבורית לא יכולה לשקר.</div>
+  <p class="sub">In an age where AI agents publish millions of claims a day, the scarce resource is neither compute nor capital. It is verifiable truth. We make lying expensive: a permanent notarized record costs less than a hundredth of a cent.</p>
+</section>
+
+<!-- 3 · numbers -->
+<section class="slide">
+  <div class="kick">BY THE NUMBERS · MEASURED, NOT CLAIMED</div>
+  <h2>The numbers</h2>
+  <div class="grid g3">
+    <div class="box"><div class="v">133,259+</div><div class="l">blocks on SAOS-NET · survived a planned fork @130,000 with kernel fixes <span class="badge">measured</span></div></div>
+    <div class="box"><div class="v">32,603 tx/s</div><div class="l">replay of 65,238 real archive transactions <span class="badge">measured</span></div></div>
+    <div class="box"><div class="v">6/6 × 9</div><div class="l">full anchor matrix, nine consecutive cycles with per-chain receipts <span class="badge">live</span></div></div>
+    <div class="box"><div class="v">$0.0000081</div><div class="l">permanent notary record (10K batch) · exact-to-wei gas model <span class="badge">measured</span></div></div>
+    <div class="box"><div class="v">88ms</div><div class="l">sovereign cross-chain conversion (p50) vs 10-90 minutes third-party <span class="badge">measured</span></div></div>
+    <div class="box"><div class="v">36s</div><div class="l">self-heal from a kernel OOM kill · zero human touch <span class="badge">measured</span></div></div>
+  </div>
+</section>
+
+<!-- 4 · receipts -->
+<section class="slide">
+  <div class="kick">RECEIPTS · OPEN IN THE EXPLORERS, NOW</div>
+  <h2>The receipt wall</h2>
+  <table>
+    <tr><th>Chain</th><th>Receipt</th><th>Location</th></tr>
+    <tr><td><span class="dot"></span><b>ETHEREUM</b></td><td class="m">0x102ec1935be6…0ef41 · cycle h25 anchor 0x02648a90…</td><td class="m">blk 25,929,261 · blk 25,958,268</td></tr>
+    <tr><td><span class="dot"></span><b>SOLANA</b></td><td class="m">2M1rkRgg…UM2M9 · seed anchor 5z46xVFc…wZr5 · h25: 5BbqFe46…</td><td class="m">slot 445,822,974 · slot 446,313,117</td></tr>
+    <tr><td><span class="dot"></span><b>STEEM</b></td><td class="m">390bcfc2…66177 · free notary 7639c915…2b46</td><td class="m">blk 10,937,394 · blk 109,496,567</td></tr>
+    <tr><td><span class="dot"></span><b>HIVE</b></td><td class="m">d4cf936b…2bd5</td><td class="m">blk 10,970,856</td></tr>
+    <tr><td><span class="dot"></span><b>TRON</b></td><td class="m">1db5006b… (bit-encoded, net zero fee)</td><td class="m">blk 86,019,974</td></tr>
+    <tr><td><span class="dot"></span><b>BLURT</b></td><td class="m">f98a1285… · 67437c73… (seventh rail, zero cost)</td><td class="m">blk 63,551,154 · 63,551,991</td></tr>
+  </table>
+  <p class="sub" style="font-size:14px">XRPL and BSC on the v50 wall: book 106,890,679 · block 121,011,726. Full links in the receipts page and the landing pages.</p>
+</section>
+
+<!-- 5 · consistency + house of memory -->
+<section class="slide">
+  <div class="kick">PROOF ARCHITECTURE</div>
+  <h2>The chain is the book</h2>
+  <div class="grid g2">
+    <div class="box"><h3>Cross-chain consistency</h3><p>The exact same stateRoot (d4970bb5…) anchored simultaneously on Ethereum and Solana and verified bit-for-bit from two separate RPC reads. "Two roots, one key, five networks" measured again and again.</p></div>
+    <div class="box"><h3>The house of memory (v68)</h3><p>An environment wipe erased the local book entirely. The organism rebuilt itself from the chain and verified live relays. The ultimate proof: what is on-chain cannot be lost.</p></div>
+    <div class="box"><h3>Gas models in two separate vessels</h3><p>The notary model predicted a mainnet transaction to the wei (30,920 gas, block 25,929,672, incl. EIP-7623). The anchor model was right 7 times in a row (32,680 gas). Every model carries its own receipt.</p></div>
+    <div class="box"><h3>Commit-sync radar (v74)</h3><p>Live commit-freshness verification against GitHub for every repo. A behind=1 state was caught and handled. Proven three times live. No fallen environment leaves us behind without us knowing.</p></div>
+  </div>
+</section>
+
+<!-- 6 · products -->
+<section class="slide">
+  <div class="kick">PRODUCT FAMILY · FOUR DOORS</div>
+  <h2>What already exists and runs</h2>
+  <div class="grid g2">
+    <div class="box"><h3><span class="mono" style="color:var(--purple);font-size:10px">IDENTITY API · LIVE TODAY</span></h3><p>One call proves a Steem/Hive account and an EVM address are the same key. Proven from the chain itself. Zero-dependency SDK, metered, PROVEN live against block 109,389,994. npm and gateway pending the owner's decision.</p></div>
+    <div class="box"><h3><span class="mono" style="color:var(--purple);font-size:10px">DEX + EXCHANGE + CONVERSION ROOM</span></h3><p>A book with full escrow · structurally sandwich-proof CoW settlement · a ve(3,3) engine with profit-capped buy-and-burn · a launchpad with live graduation · conversion room: 65/65 atomic legs, 88ms, exact-to-quote settlement · 10/10 assets in routing.</p></div>
+    <div class="box"><h3><span class="mono" style="color:var(--purple);font-size:10px">JUMPPER · NOTARY</span></h3><p>Batch notary ($0.0000081 per record) · a free rail with a live receipt · a repair-anchor that publishes fixes where the forks live · epochguard that prevents forks (0 collisions on a real sequence).</p></div>
+    <div class="box"><h3><span class="mono" style="color:var(--purple);font-size:10px">WALLET + TOWER + CLOCK</span></h3><p>A 7-chain wallet (M0-M4 verified) · an independent Ethereum explorer where you can see our anchors · an atomic clock: 6 chains to one root in 15.9ms, $0, keyless.</p></div>
+  </div>
+</section>
+
+<!-- 7 · real money -->
+<section class="slide">
+  <div class="kick">REAL MONEY · MOVING, MEASURED, DOCUMENTED</div>
+  <h2>The money already moves</h2>
+  <ul class="pts">
+    <li><span class="m">[v]</span><span><b>Old money found, wired and physically moved:</b> ETH and BNB swept to the treasury in real transactions, source addresses drained to 0. Transfer cost: ~0.5% of the dust itself.</span></li>
+    <li><span class="m">[v]</span><span><b>First conversion on HIVE:</b> txid 46ed2f58… · fleet 11/11 · balanced RC economics.</span></li>
+    <li><span class="m">[v]</span><span><b>Micro-rail:</b> a decayed price premium ground from +459% to +24.7% in 16 measured TWAP lots · net +133kµ · a phantom gap identified and proactively burned, in the open.</span></li>
+    <li><span class="m">[v]</span><span><b>Exact-to-quote settlement:</b> an atomic STEEM->USDS conversion settled exactly to the quote (2268µ).</span></li>
+    <li><span class="m">[v]</span><span><b>Harvest to real payroll:</b> 36.4 SAOS-M flowed to payroll with a tx. Tiny economics, completely real.</span></li>
+  </ul>
+</section>
+
+<!-- 8 · breakthroughs -->
+<section class="slide">
+  <div class="kick">FIVE BREAKTHROUGHS · EACH WITH ITS HONEST LIMIT</div>
+  <h2>What is hard to copy</h2>
+  <ul class="pts">
+    <li><span class="m">B1</span><span><b>Cross-paradigm identity:</b> one Graphene key = an EVM address, an ecrecover proof without exposing anything. Limit: automatic login/recovery is under construction.</span></li>
+    <li><span class="m">B2</span><span><b>An L1-shadow at a ~zero security budget:</b> a free notary instead of salaries and validators. Limit: finality is inherited from the hosts.</span></li>
+    <li><span class="m">B3</span><span><b>Public refusal counters:</b> 383,836 refused transactions, documented. Limit: the economic scale is still tiny.</span></li>
+    <li><span class="m">B4</span><span><b>1:1 wraps as a code invariant:</b> 20 assets, supply==locked. Limit: total locked is small today, and that is published.</span></li>
+    <li><span class="m">B5</span><span><b>An organism that heals and corrects itself in public:</b> a 36s heal, self-fixes published, including against ourselves.</span></li>
+  </ul>
+</section>
+
+<!-- 9 · honesty moat -->
+<section class="slide">
+  <div class="kick">THE HONESTY MOAT</div>
+  <h2>Honesty as a competitive moat</h2>
+  <div class="grid g4">
+    <div class="box"><div class="v">100+</div><div class="l">truth gaps closed with live proofs in a single audit day (roasts 53-82)</div></div>
+    <div class="box"><div class="v">h20808</div><div class="l">the first live HALT: invariants caught a phantom LP, the root was fixed, the drift was declared</div></div>
+    <div class="box"><div class="v">×52.6</div><div class="l">our own measurement error on HIVE was published with the fix and became a trust asset</div></div>
+    <div class="box"><div class="v">0.6->2.1</div><div class="l">a cost model falsified by live measurement, and the falsification published</div></div>
+  </div>
+  <p class="sub">The self-criticism archive is open. No project in this space publishes its own roasts. We do, and that is exactly what makes the rest of the numbers credible.</p>
+</section>
+
+<!-- 10 · resilience -->
+<section class="slide">
+  <div class="kick">RESILIENCE · MEASURED IN REAL FRACTURES</div>
+  <h2>Resilience proven in fire</h2>
+  <div class="grid g3">
+    <div class="box"><div class="v green">36s</div><div class="l">self-heal from OOM · mutual watch (the runner guards the runner) · zombie detector: "a live process is not truth, block progress is the truth"</div></div>
+    <div class="box"><div class="v purple">66 + 9/9</div><div class="l">LIVE-GATE: every daemon dry-by-default · RESHUT: 9/9 privilege-attack vectors blocked live · MAGEN: a fail-closed anti-phishing gate</div></div>
+    <div class="box"><div class="v gold">687 -> 0</div><div class="l">files monitored by a live secrets scan, zero real holes · keys never in the repo · a clean, verified git history · a past-vault restore exercise in full</div></div>
+  </div>
+</section>
+
+<!-- 11 · roadmap + the ask -->
+<section class="slide">
+  <div class="kick">WHAT'S NEXT · THE ASK</div>
+  <h2>94 cents away from 12 chains</h2>
+  <ul class="pts">
+    <li><span class="m">$0.94</span><span><b>Gas funding (engine v52 measurement):</b> 7 proven-pipeline EVM doors waiting. Anchor presence 5->12. Engine rating: 11.9x impact.</span></li>
+    <li><span class="m">npm</span><span><b>Shipping the SDK + public gateway:</b> the first product becomes available to every external developer. An hour of work.</span></li>
+    <li><span class="m">audit</span><span><b>External audit:</b> a byte-identical package sits packed and waiting with 13 invariants and 9 documented cryptographic assumptions.</span></li>
+    <li><span class="m">pilots</span><span><b>Pilots:</b> 10 verified targets (blockchain games, exchanges, content frontends) waiting for the Identity API. We are looking for the first partner.</span></li>
+  </ul>
+</section>
+
+<!-- 12 · close -->
+<section class="slide">
+  <div class="kick">CLOSE</div>
+  <h1>Don't believe us.<br><span class="gold">Verify.</span></h1>
+  <p class="sub">Every receipt is open in an explorer. Every measurement reproducible. Every mistake of ours fixed in public. This is not a slogan; it is a two-week archive.</p>
+  <div class="he">אל תאמינו לנו. תאמתו.</div>
+  <div class="foot">truth.html · versus.html · readiness.html · <a href="index.html">deck in Hebrew</a></div>
+</section>
+
+<div class="nav">
+  <button id="prev" aria-label="Previous">·</button>
+  <span class="ctr"><span id="cn">1</span>/12</span>
+  <button id="next" aria-label="Next">·</button>
+</div>
+
+<script>
+(function(){
+  const sl=[...document.querySelectorAll('.slide')];
+  let i=0;
+  const pn=document.getElementById('pn'), cn=document.getElementById('cn');
+  function go(n){
+    if(n<0)n=sl.length-1; if(n>=sl.length)n=0;
+    sl[i].classList.remove('on'); i=n; sl[i].classList.add('on');
+    pn.textContent=i+1; cn.textContent=i+1;
+  }
+  document.getElementById('next').onclick=()=>go(i+1);
+  document.getElementById('prev').onclick=()=>go(i-1);
+  document.addEventListener('keydown',e=>{
+    if(e.key==='ArrowRight'||e.key===' '){e.preventDefault();go(i+1);}
+    if(e.key==='ArrowLeft')go(i-1);
+    if(e.key==='Home')go(0); if(e.key==='End')go(sl.length-1);
+  });
+  let tx=null;
+  document.addEventListener('touchstart',e=>{tx=e.touches[0].clientX;},{passive:true});
+  document.addEventListener('touchend',e=>{
+    if(tx===null)return;
+    const dx=e.changedTouches[0].clientX-tx;
+    if(Math.abs(dx)>60)go(dx>0?i+1:i-1);
+    tx=null;
+  },{passive:true});
+})();
+</script>
+</body>
+</html>

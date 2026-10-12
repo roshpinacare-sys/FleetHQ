@@ -1,0 +1,32 @@
+{
+ "id": "CR-0040",
+ "from": "fleet-census desk (R14)",
+ "tier": "B",
+ "opened_at": "2026-10-03T19:03:48Z",
+ "proposes": "THE FLEET CENSUS — agents/fleet-census.cjs: an offline/keyless/DETERMINISTIC estate-wide desk that answers the owner directive (2026-10-03: examine the WHOLE git, connect the dots, what do we hold, what limits us, strengthen sovereignty, wire everything) MECHANICALLY over the real 16-repo estate on disk: (1) INVENTORY — 16 lanes x verified artifact markers, 61 capability markers hit, 11415 estate commits, every lane headed same-day (git heads + commit counts read per lane, metadata-only, zero secret echoes); (2) SOVEREIGNTY SCORECARD — counted not claimed: 8/43 Domain workflows keyless (35 carry owner secrets), STASIS brake present+armed with halt-in-code desks=1, 5 gated desks (DRY_RUN/OWNER-GATED/_LIVE env law), 21 offline/keyless desks, vault ceremony present (stdin intake + runbook), 5 mesh .t.sol; (3) BLOCKERS REGISTRY with LIVE-READ evidence — B1 fee-doctrine drift OPEN (FEE_BPS kernel=30 vs SAOSExchange=20 extracted from the sources at run time, RESOLVED-criterion = equality), B2 cadence series young OPEN (5 rows < 100 — the cron needs ~2 more days for the first honest distribution), B3 migration law ACTIVE (40bps floor < 90bps measured DEX round trip; any bridge re-spaces or stays maker-only), B4 TVM absent OPERATOR-GATED (X-1+X-2), B5 capital+authority OPERATOR-GATED (binding constraint by CR-0033 audit; DRY default proven in-source), B6 STASIS STANDING-BY (active=false healthy); (4) WIRING MAP — 10 composition arcs each verified by endpoint existence + in-source markers: cadence-cron, grid-history, stasis-brake, fill-loop, cycle-hands, cross-layer-lens, dex-grid-ledger, he-ladder-gate, vault-ceremony, census-map — 10/10 WIRED; (5) EDGE SERIES from our own ledgers — SBD/STEEM spread n=5 min=0.6565 max=1.5499 last=0.6565 (the sibling live-exec compression measured in-series), HBD/HIVE 0.1322, paper rows 110, dex grid-ledger 73 orders/43 fills; (6) 18 sha256 receipts. COMPOSITION (second-mover law, no duplication): one-bloc measures REACH — this desk measures CAPABILITY; capability-matrix measures CHAIN AUTHORITIES (network) — this desk is OFFLINE; cross-layer measures the 4 grid/market layers — this desk is the WHOLE estate. DETERMINISM LAW: stable payload byte-identical across runs for the same tree (only the book at-stamp moves) — proven E31. FAIL-SOFT: FLEET_CENSUS_ESTATE pointed at an empty dir = honest 0/16 all-MISSING census, blockers still booked null-safe, exit 0. E31 in run-evals v1.19.0 canonizes: spreadSeries exact, extractFirstInt (the drift-evidence path), 16-lane registry uniqueness, fresh-process real-estate book, determinism double-run, fail-soft empty-estate. evals 31/31.",
+ "rationale": "the owner asked for the whole-git connect-the-dots map; the fleet had reach (one-bloc), chain-authorities (capability-matrix) and layer-lens (cross-layer) but NO single offline desk that turns the estate into a measured capability/sovereignty/blocker/wiring answer — this is that answer, and it re-measures itself on every run so it cannot rot",
+ "risk": "low — read-only metadata; the only shared mutable is its own book (restored after sandbox runs); determinism makes diffs reviewable",
+ "verdict": "PASS — census 16/16 lanes present, 61 capability markers, 10/10 arcs WIRED, blockers open=2 operator=2 laws=1, receipts 18, evals 31/31 (E31 fresh-process + determinism + fail-soft)",
+ "judged_by": "self + run-evals v1.19.0 (E31) + full-chain gates",
+ "judged_at": "2026-10-03T19:03:48Z",
+ "receipts": [
+  "agents/fleet-census.json",
+  "agents/fleet-census.md",
+  "agents/evals/eval-results.json (E31)",
+  "agents/fleet-census.cjs sha256 receipted in-book (18 receipts)"
+ ],
+ "findings": [
+  "sovereignty is real but not total: 35/43 Domain workflows still carry owner secrets — the keyless share (8/43) is where autonomy compounds next",
+  "the edge series now exists mechanically: SBD/STEEM 1.5499->0.6565 measured in-series by our own cron — the first honest distribution needs ~100 rows (B2)",
+  "B1 fee-doctrine drift is now a MACHINE-CHECKED blocker: it self-resolves the day kernel FEE_BPS == SAOSExchange FEE_BPS",
+  "wiring is complete at the composition layer (10/10) — the missing arcs are CHAIN-side (TVM, capital routing) and operator-gated by doctrine, not by code"
+ ],
+ "refs": [
+  "CR-0033 (binding-constraint audit)",
+  "CR-0035 (composition law)",
+  "CR-0037 (cross-layer measured laws)",
+  "CR-0038 (cadence cron)",
+  "CR-0039 (closed cycle loop)",
+  "feat-034"
+ ]
+}

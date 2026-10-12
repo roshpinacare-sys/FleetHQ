@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>חדר הצמיחה — פוטנציאל · עבודה-פתוחה · מצוק-טוקן (אמת-מדודה)</title>
+<meta name="description" content="חדר-הצמיחה של המשרד הריבוני: סריקת-פוטנציאל חיה של האחוזה, work-orders אמיתיים עם קריטריוני-קבלה, מד-מצוק-טוקן. מוזן אך ורק מפידים אמיתיים — אפס נתונים פיקטיביים." />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📈</text></svg>" />
+<style>
+  :root{
+    --bg:#14110d; --surface:#1d1813; --surface2:#26201a; --line:#3d342a;
+    --ink:#f3ede2; --ink2:#c9bfae; --ink3:#8f8574;
+    --ok:#2fae63; --warn:#d9a13b; --err:#d95c4a; --sleep:#7f8ea3; --accent:#e0a458;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI","Noto Sans Hebrew",Arial,sans-serif}
+  body{min-height:100vh;padding:16px 14px 60px;padding-top:max(16px,env(safe-area-inset-top))}
+  a.room{position:fixed;top:max(8px,env(safe-area-inset-top));inset-inline-start:10px;z-index:9;font-size:12px;font-weight:700;color:var(--ink);background:rgba(34,28,22,.92);border:1px solid var(--line);border-radius:10px;padding:6px 11px;text-decoration:none}
+  header{max-width:1060px;margin:0 auto 14px;display:flex;flex-wrap:wrap;gap:10px;align-items:baseline}
+  h1{font-size:20px;margin:0} h1 small{color:var(--ink3);font-weight:600;font-size:12px}
+  .grid{max-width:1060px;margin:0 auto;display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px}
+  .card h2{font-size:14px;margin:0 0 10px;color:var(--accent)}
+  .meta{font-size:11px;color:var(--ink3);line-height:1.7}
+  table{width:100%;border-collapse:collapse;font-size:12px}
+  th{color:var(--ink3);font-weight:600;text-align:right;padding:4px 6px;border-bottom:1px solid var(--line)}
+  td{padding:5px 6px;border-bottom:1px solid rgba(61,52,42,.4);white-space:nowrap}
+  .chip{display:inline-block;border-radius:999px;padding:1px 8px;font-size:10.5px;font-weight:700;border:1px solid}
+  .FRESH{color:var(--ok);border-color:var(--ok)} .AGING{color:var(--warn);border-color:var(--warn)}
+  .STALE{color:var(--err);border-color:var(--err)} .SILENT{color:var(--err);border-color:var(--err);background:rgba(217,92,74,.12)}
+  .UNKNOWN{color:var(--sleep);border-color:var(--sleep)}
+  .wo{border:1px solid var(--line);border-radius:10px;padding:9px 11px;margin-bottom:8px;background:var(--surface2)}
+  .wo b{font-size:12.5px} .wo .why{font-size:11px;color:var(--ink2);margin:3px 0}
+  .wo .acc{font-size:10.5px;color:var(--ink3)} .P0{border-inline-start:3px solid var(--err)} .P1{border-inline-start:3px solid var(--warn)} .P2{border-inline-start:3px solid var(--sleep)}
+  .gauge{height:10px;border-radius:999px;background:var(--surface2);overflow:hidden;margin:8px 0}
+  .gauge i{display:block;height:100%;background:var(--ok)}
+  .feeds div{font-size:11.5px;padding:3px 0;color:var(--ink2)}
+  .ok{color:var(--ok)} .err{color:var(--err)}
+  #stale{position:fixed;bottom:max(10px,env(safe-area-inset-bottom));inset-inline-start:50%;transform:translateX(50%);font-size:11px;color:var(--ink3);background:rgba(34,28,22,.92);border:1px solid var(--line);border-radius:999px;padding:5px 12px}
+  .honest{font-size:11px;color:var(--sleep);margin-top:8px;line-height:1.6}
+</style>
+</head>
+<body>
+  <a class="room" href="../">🏛️ מפקדת</a>
+  <header>
+    <h1>📈 חדר הצמיחה <small>· מה הפוטנציאל · מה פתוח · מה נותן ערך — נמדד, לא מדומיין</small></h1>
+  </header>
+  <div class="grid">
+    <section class="card" id="card-token">
+      <h2>⏳ מד-מצוק-טוקן</h2>
+      <div id="token-body" class="meta">מודד…</div>
+      <div class="honest">מקור: Sandbox/ops/TOKEN-TRUTH.md (נמדד-ב-CI, מטא-דאטה-בלבד)</div>
+    </section>
+    <section class="card" id="card-feeds">
+      <h2>🔌 פידים חיים</h2>
+      <div class="feeds" id="feeds-body">מודד…</div>
+      <div class="honest">חדר-זה קורא רק פידים ציבוריים — אמת-בעצמך: כל-כתובת-מוצגת-כאן</div>
+    </section>
+    <section class="card" id="card-estate" style="grid-column:1/-1">
+      <h2>🗺️ מפת-האחוזה (מצב-דחיפה-חי)</h2>
+      <div style="overflow-x:auto"><table id="estate-table"><thead><tr><th>שטח</th><th>מצב</th><th>גיל-דחיפה (ש'</th><th>אדומות 48ש</th><th>פתוחים</th></tr></thead><tbody><tr><td colspan="5" class="meta">מודד…</td></tr></tbody></table></div>
+      <div class="meta" id="delta" style="margin-top:8px"></div>
+    </section>
+    <section class="card" id="card-wos" style="grid-column:1/-1">
+      <h2>🧰 work-orders פתוחים — גיוס אמיתי (תבע-בפנקס עם מזהה-ה-WO)</h2>
+      <div id="wos-body" class="meta">מודד…</div>
+    </section>
+  </div>
+  <div id="stale">…</div>
+<script type="module">
+  const now = () => new Date();
+  const ago = (iso) => {
+    try { const s = (Date.now() - new Date(iso).getTime()) / 1000;
+      if (s < 3600) return Math.max(1, Math.round(s / 60)) + " ד׳";
+      if (s < 86400) return Math.round(s / 3600) + " ש׳";
+      return Math.round(s / 86400) + " ימים";
+    } catch { return "?"; }
+  };
+  const FEEDS = {
+    potential: "https://raw.githubusercontent.com/roshpinacare-sys/Sandbox/main/ops/office/potential.json",
+    wos: "https://raw.githubusercontent.com/roshpinacare-sys/Sandbox/main/ops/office/work-orders.json",
+    truth: "https://raw.githubusercontent.com/roshpinacare-sys/Sandbox/main/ops/TOKEN-TRUTH.md",
+  };
+  let loaded = null;
+  async function jget(u) { const r = await fetch(u, {cache:"no-store"}); if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); }
+  async function tget(u) { const r = await fetch(u, {cache:"no-store"}); if (!r.ok) throw new Error("HTTP " + r.status); return r.text(); }
+
+  function renderToken(txt) {
+    const el = document.getElementById("token-body");
+    const line = txt.split("\n").find(l => l.includes("ECO_WALLET_TOKEN") && l.includes("ALIVE")) || "";
+    const p = line.split("|").map(s => s.trim());
+    // [0]=זמן [1]=שם [2]=מצב [3]=סוג [4]=תפוגה [5]=ימים [6]=יתרה [7]=login
+    const days = parseInt(p[5], 10);
+    const pct = isNaN(days) ? 0 : Math.max(0, Math.min(100, (days / 90) * 100));
+    const col = isNaN(days) ? "var(--sleep)" : days <= 14 ? "var(--err)" : days <= 45 ? "var(--warn)" : "var(--ok)";
+    el.innerHTML = p.length >= 8
+      ? `<div>טוקן-הצי: <b>${p[1]}</b> · ${p[2]} · ${p[3]}</div>
+         <div>תפוגה: <b>${p[4]}</b> · נשארו <b style="color:${col}">${p[5]} ימים</b> · יתרה ${p[6]}</div>
+         <div class="gauge"><i style="width:${pct}%;background:${col}"></i></div>
+         <div>נמדד: ${ago(p[0])} בעבר · אם ≤14 ימים: נתיב token-forge/ROTATION-RUNBOOK מוכן ללחיצה-אחת</div>`
+      : "לא-נמדד (UNKNOWN) — ה-watchdog-יפרסם-בקרוב";
+  }
+  function renderEstate(p) {
+    const tb = document.querySelector("#estate-table tbody");
+    const rows = (p.estate && p.estate.rows) || [];
+    tb.innerHTML = rows.map(r => `<tr>
+      <td><b>${r.repo}</b>${r.archived ? " 📦" : ""}</td>
+      <td><span class="chip ${r.status}">${r.status}</span></td>
+      <td>${r.push_age_h ?? "?"}</td>
+      <td>${r.reds_48h ? `<span class="chip STALE">${r.reds_48h}</span>` : '<span class="chip FRESH">0</span>'}</td>
+      <td>${r.open_issues ?? "?"}</td></tr>`).join("")
+      || `<tr><td colspan="5" class="meta">אין-נתון</td></tr>`;
+    const d = document.getElementById("delta");
+    d.innerHTML = `<b>דלתא-מהמפה-הקודמת:</b> ${(p.delta_since_last || []).join(" · ") || "(אין-שינוי)"} · נסרקו ${p.estate?.scanned ?? "?"} מאגרים · ${p.not_scanned || ""}`;
+  }
+  function renderWos(wos) {
+    const el = document.getElementById("wos-body");
+    el.innerHTML = (wos.length ? wos : []).map(w => `<div class="wo ${w.priority}">
+      <b>[${w.priority}] ${w.id}</b> — ${w.title}
+      <div class="why">למה: ${w.why}</div>
+      <div class="acc">קריטריון-קבלה: ${w.acceptance}</div></div>`).join("")
+      || "אפס-work-orders — המערך-ירוק (נמדד)";
+  }
+  function renderFeeds(p) {
+    const el = document.getElementById("feeds-body");
+    el.innerHTML = ((p && p.feeds) || []).map(f => `<div>${f.http === "200" ? '<span class="ok">●</span>' : '<span class="err">✖</span>'} ${f.feed} — HTTP ${f.http}</div>`).join("")
+      + `<div class="honest">כתובות-לאימות-עצמי:<br>${Object.values(FEEDS).map(u => u.replace("https://", "")).join("<br>")}<br>+ ops/office/VALUE-MAP.md (הטבלה-המלאה)</div>`;
+  }
+  function stamp(p) {
+    const el = document.getElementById("stale");
+    if (!p || !p.measured_at) { el.textContent = "אין-נתון-מדוד — אין-זיופים"; return; }
+    el.textContent = `נמדד ${ago(p.measured_at)} בעבר · office-growth (כל-6 שעות) · רענון-תצוגה-כל-5 ד׳`;
+  }
+  async function boot() {
+    try {
+      const p = await jget(FEEDS.potential);
+      loaded = p;
+      renderEstate(p); renderFeeds(p); stamp(p);
+    } catch (e) {
+      document.getElementById("estate-table").querySelector("tbody").innerHTML = `<tr><td colspan="5" class="meta">פיד-נפל (${e.message}) — אין-זיופים, ממתין-לסריקה-הבאה</td></tr>`;
+    }
+    try { renderWos(await jget(FEEDS.wos)); } catch (e) {
+      document.getElementById("wos-body").textContent = "פיד-work-orders-נפל (" + e.message + ")";
+    }
+    try { renderToken(await tget(FEEDS.truth)); } catch (e) {
+      document.getElementById("token-body").textContent = "פיד-TOKEN-TRUTH-נפל (" + e.message + ")";
+    }
+  }
+  boot();
+  setInterval(boot, 5 * 60 * 1000);
+  window.__growthRoom = { get loaded() { return loaded; }, FEEDS };
+</script>
+</body>
+</html>

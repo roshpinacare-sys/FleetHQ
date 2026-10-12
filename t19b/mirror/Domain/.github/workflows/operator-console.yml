@@ -1,0 +1,51 @@
+name: operator-console
+# ═══════════════════════════════════════════════════════════════════════════
+# OPERATOR-CONSOLE · הצד-המקבל של פס-הפקודות (2026-10-12).
+# gate.html משדר custom_json חתום (saos.weave.ops.v1, רשות-posting) — הצד-המקבל
+# נבנה-עתה: השרשרת-הציבורית-עצמה מאמתת (op-קיים = חתום-ע"י-רשות-ה-posting), והפקודות
+# נכנסות-לשרשרת-הנחיות-הבעלים עם-provenance-קריפטוגרפי (txid). אפס-סודות בצד-זה.
+# fail-closed: selftest-שער + verdict law אדום-על-FAIL.
+# ═══════════════════════════════════════════════════════════════════════════
+on:
+  schedule:
+    - cron: "0,39 * * * *"
+  workflow_dispatch: {}
+  repository_dispatch:
+    types: [operator-console-tick]
+permissions:
+  contents: write
+concurrency:
+  group: operator-console
+  cancel-in-progress: false
+jobs:
+  receive:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 1}
+      - uses: actions/setup-node@v4
+        with: {node-version: 20}
+      - name: selftest gate + receive on-chain operator directives (zero secrets)
+        run: node agents/operator-console.cjs
+      - name: commit directives + receipt (honest verdicts always land, FAIL included)
+        if: always()
+        run: |
+          git config user.name "operator-console[bot]"
+          git config user.email "operator-console[bot]@users.noreply.github.com"
+          git add agents/operator agents/receipts/owner-directives.jsonl
+          if git diff --cached --quiet; then echo "nothing to commit"; exit 0; fi
+          git commit -m "operator-console: on-chain directives collected $(date -u +%FT%TZ)"
+          OK=0
+          for i in 1 2 3; do
+            if git -c rebase.autoStash=true pull --rebase origin main && git push origin main; then OK=1; echo "push ok (attempt $i)"; break; fi
+            git rebase --abort 2>/dev/null || true
+            sleep 5
+          done
+          [ "$OK" = "1" ] || { echo "receipt push failed after 3 attempts — honest failure"; exit 1; }
+      - name: verdict law (red unless PASS)
+        if: always()
+        run: |
+          V="$(node -e 'try{console.log(JSON.parse(require("fs").readFileSync("agents/operator/receipt.json","utf8")).overall)}catch{console.log("ERROR")}')"
+          echo "operator-console verdict: $V"
+          [ "$V" = "PASS" ] || { echo "receiver did not pass — run stays red (honesty over comfort)"; exit 1; }

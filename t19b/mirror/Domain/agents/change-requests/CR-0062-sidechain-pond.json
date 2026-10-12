@@ -1,0 +1,33 @@
+{
+ "id": "CR-0062",
+ "slot": 62,
+ "title": "Fleet Rung 32 — THE SIDECHAIN POND (mm-volume v1.4.0 + market-grid v1.3.0): the venue's own measured 24h volume IS the volume bound — the Hive-Engine projection OPENS on the pond (min(pond, capacity) with the binding NAMED), no borrowed tape prior. The pond rides in SWAP.HIVE from the HE metrics contract and converts to SBD-term by the MEASURED HBD/HIVE internal-market mid (SBD≈HBD parity is a labeled doctrine conversion — both are the chains' own USD-like assets; the RATE is measured, never hardcoded). The daily-history probe (marketHistory/history) joins the probe-first law: measured DARK today (answers null — not RPC-exposed), booked honestly with its reason; the day it answers the pond becomes a SERIES with zero new code.",
+ "operator": "owner directive (2026-10-04, Hebrew, fifth wave): 'להיות עושי השוק והגריד הכי גדולים והמרווחים על הרשתות... כמות מאוד גדולה של עסקאות... ניקח גם את העמלות של המשתמשים האחרים... תעלה הרבה שאילתות' — the R31 booked next-rungs executed: the sidechain pond measured and the HE share ladder opened.",
+ "design": {
+  "queries": {
+   "Q16_how_does_a_volume_projection_open_without_a_tape": "THE POND BOUND: no one can trade more than everything that trades — pondBound = floor(measuredPondSbd / measuredAvgFillSize); the projection opens on min(pond, capacity) and the binding is NAMED ('pond' or 'capacity'), never a borrowed 10fpm prior that belongs to another venue. Where both a tape prior and a pond exist, the pond beats the prior (measured beats assumed).",
+   "Q17_what_is_still_missing_for_the_sidechain_tape": "the per-trade tape: marketHistory/history probed EVERY RUN (market-grid v1.3.0, probe-first fail-loud — the Blurt law) and measured dark today (result null, not RPC-exposed) — surfaced as a dark surface with its reason; standing depth (buyBook/sellBook find is ALIVE and cheap) is the booked next rung.",
+   "Q18_how_does_the_conversion_stay_honest": "the SBD-term conversion uses the measured HBD/HIVE internal mid (chain condenser, live book first + history fallback since market-grid v1.3.0 carries mids); the SBD≈HBD parity is a LABELED doctrine conversion carried on every HE row (pondConversionLaw) — a labeled assumption, never a silent rewrite.",
+   "Q19_what_opened_for_the_fleet": "INTERNAL FLOW on the zero-fee HE basket: measured fee 0 bps per-token (tokens contract, R31) + pond projection > 0 → selfFlow ELIGIBLE under the same laws (25% cap, INTERNAL-FLOW label, VWAP-exclusion); internalFlowCapSbdDay 85.684-era → 259.9887 SBD/day measured. Fee'd venues (WAIV 25bps) stay honestly blocked FEE-ROUND-TRIP-NONZERO.",
+   "Q20_coordination_to_sibling_lanes": "STANDING DEPTH is booked as the next volume rung: HE buyBook/sellBook are find-exposed (probed live 2026-10-04) — cumulative depth near mid is the next measured input for order sizing on the sidechain; whoever lands it first grows fee-doctrine.json with a depth row. The pond conversion law (SBD≈HBD labeled) is settled here — do NOT re-invent a conversion rate; read the measured mid from market-grid."
+  },
+  "instruments": [
+   "agents/market-grid.cjs v1.3.0 — HE rows carry pond24hHive + pondTerm (the metrics.volume field named for what it is); heHistoryProbe probe-first fail-loud; history rows grow mids + hePonds + heHistoryAlive; the book grows the pond law as its 6th law",
+   "agents/mm-volume.cjs v1.4.0 — venueEconomics grows the pond bound (fillsPerMin nullable + pondVolumeSbd; validity = fee/spread/size AND tape-or-pond; bounds.pondBoundTradesDay; tie order tape→capture→pond→capacity); pondSbdTerm(pondHive, mid) pure; HE venues gain pond fields + econ + sharePct + shareLadder (pond rides through N) + selfFlow on the measured 0-fee; projections grow heVenuesProjected/hePondSbdDay/heProjVolumeSbdDay/heProjNetConsSbdDay; darkSurfaces grows he-daily-history; the plan ledger grows heVenuesProjected/hePondSbdDay; the series mapper is per-venue (HE sub = symbol — no cross-venue series contamination)",
+   "agents/evals/run-evals.cjs v1.41.0 — E54 (white-box pond bound exact + cross-rate exact + ladder pond-through + selfFlow opens; black-box mid-bearing fixture opens 3 HE venues with byte-stable payload + mid-less fixture keeps honest nulls; real-tree live ladders). E53's WAIV pin EVOLVED WITH THE DESK (written in the eval): the mid-less fixture's honest reason is NO-MEASURED-HBD-HIVE-MID, not NO-MEASURED-TAPE-HE"
+  ],
+  "measured_live_2026_10_04": {
+   "hePondSbdDay": 960.4816,
+   "heVenuesProjected": 5,
+   "heProjVolumeSbdDay": 556.255,
+   "projVolumeSbdDay": "85.684 → 1039.955 SBD/day (×12.14 on honest measured bounds — no invented volume)",
+   "bindings": "BEE/CENT/SWAP.DOGE/WAIV pond-bound; SWAP.LTC capacity-bound (pond 801.2838 SBD > capacity 576×0.691)",
+   "internalFlowCapSbdDay": 259.9887,
+   "shareExample": "BEE 99.6834% of its own pond at N=1 (the ladder is pond-flat — more soldiers do not multiply a small pond; the honest growth path is bigger venues + bigger capital)",
+   "darkSurfaces": ["he-daily-history (not RPC-exposed, probe-first)", "blurt-internal-market (no node answers)"]
+  }
+ },
+ "acceptance": "evals 54/54 GREEN v1.41.0 · claims 0 offenders suite MATCH · census 16/16 caps=61 wiring=10/10 · secret-scan 0 · HE pond ladders live on the owner dashboard",
+ "status": "APPLIED",
+ "at": "2026-10-04T07:30:00Z"
+}

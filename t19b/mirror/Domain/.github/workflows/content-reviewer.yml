@@ -1,0 +1,103 @@
+#
+# What it does (read-only on the chain, one committed report per run):
+#   2. Runs the same cross-account duplication logic as the home curation daemon's
+#      dedupe layer (normalized token-overlap, near-duplicate threshold 0.6) plus a
+#      24h staleness check per account.
+#   4. If cross-account duplication > 30%, opens an issue
+#      "content-review: duplication X%" (issues:write on the built-in
+#      github.token — the desk's token loop skips empty fallbacks by design).
+#
+#
+# push, the duplication issue) under the declared permissions, so the tokens are
+
+name: content-reviewer
+
+on:
+  schedule:
+    - cron: '3 5 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency:
+  group: content-reviewer
+  cancel-in-progress: false
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Checkout (keyless — same-repo only, R26 CR-0054)
+        uses: actions/checkout@v4
+        with:
+          token: ${{ github.token }}
+          fetch-depth: 1
+
+      - name: Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Measure public content (duplication + staleness, keyless)
+        run: node agents/content-reviewer.mjs
+
+      - name: Publish the report
+        if: always()
+        run: |
+          git config user.name "content-reviewer"
+          git config user.email "content-reviewer@users.noreply.github.com"
+          git add content-review/report-*.json
+          if git diff --cached --quiet; then
+            echo "report unchanged"
+            exit 0
+          fi
+          PCT=$(node -e "const d=require('fs').readdirSync('content-review').filter(f=>f.startsWith('report-')).sort().pop();const r=JSON.parse(require('fs').readFileSync('content-review/'+d,'utf8'));console.log(r.duplication.pairDuplicationPct)")
+          git commit -m "content-review: public-content report $(date -u +%Y-%m-%d) - duplication ${PCT}% (24h window) [skip ci]"
+          for attempt in 1 2 3; do
+            git pull --rebase origin main && git push origin HEAD:main && { echo "report published (attempt ${attempt})"; exit 0; }
+            echo "push failed (attempt ${attempt})"
+            sleep 5
+          done
+          echo "could not publish the report after 3 attempts"
+          exit 1
+
+      - name: Issue gate (duplication > 30%)
+        if: always()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          LAST=$(ls content-review/report-*.json 2>/dev/null | sort | tail -1)
+          if [ -z "$LAST" ]; then echo "no report found"; exit 0; fi
+          node -e "
+            const fs=require('fs');
+            const r=JSON.parse(fs.readFileSync('$LAST','utf8'));
+            const d=r.duplication, s=r.staleness;
+            if (!d.gateTripped) { console.log('duplication '+d.pairDuplicationPct+'% <= 30% - no issue'); process.exit(0); }
+            const day=r.day;
+            const body=[
+              'content-review measured '+d.pairDuplicationPct+'% cross-account duplication in the last 24h window (threshold '+d.issueGatePct+'%).','',
+              '- public items measured: '+(r.measured.posts24h+r.measured.comments24h),
+              '- near-duplicate pairs (similarity threshold '+d.threshold+'): '+d.nearDuplicatePairs,
+              '- items involved in a near-duplicate pair: '+d.commentLevelDuplicationPct+'%',
+              '- accounts silent for 24h: '+((s.silentAccounts24h||[]).join(', ')||'none'),'',
+              'Full numbers: content-review/report-'+day+'.json in this repo.'
+            ].join('\n');
+            fs.writeFileSync('/tmp/issue.json', JSON.stringify({title:'content-review: duplication '+d.pairDuplicationPct+'%',body,labels:['content-quality']}));
+            console.log('gate tripped: duplication '+d.pairDuplicationPct+'%');
+            process.exit(0);
+          "
+          if [ ! -s /tmp/issue.json ]; then echo "no issue needed"; exit 0; fi
+          for TOKEN in "$GH_TOKEN" "$ZIP_PAT"; do
+            [ -n "$TOKEN" ] || continue
+            CODE=$(curl -s -o /tmp/issue-res.json -w '%{http_code}' -X POST \
+              -H "Authorization: Bearer $TOKEN" -H "Accept: application/vnd.github+json" \
+              "https://api.github.com/repos/${GITHUB_REPOSITORY}/issues" \
+              --data-binary @/tmp/issue.json)
+            if [ "$CODE" = "201" ]; then echo "issue opened"; exit 0; fi
+            echo "issue attempt failed (HTTP ${CODE})"
+          done
+          echo "could not open the issue with either token - recorded honestly here"
+          exit 0

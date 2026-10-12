@@ -1,0 +1,9 @@
+name: canary
+on:
+  workflow_dispatch: {}
+jobs:
+  chirp:
+    runs-on: ubuntu-latest
+    timeout-minutes: 1
+    steps:
+      - run: echo "canary alive $(date -u +%Y-%m-%dT%H:%M:%SZ)"

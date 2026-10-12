@@ -1,0 +1,68 @@
+#
+# adsmarket-panel (R31, WO-unwired-adsmarket-marketing) — the buried marketing
+# value gets a measured, public face. Adsmarket is PRIVATE: no public raw/Pages
+# mirror is lawful, so this lane publishes the MEASURED VIEW (inventory metadata
+# + canonical git pointers, zero content duplication — one-room law).
+#
+# Private checkout rides WEAVE_OPS_PAT — the proven private-repo pattern
+# (treasury-route/steem, dex-beat, econ-desk). If the credential cannot reach
+# Adsmarket the panel publishes an honest UNREACHABLE receipt (amber, exit 0)
+# — never faked. STASIS-safe: measurement only, zero capital lanes.
+#
+
+name: adsmarket-panel
+
+on:
+  schedule:
+    - cron: '41 5 * * 1'
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: adsmarket-panel
+  cancel-in-progress: false
+
+jobs:
+  panel:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: checkout private Adsmarket (measured-view source)
+        id: src
+        continue-on-error: true
+        uses: actions/checkout@v4
+        with:
+          repository: roshpinacare-sys/Adsmarket
+          token: ${{ secrets.WEAVE_OPS_PAT }}
+          fetch-depth: 1
+          path: adsmarket-repo
+
+      - name: Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: measure the marketing value (metadata only, one-room law)
+        run: node agents/adsmarket-panel.cjs
+
+      - name: publish panel book (rebase-then-push x3)
+        run: |
+          git config user.name "adsmarket-panel-bot"
+          git config user.email "adsmarket-panel@saos.local"
+          git add marketing/adsmarket.json
+          if git diff --cached --quiet; then echo "no panel delta"; exit 0; fi
+          git commit -m "adsmarket-panel: measured view of the marketing value · $(date -u +%Y-%m-%dT%H:%M:%SZ) [skip ci]"
+          ok=0
+          for i in 1 2 3; do
+            if git -c rebase.autoStash=true pull --rebase origin main && git push origin HEAD:main; then ok=1; break; fi
+            git rebase --abort 2>/dev/null || true
+            sleep 8
+          done
+          [ "$ok" = "1" ] && echo "panel book pushed" || { echo "panel book landed locally; next run re-attempts (fail-soft)"; exit 0; }

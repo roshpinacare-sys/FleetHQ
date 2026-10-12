@@ -1,0 +1,126 @@
+#
+#
+
+name: treasury-route
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'agents/treasury-desk.cjs'
+      - 'agents/route-desk.cjs'
+      - 'agents/capability-matrix.cjs'
+      - 'agents/dex-book.cjs'
+      - 'agents/bridge-desk.cjs'
+      - 'agents/blurt-curate.cjs'
+      - '.github/workflows/treasury-route.yml'
+  schedule:
+    - cron: '37 16 * * *'
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: treasury-route
+  cancel-in-progress: false
+
+jobs:
+  treasury:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      NODE_PATH: /tmp/steemjs/node_modules
+    steps:
+      - name: STASIS gate (mechanical, FATE-DEFENSE law
+        id: brake
+        run: |
+          if [ -f agents/STASIS.json ]; then
+            ST=$(node -p "JSON.parse(require('fs').readFileSync('agents/STASIS.json','utf8')).active===true")
+          else
+            ST=false
+          fi
+          echo "active=$ST" >> "$GITHUB_OUTPUT"
+          if [ "$ST" = "true" ]; then
+            echo "STASIS-HALT treasury-route · the breaker is active — capital lanes obey"
+          fi
+      - name: checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: checkout private steem home (vault recovery source — proven Z-21 pattern)
+        uses: actions/checkout@v4
+        with:
+          repository: roshpinacare-sys/steem
+          token: ${{ secrets.WEAVE_OPS_PAT }}
+          fetch-depth: 1
+          path: steem-repo
+
+      - name: Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: steem client (steem@0.7.11 — same signer as the fleet)
+        run: |
+          npm install --prefix /tmp/steemjs steem@0.7.11 --omit=dev --no-audit --no-fund --loglevel=error
+          NODE_PATH=/tmp/steemjs/node_modules node -e "require('steem'); console.log('steem-js OK')"
+
+      - name: treasury desk (book + claims + head curation)
+        env:
+          SA_FLEET_KEYS: ${{ secrets.SA_FLEET_KEYS }}
+          SA_HEAD_POSTING: ${{ secrets.SA_HEAD_POSTING }}
+          STEEM_REPO_DIR: steem-repo
+          RECEIPT_OUT: agents/receipts/treasury-desk-receipt.json
+        run: node agents/treasury-desk.cjs
+
+      - name: route desk (oracles + HE book + bridge probes)
+        env:
+          ROUTES_JSON: agents/routes.json
+        run: node agents/route-desk.cjs
+
+      - name: capability matrix (usage verification book, read-only)
+        env:
+          SA_FLEET_KEYS: ${{ secrets.SA_FLEET_KEYS }}
+          SA_HEAD_POSTING: ${{ secrets.SA_HEAD_POSTING }}
+          STEEM_REPO_DIR: steem-repo
+        run: node agents/capability-matrix.cjs
+
+      - name: dex depth book (steem orderbook + HE depth, read-only)
+        run: node agents/dex-book.cjs
+
+      - name: bridge desk (no-account exchanger sweep, read-only)
+        run: node agents/bridge-desk.cjs
+
+      - name: blurt curation (idle 8,727 BP activation, VP-gated, verify-then-sign)
+        env:
+          SA_FLEET_KEYS: ${{ secrets.SA_FLEET_KEYS }}
+          SA_HEAD_POSTING: ${{ secrets.SA_HEAD_POSTING }}
+          STEEM_REPO_DIR: steem-repo
+          RECEIPT_OUT: agents/receipts/blurt-curate-receipt.json
+        run: node agents/blurt-curate.cjs
+
+      - name: commit ledger + routes + receipts (secretless)
+        continue-on-error: true
+        run: |
+          git config user.name "saos-treasury"
+          git config user.email "treasury@saos.local"
+          mkdir -p agents/receipts
+          node agents/redact-telemetry.mjs agents/money-ledger.json agents/dex-book.json agents/bridge-book.json agents/capability-matrix.json agents/receipts/treasury-desk-receipt.json agents/receipts/blurt-curate-receipt.json || true
+          for p in agents/money-ledger.json agents/routes.json agents/routes.md agents/receipts/treasury-desk-receipt.json agents/capability-matrix.json agents/capability-matrix.md agents/dex-book.json agents/dex-book.md agents/bridge-book.json agents/bridge-book.md agents/receipts/blurt-curate-receipt.json; do
+            [ -e "$p" ] && git add "$p" || true
+          done
+          if git diff --cached --quiet; then
+            echo "no ledger changes"
+          else
+            git commit -m "treasury-route: capital book + router mirror · $(date -u +%Y-%m-%dT%H:%M:%SZ) [skip ci]"
+            ok=0
+            for i in 1 2 3; do
+              if git -c rebase.autoStash=true pull --rebase origin main && git push origin HEAD:main; then ok=1; break; fi
+              echo "push attempt $i failed (concurrent commits on main) — re-pulling"
+              git rebase --abort 2>/dev/null || true
+              sleep 10
+            done
+            [ "$ok" = "1" ] && echo "books pushed" || echo "books landed locally; next run re-attempts (fail-soft)"
+          fi

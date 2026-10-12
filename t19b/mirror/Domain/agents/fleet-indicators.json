@@ -1,0 +1,159 @@
+{
+  "protocol": "SAOS-FATE-DEFENSE-FWI/1",
+  "at": "2026-10-12T12:28:17.765Z",
+  "agent": "fleet-indicators v1.0.0 (Task 22, study: Emergence World arXiv 2606.08367 + 2609.17320)",
+  "verdict": "DEGRADED",
+  "counts": {
+    "HELD": 2,
+    "GROW": 5,
+    "DECLINE": 2
+  },
+  "indicators": [
+    {
+      "id": "F1",
+      "name": "Population Health",
+      "measures": "persistent organs (live books) alive & fresh — our equivalent of \"agents alive at end of run\"",
+      "evidenceSource": "agents/{econ,curation,money-ledger,ventures,fills-ledger,bridge,dex,learning-ledger,recruitment}-book.json .at/.updated < 48h",
+      "value": "7/9",
+      "breakEven": "≥7/9",
+      "status": "HELD",
+      "note": "econ-book.json, curation-book.json"
+    },
+    {
+      "id": "F2",
+      "name": "Safety & Public Order",
+      "measures": "destructive attempts mechanically refused (guard denies = incidents PREVENTED, not committed) + guard evals green + STASIS breaker armed",
+      "evidenceSource": "agents/command-guard.json .denies + agents/STASIS.json .active + evals/eval-results.json E7-E9",
+      "value": "denies=0 evals=PASS stasis=armed",
+      "breakEven": "evals PASS + stasis armed",
+      "status": "GROW",
+      "note": "their worlds: coercion cascades killed populations; our guard refuses before execution, our engine obeys STASIS before any seal/broadcast"
+    },
+    {
+      "id": "F3",
+      "name": "Capability Exploration",
+      "measures": "executable tool surface (syntax-valid agent scripts) — proxy for functional curiosity without narrow loops",
+      "evidenceSource": "node --check over agents/*.cjs|*.mjs + scripts/*.mjs",
+      "value": "123/123",
+      "breakEven": "100%",
+      "status": "GROW",
+      "note": "every desk ships as runnable code, not as a memory blob"
+    },
+    {
+      "id": "F4",
+      "name": "Governance Conformity",
+      "measures": "judged change-requests (100% must carry a verdict — dissent is ledgered, never silenced) + role-registry coverage",
+      "evidenceSource": "agents/change-requests/*.json verdict fields + role-registry.csv row count",
+      "value": "70/78 CRs judged · registry 57 rows (53 LIVE)",
+      "breakEven": "100% judged + ≥20 rows",
+      "status": "DECLINE",
+      "note": "their worlds: herd voting; our law: every CR judged in the open, supersession visible in git"
+    },
+    {
+      "id": "F5",
+      "name": "Public Expression",
+      "measures": "on-chain learning posts + measured reward samples — expression that produces culture AND receipts",
+      "evidenceSource": "agents/learning-ledger.json keys + samples[]",
+      "value": "45 posts · 291 samples",
+      "breakEven": "≥20 posts",
+      "status": "GROW",
+      "note": "their M6 measured volume; ours ties every expression to a chain-measured payout sample"
+    },
+    {
+      "id": "F6",
+      "name": "Social Fabric & Diversity",
+      "measures": "structural relationship diversity — distinct trust tiers, CI lanes, and owned books across the charter",
+      "evidenceSource": "role-registry.csv columns tier(7)/ci(3)/books(7) distinct counts",
+      "value": "tiers=4 lanes=24 ownedBooks=29",
+      "breakEven": "≥2 tiers · ≥5 lanes · ≥5 books",
+      "status": "GROW",
+      "note": "their mixed world proved diversity is load-bearing; ours is charter-measurable, not vibe-measurable"
+    },
+    {
+      "id": "F7",
+      "name": "Economic Vitality & Equity",
+      "measures": "real chain balances (liquid + effective SP) in an executor-identified ledger — equity via identity: one executor, one writer, no hoarding ambiguity",
+      "evidenceSource": "agents/money-ledger.json .book{executor,headSteemLiquid,headSteemStake} fresh <48h",
+      "value": "headcorner: 28.261 STEEM liquid · 2925.633 SP · book 12.8h old",
+      "breakEven": "ledger fresh + executor-identified",
+      "status": "GROW",
+      "note": "their economy was 1-CC billboards; ours is signed chain state with a named executor"
+    },
+    {
+      "id": "F8",
+      "name": "Constitutional Growth",
+      "measures": "versioned law + honest feature ledger + weekly commit motion — the constitution is AMENDED, not just recited",
+      "evidenceSource": "agents/sovereignty.md version + feature_list.json status counts + git rev-list 7d",
+      "value": "law v1.0.6 · features 31/69 done · 1 commits/7d",
+      "breakEven": "law versioned + ≤2 open features + ≥20 commits/7d",
+      "status": "DECLINE",
+      "note": "their static-constitution worlds died passive; ours has version history in git"
+    },
+    {
+      "id": "F9",
+      "name": "Sovereign Autonomy",
+      "measures": "self-run cadence receipts: scheduled dispatches that landed in git in the last 7 days (verify ALL_PASS, economy, anchors) — autonomy measured by artifacts, not by permission slips",
+      "evidenceSource": "git log --grep receipts (agent-verify/econ/anchor), last 7 days",
+      "value": "verify ALL_PASS=0 · econ receipts=0 · anchors=0 → score 0",
+      "breakEven": "≥5 receipts / 7d",
+      "status": "HELD",
+      "note": "STASIS engaged — autonomy intentionally paused, breaker holds state honestly"
+    }
+  ],
+  "books": [
+    {
+      "book": "econ-book.json",
+      "exists": true,
+      "ageHours": 183.5,
+      "fresh": false
+    },
+    {
+      "book": "curation-book.json",
+      "exists": true,
+      "ageHours": 189.8,
+      "fresh": false
+    },
+    {
+      "book": "money-ledger.json",
+      "exists": true,
+      "ageHours": 12.8,
+      "fresh": true
+    },
+    {
+      "book": "ventures.json",
+      "exists": true,
+      "ageHours": 0,
+      "fresh": true
+    },
+    {
+      "book": "fills-ledger.json",
+      "exists": true,
+      "ageHours": 0,
+      "fresh": true
+    },
+    {
+      "book": "bridge-book.json",
+      "exists": true,
+      "ageHours": 12.7,
+      "fresh": true
+    },
+    {
+      "book": "dex-book.json",
+      "exists": true,
+      "ageHours": 12.7,
+      "fresh": true
+    },
+    {
+      "book": "learning-ledger.json",
+      "exists": true,
+      "ageHours": 41.7,
+      "fresh": true
+    },
+    {
+      "book": "recruitment.json",
+      "exists": true,
+      "ageHours": 0,
+      "fresh": true
+    }
+  ]
+}

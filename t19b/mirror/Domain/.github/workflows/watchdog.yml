@@ -1,0 +1,51 @@
+#
+#
+#
+#
+
+name: watchdog
+
+on:
+  schedule:
+    - cron: '28 15 * * *'
+  workflow_dispatch:
+    inputs:
+      stale_h:
+        description: 'sandbox silence threshold in hours (default 26 — the house life doctrine)'
+        required: false
+        default: '26'
+        type: string
+      dry:
+        description: 'dry — measure everything, touch nothing (safe test of both verdict paths)'
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  issues: write
+  contents: write
+
+concurrency:
+  group: watchdog
+  cancel-in-progress: false
+
+jobs:
+  watch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 9
+    steps:
+      - name: Checkout (the watchdog lives here)
+        uses: actions/checkout@v4
+
+      - name: Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Watch the sandbox heartbeat (defi receipts · state.json law)
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          ZIP_PAT: ${{ secrets.ZIP_PAT }}
+          WATCHDOG_STALE_H: ${{ inputs.stale_h || '26' }}
+          WATCHDOG_DRY: ${{ inputs.dry && '1' || '' }}
+        run: node agents/watchdog.mjs

@@ -1,0 +1,29 @@
+{
+ "id": "CR-0064",
+ "slot": 64,
+ "title": "Fleet Rung 34 — THE FILL-THROUGH EVOLUTION (market-exec ladder 3+3 × 0.5 SBD + sovereign cadence 10-min): the measured binding is the CAPTURE, not order capacity — the ladder shape evolves with the measurement and the heartbeat calibrates to the measured fill cadence (~1 fill/12min).",
+ "operator": "owner directive (standing, 2026-10-04): the sovereignty develops itself sharply, checks-improves-corrects continuously, earns from what exists — no owner in the loop.",
+ "design": {
+  "queries": {
+   "Q25_why_evolve_the_ladder_shape": "MEASURED: after the EDGE-CURE freed the mine capital (~13.7 SBD), the old 2×0.25 SBD buy shape put only 0.5 SBD back to work per run — the freed capital sat idle while the capture is the binding (R31: fill-through 21.5% of capacity). The evolved shape — 3 sells + 3 buys × 0.5 SBD = exactly MAX_NEW_ORDERS — triples the buy exposure and doubles the touch-levels inside the same six-order ceiling. The cap law, the band law and the STACK-EXISTS law are untouched; the E28 SBD-cap pin EVOLVED WITH THE DESK (0.3 SBD funds zero buys, 1.2 SBD funds exactly two — the granularity is now 0.5).",
+   "Q26_what_sets_the_sovereign_cadence": "THE MEASURED FILL CADENCE: capture measured 106-124 fills/day ≈ one fill per 12-13 minutes — a 15-min beat re-armed slower than the flow it chases. The heartbeat evolves to 600s and the LIVE cooldown to 10 min (the beat ≈ the fill interval; the loop re-arms inside one fill-interval). The cooldown law itself is unchanged: one LIVE arm per window, a denied arm is a booked row.",
+   "Q27_when_does_the_first_positive_cycle_book": "NO CODE NEEDED — the proof surface already waits for the chain: pnl-book's edgeLawHolds flips to true the moment post-cure fills close a cycle with edge ≥ 0, and the dashboard badge flips with it. The engine's job (R34) is to make fills ARRIVE: more levels, bigger sizes, faster re-arm — all inside the caps and the VWAP law. The powerdown (476 SP/week from 2026-10-10) keeps growing the working capital the ladder stands on.",
+   "Q28_coordination_to_sibling_lanes": "THE EVOLVED SHAPE IS FLEET-WIDE: sells 3 / buys 3 × 0.5 SBD per run, MAX_NEW_ORDERS=6 unchanged; DRY planning receipts stay free for every lane; the heartbeat owns LIVE (do not double-run market-exec LIVE — DELEGATION-SELECTION law); the EDGE-CURE cancels any of our buys above sellVwap×0.997 every LIVE pass — do not re-place above the cap. CR-0062's Q20 standing-depth rung stays open for the HE basket."
+  },
+  "instruments": [
+   "agents/market-exec.cjs — DEFAULTS: SELL_LEVELS 4→3, BUY_LEVELS 2→3, BUY_SBD 0.25→0.5 (CR-0064 note in-file)",
+   "agents/sovereign-trade.cjs — COOLDOWN_MIN 15→10 (calibrated)",
+   "agents/sovereign-trade-loop.sh — SOVEREIGN_HEARTBEAT_SEC 900→600, loop restarted live",
+   "agents/evals/run-evals.cjs v1.43.0 — E57 (evolved shape exact 3+3=6, budgets, VWAP cap binds above the evolved ladder, cadence 10, real-tree ceiling) + the E28 SBD-cap pin evolved WITH the desk; 57/57 GREEN"
+  ],
+  "measured_live_2026_10_04": {
+   "evolvedPlan": "3 sells (ask-side, ascending) + 3 buys × 0.5 SBD (bid-side, descending, VWAP-capped)",
+   "cadence": "heartbeat 600s · LIVE cooldown 10 min (≈ the measured fill interval)",
+   "cures": "5 own above-cap buys cancelled live so far (2 in run #24, 3 in run #26)",
+   "suite": "evals 57/57 GREEN v1.43.0"
+  }
+ },
+ "acceptance": "evals 57/57 GREEN v1.43.0 · claims 0 offenders · secret-scan 0 · the ladder evolves on the next LIVE arms",
+ "createdAt": "2026-10-04T04:20:00Z",
+ "createdBy": "R34 fill-through-evolution rung (Z.ai Code — Domain lane)"
+}

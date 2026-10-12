@@ -1,0 +1,44 @@
+name: trigger-mesh
+
+#
+
+on:
+  schedule:
+    - cron: "44 */3 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: trigger-mesh
+  cancel-in-progress: false
+
+jobs:
+  mesh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: הפעלת מנוע-הטריגרים
+        run: node agents/trigger-mesh.mjs
+
+      - name: פרסום ספר-הטריגרים
+        run: |
+          git config user.name "trigger-mesh[bot]"
+          git config user.email "trigger-mesh@users.noreply.github.com"
+          SIG_NOW="$(node -e 'const d=require("./triggers/current.json");console.log([d.ok,d.rulesTotal,(d.fired||[]).map(f=>f.id).join(";"),(d.waited||[]).map(w=>w.id).join(";"),d.broken].join("|"))' 2>/dev/null || echo x)"
+          git show HEAD:triggers/current.json > /tmp/prev-trig.json 2>/dev/null \
+            && SIG_PREV="$(node -e 'const d=require("/tmp/prev-trig.json");console.log([d.ok,d.rulesTotal,(d.fired||[]).map(f=>f.id).join(";"),(d.waited||[]).map(w=>w.id).join(";"),d.broken].join("|"))' 2>/dev/null || echo y)" \
+            || SIG_PREV=""
+          LAST_TS="$(git log -1 --format=%cI -- triggers/current.json)"
+          LAST_S="$(date -u -d "$LAST_TS" +%s 2>/dev/null || echo 0)"
+          AGE_H=$(( ($(date -u +%s) - LAST_S) / 3600 ))
+          if [ "$SIG_NOW" = "$SIG_PREV" ] && [ "$AGE_H" -lt 6 ]; then
+            echo "trigger book semantically unchanged and heartbeat fresh (${AGE_H}h < 6h) - no commit, Pages quota spared"
+            exit 0
+          fi
+          git add triggers/current.json triggers/log.jsonl triggers/state.json || true
+          git diff --cached --quiet && echo "no trigger changes" || git commit -m "trigger-mesh: publish trigger book $(date -u +%FT%TZ)"
+          git push
