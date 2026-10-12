@@ -1,6 +1,6 @@
 {
- "at": "2026-10-12T23:41:17.487Z",
- "finishedAt": "2026-10-12T23:42:31.755Z",
+ "at": "2026-10-12T23:44:51.036Z",
+ "finishedAt": "2026-10-12T23:45:25.722Z",
  "checks": {
   "boot": {
    "app": {
@@ -20,7 +20,7 @@
   "connectivity": {
    "exit": 0,
    "verdictHe": "נמדדו 0 קבצי-קוד יתומים ו-1 ארטיפקטים ללא צרכן",
-   "sha16": "f58c88d2b9b46409"
+   "sha16": "ce8a2102bfadfa1d"
   },
   "freshOracle": {
    "exit": 0,
@@ -28,8 +28,34 @@
   },
   "silence": {
    "exit": 0,
-   "summary": "6 ALARM(S): beat/grid-pulse: no data (cannot prove alive) · post/hive/acct-01: no data (cannot prove alive) · post/hive/acct-12: no data (cannot prove alive) · post/hive/acct-11: no data (cannot prove alive) · post/hive/acct-13: no data (cannot prove alive) · post/hive/acct-00: silent 3295min (limit 2880)",
+   "summary": "6 ALARM(S): beat/grid-pulse: no data (cannot prove alive) · post/hive/acct-11: no data (cannot prove alive) · post/hive/acct-12: no data (cannot prove alive) · post/hive/acct-13: no data (cannot prove alive) · post/hive/acct-01: silent 14900min (limit 2880) · post/hive/acct-00: silent 3298min (limit 2880)",
    "alarms": 6
+  },
+  "gitHealth": {
+   "exit": 0,
+   "repos": [
+    {
+     "name": "Console",
+     "attached": true,
+     "ahead": 0,
+     "behind": 0,
+     "fsck": "ok"
+    },
+    {
+     "name": "Domain",
+     "attached": true,
+     "ahead": 0,
+     "behind": 3,
+     "fsck": "ok"
+    },
+    {
+     "name": "FleetHQ",
+     "attached": true,
+     "ahead": 8,
+     "behind": 0,
+     "fsck": "ok"
+    }
+   ]
   },
   "push": {
    "ok": false,
