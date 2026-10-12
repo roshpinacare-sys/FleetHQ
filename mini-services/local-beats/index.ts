@@ -29,7 +29,8 @@
  * the heartbeat cadence Actions used to own.
  */
 import { spawnSync } from "node:child_process";
-import { appendFileSync, existsSync, readFileSync } from "node:fs";
+import { appendFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { join } from "node:path";
 
 const CONSOLE = "/home/z/estate/Console";
 const DOMAIN = "/home/z/estate/Domain";
@@ -143,8 +144,28 @@ function officeCiLite() {
   if (running.has("office-ci-lite")) return;
   running.add("office-ci-lite");
   try {
-    const res = spawnSync("bash", ["-c", "bun run lint 2>&1 | tail -3"], { cwd: FLEETHQ, encoding: "utf8", timeout: 6 * 60_000 });
-    log(`office-ci-lite: exit=${res.status} out="${(res.stdout || "").slice(-200).replace(/\n+/g, " | ")}"`);
+    // Real checks only — honesty law: the verdict says exactly what ran.
+    const lint = spawnSync("bash", ["-c", "bun run lint 2>&1 | tail -3"], { cwd: FLEETHQ, encoding: "utf8", timeout: 6 * 60_000 });
+    const types = spawnSync("bash", ["-c", "bunx tsc --noEmit 2>&1 | tail -3"], { cwd: FLEETHQ, encoding: "utf8", timeout: 8 * 60_000 });
+    let sha = "";
+    try { sha = spawnSync("git", ["rev-parse", "HEAD"], { cwd: FLEETHQ, encoding: "utf8" }).stdout.trim(); } catch {}
+    const lintPass = lint.status === 0, typesPass = types.status === 0;
+    const verdict = {
+      schema: "office.ci/1",
+      at: new Date().toISOString(),
+      repo: "roshpinacare-sys/FleetHQ",
+      sha: sha.slice(0, 12),
+      checks: { lint: lintPass ? "pass" : "fail", typecheck: typesPass ? "pass" : "fail" },
+      overall: lintPass && typesPass ? "PASS" : "FAIL",
+      reason: `local beat: lint=${lintPass ? "pass" : "fail"} typecheck=${typesPass ? "pass" : "fail"} (full 5-check suite stays with Actions office-ci)`,
+      provenance: { runId: "local-beats/office-ci-lite", runUrl: "local://local-beats", sha },
+    };
+    const dir = join(FLEETHQ, "receipts", "office-ci");
+    mkdirSync(dir, { recursive: true });
+    writeFileSync(join(dir, "verdict-local.json"), JSON.stringify(verdict, null, 1) + "\n");
+    log(`office-ci-lite: lint=${lint.status} types=${types.status} → verdict-local.json (${verdict.overall})`);
+    const pub = publishFleet("office-ci-lite", ["receipts/office-ci/verdict-local.json"]);
+    log(`office-ci-lite: publish="${pub}"`);
   } catch (e) {
     log(`office-ci-lite: FATAL ${(e as Error).message.slice(0, 120)}`);
   } finally {
@@ -167,7 +188,7 @@ function tick() {
   if (mi === 33 && ho % 2 === 0) { const k = keyOf(d, "h"); if (!fired("money-watch", k)) { mark("money-watch", k); run("money-watch", CONSOLE, "agents/money-watch.mjs", ["dex/money.json"]); } }
   if (mi === 52) { const k = keyOf(d, "h"); if (!fired("dex-mirror", k)) { mark("dex-mirror", k); run("dex-mirror", DOMAIN, "agents/dex-mirror.mjs", ["dex/grid.json","dex/world.json","dex/state.json","dex/credits.json","dex/portfolio.json","dex/onramp.json","dex/showcase.json","dex/relay.json"]); } }
   if ((ho === 3 || ho === 15) && mi === 13) { const k = keyOf(d, "h"); if (!fired("grid-pulse", k)) { mark("grid-pulse", k); run("grid-pulse", CONSOLE, "agents/grid-pulse.mjs", []); } }
-  if (ho === 4 && mi === 10) { const k = keyOf(d, "d"); if (!fired("office-ci-lite", k)) { mark("office-ci-lite", k); officeCiLite(); } }
+  if (mi === 17 && ho % 2 === 0) { const k = keyOf(d, "h"); if (!fired("office-ci-lite", k)) { mark("office-ci-lite", k); officeCiLite(); } }
   if (mi === 41 && ho % 2 === 0) { const k = keyOf(d, "h"); if (!fired("office-heartbeat", k)) { mark("office-heartbeat", k); officeHeartbeat(); } }
   // boot catch-up (once, ≤10min after boot): mirror immediately so veritas goes fresh fast
   if (Date.now() - BOOT < 10 * 60_000 && !fired("boot-catchup", "once")) {

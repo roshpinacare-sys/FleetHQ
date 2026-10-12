@@ -143,7 +143,7 @@ async function ensureForeman(): Promise<BootInfo> {
 
 async function pushReceipts(): Promise<{ ok: boolean; attempts: number; note: string }> {
   const git = (args: string[]) => sh("git", args, FLEETHQ, 60_000);
-  git(["add", "receipts/self-check", "receipts/fresh-oracle", "office/state/connectivity.json"]);
+  git(["add", "receipts/self-check", "receipts/fresh-oracle", "receipts/silence-ledger.json", "office/state/connectivity.json"]);
   const st = git(["status", "--porcelain"]);
   if (!st.out.trim()) return { ok: true, attempts: 0, note: "no receipt delta" };
   git(["commit", "-m", "[selfcheck] standing loop receipts: security+connectivity+fresh-oracle [skip ci]"]);
@@ -211,6 +211,22 @@ async function runOnce(): Promise<void> {
       if (existsSync(p)) oracleVerdict = (JSON.parse(readFileSync(p, "utf8")) as { summary?: { verdict?: string } }).summary?.verdict ?? null;
     } catch { /* honest absence */ }
     checks.freshOracle = { exit: orc.code, verdict: oracleVerdict };
+
+    // 4.5 silence ledger — SEE THE SILENCE (owner law 2026-10-12: every voice
+    // of the organism measured — repos, ports, beats, network posts — with
+    // silent-alarm thresholds; absence recorded as absence, never invented).
+    const sl = sh("node", ["tools/silence-ledger.mjs"], FLEETHQ, 180_000);
+    let silenceSummary: string | null = null;
+    let silenceAlarms: number | null = null;
+    try {
+      const p = join(FLEETHQ, "receipts", "silence-ledger.json");
+      if (existsSync(p)) {
+        const led = JSON.parse(readFileSync(p, "utf8")) as { summary?: string; alarms?: string[] };
+        silenceSummary = led.summary ?? null;
+        silenceAlarms = Array.isArray(led.alarms) ? led.alarms.length : null;
+      }
+    } catch { /* honest absence */ }
+    checks.silence = { exit: sl.code, summary: silenceSummary, alarms: silenceAlarms };
 
     // 5. push receipts (travel)
     const push = await pushReceipts();
