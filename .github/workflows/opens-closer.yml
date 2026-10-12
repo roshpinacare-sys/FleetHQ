@@ -20,7 +20,7 @@ concurrency:
 jobs:
   closer:
     runs-on: ubuntu-latest
-    timeout-minutes: 8
+    timeout-minutes: 45 # self-relay sleeps up to 30 min before self-kick
     steps:
       - name: Checkout (full history — needed for delta check)
         uses: actions/checkout@v4
@@ -54,6 +54,27 @@ jobs:
             sleep 3
           done
           if [ "$ok" != "1" ]; then echo "PUSH-FAILED after retries"; exit 1; fi
+
+      - name: self-relay (the healer keeps itself alive — recursion-gap closure, T-72)
+        if: success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -eu
+          now=$(date +%s)
+          next=$(( (now / 1800 + 1) * 1800 ))
+          wait=$(( next - now ))
+          [ "$wait" -gt 0 ] || wait=60
+          echo "relay: sleeping ${wait}s until next half-hour boundary"
+          sleep "$wait"
+          code=$(curl -s -o /tmp/relay.out -w '%{http_code}' -X POST \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            -H "User-Agent: opens-closer-relay" \
+            https://api.github.com/repos/roshpinacare-sys/FleetHQ/actions/workflows/opens-closer.yml/dispatches \
+            -d '{"ref":"main"}')
+          echo "relay: next tick dispatched http=${code}"; cat /tmp/relay.out || true
+          [ "$code" = "204" ] || { echo "named terminal: relay-dispatch-failed"; exit 1; }
 
       - name: Honest job summary
         if: always()
