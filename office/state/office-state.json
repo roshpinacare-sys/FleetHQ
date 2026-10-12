@@ -1,55 +1,54 @@
 {
-  "capturedAt": "2026-10-12T01:31:36.679Z",
+  "capturedAt": "2026-10-12T04:46:44.006Z",
   "connected": true,
   "backend": "live",
-  "statusHe": "צוות חי — זיכרון שוחזר מהגיט (52 משמרות, 20 לקחים)",
+  "statusHe": "צוות חי — זיכרון שוחזר מהגיט (62 משמרות, 20 לקחים)",
   "mode": null,
   "agents": [
     {
       "id": "aluf",
-      "state": "thinking",
-      "activity": "מתכנן את היעד…",
+      "state": "idle",
+      "activity": "משגיח מהלוח",
       "station": "wall",
-      "since": 1791768627419,
-      "taskId": "t1428"
+      "since": 1791780419429,
+      "taskId": "t1574"
     },
     {
       "id": "gal",
       "state": "idle",
-      "activity": "",
-      "station": "desk",
-      "since": 1791768701242,
-      "taskId": "t1428"
+      "activity": "הפסקת קפה — לגימה ורענון",
+      "station": "coffee",
+      "since": 1791780419726
     },
     {
       "id": "erez",
       "state": "idle",
       "activity": "הפסקת קפה — לגימה ורענון",
       "station": "coffee",
-      "since": 1791768710153
+      "since": 1791780417525
     },
     {
       "id": "tamar",
       "state": "idle",
       "activity": "",
       "station": "desk",
-      "since": 1791768681429,
-      "taskId": "t1430"
+      "since": 1791780417415,
+      "taskId": "t1574"
     },
     {
       "id": "shachar",
       "state": "reading",
-      "activity": "קורא fleet-census",
+      "activity": "קורא pulse-book",
       "station": "library",
-      "since": 1791768703911,
-      "taskId": "t1447"
+      "since": 1791780428963,
+      "taskId": "t1587"
     },
     {
       "id": "yarden",
       "state": "idle",
       "activity": "הפסקת קפה — לגימה ורענון",
       "station": "coffee",
-      "since": 1791768721158
+      "since": 1791780428526
     }
   ],
   "tasks": [
@@ -2022,10 +2021,10 @@
       "matchBy": "llm",
       "createdBy": "aluf",
       "createdAt": 1791766028335,
-      "updatedAt": 1791768476222,
-      "startedAt": 1791768393089,
-      "summary": "הופק דוח 'לקח חוזר: סיווג unknown דומיננטי וכיסוי רדוד' על בסיס learning-summary (גיל 30.6h, נדגם 2026-10-10T18:47:26Z). הלקח הקונקרטי: הוסף שדה סיווג חובה לכל פוסט חדש כדי לחסל את הקטגוריה 'unknown' (8 פוסטים) ולנתב נושאים עם מעורבות חיצונית גבוהה (למשל follow-graph: 51B rshares) להמשך כיסוי.",
-      "durationMs": 56667
+      "updatedAt": 1791766165067,
+      "startedAt": 1791766029270,
+      "summary": "## חילoutse Lockers from learning-summary (29.9h)\n\n### 5 Recurring Patterns:\n\n1. **Extreme Polarization**: follow-graph (5.15B rshares) vs 20+ cards with 0 external engagement\n2. **Single-Post Isolation**: 18 cards have 1 post; 12 (67%) have 0 external votes — isolated content doesn't compound\n3. **'unknown' Outperforms Named**: 8 posts, 9 votes, 35B+ rshares — unnamed content resonates best\n4. **",
+      "durationMs": 74202
     },
     {
       "id": "t1430",
@@ -2038,53 +2037,243 @@
       "matchBy": "llm",
       "createdBy": "aluf",
       "createdAt": 1791766028335,
-      "updatedAt": 1791768442201,
-      "startedAt": 1791768338080,
-      "summary": "שיפור מוחשי: SLA טריות 48ש׳ ל-9 ספרי ליבה. מה משנים: קביעת SLA מחייב + התראה אוטומטית כשספר חורג. מי מבצע: בעל כל ספר (9 בעלי תפקידים). מדד הצלחה: F1 Population Health ≥7/9 ספרים טריים (כיום 6/9 — econ 158ש׳, curation 164.4ש׳, money-ledger 158ש׳). לו״ז פיילוט: 14 יום (2 ספרינטים), מדידה יומית ב-fleet-indicators.",
-      "durationMs": 52626
+      "updatedAt": 1791766636525,
+      "startedAt": 1791766489116,
+      "summary": "",
+      "durationMs": 117400
     },
     {
-      "id": "t1447",
+      "id": "t1455",
+      "title": "מחקר רשת: חפשי חדשות על סוכנים אוטונומיים וכתבי דוח עם מקורות — השתמשי ב-web_search",
+      "description": "מחקר רשת: חפשי חדשות על סוכנים אוטונומיים וכתבי דוח עם מקורות — השתמשי ב-web_search",
+      "status": "done",
+      "assignee": "gal",
+      "dependsOn": [],
+      "why": "ספרי הדקס, המסחר וההגיון הפנימי",
+      "matchBy": "fit",
+      "createdBy": "aluf",
+      "createdAt": 1791766830189,
+      "updatedAt": 1791767169662,
+      "startedAt": 1791767076585,
+      "summary": "",
+      "durationMs": 57465
+    },
+    {
+      "id": "t1476",
+      "title": "איתור דף ציבורי בעל ערך מודיעיני לתחומי הצי",
+      "description": "סריקת מקורות גלויים (בלוגי פרוטוקול, דוחות רשת, מפרטים טכניים) ובחירת יעד קריאה יחיד בעל רלוונטיות גבוהה לפעילות שוק, ביקורת או מדיניות ריבונית — רישום ה-URL וההקשר ב-pulse-book",
+      "status": "done",
+      "assignee": "shachar",
+      "dependsOn": [],
+      "why": "קצין מודיעין — pulse-book משמש לאיסוף ותיוג יעדי קריאה",
+      "matchBy": "llm",
+      "createdBy": "aluf",
+      "createdAt": 1791767368951,
+      "updatedAt": 1791767537570,
+      "startedAt": 1791767369219,
+      "summary": "",
+      "durationMs": 110756
+    },
+    {
+      "id": "t1478",
+      "title": "קריאת הדף הנבחר ב-read_page וסיכום ממצאים מבצעיים",
+      "description": "הפעלת read_page על ה-URL שנרשם, חילוץ תובנות קונקרטיות (פרמטרים, סיכונים, הזדמנויות) וכתיבת סיכום מובנה ב-learning-summary עם תיוג נושא ומקור",
+      "status": "done",
+      "assignee": "shachar",
+      "dependsOn": [],
+      "why": "קצין מודיעין — learning-summary מיועד לזיקוק ידע ממקורות חיצוניים",
+      "matchBy": "llm",
+      "createdBy": "aluf",
+      "createdAt": 1791767368951,
+      "updatedAt": 1791767613983,
+      "startedAt": 1791767483633,
+      "summary": "",
+      "durationMs": 96371
+    },
+    {
+      "id": "t1494",
+      "title": "Scan public blockchain infrastructure launches and upgrades",
+      "description": "Use web_search to identify new L1 chains, L2 rollups, consensus upgrades, and scaling solutions launched or announced in the last 30 days. Record chain names, launch dates, technical specs (TPS, finality, VM), funding, and source URLs. Store findings in pulse-book for fleet intelligence.",
+      "status": "done",
+      "assignee": "shachar",
+      "dependsOn": [],
+      "why": "intelligence officer owns pulse-book for market signals",
+      "matchBy": "llm",
+      "createdBy": "aluf",
+      "createdAt": 1791767832291,
+      "updatedAt": 1791768159185,
+      "startedAt": 1791768051301,
+      "summary": " [אושר בכנות לאחר 2 עידונים — הערת ראש-המטה: בצע חיפוש ווב אמיתי והבא תוצאות עדכניות על השקות ושדרוגי תשתיות בלוקצ'יין ציבוריות עם מקורות]",
+      "durationMs": 76498
+    },
+    {
+      "id": "t1509",
+      "title": "ייצור תוכן: גבשי דוח מצב-שוטף מהספרים הטריים לפרסום-עתידי והגישי לשער-הביקורת",
+      "description": "ייצור תוכן: גבשי דוח מצב-שוטף מהספרים הטריים לפרסום-עתידי והגישי לשער-הביקורת",
+      "status": "done",
+      "assignee": "erez",
+      "dependsOn": [],
+      "why": "ביקורות, טענות וחוזי יכולת",
+      "matchBy": "fit",
+      "createdBy": "aluf",
+      "createdAt": 1791768380307,
+      "updatedAt": 1791768549139,
+      "startedAt": 1791768460542,
+      "summary": "",
+      "durationMs": 52864
+    },
+    {
+      "id": "t1522",
       "title": "סיור שגרה: סרוק את ספרי הצי ודווח מה ישן או דורש בדיקה",
       "description": "סיור שגרה: סרוק את ספרי הצי ודווח מה ישן או דורש בדיקה",
-      "status": "doing",
+      "status": "done",
       "assignee": "shachar",
       "dependsOn": [],
       "why": "מדדים, מפקד ולמידה של הצי",
       "matchBy": "fit",
       "createdBy": "aluf",
-      "createdAt": 1791768661718,
-      "updatedAt": 1791768661718,
-      "startedAt": 1791768661718
+      "createdAt": 1791768780835,
+      "updatedAt": 1791769104232,
+      "startedAt": 1791769015002,
+      "summary": " [אושר בכנות לאחר 2 עידונים — הערת ראש-המטה: Add actual findings from the scan - list specific items that are old or require inspection.]",
+      "durationMs": 66953
+    },
+    {
+      "id": "t1536",
+      "title": "סיור גיט: נתח את זרם הקומיטים האחרון ודווח מה אפשר ללמוד ומה חסר",
+      "description": "סיור גיט: נתח את זרם הקומיטים האחרון ודווח מה אפשר ללמוד ומה חסר",
+      "status": "done",
+      "assignee": "gal",
+      "dependsOn": [],
+      "why": "ספרי הדקס, המסחר וההגיון הפנימי",
+      "matchBy": "fit",
+      "createdBy": "aluf",
+      "createdAt": 1791769299639,
+      "updatedAt": 1791769756017,
+      "startedAt": 1791769571672,
+      "summary": "",
+      "durationMs": 143525
+    },
+    {
+      "id": "t1550",
+      "title": "סיור שגרה: בדוק את תקינות ספרי הביקורת והרישום של הצי",
+      "description": "סיור שגרה: בדוק את תקינות ספרי הביקורת והרישום של הצי",
+      "status": "done",
+      "assignee": "erez",
+      "dependsOn": [],
+      "why": "ביקורות, טענות וחוזי יכולת",
+      "matchBy": "fit",
+      "createdBy": "aluf",
+      "createdAt": 1791769989140,
+      "updatedAt": 1791770111130,
+      "startedAt": 1791769989140,
+      "summary": "",
+      "durationMs": 51787
+    },
+    {
+      "id": "t1561",
+      "title": "סיור שגרה: מדוד את טריות הספרים שבבעלות העובדים ודווח",
+      "description": "סיור שגרה: מדוד את טריות הספרים שבבעלות העובדים ודווח",
+      "status": "done",
+      "assignee": "shachar",
+      "dependsOn": [],
+      "why": "מדדים, מפקד ולמידה של הצי",
+      "matchBy": "fit",
+      "createdBy": "aluf",
+      "createdAt": 1791770325801,
+      "updatedAt": 1791770603027,
+      "startedAt": 1791770449567,
+      "summary": "",
+      "durationMs": 94455
+    },
+    {
+      "id": "t1574",
+      "title": "סיור שגרה: סרוק את ספרי הצי ודווח מה ישן או דורש בדיקה",
+      "description": "סיור שגרה: סרוק את ספרי הצי ודווח מה ישן או דורש בדיקה",
+      "status": "done",
+      "assignee": "shachar",
+      "dependsOn": [],
+      "why": "מדדים, מפקד ולמידה של הצי",
+      "matchBy": "fit",
+      "createdBy": "aluf",
+      "createdAt": 1791780056331,
+      "updatedAt": 1791780171555,
+      "startedAt": 1791780056332,
+      "summary": "סיור שגרה הושלם. דו״ח נשמר עם 4 ספרי צי שנקראו ונתונים מדודים: econ-book.json 158ש׳, curation-book.json 164.4ש׳, money-ledger.json 158ש׳ (כולם >48ש׳), fleet-census 79.5ש׳, advisory triage 187.9ש׳ stale. F1 Population Health 6/9 (סף 7/9), F4 Governance 71/76 CRs, F8 Autonomy 0/7 ימים.",
+      "durationMs": 85392
+    },
+    {
+      "id": "t1587",
+      "title": "Research autonomous agent patterns in fleet intelligence books",
+      "status": "doing",
+      "description": "Search fleet-indicators, pulse-book, and learning-summary for signals, patterns, and documented cases of autonomous agent behavior and agent-written reports.",
+      "assignee": "shachar",
+      "dependsOn": [],
+      "why": "Intelligence officer owns fleet-indicators, pulse-book, learning-summary",
+      "matchBy": "llm",
+      "createdBy": "aluf",
+      "createdAt": 1791780419429,
+      "updatedAt": 1791780419627,
+      "startedAt": 1791780419627
     }
   ],
   "books": 22,
   "memory": null,
   "counts": {
-    "agent": 10,
-    "task": 0,
-    "log": 8,
-    "feed": 0,
+    "agent": 13,
+    "task": 2,
+    "log": 10,
+    "feed": 2,
     "decision": 0,
     "report": 0,
-    "goal": 0,
+    "goal": 2,
     "bubble": 3
   },
   "feed": [
     {
       "kind": "bubble:yarden",
       "text": "לגימה מהירה — וחוזרים לעבודה.",
-      "at": 1791768721159
+      "at": 1791780428527
     },
     {
-      "kind": "bubble:shachar",
-      "text": "בודק fleet-census",
-      "at": 1791768703911
+      "kind": "goal",
+      "text": "{\"id\":\"g1585\",\"text\":\"מחקר רשת: חפשי חדשות על סוכנים אוטונומיים וכתבי דוח עם מקורות — השתמשי ב-web_search\",\"status\":\"active\",\"progress\":0.94,\"createdAt\":1791780361299,\"updatedAt\":1791780421826,\"origin",
+      "at": 1791780421826
     },
     {
-      "kind": "bubble:shachar",
-      "text": "בודק econ-book",
-      "at": 1791768700240
+      "kind": "bubble:gal",
+      "text": "לגימה מהירה — וחוזרים לעבודה.",
+      "at": 1791780419726
+    },
+    {
+      "kind": "task",
+      "text": "doing: Research autonomous agent patterns in fleet intelligence books",
+      "at": 1791780419627
+    },
+    {
+      "kind": "bubble:aluf",
+      "text": "התוכנית על הלוח. קדימה לעבודה.",
+      "at": 1791780419431
+    },
+    {
+      "kind": "plan",
+      "text": "תוכנית אושרה: 1 משימות מיושרות-יעד — התאמות: שחר: Intelligence officer owns fleet-indicators, pulse-book, learning-summary",
+      "at": 1791780419431
+    },
+    {
+      "kind": "goal",
+      "text": "{\"id\":\"g1585\",\"text\":\"מחקר רשת: חפשי חדשות על סוכנים אוטונומיים וכתבי דוח עם מקורות — השתמשי ב-web_search\",\"status\":\"active\",\"progress\":0.05,\"createdAt\":1791780361299,\"updatedAt\":1791780419429,\"origin",
+      "at": 1791780419431
+    },
+    {
+      "kind": "task",
+      "text": "משימה חדשה: Research autonomous agent patterns in fleet intelligence books",
+      "at": 1791780419431
+    },
+    {
+      "kind": "task",
+      "text": "todo: Research autonomous agent patterns in fleet intelligence books",
+      "at": 1791780419431
     }
   ],
   "reports": [],
