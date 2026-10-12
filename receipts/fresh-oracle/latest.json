@@ -1,6 +1,6 @@
 {
  "schema": "fleet.fresh-oracle/1",
- "at": "2026-10-12T16:42:15.319Z",
+ "at": "2026-10-12T16:42:23.674Z",
  "law": "FRESH only if sha256(live bytes) == sha256(committed deploy-ref bytes) AND no ops doc MISSING; DRIFT=RED (200-with-different-bytes); UNREACHABLE=UNKNOWN (network, retried once, reason kept); ops-doc age rows are honest amber (MISSING alone flips exit) — never faked green",
  "results": [
   {
@@ -64,9 +64,9 @@
    "liveError": null,
    "committedError": null,
    "liveSha16": "f8a1bcd6c3f6e39e",
-   "committedSha16": "6903b18b47b06582",
+   "committedSha16": "f8a1bcd6c3f6e39e",
    "liveBytes": 15990,
-   "verdict": "DRIFT"
+   "verdict": "MATCH"
   },
   {
    "name": "Domain product catalog",
@@ -104,13 +104,13 @@
  ],
  "summary": {
   "checked": 7,
-  "match": 6,
-  "drift": 1,
+  "match": 7,
+  "drift": 0,
   "missing": 0,
   "unreachable": 0,
   "opsDocsMissing": 0,
   "opsDocsStale": 0,
-  "verdict": "STALE-OR-BROKEN"
+  "verdict": "FRESH"
  },
  "method": "https GET live URL + raw.githubusercontent deploy ref → sha256-16 byte equality"
 }
