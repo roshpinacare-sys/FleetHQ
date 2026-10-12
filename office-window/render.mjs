@@ -123,11 +123,11 @@ function renderRoom3D() {
   const runNote = 'האפליקציה האינטראקטיבית (סיור-מצלמה חי, לחיצה על דמויות) רצה מהריפו — bun install · bun run dev · ואז ?view=office';
   const head = `
     <div class="card wide">
-      <h3>🏛️ החדר התלת-ממדי — המשרד האמיתי</h3>
+      <h3>החדר התלת-ממדי — המשרד האמיתי</h3>
       <p class="meta">החדר כולו ניזון מהפורמן: בפריסה-חיה — מהסוקט ("חי"); כאן — מהיומן האמיתי שהפורמן עצמו כותב (office-state-mirror.json): המציאות הנמדדת של המשרד, קפואה בזמן-השמירה. אין סימולציה ואין המצאה — מה שלא נמדד לא מוצג.</p>
       <div class="links">
-        <a href="${appUrl}" rel="noopener">🎮 החדר האינטראקטיבי — הרצה מהריפו (README)</a>
-        <a href="https://github.com/roshpinacare-sys/FleetHQ/blob/main/receipts/office-state-mirror.json" rel="noopener">📄 מקור: היומן האמיתי</a>
+        <a href="${appUrl}" rel="noopener">החדר האינטראקטיבי — הרצה מהריפו (README)</a>
+        <a href="https://github.com/roshpinacare-sys/FleetHQ/blob/main/receipts/office-state-mirror.json" rel="noopener">מקור: היומן האמיתי</a>
       </div>
       <p class="meta" style="margin-top:8px">${esc(runNote)}</p>
     </div>`;
@@ -229,7 +229,7 @@ function renderOffice() {
   return `
   <div class="grid2">
     <div class="card">
-      <h3>🧭 ראש-המטה — המטרה הנוכחית</h3>
+      <h3>ראש-המטה — המטרה הנוכחית</h3>
       ${goal ? `
         <p class="goal-text">${esc(clip(goal.text, 240))}</p>
         <div class="progress"><div class="bar" style="width:${Math.max(0, Math.min(100, goalPct == null ? 0 : goalPct))}%"></div></div>
@@ -239,7 +239,7 @@ function renderOffice() {
     </div>
 
     <div class="card">
-      <h3>📌 לוח-המשימות — צילום-מצב</h3>
+      <h3>לוח-המשימות — צילום-מצב</h3>
       <p class="meta">${chip('ok', `בוצעו ${counts.done}`)} ${chip('warn', `בתור ${counts.todo}`)}${counts.in_work ? ` ${chip('info', `בעבודה ${counts.in_work}`)}` : ''}${counts.in_review ? ` ${chip('violet', `בביקורת ${counts.in_review}`)}` : ''}${counts.other ? ` ${chip('neutral', `אחר ${counts.other}`)}` : ''} <span class="muted">· ${tasks.length} משימות במראה</span></p>
       <ul class="tasklist">
         ${recent.map((t) => `
@@ -252,7 +252,7 @@ function renderOffice() {
     </div>
 
     <div class="card">
-      <h3>👥 הצוות — נוכחות נמדדת</h3>
+      <h3>הצוות — נוכחות נמדדת</h3>
       <ul class="crew">
         ${CAST.map((c) => {
           const a = perAgent.get(c.id) || { done: 0, active: 0, lastMs: 0, lastTitle: null };
@@ -273,7 +273,7 @@ function renderOffice() {
     </div>
 
     <div class="card">
-      <h3>📚 הספרייה — דוחות אחרונים מהצוות</h3>
+      <h3>הספרייה — דוחות אחרונים מהצוות</h3>
       ${reports.length ? `
       <ul class="reports">
         ${reports.map((r) => `
@@ -287,7 +287,7 @@ function renderOffice() {
     </div>
 
     <div class="card wide">
-      <h3>🎙️ פודיום-ההכרעות — חלון, לא הגה</h3>
+      <h3>פודיום-ההכרעות</h3>
       <p class="meta">כשסוכן נתקל בשיקול-דעת, הוא עולה לפודיום; מדיניות-המפעיל האוטונומי מכריעה, והשאלה, ההקשר והתשובה מתפרסמים כאן כרשום-שקיפות. <strong>אין משטח-שליטה ציבורי</strong> — למבקר אין דרך להטות את המשרד (ראה <a href="https://github.com/roshpinacare-sys/FleetHQ/blob/main/SECURITY.md" rel="noopener">SECURITY.md</a>).</p>
       ${decisions.length ? `
       <ul class="decisions">
@@ -340,16 +340,16 @@ function renderFleet() {
   return `
   <div class="grid2">
     <div class="card wide">
-      <h3>⚙️ מנועי-הצי — ריפואים וריצות אחרונות</h3>
+      <h3>מנועי-הצי — ריפואים וריצות אחרונות</h3>
       <div class="tablewrap"><table>
         <thead><tr><th>ריפו</th><th>נראות</th><th>ריצת-Actions אחרונה</th><th>קומיטים · 7 ימים</th><th>דחיפה אחרונה</th></tr></thead>
         <tbody>${rows || '<tr><td colspan="5" class="muted">לא נמדד — רשימת-הריפואים לא נטענה</td></tr>'}${privRow}</tbody>
       </table></div>
-      <p class="meta">נמדד ${esc(whenOrUnknown(digest.generatedAt))} · מצב-טוקן: ${digest.tokenMode === 'gh-token' ? 'טוקן-קריאה' : 'ציבורי ללא-טוקן'} · ${digest.errors && digest.errors.length ? `${digest.errors.length} קריאות נכשלו (רשומות ב-digest.json — מוצג לא-ידוע, לא ירוק-מזויף)` : 'כל הקריאות עברו'} · <a href="https://roshpinacare-sys.github.io/FleetHQ/digest.json" rel="noopener">digest.json למכונות</a></p>
+      <p class="meta">נמדד ${esc(whenOrUnknown(digest.generatedAt))} · מצב-טוקן: ${digest.tokenMode === 'gh-token' ? 'טוקן-קריאה' : 'ציבורי ללא-טוקן'} · ${digest.errors && digest.errors.length ? `${digest.errors.length} קריאות נכשלו (רשומות ב-digest.json — מוצג לא-ידוע)` : 'כל הקריאות עברו'} · <a href="https://roshpinacare-sys.github.io/FleetHQ/digest.json" rel="noopener">digest.json למכונות</a></p>
     </div>
 
     <div class="card">
-      <h3>🎯 פסק-הגריד האחרון (grid-beat)</h3>
+      <h3>פסק-הגריד האחרון (grid-beat)</h3>
       ${g ? `
         <p>${gridBadge(g.verdict)} <span class="muted">HIVE:</span> ${g.hive ? gridBadge(g.hive.verdict) : chip('neutral', 'לא נמדד')}</p>
         <p class="meta">פורסם: ${esc(whenOrUnknown(g.publishedAt))} · מנוע: ${esc(clip(g.engine || '', 80))} · real=${g.real ? 'כן' : 'לא'} · armed=${g.armed ? 'כן' : 'לא'}</p>
@@ -360,7 +360,7 @@ function renderFleet() {
     </div>
 
     <div class="card">
-      <h3>🔗 אמת-השרשרת (grid-doctor, ללא דיווח-עצמי)</h3>
+      <h3>אמת-השרשרת (grid-doctor, ללא דיווח-עצמי)</h3>
       ${ft ? `
         <ul class="kv">
           <li><span>SP אפקטיבי (STEEM)</span><b>${ft.steem && ft.steem.effectivePower != null ? esc(String(ft.steem.effectivePower)) : '—'}</b></li>
@@ -372,7 +372,7 @@ function renderFleet() {
     </div>
 
     <div class="card">
-      <h3>🛰️ בדיקות-רשת (Sandbox, קריא-בלבד)</h3>
+      <h3>בדיקות-רשת (קריאה-בלבד)</h3>
       <ul class="kv">
         <li><span>Hive probe</span><b>${hive && hive.status === 'measured' ? (hive.ok ? chip('ok', 'תקין') : chip('bad', 'ירוד')) : chip('neutral', 'לא נמדד')}</b></li>
         <li><span>בלוק-ראש HIVE</span><b>${hive && hive.headBlock != null ? esc(String(hive.headBlock)) : '—'}</b></li>
@@ -518,10 +518,9 @@ footer .stamp{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; 
   <div class="chips">
     ${chip('accent', `הונדש: ${fmtUTC(generatedAt)}`)}
     ${chip('neutral', 'צילום-מצב סטטי · נבנה מחדש מדי יום')}
-    ${chip('neutral', 'קריא-בלבד · חלון, לא הגה')}
+    ${chip('neutral', 'קריאה-בלבד')}
     <a class="chip neutral" href="https://github.com/roshpinacare-sys/FleetHQ" rel="noopener" style="text-decoration:none">GitHub · FleetHQ</a>
     <a class="chip neutral" href="potential.html" style="text-decoration:none">לוח-הפוטנציאל · potential</a>
-    <a class="chip neutral" href="operator.html" style="text-decoration:none">כניסת-מנהל · operator</a>
   </div>
 </header>
 
@@ -530,10 +529,9 @@ footer .stamp{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; 
   <section id="office3d-cta" aria-labelledby="h-office3d" style="margin-top:18px">
     <a href="https://roshpinacare-sys.github.io/Domain/office3d/v2/" rel="noopener" style="display:block;text-decoration:none;color:inherit;background:linear-gradient(135deg,#2b2016 0%,#4a301f 45%,#1f2a24 100%);border:1px solid #6b4a2a;border-radius:18px;padding:20px 22px;transition:transform .2s ease, box-shadow .2s ease" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 14px 40px rgba(224,151,63,.25)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
       <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
-        <div style="font-size:34px;line-height:1" aria-hidden="true">🔥</div>
         <div style="flex:1;min-width:220px">
           <h2 id="h-office3d" style="margin:0 0 4px;font-size:1.25rem;color:#f2c368">המשרד התלת-מימדי החי — כניסה ישירה</h2>
-          <p style="margin:0;color:#d8cdb8;font-size:.95rem;line-height:1.6">לא פריימים אפויים — החדר חי בדפדפן: הצוות הולך, יושב, מקליד, נפגש ומדבר מול הנתונים האמיתיים (לוח-המשימות, קיר-הגיט, דוכן, ספרייה). יום-אור מלא, מצלמת-במאי, וחוק-אמת: אין ירוק-מזויף.</p>
+          <p style="margin:0;color:#d8cdb8;font-size:.95rem;line-height:1.6">סיור תלת-ממדי חי בדפדפן: הצוות מוצג בעבודתו מול הנתונים האמיתיים — לוח-המשימות, קיר-הגיט והספרייה.</p>
         </div>
         <div style="background:#e0973f;color:#22180e;font-weight:800;border-radius:12px;padding:10px 18px;font-size:.95rem;white-space:nowrap">כניסה למשרד החי ←</div>
       </div>
@@ -559,29 +557,29 @@ footer .stamp{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; 
     <div class="sec-head"><span class="sec-num">4</span><h2 id="h-why">למה זה שונה<span class="en">WHY IT'S DIFFERENT</span></h2></div>
     <div class="grid2">
       <div class="card">
-        <h3>✅ עבודה ניתנת לאימות</h3>
+        <h3>עבודה ניתנת לאימות</h3>
         <p>כל מספר בדף הזה נמדד בזמן-הבנייה מקובץ אמיתי: מצב-המשרד מגיע מהפורמן עצמו (<a href="https://github.com/roshpinacare-sys/FleetHQ/blob/main/receipts/office-state-mirror.json" rel="noopener">office-state-mirror.json</a>), מצב-הצי נאסף מ-API של גיטהאב ומקבלות-גריד ציבוריות. אפשר לפתוח כל מקור ולהשוות.</p>
       </div>
       <div class="card">
-        <h3>🚫 אין דשבורדים מזויפים</h3>
-        <p>חוק-הכנות של המשרד: אדום נשאר אדום עד שנמדד ירוק, וכשל מוצג ככשל. כשמשהו לא נמדד — הדף כותב <em>לא נמדד</em>, לעולם לא ירוק-מזויף. גם הסוכנים עצמם מנועים מלדווח על מה שלא קראו.</p>
+        <h3>אין דשבורדים מזויפים</h3>
+        <p>חוק-הכנות של המשרד: אדום נשאר אדום עד שנמדד ירוק, וכשל מוצג ככשל. כשמשהו לא נמדד — הדף כותב <em>לא נמדד</em>, לעולם לא מסומן כתקין. גם הסוכנים עצמם מנועים מלדווח על מה שלא קראו.</p>
       </div>
       <div class="card">
-        <h3>🪟 חלון, לא הגה</h3>
+        <h3>קריאה-בלבד</h3>
         <p>הסוקט והדף קריא-בלבד: אין קונסולת-מטרות, אין מענה-להכרעות, אין נתיב-כתיבה ציבורי. המשרד מתופעל על-ידי המפעיל האוטונומי ומכריע שאלות-שיקול-דעת לפי מדיניות מפורסמת — המבקר רואה הכל ואינו יכול להטות דבר.</p>
       </div>
       <div class="card">
-        <h3>🛠️ המשרד משפר את עצמו ומשרת את הרשת</h3>
+        <h3>המשרד משפר את עצמו ומשרת את הרשת</h3>
         <p>הצוות סורק את ספרי-הצי בפטרולים אוטונומיים, חוצה ספרים זה-מול-זה, מדווח פערים וכותב דוחות לספרייה. הדף הזה עצמו נבנה ומתפרסם על-ידי המשרד (workflow יומי) — המשרד הוא גם המהנדס של חלונו.</p>
       </div>
       <div class="card wide">
-        <h3>🔗 כניסות לרשת</h3>
+        <h3>כניסות לרשת</h3>
         <div class="links">
-          <a href="https://roshpinacare-sys.github.io/Domain/" rel="noopener">🌍 דף Domain — הספרים והזיכרון</a>
-          <a href="https://roshpinacare-sys.github.io/Console/" rel="noopener">🖥️ קונסולת הצי (Console)</a>
-          <a href="https://github.com/roshpinacare-sys/FleetHQ" rel="noopener">📁 FleetHQ — קוד-המשרד</a>
-          <a href="https://roshpinacare-sys.github.io/FleetHQ/digest.json" rel="noopener">🤖 digest.json — למכונות</a>
-          <a href="https://github.com/roshpinacare-sys/FleetHQ/blob/main/SECURITY.md" rel="noopener">🔒 SECURITY.md — רשום-האבטחה</a>
+          <a href="https://roshpinacare-sys.github.io/Domain/" rel="noopener">דף Domain — הספרים והזיכרון</a>
+          <a href="https://roshpinacare-sys.github.io/Console/" rel="noopener">קונסולת הצי (Console)</a>
+          <a href="https://github.com/roshpinacare-sys/FleetHQ" rel="noopener">FleetHQ — קוד-המשרד</a>
+          <a href="https://roshpinacare-sys.github.io/FleetHQ/digest.json" rel="noopener">digest.json — למכונות</a>
+          <a href="https://github.com/roshpinacare-sys/FleetHQ/blob/main/SECURITY.md" rel="noopener">SECURITY.md — רשום-האבטחה</a>
         </div>
         <p class="meta" style="margin-top:10px">digest.json מיועד לצריכה-מכונית (הדף של Domain ניזון ממנו) — סכמה: roshpinacare.fleet-digest/1.</p>
       </div>
