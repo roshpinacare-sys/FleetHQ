@@ -46,7 +46,16 @@ const FLEETHQ = "/home/z/estate/FleetHQ";
 const LOG = "/tmp/local-beats.log";
 const BOOT = Date.now();
 const running = new Set();
-const lastKey: Record<string, string> = {};
+// Dedupe marks PERSIST to /tmp/local-beats-state.json (loaded at module init,
+// written on every mark). WHY: bun --hot reloads reset module memory — a
+// measured cascade (2026-10-12 22:54Z) fired one flush slot ~25 times in a
+// minute: fire → publish commit → pull --rebase rewrites the tree → reload →
+// dedupe forgotten → refire. Persisted marks survive reloads (same boot) and
+// die with /tmp on a wipe (correct: a fresh boot may flush fresh).
+const STATE = "/tmp/local-beats-state.json";
+const lastKey: Record<string, string> = (() => {
+  try { return JSON.parse(readFileSync(STATE, "utf8")) as Record<string, string>; } catch { return {}; }
+})();
 
 function envFor() {
   const env: Record<string, string> = { ...process.env } as Record<string, string>;
@@ -199,8 +208,20 @@ function flushBeat() {
     const out = (res.stdout || "").slice(-400).replace(/\n+/g, " | ");
     const err = (res.stderr || "").slice(-200).replace(/\n+/g, " | ");
     log(`flush: exit=${res.status} out="${out}"${err ? ` err="${err}"` : ""}`);
-    const pub = publishFleet("flush", ["receipts/push-queue.json"]);
-    log(`flush: publish="${pub.slice(-120)}"`);
+    // no-delta publish law (same shape as the watchdog's commit lane): the
+    // queue receipt's `at` churns every flight — committing it every slot
+    // would rewrite the tree every slot (rebase checkout → bun --hot reload →
+    // refire, the measured 22:54Z cascade). Publish only when the MEASURED
+    // state (credential verdict + per-repo divergence) changed vs HEAD.
+    const queue = (() => { try { return JSON.parse(readFileSync(join(FLEETHQ, "receipts", "push-queue.json"), "utf8")); } catch { return null; } })();
+    const committed = (() => { try { const r = spawnSync("git", ["show", "HEAD:receipts/push-queue.json"], { cwd: FLEETHQ, encoding: "utf8" }); return r.status === 0 ? JSON.parse(r.stdout) : null; } catch { return null; } })();
+    const sig = (q: { credential?: string; repos?: unknown[] } | null) => (q ? JSON.stringify([q.credential, q.repos]) : "null");
+    if (queue && committed && sig(queue) === sig(committed)) {
+      log("flush: queue unchanged — publish skipped (no-delta law)");
+    } else {
+      const pub = publishFleet("flush", ["receipts/push-queue.json"]);
+      log(`flush: publish="${pub.slice(-120)}"`);
+    }
   } catch (e) {
     log(`flush: FATAL ${(e as Error).message.slice(0, 150)} — scheduler survives`);
   } finally {
@@ -214,7 +235,10 @@ const keyOf = (d: Date, unit: string) =>
   unit === "h" ? `${d.getUTCFullYear()}-${d.getUTCMonth()}-${d.getUTCDate()}-${d.getUTCHours()}-h` :
   `${d.getUTCFullYear()}-${d.getUTCMonth()}-${d.getUTCDate()}-d`;
 const fired = (name: string, key: string) => lastKey[name] === key;
-const mark = (name: string, key: string) => { lastKey[name] = key; };
+const mark = (name: string, key: string) => {
+  lastKey[name] = key;
+  try { writeFileSync(STATE, JSON.stringify(lastKey)); } catch { /* best-effort: in-memory mark still holds for this process */ }
+};
 
 function tick() {
   const d = now();
