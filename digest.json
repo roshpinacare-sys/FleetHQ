@@ -1,32 +1,50 @@
 {
   "schema": "roshpinacare.fleet-digest/1",
-  "generatedAt": "2026-10-12T15:36:28.255Z",
+  "generatedAt": "2026-10-12T20:12:04.901Z",
   "owner": "roshpinacare-sys",
   "tokenMode": "gh-token",
   "repoListMode": "token-public-list",
   "note": "All values measured at render time by office-window/fleet-digest.mjs (read-only). Unknown means not measured — never a fake green. Private repo names are masked per exposure policy 7-b. Repos whose public visibility could not be re-verified at render time are omitted (fail-closed).",
   "fleet": {
-    "reposSeen": 6,
-    "publicCount": 6,
+    "reposSeen": 9,
+    "publicCount": 9,
     "privateCount": 0,
     "unverifiedOmitted": 0,
     "visibilityRecheck": "fail-closed",
-    "rateLimitRemaining": 4911,
+    "rateLimitRemaining": 4977,
     "degradedEarly": false
   },
   "repos": [
     {
+      "name": "GridWatch",
+      "private": false,
+      "pushedAt": "2026-10-12T20:11:48Z",
+      "defaultBranch": "main",
+      "description": "Fleet control plane: measures every repo & workflow health, auto-remediates failures, feeds the sovereign decider. The grid sees itself.",
+      "lastRun": {
+        "name": "grid-watch",
+        "status": "in_progress",
+        "conclusion": null,
+        "at": "2026-10-12T20:11:55Z",
+        "url": "https://github.com/roshpinacare-sys/GridWatch/actions/runs/38302634723"
+      },
+      "lastRunReason": null,
+      "commits7d": 6,
+      "commits7dCapped": false,
+      "commitsReason": null
+    },
+    {
       "name": "FleetHQ",
       "private": false,
-      "pushedAt": "2026-10-12T15:36:00Z",
+      "pushedAt": "2026-10-12T20:07:08Z",
       "defaultBranch": "main",
       "description": "Fleet HQ — a live operations room where real AI agents plan, work and report on your data books in real time. מפקדת הצי",
       "lastRun": {
-        "name": "office-window",
+        "name": "office-3d",
         "status": "in_progress",
         "conclusion": null,
-        "at": "2026-10-12T15:36:14Z",
-        "url": "https://github.com/roshpinacare-sys/FleetHQ/actions/runs/38271446447"
+        "at": "2026-10-12T20:10:10Z",
+        "url": "https://github.com/roshpinacare-sys/FleetHQ/actions/runs/38302442885"
       },
       "lastRunReason": null,
       "commits7d": 100,
@@ -34,35 +52,17 @@
       "commitsReason": null
     },
     {
-      "name": "saos-runtime",
-      "private": false,
-      "pushedAt": "2026-10-12T15:34:34Z",
-      "defaultBranch": "main",
-      "description": "SAOS sovereign runtime host — Actions runner heartbeat; clones the private engine tree at runtime (R244). No keys, no secrets in tree.",
-      "lastRun": {
-        "name": "gen2-rotation",
-        "status": "in_progress",
-        "conclusion": null,
-        "at": "2026-10-12T15:35:04Z",
-        "url": "https://github.com/roshpinacare-sys/saos-runtime/actions/runs/38271300703"
-      },
-      "lastRunReason": null,
-      "commits7d": 82,
-      "commits7dCapped": false,
-      "commitsReason": null
-    },
-    {
       "name": "Domain",
       "private": false,
-      "pushedAt": "2026-10-12T15:29:47Z",
+      "pushedAt": "2026-10-12T20:00:26Z",
       "defaultBranch": "main",
       "description": null,
       "lastRun": {
-        "name": "pages build and deployment",
-        "status": "completed",
-        "conclusion": "success",
-        "at": "2026-10-12T15:29:49Z",
-        "url": "https://github.com/roshpinacare-sys/Domain/actions/runs/38270658883"
+        "name": "market-grid-cron",
+        "status": "queued",
+        "conclusion": null,
+        "at": "2026-10-12T20:12:05Z",
+        "url": "https://github.com/roshpinacare-sys/Domain/actions/runs/38302653750"
       },
       "lastRunReason": null,
       "commits7d": 100,
@@ -72,15 +72,15 @@
     {
       "name": "Console",
       "private": false,
-      "pushedAt": "2026-10-12T15:17:02Z",
+      "pushedAt": "2026-10-12T19:52:24Z",
       "defaultBranch": "main",
       "description": null,
       "lastRun": {
-        "name": "pages build and deployment",
+        "name": "weave-census",
         "status": "completed",
-        "conclusion": "success",
-        "at": "2026-10-12T15:17:04Z",
-        "url": "https://github.com/roshpinacare-sys/Console/actions/runs/38269097191"
+        "conclusion": "failure",
+        "at": "2026-10-12T20:10:28Z",
+        "url": "https://github.com/roshpinacare-sys/Console/actions/runs/38302477574"
       },
       "lastRunReason": null,
       "commits7d": 100,
@@ -88,39 +88,87 @@
       "commitsReason": null
     },
     {
-      "name": "sovereign-beacon",
-      "private": false,
-      "pushedAt": "2026-10-12T15:00:02Z",
-      "defaultBranch": "main",
-      "description": "Rosh Pina — sovereign lighthouse (out-of-machine console)",
-      "lastRun": {
-        "name": "beacon-pulse",
-        "status": "completed",
-        "conclusion": "success",
-        "at": "2026-10-12T14:59:53Z",
-        "url": "https://github.com/roshpinacare-sys/sovereign-beacon/actions/runs/38266978436"
-      },
-      "lastRunReason": null,
-      "commits7d": 26,
-      "commits7dCapped": false,
-      "commitsReason": null
-    },
-    {
       "name": "sovereign-lighthouse",
       "private": false,
-      "pushedAt": "2026-10-12T15:00:01Z",
+      "pushedAt": "2026-10-12T19:47:04Z",
       "defaultBranch": "main",
       "description": "מגדלור ריבוני — Sovereign Lighthouse: זיכרון חוץ-מכונה עצמאי (RTL עברית)",
       "lastRun": {
         "name": "lighthouse-pulse",
         "status": "completed",
         "conclusion": "success",
-        "at": "2026-10-12T14:59:54Z",
-        "url": "https://github.com/roshpinacare-sys/sovereign-lighthouse/actions/runs/38266981023"
+        "at": "2026-10-12T19:46:58Z",
+        "url": "https://github.com/roshpinacare-sys/sovereign-lighthouse/actions/runs/38299913819"
       },
       "lastRunReason": null,
       "commits7d": 100,
       "commits7dCapped": true,
+      "commitsReason": null
+    },
+    {
+      "name": "Pulse",
+      "private": false,
+      "pushedAt": "2026-10-12T19:44:11Z",
+      "defaultBranch": "main",
+      "description": "Pulse — איבר-הדופק של הרשת · fleet heartbeat: autonomous census every 30min on GitHub Actions (public = unlimited free minutes), task queue, sandbox-independent. §7 sanitized runner shell.",
+      "lastRun": {
+        "name": "heartbeat",
+        "status": "completed",
+        "conclusion": "success",
+        "at": "2026-10-12T19:44:01Z",
+        "url": "https://github.com/roshpinacare-sys/Pulse/actions/runs/38299589961"
+      },
+      "lastRunReason": null,
+      "commits7d": 2,
+      "commits7dCapped": false,
+      "commitsReason": null
+    },
+    {
+      "name": "sovereign-beacon",
+      "private": false,
+      "pushedAt": "2026-10-12T18:37:26Z",
+      "defaultBranch": "main",
+      "description": "Rosh Pina — sovereign lighthouse (out-of-machine console)",
+      "lastRun": {
+        "name": "beacon-pulse",
+        "status": "completed",
+        "conclusion": "success",
+        "at": "2026-10-12T18:37:19Z",
+        "url": "https://github.com/roshpinacare-sys/sovereign-beacon/actions/runs/38292150927"
+      },
+      "lastRunReason": null,
+      "commits7d": 28,
+      "commits7dCapped": false,
+      "commitsReason": null
+    },
+    {
+      "name": "saos-runtime",
+      "private": false,
+      "pushedAt": "2026-10-12T17:22:34Z",
+      "defaultBranch": "main",
+      "description": "SAOS sovereign runtime host — Actions runner heartbeat; clones the private engine tree at runtime (R244). No keys, no secrets in tree.",
+      "lastRun": {
+        "name": "sovereign-runtime",
+        "status": "in_progress",
+        "conclusion": null,
+        "at": "2026-10-12T20:04:00Z",
+        "url": "https://github.com/roshpinacare-sys/saos-runtime/actions/runs/38301775264"
+      },
+      "lastRunReason": null,
+      "commits7d": 100,
+      "commits7dCapped": true,
+      "commitsReason": null
+    },
+    {
+      "name": "sovereign-runner-kit",
+      "private": false,
+      "pushedAt": "2026-10-12T16:05:15Z",
+      "defaultBranch": "main",
+      "description": "שכבת-הביצוע-הריבונית — המכשיר שלנו הוא המנוע, GitHub ספר-בלבד. Device-side execution, zero GitHub minutes, blockchain-anchored receipts",
+      "lastRun": null,
+      "lastRunReason": "latest-run-unavailable",
+      "commits7d": 1,
+      "commits7dCapped": false,
       "commitsReason": null
     }
   ],
@@ -149,16 +197,16 @@
   "fleetTruth": {
     "status": "measured",
     "source": "Domain agents/grid-truth.json (grid-doctor, live chain RPC — zero self-reports)",
-    "generatedAt": "2026-10-12T15:18:00.555Z",
-    "by": "grid-doctor v2.2",
+    "generatedAt": "2026-10-12T19:46:51.937Z",
+    "by": "grid-doctor v2.3-aggregate",
     "steem": {
-      "effectivePower": 1576.828,
-      "accountsAlive": 22,
-      "liquid": 107.956
+      "effectivePower": 106.358,
+      "accountsAlive": 4,
+      "liquid": 0
     },
     "hive": {
-      "effectivePower": 102490.685,
-      "accountsAlive": 2
+      "effectivePower": 32.436,
+      "accountsAlive": 1
     }
   },
   "probes": {
