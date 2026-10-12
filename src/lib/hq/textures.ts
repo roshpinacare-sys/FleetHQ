@@ -288,7 +288,7 @@ export function makeSignTexture(text: string, color: string, sub?: string): THRE
 
 type Painter = (ctx: CanvasRenderingContext2D, w: number, h: number) => void;
 
-export class DynTex {
+class DynTex {
   canvas: HTMLCanvasElement;
   ctx: CanvasRenderingContext2D;
   tex: THREE.CanvasTexture;
@@ -485,6 +485,48 @@ export function makeTaskWallTexture(): { tex: THREE.CanvasTexture; set: (tasks: 
   };
 }
 
+/** קיר הגיט — זרם קומיטים חי על מסך ענק */
+export function makeGitWireTexture(): { tex: THREE.CanvasTexture; set: (commits: { hash: string; subject: string; author: string; ts: number }[]) => void; update: (now: number) => void } {
+  let commits: { hash: string; subject: string; author: string; ts: number }[] = [];
+  let clock = 0;
+  const dyn = new DynTex(1280, 720, (ctx, w, h) => {
+    ctx.fillStyle = '#0a0d0a'; ctx.fillRect(0, 0, w, h);
+    // רשת רקע
+    ctx.strokeStyle = 'rgba(120,200,150,0.07)'; ctx.lineWidth = 1;
+    for (let x = 0; x < w; x += 64) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke(); }
+    for (let y = 0; y < h; y += 64) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke(); }
+    ctx.direction = 'rtl'; ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+    ctx.fillStyle = '#8fe3ae'; ctx.font = "700 40px 'Heebo',system-ui,sans-serif";
+    ctx.fillText('קיר הגיט · זרם הקומיטים של ספרי הצי', w - 28, 46);
+    ctx.fillStyle = 'rgba(140,230,170,0.6)'; ctx.font = "500 24px ui-monospace,monospace";
+    ctx.textAlign = 'left';
+    ctx.fillText(clock > 0.5 ? '● streaming' : '○ streaming', 28, 46);
+    const list = commits.slice(0, 12);
+    list.forEach((c, i) => {
+      const y = 120 + i * 46;
+      ctx.textAlign = 'left'; ctx.direction = 'ltr';
+      ctx.fillStyle = 'rgba(143,227,174,0.75)'; ctx.font = "500 24px ui-monospace,monospace";
+      ctx.fillText(c.hash.slice(0, 7), 28, y);
+      ctx.fillStyle = 'rgba(220,225,218,0.85)'; ctx.font = "500 26px 'Heebo',system-ui,sans-serif";
+      const subj = c.subject.length > 46 ? c.subject.slice(0, 45) + '…' : c.subject;
+      ctx.fillText(subj, 150, y);
+      ctx.fillStyle = 'rgba(140,146,150,0.6)'; ctx.font = "400 22px 'Heebo',system-ui,sans-serif";
+      ctx.textAlign = 'right';
+      ctx.fillText(c.author, w - 28, y);
+    });
+    if (!list.length) {
+      ctx.textAlign = 'center'; ctx.direction = 'rtl';
+      ctx.fillStyle = 'rgba(150,155,150,0.5)'; ctx.font = "500 30px 'Heebo',system-ui,sans-serif";
+      ctx.fillText('ממתין לזרם…', w / 2, h / 2);
+    }
+  });
+  return {
+    tex: dyn.tex,
+    set: (cs) => { commits = cs; dyn.markDirty(); },
+    update: (now) => { clock = (now / 700) % 2; dyn.update(now); },
+  };
+}
+
 /** מסך לוח שנה/מדדים בקבלה */
 export function makeReceptionScreen(): { tex: THREE.CanvasTexture; set: (s: { mode: string; provider: string; ops: number; goal?: string }) => void; update: (now: number) => void } {
   let info: { mode: string; provider: string; ops: number; goal?: string } = { mode: '…', provider: '…', ops: 0, goal: '' };
@@ -527,4 +569,222 @@ function wrapText(ctx: CanvasRenderingContext2D, text: string, x: number, y: num
   }
   if (lines.length < maxLines && cur) lines.push(cur);
   lines.slice(0, maxLines).forEach((l, i) => ctx.fillText(l, x, y + i * lineH));
+}
+
+// ─────────────── Task 53 — אמנות-קיר (השוואה מול office3d/v2) ───────────────
+// מנדט-הבעלים: "עיצוב משרד פסיכדלי אבל אלגנטי — קירות כמו טריפ-LSD פעיל
+// אבל בעצימות-נמוכה, אומנותי, לא בולט ומבלבל, עדין ואלגנטי, וכמה תמונות
+// קקטוסים, קצת עיצוב מעצב-פנים". הכל קנבס-פרוצדורלי — אפס נכסי-רשת
+// (אותה משמעת של כל-החדר), פלטת-עבר רכה ורווי-נמוך על נייר-חם.
+
+/** נייר-אמנות חם עם דגן עדין — בסיס אחיד לכל-ההדפסים */
+function artPaper(ctx: CanvasRenderingContext2D, w: number, h: number, seed = 7) {
+  const g = ctx.createLinearGradient(0, 0, w, h);
+  g.addColorStop(0, '#f4efe3');
+  g.addColorStop(0.55, '#efe8d8');
+  g.addColorStop(1, '#f6f1e5');
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, w, h);
+  let rnd = 987654321 ^ seed;
+  const rand = () => { rnd = (Math.imul(rnd, 1103515245) + 12345) & 0x7fffffff; return rnd / 0x7fffffff; };
+  ctx.globalAlpha = 0.045;
+  for (let i = 0; i < 1100; i++) {
+    ctx.fillStyle = rand() > 0.5 ? '#8a7f6a' : '#ffffff';
+    ctx.fillRect(rand() * w, rand() * h, 1.7, 1.7);
+  }
+  ctx.globalAlpha = 1;
+}
+
+/** הדפס פסיכדלי-עדין (variants 0..3) — זרימות-משי בעבר-רך, רווי-נמוך,
+ *  קונטרסט-שקט: "טריפ בעצימות-נמוכה" שנותן חיים לקיר בלי לגנוב-את-העין. */
+export function makePsyArtTexture(variant = 0): THREE.CanvasTexture {
+  const W = 512, H = 672;
+  const [c, ctx] = makeCanvas(W, H);
+  artPaper(ctx, W, H, variant * 31 + 5);
+  // פלטת-עבר: רוז-אבק, סייג', חול-זהב, לילך-מעומעם, תכלת-אפרסק — כולם רכים
+  // Task 53-fix (נמדד-במסך): הגרסה-הראשונה יצאה כמעט-לבנה מרחוק (אלפא 0.32-0.50
+  // על נייר-קרם + תאורת-יום 2.7). כאן: אלפא 0.58-0.88 — "עדין-אך-נראה".
+  const pal = [
+    ['rgba(206,142,132,0.88)', 'rgba(128,160,142,0.78)', 'rgba(200,172,104,0.72)', 'rgba(156,136,180,0.68)', 'rgba(118,152,168,0.62)'],
+    ['rgba(156,136,180,0.82)', 'rgba(206,142,132,0.74)', 'rgba(118,152,168,0.70)', 'rgba(128,160,142,0.64)', 'rgba(200,172,104,0.58)'],
+    ['rgba(200,172,104,0.80)', 'rgba(118,152,168,0.76)', 'rgba(206,142,132,0.70)', 'rgba(156,136,180,0.64)', 'rgba(128,160,142,0.60)'],
+    ['rgba(128,160,142,0.84)', 'rgba(200,172,104,0.74)', 'rgba(156,136,180,0.70)', 'rgba(206,142,132,0.64)', 'rgba(118,152,168,0.58)'],
+  ][variant % 4];
+  // גוף-הדפס: שטיפת-צבע רכה מאחורי-המוטיב (נותן להדפס "בשר" ולא קווים על נייר)
+  const bodyWash = ctx.createRadialGradient(W * 0.5, H * 0.44, 40, W * 0.5, H * 0.5, W * 0.72);
+  bodyWash.addColorStop(0, pal[variant % pal.length].replace(/0\.\d+\)$/, '0.30)'));
+  bodyWash.addColorStop(1, 'rgba(244,239,227,0)');
+  ctx.fillStyle = bodyWash;
+  ctx.fillRect(0, 0, W, H);
+  if (variant % 4 === 0 || variant % 4 === 2) {
+    // זרימות-אופק — סרטי-משי חוצי-הדף עם סחיפת-פאזה
+    const horiz = variant % 4 === 0;
+    for (let i = 0; i < 26; i++) {
+      const t = i / 26;
+      ctx.beginPath();
+      const amp = 26 + 16 * Math.sin(t * Math.PI);
+      const base = horiz ? t * H : t * W;
+      for (let s = 0; s <= 220; s++) {
+        const u = s / 220;
+        const w = 1 + 0.55 * Math.sin(u * 9.2 + i * 0.62) + 0.3 * Math.sin(u * 17.7 + i * 1.31);
+        const x = horiz ? u * W : base + w * amp;
+        const y = horiz ? base + w * amp : (1 - u) * H;
+        if (s === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      }
+      ctx.strokeStyle = pal[i % pal.length];
+      ctx.lineWidth = 3.2 + 3.8 * Math.abs(Math.sin(i * 1.7));
+      ctx.lineCap = 'round';
+      ctx.stroke();
+    }
+  } else if (variant % 4 === 1) {
+    // פריחה-רדיאלית — עלי-כותרת קשתיים מלב-ההדפס
+    const cx = W * 0.5, cy = H * 0.46;
+    for (let ring = 0; ring < 5; ring++) {
+      const r0 = 44 + ring * 52;
+      const n = 10 + ring * 3;
+      for (let i = 0; i < n; i++) {
+        const a0 = (i / n) * Math.PI * 2 + ring * 0.23;
+        const a1 = a0 + (Math.PI * 2 / n) * 0.62;
+        ctx.beginPath();
+        ctx.arc(cx, cy, r0, a0, a1);
+        ctx.arc(cx, cy, r0 * 0.55, a1, a0, true);
+        ctx.closePath();
+        ctx.fillStyle = pal[(ring + i) % pal.length];
+        ctx.fill();
+      }
+    }
+    ctx.fillStyle = 'rgba(244,239,227,0.92)';
+    ctx.beginPath(); ctx.arc(cx, cy, 26, 0, 7); ctx.fill();
+  } else {
+    // היתוך-גלים — שדה-התאבכות רך (מוואות עדינות)
+    for (let y = 0; y < H; y += 7) {
+      ctx.beginPath();
+      for (let x = 0; x <= W; x += 8) {
+        const v = Math.sin(x * 0.016 + y * 0.045) + Math.sin(x * 0.031 - y * 0.021 + 2.1) + Math.sin(y * 0.017 + 4.2);
+        const yy = y + v * 19;
+        if (x === 0) ctx.moveTo(x, yy); else ctx.lineTo(x, yy);
+      }
+      ctx.strokeStyle = pal[Math.floor(y / 46) % pal.length];
+      ctx.lineWidth = 3.4;
+      ctx.stroke();
+    }
+  }
+  // ויניטה עדינה — עומק אופטי של הדפס-אמיתי
+  const vig = ctx.createRadialGradient(W / 2, H / 2, H * 0.32, W / 2, H / 2, H * 0.72);
+  vig.addColorStop(0, 'rgba(60,50,36,0)');
+  vig.addColorStop(1, 'rgba(60,50,36,0.14)');
+  ctx.fillStyle = vig;
+  ctx.fillRect(0, 0, W, H);
+  // מסגרת-נייר פנימית עדינה (מרווח-מאונטינג)
+  ctx.strokeStyle = 'rgba(120,106,84,0.35)';
+  ctx.lineWidth = 2;
+  ctx.strokeRect(14, 14, W - 28, H - 28);
+  return finish(c);
+}
+
+/** הדפס קקטוס (variants 0..2) — מינימליזם מדברי אלגנטי על נייר-חם */
+export function makeCactusArtTexture(variant = 0): THREE.CanvasTexture {
+  const W = 512, H = 672;
+  const [c, ctx] = makeCanvas(W, H);
+  artPaper(ctx, W, H, variant * 57 + 11);
+  const green = '#5c7a54';
+  const greenDark = '#46613f';
+  if (variant % 3 === 0) {
+    // סגוארו בשקיעת-חול — צללית מינימלית + דיסק-שמש
+    const sky = ctx.createLinearGradient(0, 90, 0, H - 130);
+    sky.addColorStop(0, 'rgba(226,196,150,0.55)');
+    sky.addColorStop(1, 'rgba(214,164,156,0.34)');
+    ctx.fillStyle = sky;
+    ctx.fillRect(56, 90, W - 112, H - 240);
+    ctx.fillStyle = 'rgba(240,232,210,0.95)';
+    ctx.beginPath(); ctx.arc(W * 0.62, 200, 44, 0, 7); ctx.fill();
+    ctx.fillStyle = greenDark;
+    // גוף
+    roundRect(ctx, W * 0.46, 190, 34, 330, 17); ctx.fill();
+    // זרוע שמאל (זקופה-מעוקלת)
+    roundRect(ctx, W * 0.46 - 52, 300, 30, 120, 15); ctx.fill();
+    roundRect(ctx, W * 0.46 - 52, 268, 56, 30, 15); ctx.fill();
+    // זרוע ימין נמוכה
+    roundRect(ctx, W * 0.46 + 56, 350, 28, 96, 14); ctx.fill();
+    roundRect(ctx, W * 0.46 + 34, 350, 50, 28, 14); ctx.fill();
+    // קרקע
+    ctx.fillStyle = 'rgba(120,106,84,0.5)';
+    ctx.fillRect(56, H - 152, W - 112, 3);
+    for (let i = 0; i < 5; i++) ctx.fillRect(90 + i * 74, H - 150, 20 + (i % 3) * 12, 2.4);
+  } else if (variant % 3 === 1) {
+    // קקטוס-סיר בקו-אמן — אגס-קוצים בסיר טרהקוטה
+    const cx = W * 0.5;
+    ctx.strokeStyle = 'rgba(96,84,64,0.75)';
+    ctx.lineWidth = 3.4;
+    // סיר
+    ctx.beginPath();
+    ctx.moveTo(cx - 74, H - 250); ctx.lineTo(cx + 74, H - 250);
+    ctx.lineTo(cx + 58, H - 140); ctx.lineTo(cx - 58, H - 140);
+    ctx.closePath(); ctx.stroke();
+    ctx.fillStyle = 'rgba(190,124,92,0.6)';
+    ctx.fill();
+    // אדן-סיר
+    ctx.strokeRect(cx - 84, H - 268, 168, 20);
+    // כרית-מצע
+    ctx.fillStyle = 'rgba(110,92,66,0.55)';
+    ctx.fillRect(cx - 70, H - 272, 140, 8);
+    // אגס-קוצים — כרי-דשא מעוגלים
+    const pads: [number, number, number, number][] = [
+      [cx, H - 330, 64, 84], [cx - 74, H - 392, 52, 66], [cx + 70, H - 420, 50, 62], [cx - 20, H - 486, 44, 56],
+    ];
+    for (const [px, py, pw, ph] of pads) {
+      ctx.beginPath(); ctx.ellipse(px, py, pw / 2, ph / 2, 0, 0, 7);
+      ctx.fillStyle = green; ctx.fill();
+      ctx.strokeStyle = 'rgba(70,97,63,0.8)'; ctx.lineWidth = 2.6; ctx.stroke();
+    }
+    // קוצים עדינים
+    ctx.strokeStyle = 'rgba(246,242,228,0.85)'; ctx.lineWidth = 1.6;
+    for (const [px, py, pw, ph] of pads) {
+      for (let i = 0; i < 9; i++) {
+        const a = (i / 9) * Math.PI * 2 + px;
+        const x0 = px + Math.cos(a) * (pw / 2 - 7), y0 = py + Math.sin(a) * (ph / 2 - 7);
+        ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(x0 + Math.cos(a) * 7, y0 + Math.sin(a) * 7); ctx.stroke();
+      }
+    }
+  } else {
+    // קקטוס-חבית גיאומטרי — צלעות-מניפה + כתר-פרח
+    const cx = W * 0.5, cy = H * 0.52;
+    ctx.fillStyle = green;
+    ctx.beginPath(); ctx.ellipse(cx, cy, 108, 148, 0, 0, 7); ctx.fill();
+    ctx.strokeStyle = 'rgba(70,97,63,0.75)'; ctx.lineWidth = 2.8;
+    for (let i = -4; i <= 4; i++) {
+      ctx.beginPath();
+      ctx.ellipse(cx + i * 21, cy, 14, 148 * Math.cos((i / 5.2) * (Math.PI / 2)) * 0.96, 0, 0, 7);
+      ctx.stroke();
+    }
+    // כתר
+    ctx.fillStyle = 'rgba(214,164,156,0.9)';
+    for (let i = 0; i < 7; i++) {
+      const a = (i / 7) * Math.PI * 2;
+      ctx.beginPath(); ctx.arc(cx + Math.cos(a) * 24, cy - 138 + Math.sin(a) * 10, 8.5, 0, 7); ctx.fill();
+    }
+    // קוצי-צלע
+    ctx.strokeStyle = 'rgba(246,242,228,0.8)'; ctx.lineWidth = 1.5;
+    for (let i = -4; i <= 4; i++) {
+      for (let j = 0; j < 6; j++) {
+        const yy = cy - 120 + j * 48;
+        const xx = cx + i * 21;
+        if (Math.abs(i * 21) < 108 * Math.sqrt(Math.max(0, 1 - Math.pow((yy - cy) / 148, 2))) - 10) {
+          ctx.beginPath(); ctx.moveTo(xx, yy); ctx.lineTo(xx + 4.5, yy - 4.5); ctx.stroke();
+        }
+      }
+    }
+    // קרקע
+    ctx.fillStyle = 'rgba(120,106,84,0.5)';
+    ctx.beginPath(); ctx.ellipse(cx, cy + 172, 130, 12, 0, 0, 7); ctx.fill();
+  }
+  const vig = ctx.createRadialGradient(W / 2, H / 2, H * 0.32, W / 2, H / 2, H * 0.72);
+  vig.addColorStop(0, 'rgba(60,50,36,0)');
+  vig.addColorStop(1, 'rgba(60,50,36,0.14)');
+  ctx.fillStyle = vig;
+  ctx.fillRect(0, 0, W, H);
+  ctx.strokeStyle = 'rgba(120,106,84,0.35)';
+  ctx.lineWidth = 2;
+  ctx.strokeRect(14, 14, W - 28, H - 28);
+  return finish(c);
 }
