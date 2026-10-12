@@ -50,7 +50,11 @@ function pickTime(j: Record<string, unknown>): string {
   return "";
 }
 
-async function verifyFile(source: string, path: string): Promise<VeritasVerdict> {
+async function verifyFile(
+  source: string,
+  path: string,
+  maxAgeMs?: number,
+): Promise<VeritasVerdict> {
   let raw: string;
   try {
     raw = await readFile(path, "utf8");
@@ -70,7 +74,7 @@ async function verifyFile(source: string, path: string): Promise<VeritasVerdict>
     // File exists but claims no time — cannot prove freshness, cannot fake it.
     return verifyReceipt({ source, producedAt: "", sha256, bytes: buf.length });
   }
-  return verifyReceipt({ source, producedAt, sha256, bytes: buf.length });
+  return verifyReceipt({ source, producedAt, sha256, bytes: buf.length }, Date.now(), maxAgeMs);
 }
 
 async function latestIn(dir: string): Promise<string | null> {
@@ -84,14 +88,23 @@ async function latestIn(dir: string): Promise<string | null> {
 
 export async function GET() {
   const now = Date.now();
-  const sources: Array<{ source: string; path: string }> = [
+  // maxAgeMs per source = the PRODUCER's DECLARED cadence (calibration, not leniency:
+  // a source on a measured daily beat is not "frozen" at 3h — the real age stays
+  // fully visible in ageMs either way; a 3h gate on a daily producer just cries wolf
+  // and drowns the real signals). Default stays VERITAS_MAX_AGE_MS (3h).
+  const sources: Array<{ source: string; path: string; maxAgeMs?: number }> = [
     { source: "fresh-oracle/latest.json", path: join(RECEIPTS, "fresh-oracle", "latest.json") },
     { source: "recruitment/live.json", path: join(RECEIPTS, "recruitment", "live.json") },
     { source: "office-state-mirror.json", path: join(RECEIPTS, "office-state-mirror.json") },
     { source: "boot-verify.json", path: join(RECEIPTS, "boot-verify.json") },
     // grid + money sentinel — the profitability lane under the gate's eye (Domain/dex)
-    { source: "dex/grid.json", path: "/home/z/estate/Domain/dex/grid.json" },
-    { source: "dex/money.json", path: "/home/z/estate/Domain/dex/money.json" },
+    // grid.json: producer grid-pulse (Console, keyless, cron 03:13/15:13 = 2×/day)
+    //   + hourly dex-mirror → fleet's own opens-closer law for this exact file is
+    //   slaMin 1800 (30h) — veritas aligned to the same declared law.
+    { source: "dex/grid.json", path: "/home/z/estate/Domain/dex/grid.json", maxAgeMs: 30 * 60 * 60 * 1000 },
+    // money.json: producer money-watch (Console, cron 33 */2 = every 2h) + hourly
+    //   dex-mirror → worst chain ~3h + measured scheduler drift → 4h.
+    { source: "dex/money.json", path: "/home/z/estate/Domain/dex/money.json", maxAgeMs: 4 * 60 * 60 * 1000 },
   ];
 
   // office-ci: latest receipt file
@@ -102,7 +115,7 @@ export async function GET() {
 
   const verdicts: VeritasVerdict[] = [];
   for (const s of sources) {
-    verdicts.push(await verifyFile(s.source, s.path));
+    verdicts.push(await verifyFile(s.source, s.path, s.maxAgeMs));
   }
 
   const aggregate = aggregateVerdict(verdicts);
