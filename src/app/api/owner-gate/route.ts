@@ -73,6 +73,38 @@ export async function POST(req: Request) {
       keyfit = { ok: false, error: 'keyfit-unavailable' };
     }
 
+    // סיכום-ההתאמה נשמר כהודעת-מערכת (מתמשך — שורד רענון וסקר)
+    if (keyfit) {
+      const k = keyfit as {
+        ok?: boolean; wif?: { wifValid?: boolean };
+        steem?: { reachable?: boolean; registeredRoles?: string[]; note?: string };
+        blurt?: { reachable?: boolean; registeredRoles?: string[]; note?: string };
+        measuredAt?: string;
+      };
+      const parts: string[] = [];
+      parts.push(k.wif?.wifValid ? 'מפתח-תקין-קריפטוגרפית ✓' : 'מפתח-לא-תקין ✗');
+      if (k.steem?.reachable) {
+        parts.push(
+          k.steem.registeredRoles?.length
+            ? `STEEM: מחובר ✓ (${k.steem.registeredRoles.join(', ')})`
+            : 'STEEM: המפתח-טרם-רשום-כרשות — ההרשמה-בתהליך מול-הריבונות',
+        );
+      } else {
+        parts.push('STEEM: צמתים-לא-זמינים-כרגע');
+      }
+      if (k.blurt?.reachable) {
+        parts.push(k.blurt.registeredRoles?.length ? 'BLURT: מחובר ✓' : 'BLURT: לא-רשום');
+      } else {
+        parts.push('BLURT: צמתים-בתחזוקה (נמדד חי)');
+      }
+      await db.ownerMsg.create({
+        data: {
+          role: 'system',
+          text: `🔗 מצב-חיבור חי (${(k.measuredAt ?? new Date().toISOString()).slice(11, 16)}Z): ${parts.join(' · ')}`,
+        },
+      });
+    }
+
     return NextResponse.json({ ok: true, token, expiresInMs: SESSION_TTL_MS, keyfit });
   } catch {
     return NextResponse.json({ ok: false, error: 'gate-error' }, { status: 500 });
