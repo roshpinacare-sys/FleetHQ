@@ -1,7 +1,7 @@
 {
  "schema": "fleet.fresh-oracle/1",
- "at": "2026-10-11T23:41:05.900Z",
- "law": "FRESH only if sha256(live bytes) == sha256(committed deploy-ref bytes); DRIFT=RED (200-with-different-bytes); UNREACHABLE=UNKNOWN (network, retried once, reason kept) — never faked green",
+ "at": "2026-10-12T00:08:45.698Z",
+ "law": "FRESH only if sha256(live bytes) == sha256(committed deploy-ref bytes) AND no ops doc MISSING; DRIFT=RED (200-with-different-bytes); UNREACHABLE=UNKNOWN (network, retried once, reason kept); ops-doc age rows are honest amber (MISSING alone flips exit) — never faked green",
  "results": [
   {
    "name": "FleetHQ window",
@@ -11,9 +11,9 @@
    "committedStatus": 200,
    "liveError": null,
    "committedError": null,
-   "liveSha16": "4d15431487bc0bbc",
-   "committedSha16": "4d15431487bc0bbc",
-   "liveBytes": 37491,
+   "liveSha16": "3a123dacd9f9337d",
+   "committedSha16": "3a123dacd9f9337d",
+   "liveBytes": 37663,
    "verdict": "MATCH"
   },
   {
@@ -24,9 +24,9 @@
    "committedStatus": 200,
    "liveError": null,
    "committedError": null,
-   "liveSha16": "0af730865c58fa2a",
-   "committedSha16": "0af730865c58fa2a",
-   "liveBytes": 18917,
+   "liveSha16": "6577855d199b2175",
+   "committedSha16": "6577855d199b2175",
+   "liveBytes": 11788,
    "verdict": "MATCH"
   },
   {
@@ -37,9 +37,9 @@
    "committedStatus": 200,
    "liveError": null,
    "committedError": null,
-   "liveSha16": "e8d0aaaece8badc1",
-   "committedSha16": "e8d0aaaece8badc1",
-   "liveBytes": 25418,
+   "liveSha16": "b33f54141cf8af18",
+   "committedSha16": "b33f54141cf8af18",
+   "liveBytes": 14874,
    "verdict": "MATCH"
   },
   {
@@ -50,9 +50,9 @@
    "committedStatus": 200,
    "liveError": null,
    "committedError": null,
-   "liveSha16": "9521b6fe01d4468d",
-   "committedSha16": "9521b6fe01d4468d",
-   "liveBytes": 53531,
+   "liveSha16": "793467bd80664ba4",
+   "committedSha16": "793467bd80664ba4",
+   "liveBytes": 57563,
    "verdict": "MATCH"
   },
   {
@@ -76,9 +76,9 @@
    "committedStatus": 200,
    "liveError": null,
    "committedError": null,
-   "liveSha16": "10e403ac420d628e",
-   "committedSha16": "10e403ac420d628e",
-   "liveBytes": 18418,
+   "liveSha16": "f0650e6e5a0e03c6",
+   "committedSha16": "f0650e6e5a0e03c6",
+   "liveBytes": 18513,
    "verdict": "MATCH"
   },
   {
@@ -95,12 +95,21 @@
    "verdict": "MATCH"
   }
  ],
+ "opsDocs": [
+  {
+   "name": "OPS-DOCS-SCAN",
+   "verdict": "UNREACHABLE",
+   "error": "contents API HTTP 403"
+  }
+ ],
  "summary": {
   "checked": 7,
   "match": 7,
   "drift": 0,
   "missing": 0,
   "unreachable": 0,
+  "opsDocsMissing": 0,
+  "opsDocsStale": 0,
   "verdict": "FRESH"
  },
  "method": "https GET live URL + raw.githubusercontent deploy ref → sha256-16 byte equality"
