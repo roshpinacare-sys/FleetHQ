@@ -1,6 +1,6 @@
 {
  "schema": "fleet.fresh-oracle/1",
- "at": "2026-10-12T00:38:46.206Z",
+ "at": "2026-10-12T01:18:20.598Z",
  "law": "FRESH only if sha256(live bytes) == sha256(committed deploy-ref bytes) AND no ops doc MISSING; DRIFT=RED (200-with-different-bytes); UNREACHABLE=UNKNOWN (network, retried once, reason kept); ops-doc age rows are honest amber (MISSING alone flips exit) — never faked green",
  "results": [
   {
@@ -97,9 +97,58 @@
  ],
  "opsDocs": [
   {
-   "name": "OPS-DOCS-SCAN",
-   "verdict": "UNREACHABLE",
-   "error": "contents API HTTP 403"
+   "name": "FLOW-PLAN",
+   "file": "FLOW-PLAN-2026-10-11.md",
+   "sha16": "e355a31da97053ae",
+   "rawStatus": 200,
+   "lastCommitAt": "2026-10-11T20:29:07Z",
+   "ageDays": 0,
+   "verdict": "FRESH"
+  },
+  {
+   "name": "GROWTH-PLAN",
+   "file": "GROWTH-PLAN-2026-10-11.md",
+   "sha16": "ec0aa857d03db962",
+   "rawStatus": 200,
+   "lastCommitAt": "2026-10-11T19:24:47Z",
+   "ageDays": 0,
+   "verdict": "FRESH"
+  },
+  {
+   "name": "OWNER-P0",
+   "file": "OWNER-P0-2026-10-11.md",
+   "sha16": "ca67e6d199997874",
+   "rawStatus": 200,
+   "lastCommitAt": "2026-10-11T16:15:49Z",
+   "ageDays": 0,
+   "verdict": "FRESH"
+  },
+  {
+   "name": "RESUME-PACKET",
+   "file": "RESUME-PACKET.md",
+   "sha16": "95162a1dce0b98d6",
+   "rawStatus": 200,
+   "lastCommitAt": null,
+   "ageDays": null,
+   "verdict": "UNKNOWN-AGE"
+  },
+  {
+   "name": "TOKEN-TRUTH",
+   "file": "TOKEN-TRUTH.md",
+   "sha16": "9b481dc448dde386",
+   "rawStatus": 200,
+   "lastCommitAt": null,
+   "ageDays": null,
+   "verdict": "UNKNOWN-AGE"
+  },
+  {
+   "name": "ESTATE-TRUTH",
+   "file": "ESTATE-TRUTH-2026-10-11.md",
+   "sha16": "99befe558bcc851c",
+   "rawStatus": 200,
+   "lastCommitAt": null,
+   "ageDays": null,
+   "verdict": "UNKNOWN-AGE"
   }
  ],
  "summary": {
