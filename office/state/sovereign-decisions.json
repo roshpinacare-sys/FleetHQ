@@ -1,6 +1,6 @@
 {
  "schema": "saos.sovereign-decisions/1",
- "generatedAt": "2026-10-12T17:05:12.869Z",
+ "generatedAt": "2026-10-12T17:23:30.777Z",
  "policyVersion": "SOV-POLICY/1",
  "principle": "הריבונות מחליטה ומבצעת — הבעלים קבע (trace 1a12…f45d) שהמערכת מקבלת החלטות חכמות בעצמה בצורה הכי מתקדמת שיש; הפניה לבעלים = שלילת הריבונות. כל-החלטה: ראיה-מדודה + אימות-כפול. בעלים = בעלים; ריבונות = הגוף שמחליט.",
  "authority": {
@@ -18,17 +18,13 @@
   ]
  },
  "sense": {
-  "gridTruth": {
-   "ok": false,
-   "http": 404
-  },
   "officeState": {
    "ok": true,
-   "ageMin": 54
+   "ageMin": 72
   },
-  "valueScan": {
+  "gridTruth": {
    "ok": true,
-   "ageMin": 18
+   "ageMin": 11
   },
   "openCloser": {
    "ok": true,
@@ -37,6 +33,10 @@
   "decisionsPrev": {
    "ok": true,
    "ageMin": 18
+  },
+  "valueScan": {
+   "ok": true,
+   "ageMin": 36
   }
  },
  "decisions": [
@@ -196,18 +196,18 @@
   {
    "id": "auto-freshness",
    "area": "operations",
-   "title": "טריות הצי: 2 נפלו מעל SLA (beacon 107דק>SLA100, value-scan 107דק>SLA90) — הוערו: beacon,value-scan",
-   "status": "watch",
+   "title": "טריות הצי: הכל טרי מעל SLA (office-state 54דק, beacon 18דק, lighthouse 36דק, value-scan 18דק, domain-pulse 101דק, live 67",
+   "status": "clear",
    "evidence": {
     "source": "FleetHQ/office/state/opens-closer.json",
     "metrics": {
-     "staleCount": 2,
-     "dispatchedCount": 2
+     "staleCount": 0,
+     "dispatchedCount": 0
     },
     "selfHeal": "same-repo GITHUB_TOKEN + cross-repo CROSS_REVIVE_PAT (D1)"
    },
    "policy": "SOV-POLICY/1",
-   "decidedAt": "2026-10-12T17:05:12.869Z",
+   "decidedAt": "2026-10-12T17:23:30.777Z",
    "by": "sovereign-decider"
   },
   {
@@ -222,7 +222,7 @@
    },
    "law": "אין דריסת-מסילות: למשרד יש לולאת-רטרו משלו; הריבונות מתעדת ומאמתת, לא לוקחת",
    "policy": "SOV-POLICY/1",
-   "decidedAt": "2026-10-12T17:05:12.869Z",
+   "decidedAt": "2026-10-12T17:23:30.777Z",
    "by": "sovereign-decider"
   }
  ],
