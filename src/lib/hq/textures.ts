@@ -288,7 +288,7 @@ export function makeSignTexture(text: string, color: string, sub?: string): THRE
 
 type Painter = (ctx: CanvasRenderingContext2D, w: number, h: number) => void;
 
-class DynTex {
+export class DynTex {
   canvas: HTMLCanvasElement;
   ctx: CanvasRenderingContext2D;
   tex: THREE.CanvasTexture;
