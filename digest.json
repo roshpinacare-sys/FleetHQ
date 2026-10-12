@@ -1,48 +1,32 @@
 {
   "schema": "roshpinacare.fleet-digest/1",
-  "generatedAt": "2026-10-12T12:52:20.294Z",
+  "generatedAt": "2026-10-12T15:20:35.497Z",
   "owner": "roshpinacare-sys",
   "tokenMode": "gh-token",
   "repoListMode": "token-public-list",
-  "note": "All values measured at render time by office-window/fleet-digest.mjs (read-only). Unknown means not measured — never a fake green. Private repo names are masked per exposure policy 7-b.",
+  "note": "All values measured at render time by office-window/fleet-digest.mjs (read-only). Unknown means not measured — never a fake green. Private repo names are masked per exposure policy 7-b. Repos whose public visibility could not be re-verified at render time are omitted (fail-closed).",
   "fleet": {
-    "reposSeen": 3,
-    "publicCount": 3,
+    "reposSeen": 6,
+    "publicCount": 6,
     "privateCount": 0,
-    "rateLimitRemaining": 4959,
+    "unverifiedOmitted": 0,
+    "visibilityRecheck": "fail-closed",
+    "rateLimitRemaining": 4975,
     "degradedEarly": false
   },
   "repos": [
     {
-      "name": "Domain",
-      "private": false,
-      "pushedAt": "2026-10-12T12:52:08Z",
-      "defaultBranch": "main",
-      "description": null,
-      "lastRun": {
-        "name": "exposure-gate",
-        "status": "completed",
-        "conclusion": "success",
-        "at": "2026-10-12T12:52:11Z",
-        "url": "https://github.com/roshpinacare-sys/Domain/actions/runs/38251767934"
-      },
-      "lastRunReason": null,
-      "commits7d": 100,
-      "commits7dCapped": true,
-      "commitsReason": null
-    },
-    {
       "name": "FleetHQ",
       "private": false,
-      "pushedAt": "2026-10-12T12:51:46Z",
+      "pushedAt": "2026-10-12T15:19:35Z",
       "defaultBranch": "main",
       "description": "Fleet HQ — a live operations room where real AI agents plan, work and report on your data books in real time. מפקדת הצי",
       "lastRun": {
-        "name": "office-ci",
-        "status": "completed",
-        "conclusion": "success",
-        "at": "2026-10-12T12:50:20Z",
-        "url": "https://github.com/roshpinacare-sys/FleetHQ/actions/runs/38251565583"
+        "name": "office-window",
+        "status": "pending",
+        "conclusion": null,
+        "at": "2026-10-12T15:18:57Z",
+        "url": "https://github.com/roshpinacare-sys/FleetHQ/actions/runs/38269325326"
       },
       "lastRunReason": null,
       "commits7d": 100,
@@ -50,17 +34,89 @@
       "commitsReason": null
     },
     {
-      "name": "Console",
+      "name": "Domain",
       "private": false,
-      "pushedAt": "2026-10-12T12:39:32Z",
+      "pushedAt": "2026-10-12T15:18:01Z",
       "defaultBranch": "main",
       "description": null,
       "lastRun": {
         "name": "pages build and deployment",
         "status": "completed",
         "conclusion": "success",
-        "at": "2026-10-12T12:39:34Z",
-        "url": "https://github.com/roshpinacare-sys/Console/actions/runs/38250402135"
+        "at": "2026-10-12T15:18:03Z",
+        "url": "https://github.com/roshpinacare-sys/Domain/actions/runs/38269217678"
+      },
+      "lastRunReason": null,
+      "commits7d": 100,
+      "commits7dCapped": true,
+      "commitsReason": null
+    },
+    {
+      "name": "saos-runtime",
+      "private": false,
+      "pushedAt": "2026-10-12T15:17:14Z",
+      "defaultBranch": "main",
+      "description": "SAOS sovereign runtime host — Actions runner heartbeat; clones the private engine tree at runtime (R244). No keys, no secrets in tree.",
+      "lastRun": {
+        "name": "gen2-rotation",
+        "status": "completed",
+        "conclusion": "failure",
+        "at": "2026-10-12T15:20:21Z",
+        "url": "https://github.com/roshpinacare-sys/saos-runtime/actions/runs/38269495720"
+      },
+      "lastRunReason": null,
+      "commits7d": 79,
+      "commits7dCapped": false,
+      "commitsReason": null
+    },
+    {
+      "name": "Console",
+      "private": false,
+      "pushedAt": "2026-10-12T15:17:02Z",
+      "defaultBranch": "main",
+      "description": null,
+      "lastRun": {
+        "name": "pages build and deployment",
+        "status": "completed",
+        "conclusion": "success",
+        "at": "2026-10-12T15:17:04Z",
+        "url": "https://github.com/roshpinacare-sys/Console/actions/runs/38269097191"
+      },
+      "lastRunReason": null,
+      "commits7d": 100,
+      "commits7dCapped": true,
+      "commitsReason": null
+    },
+    {
+      "name": "sovereign-beacon",
+      "private": false,
+      "pushedAt": "2026-10-12T15:00:02Z",
+      "defaultBranch": "main",
+      "description": "Rosh Pina — sovereign lighthouse (out-of-machine console)",
+      "lastRun": {
+        "name": "beacon-pulse",
+        "status": "completed",
+        "conclusion": "success",
+        "at": "2026-10-12T14:59:53Z",
+        "url": "https://github.com/roshpinacare-sys/sovereign-beacon/actions/runs/38266978436"
+      },
+      "lastRunReason": null,
+      "commits7d": 26,
+      "commits7dCapped": false,
+      "commitsReason": null
+    },
+    {
+      "name": "sovereign-lighthouse",
+      "private": false,
+      "pushedAt": "2026-10-12T15:00:01Z",
+      "defaultBranch": "main",
+      "description": "מגדלור ריבוני — Sovereign Lighthouse: זיכרון חוץ-מכונה עצמאי (RTL עברית)",
+      "lastRun": {
+        "name": "lighthouse-pulse",
+        "status": "completed",
+        "conclusion": "success",
+        "at": "2026-10-12T14:59:54Z",
+        "url": "https://github.com/roshpinacare-sys/sovereign-lighthouse/actions/runs/38266981023"
       },
       "lastRunReason": null,
       "commits7d": 100,
@@ -93,26 +149,26 @@
   "fleetTruth": {
     "status": "measured",
     "source": "Domain agents/grid-truth.json (grid-doctor, live chain RPC — zero self-reports)",
-    "generatedAt": "2026-10-12T10:57:09.909Z",
+    "generatedAt": "2026-10-12T15:18:00.555Z",
     "by": "grid-doctor v2.2",
     "steem": {
-      "effectivePower": 4470.205,
+      "effectivePower": 1576.828,
       "accountsAlive": 22,
-      "liquid": 138.076
+      "liquid": 107.956
     },
     "hive": {
-      "effectivePower": 102479.043,
+      "effectivePower": 102490.685,
       "accountsAlive": 2
     }
   },
   "probes": {
     "hive": {
       "status": "unknown",
-      "reason": "no probe file listed in Sandbox probes/hive"
+      "reason": "probe listing unavailable (probes/hive)"
     },
     "blurt": {
       "status": "unknown",
-      "reason": "no probe file listed in Sandbox probes/blurt"
+      "reason": "probe listing unavailable (probes/blurt)"
     }
   },
   "errors": [
@@ -121,11 +177,11 @@
       "error": "http 403: Resource not accessible by integration"
     },
     {
-      "call": "/repos/roshpinacare-sys/Sandbox/contents/probes/hive",
+      "call": "/repos/(unpublished-source)/contents/probes/hive",
       "error": "http 404: Not Found"
     },
     {
-      "call": "/repos/roshpinacare-sys/Sandbox/contents/probes/blurt",
+      "call": "/repos/(unpublished-source)/contents/probes/blurt",
       "error": "http 404: Not Found"
     }
   ]
