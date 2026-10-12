@@ -27,7 +27,32 @@ log(){ echo "[boot $(date -u +%H:%M:%S)] $*"; }
 # ---------------------------------------------------------------- 1. secrets
 log "stage1: secrets vault from upload copies (fingerprint law)"
 mkdir -p /home/z/.secrets/keys
-for f in "בלורט.evm" "headcorner.txt" "Tt.txt" "בחן.txt" "הדקור.txt" "הדקור (2).txt" "קונמי.txt"; do
+# EXPOSURE LAW (2026-10-13): one upload copy's FILENAME is itself an account
+# handle (acct-00's posting key) — the tracked tree must stay handle-free, so
+# that copy is discovered by SHAPE (the only ASCII lowercase h*.txt in upload)
+# and verified by FINGERPRINT (canon sha256 prefix recorded in worklog.md,
+# 2026-10-12). Never spelled, never logged; a mismatch skips the copy
+# (fail-honest) instead of restoring a wrong file.
+ACCT00_COPY=""
+for c in "$UPLOAD"/*.txt; do
+  [ -f "$c" ] || continue
+  case "$(basename "$c")" in h*.txt) ACCT00_COPY="$(basename "$c")";; esac
+done
+if [ -n "$ACCT00_COPY" ]; then
+  FP="$(sha256sum "$UPLOAD/$ACCT00_COPY" 2>/dev/null | cut -c1-16)"
+  if [ "$FP" = "8ae2b7fabe235586" ]; then
+    if [ ! -f "/home/z/.secrets/keys/$ACCT00_COPY" ]; then
+      cp -f "$UPLOAD/$ACCT00_COPY" "/home/z/.secrets/keys/$ACCT00_COPY"
+      log "  restored posting-key copy (shape-discovered, fingerprint verified)"
+    fi
+  else
+    log "  WARN: h*.txt upload copy fingerprint mismatch ($FP) — skipped (fail-honest)"
+  fi
+else
+  log "  WARN: posting-key upload copy not found by shape (h*.txt)"
+fi
+unset ACCT00_COPY FP
+for f in "בלורט.evm" "Tt.txt" "בחן.txt" "הדקור.txt" "הדקור (2).txt" "קונמי.txt"; do
   if [ -f "$UPLOAD/$f" ]; then
     if [ ! -f "/home/z/.secrets/keys/$f" ]; then
       cp -f "$UPLOAD/$f" "/home/z/.secrets/keys/$f"
@@ -192,4 +217,19 @@ for p in 3002 3010 3040 3041 3042 3011; do
 done
 echo "$UP" > /tmp/boot-ports-verdict.txt
 log "ports:$UP"
+
+# ---------------------------------------------------------------- 9. git-health
+# Repo-level vitals: attached HEAD (a wipe-recovery clone must never come back
+# detached — the 25-d twin-race class), ahead/behind vs origin/main after a
+# real fetch, bounded fsck. NON-FATAL BY LAW: a red verdict must never block
+# the boot — the receipt (receipts/git-health.json) and the watchdog speak.
+# Idempotent: pure measurement, safe on every re-run.
+log "stage9: git-health (attached-HEAD assert + divergence + bounded fsck)"
+(
+  set +e
+  node "$ESTATE/FleetHQ/tools/git-health.mjs" "$ESTATE" >> /tmp/boot-git-health.log 2>&1
+  rc=$?
+  [ $rc -ne 0 ] && log "  git-health rc=$rc (non-fatal — see /tmp/boot-git-health.log + receipts/git-health.json)"
+  exit 0
+)
 log "DONE — verify with: curl -s :3002/api/veritas | jq .aggregate"

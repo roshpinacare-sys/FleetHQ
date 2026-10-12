@@ -4,6 +4,7 @@
 // לעולם לא מילוי-מדומה (חוק-האמת של worlds/). cache 60s.
 import { NextResponse } from 'next/server'
 import { readFile } from 'fs/promises'
+import { readFileSync } from 'fs'
 import path from 'path'
 
 export const dynamic = 'force-dynamic'
@@ -29,7 +30,22 @@ const SRC = {
 // זהות מדויקת של מדידת-השרשרת — שכפול נאמן של beacon-pulse.yml (מקור-האמת הפומבי).
 // חשבון-האוצר נגזר בזמן-ריצה (env או קידוד) — אפס-קישור-זהות במקור הפומבי (חוק PUBLISHING-POLICY).
 const OWNER_ACC = Buffer.from(process.env.OWNER_STEEM_ACC ?? 'aGVhZGNvcm5lcg==', 'base64').toString('utf8') // אוצר-הבעלים
-const FLEET_ACCS = ['israelnews', 'macrame', 'woq', 'tov', 'lsa', 'wic', 'wog', 'siq', 'cashmachine', 'hcsoldier4', 'hcsoldier5', 'hcsoldier6']
+// צי-החשבונות נגזר בזמן-ריצה ממפת-הרפרנסים (FLEET_ROSTER_MAP: env, או שורה בודדת
+// ב-/home/z/estate/.env.local — אותו חוזה-סביבה כמו local-beats envFor). הרפרנסים
+// (acct-NN) הם הזהות-הפומבית; שמות-השרשרת לעולם לא נופלים לקוד-המקור הפומבי.
+// כשל-גלוי: רוסטר חסר → הצי מתרוקן (המדידה ממשיכה עם אוצר-הבעלים בלבד, ok:false אין —
+// המדידה כן רצה; היעדר-צי נרשם כיעדר, לא מומצא).
+const FLEET_REF_ORDER = ['acct-03', 'acct-05', 'acct-10', 'acct-07', 'acct-04', 'acct-08', 'acct-09', 'acct-06', 'acct-01', 'acct-11', 'acct-12', 'acct-13']
+const FLEET_ACCS: string[] = (() => {
+  try {
+    const raw = process.env.FLEET_ROSTER_MAP
+      ?? readFileSync('/home/z/estate/.env.local', 'utf-8').match(/^FLEET_ROSTER_MAP=(.*)$/m)?.[1]
+    const refs = raw ? (JSON.parse(raw) as { refs?: Record<string, string> }).refs : null
+    return refs ? FLEET_REF_ORDER.map((r) => refs[r]).filter(Boolean) : []
+  } catch {
+    return []
+  }
+})()
 const STEEM_ACCS = [OWNER_ACC, ...FLEET_ACCS]
 const num = (x: unknown) => parseFloat(String(x ?? '0').split(' ')[0]) || 0
 
