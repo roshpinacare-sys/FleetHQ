@@ -521,6 +521,7 @@ footer .stamp{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; 
     ${chip('neutral', 'קריא-בלבד · חלון, לא הגה')}
     <a class="chip neutral" href="https://github.com/roshpinacare-sys/FleetHQ" rel="noopener" style="text-decoration:none">GitHub · FleetHQ</a>
     <a class="chip neutral" href="potential.html" style="text-decoration:none">לוח-הפוטנציאל · potential</a>
+    <a class="chip neutral" href="operator.html" style="text-decoration:none">כניסת-מנהל · operator</a>
   </div>
 </header>
 
