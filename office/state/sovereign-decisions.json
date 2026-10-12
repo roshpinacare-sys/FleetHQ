@@ -1,6 +1,6 @@
 {
  "schema": "saos.sovereign-decisions/1",
- "generatedAt": "2026-10-12T09:40:48.285Z",
+ "generatedAt": "2026-10-12T10:01:01.976Z",
  "policyVersion": "SOV-POLICY/1",
  "principle": "הריבונות מחליטה ומבצעת — הבעלים קבע (trace 1a12d4ae2964f45d) שהמערכת מקבלת החלטות חכמות בעצמה בצורה הכי מתקדמת שיש; הפניה לבעלים = שלילת הריבונות. כל-החלטה: ראיה-מדודה + אימות-כפול. בעלים = בעלים; ריבונות = הגוף שמחליט.",
  "authority": {
@@ -26,17 +26,17 @@
    "ok": true,
    "ageMin": 20
   },
-  "valueScan": {
+  "officeState": {
    "ok": true,
-   "ageMin": 150
+   "ageMin": 204
   },
   "gridTruth": {
    "ok": true,
-   "ageMin": 20
+   "ageMin": 40
   },
-  "officeState": {
+  "valueScan": {
    "ok": true,
-   "ageMin": 184
+   "ageMin": 170
   }
  },
  "decisions": [
@@ -208,24 +208,24 @@
    },
    "law": "הגשות-חימוש חייבות לכבד רצפות; הכיוון הריבוני = הכנסה מבנית (fee-engine) לפני הוצאה",
    "policy": "SOV-POLICY/1",
-   "decidedAt": "2026-10-12T09:40:48.285Z",
+   "decidedAt": "2026-10-12T10:01:01.976Z",
    "by": "sovereign-decider"
   },
   {
    "id": "auto-freshness",
    "area": "operations",
-   "title": "טריות הצי: 2 נפלו מעל SLA (value-scan 129דק>SLA90, grid 129דק>SLA125) — הוערו: value-scan,grid",
+   "title": "טריות הצי: 3 נפלו מעל SLA (office-state 184דק>SLA180, value-scan 150דק>SLA90, live 197דק>SLA180) — הוערו: office-state,va",
    "status": "watch",
    "evidence": {
     "source": "FleetHQ/office/state/opens-closer.json",
     "metrics": {
-     "staleCount": 2,
-     "dispatchedCount": 2
+     "staleCount": 3,
+     "dispatchedCount": 3
     },
     "selfHeal": "same-repo GITHUB_TOKEN + cross-repo CROSS_REVIVE_PAT (D1)"
    },
    "policy": "SOV-POLICY/1",
-   "decidedAt": "2026-10-12T09:40:48.285Z",
+   "decidedAt": "2026-10-12T10:01:01.976Z",
    "by": "sovereign-decider"
   },
   {
@@ -240,7 +240,7 @@
    },
    "law": "אין דריסת-מסילות: למשרד יש לולאת-רטרו משלו; הריבונות מתעדת ומאמתת, לא לוקחת",
    "policy": "SOV-POLICY/1",
-   "decidedAt": "2026-10-12T09:40:48.285Z",
+   "decidedAt": "2026-10-12T10:01:01.976Z",
    "by": "sovereign-decider"
   }
  ],
