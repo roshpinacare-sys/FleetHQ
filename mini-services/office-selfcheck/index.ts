@@ -127,6 +127,11 @@ async function ensureForeman(): Promise<BootInfo> {
   const pid = spawnDetached("bun", ["run", "dev"], svcDir, "/tmp/office-selfcheck-foreman.log", {
     AGENT_HQ_PORT: String(FOREMAN_PORT),
     AGENT_HQ_DATA_DIR: REAL_BOOKS_DIR, // the REAL Domain books — wired, not demo
+    // env parity with the security suite (the suite got it, the boot didn't —
+    // 2026-10-12 damage audit: foreman booted demo-mode forever, mirror froze,
+    // veritas read STALE). Without FLEET_DIR the office never mirrors durable
+    // state into receipts/ and the public page + veritas go dark.
+    AGENT_HQ_FLEET_DIR: FLEETHQ,
   });
   for (let i = 0; i < 10; i++) {
     await new Promise((r) => setTimeout(r, 3000));
