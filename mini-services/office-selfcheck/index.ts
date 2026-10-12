@@ -228,6 +228,21 @@ async function runOnce(): Promise<void> {
     } catch { /* honest absence */ }
     checks.silence = { exit: sl.code, summary: silenceSummary, alarms: silenceAlarms };
 
+    // 4.6 git-health — repo-level vitals (26-b backlog): attached-HEAD assert,
+    // divergence vs origin/main after a real fetch, bounded fsck per repo.
+    // The tool owns the measurement AND the receipt (receipts/git-health.json);
+    // boot-services stage9 runs the same tool — same check, two callers.
+    const ghh = sh("node", ["tools/git-health.mjs"], FLEETHQ, 300_000);
+    let gitHealthRepos: unknown = null;
+    try {
+      const p = join(FLEETHQ, "receipts", "git-health.json");
+      if (existsSync(p)) {
+        const j = JSON.parse(readFileSync(p, "utf8")) as { repos?: { name: string; headAttached: boolean; ahead: number | null; behind: number | null; fsck: string }[] };
+        gitHealthRepos = (j.repos ?? []).map((r) => ({ name: r.name, attached: r.headAttached, ahead: r.ahead, behind: r.behind, fsck: r.fsck }));
+      }
+    } catch { /* honest absence */ }
+    checks.gitHealth = { exit: ghh.code, repos: gitHealthRepos };
+
     // 5. push receipts (travel)
     const push = await pushReceipts();
     checks.push = push;
