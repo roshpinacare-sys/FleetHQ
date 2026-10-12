@@ -1,6 +1,6 @@
 {
  "schema": "saos.sovereign-decisions/1",
- "generatedAt": "2026-10-12T02:14:23.103Z",
+ "generatedAt": "2026-10-12T02:31:22.170Z",
  "policyVersion": "SOV-POLICY/1",
  "principle": "הריבונות מחליטה ומבצעת — הבעלים קבע (trace 1a12d4ae2964f45d) שהמערכת מקבלת החלטות חכמות בעצמה בצורה הכי מתקדמת שיש; הפניה לבעלים = שלילת הריבונות. כל-החלטה: ראיה-מדודה + אימות-כפול. בעלים = בעלים; ריבונות = הגוף שמחליט.",
  "authority": {
@@ -18,23 +18,23 @@
   ]
  },
  "sense": {
-  "valueScan": {
+  "officeState": {
    "ok": true,
-   "ageMin": 95
+   "ageMin": 60
+  },
+  "decisionsPrev": {
+   "ok": true,
+   "ageMin": 17
   },
   "gridTruth": {
    "ok": true,
-   "ageMin": 50
+   "ageMin": 4
   },
-  "officeState": {
+  "valueScan": {
    "ok": true,
-   "ageMin": 43
+   "ageMin": 17
   },
   "openCloser": {
-   "ok": true,
-   "ageMin": 31
-  },
-  "decisionsPrev": {
    "ok": true,
    "ageMin": 17
   }
@@ -201,20 +201,20 @@
    "evidence": {
     "source": "Domain/agents/grid-truth.json (grid-doctor v2, RPC-measured)",
     "alerts": [
-     "steem:headcorner SP-UNDERFLOOR — effective 2925.647 SP below floor 3000 — arming waves must respect the treasury floor",
-     "steem:headcorner TREASURY-UNDERFLOOR — liquid 23.066 + locked-in-orders 29.028 = 52.094 below floor 90"
+     "steem:headcorner SP-UNDERFLOOR — effective 2925.656 SP below floor 3000 — arming waves must respect the treasury floor",
+     "steem:headcorner TREASURY-UNDERFLOOR — liquid 43.99 + locked-in-orders 29.028 = 73.018 below floor 90"
     ],
-    "measuredAt": "2026-10-12T01:24:21.939Z"
+    "measuredAt": "2026-10-12T02:27:23.954Z"
    },
    "law": "הגשות-חימוש חייבות לכבד רצפות; הכיוון הריבוני = הכנסה מבנית (fee-engine) לפני הוצאה",
    "policy": "SOV-POLICY/1",
-   "decidedAt": "2026-10-12T02:14:23.103Z",
+   "decidedAt": "2026-10-12T02:31:22.170Z",
    "by": "sovereign-decider"
   },
   {
    "id": "auto-freshness",
    "area": "operations",
-   "title": "טריות הצי: 1 נפלו מעל SLA (beacon 118דק>SLA100) — הוערו: beacon",
+   "title": "טריות הצי: 1 נפלו מעל SLA (value-scan 95דק>SLA90) — הוערו: value-scan",
    "status": "watch",
    "evidence": {
     "source": "FleetHQ/office/state/opens-closer.json",
@@ -225,7 +225,7 @@
     "selfHeal": "same-repo GITHUB_TOKEN + cross-repo CROSS_REVIVE_PAT (D1)"
    },
    "policy": "SOV-POLICY/1",
-   "decidedAt": "2026-10-12T02:14:23.103Z",
+   "decidedAt": "2026-10-12T02:31:22.170Z",
    "by": "sovereign-decider"
   },
   {
@@ -240,7 +240,7 @@
    },
    "law": "אין דריסת-מסילות: למשרד יש לולאת-רטרו משלו; הריבונות מתעדת ומאמתת, לא לוקחת",
    "policy": "SOV-POLICY/1",
-   "decidedAt": "2026-10-12T02:14:23.103Z",
+   "decidedAt": "2026-10-12T02:31:22.170Z",
    "by": "sovereign-decider"
   }
  ],
