@@ -1,6 +1,6 @@
 {
  "schema": "saos.sovereign-decisions/1",
- "generatedAt": "2026-10-12T15:34:53.481Z",
+ "generatedAt": "2026-10-12T15:52:14.313Z",
  "policyVersion": "SOV-POLICY/1",
  "principle": "הריבונות מחליטה ומבצעת — הבעלים קבע (trace 1a12…f45d) שהמערכת מקבלת החלטות חכמות בעצמה בצורה הכי מתקדמת שיש; הפניה לבעלים = שלילת הריבונות. כל-החלטה: ראיה-מדודה + אימות-כפול. בעלים = בעלים; ריבונות = הגוף שמחליט.",
  "authority": {
@@ -19,16 +19,16 @@
  },
  "sense": {
   "gridTruth": {
-   "ok": true,
-   "ageMin": 17
-  },
-  "officeState": {
-   "ok": true,
-   "ageMin": 10
+   "ok": false,
+   "http": 404
   },
   "valueScan": {
    "ok": true,
-   "ageMin": 35
+   "ageMin": 52
+  },
+  "officeState": {
+   "ok": true,
+   "ageMin": 27
   },
   "openCloser": {
    "ok": true,
@@ -194,39 +194,20 @@
    "by": "sovereign-decider"
   },
   {
-   "id": "auto-treasury-floor",
-   "area": "economics",
-   "title": "אוצר מתחת לרצפה (3 התראות מדודות)",
-   "status": "constraint-active",
-   "evidence": {
-    "source": "Domain/agents/grid-truth.json (grid-doctor v2, RPC-measured)",
-    "alerts": [
-     "steem:owner SP-UNDERFLOOR — effective 32.33 SP below floor 3000 — arming waves must respect the treasury floor",
-     "steem:owner TREASURY-UNDERFLOOR — liquid 0 + locked-in-orders 0 = 0 below floor 90",
-     "claims PHANTOM-CLAIM — claim \"owner-eff-post-arming\" asserts 2926 SP owner effective (post-arming, floor 3000) but chain measures 32.33 (rat"
-    ],
-    "measuredAt": "2026-10-12T15:18:00.555Z"
-   },
-   "law": "הגשות-חימוש חייבות לכבד רצפות; הכיוון הריבוני = הכנסה מבנית (fee-engine) לפני הוצאה",
-   "policy": "SOV-POLICY/1",
-   "decidedAt": "2026-10-12T15:34:53.481Z",
-   "by": "sovereign-decider"
-  },
-  {
    "id": "auto-freshness",
    "area": "operations",
-   "title": "טריות הצי: 3 נפלו מעל SLA (office-state 309דק>SLA180, domain-pulse 351דק>SLA180, grid 260דק>SLA125) — הוערו: office-state",
-   "status": "watch",
+   "title": "טריות הצי: הכל טרי מעל SLA (office-state 10דק, beacon 35דק, lighthouse 35דק, value-scan 35דק, domain-pulse 10דק, live 35ד",
+   "status": "clear",
    "evidence": {
     "source": "FleetHQ/office/state/opens-closer.json",
     "metrics": {
-     "staleCount": 3,
-     "dispatchedCount": 2
+     "staleCount": 0,
+     "dispatchedCount": 0
     },
     "selfHeal": "same-repo GITHUB_TOKEN + cross-repo CROSS_REVIVE_PAT (D1)"
    },
    "policy": "SOV-POLICY/1",
-   "decidedAt": "2026-10-12T15:34:53.481Z",
+   "decidedAt": "2026-10-12T15:52:14.313Z",
    "by": "sovereign-decider"
   },
   {
@@ -241,14 +222,14 @@
    },
    "law": "אין דריסת-מסילות: למשרד יש לולאת-רטרו משלו; הריבונות מתעדת ומאמתת, לא לוקחת",
    "policy": "SOV-POLICY/1",
-   "decidedAt": "2026-10-12T15:34:53.481Z",
+   "decidedAt": "2026-10-12T15:52:14.313Z",
    "by": "sovereign-decider"
   }
  ],
  "stats": {
   "standing": 9,
-  "thisRun": 5,
-  "total": 12
+  "thisRun": 4,
+  "total": 11
  },
  "ownerActionsRemaining": [],
  "eraNote": "מ- T-63: לוח-״פעולות-בעלים״ מוחלף בפנקס-ההחלטות הריבוני. הבעלים ממשיך להוביל דרך דירקטיבות; הריבונות מחליטה, מבצעת, ומאמתת.",
