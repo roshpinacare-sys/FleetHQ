@@ -161,8 +161,7 @@ const GATE_SALT   = "roshpina.office.operator.v1";
 const VAULT_SALT  = "roshpina.office.vault.v1";
 /* hash digests only — not the key material itself */
 const GATE_HASHES = [
-  "1471fc4d9b0cf5674b5a795958bd29440bd2f498524a5d628373799d698d94d9",
-  "88f906c2da8cf1591ce9f8f0ccb8aec8c21949633e4122ee7482c3b9bf68ced0"
+  "ce4e63f5bf85e04ab5f03221ca216a96c9466d200751e356de0d91e21a6563db"
 ];
 const VAULT_KEYNAME = "roshpina.operator.vault.v1";
 const REPO = "roshpinacare-sys/Sandbox";
@@ -198,16 +197,36 @@ async function openVault(adminKey) {
   } catch { return null; }
 }
 
+/* סבלנות-הדבקה (חוק-טעות-אנוש): שורה-יחידה · ריבוי-שורות · תווית+מפתח · קידומת-WIF.
+   ההשוואה נשארת דיגיסט-יחיד מקומי; המועמדים לעולם לא נשמרים ולא נשלחים. */
+function keyCandidateForms(input) {
+  const out = new Set();
+  const push = (s) => { if (!s) return; const t = s.trim(); if (t.length < 8 || t.length > 512) return; out.add(t);
+    if (t.length >= 2 && t[0] === "P" && /^[5KL]/.test(t[1] || "")) out.add(t.slice(1)); };
+  const lines = input.split(/\r?\n/).map(s => s.trim()).filter(Boolean);
+  push(input); push(input.replace(/\s+/g, ""));
+  for (const l of lines) push(l);
+  if (lines.length > 1) { push(lines[lines.length - 1]); push([...lines].sort((a, b) => b.length - a.length)[0]); }
+  const w = input.search(/P[5KL]/); if (w > 0) push(input.slice(w));
+  return [...out];
+}
+
+let matchedKey = null;
+
 async function unlock() {
   const k = $("adminKey").value;
   if (!k) { setMsg("msg", "הקש מפתח-מנהל", "err"); return; }
   setMsg("msg", "מאמת מקומית…", "info");
-  const bits = await pbkdf2Bits(k, GATE_SALT, 256);
-  if (!GATE_HASHES.includes(hex(bits))) {
+  matchedKey = null;
+  for (const form of keyCandidateForms(k)) {
+    const bits = await pbkdf2Bits(form, GATE_SALT, 256);
+    if (GATE_HASHES.includes(hex(bits))) { matchedKey = form; break; }
+  }
+  if (!matchedKey) {
     setMsg("msg", "מפתח-שגוי. שום-דבר-לא-נשלח — נסה שוב.", "err");
     return;
   }
-  const tok = await openVault(k);
+  const tok = await openVault(matchedKey);
   if (tok) { enterConsole(tok); }
   else { $("gate").classList.add("hidden"); $("vaultSetup").classList.remove("hidden"); setMsg("msg2", "המפתח אומת. אין-עדיין כספת-מקומית במחשב-הזה — התקנה-חד-פעמית למטה.", "info"); }
 }
@@ -225,7 +244,7 @@ async function saveVault() {
   } catch { readOk = false; }
   if (!readOk) { setMsg("msg2", "המפתח-הטכני לא הצליח לקרוא את הלוח (401/404?). לא נשמר-כלום. בדוק-שהמפתח-תקף.", "err"); return; }
   const iv = crypto.getRandomValues(new Uint8Array(12));
-  const ct = await crypto.subtle.encrypt({ name: "AES-GCM", iv }, await deriveVaultKey($("adminKey").value), enc.encode(tok));
+  const ct = await crypto.subtle.encrypt({ name: "AES-GCM", iv }, await deriveVaultKey(matchedKey || $("adminKey").value), enc.encode(tok));
   localStorage.setItem(VAULT_KEYNAME, b64(iv) + "." + b64(ct));
   $("ghToken").value = "";
   setMsg("msg2", "הוצפן-ונשמר-מקומית ✓ (אימות-קריאה עבר: " + who + "). הרשאת-הכתיבה תיבדק-בפקודה-הראשונה.", "ok");
