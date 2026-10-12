@@ -1,55 +1,121 @@
 /**
- * /api/office-state — מקרר-האמת של המשרד (צד-שרת בלבד).
+ * /api/office-state — מקרר-האמת של המשרד (צד-שרת בלבד). [T-audit מהדורה-שנייה]
  * ---------------------------------------------------------------------------
- * מאגד את מקורות-האמת הציבוריים (keyless, raw.githubusercontent):
- *  · FleetHQ office/state/office-state.json — הפורמן האמיתי
- *  · Domain office/data.json — דופק המשרד (verdict/עורקים)
- *  · sovereign-beacon state.json — אמת כלכלית (אוצרה/מפעילים/ראש-שרשרת)
- *  · FleetHQ commits atom — קיר הגיט (keyless, ללא מגבלת-API)
- * כל מקור נכשל לבד (fail-soft) — התשובה תמיד כנה לגבי מה שחסר.
- * Cache: זיכרון-מקומי 60 שניות (מקור-גיט 180 שניות) — אין תשתית חיצונית.
+ * · כל-מקור-אמת נאחזר דרך gh-truth: ציבורי=raw, פרטי=API-מאומת-שרת.
+ *   (לפני-התיקון: מקורות-פרטיים נאחזרו אנונימית והחזירו 404 תמידי — מיושן-מלידה.)
+ * · SWR: אין-חסימות-ארוכות; תשובה מיידית מהקאש + רענון-רקע.
+ * · כל-מקור נושא fetchedAt + ageMs + חוק-חיות: נתון-גולמי עתיק (>24h) מסומן stale.
+ * · fail-soft לכל-מקור — התשובה תמיד כנה לגבי מה שחסר.
  */
 import { NextResponse } from 'next/server';
+import { fetchTruth, ageMs } from '@/lib/gh-truth';
 import type { BeaconRaw, ForemanRaw, OfficePulseRaw } from '@/lib/hq/truth';
 
 export const revalidate = 0;
 
-const RAW = 'https://raw.githubusercontent.com/roshpinacare-sys';
 const TTL_MS = 60_000;
 const GIT_TTL_MS = 180_000;
+const STALE_LAW_MS = 24 * 60 * 60 * 1000; // חוק-החיות: >24h = היסטורי
+
+interface AtomBox { commits: CommitViewWire[]; fetchedAt: string }
+const g2 = globalThis as unknown as { __officeAtomCache?: { at: number; v: AtomBox | null; refreshing?: boolean } };
 
 interface CommitViewWire { hash: string; subject: string; author: string; ts: number; repo: string }
 
+interface SourceBox<T> {
+  ok: boolean;
+  error?: string;
+  data?: T;
+  fetchedAt?: string;
+  ageMs?: number;
+  /** נתון-המקור-עצמו עתיק מ-24h (חוק-החיות של מדיניות-הפרסום) */
+  staleData?: boolean;
+}
+
 interface Payload {
   fetchedAt: string;
-  foreman: { ok: boolean; error?: string; state?: ForemanRaw };
-  pulse: { ok: boolean; error?: string; data?: OfficePulseRaw };
-  beacon: { ok: boolean; error?: string; data?: BeaconRaw };
-  git: { ok: boolean; error?: string; commits?: CommitViewWire[] };
+  foreman: SourceBox<ForemanRaw>;
+  pulse: SourceBox<OfficePulseRaw>;
+  beacon: SourceBox<BeaconRaw>;
+  git: { ok: boolean; error?: string; commits?: CommitViewWire[]; fetchedAt?: string; ageMs?: number };
 }
 
-type CacheBox = { at: number; data: Payload };
-const g = globalThis as unknown as { __officeStateCache?: CacheBox; __officeGitCache?: CacheBox };
-
-async function fetchJson<T>(url: string): Promise<T | null> {
-  try {
-    const res = await fetch(url, { cache: 'no-store', signal: AbortSignal.timeout(8000) });
-    if (!res.ok) return null;
-    return (await res.json()) as T;
-  } catch {
-    return null;
+/** חילוץ חותמת-זמן מן-הנתון-הגולמי (best-effort, לחוק-החיות) */
+function extractTs(d: unknown, depth = 0): number | null {
+  if (!d || typeof d !== 'object' || depth > 2) return null;
+  const o = d as Record<string, unknown>;
+  for (const k of ['at', 'updatedAt', 'generatedAt', 'publishedAt', 'measuredAt', 'fetchedAt', 'timestamp']) {
+    const v = o[k];
+    if (typeof v === 'string') {
+      const t = Date.parse(v);
+      if (!Number.isNaN(t)) return t;
+    }
   }
+  for (const v of Object.values(o)) {
+    if (v && typeof v === 'object') {
+      const t = extractTs(v, depth + 1);
+      if (t) return t;
+    }
+  }
+  return null;
 }
 
-/** קיר-הגיט: קומיטים אמיתיים מפיד-ה-atom הציבורי (keyless, בלי מגבלת-API) */
-async function fetchGitCommits(): Promise<CommitViewWire[] | null> {
-  const cached = g.__officeGitCache;
-  if (cached && Date.now() - cached.at < GIT_TTL_MS && cached.data.git.ok) {
-    return cached.data.git.commits ?? null;
+function box<T>(r: { ok: boolean; data: T | null; error?: string; fetchedAt: string }): SourceBox<T> {
+  if (!r.ok || r.data === null) {
+    return { ok: false, error: r.error ?? 'unavailable', fetchedAt: r.fetchedAt, ageMs: ageMs(r.fetchedAt) };
   }
+  const ts = extractTs(r.data);
+  return {
+    ok: true,
+    data: r.data,
+    fetchedAt: r.fetchedAt,
+    ageMs: ageMs(r.fetchedAt),
+    ...(ts !== null && Date.now() - ts > STALE_LAW_MS ? { staleData: true } : {}),
+  };
+}
+
+export async function GET() {
+  const [foreman, pulse, beacon, commits] = await Promise.all([
+    fetchTruth<ForemanRaw>('FleetHQ', 'office/state/office-state.json', { ttlMs: TTL_MS }),
+    fetchTruth<OfficePulseRaw>('Domain', 'office/data.json', { ttlMs: TTL_MS }),
+    fetchTruth<BeaconRaw>('sovereign-beacon', 'state.json', { ttlMs: TTL_MS }),
+    fetchGitCommits(),
+  ]);
+
+  const payload: Payload = {
+    fetchedAt: new Date().toISOString(),
+    foreman: box(foreman),
+    pulse: box(pulse),
+    beacon: box(beacon),
+    git: commits
+      ? { ok: true, commits, fetchedAt: commits.fetchedAt, ageMs: ageMs(commits.fetchedAt) }
+      : { ok: false, error: 'unavailable' },
+  };
+
+  return NextResponse.json(payload, { headers: { 'x-office-cache': 'swr' } });
+}
+
+/** קיר-הגיט: קומיטים אמיתיים מפיד-ה-atom הציבורי (keyless, בלי מגבלת-API) — SWR */
+async function fetchGitCommits(): Promise<AtomBox | null> {
+  const c = g2.__officeAtomCache;
+  if (c && Date.now() - c.at < GIT_TTL_MS) return c.v;
+  if (c && !c.refreshing) {
+    c.refreshing = true;
+    void fetchAtom()
+      .then((v) => { g2.__officeAtomCache = { at: Date.now(), v }; })
+      .finally(() => { const cur = g2.__officeAtomCache; if (cur) cur.refreshing = false; });
+    return c.v;
+  }
+  if (c?.refreshing) return c.v;
+  const v = await fetchAtom();
+  g2.__officeAtomCache = { at: Date.now(), v };
+  return v;
+}
+
+async function fetchAtom(): Promise<AtomBox | null> {
   try {
     const res = await fetch('https://github.com/roshpinacare-sys/FleetHQ/commits/main.atom', {
-      cache: 'no-store', signal: AbortSignal.timeout(8000),
+      cache: 'no-store', signal: AbortSignal.timeout(7000),
     });
     if (!res.ok) return null;
     const xml = await res.text();
@@ -69,34 +135,10 @@ async function fetchGitCommits(): Promise<CommitViewWire[] | null> {
         repo: 'FleetHQ',
       });
     }
-    return commits;
+    return commits.length ? { commits, fetchedAt: new Date().toISOString() } : null;
   } catch {
     return null;
   }
 }
 
-export async function GET() {
-  const now = Date.now();
-  const cached = g.__officeStateCache;
-  if (cached && now - cached.at < TTL_MS) {
-    return NextResponse.json(cached.data, { headers: { 'x-office-cache': 'hit' } });
-  }
-
-  const [foremanRaw, pulseRaw, beaconRaw, commits] = await Promise.all([
-    fetchJson<ForemanRaw>(`${RAW}/FleetHQ/main/office/state/office-state.json`),
-    fetchJson<OfficePulseRaw>(`${RAW}/Domain/main/office/data.json`),
-    fetchJson<BeaconRaw>(`${RAW}/sovereign-beacon/main/state.json`),
-    fetchGitCommits(),
-  ]);
-
-  const payload: Payload = {
-    fetchedAt: new Date().toISOString(),
-    foreman: { ok: !!foremanRaw, ...(foremanRaw ? { state: foremanRaw } : { error: 'unavailable' }) },
-    pulse: { ok: !!pulseRaw, ...(pulseRaw ? { data: pulseRaw } : { error: 'unavailable' }) },
-    beacon: { ok: !!beaconRaw, ...(beaconRaw ? { data: beaconRaw } : { error: 'unavailable' }) },
-    git: { ok: !!commits, ...(commits ? { commits } : { error: 'unavailable' }) },
-  };
-
-  g.__officeStateCache = { at: now, data: payload };
-  return NextResponse.json(payload, { headers: { 'x-office-cache': 'miss' } });
-}
+// הערה: fetchGitCommits נקראת לפני הגדרתה — hoisting של function-declaration מכסה זאת.

@@ -10,7 +10,7 @@
 
 import { useState } from 'react';
 import { RoomRoot } from '@/components/hq/RoomRoot';
-import { useWorldsState, ageHe } from '@/lib/worlds/bridge';
+import { useWorldsState } from '@/lib/worlds/bridge';
 import { NetworkWorld } from './NetworkWorld';
 import { BusinessWorld } from './BusinessWorld';
 import { ParallelWorld } from './ParallelWorld';
@@ -31,6 +31,11 @@ export function WorldDeck() {
   const { data, error } = useWorldsState(60_000);
   // המשרד (T12) מזין את עצמו מהגשר-שלו; העולמות האחרים מהמקרר-המשותף.
   const needsWorlds = active !== 'office';
+  // חוק-החיות: מספר-מקורות שהנתון-הגולמי שלהם עתיק (>24h) — מוצג בכנות
+  const staleCount = data
+    ? (['flow', 'lighthouse', 'beacon', 'dex', 'valueScan', 'foreman', 'chain', 'decisions', 'verify'] as const)
+        .filter((k) => (data[k] as { staleData?: boolean })?.staleData === true).length
+    : 0;
 
   return (
     <div className="flex h-full w-full flex-col">
@@ -55,8 +60,18 @@ export function WorldDeck() {
           </button>
         ))}
         {needsWorlds ? (
-          <span className="ms-auto hidden self-center whitespace-nowrap pe-2 text-[10.5px] text-[color:var(--ink-3)] sm:block">
-            {error ? 'מקרר-האמת: שגיאה — כנות' : data ? `מקרר-האמת · ${ageHe(0)}` : 'מקרר-האמת נטען…'}
+          <span
+            className="ms-auto hidden self-center whitespace-nowrap pe-2 text-[10.5px] sm:block"
+            style={{ color: staleCount > 0 ? '#b3402f' : 'var(--ink-3)' }}
+            title={staleCount > 0 ? `${staleCount} מקורות עם נתון-גולמי עתיק (>24h) — מוצגים כהיסטוריים` : undefined}
+          >
+            {error
+              ? 'מקרר-האמת: שגיאה — כנות'
+              : !data
+                ? 'מקרר-האמת נטען…'
+                : staleCount > 0
+                  ? `מקרר-האמת · ${staleCount} מקורות היסטוריים (>24h)`
+                  : 'מקרר-האמת · חי'}
           </span>
         ) : null}
       </div>
