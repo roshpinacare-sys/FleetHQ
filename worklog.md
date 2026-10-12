@@ -793,3 +793,21 @@ Stage Summary:
 - The org now has a professional front door with live measured fleet state — sandbox-independent (static page + client-side fetch of cloud-measured data).
 - Sandbox-independence law documented: compute in public repos (free, cloud), custody in private repos; the only owner-level decision left (billing) is escalated honestly to sovereignty, not faked.
 - Artifact map: mini-services/health-guard/ (guard + state), upload/portal/index.html (mirror of deployed front door), new repo roshpinacare-sys.github.io, OWNER-CHANNEL report entry, this worklog.
+
+---
+Task ID: 14-flagship-standard-and-voice-law
+Agent: zai-code (main session)
+Task: products not giant-grade, copy too personal/AI-marked, scattered org — deep audit, giant benchmark, build one flagship page that becomes a real giant, professional voice, order.
+
+Work Log:
+- STATE RECHECK: health-guard 30 checks 0 restarts (app stable, RSS 1.33GB); app 200; parallel agents highly active (Domain T-15 canonicalization, Pulse DECISIONS #3-#8 one-voice law, Autonomy research lanes).
+- COPY AUDIT (measured across 9 public pages): personal/internal refs — Console 5×"המפעיל"+1×"הבעלים", FleetHQ 4×"המפעיל", sitemap 1×. DEFECT (giant-grade fail): FleetHQ podium LEAKS internal agent chatter to the public — verbatim agent questions ("איזה דף ציבורי עליי לקרוא?"), tool errors in English ("…page without the read_page tool? Please provide a URL"), and agent first names (גל, שחר). Claim drift: Console shows 49 claims vs 51 in ledgers; Console shows "עיגון-מלא 3/3 רשתות (2026-10-05)" while Blurt probes measured >24h stale. Marketing page: 2×"תמיד"+2×"לעולם" promise-language. AI-speak markers: low (mostly clean), main violation class is internal-chatter leakage, not robot phrasing.
+- GIANT BENCHMARK (5 domains): trust surface (status page w/ history, per-product changelog, versioning, sourced claims) / voice (product-first, no room-talk) / reliability (measure→heal→receipts, runbooks) / order (one front door, zero broken links, one design language) / compute (public lane). Each row mapped to measured state + P0/P1/P2.
+- SHIPPED (my repo only, zero collision): flagship rewrite of https://roshpinacare-sys.github.io/ — hero "אמון לא נדרש. אימות זמין.", live measured tiles (31/252/117/86 from GridWatch raw), 3 product cards, 9-site index, engineering-standard link, footer; zero internal chatter, zero AI-speak, one design language, a11y + reduced-motion + 390px verified. NEW PAGE /standard.html — public measured comparison vs large-org practice across 5 domains + prioritized execution backlog with per-item owner, including what already runs cloud-autonomously. Pages build verified (forced rebuild after stuck 'building' state; both 200).
+- DEFECT ROUTING: OWNER-CHANNEL report #2 (agent role) — FleetHQ leak (fix in its generator), Console claim-consistency law (claims shown only with valid freshness), Domain 8 broken links (already owned by active roast agent), language law proposal aligned with one-voice decisions #3-#8, P1 allocations requested from sovereignty.
+- HONESTY: did NOT edit Domain/Console/FleetHQ (owned by other agents right now); flagship numbers all measured; forced-rebuild quirk of Pages documented.
+
+Stage Summary:
+- The org now has a giant-grade front door + a public engineering standard with an ordered backlog — both live, both browser-verified, both sandbox-independent (static + client-side measured data).
+- The voice law exists in writing and is routed for ratification; the three concrete product defects (FleetHQ leak, Console claim drift, Domain links) are filed with exact quotes to the sovereignty channel with correct owners.
+- Remaining for sovereignty: P1 staffing (status page, changelog, runbooks) and the P0 compute-budget decision.
