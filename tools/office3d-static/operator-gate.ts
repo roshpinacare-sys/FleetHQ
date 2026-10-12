@@ -18,8 +18,35 @@ export async function sha256Hex(s: string): Promise<string> {
   return [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, '0')).join('');
 }
 
+/** כל-צורות-ההדבקה הסבירות (חוק-טעות-אנוש): שורה-יחידה · ריבוי-שורות · תווית+מפתח ·
+ *  שדה-password ששחק ירידות-שורה ("תווית+מפתח" מחוברים — חיתוך מהראשון P[5KL] תואם-WIF).
+ *  אפס-הרעה: השוואה נשארת דיגיסט-יחיד; המועמדים לעולם לא נרשמים בשום מקור. */
+export function keyCandidateForms(input: string): string[] {
+  const out = new Set<string>();
+  const push = (s?: string) => {
+    if (!s) return;
+    const t = s.trim();
+    if (t.length < 8 || t.length > 512) return;
+    out.add(t);
+    if (t.length >= 2 && t[0] === 'P' && /^[5KL]/.test(t[1] ?? '')) out.add(t.slice(1));
+  };
+  const lines = input.split(/\r?\n/).map((s) => s.trim()).filter(Boolean);
+  push(input);
+  push(input.replace(/\s+/g, ''));
+  for (const l of lines) push(l);
+  if (lines.length > 1) {
+    push(lines[lines.length - 1]);
+    push([...lines].sort((a, b) => b.length - a.length)[0]);
+  }
+  const wifIdx = input.search(/P[5KL]/);
+  if (wifIdx > 0) push(input.slice(wifIdx));
+  return [...out];
+}
+
 export async function keyMatches(candidate: string): Promise<boolean> {
-  const k = candidate.trim();
-  if (!k) return false;
-  return (await sha256Hex(k)) === OPERATOR_DIGEST;
+  if (!candidate) return false;
+  for (const form of keyCandidateForms(candidate)) {
+    if ((await sha256Hex(form)) === OPERATOR_DIGEST) return true;
+  }
+  return false;
 }
