@@ -93,8 +93,8 @@
   {
    "id": "roshpina",
    "vis": "private",
-   "role": "פלטפורמת הערך — מנוע עמלות ורווח (חמוש: מלאי נמדד T-58; armed→live = החלטת אירוח)",
-   "status": "revival-armed"
+   "role": "פלטפורמת הערך — מנוע עמלות ורווח (חי T-63: D4 אירוח על מסילת saos-runtime, kernel-smoke 7/7, רץ cron 23 */4)",
+   "status": "alive"
   },
   {
    "id": "Saosmartwallet",
@@ -395,10 +395,10 @@
    "to": "economics",
    "artifact": "fee-engine/state.json + REVIVAL.md (armed snapshot lane)",
    "mode": "git snapshot (pnl-desk doctrine)",
-   "cadence": "per-cycle (once live)",
-   "slaMinutes": 0,
-   "status": "armed",
-   "evidence": "מלאי נמדד ומתאים לעץ החי: 114 kernel files/17 דומיינים/12 API routes/11 פאנלים (roshpina 3f887102); G20 מאמת התאמת מלאי; armed→live = החלטת אירוח בלבד"
+   "cadence": "per-cycle (cron 23 */4)",
+   "slaMinutes": 1440,
+   "status": "live",
+   "evidence": "D4 T-63: kernel-smoke 7/7 (מקומית) + ריצת-runner ראשונה ירוקה 38187803398 → fee-engine/state.json status=live @ roshpina (ירושה מדודה של חומת-החיוב: 38187350674+38187704256)"
   },
   {
    "from": "saos-jummper",
@@ -554,11 +554,6 @@
   ]
  },
  "revivalQueue": [
-  {
-   "repo": "roshpina",
-   "lane": "fee engine — ARMED",
-   "next": "armed→live: החלטת אירוח בלבד (sovereign engine :3044 או runner חוץ); אחר-כך מסילת עמלה ראשונה על D-023"
-  },
   {
    "repo": "saos-jummper",
    "lane": "notary — LIVE",
