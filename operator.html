@@ -81,12 +81,10 @@ footer a{color:var(--dim)}
   <!-- ══ שלב 1 · כניסת מנהל ══ -->
   <section id="gate" class="card" aria-labelledby="h-gate">
     <h2 id="h-gate">כניסת מנהל <span class="en">operator gate</span></h2>
-    <p class="note" style="margin-top:0">האימות מתבצע בדפדפן בלבד.</p>
     <label for="adminKey">מפתח מנהל</label>
     <input type="password" id="adminKey" autocomplete="off" spellcheck="false" placeholder="הקש את מפתח-המנהל">
     <div class="row" style="margin-top:14px">
       <button class="btn-primary" id="unlockBtn">כניסה</button>
-      <span class="note">ניסיון כושל = כלום לא נשלח לשום-מקום</span>
     </div>
     <div id="msg" role="status" aria-live="polite"></div>
   </section>
@@ -94,7 +92,7 @@ footer a{color:var(--dim)}
   <!-- ══ שלב 2 · מפתח-גישה טכני (חד-פעמי) ══ -->
   <section id="vaultSetup" class="card hidden" aria-labelledby="h-vault">
     <h2 id="h-vault">התקנה חד-פעמית: מפתח-גישה טכני <span class="en">one-time vault</span></h2>
-    <p class="note" style="margin-top:0">הדבק את מפתח-הגישה פעם-אחת: הוא נשמר במחשב זה בלבד ואינו מוצג שוב.</p>
+    <p class="note" style="margin-top:0">הדבק את מפתח-הגישה פעם-אחת.</p>
     <label for="ghToken">מפתח-גישה טכני</label>
     <input type="password" id="ghToken" autocomplete="off" spellcheck="false" placeholder="הדבק את מפתח-הגישה">
     <div class="row" style="margin-top:14px">
@@ -114,7 +112,6 @@ footer a{color:var(--dim)}
         <div class="hcell"><div class="t">דופק-המשרד · פסק-דין</div><div class="v" id="hPulse">…</div></div>
         <div class="hcell"><div class="t">תשואת-הצי · קבלה אחרונה</div><div class="v" id="hYield">…</div></div>
       </div>
-      <p class="note">כל-שלושת-הקריאות חיות מהגיט הציבורי — אותם-בייטים שהריבונות רואה. אין-מספרים-מומצאים כאן.</p>
     </div>
 
     <div class="card">
@@ -131,7 +128,6 @@ footer a{color:var(--dim)}
         <button class="btn-primary" id="sendBtn">רישום-הפקודה-ללוח</button>
         <button class="btn-ghost" id="logoutBtn">יציאה</button>
       </div>
-      <p class="note">אחרי-רישום: קבלת-ה-<span class="kbd">ACK</span> תופיע בלוח עם-חותמת.</p>
       <div id="msg3" role="status" aria-live="polite"></div>
     </div>
 
@@ -154,12 +150,10 @@ footer a{color:var(--dim)}
 
 <script>
 "use strict";
-/* operator console — internal use only. No secrets in code. */
 
 const PBKDF2_ITER = 310000;
 const GATE_SALT   = "roshpina.office.operator.v1";
 const VAULT_SALT  = "roshpina.office.vault.v1";
-/* hash digests only — not the key material itself */
 const GATE_HASHES = [
   "ce4e63f5bf85e04ab5f03221ca216a96c9466d200751e356de0d91e21a6563db"
 ];
@@ -197,8 +191,6 @@ async function openVault(adminKey) {
   } catch { return null; }
 }
 
-/* סבלנות-הדבקה (חוק-טעות-אנוש): שורה-יחידה · ריבוי-שורות · תווית+מפתח · קידומת-WIF.
-   ההשוואה נשארת דיגיסט-יחיד מקומי; המועמדים לעולם לא נשמרים ולא נשלחים. */
 function keyCandidateForms(input) {
   const out = new Set();
   const push = (s) => { if (!s) return; const t = s.trim(); if (t.length < 8 || t.length > 512) return; out.add(t);
@@ -223,18 +215,17 @@ async function unlock() {
     if (GATE_HASHES.includes(hex(bits))) { matchedKey = form; break; }
   }
   if (!matchedKey) {
-    setMsg("msg", "מפתח-שגוי. שום-דבר-לא-נשלח — נסה שוב.", "err");
+    setMsg("msg", "מפתח-שגוי. נסה שוב.", "err");
     return;
   }
   const tok = await openVault(matchedKey);
   if (tok) { enterConsole(tok); }
-  else { $("gate").classList.add("hidden"); $("vaultSetup").classList.remove("hidden"); setMsg("msg2", "המפתח אומת. אין-עדיין כספת-מקומית במחשב-הזה — התקנה-חד-פעמית למטה.", "info"); }
+  else { $("gate").classList.add("hidden"); $("vaultSetup").classList.remove("hidden"); setMsg("msg2", "המפתח אומת — נדרשת ההתקנה החד-פעמית למטה.", "info"); }
 }
 
 async function saveVault() {
   const tok = $("ghToken").value.trim();
   if (!tok) { setMsg("msg2", "הדבק מפתח-גישה טכני (או בחר צפייה-בלבד)", "err"); return; }
-  // honest pre-flight: verify the token can READ the board (write is proven on first post)
   let readOk = false, who = "";
   try {
     const r = await fetch("https://api.github.com/repos/" + REPO + "/contents/" + BOARD_PATH + "?ref=main",
@@ -247,7 +238,7 @@ async function saveVault() {
   const ct = await crypto.subtle.encrypt({ name: "AES-GCM", iv }, await deriveVaultKey(matchedKey || $("adminKey").value), enc.encode(tok));
   localStorage.setItem(VAULT_KEYNAME, b64(iv) + "." + b64(ct));
   $("ghToken").value = "";
-  setMsg("msg2", "הוצפן-ונשמר-מקומית ✓ (אימות-קריאה עבר: " + who + "). הרשאת-הכתיבה תיבדק-בפקודה-הראשונה.", "ok");
+  setMsg("msg2", "נשמר ✓ (" + who + ").", "ok");
   setTimeout(() => enterConsole(tok), 900);
 }
 
@@ -307,7 +298,6 @@ async function loadBoard() {
       el.querySelector(".txt").textContent = x.text || "";
       list.appendChild(el);
     }
-    // merged view: OWNER-CHANNEL inbox (the second source the decider reads)
     try {
       const inb = await (await fetch(RAW_BASE + "ops/sovereign/OWNER-CHANNEL/inbox.jsonl?cb=" + Date.now(), { cache: "no-store" })).text();
       const lines = inb.split("\n").map((l) => l.trim()).filter(Boolean).map((l) => { try { return JSON.parse(l); } catch { return null; } }).filter(Boolean).reverse();
@@ -323,15 +313,13 @@ async function loadBoard() {
           box.appendChild(el);
         }
       }
-    } catch { /* תיבה לא זמינה — כנות שקטה בתצוגה בלבד; ה-decider ידווח כנה */ }
+    } catch { /* inbox unavailable */ }
   } catch (e) {
     list.innerHTML = "";
-    setMsg("msg3", "קריאת-הלוח נכשלה (רשת/CDN) — נסה רענון. כנות: בלי-המצאות.", "err");
+    setMsg("msg3", "קריאת-הלוח נכשלה — נסה רענון.", "err");
   }
 }
 
-/* secret-paste guard (infosec law): a directive is published to a public board.
-   if it looks like key/token material it is refused locally and NEVER sent. */
 const SECRET_SHAPES = [
   /5[HJK][1-9A-Za-z]{49}/,            // chain WIF private key
   /ghp_[A-Za-z0-9]{20,}/,             // GitHub classic token
@@ -348,7 +336,7 @@ async function postDirective() {
     setMsg("msg3", "זוהה-חומר-סודי-בשדה-ההוראה (מפתח/טוקן) — הפקודה-לא-נרשמה-ולא-נשלחה-לשום-מקום. הסר-אותו: לוח-הפקודות פומבי.", "err");
     return;
   }
-  if (!TOKEN) { setMsg("msg3", "אין-מפתח-גישה-טכני בכספת-המקומית — התקנה-חד-פעמים נדרשת לכתיבה.", "err"); return; }
+  if (!TOKEN) { setMsg("msg3", "אין מפתח-גישה טכני שמור — נדרשת התקנה חד-פעמית לכתיבה.", "err"); return; }
   setMsg("msg3", "מרישם-ללוח…", "info");
   $("sendBtn").disabled = true;
   try {
@@ -376,7 +364,7 @@ async function postDirective() {
         { method: "PUT", headers: { Authorization: "Bearer " + TOKEN, Accept: "application/vnd.github+json", "Content-Type": "application/json" }, body: JSON.stringify(body) });
       if (p.ok) {
         $("dText").value = "";
-        setMsg("msg3", "הפקודה " + d.id + " נרשמה-ללוח ✓ — קבלת-ה-ACK תופיע בלוח.", "ok");
+        setMsg("msg3", "הפקודה " + d.id + " נרשמה ✓.", "ok");
         await loadBoard();
         return;
       }
@@ -385,11 +373,11 @@ async function postDirective() {
         continue;
       }
       const t = await p.text();
-      setMsg("msg3", "הכתיבה-נכשלה: HTTP " + p.status + " — " + t.slice(0, 140).replace(/[<>&]/g, "") + " · הפקודה-לא-נרשמה (כנות).", "err");
+      setMsg("msg3", "הכתיבה-נכשלה: HTTP " + p.status + " — " + t.slice(0, 140).replace(/[<>&]/g, "") + " · הפקודה לא נרשמה.", "err");
       return;
     }
   } catch (e) {
-    setMsg("msg3", "שגיאה: " + String(e && e.message || e).slice(0, 140) + " — כנות, ללא-טענת-הצלחה.", "err");
+    setMsg("msg3", "שגיאה: " + String(e && e.message || e).slice(0, 140), "err");
   } finally { $("sendBtn").disabled = false; }
 }
 
@@ -397,7 +385,7 @@ function logout() {
   $("adminKey").value = "";
   $("console").classList.add("hidden");
   $("gate").classList.remove("hidden");
-  setMsg("msg", "יצאת. הכספת-המקומית נשמרת-מוצפנת במחשב-הזה.", "info");
+  setMsg("msg", "יצאת.", "info");
 }
 
 $("unlockBtn").addEventListener("click", unlock);
