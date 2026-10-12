@@ -16,6 +16,8 @@
  * · window.__hqSun = { phase, sunPos, intensity } — ל-probe (DESIGN.md §0).
  */
 'use client';
+/* eslint-disable react-hooks/immutability */
+// המותאם כאן: סינגלטון-מודול (hqSun) שאינו מצב-hook — תבנית-השמש החיה של exec-14.
 
 import { useEffect, useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
