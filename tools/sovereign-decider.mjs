@@ -103,6 +103,8 @@ const out = {
   sense,
   decisions: merged,
   stats: { standing: prior.length, thisRun: decisions.length, total: merged.length },
+  ownerActionsRemaining: Array.isArray(decisionsPrev?.ownerActionsRemaining) ? decisionsPrev.ownerActionsRemaining : [],
+  eraNote: decisionsPrev?.eraNote || 'מ- T-63: לוח-״פעולות-בעלים״ מוחלף בפנקס-ההחלטות הריבוני. הבעלים ממשיך להוביל דרך דירקטיבות; הריבונות מחליטה, מבצעת, ומאמתת.',
   commitDecision: 'set-by-runner',
 };
 out.commitDecision = (() => {
