@@ -25,7 +25,7 @@ import type {
   GitPulse, Goal, LogEntry, Report, Snapshot, Task,
 } from './protocol';
 import { CREW_FALLBACK } from './protocol';
-import { createBrains, type AgentBrain } from './world';
+import { createBrains, joinCrewAtPosts, type AgentBrain } from './world';
 import type { TruthInfo } from './truth';
 
 export type Lang = 'he' | 'en';
@@ -60,6 +60,24 @@ export interface UiBindings {
   setLang?: (l: Lang) => void;
 }
 
+/** אירוע יומן-השידור — מהמראה הקנונית ב-Domain (world-journal) */
+export interface BroadcastEvent { at: number; who: string; text: string }
+
+/** מצב-השידור החי (T20) — העולם הקנוני חי ב-Domain ומתקדם בענן כל 10 דק'
+ *  (office-worldbeat). החדר מצטרף לשידור הקיים — לא מחדש עולם משלו.
+ *  beatAgeMs מעל 30 דק' = השידור מוקפא בפועל — מוצג בכנות. */
+export interface BroadcastInfo {
+  ok: boolean;
+  phase: string;
+  phaseKind: string | null;
+  worldT: number | null;
+  beatAgeMs: number | null;
+  /** false = הפאזה חושבה מקומית לפי שעת ירושלים (אותו חוק) — המראה לא נענתה */
+  canonical: boolean;
+  fetchedAt: number;
+  journal: BroadcastEvent[];
+}
+
 interface HqBridgeState {
   /** תמיד true — החדר ניזון ישירות מהמצב האמיתי של AgentHQ */
   booted: boolean;
@@ -89,6 +107,10 @@ interface HqBridgeState {
   toasts: { id: number; text: string }[];
   /** גשר-האמת: מקורות הנתונים האמיתיים + טריותם (לצ'יפ הכנות בחדר) */
   truth: TruthInfo | null;
+  /** השידור החי הקנוני (T20) — המראה ב-Domain + יומן-המשמרת */
+  broadcast: BroadcastInfo | null;
+  /** הצוות כבר הצטרף לעמדותיו (פעם-אחת) — בלי לידה-בדלת בכל סנכרון */
+  broadcastJoined: boolean;
 
   bindUi(ui: UiBindings): void;
   setLang(l: Lang): void;
@@ -111,6 +133,7 @@ interface HqBridgeState {
   syncStatus(status: ForemanStatus): void;
   syncGit(git: GitPulse): void;
   setTruth(t: TruthInfo): void;
+  syncBroadcast(b: BroadcastInfo): void;
   syncConnected(connected: boolean): void;
   /** עדכון מצב-הזנת המראה (Task 11-a) — כנות-מלאה: ready/error/savedAt */
   setFeedMeta(m: { mode?: FeedMode; ready?: boolean; savedAt?: number | null; error?: string | null; journal?: FeedJournal | null }): void;
@@ -162,6 +185,8 @@ export const useHq = create<HqBridgeState>((set, get) => ({
   ui: {},
   toasts: [],
   truth: null,
+  broadcast: null,
+  broadcastJoined: false,
 
   bindUi(ui) { set({ ui }); },
 
@@ -203,8 +228,16 @@ export const useHq = create<HqBridgeState>((set, get) => ({
       ? snap.agents
       : crew.map((c) => ({ id: c.id, state: 'idle' as const, activity: '', station: 'desk' as const, since: Date.now() }));
     const next: Snapshot = { ...snap, crew, agents };
+    const firstJoin = !get().broadcastJoined;
     set({ snap: next, lastSignalAt: Date.now() });
-    syncBrains(get().brains, agents);
+    if (firstJoin) {
+      // חוק-ההצטרפות לשידור (T20): בסנכרון האמת הראשון הצוות נמצא בעמדתו —
+      // הצופה מצטרף למשמרת באמצעה, בדיוק כמו שידור שנמשך כל הזמן.
+      joinCrewAtPosts(get().brains, agents);
+      set({ broadcastJoined: true });
+    } else {
+      syncBrains(get().brains, agents);
+    }
   },
   syncAgent(a) {
     const st = get();
@@ -248,6 +281,9 @@ export const useHq = create<HqBridgeState>((set, get) => ({
   },
   setTruth(t) {
     set({ truth: t });
+  },
+  syncBroadcast(b) {
+    set({ broadcast: b });
   },
   syncConnected(connected) {
     set({ connected });
