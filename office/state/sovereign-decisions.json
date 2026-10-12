@@ -1,6 +1,6 @@
 {
  "schema": "saos.sovereign-decisions/1",
- "generatedAt": "2026-10-12T18:01:08.170Z",
+ "generatedAt": "2026-10-12T18:19:22.431Z",
  "policyVersion": "SOV-POLICY/1",
  "principle": "הריבונות מחליטה ומבצעת — הבעלים קבע (trace 1a12…f45d) שהמערכת מקבלת החלטות חכמות בעצמה בצורה הכי מתקדמת שיש; הפניה לבעלים = שלילת הריבונות. כל-החלטה: ראיה-מדודה + אימות-כפול. בעלים = בעלים; ריבונות = הגוף שמחליט.",
  "authority": {
@@ -20,23 +20,23 @@
  "sense": {
   "officeState": {
    "ok": true,
-   "ageMin": 110
-  },
-  "gridTruth": {
-   "ok": true,
-   "ageMin": 48
+   "ageMin": 128
   },
   "valueScan": {
    "ok": true,
-   "ageMin": 74
+   "ageMin": 92
+  },
+  "gridTruth": {
+   "ok": true,
+   "ageMin": 67
   },
   "openCloser": {
    "ok": true,
-   "ageMin": 56
+   "ageMin": 18
   },
   "decisionsPrev": {
    "ok": true,
-   "ageMin": 20
+   "ageMin": 18
   }
  },
  "decisions": [
@@ -196,18 +196,18 @@
   {
    "id": "auto-freshness",
    "area": "operations",
-   "title": "טריות הצי: הכל טרי מעל SLA (office-state 54דק, beacon 18דק, lighthouse 36דק, value-scan 18דק, domain-pulse 101דק, live 67",
-   "status": "clear",
+   "title": "טריות הצי: 1 נפלו מעל SLA (lighthouse 92דק>SLA80) — הוערו: lighthouse",
+   "status": "watch",
    "evidence": {
     "source": "FleetHQ/office/state/opens-closer.json",
     "metrics": {
-     "staleCount": 0,
-     "dispatchedCount": 0
+     "staleCount": 1,
+     "dispatchedCount": 1
     },
     "selfHeal": "same-repo GITHUB_TOKEN + cross-repo CROSS_REVIVE_PAT (D1)"
    },
    "policy": "SOV-POLICY/1",
-   "decidedAt": "2026-10-12T18:01:08.170Z",
+   "decidedAt": "2026-10-12T18:19:22.431Z",
    "by": "sovereign-decider"
   },
   {
@@ -222,7 +222,7 @@
    },
    "law": "אין דריסת-מסילות: למשרד יש לולאת-רטרו משלו; הריבונות מתעדת ומאמתת, לא לוקחת",
    "policy": "SOV-POLICY/1",
-   "decidedAt": "2026-10-12T18:01:08.170Z",
+   "decidedAt": "2026-10-12T18:19:22.431Z",
    "by": "sovereign-decider"
   }
  ],
