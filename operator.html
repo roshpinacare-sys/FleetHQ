@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>מפקדת הצי · כניסת-מנהל</title>
-<meta name="description" content="קונסולת-המפעיל של אתר-המשרד: פקודות-מנהל חיות ללוח-הפקודות של הריבונות. המפתחות נשארים בדפדפן שלך.">
+<meta name="description" content="כניסת-מנהל למפקדת הצי.">
 <meta name="robots" content="noindex, nofollow">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230b0f14'/%3E%3Crect x='7' y='13' width='18' height='12' rx='2' fill='%232dd4bf'/%3E%3Crect x='10' y='7' width='5' height='6' fill='%23d29922'/%3E%3C/svg%3E">
 <style>
@@ -72,8 +72,7 @@ footer a{color:var(--dim)}
       <svg width="20" height="20" viewBox="0 0 32 32"><rect width="32" height="32" rx="7" fill="none"/><rect x="7" y="13" width="18" height="12" rx="2" fill="#2dd4bf"/><rect x="10" y="7" width="5" height="6" fill="#d29922"/></svg>
     </div>
     <h1>מפקדת הצי · כניסת-מנהל</h1>
-    <span class="badge acc">ערוץ-פקודות חי</span>
-    <p class="sub">מכאן אתה מניע את הריבונות: כל פקודה נרשמת ללוח-הפקודות בגיט, ועורק-ההכרעה קורא אותה, מאשר קבלה ומנתב למסילות-הביצוע — בלי-המתנה-שגרתית.</p>
+    <p class="sub">עמוד כניסה שמור — שימוש פנימי בלבד.</p>
   </div>
 </header>
 
@@ -82,7 +81,7 @@ footer a{color:var(--dim)}
   <!-- ══ שלב 1 · כניסת מנהל ══ -->
   <section id="gate" class="card" aria-labelledby="h-gate">
     <h2 id="h-gate">כניסת מנהל <span class="en">operator gate</span></h2>
-    <p class="note" style="margin-top:0">המפתח לעולם לא עוזב את הדפדפן: הוא נבדק מקומית (PBKDF2 · 310,000 איטרציות) ומשמש להצפנת מפתח-הגישה הטכני במחשב שלך בלבד. אף-מפתח אינו נשלח-נשמר-או נכתב בקוד.</p>
+    <p class="note" style="margin-top:0">האימות מתבצע בדפדפן בלבד.</p>
     <label for="adminKey">מפתח מנהל</label>
     <input type="password" id="adminKey" autocomplete="off" spellcheck="false" placeholder="הקש את מפתח-המנהל">
     <div class="row" style="margin-top:14px">
@@ -95,9 +94,9 @@ footer a{color:var(--dim)}
   <!-- ══ שלב 2 · מפתח-גישה טכני (חד-פעמי) ══ -->
   <section id="vaultSetup" class="card hidden" aria-labelledby="h-vault">
     <h2 id="h-vault">התקנה חד-פעמית: מפתח-גישה טכני <span class="en">one-time vault</span></h2>
-    <p class="note" style="margin-top:0">כדי לרשום פקודות ללוח-בגיט, הדף צריך מפתח-גישה טכני (GitHub, רשות-כתיבה-ל-Sandbox). הדבק אותו פעם-אחת: הוא יוצפן מקומית (AES-GCM) עם מפתח-המנהל ויישמר <b>רק במחשב הזה</b>. מהפעם-הבאה — מפתח-המנהל לבדו פותח-הכל. הדף אף-פעם לא מציג-או משדר את המפתח לשום-כתובת פרט-ל-GitHub.</p>
-    <label for="ghToken">מפתח-גישה טכני (GitHub · repo: Sandbox)</label>
-    <input type="password" id="ghToken" autocomplete="off" spellcheck="false" placeholder="ghp_… / github_pat_…">
+    <p class="note" style="margin-top:0">הדבק את מפתח-הגישה פעם-אחת: הוא נשמר במחשב זה בלבד ואינו מוצג שוב.</p>
+    <label for="ghToken">מפתח-גישה טכני</label>
+    <input type="password" id="ghToken" autocomplete="off" spellcheck="false" placeholder="הדבק את מפתח-הגישה">
     <div class="row" style="margin-top:14px">
       <button class="btn-amber" id="saveVaultBtn">הצפנה ושמירה-מקומית</button>
       <button class="btn-ghost" id="skipVaultBtn">רק צפייה בלוח (בלי כתיבה)</button>
@@ -111,9 +110,9 @@ footer a{color:var(--dim)}
     <div class="card">
       <h2>מצב-הריבונות-עכשיו <span class="en">live · keyless reads</span> <span class="badge" id="freshBadge">…</span></h2>
       <div class="health">
-        <div class="hcell"><div class="t">עורק-ההכרעה (sovereign-decider) · פעימה אחרונה</div><div class="v" id="hDecider">…</div></div>
-        <div class="hcell"><div class="t">דופק-המשרד (office-pulse) · פסק-דין</div><div class="v" id="hPulse">…</div></div>
-        <div class="hcell"><div class="t">עורק-התשואה (fleet-yield) · קבלה אחרונה</div><div class="v" id="hYield">…</div></div>
+        <div class="hcell"><div class="t">פעימת-ההכרעה · מדידה אחרונה</div><div class="v" id="hDecider">…</div></div>
+        <div class="hcell"><div class="t">דופק-המשרד · פסק-דין</div><div class="v" id="hPulse">…</div></div>
+        <div class="hcell"><div class="t">תשואת-הצי · קבלה אחרונה</div><div class="v" id="hYield">…</div></div>
       </div>
       <p class="note">כל-שלושת-הקריאות חיות מהגיט הציבורי — אותם-בייטים שהריבונות רואה. אין-מספרים-מומצאים כאן.</p>
     </div>
@@ -132,15 +131,15 @@ footer a{color:var(--dim)}
         <button class="btn-primary" id="sendBtn">רישום-הפקודה-ללוח</button>
         <button class="btn-ghost" id="logoutBtn">יציאה</button>
       </div>
-      <p class="note">אחרי-רישום: עורק-ההכרעה קורא-את-הלוח פעמיים-בשעה (xx:04 · xx:34 UTC) — שם-תופיע קבלת-ה-<span class="kbd">ACK</span> עם-חותמת, והפקודה-תונתב-למסילות. אין-ערוץ-כתיבה-אחר-ללוח.</p>
+      <p class="note">אחרי-רישום: קבלת-ה-<span class="kbd">ACK</span> תופיע בלוח עם-חותמת.</p>
       <div id="msg3" role="status" aria-live="polite"></div>
     </div>
 
     <div class="card">
-      <h2>לוח-הפקודות <span class="en">directive board · Sandbox/ops/sovereign/DIRECTIVES/board.json</span></h2>
+      <h2>לוח-הפקודות <span class="en">directive board</span></h2>
       <div class="row"><button class="btn-ghost" id="refreshBtn">רענון</button><span class="note" id="boardMeta"></span></div>
       <div id="boardList" aria-live="polite"></div>
-      <h2 style="margin-top:22px">תיבת-ההוראות <span class="en">OWNER-CHANNEL · inbox.jsonl</span></h2>
+      <h2 style="margin-top:22px">תיבת-ההוראות <span class="en">owner inbox</span></h2>
       <div id="inboxList" aria-live="polite"></div>
     </div>
 
@@ -149,22 +148,13 @@ footer a{color:var(--dim)}
 
 <footer>
   <div class="inner">
-    קונסולת-המפעיל · חלק מ<a href="index.html">מפקדת-הצי</a> · ערוץ-הפקודות: operator.html → לוח-פקודות-בגיט → עורק-ההכרעה (ACK ≤ 30 דק') → מסילות-ביצוע. · אפס-סודות-בקוד · אפס-מספרים-מומצאים · חוק-האמת-של-הבית.
+    קונסולת-המפעיל · חלק מ<a href="index.html">מפקדת-הצי</a>.
   </div>
 </footer>
 
 <script>
 "use strict";
-/* ═══════════════════════════════════════════════════════════════════
- * operator console — security model (honest, no secrets in code):
- *  · admin key: verified client-side only (PBKDF2-SHA256, 310k iters, public salt)
- *    → the page stores ONLY hash digests; brute-forcing them yields the gate UI alone.
- *  · GitHub token: pasted once, encrypted locally (AES-GCM, key derived from the
- *    admin key) and kept in THIS browser's localStorage. Never displayed, never sent
- *    anywhere except api.github.com over TLS. Server-less: nothing else holds it.
- *  · directives: appended to Sandbox/ops/sovereign/DIRECTIVES/board.json via the
- *    GitHub Contents API. The sovereign-decider (every 30 min) ACKs and routes them.
- * ═══════════════════════════════════════════════════════════════════ */
+/* operator console — internal use only. No secrets in code. */
 
 const PBKDF2_ITER = 310000;
 const GATE_SALT   = "roshpina.office.operator.v1";
@@ -233,7 +223,7 @@ async function saveVault() {
     readOk = r.ok;
     if (r.ok) { const d = await r.json(); who = d.sha ? "sha " + d.sha.slice(0, 8) : ""; }
   } catch { readOk = false; }
-  if (!readOk) { setMsg("msg2", "המפתח-הטכני לא הצליח לקרוא את הלוח (401/404?). לא נשמר-כלום. בדוק-שהמפתח-תקף-ושיש-גישה-ל-Sandbox.", "err"); return; }
+  if (!readOk) { setMsg("msg2", "המפתח-הטכני לא הצליח לקרוא את הלוח (401/404?). לא נשמר-כלום. בדוק-שהמפתח-תקף.", "err"); return; }
   const iv = crypto.getRandomValues(new Uint8Array(12));
   const ct = await crypto.subtle.encrypt({ name: "AES-GCM", iv }, await deriveVaultKey($("adminKey").value), enc.encode(tok));
   localStorage.setItem(VAULT_KEYNAME, b64(iv) + "." + b64(ct));
@@ -367,12 +357,12 @@ async function postDirective() {
         { method: "PUT", headers: { Authorization: "Bearer " + TOKEN, Accept: "application/vnd.github+json", "Content-Type": "application/json" }, body: JSON.stringify(body) });
       if (p.ok) {
         $("dText").value = "";
-        setMsg("msg3", "הפקודה " + d.id + " נרשמה-ללוח ✓ — קבלת-ACK תופיע-כאן תוך-עד-30 דק' (עורק-ההכרעה).", "ok");
+        setMsg("msg3", "הפקודה " + d.id + " נרשמה-ללוח ✓ — קבלת-ה-ACK תופיע בלוח.", "ok");
         await loadBoard();
         return;
       }
       if ((p.status === 409 || p.status === 422) && attempt < 2) {
-        setMsg("msg3", "הלוח-השתנה-במקביל (עורק-ההכרעה כותב-ACK) — קורא-מחדש-ומנסה-שוב…", "info");
+        setMsg("msg3", "הלוח-השתנה-במקביל — קורא-מחדש-ומנסה-שוב…", "info");
         continue;
       }
       const t = await p.text();
