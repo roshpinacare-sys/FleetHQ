@@ -82,7 +82,11 @@ function run(name: string, cwd: string, script: string, redactFiles: string[] = 
   if (running.has(name)) { log(`${name}: skipped — previous flight still running`); return; }
   running.add(name);
   try {
-    const pull = spawnSync("git", ["-c", "rebase.autoStash=true", "pull", "--rebase", "-q"], { cwd, encoding: "utf8" });
+    // 25-a fix: -X theirs + explicit origin main — the estate discipline for
+    // live-book repos (twins push constantly; a conflict must resolve to the
+    // upstream canonical, never poison the repo into an unresolved state that
+    // blocks every later pull — measured in Domain 20:52Z).
+    const pull = spawnSync("git", ["-c", "rebase.autoStash=true", "pull", "--rebase", "-X", "theirs", "-q", "origin", "main"], { cwd, encoding: "utf8" });
     if (pull.status !== 0) log(`${name}: pull note exit=${pull.status} ${(pull.stderr || "").slice(-100)}`);
     const env = { ...envFor() } as NodeJS.ProcessEnv;
     const res = spawnSync("node", [script], { cwd, env, encoding: "utf8", timeout: 8 * 60_000 });
@@ -162,9 +166,9 @@ function officeCiLite() {
     };
     const dir = join(FLEETHQ, "receipts", "office-ci");
     mkdirSync(dir, { recursive: true });
-    writeFileSync(join(dir, "verdict-local.json"), JSON.stringify(verdict, null, 1) + "\n");
-    log(`office-ci-lite: lint=${lint.status} types=${types.status} → verdict-local.json (${verdict.overall})`);
-    const pub = publishFleet("office-ci-lite", ["receipts/office-ci/verdict-local.json"]);
+    writeFileSync(join(dir, "verdict.json"), JSON.stringify(verdict, null, 1) + "\n");
+    log(`office-ci-lite: lint=${lint.status} types=${types.status} → verdict.json (${verdict.overall})`);
+    const pub = publishFleet("office-ci-lite", ["receipts/office-ci/verdict.json"]);
     log(`office-ci-lite: publish="${pub}"`);
   } catch (e) {
     log(`office-ci-lite: FATAL ${(e as Error).message.slice(0, 120)}`);

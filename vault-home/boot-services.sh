@@ -85,6 +85,29 @@ else
 fi
 chmod 600 "$ESTATE/.env.local" 2>/dev/null
 
+# ---------------------------------------------------------------- 4.5 roster map
+# The beats run OUTSIDE Actions, so the FLEET_ROSTER_MAP secret is absent;
+# refs.mjs falls back to the untracked local map (agents/.roster-map.local.json).
+# That file is untracked BY LAW (exposure), so a wipe destroys it — rebuild it
+# at boot from Console git history (the pre-refs-sweep commit 36dca9f0 carries
+# the original literal; the sweep itself guarantees zero names at HEAD).
+# Measured 2026-10-12: without this, money-watch/grid-pulse/key-verify all
+# exit "roster-unresolved" and money.json never refreshes (veritas red).
+log "stage4.5: roster map (untracked by law — rebuilt from Console git history if missing)"
+if [ -d "$ESTATE/Console/.git" ] && [ ! -f "$ESTATE/Console/agents/.roster-map.local.json" ]; then
+  NAME=$(git -C "$ESTATE/Console" show 36dca9f0:agents/money-watch.mjs 2>/dev/null | grep -o 'const STEEM_ACCOUNT = "[^"]*"' | head -1 | sed 's/.*"\(.*\)"/\1/')
+  if [ -n "$NAME" ]; then
+    printf '{"refs":{"acct-00":"%s"}}\n' "$NAME" > "$ESTATE/Console/agents/.roster-map.local.json"
+    chmod 600 "$ESTATE/Console/agents/.roster-map.local.json"
+    log "  roster map rebuilt (acct-00 resolved from history; value never logged)"
+  else
+    log "  WARN: acct-00 not derivable from Console history — money-watch will fail-honest (roster-unresolved)"
+  fi
+  unset NAME
+else
+  log "  roster map present (or Console not cloned yet)"
+fi
+
 # ---------------------------------------------------------------- 5. clones
 log "stage5: estate clones (public repos — anonymous)"
 for r in Console Domain FleetHQ; do
@@ -142,11 +165,23 @@ ensure selfcheck 3040 /tmp/boot-selfcheck.log env \
 ensure recruit 3041 /tmp/boot-recruit.log bash -c "cd $ESTATE/FleetHQ/mini-services/office-recruit && bun run dev"
 ensure boot-verifier 3042 /tmp/boot-bootverifier.log bash -c "cd $ESTATE/FleetHQ/mini-services/boot-verifier && bun run dev"
 ensure sovereign-gateway 3011 /tmp/boot-gateway.log bash -c "cd $ESTATE/FleetHQ/mini-services/sovereign-gateway && bun run dev"
-if ! pgrep -f "local-beats" >/dev/null 2>&1; then
-  nohup bash -c "cd $ESTATE/FleetHQ/mini-services/local-beats && bun run dev" > /tmp/boot-localbeats.log 2>&1 &
-  log "  local-beats started"
+# local-beats has NO HTTP port (it is a setInterval scheduler, not a server) —
+# probe by PROCESS IDENTITY, not port. Measured 2026-10-12 (bug 25-a): the old
+# probe was `pgrep -f "local-beats"`, but the live scheduler's cmdline is
+# `bun run dev` / `bun --hot index.ts` (bash exec-optimization drops the
+# directory string) — pgrep NEVER matched, so EVERY boot respawned it and
+# repeated boots piled up ~20 scheduler instances firing beats 10x a minute.
+# Fix: match the bun process whose CWD is the local-beats dir.
+LB_DIR="$ESTATE/FleetHQ/mini-services/local-beats"
+LB_PID=""
+for p in $(pgrep -f "bun" 2>/dev/null); do
+  if [ "$(readlink -f "/proc/$p/cwd" 2>/dev/null)" = "$LB_DIR" ]; then LB_PID=$p; break; fi
+done
+if [ -n "$LB_PID" ]; then
+  log "  local-beats already running (pid $LB_PID)"
 else
-  log "  local-beats already running"
+  nohup bash -c "cd $LB_DIR && bun run dev" > /tmp/boot-localbeats.log 2>&1 &
+  log "  local-beats started"
 fi
 
 # ---------------------------------------------------------------- 8. verdict
