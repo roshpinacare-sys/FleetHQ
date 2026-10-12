@@ -1,9 +1,9 @@
 {
  "schema": "fleet.connectivity-audit/1",
- "generatedAt": "2026-10-12T01:45:00.781Z",
+ "generatedAt": "2026-10-12T01:57:54.411Z",
  "doctrine": "measured-not-claimed: every verdict from a real graph walk; bytes+sha256 attached; library/scaffold classified honestly, never as orphans",
  "graph": {
-  "codeFiles": 109,
+  "codeFiles": 110,
   "entryPoints": [
    "src/app/api/fleet-health/route.ts",
    "src/app/api/foreman/health/route.ts",
@@ -21,6 +21,7 @@
   ],
   "reachable": 62,
   "orphans": [
+   "src/components/hq/Interior.tsx",
    "src/components/ui/accordion.tsx",
    "src/components/ui/alert-dialog.tsx",
    "src/components/ui/alert.tsx",
@@ -70,6 +71,11 @@
    "src/lib/db.ts"
   ],
   "classified": [
+   {
+    "file": "src/components/hq/Interior.tsx",
+    "class": "orphan",
+    "note": null
+   },
    {
     "file": "src/components/ui/accordion.tsx",
     "class": "library",
@@ -308,7 +314,7 @@
   ],
   "libraryCount": 46,
   "scaffoldCount": 1,
-  "trueOrphanCount": 0
+  "trueOrphanCount": 1
  },
  "artifacts": {
   "scanned": 30,
@@ -328,10 +334,10 @@
    "/worlds"
   ]
  },
- "verdictHe": "הכל מחובר — אין יתומים",
+ "verdictHe": "נמדדו 1 קבצי-קוד יתומים ו-0 ארטיפקטים ללא צרכן",
  "selfProof": {
   "algo": "sha256-16",
   "of": "this document sans selfProof field",
-  "sha16": "8e5503a86b213eb5"
+  "sha16": "e9b20516811056d3"
  }
 }
