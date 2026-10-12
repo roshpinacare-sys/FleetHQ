@@ -73,32 +73,6 @@ export function OwnerChat() {
     if (logRef.current) logRef.current.scrollTop = logRef.current.scrollHeight;
   }, [msgs, open]);
 
-  const keyfitNote = (k: Record<string, unknown> | null | undefined): string => {
-    if (!k || !k.ok) return 'מצב-חיבור: הבדיקה-לא-הושלמה';
-    const wif = k.wif as { wifValid?: boolean } | undefined;
-    const steem = k.steem as { reachable?: boolean; registeredRoles?: string[]; note?: string } | undefined;
-    const blurt = k.blurt as { reachable?: boolean; note?: string } | undefined;
-    const parts: string[] = [];
-    parts.push(wif?.wifValid ? 'מפתח-תקין-קריפטוגרפית ✓' : 'מפתח-לא-תקין ✗');
-    if (steem?.reachable) {
-      parts.push(
-        steem.registeredRoles && steem.registeredRoles.length
-          ? `STEEM: מחובר ✓ (${steem.registeredRoles.join(', ')})`
-          : 'STEEM: המפתח-תקין-אך-טרם-רשום-כרשות — ההרשמה-בתהליך מול-הריבונות',
-      );
-    } else {
-      parts.push('STEEM: הצמתים-לא-זמינים-כרגע');
-    }
-    if (blurt?.reachable) {
-      parts.push(
-        blurt.registeredRoles && blurt.registeredRoles.length ? `BLURT: מחובר ✓` : 'BLURT: לא-רשום',
-      );
-    } else {
-      parts.push('BLURT: צמתים-לא-זמינים (תחזוקה-רשת)');
-    }
-    return `מצב-חיבור חי: ${parts.join(' · ')}`;
-  };
-
   const submitSecret = async (action: 'claim' | 'verify') => {
     setGateErr('');
     try {
@@ -115,18 +89,7 @@ export function OwnerChat() {
       sessionStorage.setItem(TOKEN_KEY, d.token);
       setToken(d.token);
       setSecret('');
-      await loadMsgs();
-      if (d.keyfit) {
-        setMsgs((m) => [
-          ...m,
-          {
-            id: `kf-${Date.now()}`,
-            role: 'system',
-            text: `🔗 ${keyfitNote(d.keyfit)}`,
-            createdAt: new Date().toISOString(),
-          },
-        ]);
-      }
+      await loadMsgs(); // סיכום-ההתאמה נשמר-בשרת ומופיע כהודעת-מערכת מתמשכת
     } catch {
       setGateErr('השער לא זמין');
     }
