@@ -590,3 +590,59 @@ Stage Summary:
   with staleness marker).
 - COORDINATION: next agent — check Sandbox Actions recovery first (billing), then the board directive
   DIR-20261012 (keyfit) is first in queue; do not re-file it.
+
+---
+Task ID: 10-audit-and-fix
+Agent: main (owner: בחן מה עשית ותקן)
+
+Work Log:
+- AUDIT (claims vs reality, independent evidence only):
+  * CRITICAL: last commit (4814350, UUID message) tracked upload/headcorner.txt
+    (owner private key), upload/pat.env (GitHub PAT), db/custom.db (owner chat).
+    NO remote configured locally; checked all 5 org repos (FleetHQ/Domain/Console/
+    saos-runtime/sovereign-beacon trees) — secrets NEVER pushed. Fixed locally:
+    untracked + gitignore'd (upload/, *.db, tool-results/, logs) + filter-branch
+    purged the 3 paths from ALL history + gc. Files remain on disk (gate needs them).
+  * "Keys don't connect" ROOT CAUSE (measured): login WORKS (gate hash cfc2a4ea…
+    == hash of owner file key, POST 200, token issued, WIF valid, fingerprint
+    P5KQG…cU4G). BUT the derived pubkey STM8StTG4aes…icnoh is NOT registered on
+    headcorner authorities (STEEM measured via 2 nodes: posting=STM8m3rB…,
+    active=STM5HhJD…, roles=[]). BLURT: all 4 nodes unreachable from sandbox.
+    Nobody can "register" it without the account active/owner key — the old
+    system message "ההרשמה-בתהליך מול-הריבונות" was a FALSE claim; replaced with
+    the honest requirement (update authorities via network interface w/ active
+    key, or provide the registered key).
+  * STALE DATA ROOT CAUSE: 5 of 10 truth sources are PRIVATE repos (Sandbox,
+    sovereign-beacon, sovereign-lighthouse) fetched via anonymous raw → permanent
+    404 → "five living worlds" half-dead. FIXED: new src/lib/gh-truth.ts —
+    authenticated contents-API for private repos (PAT server-only), raw for
+    public, 60s TTL + stale-while-revalidate (no more 8s blocks; warm hits 5-30ms).
+    VERIFIED: all 9 sources ok=true (flow/lighthouse/beacon/dex/valueScan/
+    decisions/foreman/chain/verify). Freshness law added per Sandbox
+    ops/PUBLISHING-POLICY.json: >24h data flagged staleData, shown red in UI chip.
+  * SECURITY BUG (fail-open): owner-gate POST claim used cands[0] when canonical
+    mismatch → an attacker could claim the gate with a random key. FIXED
+    fail-closed: claim/verify both require canonical match; no canonical file →
+    503; verified random/garbage keys → 401/403 rejection.
+  * Token leak: session token moved from query-string (was logged in dev.log)
+    to x-owner-token header.
+  * Honesty: owner-gate system messages now state measured truth only.
+- BROWSER-VERIFIED (agent-browser): office 3D renders w/ real data (2,925.7 SP,
+  heartbeat 7/7 ALIVE); network world LIVE (35 channels · 119 flows — was dead
+  404 before); business world LIVE w/ honest amber gaps + verify 50/51 failures
+  shown; parallel + recruit worlds render; owner chat login works end-to-end in
+  UI; mobile 390px layout OK; sticky footer OK; no console errors.
+- FLAG (anti-forgery): an agent-authored message sits in OwnerMsg/OWNER-CHANNEL
+  as role=owner at 11:59:42Z ("צו-התאמת-מפתח T19…"). Its plan (add pubkey as
+  posting authority) is NOT yet executed on-chain (measured). Agents must never
+  write as role=owner; that channel must carry owner-verified text only.
+
+Stage Summary:
+- Secrets purged from local history; public repos confirmed clean (no rotation
+  strictly required, but PAT rotation recommended as defense-in-depth).
+- All 9 truth sources alive via authenticated server fetch; SWR kills the 8s
+  stalls; freshness law visible in UI.
+- Gate fail-closed; login proven working; the ONLY remaining "key doesn't
+  connect" step is on-chain: someone holding headcorner's active key must add
+  STM8StTG4aesGfmAUgBpMU9LKvoz98E5uz9eCCtEUvYM8Ywnicnoh as posting authority
+  (or the owner supplies the already-registered key). Honest, no fake progress.

@@ -76,17 +76,29 @@ export interface DecisionsWire {
   noAction?: { area: string; note: string }[];
   law?: string;
 }
+/** קופסת-מקור: כנות-מלאה — ok/שגיאה/נתון + טריות (fetchedAt/ageMs) + חוק-חיות (staleData) */
+export interface SourceBox<T> {
+  ok: boolean;
+  error?: string;
+  data?: T;
+  /** מתי נאחזר מהשרשרת/הגיט (זמן-שרת) */
+  fetchedAt?: string;
+  /** גיל-האחזור במ"ש */
+  ageMs?: number;
+  /** חוק-החיות: הנתון-הגולמי עצמו עתיק מ-24h → היסטורי, מוצג אדום */
+  staleData?: boolean;
+}
 export interface WorldsPayload {
   fetchedAt: string;
-  flow: { ok: boolean; error?: string; data?: FlowDataWire };
-  lighthouse: { ok: boolean; error?: string; data?: LighthouseWire };
-  beacon: { ok: boolean; error?: string; data?: BeaconWire };
-  dex: { ok: boolean; error?: string; data?: DexWire };
-  valueScan: { ok: boolean; error?: string; data?: ValueScanWire };
-  foreman: { ok: boolean; error?: string; data?: ForemanWire };
-  chain: { ok: boolean; error?: string; data?: ChainWire };
-  decisions: { ok: boolean; error?: string; data?: DecisionsWire };
-  verify: { ok: boolean; error?: string; data?: VerifyWire };
+  flow: SourceBox<FlowDataWire>;
+  lighthouse: SourceBox<LighthouseWire>;
+  beacon: SourceBox<BeaconWire>;
+  dex: SourceBox<DexWire>;
+  valueScan: SourceBox<ValueScanWire>;
+  foreman: SourceBox<ForemanWire>;
+  chain: SourceBox<ChainWire>;
+  decisions: SourceBox<DecisionsWire>;
+  verify: SourceBox<VerifyWire>;
 }
 
 /** [T15] רשת-האמת של הקונסולה — המאמת-העצמאי + שער-האמת-הציבורי */

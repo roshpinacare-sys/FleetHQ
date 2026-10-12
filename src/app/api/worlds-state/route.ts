@@ -1,19 +1,14 @@
 /**
- * /api/worlds-state — מקרר-האמת של העולמות (צד-שרת בלבד). [T13 · T14]
+ * /api/worlds-state — מקרר-האמת של העולמות (צד-שרת בלבד). [T13 · T14 · T-audit]
  * ---------------------------------------------------------------------------
- * מאגד מקורות-אמת ציבוריים keyless בעבור העולמות-החדשים:
- *  · Sandbox ops/flow/flow-map.json — מפת-הזרימה האמיתית (zai-code-3/F-series) — צריכה-בלבד
- *  · sovereign-lighthouse state.json — דופק-המגדלור + lastKnownAlive
- *  · sovereign-beacon state.json — האמת הכלכלית המפורסמת
- *  · Domain dex/grid.json — פס-ייצור ה-DEX האמיתי
- *  · Sandbox ops/sovereign/VALUE-SCAN/state.json — סריקת-הערך האוטונומית (עשוי להיות חסר — כנה עליו)
- *  · Sandbox ops/sovereign/DECIDER/state.json — הכרעות-הריבונות [T14 — הריבונות מכריעה בעצמה]
- *  · FleetHQ office-state.json — שיקוף סוכנים/משימות לעולם-המקביל וללוח-הגיוס
- *  · Console agent/verify/results.json + truth/latest.json — רשת-האמת (המאמת-העצמאי + שער-האמת) [T15]
- *  · מדידת-שרשרת ישירה (api.steemit.com) — המרה מדויקת של SP; מהווה ביקורת-אמת עצמאית למשואה
- * כל מקור נכשל לבד (fail-soft) — התשובה תמיד כנה לגבי מה שחסר. אין המצאות.
+ * · כל-מקור נאחזר דרך gh-truth: ציבורי=raw, פרטי(Sandbox/beacon/lighthouse)=API-מאומת-שרת.
+ *   (לפני-התיקון: 5 מקורות-פרטיים נאחזרו אנונימית → 404 תמידי → "חמש-עולמות-חיים" היו חצי-מתות.)
+ * · SWR: אין-חסימות-ארוכות; תשובה מיידית מהקאש + רענון-רקע.
+ * · כל-מקור נושא fetchedAt + ageMs; נתון-גולמי עתיק (>24h) מסומן staleData (חוק-החיות).
+ * · fail-soft לכל-מקור — התשובה תמיד כנה לגבי מה שחסר. אין המצאות.
  */
 import { NextResponse } from 'next/server';
+import { fetchTruth, ageMs } from '@/lib/gh-truth';
 import type {
   BeaconWire, ChainWire, DecisionsWire, DexWire, FlowDataWire, ForemanWire,
   LighthouseWire, ValueScanWire, VerifyWire, WorldsPayload,
@@ -21,40 +16,69 @@ import type {
 
 export const revalidate = 0;
 
-const RAW = 'https://raw.githubusercontent.com/roshpinacare-sys';
 const TTL_MS = 60_000;
+const STALE_LAW_MS = 24 * 60 * 60 * 1000; // חוק-החיות: >24h = היסטורי
 
-type CacheBox = { at: number; data: WorldsPayload };
-const g = globalThis as unknown as { __worldsStateCache?: CacheBox };
-
-async function fetchJson<T>(url: string, timeoutMs = 8000): Promise<T | null> {
-  try {
-    const res = await fetch(url, { cache: 'no-store', signal: AbortSignal.timeout(timeoutMs) });
-    if (!res.ok) return null;
-    return (await res.json()) as T;
-  } catch {
-    return null;
-  }
+interface SourceBox<T> {
+  ok: boolean;
+  error?: string;
+  data?: T;
+  fetchedAt?: string;
+  ageMs?: number;
+  staleData?: boolean;
 }
 
-/** [T15] רשת-האמת: המאמת-העצמאי (51 טענות מדודות) + שער-האמת של האתר-החי */
+function extractTs(d: unknown, depth = 0): number | null {
+  if (!d || typeof d !== 'object' || depth > 2) return null;
+  const o = d as Record<string, unknown>;
+  for (const k of ['at', 'updatedAt', 'generatedAt', 'publishedAt', 'measuredAt', 'fetchedAt', 'timestamp']) {
+    const v = o[k];
+    if (typeof v === 'string') {
+      const t = Date.parse(v);
+      if (!Number.isNaN(t)) return t;
+    }
+  }
+  for (const v of Object.values(o)) {
+    if (v && typeof v === 'object') {
+      const t = extractTs(v, depth + 1);
+      if (t) return t;
+    }
+  }
+  return null;
+}
+
+function box<T>(r: { ok: boolean; data: T | null; error?: string; fetchedAt: string }): SourceBox<T> {
+  if (!r.ok || r.data === null) {
+    return { ok: false, error: r.error ?? 'unavailable', fetchedAt: r.fetchedAt, ageMs: ageMs(r.fetchedAt) };
+  }
+  const ts = extractTs(r.data);
+  return {
+    ok: true,
+    data: r.data,
+    fetchedAt: r.fetchedAt,
+    ageMs: ageMs(r.fetchedAt),
+    ...(ts !== null && Date.now() - ts > STALE_LAW_MS ? { staleData: true } : {}),
+  };
+}
+
+/** [T15] רשת-האמת: המאמת-העצמי (51 טענות מדודות) + שער-האמת של האתר-החי */
 async function fetchVerify(): Promise<VerifyWire | null> {
   const [avRaw, tgRaw] = await Promise.all([
-    fetchJson<{ summary?: { total: number; passed: number; failed: number; verdict: string }; generatedAt?: string; results?: { id: string; ok: boolean; details?: string }[] }>(
-      `${RAW}/Console/main/agent/verify/results.json`),
-    fetchJson<{ at?: string; verdict?: string; counts?: { pass: number; fail: number; skip: number }; results?: { gate: string; status: string; note?: string; measured?: string }[] }>(
-      `${RAW}/Console/main/truth/latest.json`),
+    fetchTruth<{ summary?: { total: number; passed: number; failed: number; verdict: string }; generatedAt?: string; results?: { id: string; ok: boolean; details?: string }[] }>(
+      'Console', 'agent/verify/results.json', { ttlMs: TTL_MS }),
+    fetchTruth<{ at?: string; verdict?: string; counts?: { pass: number; fail: number; skip: number }; results?: { gate: string; status: string; note?: string; measured?: string }[] }>(
+      'Console', 'truth/latest.json', { ttlMs: TTL_MS }),
   ]);
-  if (!avRaw && !tgRaw) return null;
+  if (!avRaw.ok && !tgRaw.ok) return null;
   return {
-    summary: avRaw?.summary,
-    generatedAt: avRaw?.generatedAt,
-    failures: (avRaw?.results ?? []).filter((r) => !r.ok).map((r) => ({ id: r.id, details: r.details })),
-    truthGate: tgRaw ? {
-      at: tgRaw.at,
-      verdict: tgRaw.verdict,
-      counts: tgRaw.counts,
-      redGates: (tgRaw.results ?? []).filter((g) => g.status === 'FAIL').map((g) => ({ gate: g.gate, note: g.note, measured: g.measured })),
+    summary: avRaw.data?.summary,
+    generatedAt: avRaw.data?.generatedAt,
+    failures: (avRaw.data?.results ?? []).filter((r) => !r.ok).map((r) => ({ id: r.id, details: r.details })),
+    truthGate: tgRaw.data ? {
+      at: tgRaw.data.at,
+      verdict: tgRaw.data.verdict,
+      counts: tgRaw.data.counts,
+      redGates: (tgRaw.data.results ?? []).filter((g) => g.status === 'FAIL').map((g) => ({ gate: g.gate, note: g.note, measured: g.measured })),
     } : undefined,
   };
 }
@@ -67,8 +91,8 @@ async function measureChain(): Promise<ChainWire | null> {
       JSON.stringify({ jsonrpc: '2.0', id: 1, method, params });
     const h = { 'Content-Type': 'application/json' };
     const [gRes, aRes] = await Promise.all([
-      fetch(POST, { method: 'POST', body: body('condenser_api.get_dynamic_global_properties', []), headers: h, cache: 'no-store', signal: AbortSignal.timeout(9000) }),
-      fetch(POST, { method: 'POST', body: body('condenser_api.get_accounts', [['headcorner']]), headers: h, cache: 'no-store', signal: AbortSignal.timeout(9000) }),
+      fetch(POST, { method: 'POST', body: body('condenser_api.get_dynamic_global_properties', []), headers: h, cache: 'no-store', signal: AbortSignal.timeout(7000) }),
+      fetch(POST, { method: 'POST', body: body('condenser_api.get_accounts', [['headcorner']]), headers: h, cache: 'no-store', signal: AbortSignal.timeout(7000) }),
     ]);
     if (!gRes.ok || !aRes.ok) return null;
     const gp = (await gRes.json())?.result;
@@ -94,37 +118,36 @@ async function measureChain(): Promise<ChainWire | null> {
 }
 
 export async function GET() {
-  const now = Date.now();
-  const cached = g.__worldsStateCache;
-  if (cached && now - cached.at < TTL_MS) {
-    return NextResponse.json(cached.data, { headers: { 'x-worlds-cache': 'hit' } });
-  }
-
-  const [flowRaw, lhRaw, beaconRaw, dexRaw, vsRaw, decRaw, foremanRaw, chainRaw, verifyRaw] = await Promise.all([
-    fetchJson<FlowDataWire>(`${RAW}/Sandbox/main/ops/flow/flow-map.json`),
-    fetchJson<LighthouseWire>(`${RAW}/sovereign-lighthouse/main/state.json`),
-    fetchJson<BeaconWire>(`${RAW}/sovereign-beacon/main/state.json`),
-    fetchJson<DexWire>(`${RAW}/Domain/main/dex/grid.json`),
-    fetchJson<ValueScanWire>(`${RAW}/Sandbox/main/ops/sovereign/VALUE-SCAN/state.json`),
-    fetchJson<DecisionsWire>(`${RAW}/Sandbox/main/ops/sovereign/DECIDER/state.json`),
-    fetchJson<ForemanWire>(`${RAW}/FleetHQ/main/office/state/office-state.json`),
+  const [flow, lh, beacon, dex, vs, dec, foreman, chainRaw, verifyRaw] = await Promise.all([
+    fetchTruth<FlowDataWire>('Sandbox', 'ops/flow/flow-map.json', { ttlMs: TTL_MS }),
+    fetchTruth<LighthouseWire>('sovereign-lighthouse', 'state.json', { ttlMs: TTL_MS }),
+    fetchTruth<BeaconWire>('sovereign-beacon', 'state.json', { ttlMs: TTL_MS }),
+    fetchTruth<DexWire>('Domain', 'dex/grid.json', { ttlMs: TTL_MS }),
+    fetchTruth<ValueScanWire>('Sandbox', 'ops/sovereign/VALUE-SCAN/state.json', { ttlMs: TTL_MS }),
+    fetchTruth<DecisionsWire>('Sandbox', 'ops/sovereign/DECIDER/state.json', { ttlMs: TTL_MS }),
+    fetchTruth<ForemanWire>('FleetHQ', 'office/state/office-state.json', { ttlMs: TTL_MS }),
     measureChain(),
     fetchVerify(),
   ]);
 
+  const chain = chainRaw
+    ? { ok: true as const, data: chainRaw, fetchedAt: new Date().toISOString(), ageMs: 0 }
+    : { ok: false as const, error: 'unavailable' };
+
   const payload: WorldsPayload = {
     fetchedAt: new Date().toISOString(),
-    flow: { ok: !!flowRaw, ...(flowRaw ? { data: flowRaw } : { error: 'unavailable' }) },
-    lighthouse: { ok: !!lhRaw, ...(lhRaw ? { data: lhRaw } : { error: 'unavailable' }) },
-    beacon: { ok: !!beaconRaw, ...(beaconRaw ? { data: beaconRaw } : { error: 'unavailable' }) },
-    dex: { ok: !!dexRaw, ...(dexRaw ? { data: dexRaw } : { error: 'unavailable' }) },
-    valueScan: { ok: !!vsRaw, ...(vsRaw ? { data: vsRaw } : { error: 'not-published-yet' }) },
-    decisions: { ok: !!decRaw, ...(decRaw ? { data: decRaw } : { error: 'not-published-yet' }) },
-    foreman: { ok: !!foremanRaw, ...(foremanRaw ? { data: foremanRaw } : { error: 'unavailable' }) },
-    chain: { ok: !!chainRaw, ...(chainRaw ? { data: chainRaw } : { error: 'unavailable' }) },
-    verify: { ok: !!verifyRaw, ...(verifyRaw ? { data: verifyRaw } : { error: 'not-published-yet' }) },
+    flow: box(flow),
+    lighthouse: box(lh),
+    beacon: box(beacon),
+    dex: box(dex),
+    valueScan: box(vs),
+    decisions: box(dec),
+    foreman: box(foreman),
+    chain,
+    verify: verifyRaw
+      ? { ok: true, data: verifyRaw, fetchedAt: new Date().toISOString(), ageMs: 0 }
+      : { ok: false, error: 'not-published-yet' },
   };
 
-  g.__worldsStateCache = { at: now, data: payload };
-  return NextResponse.json(payload, { headers: { 'x-worlds-cache': 'miss' } });
+  return NextResponse.json(payload, { headers: { 'x-worlds-cache': 'swr' } });
 }

@@ -29,7 +29,8 @@ export function OwnerChat() {
     try {
       const t = sessionStorage.getItem(TOKEN_KEY);
       if (!t) return; // חוק-T19: אין-שליפת-היסטוריה בלי-כניסה
-      const r = await fetch(`/api/owner-chat?token=${encodeURIComponent(t)}`, { cache: 'no-store' });
+      // [T-audit] הטוקן בכותרת — לא ב-query-string (לא-נרשם-בלוגים)
+      const r = await fetch('/api/owner-chat', { cache: 'no-store', headers: { 'x-owner-token': t } });
       if (r.status === 401) {
         sessionStorage.removeItem(TOKEN_KEY);
         setToken(null);
