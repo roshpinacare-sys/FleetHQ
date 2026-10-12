@@ -1,6 +1,6 @@
 {
  "schema": "saos.sovereign-decisions/1",
- "generatedAt": "2026-10-12T16:07:17.946Z",
+ "generatedAt": "2026-10-12T16:28:57.357Z",
  "policyVersion": "SOV-POLICY/1",
  "principle": "הריבונות מחליטה ומבצעת — הבעלים קבע (trace 1a12…f45d) שהמערכת מקבלת החלטות חכמות בעצמה בצורה הכי מתקדמת שיש; הפניה לבעלים = שלילת הריבונות. כל-החלטה: ראיה-מדודה + אימות-כפול. בעלים = בעלים; ריבונות = הגוף שמחליט.",
  "authority": {
@@ -18,25 +18,25 @@
   ]
  },
  "sense": {
+  "valueScan": {
+   "ok": true,
+   "ageMin": 89
+  },
   "gridTruth": {
    "ok": false,
    "http": 404
   },
-  "officeState": {
+  "decisionsPrev": {
    "ok": true,
-   "ageMin": 42
-  },
-  "valueScan": {
-   "ok": true,
-   "ageMin": 67
+   "ageMin": 22
   },
   "openCloser": {
    "ok": true,
-   "ageMin": 32
+   "ageMin": 0
   },
-  "decisionsPrev": {
+  "officeState": {
    "ok": true,
-   "ageMin": 15
+   "ageMin": 18
   }
  },
  "decisions": [
@@ -196,18 +196,18 @@
   {
    "id": "auto-freshness",
    "area": "operations",
-   "title": "טריות הצי: הכל טרי מעל SLA (office-state 10דק, beacon 35דק, lighthouse 35דק, value-scan 35דק, domain-pulse 10דק, live 35ד",
-   "status": "clear",
+   "title": "טריות הצי: 1 נפלו מעל SLA (lighthouse 89דק>SLA80) — הוערו: lighthouse",
+   "status": "watch",
    "evidence": {
     "source": "FleetHQ/office/state/opens-closer.json",
     "metrics": {
-     "staleCount": 0,
-     "dispatchedCount": 0
+     "staleCount": 1,
+     "dispatchedCount": 1
     },
     "selfHeal": "same-repo GITHUB_TOKEN + cross-repo CROSS_REVIVE_PAT (D1)"
    },
    "policy": "SOV-POLICY/1",
-   "decidedAt": "2026-10-12T16:07:17.946Z",
+   "decidedAt": "2026-10-12T16:28:57.357Z",
    "by": "sovereign-decider"
   },
   {
@@ -217,12 +217,12 @@
    "status": "clear",
    "evidence": {
     "source": "office-state.json",
-    "capturedAt": "2026-10-12T15:25:14.162Z",
+    "capturedAt": "2026-10-12T16:11:03.191Z",
     "tasks": "n/a"
    },
    "law": "אין דריסת-מסילות: למשרד יש לולאת-רטרו משלו; הריבונות מתעדת ומאמתת, לא לוקחת",
    "policy": "SOV-POLICY/1",
-   "decidedAt": "2026-10-12T16:07:17.946Z",
+   "decidedAt": "2026-10-12T16:28:57.357Z",
    "by": "sovereign-decider"
   }
  ],
