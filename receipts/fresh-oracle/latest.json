@@ -1,6 +1,6 @@
 {
  "schema": "fleet.fresh-oracle/1",
- "at": "2026-10-12T17:09:25.503Z",
+ "at": "2026-10-12T17:12:15.859Z",
  "law": "FRESH only if sha256(live bytes) == sha256(committed deploy-ref bytes) AND no ops doc MISSING; DRIFT=RED (200-with-different-bytes); UNREACHABLE=UNKNOWN (network, retried once, reason kept); ops-doc age rows are honest amber (MISSING alone flips exit) — never faked green",
  "results": [
   {
@@ -50,10 +50,11 @@
    "committedStatus": 200,
    "liveError": null,
    "committedError": null,
-   "liveSha16": "7ed3a9fd44c50f35",
-   "committedSha16": "7ed3a9fd44c50f35",
-   "liveBytes": 56327,
-   "verdict": "MATCH"
+   "liveSha16": "b0e72e78a6741d24",
+   "committedSha16": "b0e72e78a6741d24",
+   "liveBytes": 56142,
+   "verdict": "MATCH",
+   "note": "settled after deploy-lag re-measure (+60s) — was mid-publish"
   },
   {
    "name": "Domain worlds room",
@@ -99,7 +100,7 @@
   {
    "name": "OPS-DOCS-SCAN",
    "verdict": "UNREACHABLE",
-   "error": "contents API HTTP 403"
+   "error": "contents API HTTP 404"
   }
  ],
  "summary": {
