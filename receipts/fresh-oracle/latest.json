@@ -1,6 +1,6 @@
 {
  "schema": "fleet.fresh-oracle/1",
- "at": "2026-10-12T23:21:53.625Z",
+ "at": "2026-10-12T23:26:08.178Z",
  "law": "FRESH only if sha256(live bytes) == sha256(committed deploy-ref bytes) AND no ops doc MISSING; DRIFT=RED (200-with-different-bytes); UNREACHABLE=UNKNOWN (network, retried once, reason kept); ops-doc age rows are honest amber (MISSING alone flips exit) — never faked green",
  "results": [
   {
@@ -50,10 +50,10 @@
    "committedStatus": 200,
    "liveError": null,
    "committedError": null,
-   "liveSha16": "d59be00c5da59e91",
+   "liveSha16": "668adc86c4ab4a51",
    "committedSha16": "d59be00c5da59e91",
-   "liveBytes": 59703,
-   "verdict": "MATCH"
+   "liveBytes": 65372,
+   "verdict": "DRIFT"
   },
   {
    "name": "Domain worlds room",
@@ -63,9 +63,9 @@
    "committedStatus": 200,
    "liveError": null,
    "committedError": null,
-   "liveSha16": "4e24556952a17648",
-   "committedSha16": "4e24556952a17648",
-   "liveBytes": 16042,
+   "liveSha16": "76dd2da7f16316ca",
+   "committedSha16": "76dd2da7f16316ca",
+   "liveBytes": 16332,
    "verdict": "MATCH"
   },
   {
@@ -76,9 +76,9 @@
    "committedStatus": 200,
    "liveError": null,
    "committedError": null,
-   "liveSha16": "9bc69567d2787506",
-   "committedSha16": "9bc69567d2787506",
-   "liveBytes": 23490,
+   "liveSha16": "d62d6098165e9d5f",
+   "committedSha16": "d62d6098165e9d5f",
+   "liveBytes": 24807,
    "verdict": "MATCH"
   },
   {
@@ -104,13 +104,13 @@
  ],
  "summary": {
   "checked": 7,
-  "match": 7,
-  "drift": 0,
+  "match": 6,
+  "drift": 1,
   "missing": 0,
   "unreachable": 0,
   "opsDocsMissing": 0,
   "opsDocsStale": 0,
-  "verdict": "FRESH"
+  "verdict": "STALE-OR-BROKEN"
  },
  "method": "https GET live URL + raw.githubusercontent deploy ref → sha256-16 byte equality"
 }
