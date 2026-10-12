@@ -12,10 +12,9 @@
 import {
   PLAN_W, PLAN_H, SCALE,
   DESKS, LEAD_TABLE, TASK_WALL, PODIUM, LIBRARY_TABLE, FLAME, COFFEE,
-  resolveCircle,
+  resolveCircle, ENTRANCE,
 } from './contract';
 import type { AgentState, Station } from './protocol';
-
 
 // ─────────────── אוטובוס אירועים ───────────────
 type BusEvents = {
@@ -47,10 +46,6 @@ export const director = {
   focus: null as null | { x: number; z: number; kind: string; id?: string },
   /** העדפת מערכת: תנועה מופחתת → מעברי מצלמה מיידיים */
   reducedMotion: false,
-  /** Task 11-a — סיור-מודרך: המצלמה גולשת בעדינות בין התחנות (stations →
-   *  podium → wall → library), עם הקפה-סרק בין-המעברים. כל קלט מהמשתמש
-   *  מחזיר שליטה מיידית (מבטל את הסיור). false = שליטה ידנית בלבד. */
-  tour: false,
 };
 
 // ─────────────── חוזה מצב→תנועה (דטרמיניסטי) ───────────────
@@ -140,9 +135,17 @@ export class AgentBrain {
   constructor(id: string, desk: { x: number; y: number; face: number; seat: [number, number] }) {
     this.id = id;
     this.desk = desk;
-    this.x = desk.seat[0]; this.y = desk.seat[1];
-    this.yaw = desk.face; this.yawTarget = desk.face;
-    this.arrived = true;
+    // Task 53 — כניסה-חיה (השוואה מול office3d/v2 שם החדר "חי" מהשנייה-הראשונה):
+    // הצוות נכנס מהדלת-הדרומית והולך לתחנתו בכל-טעינה. פיזור דטרמיניסטי
+    // לפי-ה-id (לא מקהל-מסונכרנת, אותה-כניסה בכל-טעינה), התחלה מדורגת.
+    // זו ניווט, לא עבודה — המצב-האמיתי מוצג בשלט מהשנייה-הראשונה (חוק-הכנות).
+    const s = spreadOf(id);
+    this.x = ENTRANCE[0] + (s - 0.5) * 140;
+    this.y = ENTRANCE[1] - 10 - s * 26;
+    this.yaw = Math.PI;      // פנימה (צפונה)
+    this.yawTarget = Math.PI;
+    this.arrived = false;
+    this.waitT = 0.35 + s * 3.1; // כניסה מדורגת — אחד-אחד, לא נהר
   }
 
   /** תרגום AgentView → יעד. נקרא מהצד שסונכרן עם הסוקט */
@@ -206,6 +209,8 @@ export class AgentBrain {
   /** stuck detector: closing-distance bookkeeping (see update) */
   private lastD = Number.POSITIVE_INFINITY;
   private stuckT = 0;
+  /** Task 53: המתנה דטרמיניסטית בפתח — כניסה מדורגת (ראה constructor) */
+  private waitT = 0;
 
   /**
    * @param dtNav  wall-clock-true delta (capped at 1s) — NAVIGATION ONLY.
@@ -222,6 +227,10 @@ export class AgentBrain {
     this.t += dtAnim;
     const tgt = this.target;
     if (tgt && !this.arrived) {
+      if (this.waitT > 0) {
+        // Task 53: עומד בפתח — הכניסה מדורגת (היעד כבר קיים, רק מחכים לתור)
+        this.waitT -= dtNav;
+      } else {
       const dx = tgt.x - this.x, dy = tgt.y - this.y;
       const d = Math.hypot(dx, dy);
       const spd = 88; // יחידות/שנ' ≈ 1.1 מ'/שנ'
@@ -252,6 +261,7 @@ export class AgentBrain {
           this.yawTarget = Math.atan2(nx, ny);
           this.walkAmt = Math.min(1, this.walkAmt + dtAnim * 5);
         }
+      }
       }
     } else {
       this.walkAmt = Math.max(0, this.walkAmt - dtAnim * 6);
