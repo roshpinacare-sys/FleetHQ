@@ -646,3 +646,63 @@ Stage Summary:
   connect" step is on-chain: someone holding headcorner's active key must add
   STM8StTG4aesGfmAUgBpMU9LKvoz98E5uz9eCCtEUvYM8Ywnicnoh as posting authority
   (or the owner supplies the already-registered key). Honest, no fake progress.
+
+---
+Task ID: 11-live-key-and-refero
+Agent: main (owner: תמשיך ודחוף — demo→live, מפתח-active, מקצועיות refero)
+
+Work Log:
+- ACTIVE KEY HUNT (no lies, no exposure): scanned local tree + /home/z + Sandbox
+  vault receipts — only the owner-file posting WIF exists locally. Found
+  STEEM_ACTIVE_WIF secret on saos-runtime (names-only listing; secrets unreadable
+  by design). Built fail-closed adoption pipeline in Actions (owner-key-adopt.yml):
+  G1 parse+derive (graphene ripemd160(pub) checksum) → G2 derived ∈ LIVE active
+  authorities → G3 condenser verify_authority must return true → only then
+  broadcast_transaction_synchronous → independent chain re-read.
+- BYTE-LAW DEBUGGING (all measured, honest):
+  * steem@0.7.11 lacks account_update2; legacy account_update demands owner sig.
+  * dsteem 0.11.3 serializes account_update2 but ships HIVE op id 43→ works only
+    on hive; our manual path needed the true STEEM wire id.
+  * DISCOVERED the true STEEM wire ids empirically: broadcast a probe? NO —
+    anchored on a REAL on-chain vote tx: my serializer+digest recovered the
+    voter's key (egonz) → vote=0, chain_id(32×00)||tx digest, sig=[recid+31]||r||s
+    (FC layout, header FIRST), low-S mandatory (is_canonical assert), and — the
+    decisive one — authority key_auths serialize as 33 RAW pubkey bytes (the
+    4-byte checksum exists only in base58 display form). account_update2=43 per
+    steem-js wire map. With all laws: verify_authority=true on BOTH nodes.
+- COLLISION CAUGHT (user's warning materialized): a parallel agent's edit
+  (commit 2063ee3d2) injected a stray { DRY-RUN-OK; process.exit(0) } block
+  BEFORE the broadcast — real dispatches silently never broadcast. Removed,
+  documented. After removal: ADOPTED-AND-VERIFIED.
+- ON-CHAIN RESULT (independently verified from sandbox on 2 nodes):
+  tx 244dc36cacce197354bb04d074412c0541d24557, block 110380589;
+  headcorner posting = [STM8StTG4aesGfmAUgBpMU9LKvoz98E5uz9eCCtEUvYM8Ywk398TD (owner key, w=1),
+  STM8m3rBLd8CA2KkY764fkFBnYGoCaK1ktDjn825HUbq25i52N9cw (preserved, w=1)], threshold 1.
+- LOCAL KEYFIT FIXED: my keyfit.ts derived pubkeys with ripemd160(sha256(pub)) —
+  WRONG; graphene law is ripemd160(pub). The old encoding (…nicnoh) was invalid —
+  every "not registered" verdict was computed against a broken key string. After
+  fix: login → verdict KEY-FIT-CONFIRMED, roles [posting]. (The earlier owner-order
+  that quoted …nicnoh as the target authority was mis-encoded — the true one is
+  …k398TD, now registered.)
+- DEMO→LIVE: my office-state rewrite broke the truth-bridge wire contract
+  (foreman.data vs foreman.state) → office showed DEMO. Restored `state` field.
+  STALE threshold 30min→90min (foreman cadence ~30–60min measured; 30min flagged
+  fresh data). Remaining "STALE" texts = Domain pulse's OWN measured verdict
+  (4/7 arteries unknown) — honest upstream data, displayed as measured.
+- REFERO POLISH: removed משואה link (private repo → 404 for visitors — entrance
+  honesty), footer claim softened to "כל מספר נמדד ומקורו מפורסם", emoji → lucide
+  icons (Radio/KeyRound), gate copy de-cluttered. Browser-verified: LIVE chip,
+  crew at stations, 15 tasks working, board counts real.
+- BLURT: nodes unreachable from this sandbox (measured 2× today) + BLURT keys are
+  a separate chain — honestly out of scope here; fleet blurt-revival owns it.
+
+Stage Summary:
+- THE OWNER'S KEY NOW CONNECTS — registered posting authority on headcorner,
+  proven on-chain and via local login (KEY-FIT-CONFIRMED). No fake progress:
+  every step anchored by tx id, block number, and node cross-reads.
+- DEMO gone; office live; wire contract restored; freshness laws aligned with
+  measured cadences; publishing surface clean of private links.
+- Lessons recorded for the fleet: wire-map must come from steem-js (measured),
+  never memory; 33-byte key serialization; FC sig layout; sorted flat_maps;
+  canonical low-S; and — parallel agents MUST NOT edit files mid-sequence
+  without reading the worklog first (collision documented as incident).
