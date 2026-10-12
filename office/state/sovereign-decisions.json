@@ -1,6 +1,6 @@
 {
  "schema": "saos.sovereign-decisions/1",
- "generatedAt": "2026-10-12T02:31:22.170Z",
+ "generatedAt": "2026-10-12T02:48:40.311Z",
  "policyVersion": "SOV-POLICY/1",
  "principle": "הריבונות מחליטה ומבצעת — הבעלים קבע (trace 1a12d4ae2964f45d) שהמערכת מקבלת החלטות חכמות בעצמה בצורה הכי מתקדמת שיש; הפניה לבעלים = שלילת הריבונות. כל-החלטה: ראיה-מדודה + אימות-כפול. בעלים = בעלים; ריבונות = הגוף שמחליט.",
  "authority": {
@@ -18,25 +18,25 @@
   ]
  },
  "sense": {
-  "officeState": {
-   "ok": true,
-   "ageMin": 60
-  },
-  "decisionsPrev": {
+  "openCloser": {
    "ok": true,
    "ageMin": 17
   },
   "gridTruth": {
    "ok": true,
-   "ageMin": 4
+   "ageMin": 5
   },
   "valueScan": {
    "ok": true,
-   "ageMin": 17
+   "ageMin": 34
   },
-  "openCloser": {
+  "decisionsPrev": {
    "ok": true,
    "ageMin": 17
+  },
+  "officeState": {
+   "ok": true,
+   "ageMin": 77
   }
  },
  "decisions": [
@@ -201,31 +201,31 @@
    "evidence": {
     "source": "Domain/agents/grid-truth.json (grid-doctor v2, RPC-measured)",
     "alerts": [
-     "steem:headcorner SP-UNDERFLOOR — effective 2925.656 SP below floor 3000 — arming waves must respect the treasury floor",
+     "steem:headcorner SP-UNDERFLOOR — effective 2925.658 SP below floor 3000 — arming waves must respect the treasury floor",
      "steem:headcorner TREASURY-UNDERFLOOR — liquid 43.99 + locked-in-orders 29.028 = 73.018 below floor 90"
     ],
-    "measuredAt": "2026-10-12T02:27:23.954Z"
+    "measuredAt": "2026-10-12T02:43:27.853Z"
    },
    "law": "הגשות-חימוש חייבות לכבד רצפות; הכיוון הריבוני = הכנסה מבנית (fee-engine) לפני הוצאה",
    "policy": "SOV-POLICY/1",
-   "decidedAt": "2026-10-12T02:31:22.170Z",
+   "decidedAt": "2026-10-12T02:48:40.311Z",
    "by": "sovereign-decider"
   },
   {
    "id": "auto-freshness",
    "area": "operations",
-   "title": "טריות הצי: 1 נפלו מעל SLA (value-scan 95דק>SLA90) — הוערו: value-scan",
-   "status": "watch",
+   "title": "טריות הצי: הכל טרי מעל SLA (office-state 60דק, beacon 1דק, lighthouse 11דק, value-scan 17דק, domain-pulse 16דק, live 158ד",
+   "status": "clear",
    "evidence": {
     "source": "FleetHQ/office/state/opens-closer.json",
     "metrics": {
-     "staleCount": 1,
-     "dispatchedCount": 1
+     "staleCount": 0,
+     "dispatchedCount": 0
     },
     "selfHeal": "same-repo GITHUB_TOKEN + cross-repo CROSS_REVIVE_PAT (D1)"
    },
    "policy": "SOV-POLICY/1",
-   "decidedAt": "2026-10-12T02:31:22.170Z",
+   "decidedAt": "2026-10-12T02:48:40.311Z",
    "by": "sovereign-decider"
   },
   {
@@ -240,7 +240,7 @@
    },
    "law": "אין דריסת-מסילות: למשרד יש לולאת-רטרו משלו; הריבונות מתעדת ומאמתת, לא לוקחת",
    "policy": "SOV-POLICY/1",
-   "decidedAt": "2026-10-12T02:31:22.170Z",
+   "decidedAt": "2026-10-12T02:48:40.311Z",
    "by": "sovereign-decider"
   }
  ],
