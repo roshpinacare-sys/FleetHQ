@@ -1,10 +1,14 @@
 # sovereign-decider.yml — T-63: the sovereignty's standing decision organ (sense → decide → act → verify → record).
 # Owner law trace 1a12…f45d: the sovereignty decides — no referral upward, no fakes, measured evidence only.
+#
+# ADVISORY lane — authority = Autonomy/sovereign-decider (owner architecture, trace 1a1376b80ef2867d).
+# This organ records proposals/history only; its verdicts are advisory.
+# Kept alive because opens-closer.mjs watches this file (slaMin 90).
 name: sovereign-decider
 
 on:
   schedule:
-    - cron: "13,43 * * * *"
+    - cron: "17 * * * *"
   workflow_dispatch: {}
 
 permissions:

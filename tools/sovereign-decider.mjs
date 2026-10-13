@@ -6,6 +6,10 @@
 // envelope) → VERIFY (measured evidence, double-pass) → RECORD (this ledger, no-noise commit law).
 // Gate law: reversible+measured = execute; irreversible/out-of-envelope = codify the trigger and
 // route through the owning lane's protocol — never fake, never silent.
+// ADVISORY lane (owner directive trace 1a1376b80ef2867d): authority =
+// Autonomy/sovereign-decider (the owner's architecture). This organ records
+// proposals/history only; its verdicts are advisory. Kept alive because
+// opens-closer.mjs watches this file (slaMin 90).
 import { writeFileSync } from 'node:fs';
 
 const ORG = 'roshpinacare-sys';
@@ -124,7 +128,9 @@ const out = {
   generatedAt: NOW,
   policyVersion: POLICY,
   principle: 'הריבונות מחליטה ומבצעת — הבעלים קבע (trace 1a12…f45d) שהמערכת מקבלת החלטות חכמות בעצמה בצורה הכי מתקדמת שיש; הפניה לבעלים = שלילת הריבונות. כל-החלטה: ראיה-מדודה + אימות-כפול. בעלים = בעלים; ריבונות = הגוף שמחליט.',
-  authority: {
+  authority: 'advisory',
+  authorityOf: 'Autonomy/sovereign-decider',
+  authorityEnvelope: {
     execute: ['שינויי-תצורה/מצב הפיכים במסילות מתובעות (claim-first)', 'workflow dispatches באותו-ריפו וחוצי-ריפו דרך כתב-ההרשאה המואצל (CROSS_REVIVE_PAT)', 'ניהול-סודות דרך sealed box (שמות-בלבד בלוגים)', 'תחייה/השבה של מסילות שנפלו', 'מעשי-הכרעה המנותבים לפרוטוקולי-המסילות (SAOS-GRID-PARAMS/1 וכד׳)'],
     gates: ['העברת-כספים על-השרשרת מחוץ למנדט-מסילה חמוש — מנותב למסילה עם נגזרת-מדודה', 'ייצור חומרת-מפתח מעבר להיקף-רוטציה מוגדר', 'פעולה בלתי-הפיכה בלי ראיה מדודה'],
   },
