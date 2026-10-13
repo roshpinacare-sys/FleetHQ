@@ -26,6 +26,15 @@ on:
     - cron: "11,31,51 * * * *"
     - cron: "17,37,57 * * * *"
   workflow_dispatch: {}
+  repository_dispatch:
+    types: [pacemaker-tick]
+  # עוגן-אירוע (חוק-הענקים: לעולם לא מקור-קצב יחיד): ה-scheduler מדליק schedules
+  # ישנים אבל משתיק רישום-של-workflows-חדשים (נמדד: 3 מחזורי-cron של-workflow-חדש
+  # הוחמצו). workflow_run הוא טריגר-אירוע — לא-תלוי-רישום-scheduler. כל סיום של
+  # lanes ותיקים-שמוכח-שהם-יורים מזניק מחזור-פצמר — הקצב לעולם לא נשען רק על cron.
+  workflow_run:
+    workflows: [value-scan, sovereign-decider, opens-closer, office-heartbeat, office-ci]
+    types: [completed]
 
 permissions:
   contents: write
