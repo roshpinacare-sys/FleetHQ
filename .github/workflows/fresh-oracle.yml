@@ -38,8 +38,8 @@ jobs:
       - name: Publish receipt (sibling-stand-down + rebase-then-push x6, jittered)
         if: always()
         run: |
-          git config user.name "fresh-oracle-bot"
-          git config user.email "fresh-oracle-bot@agents.roshpinacare-sys"
+          git config user.name "roshpinacare-sys"
+          git config user.email "326012154+roshpinacare-sys@users.noreply.github.com"
           sibling_stand_down() {
             git fetch -q origin main 2>/dev/null || return 1
             if git show origin/main:receipts/fresh-oracle/latest.json 2>/dev/null | grep -q "\"at\""; then

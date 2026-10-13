@@ -63,8 +63,8 @@ jobs:
           set -euo pipefail
           TOKEN="${GH_TOKEN:-}"
           [ -n "$TOKEN" ] || { echo "receipt: token missing (fail-closed)" >&2; exit 1; }
-          git config user.name "fleet-office-bot"
-          git config user.email "roshpinacare-sys@users.noreply.github.com"
+          git config user.name "roshpinacare-sys"
+          git config user.email "326012154+roshpinacare-sys@users.noreply.github.com"
           git remote set-url origin "https://x-access-token:${TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
           git add office/BACKLOG.md office/RETRO-LATEST.md office/retro-state.json office/PROPOSALS 2>/dev/null || true
           # note: office/dist/* is a build artifact — it ships via office-pages only, never on main

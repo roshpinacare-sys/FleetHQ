@@ -31,8 +31,8 @@ RETRO_STATE="$(pwd)/office/retro-state.json"
 LATEST_PROPOSAL="$(ls -1t "$(pwd)"/office/PROPOSALS/*.md 2>/dev/null | head -1 || true)"
 
 # identity: noreply only (gmail=0 law)
-git config user.name "fleet-office-bot"
-git config user.email "roshpinacare-sys@users.noreply.github.com"
+git config user.name "roshpinacare-sys"
+git config user.email "326012154+roshpinacare-sys@users.noreply.github.com"
 git remote set-url origin "https://x-access-token:${TOKEN}@github.com/${REPO_SLUG}.git"
 
 # rebase-first: fetch the branch explicitly

@@ -20,8 +20,8 @@ DIST_DIGEST="$(pwd)/office-window/dist/digest.json"
 [ -f "$DIST_DIGEST" ] || { echo "publish: office-window/dist/digest.json missing — run fleet-digest.mjs first" >&2; exit 1; }
 
 # identity: noreply only (gmail=0 law)
-git config user.name "fleet-office-bot"
-git config user.email "roshpinacare-sys@users.noreply.github.com"
+git config user.name "roshpinacare-sys"
+git config user.email "326012154+roshpinacare-sys@users.noreply.github.com"
 git remote set-url origin "https://x-access-token:${TOKEN}@github.com/${REPO_SLUG}.git"
 
 # rebase-first: fetch the branch explicitly

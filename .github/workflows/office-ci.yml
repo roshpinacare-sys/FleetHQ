@@ -113,8 +113,8 @@ jobs:
       - name: Publish receipt (sibling-stand-down + snapshot/re-apply push x8, backoff+jitter)
         if: always()
         run: |
-          git config user.name "office-ci-bot"
-          git config user.email "office-ci-bot@agents.roshpinacare-sys"
+          git config user.name "roshpinacare-sys"
+          git config user.email "326012154+roshpinacare-sys@users.noreply.github.com"
           # Snapshot THIS run's measured receipt payload before the tree is
           # touched — the publish re-applies exactly this, never regenerates.
           SNAP=/tmp/publish-snap
