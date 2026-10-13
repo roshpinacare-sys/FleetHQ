@@ -78,8 +78,8 @@ jobs:
         if: always()
         run: |
           if [ ! -f receipts/office-3d/log.jsonl ]; then echo "no office-3d receipts — nothing to commit"; exit 0; fi
-          git config user.name "office-3d-bot"
-          git config user.email "office-3d-bot@agents.roshpinacare-sys"
+          git config user.name "roshpinacare-sys"
+          git config user.email "326012154+roshpinacare-sys@users.noreply.github.com"
           # Snapshot THIS run's measured bake receipt before the tree is touched.
           SNAP=/tmp/publish-snap
           rm -rf "$SNAP"; mkdir -p "$SNAP/receipts/office-3d"
