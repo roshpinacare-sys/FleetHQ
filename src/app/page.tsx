@@ -8,6 +8,7 @@
  */
 import { WorldDeck } from '@/components/worlds/WorldDeck';
 import { OwnerChat } from '@/components/owner/OwnerChat';
+import { NetworkSelf } from '@/components/owner/NetworkSelf';
 
 const LINKS = [
   { href: 'https://github.com/roshpinacare-sys/FleetHQ', label: 'FleetHQ', title: 'מקור הפורמן והמשרד' },
@@ -66,8 +67,9 @@ export default function Home() {
         </div>
       </footer>
 
-      {/* ── ערוץ-הפעלה-ריבוני: צ'אט-מנהל (T17) ── */}
+      {/* ── ערוץ-הפעלה-ריבוני: צ'אט-מנהל (T17) + מודעות-הרשת (T23) ── */}
       <OwnerChat />
+      <NetworkSelf />
     </div>
   );
 }
