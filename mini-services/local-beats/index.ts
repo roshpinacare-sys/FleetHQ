@@ -209,6 +209,76 @@ function runSandbox(name: string, script: string, timeoutMin: number) {
   }
 }
 
+// ---- dex-family beat (27-d, 2026-10-13) --------------------------------------
+// THE DEX VOLUME MANDATE (owner IM trace 1a135930da12227d): the keyless DEX
+// engine family as ONE local flight every 30 min. STASIS lifted lawfully
+// (Domain directives chain i=6), custody probe fixed to the FUNDED treasury
+// (headcorner 16.632 SBD measured; owner=0.001 SBD was the whole drought),
+// exchange-core re-genesis'd on real keyed custody. Flight =
+//   market-grid → dex-router → arb-mesh → dex-core tick → settle-intents
+//   → dex-xc → mm-volume · publish: agents books, one commit, rebase-theirs.
+// Cadence :11/:41 — clear of the :52 dex-mirror publish and flush slots.
+function dexFamily() {
+  const env = { ...envFor() } as NodeJS.ProcessEnv;
+  env.FLEET_ACCOUNT = "headcorner";
+  const steps: Array<[string, string[]]> = [
+    ["market-grid", ["agents/market-grid.cjs"]],
+    ["dex-router", ["agents/dex-router.cjs"]],
+    ["arb-mesh", ["agents/arb-mesh.cjs"]],
+    ["dex-core", ["agents/dex-core.cjs"]],
+    ["settle-intents", ["agents/dex-core.cjs", "settle-intents"]],
+    ["dex-xc", ["agents/dex-xc.cjs"]],
+    ["mm-volume", ["agents/mm-volume.cjs"]]
+  ];
+  const outs: string[] = [];
+  for (const [step, args] of steps) {
+    try {
+      const res = spawnSync("node", args, { cwd: DOMAIN, env, encoding: "utf8", timeout: 3 * 60_000 });
+      const out = (res.stdout || "").trim().split("\n").slice(-1)[0] || "";
+      const err = (res.stderr || "").trim().split("\n").slice(-1)[0] || "";
+      outs.push(`${step}=${res.status === 0 ? "ok" : "exit" + res.status}${out ? " " + out.slice(0, 120) : ""}${err ? " ERR:" + err.slice(0, 100) : ""}`);
+    } catch (e) {
+      outs.push(`${step}=FATAL ${(e as Error).message.slice(0, 100)}`);
+    }
+  }
+  log(`dex-family: ${outs.join(" | ")}`);
+}
+
+function publishDexFamily(): string {
+  const paths = "agents/STASIS.json agents/receipts/owner-directives.jsonl agents/dex-core.json agents/arb-mesh.json agents/mm-volume.json agents/dex-xc.json agents/dex-router.json agents/dex-intents.json agents/dex-batch.json agents/market-grid-paper.jsonl agents/counter-grid.json agents/market-cycle.json";
+  const script = `
+    set -e
+    cd "${DOMAIN}"
+    if [ -f agents/redact-telemetry.mjs ]; then node agents/redact-telemetry.mjs agents/dex-core.json agents/arb-mesh.json agents/mm-volume.json agents/dex-xc.json agents/dex-router.json >/dev/null 2>&1 || true; fi
+    git add ${paths} 2>/dev/null || true
+    if ! git diff --cached --quiet; then
+      git -c user.name="local-beats" -c user.email="local-beats@agents.roshpinacare-sys" commit -q -m "dex-family: local beat · $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+      git -c rebase.autoStash=true pull --rebase -X theirs -q origin main || true
+      git push -q origin HEAD 2>/dev/null || echo "push deferred (flush drains)"
+      echo "PUSHED"
+    else
+      echo "NO-CHANGE"
+    fi`;
+  const pub = spawnSync("bash", ["-c", script], { cwd: DOMAIN, encoding: "utf8", timeout: 3 * 60_000 });
+  return ((pub.stdout || "") + (pub.stderr ? " ERR:" + pub.stderr.slice(-120) : "")).trim().slice(-200);
+}
+
+function runDexFamily() {
+  if (running.has("dex-family")) { log("dex-family: skipped — previous flight still running"); return; }
+  running.add("dex-family");
+  try {
+    const pull = spawnSync("git", ["-c", "rebase.autoStash=true", "pull", "--rebase", "-X", "theirs", "-q", "origin", "main"], { cwd: DOMAIN, encoding: "utf8" });
+    if (pull.status !== 0) log(`dex-family: pull note exit=${pull.status} ${(pull.stderr || "").slice(-100)}`);
+    dexFamily();
+    const verdict = publishDexFamily();
+    log(`dex-family: publish="${verdict}"`);
+  } catch (e) {
+    log(`dex-family: FATAL ${(e as Error).message.slice(0, 200)} — scheduler survives`);
+  } finally {
+    running.delete("dex-family");
+  }
+}
+
 // ---- office-retro beat (27-b, 2026-10-13) -----------------------------------
 // ROOT CAUSE: office/RETRO-LATEST.md + retro-state.json are written by the
 // WEEKLY Actions lane (office-retro.yml, Thursday 07:43 UTC) — the only
@@ -353,6 +423,8 @@ function tick() {
 
   if (mi === 33 && ho % 2 === 0) { const k = keyOf(d, "h"); if (!fired("money-watch", k)) { mark("money-watch", k); run("money-watch", CONSOLE, "agents/money-watch.mjs", ["dex/money.json"]); } }
   if (mi === 52) { const k = keyOf(d, "h"); if (!fired("dex-mirror", k)) { mark("dex-mirror", k); run("dex-mirror", DOMAIN, "agents/dex-mirror.mjs", ["dex/grid.json","dex/world.json","dex/state.json","dex/credits.json","dex/portfolio.json","dex/onramp.json","dex/showcase.json","dex/relay.json"]); } }
+  // dex-family :11/:41 (27-d) — the DEX volume mandate flywheel
+  if (mi === 11 || mi === 41) { const k = `${keyOf(d, "h")}:${mi}`; if (!fired("dex-family", k)) { mark("dex-family", k); runDexFamily(); } }
   if ((ho === 3 || ho === 15) && mi === 13) { const k = keyOf(d, "h"); if (!fired("grid-pulse", k)) { mark("grid-pulse", k); run("grid-pulse", CONSOLE, "agents/grid-pulse.mjs", []); } }
   if (mi === 17 && ho % 2 === 0) { const k = keyOf(d, "h"); if (!fired("office-ci-lite", k)) { mark("office-ci-lite", k); officeCiLite(); } }
   // office-heartbeat — hourly at :41 (3-b: was every-2h; the owner measured a
@@ -400,6 +472,6 @@ Bun.serve({
   }),
 });
 
-log("local-beats scheduler UP (flush-durable build 2026-10-13, 3-b office-hourly, 27-b arteries+retro) — beats: money-watch 2h:33, grid-pulse 03:13/15:13, dex-mirror h:52, office-ci-lite 2h:17, office-heartbeat h:41, flush :09/:24/:39/:54, sbx-arteries grid :05/:35 · tick :21 · wallet :40 · fleet 2h:25, office-retro Thu 07:43 + 26h-catchup, boot catch-up dex-mirror");
+log("local-beats scheduler UP (flush-durable build 2026-10-13, 3-b office-hourly, 27-b arteries+retro, 27-d dex-family :11/:41) — beats: money-watch 2h:33, grid-pulse 03:13/15:13, dex-mirror h:52, dex-family h:11/h:41, office-ci-lite 2h:17, office-heartbeat h:41, flush :09/:24/:39/:54, sbx-arteries grid :05/:35 · tick :21 · wallet :40 · fleet 2h:25, office-retro Thu 07:43 + 26h-catchup, boot catch-up dex-mirror");
 setInterval(tick, 60_000);
 tick();
