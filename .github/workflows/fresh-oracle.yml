@@ -57,7 +57,7 @@ jobs:
           git commit -m "fresh-oracle receipt: $(node -e 'console.log(JSON.parse(require("fs").readFileSync("receipts/fresh-oracle/latest.json","utf8")).summary.verdict)') [skip ci]"
           ok=0
           for i in 1 2 3 4 5 6; do
-            if git pull --rebase -q origin main && git push -q origin main; then ok=1; echo "PUSH-OK attempt $i"; break; fi
+            if git pull --rebase -X theirs --autostash -q origin main && git push -q origin main; then ok=1; echo "PUSH-OK attempt $i"; break; fi
             git rebase --abort 2>/dev/null || true
             if sibling_stand_down; then ok=1; break; fi
             sleep $((3 + RANDOM % 7))

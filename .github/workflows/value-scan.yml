@@ -40,7 +40,7 @@ jobs:
           for i in 1 2 3; do
             if git push -q origin main; then ok=1; echo "PUSH-OK attempt $i"; break; fi
             echo "push attempt $i failed — rebase and retry"
-            git pull --rebase -q origin main || true
+            git pull --rebase -X theirs --autostash -q origin main || true
             sleep 3
           done
           if [ "$ok" != "1" ]; then echo "PUSH-FAILED after retries"; exit 1; fi

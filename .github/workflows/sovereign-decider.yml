@@ -41,5 +41,5 @@ jobs:
           git add office/state/sovereign-decisions.json
           git commit -m "decide: sovereign decision cycle (SOV-POLICY/1) — sense/decide/record, evidence-anchored"
           for i in 1 2 3; do
-            git pull --rebase origin main && git push origin main && break || { echo "yield+retry $i"; sleep 6; }
+            git pull --rebase -X theirs --autostash origin main && git push origin main && break || { echo "yield+retry $i"; sleep 6; }
           done
