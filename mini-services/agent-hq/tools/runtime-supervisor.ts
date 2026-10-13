@@ -75,6 +75,19 @@ const services: ServiceDef[] = [
     env: {},
     log: path.join(RUNTIME, 'gateway.log'),
   },
+  {
+    // local-beats — the estate's vein scheduler (flush/office/sbx beats). Was an
+    // orphan `bun --hot` process: hot reload is untrustworthy (measured 2026-10-13 —
+    // it silently kept pre-identity-law code alive after the file changed) and a
+    // dead scheduler stayed dead (no supervisor, no port). Now: liveness port 3012
+    // + supervisor ownership + NO --hot (a law change lands via supervisor restart).
+    name: 'local-beats',
+    port: 3012,
+    cwd: path.join(ROOT, 'mini-services/local-beats'),
+    script: 'index.ts',
+    env: {},
+    log: path.join(RUNTIME, 'local-beats.log'),
+  },
 ];
 
 type ServiceState = {

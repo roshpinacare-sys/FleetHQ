@@ -384,6 +384,22 @@ function tick() {
   }
 }
 
+// ---- liveness port (3012): the runtime-supervisor's law judges a service by
+// PROCESS + PORT; a pure scheduler has neither, so expose a tiny read-only one.
+// Without it the supervisor cannot own this service, and a dead scheduler stays
+// dead until a human notices. Measured 2026-10-13: the --hot process silently
+// kept running pre-fix code after the identity-law edit (hot reload does not
+// rebind live timers) — the durable fix is supervisor ownership + NO --hot.
+Bun.serve({
+  port: 3012,
+  fetch: () => Response.json({
+    service: "local-beats",
+    pid: process.pid,
+    bootedAt: new Date(BOOT).toISOString(),
+    build: "identity-law 2026-10-13 — writers = local-beats@agents.roshpinacare-sys, supervised (no --hot)",
+  }),
+});
+
 log("local-beats scheduler UP (flush-durable build 2026-10-13, 3-b office-hourly, 27-b arteries+retro) — beats: money-watch 2h:33, grid-pulse 03:13/15:13, dex-mirror h:52, office-ci-lite 2h:17, office-heartbeat h:41, flush :09/:24/:39/:54, sbx-arteries grid :05/:35 · tick :21 · wallet :40 · fleet 2h:25, office-retro Thu 07:43 + 26h-catchup, boot catch-up dex-mirror");
 setInterval(tick, 60_000);
 tick();
