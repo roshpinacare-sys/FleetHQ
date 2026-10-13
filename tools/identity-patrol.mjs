@@ -151,11 +151,15 @@ async function main() {
   fs.writeFileSync(path.join(RECEIPTS_DIR, "identity-patrol.md"), lines.join("\n") + "\n");
 
   console.log(`patrol verdict=${verdict} repos=${repos.length} violations=${violations.length}`);
+  // T-77 anti-flood doctrine: a VIOLATION is a STATE, not a job failure.
+  // fail-loud (exit 1) = one red email per run while a foreign source machine
+  // keeps signing wrong — that recreated a mini-flood (measured 3 reds/30min).
+  // The receipt in git IS the alarm: verdict=VIOLATION + the violations list,
+  // read by the office/self-book/watchdog beats. Silence here is the alarm.
   if (violations.length > 0) {
     violations.slice(0, 10).forEach((v) =>
-      console.error(`VIOLATION ${v.repo} ${v.sha}: ${v.bad.join(" + ")}`),
+      console.log(`VIOLATION ${v.repo} ${v.sha}: ${v.bad.join(" + ")}`),
     );
-    process.exit(1);
   }
 }
 
