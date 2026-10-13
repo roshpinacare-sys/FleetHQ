@@ -1,8 +1,8 @@
 {
-  "capturedAt": "2026-10-12T22:41:31.991Z",
+  "capturedAt": "2026-10-13T02:07:53.452Z",
   "connected": true,
   "backend": "live",
-  "statusHe": "צוות חי — זיכרון שוחזר מהגיט (6 משמרות, 4 לקחים)",
+  "statusHe": "צוות חי — זיכרון שוחזר מהגיט (9 משמרות, 7 לקחים)",
   "mode": null,
   "agents": [
     {
@@ -10,48 +10,46 @@
       "state": "idle",
       "activity": "",
       "station": "wall",
-      "since": 1791844751467,
-      "taskId": "t2271"
+      "since": 1791857275731,
+      "taskId": "t1698"
     },
     {
       "id": "gal",
-      "state": "reading",
-      "activity": "קורא registry",
-      "station": "library",
-      "since": 1791844906471,
-      "taskId": "t2271"
-    },
-    {
-      "id": "erez",
       "state": "idle",
       "activity": "",
       "station": "desk",
-      "since": 1791844801070,
-      "taskId": "t2273"
+      "since": 1791857270018,
+      "taskId": "t1698"
+    },
+    {
+      "id": "erez",
+      "state": "walking",
+      "activity": "יוצא להפסקת קפה",
+      "station": "coffee",
+      "since": 1791857300046,
+      "taskId": "t1682"
     },
     {
       "id": "tamar",
       "state": "idle",
       "activity": "",
       "station": "desk",
-      "since": 1791844827472,
-      "taskId": "t2221"
+      "since": 1791857229615
     },
     {
       "id": "shachar",
-      "state": "reading",
-      "activity": "קורא fleet-indicators",
-      "station": "library",
-      "since": 1791844829690,
-      "taskId": "t2269"
+      "state": "thinking",
+      "activity": "קורא את המשימה",
+      "station": "desk",
+      "since": 1791857276942,
+      "taskId": "t1698"
     },
     {
       "id": "yarden",
       "state": "idle",
       "activity": "הפסקת קפה — לגימה ורענון",
       "station": "coffee",
-      "since": 1791844919991,
-      "taskId": "t2146"
+      "since": 1791857297946
     }
   ],
   "tasks": [
@@ -2254,239 +2252,7 @@
       "durationMs": 120670
     },
     {
-      "id": "t1640",
-      "title": "חיפוש רשת: תשתיות בלוקצ'יין ציבוריות חדשות",
-      "description": "בצע חיפוש באינטרנט (web_search) אחר פרויקטים, פרוטוקולים ושדרוגים חדשים בתשתיות בלוקצ'יין ציבוריות (למשל L1/L2, שדרוגי קונצנזוס, פתרונות סקיילביליות). אסוף קישורים, תאריכים ותיאור קצר של כל פרויקט.",
-      "status": "blocked",
-      "assignee": "tamar",
-      "dependsOn": [],
-      "createdBy": "aluf",
-      "createdAt": 1791834208113,
-      "updatedAt": 1791835000297,
-      "startedAt": 1791834743922,
-      "durationMs": 149314
-    },
-    {
-      "id": "t1642",
-      "title": "ניתוח כלכלי של השפעות המודרניות",
-      "description": "השתמש ב-\"econ-book\" ו-\"sovereign-policy\" כדי להעריך את ההשפעות הכלכליות של התשתיות החדשות על שוקי המטבע, עלויות טרנזקציה ותמריצים.",
-      "status": "blocked",
-      "assignee": "erez",
-      "dependsOn": [],
-      "createdBy": "aluf",
-      "createdAt": 1791834208113,
-      "updatedAt": 1791834962564,
-      "startedAt": 1791834682316,
-      "durationMs": 101173
-    },
-    {
-      "id": "t1644",
-      "title": "הכנת דוח סיכום עם מקורות",
-      "description": "כתוב דוח סיכום שמרכז את הממצאים: רשימת תשתיות חדשות, קישורים למקורות, אימות מהספרים, והערכת ההשפעות הכלכליות. כלול ציטוטים ו-URL.",
-      "status": "done",
-      "assignee": "shachar",
-      "dependsOn": [],
-      "createdBy": "aluf",
-      "createdAt": 1791834208113,
-      "updatedAt": 1791835216507,
-      "startedAt": 1791835098153,
-      "summary": "",
-      "durationMs": 79109
-    },
-    {
-      "id": "t1681",
-      "title": "סיור שגרה: צלב בין שני ספרי צי ודווח על פערים שנמצאו",
-      "description": "סיור שגרה: צלב בין שני ספרי צי ודווח על פערים שנמצאו",
-      "status": "done",
-      "assignee": "gal",
-      "dependsOn": [],
-      "why": "ספרי הדקס, המסחר וההגיון הפנימי",
-      "matchBy": "fit",
-      "createdBy": "aluf",
-      "createdAt": 1791835542029,
-      "updatedAt": 1791835672460,
-      "startedAt": 1791835542029,
-      "summary": "סיור שגרה הושלם: צלב בין fills-ledger (גיל 7.5ש׳, totalRealizedSwaphive=3.466847, count=3) ו-market-grid (גיל 4.0ש׳, WAIV bid=0.19855/ask=0.19999, volume24h=1.60092517, paperFillsSnapshot=20). פערים: אין מונים משותפים, ספרים משרתים מטרות שונות (מימושים בפועל מול גרידים/נייר), פער זמן 3.57ש׳. דו״ח נשמר.",
-      "durationMs": 102652
-    },
-    {
-      "id": "t1695",
-      "title": "סיור שגרה: בדוק את תקינות ספרי הביקורת והרישום של הצי",
-      "description": "סיור שגרה: בדוק את תקינות ספרי הביקורת והרישום של הצי",
-      "status": "done",
-      "assignee": "erez",
-      "dependsOn": [],
-      "why": "ביקורות, טענות וחוזי יכולת",
-      "matchBy": "fit",
-      "createdBy": "aluf",
-      "createdAt": 1791835876021,
-      "updatedAt": 1791835995013,
-      "startedAt": 1791835876021,
-      "summary": "",
-      "durationMs": 86315
-    },
-    {
-      "id": "t1717",
-      "title": "סיור שגרה: מדוד את טריות הספרים שבבעלות העובדים ודווח",
-      "description": "סיור שגרה: מדוד את טריות הספרים שבבעלות העובדים ודווח",
-      "status": "done",
-      "assignee": "shachar",
-      "dependsOn": [],
-      "why": "מדדים, מפקד ולמידה של הצי",
-      "matchBy": "fit",
-      "createdBy": "aluf",
-      "createdAt": 1791836217202,
-      "updatedAt": 1791836317988,
-      "startedAt": 1791836217202,
-      "summary": "סיור שגרה הושלם. דוח טריות נכתב עם נתונים מדודים: 6/9 ספרים טריים (<48h), 3 ספרי ליבה לא טריים (158-164h), advisory triage בן 213.3h.",
-      "durationMs": 62679
-    },
-    {
-      "id": "t1756",
-      "title": "סיור גיט: נתח את זרם הקומיטים האחרון ודווח מה אפשר ללמוד ומה חסר",
-      "description": "סיור גיט: נתח את זרם הקומיטים האחרון ודווח מה אפשר ללמוד ומה חסר",
-      "status": "done",
-      "assignee": "gal",
-      "dependsOn": [],
-      "why": "ספרי הדקס, המסחר וההגיון הפנימי",
-      "matchBy": "fit",
-      "createdBy": "aluf",
-      "createdAt": 1791836528777,
-      "updatedAt": 1791836759141,
-      "startedAt": 1791836528777,
-      "summary": "סיור גיט הושלם. נותח זרם קומיטים 24h/7d בשני ריפוז: Domain (223/912) ו-FleetHQ (690/843). נלמד: מיגרציית twin פעילה, self-healing grid, לולאות self-check רציפות כל ~15 שניות. חסר: אין קומיטים נראים בספרי dex-book, fills-ledger, market-grid, truth-history; אין שינויים בלוגיקת מסחר, פרמטרי סיכון, או אינטגרציות נתוני שוק חדשות. דו\"ח נשמר.",
-      "durationMs": 206921
-    },
-    {
-      "id": "t1770",
-      "title": "סיור גיט: בדוק את בריאות הריפו — תחומים חמים, פערי תיעוד וסיכוני העברה",
-      "description": "סיור גיט: בדוק את בריאות הריפו — תחומים חמים, פערי תיעוד וסיכוני העברה",
-      "status": "done",
-      "assignee": "shachar",
-      "dependsOn": [],
-      "why": "מדדים, מפקד ולמידה של הצי",
-      "matchBy": "fit",
-      "createdBy": "aluf",
-      "createdAt": 1791836968593,
-      "updatedAt": 1791837219951,
-      "startedAt": 1791836968594,
-      "summary": "",
-      "durationMs": 201750
-    },
-    {
-      "id": "t1781",
-      "title": "סיור כלכלה: עבור על פנקס הכלכלה ודווח על מגמות וחובות פתוחים",
-      "description": "סיור כלכלה: עבור על פנקס הכלכלה ודווח על מגמות וחובות פתוחים",
-      "status": "done",
-      "assignee": "tamar",
-      "dependsOn": [],
-      "why": "כלכלה, ריבונות וספרי הון",
-      "matchBy": "fit",
-      "createdBy": "aluf",
-      "createdAt": 1791837471971,
-      "updatedAt": 1791837526999,
-      "startedAt": 1791837471971,
-      "summary": "בדיקת פנקס הכלכלה (econ‑book) חשפה חוב פתוח משמעותי במטבע BEE של 1.85308870 יחידות, וכן זמן עיבוד כולל של 7 223 מילישניות לביצוע הסקירה. המגמה המרכזית היא ריבוי פקודות \"dust‑held\" – נכסים כמו VKBT, PAY, BLANK ו‑CENT מוחזקים ללא הצעות קנייה משמעותיות, מה שמעיד על חוסר נזילות בשוק. בנוסף, רוב הפקודות הן במצב \"AT‑KEEP\" או \"SKIP‑BELOW‑MIN\", מה שמצביע על קפאון פעילות מסחרית ודרישה לשיפור תנאי השוק והגב",
-      "durationMs": 25706
-    },
-    {
-      "id": "t1817",
-      "title": "סיור רשת: בדוק את תקשורת בין-הסוכנים ורשום שתיקות או ניתוקים חריגים",
-      "description": "סיור רשת: בדוק את תקשורת בין-הסוכנים ורשום שתיקות או ניתוקים חריגים",
-      "status": "done",
-      "assignee": "gal",
-      "dependsOn": [],
-      "why": "ספרי הדקס, המסחר וההגיון הפנימי",
-      "matchBy": "fit",
-      "createdBy": "aluf",
-      "createdAt": 1791837741238,
-      "updatedAt": 1791837914688,
-      "startedAt": 1791837741238,
-      "summary": "סיור רשת הושלם. נמצאו 4 שתיקות/ניתוקים חריגים: (1) Blurt DEX מנותק ברמת DNS (market-grid 4.6h), (2) Hive Engine daily history dark — RPC לא חושף history, (3) Truth-history עם 2 כשלי RED ב-15 שעות אחרונות (369.3h), (4) Fills-ledger ללא פעילות חדשה 10 ימים (8.2h). דו״ח נשמר.",
-      "durationMs": 137470
-    },
-    {
-      "id": "t1858",
-      "title": "סיור לקחים: עבור על פנקס הלקחים והצע שיפור מוחשי אחד למשרד",
-      "description": "סיור לקחים: עבור על פנקס הלקחים והצע שיפור מוחשי אחד למשרד",
-      "status": "done",
-      "assignee": "gal",
-      "dependsOn": [],
-      "why": "ספרי הדקס, המסחר וההגיון הפנימי",
-      "matchBy": "fit",
-      "createdBy": "aluf",
-      "createdAt": 1791838119928,
-      "updatedAt": 1791838158927,
-      "startedAt": 1791838119928,
-      "summary": "פנקס הלקחים (truth-history, גיל 369.4 שעות) מראה 2 כישלונות אדומים ב-15 ימים (6/10 ו-11/10) מתוך הרצות שעתיות — דפוס של כשל חולף. שיפור מוחשי: הוספת מנגנון זיהוי והסגר אוטומטי לבדיקות לא-יציבות (flaky) בצינור ה-CI, עם הרצה חוזרת חובה לפני סימון RED.",
-      "durationMs": 16692
-    },
-    {
-      "id": "t1870",
-      "title": "מחקר רשת: חפשי חדשות על סוכנים אוטונומיים וכתבי דוח עם מקורות — השתמשי ב-web_search",
-      "description": "מחקר רשת: חפשי חדשות על סוכנים אוטונומיים וכתבי דוח עם מקורות — השתמשי ב-web_search",
-      "status": "done",
-      "assignee": "gal",
-      "dependsOn": [],
-      "why": "ספרי הדקס, המסחר וההגיון הפנימי",
-      "matchBy": "fit",
-      "createdBy": "aluf",
-      "createdAt": 1791838376354,
-      "updatedAt": 1791838621251,
-      "startedAt": 1791838510669,
-      "summary": "",
-      "durationMs": 77903
-    },
-    {
-      "id": "t1887",
-      "title": "מחקר רשת: קראי דף ציבורי רלוונטי לתחומי המשרד וסכמי ממצאים — השתמשי ב-read_page",
-      "description": "מחקר רשת: קראי דף ציבורי רלוונטי לתחומי המשרד וסכמי ממצאים — השתמשי ב-read_page",
-      "status": "done",
-      "assignee": "gal",
-      "dependsOn": [],
-      "why": "ספרי הדקס, המסחר וההגיון הפנימי",
-      "matchBy": "fit",
-      "createdBy": "aluf",
-      "createdAt": 1791838829618,
-      "updatedAt": 1791839032204,
-      "startedAt": 1791838829619,
-      "summary": "נקרא dex-book (טריות 3.8h, timestamp 2026-10-12T17:10:30.508Z) ונכתב דוח מסכם עם ממצאי שוק DEX: STEEM/SBD mid 0.101512, SWAP.BTC pool 840K HIVE reserve, SWAP.LTC 181K HIVE, SWAP.DOGE 181K HIVE, SWAP.ETH נזילות דלה (slippage 134%), SWAP.SOL נזילות דלה מאוד, LEO pool 82K HIVE, BLURT ללא DEX, STEEM USD $0.05817",
-      "durationMs": 142558
-    },
-    {
-      "id": "t1903",
-      "title": "מחקר שוק: בדקי מה חדש בתשתיות בלוקציין ציבוריות ודווחי עם מקורות — השתמשי ב-web_search",
-      "description": "מחקר שוק: בדקי מה חדש בתשתיות בלוקציין ציבוריות ודווחי עם מקורות — השתמשי ב-web_search",
-      "status": "done",
-      "assignee": "gal",
-      "dependsOn": [],
-      "why": "ספרי הדקס, המסחר וההגיון הפנימי",
-      "matchBy": "fit",
-      "createdBy": "aluf",
-      "createdAt": 1791839257174,
-      "updatedAt": 1791839620213,
-      "startedAt": 1791839491954,
-      "summary": " [אושר בכנות לאחר 2 עידונים — הערת ראש-המטה: בצעי חיפוש רשת בפועל (web_search) על התפתחויות חדשות בתשתיות בלוקצ'יין ציבוריות, והחזירי דוח הכולל ממצאים קונקרטיים, תאריכים, פרויקטים רלוונטיים וקישורים למקורות.]",
-      "durationMs": 99065
-    },
-    {
-      "id": "t1956",
-      "title": "ייצור תוכן: גבשי דוח מצב-שוטף מהספרים הטריים לפרסום-עתידי והגישי לשער-הביקורת",
-      "description": "ייצור תוכן: גבשי דוח מצב-שוטף מהספרים הטריים לפרסום-עתידי והגישי לשער-הביקורת",
-      "status": "done",
-      "assignee": "erez",
-      "dependsOn": [],
-      "why": "ביקורות, טענות וחוזי יכולת",
-      "matchBy": "fit",
-      "createdBy": "aluf",
-      "createdAt": 1791839854926,
-      "updatedAt": 1791840361733,
-      "startedAt": 1791840134411,
-      "summary": "",
-      "durationMs": 163210
-    },
-    {
-      "id": "t2050",
+      "id": "t1638",
       "title": "סיור שגרה: סרוק את ספרי הצי ודווח מה ישן או דורש בדיקה",
       "description": "סיור שגרה: סרוק את ספרי הצי ודווח מה ישן או דורש בדיקה",
       "status": "done",
@@ -2495,14 +2261,46 @@
       "why": "מדדים, מפקד ולמידה של הצי",
       "matchBy": "fit",
       "createdBy": "aluf",
-      "createdAt": 1791840568916,
-      "updatedAt": 1791840784283,
-      "startedAt": 1791840682250,
-      "summary": "סיור שגרה — פריטים ישנים/דורשים בדיקה:\n\n1. fleet-census — גיל 96.4h (4 ימים), נכתב 2026-10-08T21:06:44Z\n2. learning-summary — גיל 50.7h (2.1 ימים), נכתב 2026-10-10T18:47:26Z\n3. econ-book — גיל 158h (6.6 ימים), מצוין ב-fleet-indicators כלא טרי\n4. curation-book — גיל 164.4h (6.85 ימים), מצוין ב-fleet-indicators כלא טרי\n5. money-ledger — גיל 158h (6.6 ימים), מצוין ב-fleet-indicators כלא טרי\n6. pulse-",
-      "durationMs": 81845
+      "createdAt": 1791833601824,
+      "updatedAt": 1791833860007,
+      "startedAt": 1791833733961,
+      "summary": "סיור שגרה הושלם. ארבעת ספרי הצי הראשיים: fleet-indicators (32.5 שעות), fleet-census (94.4 שעות), pulse-book (7.1 שעות), learning-summary (48.7 שעות) — כולם מתחת ל-30 יום (720 שעות). ממצאים דורשי בדיקה: 1) fleet-indicators מראה 3 מדדים בירידה (DECLINE): F1 Population Health 6/9 ספרים טריים (שבירה 7/9), F4 Governance Conformity 71/76 CRs נשפטו (שבירה 100%), F9 Autonomy Receipts 0/7 ימים (שבירה ≥5). ",
+      "durationMs": 87571
     },
     {
-      "id": "t2061",
+      "id": "t1651",
+      "title": "מחקר רשת: חפשי חדשות על סוכנים אוטונומיים וכתבי דוח עם מקורות — השתמשי ב-web_search",
+      "description": "מחקר רשת: חפשי חדשות על סוכנים אוטונומיים וכתבי דוח עם מקורות — השתמשי ב-web_search",
+      "status": "done",
+      "assignee": "gal",
+      "dependsOn": [],
+      "why": "ספרי הדקס, המסחר וההגיון הפנימי",
+      "matchBy": "fit",
+      "createdBy": "aluf",
+      "createdAt": 1791845479378,
+      "updatedAt": 1791845768821,
+      "startedAt": 1791845479379,
+      "summary": "",
+      "durationMs": 246152
+    },
+    {
+      "id": "t1670",
+      "title": "סיור שגרה: סרוק את ספרי הצי ודווח מה ישן או דורש בדיקה",
+      "description": "סיור שגרה: סרוק את ספרי הצי ודווח מה ישן או דורש בדיקה",
+      "status": "done",
+      "assignee": "shachar",
+      "dependsOn": [],
+      "why": "מדדים, מפקד ולמידה של הצי",
+      "matchBy": "fit",
+      "createdBy": "aluf",
+      "createdAt": 1791846836130,
+      "updatedAt": 1791846945684,
+      "startedAt": 1791846836131,
+      "summary": "",
+      "durationMs": 74545
+    },
+    {
+      "id": "t1682",
       "title": "סיור שגרה: צלב בין שני ספרי צי ודווח על פערים שנמצאו",
       "description": "סיור שגרה: צלב בין שני ספרי צי ודווח על פערים שנמצאו",
       "status": "done",
@@ -2511,178 +2309,36 @@
       "why": "ספרי הדקס, המסחר וההגיון הפנימי",
       "matchBy": "fit",
       "createdBy": "aluf",
-      "createdAt": 1791840984831,
-      "updatedAt": 1791841117140,
-      "startedAt": 1791840984831,
-      "summary": "פערים נמצאו: STEEM mid: 0.101512 (dex-book) vs 0.100415 (market-grid)",
-      "durationMs": 109977
+      "createdAt": 1791847154575,
+      "updatedAt": 1791856863946,
+      "startedAt": 1791847154575,
+      "summary": "סיור שגרה הושלם: צלב dex-book ↔ fills-ledger בוצע. פערים עיקריים: (1) אין מונים מספריים משותפים — מבנים שונים לחלוטין (נתוני שוק חיים מול רשומת ביצועים סגורה). (2) פער גיל ספרים 4.7 שעות (dex-book 6.1h, fills-ledger 10.8h). (3) אין הצלבת מחירים נוכחיים. נתונים מדודים: dex-book heartbeat 2026-10-12T17:10:30.508Z, fills-ledger heartbeat 2026-10-12T12:28:13.514Z, totalRealizedSwaphive 3.466847, count",
+      "durationMs": 56972
     },
     {
-      "id": "t2115",
-      "title": "סיור שגרה: בדוק את תקינות ספרי הביקורת והרישום של הצי",
-      "description": "סיור שגרה: בדוק את תקינות ספרי הביקורת והרישום של הצי",
-      "status": "done",
-      "assignee": "erez",
-      "dependsOn": [],
-      "why": "ביקורות, טענות וחוזי יכולת",
-      "matchBy": "fit",
-      "createdBy": "aluf",
-      "createdAt": 1791841319945,
-      "updatedAt": 1791841419387,
-      "startedAt": 1791841319945,
-      "summary": "",
-      "durationMs": 73831
-    },
-    {
-      "id": "t2127",
-      "title": "סיור שגרה: מדוד את טריות הספרים שבבעלות העובדים ודווח",
-      "description": "סיור שגרה: מדוד את טריות הספרים שבבעלות העובדים ודווח",
-      "status": "done",
+      "id": "t1698",
+      "title": "סיור שגרה: סרוק את ספרי הצי ודווח מה ישן או דורש בדיקה",
+      "description": "סיור שגרה: סרוק את ספרי הצי ודווח מה ישן או דורש בדיקה",
+      "status": "doing",
       "assignee": "shachar",
       "dependsOn": [],
       "why": "מדדים, מפקד ולמידה של הצי",
       "matchBy": "fit",
       "createdBy": "aluf",
-      "createdAt": 1791841611322,
-      "updatedAt": 1791841693174,
-      "startedAt": 1791841611322,
-      "summary": "סיור שגרה הושלם. נמדדה טריות 9 ספרי צוות מתוך fleet-indicators (נמדד 2026-10-11T11:02:07Z): 6 ספרים טריים (<48ש׳) — ventures.json(0ש׳), fills-ledger.json(0ש׳), bridge-book.json(14.9ש׳), dex-book.json(14.9ש׳), learning-ledger.json(16.2ש׳), recruitment.json(0ש׳); 3 ספרים לא טריים — econ-book.json(158ש׳), curation-book.json(164.4ש׳), money-ledger.json(158ש׳). צוות fleet-census: 6 חברים (aluf, gal, er",
-      "durationMs": 56026
-    },
-    {
-      "id": "t2146",
-      "title": "סיור גיט: נתח את זרם הקומיטים האחרון ודווח מה אפשר ללמוד ומה חסר",
-      "description": "סיור גיט: נתח את זרם הקומיטים האחרון ודווח מה אפשר ללמוד ומה חסר",
-      "status": "done",
-      "assignee": "gal",
-      "dependsOn": [],
-      "why": "ספרי הדקס, המסחר וההגיון הפנימי",
-      "matchBy": "fit",
-      "createdBy": "aluf",
-      "createdAt": 1791841884417,
-      "updatedAt": 1791842495762,
-      "startedAt": 1791842345619,
-      "summary": "סיור גיט הושלם. נותחו 275 קומיטים ב-24h (Domain) ו-679 קומיטים ב-24h (FleetHQ). ממצאים עיקריים: Domain מתמקד בסנכרון DEX mirror (4 beats/יום), תיקוני site-roast, וסקריפטי exposure/economy/ladder. FleetHQ נשלט ע\"י selfcheck loop חוזר (6 פעמים). פערים: אין קומיטי בדיקות, אין ADRs, תיעוד מינימלי, עייפות התראות אפשרית. נתונים מדודים: dex-book freshness 4.8h, fills-ledger freshness 9.5h, market-grid fr",
-      "durationMs": 109265
-    },
-    {
-      "id": "t2161",
-      "title": "סיור גיט: בדוק את בריאות הריפו — תחומים חמים, פערי תיעוד וסיכוני העברה",
-      "description": "סיור גיט: בדוק את בריאות הריפו — תחומים חמים, פערי תיעוד וסיכוני העברה",
-      "status": "done",
-      "assignee": "shachar",
-      "dependsOn": [],
-      "why": "מדדים, מפקד ולמידה של הצי",
-      "matchBy": "fit",
-      "createdBy": "aluf",
-      "createdAt": 1791842689551,
-      "updatedAt": 1791843211769,
-      "startedAt": 1791842981481,
-      "summary": "",
-      "durationMs": 187634
-    },
-    {
-      "id": "t2221",
-      "title": "סיור כלכלה: עבור על פנקס הכלכלה ודווח על מגמות וחובות פתוחים",
-      "description": "סיור כלכלה: עבור על פנקס הכלכלה ודווח על מגמות וחובות פתוחים",
-      "status": "done",
-      "assignee": "tamar",
-      "dependsOn": [],
-      "why": "כלכלה, ריבונות וספרי הון",
-      "matchBy": "fit",
-      "createdBy": "aluf",
-      "createdAt": 1791843424434,
-      "updatedAt": 1791843541636,
-      "startedAt": 1791843424435,
-      "summary": "סיור כלכלה הושלם. דו״ח נשמר: 'סיור כלכלה — פנקס הכלכלה (econ-book)'. נתונים מדודים: גיל ספר 193.3 שעות (2026-10-04T20:59:10.983Z); חוב BEE פתוח 1.85308870 חסר; SWAP.HIVE wrapper 0.03020690, HIVE נזיל 0.034; 4 סמלי אבק מוחזקים (VKBT, PAY, BLANK, CENT); הפקדה ממתינה 0.310 HIVE (trx 875404ff...).",
-      "durationMs": 81767
-    },
-    {
-      "id": "t2242",
-      "title": "סיור רשת: בדוק את תקשורת בין-הסוכנים ורשום שתיקות או ניתוקים חריגים",
-      "description": "סיור רשת: בדוק את תקשורת בין-הסוכנים ורשום שתיקות או ניתוקים חריגים",
-      "status": "done",
-      "assignee": "gal",
-      "dependsOn": [],
-      "why": "ספרי הדקס, המסחר וההגיון הפנימי",
-      "matchBy": "fit",
-      "createdBy": "aluf",
-      "createdAt": 1791843744567,
-      "updatedAt": 1791843838411,
-      "startedAt": 1791843744567,
-      "summary": "סיור רשת הושלם. נמצאו 2 ניתוקים חריגים מאושרים: Blurt (ENOTFOUND api.blurt.world) ו-Hive-Engine Daily History (null RPC). כמו כן: 2 כשלי RED ב-truth-history ב-369.9h אחרונות, 0 פעילות חדשה ב-fills-ledger בן 9.9h, ו-brakeArmed ב-market-grid מ-2026-10-04. דוח נשמר.",
-      "durationMs": 61909
-    },
-    {
-      "id": "t2256",
-      "title": "סיור לקחים: עבור על פנקס הלקחים והצע שיפור מוחשי אחד למשרד",
-      "description": "סיור לקחים: עבור על פנקס הלקחים והצע שיפור מוחשי אחד למשרד",
-      "status": "done",
-      "assignee": "gal",
-      "dependsOn": [],
-      "why": "ספרי הדקס, המסחר וההגיון הפנימי",
-      "matchBy": "fit",
-      "createdBy": "aluf",
-      "createdAt": 1791844047097,
-      "updatedAt": 1791844131057,
-      "startedAt": 1791844047097,
-      "summary": "Completed lesson tour on truth-history (370h old). Found hourly CI runs with 2 recent RED verdicts (2026-10-06, 2026-10-11). Proposed concrete improvement: add webhook alert on non-ALL-GREEN verdicts to cut detection time from hours to minutes. Report saved.",
-      "durationMs": 61228
-    },
-    {
-      "id": "t2269",
-      "title": "חיפוש חדשות על סוכנים אוטונומיים",
-      "description": "השתמשי ב-web_search לאיתור ידיעות, מאמרים ודוחות מהשבועות האחרונים על סוכנים אוטונומיים (AI agents, autonomous agents, agentic AI) — התמקדי בהתפתחויות טכניות, השקות מוצר, מסגרות עבודה ומקרי שימוש ארגוניים. שמרי קישורים ותאריכים לכל מקור.",
-      "status": "doing",
-      "assignee": "shachar",
-      "dependsOn": [],
-      "why": "קצין מודיעין — מומחה באיסוף וסינתזת מודיעין",
-      "matchBy": "llm",
-      "createdBy": "aluf",
-      "createdAt": 1791844302416,
-      "updatedAt": 1791844752666,
-      "startedAt": 1791844752666,
-      "summary": "[redo 1] הכיני דוח מלא עם סיכום ממצאים, ציטוטי מקורות ותאריכים מתוצאות החיפוש.",
-      "durationMs": 193964
-    },
-    {
-      "id": "t2271",
-      "title": "כתיבת דוח מחקר מסוכם עם מקורות",
-      "description": "ערכי את הממצאים לדוח מובנה: תקציר מנהלים, מגמות עיקריות, טבלת מקורות (כותרת, מקור, תאריך, קישור, רלוונטיות), והערכת השפעה על הצי. שמרי את הדוח כקובץ בספר pulse-book או learning-summary.",
-      "status": "doing",
-      "assignee": "gal",
-      "dependsOn": [],
-      "why": "ספרי הדקס, המסחר וההגיון הפנימי",
-      "matchBy": "fit",
-      "createdBy": "aluf",
-      "createdAt": 1791844302416,
-      "updatedAt": 1791844752666,
-      "startedAt": 1791844752666
-    },
-    {
-      "id": "t2273",
-      "title": "ביקורת אמינות מקורות וציטוטים",
-      "description": "בדקי מדגמית 5-7 מהמקורות שנאספו: ודאי שהקישורים תקינים, התאריכים נכונים, והציטוטים משקפים את המקור. סמני כל סתירה או מקור מפוקפק. רשמי ממצאים ב-claims-audit.",
-      "status": "done",
-      "assignee": "erez",
-      "dependsOn": [],
-      "why": "מבקר פנים — מומחה באימות תביעות ומקורות",
-      "matchBy": "llm",
-      "createdBy": "aluf",
-      "createdAt": 1791844302416,
-      "updatedAt": 1791844576182,
-      "startedAt": 1791844303813,
-      "summary": "",
-      "durationMs": 175063
+      "createdAt": 1791857090755,
+      "updatedAt": 1791857275841,
+      "startedAt": 1791857275841,
+      "summary": "[redo 2] העובד לא סיפק דוח סריקה בפועל — יש להריץ שאילתה מול ספרי הצי, להוציא רשומות עם תאריך בדיקה אחרון לפני יותר מ-12 חודשים או סטטוס 'דורש בדיקה', ולהחזיר את הרשימה כפלט המשימה.",
+      "durationMs": 69222
     }
   ],
   "books": 22,
   "memory": null,
   "counts": {
-    "agent": 3,
-    "task": 0,
+    "agent": 6,
+    "task": 2,
     "log": 4,
-    "feed": 43,
+    "feed": 0,
     "decision": 0,
     "report": 0,
     "goal": 0,
@@ -2692,227 +2348,22 @@
     {
       "kind": "bubble:yarden",
       "text": "לגימה מהירה — וחוזרים לעבודה.",
-      "at": 1791844919992
+      "at": 1791857297946
     },
     {
-      "kind": "git",
-      "text": "commit 2e7fed3d6 — [selfcheck] standing loop receipts: security+connectivity+fresh-oracle [skip ci]",
-      "at": 1791844918573
+      "kind": "task",
+      "text": "doing: סיור שגרה: סרוק את ספרי הצי ודווח מה ישן או דורש בדיקה",
+      "at": 1791857275842
     },
     {
-      "kind": "git",
-      "text": "commit e412a1562 — [selfcheck] standing loop receipts: security+connectivity+fresh-oracle [skip ci]",
-      "at": 1791844918573
+      "kind": "bubble:aluf",
+      "text": "שחר, צריך עידון: העובד לא סיפק דוח סריקה בפועל — יש להריץ שאילתה מול ספרי הצי, להוציא רשומות עם תאריך בדיקה אחרון לפני יותר מ-12 חודשים או סטטוס 'דורש בדיקה', ולהחזיר את הרשימה כפלט המשימה.",
+      "at": 1791857275734
     },
     {
-      "kind": "git",
-      "text": "commit 42a935804 — [selfcheck] standing loop receipts: security+connectivity+fresh-oracle [skip ci]",
-      "at": 1791844918573
-    },
-    {
-      "kind": "bubble:gal",
-      "text": "בודק רישום סוכנים ומחקרים קשורים",
-      "at": 1791844906471
-    },
-    {
-      "kind": "git",
-      "text": "commit bedfff52f — [selfcheck] standing loop receipts: security+connectivity+fresh-oracle [skip ci]",
-      "at": 1791844893567
-    },
-    {
-      "kind": "git",
-      "text": "commit 0396f941b — [selfcheck] standing loop receipts: security+connectivity+fresh-oracle [skip ci]",
-      "at": 1791844893567
-    },
-    {
-      "kind": "git",
-      "text": "commit 66d63bf96 — [selfcheck] standing loop receipts: security+connectivity+fresh-oracle [skip ci]",
-      "at": 1791844893567
-    },
-    {
-      "kind": "git",
-      "text": "commit b0684f2cd — [selfcheck] standing loop receipts: security+connectivity+fresh-oracle [skip ci]",
-      "at": 1791844893567
-    },
-    {
-      "kind": "git",
-      "text": "commit 282376836 — [selfcheck] standing loop receipts: security+connectivity+fresh-oracle [skip ci]",
-      "at": 1791844893567
-    },
-    {
-      "kind": "git",
-      "text": "commit 8e3657d23 — boot fix (25-a): local-beats ensure probe was pgrep -f local-beats — never matches the live bun process (cmdli",
-      "at": 1791844893567
-    },
-    {
-      "kind": "git",
-      "text": "commit fe9c6e3d7 — [selfcheck] standing loop receipts: security+connectivity+fresh-oracle [skip ci]",
-      "at": 1791844893567
-    },
-    {
-      "kind": "git",
-      "text": "commit 91e4c1d77 — [selfcheck] standing loop receipts: security+connectivity+fresh-oracle [skip ci]",
-      "at": 1791844893567
-    },
-    {
-      "kind": "git",
-      "text": "commit 956625c0c — [selfcheck] standing loop receipts: security+connectivity+fresh-oracle [skip ci]",
-      "at": 1791844893567
-    },
-    {
-      "kind": "git",
-      "text": "commit 5dbcf6796 — [selfcheck] standing loop receipts: security+connectivity+fresh-oracle [skip ci]",
-      "at": 1791844893567
-    },
-    {
-      "kind": "git",
-      "text": "commit f38501be0 — [selfcheck] standing loop receipts: security+connectivity+fresh-oracle [skip ci]",
-      "at": 1791844893567
-    },
-    {
-      "kind": "git",
-      "text": "commit 63e2d8f32 — [selfcheck] standing loop receipts: security+connectivity+fresh-oracle [skip ci]",
-      "at": 1791844893567
-    },
-    {
-      "kind": "git",
-      "text": "commit 273f43aa2 — [selfcheck] standing loop receipts: security+connectivity+fresh-oracle [skip ci]",
-      "at": 1791844893567
-    },
-    {
-      "kind": "git",
-      "text": "commit 8857766fc — [selfcheck] standing loop receipts: security+connectivity+fresh-oracle [skip ci]",
-      "at": 1791844893567
-    },
-    {
-      "kind": "git",
-      "text": "commit 2597ca817 — [selfcheck] standing loop receipts: security+connectivity+fresh-oracle [skip ci]",
-      "at": 1791844893567
-    },
-    {
-      "kind": "git",
-      "text": "commit 642b6fa27 — [selfcheck] standing loop receipts: security+connectivity+fresh-oracle [skip ci]",
-      "at": 1791844893567
-    },
-    {
-      "kind": "git",
-      "text": "commit a1d8144a0 — [selfcheck] standing loop receipts: security+connectivity+fresh-oracle [skip ci]",
-      "at": 1791844893567
-    },
-    {
-      "kind": "git",
-      "text": "commit 9a3c40edb — [selfcheck] standing loop receipts: security+connectivity+fresh-oracle [skip ci]",
-      "at": 1791844893567
-    },
-    {
-      "kind": "git",
-      "text": "commit 1248ff03c — [selfcheck] standing loop receipts: security+connectivity+fresh-oracle [skip ci]",
-      "at": 1791844893567
-    },
-    {
-      "kind": "git",
-      "text": "commit 247b9c598 — architecture round: flush daemon (auto-drain on valid credential + honest push-queue receipt), silence-watchdo",
-      "at": 1791844893567
-    },
-    {
-      "kind": "git",
-      "text": "commit c86b0fe3d — [selfcheck] standing loop receipts: security+connectivity+fresh-oracle [skip ci]",
-      "at": 1791844893567
-    },
-    {
-      "kind": "git",
-      "text": "commit 8cd1bac3a — [selfcheck] standing loop receipts: security+connectivity+fresh-oracle [skip ci]",
-      "at": 1791844893567
-    },
-    {
-      "kind": "git",
-      "text": "commit 4e1cb3d02 — [selfcheck] standing loop receipts: security+connectivity+fresh-oracle [skip ci]",
-      "at": 1791844893567
-    },
-    {
-      "kind": "git",
-      "text": "commit 1d3cc85db — [selfcheck] standing loop receipts: security+connectivity+fresh-oracle [skip ci]",
-      "at": 1791844893567
-    },
-    {
-      "kind": "git",
-      "text": "commit 1bd8e4df8 — [selfcheck] standing loop receipts: security+connectivity+fresh-oracle [skip ci]",
-      "at": 1791844893567
-    },
-    {
-      "kind": "git",
-      "text": "commit 06389adf7 — [selfcheck] standing loop receipts: security+connectivity+fresh-oracle [skip ci]",
-      "at": 1791844893567
-    },
-    {
-      "kind": "git",
-      "text": "commit 697c1b2b8 — [selfcheck] standing loop receipts: security+connectivity+fresh-oracle [skip ci]",
-      "at": 1791844893567
-    },
-    {
-      "kind": "git",
-      "text": "commit 0e55b09a9 — [selfcheck] standing loop receipts: security+connectivity+fresh-oracle [skip ci]",
-      "at": 1791844893567
-    },
-    {
-      "kind": "git",
-      "text": "commit 0c3c01be5 — [selfcheck] standing loop receipts: security+connectivity+fresh-oracle [skip ci]",
-      "at": 1791844893567
-    },
-    {
-      "kind": "git",
-      "text": "commit 7f204ea29 — [selfcheck] standing loop receipts: security+connectivity+fresh-oracle [skip ci]",
-      "at": 1791844893567
-    },
-    {
-      "kind": "git",
-      "text": "commit e88e8877f — office-ci-lite: local heartbeat · 2026-10-12T22:17:21Z",
-      "at": 1791844893567
-    },
-    {
-      "kind": "git",
-      "text": "commit 831d296b2 — office-ci-lite: local heartbeat · 2026-10-12T22:17:39Z",
-      "at": 1791844893567
-    },
-    {
-      "kind": "git",
-      "text": "commit 5ff66793a — [selfcheck] standing loop receipts: security+connectivity+fresh-oracle [skip ci]",
-      "at": 1791844893567
-    },
-    {
-      "kind": "git",
-      "text": "commit e60af65ae — office-ci-lite: local heartbeat · 2026-10-12T22:17:58Z",
-      "at": 1791844893567
-    },
-    {
-      "kind": "git",
-      "text": "commit a5a969b01 — [selfcheck] standing loop receipts: security+connectivity+fresh-oracle [skip ci]",
-      "at": 1791844893567
-    },
-    {
-      "kind": "git",
-      "text": "commit a39ed43c3 — office-ci-lite: local heartbeat · 2026-10-12T22:18:17Z",
-      "at": 1791844893567
-    },
-    {
-      "kind": "git",
-      "text": "commit db86f4f2b — [selfcheck] standing loop receipts: security+connectivity+fresh-oracle [skip ci]",
-      "at": 1791844893567
-    },
-    {
-      "kind": "git",
-      "text": "commit 2a563ed20 — [selfcheck] standing loop receipts: security+connectivity+fresh-oracle [skip ci]",
-      "at": 1791844893567
-    },
-    {
-      "kind": "git",
-      "text": "commit fdf42870b — office-heartbeat: local heartbeat · 2026-10-12T22:41:30Z",
-      "at": 1791844893566
-    },
-    {
-      "kind": "git",
-      "text": "commit 578167b0b — [selfcheck] standing loop receipts: security+connectivity+fresh-oracle [skip ci]",
-      "at": 1791844893566
+      "kind": "task",
+      "text": "todo: סיור שגרה: סרוק את ספרי הצי ודווח מה ישן או דורש בדיקה",
+      "at": 1791857275732
     }
   ],
   "reports": [],
