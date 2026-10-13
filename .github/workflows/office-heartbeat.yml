@@ -126,6 +126,33 @@ jobs:
             git push -q origin main && echo "PUBLISHED: office state live for the page"
           fi
 
+      - name: build + commit office-knowledge.json (measured roster/shifts/lessons/retro/recruitment book — T23-B)
+        run: |
+          node tools/office-knowledge.mjs || echo "::warning::office-knowledge degraded — the degraded book still lands (honest)"
+          [ -f office/state/office-knowledge.json ] && cat office/state/office-knowledge.json
+          git config user.name  "roshpinacare-sys"
+          git config user.email "326012154+roshpinacare-sys@users.noreply.github.com"
+          git add office/state/office-knowledge.json
+          if git diff --cached --quiet; then
+            echo "NO-CHANGE: office-knowledge.json already current (honest)"
+          else
+            git commit -m "office-heartbeat: office-knowledge.json refreshed (measured) [skip ci]"
+            git -c rebase.autoStash=true pull --rebase -q origin main || true
+            git push -q origin main && echo "PUBLISHED: office-knowledge.json live for the page"
+          fi
+          # READBACK VERIFY — the published book must be reachable on origin;
+          # byte-exact OR a strictly newer sibling book (fleet race) both pass.
+          sleep 5
+          if curl -sf "https://raw.githubusercontent.com/${GITHUB_REPOSITORY}/main/office/state/office-knowledge.json" -o /tmp/kb-readback.json; then
+            if cmp -s office/state/office-knowledge.json /tmp/kb-readback.json; then
+              echo "READBACK-VERIFY: MATCH — office-knowledge.json is live and byte-exact"
+            else
+              python3 -c "import json;d=json.load(open('/tmp/kb-readback.json'));assert d.get('schema')=='office-knowledge/1' and d.get('generatedAt')>=json.load(open('office/state/office-knowledge.json')).get('generatedAt');print('READBACK-VERIFY: newer sibling book live, generatedAt', d.get('generatedAt'))"
+            fi
+          else
+            echo "READBACK-VERIFY: published book NOT reachable — FAIL-LOUD"; exit 1
+          fi
+
       - name: shift summary
         run: |
           {
