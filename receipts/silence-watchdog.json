@@ -1,68 +1,68 @@
 {
  "schema": "silence.watchdog/1",
- "at": "2026-10-12T23:27:58.331Z",
+ "at": "2026-10-13T03:40:43.640Z",
  "scope": "actions",
  "voices": [
   {
    "name": "origin/FleetHQ",
-   "lastActivity": "2026-10-12T23:27:01.000Z",
-   "ageMin": 1,
+   "lastActivity": "2026-10-13T03:33:00.000Z",
+   "ageMin": 8,
    "maxSilenceMin": 240,
    "verdict": "alive",
    "detail": {
-    "subject": "[selfcheck] standing loop receipts: security+connectivity+fresh-oracle"
+    "subject": "pacemaker receipt: 2026-10-13T03:33:00Z"
    }
   },
   {
    "name": "origin/Domain",
-   "lastActivity": "2026-10-12T23:27:16.000Z",
-   "ageMin": 1,
+   "lastActivity": "2026-10-13T03:37:30.000Z",
+   "ageMin": 3,
    "maxSilenceMin": 240,
    "verdict": "alive",
    "detail": {
-    "subject": "office engine v2 — purposeful agendas: role-weighted station choice, s"
+    "subject": "grid-doctor v2: live fleet truth + drift + phantom-claims 2026-10-13T0"
    }
   },
   {
    "name": "origin/Console",
-   "lastActivity": "2026-10-12T23:27:17.000Z",
-   "ageMin": 1,
+   "lastActivity": "2026-10-13T03:20:20.000Z",
+   "ageMin": 20,
    "maxSilenceMin": 240,
    "verdict": "alive",
    "detail": {
-    "subject": "voice law: exam-loop line speaks sovereign exams, not operator demands"
+    "subject": "dex-beat: h17877 · 0 credits · 2026-10-13T03:20Z"
    }
   },
   {
    "name": "divergence/FleetHQ",
-   "lastActivity": "2026-10-12T23:24:59.000Z",
-   "ageMin": 3,
+   "lastActivity": "2026-10-13T00:09:30.000Z",
+   "ageMin": 211,
    "maxSilenceMin": 75,
-   "verdict": "alive",
+   "verdict": "SILENT-ALARM",
    "detail": {
     "source": "push-queue-receipt (via git)",
-    "ahead": 0,
+    "ahead": 1,
     "behind": 0
    }
   },
   {
    "name": "divergence/Domain",
-   "lastActivity": "2026-10-12T23:24:59.000Z",
-   "ageMin": 3,
+   "lastActivity": "2026-10-13T00:09:30.000Z",
+   "ageMin": 211,
    "maxSilenceMin": 75,
-   "verdict": "alive",
+   "verdict": "SILENT-ALARM",
    "detail": {
     "source": "push-queue-receipt (via git)",
     "ahead": 0,
-    "behind": 0
+    "behind": 1
    }
   },
   {
    "name": "divergence/Console",
-   "lastActivity": "2026-10-12T23:24:59.000Z",
-   "ageMin": 3,
+   "lastActivity": "2026-10-13T00:09:30.000Z",
+   "ageMin": 211,
    "maxSilenceMin": 75,
-   "verdict": "alive",
+   "verdict": "SILENT-ALARM",
    "detail": {
     "source": "push-queue-receipt (via git)",
     "ahead": 0,
@@ -71,36 +71,42 @@
   },
   {
    "name": "sandbox-ledger (via git)",
-   "lastActivity": "2026-10-12T23:26:55.736Z",
-   "ageMin": 1,
+   "lastActivity": "2026-10-13T00:09:26.017Z",
+   "ageMin": 211,
    "maxSilenceMin": 180,
-   "verdict": "alive",
+   "verdict": "SILENT-ALARM",
    "detail": {
-    "localSummary": "6 ALARM(S): beat/grid-pulse: no data (cannot prove alive) · post/hive/acct-01: n"
+    "localSummary": "6 ALARM(S): beat/grid-pulse: no data (cannot prove alive) · post/hive/acct-12: n"
    }
   },
   {
    "name": "pages/money",
    "lastActivity": "2026-10-12T22:34:00.851Z",
-   "ageMin": 54,
+   "ageMin": 307,
    "maxSilenceMin": 240,
-   "verdict": "alive",
+   "verdict": "SILENT-ALARM",
    "detail": {
     "url": "dex/money.json"
    }
   },
   {
    "name": "pages/site-audit",
-   "lastActivity": "2026-10-12T23:26:18.343Z",
-   "ageMin": 2,
+   "lastActivity": "2026-10-13T01:06:49.234Z",
+   "ageMin": 154,
    "maxSilenceMin": 360,
    "verdict": "alive",
    "detail": {
     "verdict": "unknown",
-    "at": "2026-10-12T23:26:18.343Z"
+    "at": "2026-10-13T01:06:49.234Z"
    }
   }
  ],
- "alarms": [],
- "summary": "ALL VISIBLE VOICES ALIVE"
+ "alarms": [
+  "divergence/FleetHQ: silent 211min (limit 75)",
+  "divergence/Domain: silent 211min (limit 75)",
+  "divergence/Console: silent 211min (limit 75)",
+  "sandbox-ledger (via git): silent 211min (limit 180)",
+  "pages/money: silent 307min (limit 240)"
+ ],
+ "summary": "5 ALARM(S): divergence/FleetHQ: silent 211min (limit 75) · divergence/Domain: silent 211min (limit 75) · divergence/Console: silent 211min (limit 75) · sandbox-ledger (via git): silent 211min (limit 180) · pages/money: silent 307min (limit 240)"
 }
