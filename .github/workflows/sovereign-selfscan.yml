@@ -50,7 +50,7 @@ jobs:
           git commit -m "sovereign-selfscan: network state + claims $(date -u +%Y-%m-%dT%H:%MZ) [skip ci]"
           ok=0
           for i in 1 2 3 4 5 6 7 8; do
-            if git pull --rebase --autostash -q origin main && git push -q origin main; then ok=1; echo "PUSH-OK attempt $i"; break; fi
+            if git pull --rebase -X theirs --autostash --autostash -q origin main && git push -q origin main; then ok=1; echo "PUSH-OK attempt $i"; break; fi
             echo "push attempt $i lost the race — rebase and retry"; sleep $((8 + RANDOM % 10))
           done
           [ "$ok" = "1" ] || { echo "named terminal: publish-deferred — book is on disk, next scan re-lands it"; exit 0; }
