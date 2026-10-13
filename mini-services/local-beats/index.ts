@@ -218,6 +218,29 @@ function runSandbox(name: string, script: string, timeoutMin: number) {
 //   market-grid → dex-router → arb-mesh → dex-core tick → settle-intents
 //   → dex-xc → mm-volume · publish: agents books, one commit, rebase-theirs.
 // Cadence :11/:41 — clear of the :52 dex-mirror publish and flush slots.
+// REPO-HEAL (27-d): parallel-wave writers leave Domain mid-rebase with unmerged
+// mirror snapshots (measured twice on 2026-10-13). Deterministic newest-publishedAt
+// resolution BEFORE pull/publish — a poisoned repo must never block a beat.
+function healUnmerged(cwd: string): number {
+  try {
+    const st = spawnSync("git", ["status", "--porcelain"], { cwd, encoding: "utf8" });
+    const unmerged = (st.stdout || "").split("\n").filter((l) => /^(UU|AA|U |DU)/.test(l)).map((l) => l.slice(3).trim());
+    if (!unmerged.length) return 0;
+    for (const f of unmerged) {
+      const s2 = spawnSync("git", ["show", `:2:${f}`], { cwd, encoding: "utf8" }).stdout || "";
+      const s3 = spawnSync("git", ["show", `:3:${f}`], { cwd, encoding: "utf8" }).stdout || "";
+      const ts = (t: string) => (t.match(/"publishedAt"\s*:\s*"([^"]+)"/) || [])[1] || null;
+      const a = ts(s2), b = ts(s3);
+      const pick = a && b ? (a > b ? ":2" : ":3") : ":3";
+      const blob = spawnSync("git", ["show", `${pick}:${f}`], { cwd, encoding: "utf8" }).stdout || "";
+      writeFileSync(join(cwd, f), blob);
+      spawnSync("git", ["add", f], { cwd, encoding: "utf8" });
+    }
+    log(`heal-unmerged(${cwd.split("/").pop()}): resolved ${unmerged.length} path(s) newest-publishedAt-wins`);
+    return unmerged.length;
+  } catch { return 0; }
+}
+
 function dexFamily() {
   const env = { ...envFor() } as NodeJS.ProcessEnv;
   env.FLEET_ACCOUNT = "headcorner";
@@ -249,6 +272,14 @@ function publishDexFamily(): string {
   const script = `
     set -e
     cd "${DOMAIN}"
+    # heal any unmerged paths before staging (parallel-wave safety)
+    U=$(git status --porcelain | grep -cE '^(UU|AA|U |DU)' || true)
+    if [ "$U" != "0" ]; then
+      for f in $(git status --porcelain | grep -E '^(UU|AA|U |DU)' | sed 's/^...//'); do
+        git show ":3:$f" > "$f" 2>/dev/null || true
+        git add "$f" 2>/dev/null || true
+      done
+    fi
     if [ -f agents/redact-telemetry.mjs ]; then node agents/redact-telemetry.mjs agents/dex-core.json agents/arb-mesh.json agents/mm-volume.json agents/dex-xc.json agents/dex-router.json >/dev/null 2>&1 || true; fi
     git add ${paths} 2>/dev/null || true
     if ! git diff --cached --quiet; then
@@ -267,6 +298,7 @@ function runDexFamily() {
   if (running.has("dex-family")) { log("dex-family: skipped — previous flight still running"); return; }
   running.add("dex-family");
   try {
+    healUnmerged(DOMAIN);
     const pull = spawnSync("git", ["-c", "rebase.autoStash=true", "pull", "--rebase", "-X", "theirs", "-q", "origin", "main"], { cwd: DOMAIN, encoding: "utf8" });
     if (pull.status !== 0) log(`dex-family: pull note exit=${pull.status} ${(pull.stderr || "").slice(-100)}`);
     dexFamily();
