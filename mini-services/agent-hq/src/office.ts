@@ -47,10 +47,18 @@ const PATROL_COOLDOWN_MS = 2 * 60_000;
 // החוק החדש: פנוי ≠ פסלון. עובד פנוי יוצא (מתוזמן, מתויג-כנה) להפסקת-קפה
 // אמיתית בבר — הליכה, לגימה, חזרה — והחדר נשאר חי גם בין-משמרות. זו
 // הפסקה, לעולם לא עבודה: אפס אנימציית-הקלדה ואפס ספירת-ops על הפסקה.
-const BREAK_IDLE_MIN_MS = 70_000; // פנוי לפחות כמה זמן לפני הפסקה
-const BREAK_STAGGER_MS = 150_000; // פיזור דטרמיניסטי-לסוכן מעל המינימום
-const BREAK_STAY_MS = 24_000; // כמה זמן עומדים בבר
+const BREAK_IDLE_MIN_MS = 150_000; // 3-b: פנוי לפחות 2.5 דק' לפני יציאה (היה 70 שנ' — הבר התמלא)
+const BREAK_STAGGER_MS = 210_000; // פיזור דטרמיניסטי-לסוכן מעל המינימום
+const BREAK_STAY_MS = 15_000; // 3-b: לגימה קצרה (היה 24 שנ')
 const BREAK_WALK_MS = 4_500; // משך-הליכה משוער שולחן↔בר (המוח הולך בקצב אמיתי)
+// 3-b owner law ("שלא ישתו כלכך הרבה קפה"): the measured capture caught 4-5 of
+// 6 agents at the bar simultaneously and the drift REPEATED after every return.
+// Coffee is now rare (global slot + per-agent cooldown) and brief; every other
+// idle worker past the threshold goes to the LIBRARY and reads a REAL book from
+// the foreman's measured shelf — the room fills with work/reading, not a bar crowd.
+const MAX_ON_BREAK = 1; // אף פעם לא יותר מסוכן אחד בבר
+const BREAK_COOLDOWN_MS = 10 * 60_000; // מקסימום הפסקה אחת לסוכן כל ~10 דק'
+const LIBRARY_STAY_MS = 75_000; // מסלול-קריאה בספרייה (חלון 60-90 שנ' מה-hash)
 // תקורה-מקבילה: עד-כמה עובדים מריצים משימות במקביל (היה 1-התחלה/טיק —
 // עם rt.running לכל-סוכן; העלאת-המקביליות משלשת את התפוקה הנראית).
 const MAX_WORKER_STARTS_PER_TICK = 2;
@@ -365,9 +373,16 @@ interface AgentRuntime {
   logs: LogEntry[];
   running: boolean;
   pendingAnswer?: { option?: string; text?: string };
-  /** Task 52 break choreography — honest, labeled, never counted as work */
+  /** Task 52 break choreography — honest, labeled, never counted as work.
+   *  3-b additions: per-agent coffee cooldown + in-choreography flag. */
   onBreak: boolean;
   breakTaken: number;
+  /** epoch ms of the agent's last finished break — BREAK_COOLDOWN_MS gate */
+  lastBreakEnd?: number;
+  /** true while a break/reading choreography is mid-flight (re-entry guard) */
+  choring?: boolean;
+  /** epoch ms of the agent's last finished library-reading stay */
+  lastLibraryEnd?: number;
 }
 
 export class Office {
@@ -431,6 +446,7 @@ export class Office {
         running: false,
         onBreak: false,
         breakTaken: 0,
+        choring: false,
       });
     }
     this.status = {
@@ -1396,12 +1412,18 @@ export class Office {
   // ---- Task 52: break choreography (honest, labeled, never work) ---------------------------
   /**
    * נמדד-חי: אחרי-סגירת-משמרת כל-הסוכנים ישבו פסלונים (idle 3383s מול העיניים
-   * של הבעלים). החוק החדש: עובד שנפנה יוצא להפסקת-קפה אמיתית — הליכה אל הבר
-   * (מזרח-דרום), עמידה ולגימה, חזרה לשולחן. הפיזור בין-הסוכנים דטרמיניסטי
-   * מה-id (החדר לא יוצא להפסקה במקה). ההפסקה מתויגת 'הפסקת קפה' ולעולם לא
-   * נספרת כעבודה — אפס אנימציית-הקלדה, אפס ops. משימה שמגיעה בזמן-הפסקה
-   * גוברת: runWorker מציב running=true וההפסקה מנותקת-עצמאית בלי לגרור
-   * את הסוכן מהמקלדת.
+   * של הבעלים). החוק הראשון (Task 52): עובד שנפנה יוצא להפסקת-קפה אמיתית.
+   * המדידה-החדשה (3-b, פניית-הבעלים "שלא ישתו כלכך הרבה קפה"): התפיסה קלטה
+   * 4-5 מתוך 6 סוכנים עומדים בבר במקביל ("הפסקת קפה" בבועות) — כל עובד פנוי
+   * נדד לבר אחרי-הסף שלו, ואחרי-חזרה נדד שוב (אין-קירור), כך ששעות-שקטות
+   * הפכו לקהל-קפה. החוק המתוקן (עדיין כן, עדיין מתויג, לעולם לא נספר כעבודה):
+   *   · מקסימום סוכן אחד בבר בכל רגע (MAX_ON_BREAK = 1)
+   *   · קירור-פר-סוכן: לכל היותר הפסקה אחת כל BREAK_COOLDOWN_MS
+   *   · ההפסקה עצמה קצרה (הליכה + לגימה קצרה + חזרה)
+   *   · כל שאר הפנויים שעברו-את-הסף הולכים לספרייה וקוראים ספר אמיתי מהמדף
+   *     הנמדד של הפורמן (this.books) — החדר מתמלא בעבודה/קריאה, לא בקהל-בר.
+   * משימה שמגיעה בזמן-ההפסקה/הקריאה גוברת: runWorker מציב running=true
+   * והמסלול מנותק-עצמאית בלי לגרור את הסוכן מהמקלדת.
    */
   private breakHash(id: string): number {
     let h = 2166136261;
@@ -1415,21 +1437,57 @@ export class Office {
   private maybeBreak() {
     if (this.status.backend === 'sim') return;
     const now = Date.now();
+    const onBreakCount = [...this.agents.values()].filter((rt) => rt.onBreak).length;
     for (const [id, rt] of this.agents) {
-      if (id === LEAD || rt.running || rt.onBreak) continue;
+      if (id === LEAD || rt.running || rt.onBreak || rt.choring) continue;
       if (rt.view.station !== 'desk' || rt.view.state !== 'idle') continue;
       const idleFor = now - rt.view.since;
       // פיזור דטרמיניסטי: לכל סוכן סף-יציאה משלו מעל המינימום — החדר נשאר מאוכלס
       const threshold = BREAK_IDLE_MIN_MS + (this.breakHash(id) / 1000) * BREAK_STAGGER_MS;
       if (idleFor < threshold) continue;
+      // קירור-קפה פר-סוכן: עבר הפסקה לאחרונה? הפעם הוא הולך לקרוא, לא לשתות
+      if (rt.lastBreakEnd && now - rt.lastBreakEnd < BREAK_COOLDOWN_MS) { void this.readAtLibrary(id); continue; }
+      // תור-הבר: סוכן אחד בלבד בכל רגע — השאר קוראים בספרייה
+      if (onBreakCount >= MAX_ON_BREAK) { void this.readAtLibrary(id); continue; }
       void this.takeBreak(id);
+    }
+  }
+
+  /** ספר אמיתי לקריאה: הספרים של הסוכן מהמדף הנמדד של הפורמן; רוטציה לאט מה-hash */
+  private bookFor(id: string): string {
+    const mine = (crewOf(id)?.books ?? []).filter((b) => this.books.some((bb) => bb.id === b));
+    const pool = mine.length ? mine : this.books.map((b) => b.id);
+    if (!pool.length) return 'ספרי-הצי';
+    const bucket = Math.floor(Date.now() / 600_000); // רוטציה כל 10 דק'
+    return pool[this.breakHash(id + bucket) % pool.length]!;
+  }
+
+  /** 3-b: קריאת-ספר אמיתי בספרייה — מצב-ביניים מכובד לפנוי (לא קפה, לא פסלון) */
+  private async readAtLibrary(id: string) {
+    const rt = this.agents.get(id);
+    if (!rt || rt.running || rt.onBreak || rt.choring) return;
+    rt.choring = true;
+    try {
+      this.setState(id, 'walking', 'הולך לקרוא בספרייה', 'library');
+      await sleep(BREAK_WALK_MS);
+      if (rt.running || rt.view.station !== 'library' || rt.view.state !== 'walking') return;
+      this.setState(id, 'reading', `קורא ${this.bookFor(id)} — סיור-רענון`, 'library');
+      await sleep(LIBRARY_STAY_MS + (this.breakHash(id + 'r') / 1000) * 30_000);
+      if (rt.running || rt.view.station !== 'library') return;
+      this.setState(id, 'walking', 'חוזר מהספרייה', 'desk');
+      await sleep(BREAK_WALK_MS);
+      if (!rt.running) this.setState(id, 'idle', '', 'desk');
+    } finally {
+      rt.choring = false;
+      rt.lastLibraryEnd = Date.now();
     }
   }
 
   private async takeBreak(id: string) {
     const rt = this.agents.get(id)!;
-    if (rt.running || rt.onBreak) return;
+    if (rt.running || rt.onBreak || rt.choring) return;
     rt.onBreak = true;
+    rt.choring = true;
     try {
       this.setState(id, 'walking', 'יוצא להפסקת קפה', 'coffee');
       await sleep(BREAK_WALK_MS);
@@ -1443,6 +1501,8 @@ export class Office {
       if (!rt.running) this.setState(id, 'idle', '', 'desk');
     } finally {
       rt.onBreak = false;
+      rt.choring = false;
+      rt.lastBreakEnd = Date.now();
       rt.breakTaken++;
     }
   }

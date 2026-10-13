@@ -7,6 +7,21 @@
 // Honesty law: everything in the JSON was actually emitted by the foreman.
 // Nothing is invented; when the office is quiet, the JSON says so.
 //
+// COUNTS LAW (3-b fix, 2026-10-13): counts were WINDOW-EVENT counters (bumped
+// per socket event during the capture window), so a quiet window showed
+// counts.task=0 next to a 158-task array — the owner read it as "the wall is
+// broken". Now counts = the MEASURED SIZES of the arrays shipped in this very
+// file (agent/task/feed/decision/report/bubble are self-consistent totals);
+// only log/goal remain window-event counters (their arrays are not shipped),
+// and the header comment says so.
+//
+// MEMORY LAW (3-b fix, 2026-10-13): the foreman ships its git-restored shift
+// memory at snapshot.status.memory ({shifts, lessons}) — NOT at the snapshot
+// root. The capture read s.memory, found nothing, and published memory:null
+// forever, so every reader showed "0 משמרות, 0 לקחים". Now both paths are
+// read (status.memory first, root as fallback) — still foreman-emitted truth
+// only, never invented.
+//
 // Usage: bun tools/office-state-capture.ts [port] [outFile] [captureMs]
 //   port      default 3010
 //   outFile   default office-state.json
@@ -60,7 +75,9 @@ socket.on('snapshot', (s: any) => {
   state.mode = s?.mode ?? s?.status?.mode ?? null;
   state.agents = Array.isArray(s?.agents) ? s.agents : [];
   state.books = Array.isArray(s?.books) ? s.books.length : state.books;
-  if (s?.memory) state.memory = s.memory;
+  // foreman path: status.memory = {shifts, lessons} (git-restored); root memory = legacy fallback
+  const mem = s?.status?.memory ?? s?.memory;
+  if (mem) state.memory = mem;
   if (Array.isArray(s?.tasks)) state.tasks = s.tasks;
 });
 
@@ -95,6 +112,18 @@ socket.on('report', (r: { id?: string; title?: string; agentId?: string }) => {
 
 setTimeout(() => {
   state.feed.reverse(); // newest first
+  // COUNTS LAW: publish the measured sizes of THIS file's arrays (self-consistent
+  // totals a reader can verify against the arrays), never a quiet-window zero.
+  state.counts = {
+    agent: state.agents.length,
+    task: state.tasks.length,
+    log: state.counts.log, // window-event counter (log entries are not shipped)
+    feed: state.feed.length,
+    decision: state.decisions.length,
+    report: state.reports.length,
+    goal: state.counts.goal, // window-event counter (goals are not shipped)
+    bubble: state.feed.filter((f) => f.kind.startsWith('bubble:')).length,
+  };
   writeFileSync(OUT, JSON.stringify(state, null, 2), 'utf8');
   console.log(`[office-state-capture] wrote ${OUT}: connected=${state.connected} backend=${state.backend} agents=${state.agents.length} tasks=${state.tasks.length} reports=${state.reports.length} events={${Object.entries(state.counts).map(([k, v]) => `${k}:${v}`).join(',')}}`);
   socket.disconnect();
