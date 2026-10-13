@@ -290,7 +290,11 @@ function publishDexFamily(): string {
     else
       echo "NO-CHANGE"
     fi`;
-  const pub = spawnSync("bash", ["-c", script], { cwd: DOMAIN, encoding: "utf8", timeout: 3 * 60_000 });
+  const penv = { ...envFor() } as NodeJS.ProcessEnv;
+  if (penv.GITHUB_PAT && !penv.GIT_PAT) penv.GIT_PAT = penv.GITHUB_PAT;
+  if (existsSync(GIT_ASKPASS)) penv.GIT_ASKPASS = GIT_ASKPASS;
+  penv.GIT_TERMINAL_PROMPT = "0";
+  const pub = spawnSync("bash", ["-c", script], { cwd: DOMAIN, env: penv, encoding: "utf8", timeout: 3 * 60_000 });
   return ((pub.stdout || "") + (pub.stderr ? " ERR:" + pub.stderr.slice(-120) : "")).trim().slice(-200);
 }
 
