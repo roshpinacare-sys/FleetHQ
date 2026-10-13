@@ -1,54 +1,54 @@
 {
-  "capturedAt": "2026-10-13T05:37:53.997Z",
+  "capturedAt": "2026-10-13T07:11:47.009Z",
   "connected": true,
   "backend": "live",
-  "statusHe": "צוות חי — זיכרון שוחזר מהגיט (13 משמרות, 11 לקחים)",
+  "statusHe": "צוות חי — זיכרון שוחזר מהגיט (14 משמרות, 12 לקחים)",
   "mode": null,
   "agents": [
     {
       "id": "aluf",
-      "state": "idle",
-      "activity": "",
+      "state": "thinking",
+      "activity": "מתכנן את היעד…",
       "station": "wall",
-      "since": 1791869865798,
+      "since": 1791875338884,
       "taskId": "t1705"
     },
     {
       "id": "gal",
       "state": "idle",
-      "activity": "",
-      "station": "desk",
-      "since": 1791869856279,
-      "taskId": "t1705"
+      "activity": "הפסקת קפה — לגימה ורענון",
+      "station": "coffee",
+      "since": 1791875522737
     },
     {
       "id": "erez",
       "state": "idle",
       "activity": "הפסקת קפה — לגימה ורענון",
       "station": "coffee",
-      "since": 1791869887468
+      "since": 1791875520537
     },
     {
       "id": "tamar",
       "state": "idle",
-      "activity": "",
-      "station": "desk",
-      "since": 1791869830127
+      "activity": "הפסקת קפה — לגימה ורענון",
+      "station": "coffee",
+      "since": 1791875535939,
+      "taskId": "t1705"
     },
     {
       "id": "shachar",
       "state": "reading",
-      "activity": "סורק את מדף הספרים",
+      "activity": "קורא learning-summary",
       "station": "library",
-      "since": 1791869883700,
-      "taskId": "t1705"
+      "since": 1791875535089,
+      "taskId": "t1719"
     },
     {
       "id": "yarden",
       "state": "idle",
       "activity": "הפסקת קפה — לגימה ורענון",
       "station": "coffee",
-      "since": 1791869898475
+      "since": 1791875531539
     }
   ],
   "tasks": [
@@ -2334,41 +2334,75 @@
       "id": "t1705",
       "title": "סיור שגרה: סרוק את ספרי הצי ודווח מה ישן או דורש בדיקה",
       "description": "סיור שגרה: סרוק את ספרי הצי ודווח מה ישן או דורש בדיקה",
-      "status": "doing",
+      "status": "done",
       "assignee": "shachar",
       "dependsOn": [],
       "why": "מדדים, מפקד ולמידה של הצי",
       "matchBy": "fit",
       "createdBy": "aluf",
       "createdAt": 1791869644074,
-      "updatedAt": 1791869867562,
-      "startedAt": 1791869867562,
-      "summary": "[redo 1] Provide a detailed report of the inventory books, listing items that are old or require inspection, including dates and condition.",
-      "durationMs": 128151
+      "updatedAt": 1791875174015,
+      "startedAt": 1791875069195,
+      "summary": "סיור שגרה הושלם. ממצאים מדודים: 1) fleet-census בן 106 שעות (עודכן 2026-10-08T21:06:44Z) — הספר הישן בצי הליבה. 2) fleet-indicators מראה verdict DEGRADED עם 4 מדדי DECLINE; שלושה ספרי-ליבה (econ-book 158h, curation-book 164.4h, money-ledger 158h) אינם fresh. 3) pulse-book: advisory triage במצב STALE-NOT-JOINED בן 213.3 שעות (סף 36h), יומן יומי ריק (0 commits), 0 התקבלו היום. 4) F9 Autonomy Realiza",
+      "durationMs": 70550
+    },
+    {
+      "id": "t1719",
+      "title": "סיור שגרה: סרוק את ספרי הצי ודווח מה ישן או דורש בדיקה",
+      "description": "סיור שגרה: סרוק את ספרי הצי ודווח מה ישן או דורש בדיקה",
+      "status": "doing",
+      "assignee": "shachar",
+      "dependsOn": [],
+      "why": "מדדים, מפקד ולמידה של הצי",
+      "matchBy": "fit",
+      "createdBy": "aluf",
+      "createdAt": 1791875464958,
+      "updatedAt": 1791875464959,
+      "startedAt": 1791875464959
     }
   ],
   "books": 22,
   "memory": null,
   "counts": {
-    "agent": 6,
+    "agent": 14,
     "task": 0,
-    "log": 4,
+    "log": 12,
     "feed": 0,
     "decision": 0,
     "report": 0,
     "goal": 0,
-    "bubble": 2
+    "bubble": 6
   },
   "feed": [
     {
-      "kind": "bubble:yarden",
+      "kind": "bubble:tamar",
       "text": "לגימה מהירה — וחוזרים לעבודה.",
-      "at": 1791869898475
+      "at": 1791875535940
     },
     {
       "kind": "bubble:shachar",
-      "text": "סורק רשימת ספרי הצי",
-      "at": 1791869883700
+      "text": "קורא learning-summary",
+      "at": 1791875535090
+    },
+    {
+      "kind": "bubble:yarden",
+      "text": "לגימה מהירה — וחוזרים לעבודה.",
+      "at": 1791875531539
+    },
+    {
+      "kind": "bubble:shachar",
+      "text": "קורא pulse-book",
+      "at": 1791875525822
+    },
+    {
+      "kind": "bubble:gal",
+      "text": "לגימה מהירה — וחוזרים לעבודה.",
+      "at": 1791875522737
+    },
+    {
+      "kind": "bubble:shachar",
+      "text": "קורא fleet-indicators",
+      "at": 1791875519265
     }
   ],
   "reports": [],
