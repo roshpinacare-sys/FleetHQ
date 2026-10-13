@@ -1,6 +1,6 @@
 {
- "at": "2026-10-12T23:58:27.549Z",
- "finishedAt": "2026-10-12T23:58:57.345Z",
+ "at": "2026-10-13T10:22:15.045Z",
+ "finishedAt": "2026-10-13T10:22:31.820Z",
  "checks": {
   "boot": {
    "app": {
@@ -20,15 +20,15 @@
   "connectivity": {
    "exit": 0,
    "verdictHe": "נמדדו 0 קבצי-קוד יתומים ו-1 ארטיפקטים ללא צרכן",
-   "sha16": "b856207d8d1fe34f"
+   "sha16": "99adf04b853b704a"
   },
   "freshOracle": {
    "exit": 0,
    "verdict": "FRESH"
   },
   "silence": {
-   "exit": 0,
-   "summary": "6 ALARM(S): beat/grid-pulse: no data (cannot prove alive) · post/hive/acct-00: no data (cannot prove alive) · post/hive/acct-12: no data (cannot prove alive) · post/hive/acct-11: no data (cannot prove alive) · post/hive/acct-01: silent 14914min (limit 2880) · post/hive/acct-13: no data (cannot prove alive)",
+   "exit": 2,
+   "summary": "6 ALARM(S): beat/money-watch: no data (cannot prove alive) · beat/dex-mirror: no data (cannot prove alive) · beat/grid-pulse: no data (cannot prove alive) · beat/office-ci-lite: no data (cannot prove alive) · beat/office-heartbeat: no data (cannot prove alive) · roster: unresolved — no FLEET_ROSTER_MAP in env/estate/.env.local and no local map file; post voices unmeasurable",
    "alarms": 6
   },
   "gitHealth": {
@@ -44,23 +44,23 @@
     {
      "name": "Domain",
      "attached": true,
-     "ahead": 0,
-     "behind": 0,
+     "ahead": 1,
+     "behind": 5,
      "fsck": "ok"
     },
     {
      "name": "FleetHQ",
      "attached": true,
-     "ahead": 5,
-     "behind": 1,
+     "ahead": 0,
+     "behind": 0,
      "fsck": "ok"
     }
    ]
   },
   "push": {
-   "ok": false,
-   "attempts": 3,
-   "note": "push failed after 3 jittered attempts — receipts remain local, next cycle retries (honest, no fakes)"
+   "ok": true,
+   "attempts": 1,
+   "note": "pushed"
   }
  },
  "state": "ok"

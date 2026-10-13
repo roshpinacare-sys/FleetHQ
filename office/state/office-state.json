@@ -1,5 +1,5 @@
 {
-  "capturedAt": "2026-10-13T10:37:29.408Z",
+  "capturedAt": "2026-10-13T10:41:18.782Z",
   "connected": true,
   "backend": "live",
   "statusHe": "צוות חי — זיכרון שוחזר מהגיט (17 משמרות, 14 לקחים)",
@@ -10,45 +10,47 @@
       "state": "thinking",
       "activity": "מתכנן את היעד…",
       "station": "wall",
-      "since": 1791887754329,
-      "taskId": "t1719"
+      "since": 1791888041666,
+      "taskId": "t1753"
     },
     {
       "id": "gal",
       "state": "idle",
       "activity": "",
       "station": "desk",
-      "since": 1791887816582,
-      "taskId": "t1719"
+      "since": 1791888089842,
+      "taskId": "t1753"
     },
     {
       "id": "erez",
-      "state": "idle",
-      "activity": "הפסקת קפה — לגימה ורענון",
-      "station": "coffee",
-      "since": 1791887862923
+      "state": "reading",
+      "activity": "קורא workflow-audit",
+      "station": "library",
+      "since": 1791888103377,
+      "taskId": "t1782"
     },
     {
       "id": "tamar",
       "state": "idle",
-      "activity": "",
-      "station": "desk",
-      "since": 1791887805573
+      "activity": "הפסקת קפה — לגימה ורענון",
+      "station": "coffee",
+      "since": 1791888098744,
+      "taskId": "t1740"
     },
     {
       "id": "shachar",
-      "state": "reading",
-      "activity": "קורא learning-summary",
-      "station": "library",
-      "since": 1791887877099,
-      "taskId": "t1732"
+      "state": "idle",
+      "activity": "",
+      "station": "desk",
+      "since": 1791887968831,
+      "taskId": "t1740"
     },
     {
       "id": "yarden",
       "state": "idle",
-      "activity": "הפסקת קפה — לגימה ורענון",
-      "station": "coffee",
-      "since": 1791887873925
+      "activity": "",
+      "station": "desk",
+      "since": 1791887913829
     }
   ],
   "tasks": [
@@ -2357,43 +2359,120 @@
       "matchBy": "fit",
       "createdBy": "aluf",
       "createdAt": 1791875464958,
-      "updatedAt": 1791887580256,
-      "startedAt": 1791887411591,
-      "summary": "",
-      "durationMs": 155972
+      "updatedAt": 1791887067128,
+      "startedAt": 1791886930322,
+      "summary": "סיור שגרה הושלם. 9 ספרים מעל 24 שעות: truth-history (381.0h), deep-audit (225.7h), sovereign-policy (229.9h), scheduler-audit (210.1h), econ-book (205.4h), fleet-roster (204.3h), sovereign-state (109.3h), fleet-census (109.3h), fleet-indicators (47.3h). דוח נשמר.",
+      "durationMs": 86657
     },
     {
-      "id": "t1732",
+      "id": "t1740",
       "title": "סיור שגרה: סרוק את ספרי הצי ודווח מה ישן או דורש בדיקה",
       "description": "סיור שגרה: סרוק את ספרי הצי ודווח מה ישן או דורש בדיקה",
-      "status": "doing",
+      "status": "done",
       "assignee": "shachar",
       "dependsOn": [],
       "why": "מדדים, מפקד ולמידה של הצי",
       "matchBy": "fit",
       "createdBy": "aluf",
-      "createdAt": 1791887838392,
-      "updatedAt": 1791887838392,
-      "startedAt": 1791887838392
+      "createdAt": 1791887318483,
+      "updatedAt": 1791887478828,
+      "startedAt": 1791887318483,
+      "summary": "סיור שגרה הושלם. דוח נשמר: 'סיור שגרה — דוח מצב ספרי הצי'.\n\nממצאים עיקריים (נתונים מדודים):\n- fleet-census: 109.3 ש׳ (עודכן 2026-10-08T21:06:44Z)\n- fleet-indicators: 47.4 ש׳, מצב DEGRADED, ספרי ליבה ישנים: econ-book 158 ש׳, curation-book 164.4 ש׳, money-ledger 158 ש׳\n- pulse-book advisoryTriag: 213.3 ש׳ (מ-2026-10-03T15:08:54Z), מצב STALE-NOT-JOINED\n- learning-summary: 12.3 ש׳ (עודכן 2026-10-12T22",
+      "durationMs": 128641
+    },
+    {
+      "id": "t1753",
+      "title": "סיור שגרה: צלב בין שני ספרי צי ודווח על פערים שנמצאו",
+      "description": "סיור שגרה: צלב בין שני ספרי צי ודווח על פערים שנמצאו",
+      "status": "done",
+      "assignee": "gal",
+      "dependsOn": [],
+      "why": "ספרי הדקס, המסחר וההגיון הפנימי",
+      "matchBy": "fit",
+      "createdBy": "aluf",
+      "createdAt": 1791887707632,
+      "updatedAt": 1791887892391,
+      "startedAt": 1791887707632,
+      "summary": "סיור שגרה הושלם: צולבו dex-book (גיל 9.9h) ו-market-grid (גיל 1.0h). נמצאו פערים בשוק SBD/STEEM: פער זמן 8.9 שעות, פער ask 0.79%, פער mid 0.43%, spreadPct שונה (1.65% מול 0%), עומק ספר שונה (17/20 מול 10/10). דו\"ח נשמר.",
+      "durationMs": 141387
+    },
+    {
+      "id": "t1782",
+      "title": "סיור שגרה: בדוק את תקינות ספרי הביקורת והרישום של הצי",
+      "status": "doing",
+      "description": "סיור שגרה: בדוק את תקינות ספרי הביקורת והרישום של הצי",
+      "assignee": "erez",
+      "dependsOn": [],
+      "why": "ביקורות, טענות וחוזי יכולת",
+      "matchBy": "fit",
+      "createdBy": "aluf",
+      "createdAt": 1791888086085,
+      "updatedAt": 1791888086086,
+      "startedAt": 1791888086086
     }
   ],
   "books": 22,
   "memory": null,
   "counts": {
-    "agent": 9,
-    "task": 0,
-    "log": 11,
-    "feed": 0,
+    "agent": 12,
+    "task": 2,
+    "log": 12,
+    "feed": 2,
     "decision": 0,
     "report": 0,
-    "goal": 0,
-    "bubble": 1
+    "goal": 2,
+    "bubble": 4
   },
   "feed": [
     {
-      "kind": "bubble:yarden",
+      "kind": "bubble:erez",
+      "text": "בודק workflow-audit",
+      "at": 1791888103378
+    },
+    {
+      "kind": "bubble:tamar",
       "text": "לגימה מהירה — וחוזרים לעבודה.",
-      "at": 1791887873926
+      "at": 1791888098745
+    },
+    {
+      "kind": "bubble:erez",
+      "text": "בודק ספרי ביקורת",
+      "at": 1791888097762
+    },
+    {
+      "kind": "bubble:erez",
+      "text": "מתחיל סיור שגרה",
+      "at": 1791888093245
+    },
+    {
+      "kind": "goal",
+      "text": "{\"id\":\"g1780\",\"text\":\"סיור שגרה: בדוק את תקינות ספרי הביקורת והרישום של הצי\",\"status\":\"active\",\"progress\":0.94,\"createdAt\":1791888040766,\"updatedAt\":1791888087644,\"origin\":\"patrol\"}",
+      "at": 1791888087644
+    },
+    {
+      "kind": "task",
+      "text": "doing: סיור שגרה: בדוק את תקינות ספרי הביקורת והרישום של הצי",
+      "at": 1791888086090
+    },
+    {
+      "kind": "goal",
+      "text": "{\"id\":\"g1780\",\"text\":\"סיור שגרה: בדוק את תקינות ספרי הביקורת והרישום של הצי\",\"status\":\"active\",\"progress\":0.05,\"createdAt\":1791888040766,\"updatedAt\":1791888086086,\"origin\":\"patrol\"}",
+      "at": 1791888086090
+    },
+    {
+      "kind": "system",
+      "text": "לא התקבלה תוכנית מיושרת-יעד — הראש-המטה מקצה את היעד עצמו לארז (התאמת FIT)",
+      "at": 1791888086090
+    },
+    {
+      "kind": "task",
+      "text": "משימה חדשה: סיור שגרה: בדוק את תקינות ספרי הביקורת והרישום של הצי",
+      "at": 1791888086090
+    },
+    {
+      "kind": "task",
+      "text": "todo: סיור שגרה: בדוק את תקינות ספרי הביקורת והרישום של הצי",
+      "at": 1791888086086
     }
   ],
   "reports": [],
