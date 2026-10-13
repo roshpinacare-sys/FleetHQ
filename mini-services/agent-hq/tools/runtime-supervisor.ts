@@ -30,7 +30,10 @@ import { connect } from 'net';
 import fs from 'fs';
 import path from 'path';
 
-const ROOT = '/home/z/my-project';
+// WIPE-#4 law (2026-10-13, task 27-b): the root is DERIVED (env → import.meta.dir),
+// never hardcoded — the checkout moved to /home/z/estate/FleetHQ and hardcoded
+// paths silently killed this sentinel. tools/ → agent-hq → mini-services → root.
+const ROOT = process.env.AGENT_HQ_FLEET_DIR ?? path.resolve(import.meta.dir, '..', '..', '..');
 const RECEIPTS = path.join(ROOT, 'receipts');
 const RUNTIME = path.join(RECEIPTS, 'runtime');
 const JOURNAL = path.join(RECEIPTS, 'runtime-supervisor.jsonl');
@@ -57,7 +60,8 @@ const services: ServiceDef[] = [
     script: 'index.ts',
     env: {
       AGENT_HQ_PORT: String(process.env.AGENT_HQ_PORT || 3010),
-      AGENT_HQ_DATA_DIR: process.env.AGENT_HQ_DATA_DIR || path.join(ROOT, 'Domain'),
+      AGENT_HQ_DATA_DIR: process.env.AGENT_HQ_DATA_DIR
+        || (fs.existsSync(path.join(path.dirname(ROOT), 'Domain')) ? path.join(path.dirname(ROOT), 'Domain') : path.join(ROOT, 'Domain')),
       // the office's own code repo (the git-learning wire studies it):
       AGENT_HQ_FLEET_DIR: process.env.AGENT_HQ_FLEET_DIR || ROOT,
     },

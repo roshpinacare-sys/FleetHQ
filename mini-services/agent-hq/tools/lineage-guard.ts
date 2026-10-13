@@ -7,7 +7,7 @@
 // sanity-syntax-compile the changed sources, and keep the deployment path
 // perfectly linear — without waiting for a human.
 //
-// TURF: this guard covers ONLY the FleetHQ checkout (/home/z/my-project).
+// TURF: this guard covers ONLY the FleetHQ checkout (derived ROOT — estate law 27-b).
 // The Domain clone has its own syncer (domain-sync.sh, 600s loop) — two
 // pushers on one repo is the proven twin-race pathology, so the guard never
 // touches Domain.
@@ -40,7 +40,11 @@ import { execFile } from 'child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 
-const ROOT = '/home/z/my-project'; // FleetHQ checkout — nothing else is our turf
+// WIPE-#4 law (2026-10-13, task 27-b): the root is DERIVED (env → import.meta.dir),
+// never hardcoded — the checkout moved to /home/z/estate/FleetHQ and hardcoded
+// paths silently killed this sentinel. tools/ → agent-hq → mini-services → root.
+const ROOT = process.env.AGENT_HQ_FLEET_DIR ?? path.resolve(import.meta.dir, '..', '..', '..');
+// FleetHQ checkout — nothing else is our turf
 const RECEIPTS = path.join(ROOT, 'receipts');
 const STATE_JSON = path.join(RECEIPTS, 'lineage-guard.json');
 const EVENTS_JSONL = path.join(RECEIPTS, 'lineage-guard.jsonl');

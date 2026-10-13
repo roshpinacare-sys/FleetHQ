@@ -21,7 +21,11 @@ import os from 'node:os';
 import crypto from 'node:crypto';
 import { execFile } from 'node:child_process';
 
-const RECEIPTS = '/home/z/my-project/receipts';
+// WIPE-#4 law (2026-10-13, task 27-b): the root is DERIVED (env → import.meta.dir),
+// never hardcoded — the checkout moved to /home/z/estate/FleetHQ and hardcoded
+// paths silently killed this sentinel. tools/ → agent-hq → mini-services → root.
+const ROOT = process.env.AGENT_HQ_FLEET_DIR ?? path.resolve(import.meta.dir, '..', '..', '..');
+const RECEIPTS = path.join(ROOT, 'receipts');
 
 // ---- HOST MEMORY LAW (owner question, answered with code) ----------------
 // The 2.5GB available-memory boundary is the sovereign ceiling: below it the
@@ -45,7 +49,7 @@ const HISTORY_MAX_LINES = 2000;
 // receipts/host-mem.jsonl as edge-triggered records — append-only, so the
 // linear history tree is never rewritten. Every 5 minutes this process also
 // KICKS mem_profiler.py --once so both layers measure the same living host.
-const STACK = '/home/z/my-project/sovereign-stack';
+const STACK = path.join(ROOT, 'sovereign-stack');
 const MEM_JSON = path.join(STACK, 'health', 'mem.json');
 const POLICY_JSON = path.join(STACK, 'health', 'compaction-policy.json');
 const PROFILER_KICK_MS = 5 * 60_000;

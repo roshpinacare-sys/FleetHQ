@@ -21,8 +21,21 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-const ROOT = '/home/z/my-project';
-const DOMAIN = path.join(ROOT, 'Domain');
+// WIPE-#4 root cause (2026-10-13, task 27-b): this constant used to hardcode
+// /home/z/my-project — the pre-estate root. After the checkout moved to
+// /home/z/estate/FleetHQ the transcriptor either never spawned (the health
+// route planted a nonexistent path) or read/wrote the WRONG tree. LAW: the
+// root is DERIVED (env → import.meta.dir), never hardcoded — a moved checkout
+// can never silently kill the office history again.
+const ROOT = process.env.AGENT_HQ_FLEET_DIR
+  ?? path.resolve(import.meta.dir, '..', '..', '..'); // tools/ → agent-hq → mini-services → FleetHQ root
+// The journal lives in the Domain clone: a SIBLING of FleetHQ in the estate
+// layout, a CHILD of the root in the legacy sandbox layout. Env wins, then
+// layout detection — absence is measured, never guessed.
+const DOMAIN = process.env.AGENT_HQ_DATA_DIR
+  ?? (fs.existsSync(path.join(path.dirname(ROOT), 'Domain'))
+    ? path.join(path.dirname(ROOT), 'Domain')
+    : path.join(ROOT, 'Domain'));
 const RECEIPTS = path.join(ROOT, 'receipts');
 const JOURNAL = path.join(DOMAIN, 'agents', 'office-events.jsonl');
 const JOURNAL_PREV = `${JOURNAL}.prev`;
