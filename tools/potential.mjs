@@ -265,7 +265,7 @@ function rows(items, cols) {
 const html = `<!doctype html>
 <html lang="he" dir="rtl"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>לוח הפוטנציאל והגיוס — ריבונות רושפינה</title>
+<title>לוח הפוטנציאל והגיוס · SAOS</title>
 <style>
  :root{--bg:#14110d;--s2:#26201a;--line:#3d342a;--ink:#f3ede2;--ink2:#c9bfae;--ink3:#8f8574;--ok:#2fae63;--warn:#d9a13b;--err:#d95c4a;--acc:#e0a458}
  *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI","Noto Sans Hebrew",Arial,sans-serif;line-height:1.65}
@@ -286,8 +286,8 @@ const html = `<!doctype html>
  .foot a{color:var(--acc)} .stamp{color:var(--ok)}
 </style></head><body><main>
 <h1>לוח הפוטנציאל והגיוס</h1>
-<div class="sub">המשרד שואל תמיד: מה הפוטנציאל · מה פתוח · מה יכול לתת עוד ערך — במדידה, לא בהצהרה. נוצר ${esc(now)}</div>
-<div class="motto">⚖️ ${esc(potential.motto)} כל שורה נושאת מקור + עדות + צעד ראשון. מגויסים: סוכנים ובני-אדם — אותן חוקים.</div>
+<div class="sub">הלוח מציג פוטנציאל, פריטים פתוחים והזדמנויות-ערך — במדידה, לא בהצהרה. נוצר ${esc(now)}</div>
+<div class="motto">${esc(potential.motto)} כל שורה נושאת מקור + עדות + צעד ראשון. מגויסים: סוכנים ובני-אדם — אותם כללים.</div>
 
 <div class="kpis">
  <div class="kpi"><div class="n">${esc(potential.fleetGraph ? potential.fleetGraph.reposActive24h : "unknown")}</div><div class="l">ריפואים פעילים 24h (FLEET-GRAPH)</div></div>
@@ -295,11 +295,11 @@ const html = `<!doctype html>
  <div class="kpi"><div class="n">${esc(potential.fleetGraph ? potential.fleetGraph.queued : "unknown")}</div><div class="l">קשתות בתור (עתיד בבנייה)</div></div>
  <div class="kpi"><div class="n">${esc(openWork.length)}</div><div class="l">פריטי עבודה פתוחים (נמדדו)</div></div>
  <div class="kpi"><div class="n">${esc(potential.theater ? potential.theater.count : "unknown")}</div><div class="l">תיאטרון-קומיטים (נמדד)</div></div>
- <div class="kpi"><div class="n">${esc(potential.ghostsVerification ? potential.ghostsVerification.measured : "unknown")}</div><div class="l">רפאים במפה (חי: ${potential.ghostsVerification && potential.ghostsVerification.resolvedNow && potential.ghostsVerification.resolvedNow.length ? "חודש ✓" : "unknown"})</div></div>
+ <div class="kpi"><div class="n">${esc(potential.ghostsVerification ? potential.ghostsVerification.measured : "unknown")}</div><div class="l">רפאים במפה (חי: ${potential.ghostsVerification && potential.ghostsVerification.resolvedNow && potential.ghostsVerification.resolvedNow.length ? "חודש" : "unknown"})</div></div>
 </div>
 
-<h2>🧑‍🚀 לוח הגיוס — תפקידים פתוחים</h2>
-<table><thead><tr><th>תפקיד</th><th>משימה</th><th>ערך צפוי</th><th>חוק</th></tr></thead>
+<h2>לוח הגיוס — תפקידים פתוחים</h2>
+<table><thead><tr><th>תפקיד</th><th>משימה</th><th>ערך צפוי</th><th>כלל</th></tr></thead>
 <tbody>${rows(potential.recruiting.roles.map(r => ({ role: r.role, mission: r.mission, value: r.value, law: r.law })), ["role", "mission", "value", "law"])}</tbody></table>
 <div class="sub">מסלולות תפוסים (write-log): ${esc(potential.recruiting.claimedLanes.join(" · ") || "אין טענות רשומות")}</div>
 ${potential.officeRecruitment ? `
@@ -308,7 +308,7 @@ ${potential.officeRecruitment ? `
 <tbody><tr><td>${esc(String(potential.officeRecruitment.rolesCount))} תפקידים · agent=${esc(potential.officeRecruitment.agent || "unknown")} · at=${esc(potential.officeRecruitment.at || "unknown")}</td>
 <td>${esc((potential.officeRecruitment.roles || []).map(r => typeof r === "string" ? r : (r.role || r.name || JSON.stringify(r).slice(0, 60))).join(" · ") || "ללא תפקידים פתוחים כרגע")}</td></tr></tbody></table>` : `<div class="sub">תפקידי משרד-ה-Domain: לא נמדדו (recruitment.json לא נשלף)</div>`}
 
-<h2>🧱 עבודה פתוחה — מה הפוטנציאל, מה הצעד הראשון</h2>
+<h2>עבודה פתוחה — מה הפוטנציאל, מה הצעד הראשון</h2>
 <table><thead><tr><th>פריט</th><th>עדות נמדדת</th><th>מקור</th><th>מצב</th><th>ערך צפוי</th><th>צעד ראשון</th></tr></thead>
 <tbody>${rows(openWork.map(w => ({
   id: w.id + " · " + w.status,
@@ -317,18 +317,18 @@ ${potential.officeRecruitment ? `
   expectedValue: w.expectedValue, firstStep: w.firstStep
 })), ["id", "evidence", "source", "status", "expectedValue", "firstStep"])}</tbody></table>
 
-<h2>📊 הצי הנמדד (digest אחרון)</h2>
+<h2>הצי הנמדד (digest אחרון)</h2>
 <table><thead><tr><th>ריפו</th><th>דחיפות 7d</th><th>נדחף</th><th>CI אחרון</th></tr></thead>
 <tbody>${rows(fleet ? fleet.topRepos.map(r => ({ name: r.name, commits7d: r.commits7d, pushedAt: r.pushedAt || "unknown", lastRun: r.lastRun })) : null, ["name", "commits7d", "pushedAt", "lastRun"])}</tbody></table>
 
-<h2>🧾 פרובננציה — מאיפה כל ערך</h2>
+<h2>פרובננציה — מאיפה כל ערך</h2>
 <table><thead><tr><th>קלט</th><th>מקור</th><th>בזמן</th></tr></thead>
 <tbody>${rows(provenance.map(p => ({ name: p.name, source: p.source, at: p.at })), ["name", "source", "at"])}</tbody></table>
 
 <div class="foot">
- מנוע: FleetHQ/tools/potential.mjs · אפס תלות · אפס מפתחות · fail→unknown.
+ מנוע: FleetHQ/tools/potential.mjs · אפס תלות · אפס מפתחות · כשל מוצג כ-unknown.
  עומק-ערך: <a href="${esc(VALUE_MAP_URL)}">מפת הערך ל-13 הריפואים</a> · זרימה: <a href="${esc(FLOW_URL)}">מפת הזרימה החיה</a>.
- אימות-רפאים: ${esc(potential.ghostsVerification ? potential.ghostsVerification.evidence : "unknown")} <span class="stamp">${potential.ghostsVerification && potential.ghostsVerification.resolvedNow && potential.ghostsVerification.resolvedNow.length ? "✓ חודש ואומת" : ""}</span>
+ אימות-רפאים: ${esc(potential.ghostsVerification ? potential.ghostsVerification.evidence : "unknown")} <span class="stamp">${potential.ghostsVerification && potential.ghostsVerification.resolvedNow && potential.ghostsVerification.resolvedNow.length ? "חודש ואומת" : ""}</span>
 </div>
 </main></body></html>`;
 const htmlPath = path.join(DIST, "potential.html");
