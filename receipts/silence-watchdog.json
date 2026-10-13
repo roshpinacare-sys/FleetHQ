@@ -1,68 +1,68 @@
 {
  "schema": "silence.watchdog/1",
- "at": "2026-10-13T03:40:43.640Z",
+ "at": "2026-10-13T11:04:57.182Z",
  "scope": "actions",
  "voices": [
   {
    "name": "origin/FleetHQ",
-   "lastActivity": "2026-10-13T03:33:00.000Z",
-   "ageMin": 8,
+   "lastActivity": "2026-10-13T11:00:36.000Z",
+   "ageMin": 4,
    "maxSilenceMin": 240,
    "verdict": "alive",
    "detail": {
-    "subject": "pacemaker receipt: 2026-10-13T03:33:00Z"
+    "subject": "value-scan: opportunities from measured evidence [skip ci]"
    }
   },
   {
    "name": "origin/Domain",
-   "lastActivity": "2026-10-13T03:37:30.000Z",
-   "ageMin": 3,
+   "lastActivity": "2026-10-13T11:04:13.000Z",
+   "ageMin": 1,
    "maxSilenceMin": 240,
    "verdict": "alive",
    "detail": {
-    "subject": "grid-doctor v2: live fleet truth + drift + phantom-claims 2026-10-13T0"
+    "subject": "office-worldbeat: advance the persistent world"
    }
   },
   {
    "name": "origin/Console",
-   "lastActivity": "2026-10-13T03:20:20.000Z",
-   "ageMin": 20,
+   "lastActivity": "2026-10-13T11:04:11.000Z",
+   "ageMin": 1,
    "maxSilenceMin": 240,
    "verdict": "alive",
    "detail": {
-    "subject": "dex-beat: h17877 · 0 credits · 2026-10-13T03:20Z"
+    "subject": "pacemaker receipt: 2026-10-13T11:04:11Z"
    }
   },
   {
    "name": "divergence/FleetHQ",
-   "lastActivity": "2026-10-13T00:09:30.000Z",
-   "ageMin": 211,
+   "lastActivity": "2026-10-13T10:24:18.000Z",
+   "ageMin": 41,
    "maxSilenceMin": 75,
-   "verdict": "SILENT-ALARM",
+   "verdict": "alive",
    "detail": {
     "source": "push-queue-receipt (via git)",
-    "ahead": 1,
+    "ahead": 0,
     "behind": 0
    }
   },
   {
    "name": "divergence/Domain",
-   "lastActivity": "2026-10-13T00:09:30.000Z",
-   "ageMin": 211,
+   "lastActivity": "2026-10-13T10:24:18.000Z",
+   "ageMin": 41,
    "maxSilenceMin": 75,
-   "verdict": "SILENT-ALARM",
+   "verdict": "alive",
    "detail": {
     "source": "push-queue-receipt (via git)",
     "ahead": 0,
-    "behind": 1
+    "behind": 0
    }
   },
   {
    "name": "divergence/Console",
-   "lastActivity": "2026-10-13T00:09:30.000Z",
-   "ageMin": 211,
+   "lastActivity": "2026-10-13T10:24:18.000Z",
+   "ageMin": 41,
    "maxSilenceMin": 75,
-   "verdict": "SILENT-ALARM",
+   "verdict": "alive",
    "detail": {
     "source": "push-queue-receipt (via git)",
     "ahead": 0,
@@ -71,42 +71,36 @@
   },
   {
    "name": "sandbox-ledger (via git)",
-   "lastActivity": "2026-10-13T00:09:26.017Z",
-   "ageMin": 211,
+   "lastActivity": "2026-10-13T10:52:16.367Z",
+   "ageMin": 13,
    "maxSilenceMin": 180,
-   "verdict": "SILENT-ALARM",
+   "verdict": "alive",
    "detail": {
-    "localSummary": "6 ALARM(S): beat/grid-pulse: no data (cannot prove alive) · post/hive/acct-12: n"
+    "localSummary": "3 ALARM(S): beat/grid-pulse: no data (cannot prove alive) · beat/office-ci-lite:"
    }
   },
   {
    "name": "pages/money",
-   "lastActivity": "2026-10-12T22:34:00.851Z",
-   "ageMin": 307,
+   "lastActivity": "2026-10-13T10:33:20.771Z",
+   "ageMin": 32,
    "maxSilenceMin": 240,
-   "verdict": "SILENT-ALARM",
+   "verdict": "alive",
    "detail": {
     "url": "dex/money.json"
    }
   },
   {
    "name": "pages/site-audit",
-   "lastActivity": "2026-10-13T01:06:49.234Z",
-   "ageMin": 154,
+   "lastActivity": "2026-10-13T10:54:35.750Z",
+   "ageMin": 10,
    "maxSilenceMin": 360,
    "verdict": "alive",
    "detail": {
     "verdict": "unknown",
-    "at": "2026-10-13T01:06:49.234Z"
+    "at": "2026-10-13T10:54:35.750Z"
    }
   }
  ],
- "alarms": [
-  "divergence/FleetHQ: silent 211min (limit 75)",
-  "divergence/Domain: silent 211min (limit 75)",
-  "divergence/Console: silent 211min (limit 75)",
-  "sandbox-ledger (via git): silent 211min (limit 180)",
-  "pages/money: silent 307min (limit 240)"
- ],
- "summary": "5 ALARM(S): divergence/FleetHQ: silent 211min (limit 75) · divergence/Domain: silent 211min (limit 75) · divergence/Console: silent 211min (limit 75) · sandbox-ledger (via git): silent 211min (limit 180) · pages/money: silent 307min (limit 240)"
+ "alarms": [],
+ "summary": "ALL VISIBLE VOICES ALIVE"
 }
