@@ -26,8 +26,14 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import { spawn } from 'node:child_process';
 
-const ROOT = '/home/z/my-project';
-const DATA_DIR = '/home/z/my-project/Domain';
+// WIPE-#4 law (2026-10-13, task 27-b): the root is DERIVED (env → import.meta.dir),
+// never hardcoded — the checkout moved to /home/z/estate/FleetHQ and hardcoded
+// paths silently killed this sentinel. tools/ → agent-hq → mini-services → root.
+const ROOT = process.env.AGENT_HQ_FLEET_DIR ?? path.resolve(import.meta.dir, '..', '..', '..');
+const DATA_DIR = process.env.AGENT_HQ_DATA_DIR
+  ?? (fs.existsSync(path.join(path.dirname(ROOT), 'Domain'))
+    ? path.join(path.dirname(ROOT), 'Domain')
+    : path.join(ROOT, 'Domain'));
 const RECEIPTS = path.join(ROOT, 'receipts');
 const PLANT = path.join(ROOT, 'mini-services/agent-hq/tools/plant-books.ts');
 

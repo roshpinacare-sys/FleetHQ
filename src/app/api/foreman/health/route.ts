@@ -1,7 +1,24 @@
 import { NextResponse } from 'next/server';
 import { spawn, execFile } from 'child_process';
 import { connect } from 'net';
-import { readFileSync } from 'fs';
+import { readFileSync, existsSync } from 'fs';
+import { join, dirname } from 'path';
+
+// WIPE-#4 root cause (2026-10-13, task 27-b): every path below used to hardcode
+// /home/z/my-project — the PRE-ESTATE root. After the checkout moved to
+// /home/z/estate/FleetHQ every sentinel spawn was born dead (bun <nonexistent
+// file>) and the whole chain silently vanished: shift-history, watchdog,
+// telemetry-snapshot, lineage-guard, post-batcher, the runtime supervisor.
+// LAW: paths are DERIVED (env → the server's own cwd), never hardcoded.
+// The Next server runs with cwd = the FleetHQ checkout, so process.cwd() IS
+// the estate truth. The Domain clone is a SIBLING of FleetHQ in the estate
+// layout, a CHILD in the legacy layout — detected, never guessed.
+const HQ = process.env.AGENT_HQ_FLEET_DIR ?? process.cwd();
+const HQ_DATA = process.env.AGENT_HQ_DATA_DIR
+  ?? (existsSync(join(dirname(HQ), 'Domain'))
+    ? join(dirname(HQ), 'Domain')
+    : join(HQ, 'Domain'));
+const HQ_TOOLS = join(HQ, 'mini-services', 'agent-hq', 'tools');
 
 // ============================================================================
 // /api/foreman/health — REPORTER + last-resort planter of the runtime owner.
@@ -30,12 +47,16 @@ export const dynamic = 'force-dynamic';
 
 const PORT = 3010;
 const GW_PORT = 3011;
-const CWD = '/home/z/my-project/mini-services/agent-hq';
+const CWD = join(HQ, 'mini-services/agent-hq');
 
 // the dedicated runtime owner (Task 47)
-const RUNTIME_SUPERVISOR = '/home/z/my-project/mini-services/agent-hq/tools/runtime-supervisor.ts';
-const SUPERVISOR_PID = '/home/z/my-project/receipts/runtime-supervisor.pid';
-const SUPERVISOR_STATE = '/home/z/my-project/receipts/runtime-supervisor-state.json';
+const RUNTIME_SUPERVISOR = join(HQ_TOOLS, 'runtime-supervisor.ts');
+const SUPERVISOR_PID = join(HQ, 'receipts/runtime-supervisor.pid');
+const SUPERVISOR_STATE = join(HQ, 'receipts/runtime-supervisor-state.json');
+
+// the estate spawn env — every child learns where the estate really lives
+// (the same contract boot-services.sh uses for the foreman itself)
+const ESTATE_ENV = { AGENT_HQ_FLEET_DIR: HQ, AGENT_HQ_DATA_DIR: HQ_DATA };
 
 let lastSupervisorPlantAt = 0;
 
@@ -86,14 +107,13 @@ function ensureRuntimeSupervisor(): { alive: boolean; planted: boolean } & Recor
   lastSupervisorPlantAt = now;
   try {
     const child = spawn('bun', [RUNTIME_SUPERVISOR], {
-      cwd: '/home/z/my-project',
+      cwd: HQ,
       detached: true,
       stdio: 'ignore',
       env: {
         ...process.env,
+        ...ESTATE_ENV,
         AGENT_HQ_PORT: String(PORT),
-        AGENT_HQ_DATA_DIR: '/home/z/my-project/Domain',
-        AGENT_HQ_FLEET_DIR: '/home/z/my-project',
       },
     });
     child.unref();
@@ -119,7 +139,7 @@ function ensureSyncLoop() {
       cwd: CWD,
       detached: true,
       stdio: 'ignore',
-      env: { ...process.env, AGENT_HQ_DATA_DIR: '/home/z/my-project/Domain' },
+      env: { ...process.env, ...ESTATE_ENV },
     });
     child.unref();
   }).catch(() => {});
@@ -127,13 +147,13 @@ function ensureSyncLoop() {
 
 // ---- shelf watchdog + telemetry snapshot (receipts/ engines) ---------------
 
-const WATCHDOG_TS = '/home/z/my-project/mini-services/agent-hq/tools/watchdog.ts';
-const SNAPSHOT_TS = '/home/z/my-project/mini-services/agent-hq/tools/telemetry-snapshot.ts';
-const HISTORY_TS = '/home/z/my-project/mini-services/agent-hq/tools/shift-history.ts';
-const LINEAGE_TS = '/home/z/my-project/mini-services/agent-hq/tools/lineage-guard.ts';
-const POSTBATCH_TS = '/home/z/my-project/mini-services/agent-hq/tools/post-batcher.ts';
-const BOOTWATCH_TS = '/home/z/my-project/mini-services/agent-hq/tools/boot-watcher.ts';
-const MONITOR_CMD = '/home/z/my-project/sovereign-stack/health_monitor.py';
+const WATCHDOG_TS = join(HQ_TOOLS, 'watchdog.ts');
+const SNAPSHOT_TS = join(HQ_TOOLS, 'telemetry-snapshot.ts');
+const HISTORY_TS = join(HQ_TOOLS, 'shift-history.ts');
+const LINEAGE_TS = join(HQ_TOOLS, 'lineage-guard.ts');
+const POSTBATCH_TS = join(HQ_TOOLS, 'post-batcher.ts');
+const BOOTWATCH_TS = join(HQ_TOOLS, 'boot-watcher.ts');
+const MONITOR_CMD = join(HQ, 'sovereign-stack/health_monitor.py');
 
 function pgrepAlive(pattern: string): Promise<boolean> {
   return new Promise((resolve) => {
@@ -149,7 +169,12 @@ function ensureNode(label: string, script: string, pattern: string, lastAt: { v:
     const now = Date.now();
     if (now - lastAt.v < 30_000) return false; // debounce respawns
     lastAt.v = now;
-    const child = spawn('bun', [script], { cwd: '/home/z/my-project', detached: true, stdio: 'ignore' });
+    const child = spawn('bun', [script], {
+      cwd: HQ,
+      detached: true,
+      stdio: 'ignore',
+      env: { ...process.env, ...ESTATE_ENV },
+    });
     child.unref();
     console.log(`[supervisor] respawned ${label}`);
     return false; // will report alive on the next poll
@@ -185,13 +210,16 @@ function ensureSentinels(): Promise<{
 }
 
 function ensureMonitor(): Promise<boolean> {
+  // honest guard (27-b): the monitor script is not part of the estate checkout
+  // unless sovereign-stack ships it — absence is reported, never invented.
+  if (!existsSync(MONITOR_CMD)) return Promise.resolve(false);
   return pgrepAlive('health_monitor.py --loop').then((alive) => {
     if (alive) return true;
     const now = Date.now();
     if (now - monitorStamp.v < 30_000) return false;
     monitorStamp.v = now;
     const child = spawn('python3', [MONITOR_CMD, '--loop', '120'], {
-      cwd: '/home/z/my-project/sovereign-stack',
+      cwd: join(HQ, 'sovereign-stack'),
       detached: true,
       stdio: 'ignore',
     });
@@ -202,15 +230,21 @@ function ensureMonitor(): Promise<boolean> {
 }
 
 function ensureBootWatcher(): Promise<boolean> {
+  // estate law (27-b): the boot-watcher's fixed revival target is :3000 — on
+  // this box that is the PLATFORM's own server, not FleetHQ (:3002, owned by
+  // boot-services.sh + office-selfcheck). Planting it here would fight a
+  // server we do not own. Opt-in only, via env, honestly off by default.
+  if (process.env.AGENT_HQ_BOOT_WATCHER !== '1') return Promise.resolve(false);
   return pgrepAlive('tools/boot-watcher.ts').then((alive) => {
     if (alive) return true;
     const now = Date.now();
     if (now - bootwatchStamp.v < 30_000) return false;
     bootwatchStamp.v = now;
     const child = spawn('bun', [BOOTWATCH_TS], {
-      cwd: '/home/z/my-project',
+      cwd: HQ,
       detached: true,
       stdio: 'ignore',
+      env: { ...process.env, ...ESTATE_ENV },
     });
     child.unref();
     console.log('[supervisor] respawned boot-watcher');
@@ -225,9 +259,10 @@ function ensureBatcher(): Promise<boolean> {
     if (now - batcherStamp.v < 30_000) return false;
     batcherStamp.v = now;
     const child = spawn('bun', [POSTBATCH_TS, '--loop', '1800'], {
-      cwd: '/home/z/my-project',
+      cwd: HQ,
       detached: true,
       stdio: 'ignore',
+      env: { ...process.env, ...ESTATE_ENV },
     });
     child.unref();
     console.log('[supervisor] respawned post-batcher');

@@ -20,8 +20,14 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { execSync } from 'node:child_process';
 
-const ROOT = '/home/z/my-project';
-const DATA = path.join(ROOT, 'Domain');
+// WIPE-#4 law (2026-10-13, task 27-b): the root is DERIVED (env → import.meta.dir),
+// never hardcoded — the checkout moved to /home/z/estate/FleetHQ and hardcoded
+// paths silently killed this sentinel. tools/ → agent-hq → mini-services → root.
+const ROOT = process.env.AGENT_HQ_FLEET_DIR ?? path.resolve(import.meta.dir, '..', '..', '..');
+const DATA = process.env.AGENT_HQ_DATA_DIR
+  ?? (fs.existsSync(path.join(path.dirname(ROOT), 'Domain'))
+    ? path.join(path.dirname(ROOT), 'Domain')
+    : path.join(ROOT, 'Domain'));
 const NOW = new Date().toISOString();
 
 function portAlive(port: number): boolean {
@@ -118,7 +124,7 @@ write('agents/sovereign-state.json', {
 // ---- agents/fleet-census.json — what the fleet actually has -------------------------
 const domainFiles = (() => {
   try {
-    return execSync(`rg --files /home/z/my-project/Domain 2>/dev/null | wc -l`, { shell: '/bin/bash', timeout: 8000, encoding: 'utf8' }).trim();
+    return execSync(`rg --files ${DATA} 2>/dev/null | wc -l`, { shell: '/bin/bash', timeout: 8000, encoding: 'utf8' }).trim();
   } catch {
     return '0';
   }

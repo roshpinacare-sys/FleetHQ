@@ -19,7 +19,10 @@ import { connect } from 'net';
 import fs from 'fs';
 import path from 'path';
 
-const ROOT = '/home/z/my-project';
+// WIPE-#4 law (2026-10-13, task 27-b): the root is DERIVED (env → import.meta.dir),
+// never hardcoded — the checkout moved to /home/z/estate/FleetHQ and hardcoded
+// paths silently killed this sentinel. tools/ → agent-hq → mini-services → root.
+const ROOT = process.env.AGENT_HQ_FLEET_DIR ?? path.resolve(import.meta.dir, '..', '..', '..');
 const RECEIPTS = path.join(ROOT, 'receipts');
 const STATE_JSON = path.join(RECEIPTS, 'boot-watcher-state.json');
 const EVENTS_JSONL = path.join(RECEIPTS, 'boot-watcher.jsonl');

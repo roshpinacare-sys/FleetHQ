@@ -234,6 +234,27 @@ else
   log "  local-beats started"
 fi
 
+# shift-history — the office's operational-log transcriptor (task 27-b, wipe-#4
+# law: a STANDING service, not a UI-dependent one). Before this it was only
+# plantable by /api/foreman/health — which (a) nobody may poll for hours and
+# (b) planted hardcoded /home/z/my-project paths, so every spawn was born dead
+# and the office history froze 2026-10-10→13 (owner saw "0 shifts"). It
+# compiles receipts/shift-history-latest.md + history.jsonl + state.json every
+# 60s from the live office journal (Domain/agents/office-events.jsonl).
+# Identity probe by CWD (the local-beats lesson: cmdline strings lie).
+SH_DIR="$ESTATE/FleetHQ/mini-services/agent-hq/tools"
+SH_PID=""
+for p in $(pgrep -f "shift-history.ts" 2>/dev/null); do
+  if [ "$(readlink -f "/proc/$p/cwd" 2>/dev/null)" = "$ESTATE/FleetHQ" ]; then SH_PID=$p; break; fi
+done
+if [ -n "$SH_PID" ]; then
+  log "  shift-history already running (pid $SH_PID)"
+else
+  nohup env AGENT_HQ_FLEET_DIR="$ESTATE/FleetHQ" AGENT_HQ_DATA_DIR="$ESTATE/Domain" \
+    bun "$SH_DIR/shift-history.ts" >> /tmp/boot-shift-history.log 2>&1 &
+  log "  shift-history started"
+fi
+
 # ---------------------------------------------------------------- 8. verdict
 log "stage8: verdict"
 UP=""
