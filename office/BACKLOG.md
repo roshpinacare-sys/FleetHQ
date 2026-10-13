@@ -29,7 +29,7 @@
 | 1 | `research-e1-spread-regime` | research/2026-10-11 (E1 spread-re… | E1 spread-regime — spread tightened (93.48 < 93.5 bps) — grid-side liquidity improving | SAFE | 4 | 2 | — | `builtin-e1-spread-regime` |
 | 2 | `WO-unwired-adsmarket-marketing` | work-orders.json (Sandbox raw) | חבר את ערן-השיווק החי (private-1) למשטח-חי — fact-sheet/pitch/kits EN-HE נגישים מ-Domain | MACHINE-PREP | 7 | 2 | — | `owner-after-prep` |
 | 3 | `research-e2-feed-divergence` | research/2026-10-11 (E2 feed-dive… | E2 feed-divergence — healthy band: divergence 252.14 bps ≤ 300 (feed_above_market) | MACHINE-PREP | 4 | 2 | — | `owner-after-prep` |
-| 4 | `research-e3-rc-census` | research/2026-10-11 (E3 rc-census) | E3 rc-census — 4 RC-starved accounts (<40%): wog 25.94%, acct-11 8.05%, acct-12 2… | 🔒 OWNER-WORD | 4 | 2 | כן | `owner-only` |
+| 4 | `research-e3-rc-census` | research/2026-10-11 (E3 rc-census) | E3 rc-census — 4 RC-starved accounts (<40%): acct-09 25.94%, acct-11 8.05%, acct-12 2… | 🔒 OWNER-WORD | 4 | 2 | כן | `owner-only` |
 
 ## הצעה ראשית של המחזור
 

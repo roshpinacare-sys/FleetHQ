@@ -63,6 +63,47 @@ const hasFlag = (f) => args.includes(f);
 const REPO = resolve(argOf('--root', resolve(HERE, '..')));
 
 const PROTOCOL = 'SAOS-OFFICE-RETRO/1';
+
+// ── refs layer (3-c identity law) ────────────────────────────────────────────
+// The office mirrors upstream research findings VERBATIM (Sandbox
+// research/findings-*.json). Measured leak class (3-a sweep): an experiment
+// verdict quoting a bare SHORT estate token ("acct-09 25.94%" today, real name
+// at HEAD before this fix) landed in BACKLOG/RETRO-LATEST/retro-state beside
+// its already-scrubbed acct-11..13 siblings. Law now: every ingested
+// upstream object passes the estate-name scrub below — names -> acct-NN refs
+// (map = FLEET_ROSTER_MAP secret, env-only; absent map = honest no-op note,
+// never a fabricated mapping, never a committed name->ref table).
+const ROSTER_NAME_TO_REF = (() => {
+  try {
+    const env = process.env.FLEET_ROSTER_MAP || '';
+    if (!env.trim().startsWith('{')) return new Map();
+    const j = JSON.parse(env);
+    const m = new Map();
+    const ingest = (ref, name) => {
+      if (typeof ref === 'string' && /^acct-\d\d$/.test(ref) && typeof name === 'string' && name) m.set(name, ref);
+    };
+    if (j && typeof j.refs === 'object') for (const [r, n] of Object.entries(j.refs)) ingest(r, n);
+    if (j && typeof j.names === 'object') for (const [n, r] of Object.entries(j.names)) ingest(r, n);
+    if (j && typeof j === 'object') for (const [k, v] of Object.entries(j)) {
+      if (typeof k === 'string' && typeof v === 'string') (k.startsWith('acct-') ? ingest(k, v) : ingest(v, k));
+    }
+    return m;
+  } catch { return new Map(); }
+})();
+const refsScrubText = (t) => {
+  let out = String(t);
+  for (const [n, r] of ROSTER_NAME_TO_REF) {
+    out = out.replace(new RegExp('(?<![A-Za-z0-9])' + n.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '(?![A-Za-z0-9])', 'gi'), r);
+  }
+  return out;
+};
+function refsScrubVal(v) {
+  if (typeof v === 'string') return refsScrubText(v);
+  if (Array.isArray(v)) return v.map(refsScrubVal);
+  if (v && typeof v === 'object') return Object.fromEntries(Object.entries(v).map(([k, x]) => [refsScrubText(k), refsScrubVal(x)]));
+  return v;
+}
+if (!ROSTER_NAME_TO_REF.size) console.log('[refs] roster-unresolved: FLEET_ROSTER_MAP absent — office refs scrub is a NO-OP this run (identity law relies on upstream)');
 const LANE = 'office-retro (zai-11d · E1-deed zai-13c)';
 const OWNER_MANDATE = '[owner-directive]';
 const LAWS = [
@@ -1201,11 +1242,13 @@ async function runLive() {
   const workOrders = await fetchWorkOrders(token);
   const e1 = await fetchE1Verdict(nowMs);
   const profit = await fetchProfitOracle(token); // zai-14c — defensive; 14b may not have landed yet
-  const snapshot = {
+  // 3-c refs law: the whole measured snapshot passes the estate-name scrub before
+  // any file is built from it (upstream mirrors are verbatim by design; names die here).
+  const snapshot = refsScrubVal({
     at: new Date(nowMs).toISOString(),
     registry: { source: reg.source, note: reg.note, registry: reg.registry },
     bus, findings, gates, digest, workOrders, e1, profit,
-  };
+  });
   console.log(`חקר: registry=${reg.source} · bus ${bus.counts.green}G/${bus.counts.amber}A/${bus.counts.red}R/${bus.counts.grey}U · findings=${findings.found ? findings.date : 'לא-נמדד'} · gates=${gates.gates ? gates.gates.length + ' ממופים' : 'לא-ידוע'} · digest=${digest.generatedAt ? fmtUTC(digest.generatedAt) : 'לא-ידוע'} · WO=${workOrders.counts ? `${workOrders.counts.open}פתוחים/${workOrders.counts.resolved}נפתרו/P1:${workOrders.counts.openP1}` : 'לא-ידוע'} · E1=${e1.verdict} · profit=${profit.unavailable ? `לא-זמין (כנה)` : (profit.verdict || 'שדות-נמדדו')}${profit.unavailable ? '' : ` delta=${profit.deltaVsPriorPct == null ? '?' : profit.deltaVsPriorPct + '%'}`}`);
 
   // STAGE 2 זיקוק
