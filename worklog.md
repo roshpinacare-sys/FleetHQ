@@ -942,3 +942,25 @@ Stage Summary:
 - The giant transformation has a public face: giant.html measures us against the six-system giant bar on every load, shows the real execution feed, and routes remaining decisions to sovereignty — the דף שנהפוך לענק the owner asked for.
 - MEASURED WALL GROWTH (18/87) is the standing threat — escalation refreshed daily by forge with fresh numbers; public-compute migration (now 7 live engines) is the proven path.
 - FOR NEXT LANES: voice lane owns Domain/Console texts (do not collide); ops-intake QUEUE-09/11 will auto-close on next intake cycle by measurement; forge brain slot documented OFF pending sovereignty decision; roast v2 residuals (FleetHQ podium chatter, marketing links, verify/ private-fetch) remain routed to their owning lanes per coordination law.
+
+---
+Task ID: T22-decision-desk-clerk-experts
+Agent: zai-code (main session)
+Task: בחינת מה-שנעשה + תיקון-הכל — דוכן-ההחלטות מת שומקום, הפקיד-למבקרים נעלם, משרד-שני ב-FleetHQ, אישיות-ומשמעת לסוכנים, באגים ורצינות.
+
+Work Log:
+- READ-FIRST: worklog tail (T20/T21), FleetHQ Pages (המשרד-השני — חלון סטטי חי, לקחת ממנו את מקורות-האמת), ops-intake QUEUE (11 פתוחים, 2 P0), ops-forge RECEIPTS (44 קבלות), ערוץ-הריבונות (Sandbox פרטי).
+- ROOT-CAUSE של הדוכן-המת: setPanel בחדר קרא ל-bindings (openTab/openChat/selectAgent) שאף-אחד לא חיבר מאז ש-AgentHQ הוסר — כל קליק על דוכן/קבלה/שולחן היה עיוור (מיקוד-מצלמה בלבד). וגם: snap.decisions של הפורמן ריק תמידית (counts.decision=0) — הטבעת לא יכלה להידלק.
+- DECISION SPINE: gh-truth קיבל fetchTruthText+parseJsonl (JSONL פרטי-מאומת); /api/decisions חדש — ארבעה מקורות: ops-intake QUEUE + ops-forge RECEIPTS + הכרעות-הפורמן + ערוץ-הריבונות (אנטי-זיוף: רק role!=owner), SWR 2דק', חוק-חיות 24h.
+- דוכן-ההחלטות חי: panels.ts חדש — פנקס-הכרעות (פתוחות מדורגות P0→P3 עם ראיות + בוצעו-עם-קבלה + מוסלק-לריבונות + הכרעות-המשרד), טבעת-הדוכן נדלקת מהמדידה, HUD הכרעות מהפנקס, וחוק-התכנסות בעולם: P0 פתוח → אלוף מציג מאחורי-הדוכן פנים-למצלמה + ארז/תמר קהל דרום-מזרח (תיקון-הרכב אחרי-מדידה: הנואם חסם את הפריים מאחורי-גבו).
+- פקידת-המבקרים חזרה: נועה בקבלה — /api/visitor-chat (z-ai-web-dev-sdk בשרת בלבד), זיכרון-אמת ב-SQLite (VisitorSession/VisitorMsg/ClerkFact/VisitorRequest; db:push בוצע), הקשר-משרד נמדד מוזרק להנחיה (פאזה + צוות-חי + פנקס-פתוחים), גבול-סמכות מפורש בממשק ובהנחיה: אין גישה-להפעלה — כל בקשה-תפעולית נרשמת בפנקס ומוסרת לריבונות לבחינה וסקירה. זיכרון: היסטוריית-14 + עובדות-מופקות כל שלישית-הודעה; נמדד — 3 עובדות נשמרו, 2 פניות ממתינות, פגישה-חוזרת מזוהה (visits).
+- אישיות-ומשמעת: EXPERTS registry ב-protocol.ts — לכל-סוכן תחום-בלעדי, התמחויות, סמכות-הכרעה, מה מוסלק-לריבונות, משמעת-ביצוע; תיק-מומחה בלחיצת-שולחן (מצב-נמדד בעברית + על-השולחן-עכשיו + ספרים + יומן); נועה מכירה את תחומי-המומחים ומפנה אליהם.
+- כל-התחנות חיות: לוח-המשימות / קיר-הגיט / הספרייה נפתחים לפאנל אמיתי; Esc סוגר; פאנל-אחד בכל-רגע; מצבים-וסטטוסים בעברית (לא מפתחות-גלמיים).
+- באגים-שנתפסו-ותוקנו (כולם בדפדפן): (1) /api/office-state החזיר את AtomBox כ-commits במקום המערך — קריסת .map בפאנל קיר-הגיט (באג-ישן מהיום-הראשון של ה-wire); (2) הרכב-ההתכנסות חסם-מצלמה; (3) פאנל-מובייל התנגש בסרגל-העמדות (bottom-24); (4) useShallow לסלקטורים-מחזירי-מערך (סיכון-לולאת-רינדור ב-zustand v5).
+- BROWSER-VERIFIED (agent-browser, 1440+390): דוכן→פנקס (P0 ראשונים, 11 פתוחים, קבלות, הסלמות), קבלה→נועה (שיחה-חיה + ניתוב-פנייה + מונה-פניות), שולחן→תיק-ארז, לוח/גיט/ספרייה נפתחים, אפס-שגיאות-קונסול אחרי-התיקונים, lint נקי, נייד-ללא-התנגשויות.
+
+Stage Summary:
+- הדוכן-ההחלטות הפך מרהיט-שקט לאיבר-הכרעה-חי: פנקס-אמת אחד (סדרי-עבודה, קבלות-ביצוע, הסלמות-ריבונות), טבעת-חיות, והתכנסות-צוות-נגזרת-מדידה.
+- הפקידה-שנעלמה חזרה עם זיכרון-אמת וגבול-סמכות-מפורש — תוכן-כן, פניות-מנותבות, אפס-הפעלה.
+- כל-תחנה-בחדר עכשיו עושה-משהו — אפס-קליקים-עיוורים.
+- למעבירי-המשרה: הפנקס מוזן מ-ops-intake/ops-forge/ערוץ-הריבונות — הוספת-מקור = /api/decisions בלבד; חוק-ההתכנסות חי ב-store.syncAssembly; אין-לגעת ב-bindings בלי לשמר bindUi ב-RoomPanels.

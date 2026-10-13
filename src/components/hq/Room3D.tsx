@@ -9,6 +9,7 @@
 import { useEffect } from 'react';
 import { Office3D } from './Office3D';
 import { ViewDeck } from './ViewDeck';
+import { RoomPanels } from './Panels';
 import { useHq } from '@/lib/hq/store';
 
 export default function Room3D() {
@@ -38,6 +39,7 @@ export default function Room3D() {
     <div className="relative h-full w-full" dir="rtl">
       <Office3D />
       <ViewDeck />
+      <RoomPanels />
     </div>
   );
 }

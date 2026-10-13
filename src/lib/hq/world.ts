@@ -228,8 +228,18 @@ export class AgentBrain {
       const sy = TASK_WALL.cy + 140 + (this.id === 'aluf' ? 0 : s * 50);
       this.setTarget({ x: sx, y: sy, face: Math.PI, kind: 'stand' });
     } else if (station === 'podium') {
-      const s = spreadOf(this.id);
-      this.setTarget({ x: PODIUM.x + 50 + s * 30, y: PODIUM.y - 30 + s * 24, face: -Math.PI / 2, kind: 'stand' });
+      // התכנסות-הדוכן (T22, הרכב-נמדד): ראש-המטה מציג מאחורי הדוכן — פנים
+      // אל-תוך-האולם ואל-המצלמה, כמו נואם על בימה; השאר — קהל דרומית-מזרחית
+      // לבימה, פנים אל הדוכן, בלי לחסום את מסלול-המצלמה (נמדד: נואם שעומד
+      // בין המצלמה לדוכן חוסם את כל-הפריים מאחורי-גבו).
+      if (this.id === 'aluf') {
+        this.setTarget({ x: PODIUM.x - 62, y: PODIUM.y + 14, face: 1.97, kind: 'stand' });
+      } else {
+        const s = spreadOf(this.id);
+        const ax = PODIUM.x + 26 + s * 66;
+        const ay = PODIUM.y + 92 + s * 28;
+        this.setTarget({ x: ax, y: ay, face: Math.atan2(PODIUM.x - ax, PODIUM.y - ay), kind: 'stand' });
+      }
     } else if (station === 'library') {
       const s = spreadOf(this.id);
       this.setTarget({ x: LIBRARY_TABLE[0] - 50 + s * 100, y: LIBRARY_TABLE[1] + 45 + s * 30, face: -0.35, kind: 'stand' });
