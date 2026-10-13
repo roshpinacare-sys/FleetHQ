@@ -1,6 +1,6 @@
 {
  "schema": "fleet.fresh-oracle/1",
- "at": "2026-10-13T15:52:15.355Z",
+ "at": "2026-10-13T20:43:09.928Z",
  "law": "FRESH only if sha256(live bytes) == sha256(committed deploy-ref bytes) AND no ops doc MISSING; DRIFT=RED (200-with-different-bytes); UNREACHABLE=UNKNOWN (network, retried once, reason kept); ops-doc age rows are honest amber (MISSING alone flips exit) — never faked green",
  "results": [
   {
@@ -11,9 +11,9 @@
    "committedStatus": 200,
    "liveError": null,
    "committedError": null,
-   "liveSha16": "1a12a5c010433a87",
-   "committedSha16": "1a12a5c010433a87",
-   "liveBytes": 39113,
+   "liveSha16": "5993962ad38a1c51",
+   "committedSha16": "5993962ad38a1c51",
+   "liveBytes": 38864,
    "verdict": "MATCH"
   },
   {
@@ -24,9 +24,9 @@
    "committedStatus": 200,
    "liveError": null,
    "committedError": null,
-   "liveSha16": "159799e65722c9f6",
-   "committedSha16": "159799e65722c9f6",
-   "liveBytes": 7649,
+   "liveSha16": "ae3b9b820d4ebbfa",
+   "committedSha16": "ae3b9b820d4ebbfa",
+   "liveBytes": 7653,
    "verdict": "MATCH"
   },
   {
@@ -37,9 +37,9 @@
    "committedStatus": 200,
    "liveError": null,
    "committedError": null,
-   "liveSha16": "b8437a94cd21d71f",
-   "committedSha16": "b8437a94cd21d71f",
-   "liveBytes": 9603,
+   "liveSha16": "1735727e6f4f567c",
+   "committedSha16": "1735727e6f4f567c",
+   "liveBytes": 9607,
    "verdict": "MATCH"
   },
   {
@@ -99,7 +99,7 @@
   {
    "name": "OPS-DOCS-SCAN",
    "verdict": "UNREACHABLE",
-   "error": "contents API HTTP 403"
+   "error": "contents API HTTP 404"
   }
  ],
  "summary": {
