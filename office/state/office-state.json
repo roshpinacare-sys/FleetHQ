@@ -1,8 +1,8 @@
 {
-  "capturedAt": "2026-10-13T16:32:21.108Z",
+  "capturedAt": "2026-10-13T20:37:58.077Z",
   "connected": true,
   "backend": "live",
-  "statusHe": "צוות חי — זיכרון שוחזר מהגיט (22 משמרות, 14 לקחים)",
+  "statusHe": "צוות חי — זיכרון שוחזר מהגיט (24 משמרות, 15 לקחים)",
   "mode": null,
   "agents": [
     {
@@ -10,45 +10,46 @@
       "state": "thinking",
       "activity": "מתכנן את היעד…",
       "station": "wall",
-      "since": 1791909136275,
-      "taskId": "t1820"
+      "since": 1791923804933,
+      "taskId": "t1866"
     },
     {
       "id": "gal",
-      "state": "idle",
-      "activity": "",
+      "state": "thinking",
+      "activity": "קורא את המשימה",
       "station": "desk",
-      "since": 1791909125687,
-      "taskId": "t1820"
+      "since": 1791923856571,
+      "taskId": "t1881"
     },
     {
       "id": "erez",
       "state": "idle",
       "activity": "",
       "station": "desk",
-      "since": 1791908948974,
-      "taskId": "t1820"
+      "since": 1791923904469,
+      "taskId": "t1866"
     },
     {
       "id": "tamar",
       "state": "reading",
-      "activity": "קורא fleet-roster — סיור-רענון",
+      "activity": "קורא econ-book — סיור-רענון",
       "station": "library",
-      "since": 1791909112792
+      "since": 1791923849749
     },
     {
       "id": "shachar",
       "state": "idle",
       "activity": "",
       "station": "desk",
-      "since": 1791908973790
+      "since": 1791923660266,
+      "taskId": "t1866"
     },
     {
       "id": "yarden",
       "state": "idle",
       "activity": "",
       "station": "desk",
-      "since": 1791909075047
+      "since": 1791923812010
     }
   ],
   "tasks": [
@@ -2441,17 +2442,61 @@
       "startedAt": 1791908844128,
       "summary": " [אושר בכנות לאחר 2 עידונים — הערת ראש-המטה: בצעי חיפוש רשת בפועל (web_search) על סוכנים אוטונומיים, אספי ידיעות עדכניות עם מקורות, וכתבי דוח מסודר הכולל כותרות, תאריכים, קישורים וסיכום תמציתי.]",
       "durationMs": 83123
+    },
+    {
+      "id": "t1852",
+      "title": "ייצור תוכן: גבשי דוח מצב-שוטף מהספרים הטריים לפרסום-עתידי והגישי לשער-הביקורת",
+      "description": "ייצור תוכן: גבשי דוח מצב-שוטף מהספרים הטריים לפרסום-עתידי והגישי לשער-הביקורת",
+      "status": "blocked",
+      "assignee": "gal",
+      "dependsOn": [],
+      "why": "ספרי הדקס, המסחר וההגיון הפנימי",
+      "matchBy": "fit",
+      "createdBy": "aluf",
+      "createdAt": 1791923525048,
+      "updatedAt": 1791923582200,
+      "startedAt": 1791923581098
+    },
+    {
+      "id": "t1866",
+      "title": "סיור שגרה: צלב בין שני ספרי צי ודווח על פערים שנמצאו",
+      "description": "סיור שגרה: צלב בין שני ספרי צי ודווח על פערים שנמצאו",
+      "status": "done",
+      "assignee": "erez",
+      "dependsOn": [],
+      "why": "ביקורות, טענות וחוזי יכולת",
+      "matchBy": "fit",
+      "createdBy": "aluf",
+      "createdAt": 1791923587604,
+      "updatedAt": 1791923662103,
+      "startedAt": 1791923607506,
+      "summary": "פערים בין fleet-roster ו-fleet-indicators: counts.DECLINE, counts.GROW, counts.HELD, הפרש זמן 156.9 שעות.",
+      "durationMs": 42549
+    },
+    {
+      "id": "t1881",
+      "title": "סיור גיט: נתח את זרם הקומיטים האחרון ודווח מה אפשר ללמוד ומה חסר",
+      "description": "סיור גיט: נתח את זרם הקומיטים האחרון ודווח מה אפשר ללמוד ומה חסר",
+      "status": "doing",
+      "assignee": "gal",
+      "dependsOn": [],
+      "why": "ספרי הדקס, המסחר וההגיון הפנימי",
+      "matchBy": "fit",
+      "createdBy": "aluf",
+      "createdAt": 1791923855470,
+      "updatedAt": 1791923855471,
+      "startedAt": 1791923855471
     }
   ],
   "books": 22,
   "memory": {
-    "shifts": 23,
-    "lessons": 14
+    "shifts": 24,
+    "lessons": 15
   },
   "counts": {
     "agent": 6,
-    "task": 163,
-    "log": 1,
+    "task": 166,
+    "log": 0,
     "feed": 0,
     "decision": 0,
     "report": 0,
