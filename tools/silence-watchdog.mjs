@@ -24,13 +24,19 @@
 //     · pages/money          — dex/money.json publishedAt age (live site truth)
 //     · pages/site-audit     — audit verdict FAIL = the live site is broken
 //
-// Lanes: (1) Issue "SILENCE ALARM" created/updated/closed idempotently;
-//        (2) receipt committed ONLY when the alarm set changes (no-noise law).
-// DRY=1 → measure + receipt only, no issue/commit lanes (safe anywhere).
+// Lanes: (1) Issue "SILENCE ALARM" — TRANSITION-ONLY writes (Anti-Storm Law §2,
+//        trace 1a1374da43d52c39 "one signature, one escalation"): the issue is
+//        edited/created ONLY when the verdict signature changes (a voice went
+//        down or recovered); an unchanged signature with the issue already open
+//        gets ZERO emails; (2) receipt committed ONLY when the verdict signature
+//        changes (no-noise law); (3) state/silence-watchdog/state.json committed
+//        EVERY run — its commit timestamp at origin is the meta-voice.
+// DRY=1 → measure + receipt + state preview only, no issue/commit lanes (safe anywhere).
 //
 // Run: node tools/silence-watchdog.mjs    (exit 0 always; verdict in receipt)
 
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
+import { createHash } from "node:crypto";
 import { execFileSync } from "node:child_process";
 
 const REPO_FULL = process.env.GITHUB_REPOSITORY || "roshpinacare-sys/FleetHQ";
@@ -175,46 +181,132 @@ const runbooksFor = (alarms) => {
 // ---- receipt (always) ----
 const RECEIPT = "receipts/silence-watchdog.json";
 mkdirSync("receipts", { recursive: true });
-const prevRaw = (() => { try { return execFileSync("git", ["show", `HEAD:${RECEIPT}`], { encoding: "utf8", stdio: ["ignore", "pipe", "ignore"] }); } catch { return ""; } })();
 writeFileSync(RECEIPT, JSON.stringify(ledger, null, 1) + "\n");
-if (DRY) { console.log("DRY: lanes skipped"); process.exit(0); }
 
-const prevAlarms = (() => { try { return JSON.stringify(JSON.parse(prevRaw).alarms || []); } catch { return "[]"; } })();
-const nextAlarms = JSON.stringify(ledger.alarms);
+// ---- state: the transition-dedup brain (Anti-Storm Law §2) ----
+// state/silence-watchdog/state.json stores per-voice last verdicts, the global
+// verdict signature (sha256 of the sorted verdict table), the alarm issue's
+// last-published body hash, and a bounded run history. The issue is touched
+// ONLY when the signature changes — one signature, one escalation; no repeat
+// emails for a known, still-open signature.
+const STATE_DIR = "state/silence-watchdog";
+const STATE_PATH = `${STATE_DIR}/state.json`;
+gitOk(["fetch", "-q", "origin", "+main:refs/wd/self"]); // freshest origin state, best-effort
+const loadPrevState = () => {
+  for (const read of [
+    () => gitOrigin(["show", `refs/wd/self:${STATE_PATH}`]),
+    () => execFileSync("git", ["show", `HEAD:${STATE_PATH}`], { encoding: "utf8", stdio: ["ignore", "pipe", "ignore"] }),
+    () => readFileSync(STATE_PATH, "utf8"),
+  ]) {
+    try { const s = JSON.parse(read()); if (s && typeof s === "object" && s.schema === "silence-watchdog.state/1") return s; } catch {}
+  }
+  return null; // first run — state created if missing
+};
+const prevState = loadPrevState();
+const signatureOf = (voices) => {
+  const sorted = voices.map((v) => [v.name, v.verdict]).sort((a, b) => (a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : 0));
+  return "sig:" + createHash("sha256").update(JSON.stringify(sorted)).digest("hex").slice(0, 16);
+};
+const signature = signatureOf(ledger.voices);
+const perVoice = {};
+for (const v of ledger.voices) perVoice[v.name] = v.verdict;
+const sigChanged = !prevState || prevState.signature !== signature;
+console.log(`transition-dedup: signature=${signature} changed=${sigChanged} (one signature, one escalation)`);
 
-// ---- issue lane (the owner's email) ----
+if (DRY) {
+  console.log("DRY: lanes skipped");
+  console.log("DRY state-preview: " + JSON.stringify({ signature, sigChanged, prevSignature: prevState?.signature ?? null, prevStateAt: prevState?.at ?? null, alarms: ledger.alarms.length, perVoice }));
+  process.exit(0);
+}
+
+const bodyHashOf = (s) => "sha256:" + createHash("sha256").update(s).digest("hex").slice(0, 16);
+
+// ---- issue lane (the owner's email — TRANSITION-ONLY) ----
 const ISSUE_TITLE = "🚨 SILENCE ALARM — a voice of the organism stopped";
 const ghCli = (args) => execFileSync("gh", args, { encoding: "utf8", timeout: 30000 });
 const table = ledger.voices.map((v) => `| ${v.name} | ${v.lastActivity || "—"} | ${v.ageMin ?? "—"}m | ${v.verdict} |`).join("\n");
 const runbookLines = runbooksFor(ledger.alarms).map((c) => `Runbook: docs/runbooks/${c}.md`).join("\n");
-const body = `Measured at ${ledger.at} (actions-scope, public truth only).\n\n| voice | last activity | age | verdict |\n|---|---|---|---|\n${table}\n\n**Summary:** ${ledger.summary}\n\n${runbookLines}\n\n_This issue is managed by silence-watchdog (every 15min). It closes itself when every visible voice recovers. Meta-law: if THIS issue stops updating, the watchdog itself is dead — that too is an alarm._`;
+const body = `Measured at ${ledger.at} (actions-scope, public truth only). Signature: \`${signature}\`.\nThis issue is written ONLY when a voice changes state (Anti-Storm Law §2: one signature, one escalation — no repeat emails for a known, still-open signature).\n\n| voice | last activity | age | verdict |\n|---|---|---|---|\n${table}\n\n**Summary:** ${ledger.summary}\n\n${runbookLines}\n\n_This issue is managed by silence-watchdog (every 15min, transition-only). It closes itself when every visible voice recovers. Meta-law: because updates are transition-only, the watchdog's liveness is proven by the state commit — if state/silence-watchdog/state.json stops advancing at origin every ~15min, the watchdog itself is dead — that too is an alarm._`;
+
+let issueNumber = null;
+let issueBodyHash = prevState?.issue?.bodyHash || null;
+let issueAction = "none";
 
 try {
   const open = JSON.parse(ghCli(["issue", "list", "--state", "open", "--search", "SILENCE ALARM in:title", "--json", "number,title"]));
   const existing = open.find((i) => i.title.startsWith("🚨 SILENCE ALARM"));
   if (ledger.alarms.length > 0) {
-    if (existing) ghCli(["issue", "edit", String(existing.number), "--body", body]);
-    else ghCli(["issue", "create", "--title", ISSUE_TITLE, "--body", body]);
+    if (existing) {
+      if (sigChanged) {
+        ghCli(["issue", "edit", String(existing.number), "--body", body]);
+        issueNumber = existing.number; issueBodyHash = bodyHashOf(body); issueAction = "edited";
+        console.log(`issue-lane: signature changed → edited #${existing.number} (one transition email)`);
+      } else {
+        issueNumber = existing.number; issueAction = "no-change";
+        console.log("issue-lane: no-change — signature unchanged and alarm issue already open → ZERO email");
+      }
+    } else if (!sigChanged && prevState?.issue?.number) {
+      // the recorded alarm issue is not open anymore while the signature is
+      // unchanged: a human closed it deliberately — respect that; re-opening
+      // would fight the operator and storm. A signature CHANGE re-escalates.
+      issueNumber = prevState.issue.number; issueAction = "external-close-respected";
+      console.log(`issue-lane: alarm issue #${prevState.issue.number} closed externally with signature unchanged — respected, not re-opened (zero email)`);
+    } else if (!sigChanged && prevState?.issue?.lastAction === "created-parse-unknown") {
+      issueNumber = null; issueAction = "no-change";
+      console.log("issue-lane: assuming the previous run's alarm issue exists (number unrecorded) — zero email");
+    } else {
+      const created = ghCli(["issue", "create", "--title", ISSUE_TITLE, "--body", body]);
+      issueBodyHash = bodyHashOf(body); issueAction = "created";
+      const m = /issues\/(\d+)\s*$/.exec(String(created).trim());
+      if (m) { issueNumber = Number(m[1]); }
+      else issueAction = "created-parse-unknown";
+      console.log(`issue-lane: created alarm issue #${issueNumber ?? "?"} (new escalation — first run, prior create failed, or signature changed)`);
+    }
   } else if (existing) {
     ghCli(["issue", "close", String(existing.number), "--comment", `recovered at ${ledger.at} — ${ledger.summary}`]);
+    issueNumber = existing.number; issueBodyHash = null; issueAction = "closed";
+    console.log(`issue-lane: all visible voices recovered → closed #${existing.number}`);
+  } else {
+    console.log("issue-lane: all clear, nothing to close");
   }
-  console.log("issue-lane: done");
 } catch (e) {
+  if (issueAction === "none" || issueAction === "no-change") issueAction = "issue-lane-unavailable";
   console.log(`issue-lane: unavailable (${String(e.message).slice(0, 80)}) — receipt still recorded`);
 }
 
-// ---- commit lane (no-noise law: commit only when the alarm SET changed) ----
-if (prevAlarms !== nextAlarms) {
-  try {
-    execFileSync("git", ["add", RECEIPT]);
-    execFileSync("git", ["-c", "user.name=silence-watchdog", "-c", "user.email=silence-watchdog@agents.roshpinacare-sys",
-      "commit", "-q", "-m", `silence-watchdog: ${ledger.alarms.length === 0 ? "all visible voices alive" : ledger.alarms.length + " alarm(s)"} [skip ci]`]);
-    execFileSync("git", ["push", "-q", "origin", "HEAD"]);
-    console.log("commit-lane: verdict-change committed");
-  } catch (e) {
-    console.log(`commit-lane: skipped (${String(e.message).slice(0, 80)})`);
+// ---- state file (the run receipt lives here; written EVERY run) ----
+const state = {
+  schema: "silence-watchdog.state/1",
+  at: ledger.at,
+  signature,
+  perVoice,
+  issue: { number: issueNumber, bodyHash: issueBodyHash, lastAction: issueAction, at: ledger.at },
+  runs: [...(prevState?.runs || []), { at: ledger.at, alarms: ledger.alarms.length, issueAction }].slice(-8),
+};
+mkdirSync(STATE_DIR, { recursive: true });
+writeFileSync(STATE_PATH, JSON.stringify(state, null, 1) + "\n");
+
+// ---- commit lane ----
+// (a) verdict receipt: committed ONLY when the verdict signature changed (no-noise law);
+// (b) state file: committed EVERY run — its commit timestamp at origin is the
+//     meta-voice (liveness proof under transition-only issue updates).
+// Push follows the fleet pattern: [skip ci], pull --rebase retry loop; a lost
+// race names its terminal publish-deferred and exits 0 (Anti-Storm Law §5).
+const sleepSync = (ms) => { try { Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms); } catch {} };
+try {
+  const files = sigChanged ? [RECEIPT, STATE_PATH] : [STATE_PATH];
+  if (!sigChanged) { try { execFileSync("git", ["checkout", "--", RECEIPT]); } catch {} }
+  execFileSync("git", ["add", ...files]);
+  execFileSync("git", ["-c", "user.name=silence-watchdog", "-c", "user.email=silence-watchdog@agents.roshpinacare-sys",
+    "commit", "-q", "-m", `silence-watchdog: ${ledger.alarms.length === 0 ? "all visible voices alive" : ledger.alarms.length + " alarm(s)"} sig=${signature} [skip ci]`]);
+  let pushed = false;
+  for (let i = 1; i <= 5 && !pushed; i++) {
+    try { execFileSync("git", ["pull", "--rebase", "-q", "origin", "main"]); } catch { try { execFileSync("git", ["rebase", "--abort"]); } catch {} }
+    try { execFileSync("git", ["push", "-q", "origin", "HEAD"]); pushed = true; }
+    catch { console.log(`commit-lane: push race lost (attempt ${i}/5) — rebase + retry`); if (i < 5) sleepSync(i * 4000); }
   }
-} else {
-  try { execFileSync("git", ["checkout", "--", RECEIPT]); } catch {}
-  console.log("commit-lane: no-delta — discarding (no-noise law)");
+  if (pushed) console.log(`commit-lane: state committed${sigChanged ? " + receipt (verdict transition)" : ""} — meta-voice advanced`);
+  else console.log("commit-lane: publish-deferred — push lost the race after 5 retries; state survives in the run log; next flight re-lands it (law §5)");
+} catch (e) {
+  console.log(`commit-lane: skipped (${String(e.message).slice(0, 80)})`);
 }
