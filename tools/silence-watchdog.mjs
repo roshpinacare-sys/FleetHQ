@@ -237,10 +237,24 @@ try {
   const existing = open.find((i) => i.title.startsWith("🚨 SILENCE ALARM"));
   if (ledger.alarms.length > 0) {
     if (existing) {
-      if (sigChanged) {
+      // [exec28/fh-1d] race-proof dedup: the issue body itself carries the
+      // signature — the issue is the persistent record, so dedup must not
+      // depend on the state commit winning a push race. Edit only when the
+      // body's recorded signature differs from the live signature.
+      let existingSig = null, issueViewOk = false;
+      try {
+        const cur = JSON.parse(ghCli(["issue", "view", String(existing.number), "--json", "body"]));
+        existingSig = /Signature:\s*`(sig:[0-9a-f]+)`/.exec(String(cur.body || ""))?.[1] || null;
+        issueViewOk = true;
+      } catch {}
+      const bodyDiffers = issueViewOk && existingSig !== signature;
+      if (issueViewOk && !bodyDiffers) {
+        issueNumber = existing.number; issueAction = "no-change";
+        console.log("issue-lane: no-change — issue body already carries this signature → ZERO email (race-proof dedup)");
+      } else if (!issueViewOk ? sigChanged : bodyDiffers) {
         ghCli(["issue", "edit", String(existing.number), "--body", body]);
         issueNumber = existing.number; issueBodyHash = bodyHashOf(body); issueAction = "edited";
-        console.log(`issue-lane: signature changed → edited #${existing.number} (one transition email)`);
+        console.log(`issue-lane: refreshed #${existing.number} — body signature ${existingSig ?? "(none)"} → ${signature} (one transition email)`);
       } else {
         issueNumber = existing.number; issueAction = "no-change";
         console.log("issue-lane: no-change — signature unchanged and alarm issue already open → ZERO email");
@@ -294,6 +308,11 @@ writeFileSync(STATE_PATH, JSON.stringify(state, null, 1) + "\n");
 // race names its terminal publish-deferred and exits 0 (Anti-Storm Law §5).
 const sleepSync = (ms) => { try { Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms); } catch {} };
 try {
+  // [exec28/fh-1d] repo-local identity BEFORE the loop: pull --rebase inside the
+  // retry loop replays commits and needs a committer identity (measured:
+  // "Committer identity unknown" silently killed retries 4-5).
+  execFileSync("git", ["config", "user.name", "silence-watchdog"]);
+  execFileSync("git", ["config", "user.email", "silence-watchdog@agents.roshpinacare-sys"]);
   const files = sigChanged ? [RECEIPT, STATE_PATH] : [STATE_PATH];
   if (!sigChanged) { try { execFileSync("git", ["checkout", "--", RECEIPT]); } catch {} }
   execFileSync("git", ["add", ...files]);
