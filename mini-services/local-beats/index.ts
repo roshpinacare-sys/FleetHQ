@@ -457,6 +457,8 @@ function tick() {
   if (mi === 52) { const k = keyOf(d, "h"); if (!fired("dex-mirror", k)) { mark("dex-mirror", k); run("dex-mirror", DOMAIN, "agents/dex-mirror.mjs", ["dex/grid.json","dex/world.json","dex/state.json","dex/credits.json","dex/portfolio.json","dex/onramp.json","dex/showcase.json","dex/relay.json"]); } }
   // dex-family :11/:41 (27-d) — the DEX volume mandate flywheel
   if (mi === 11 || mi === 41) { const k = `${keyOf(d, "h")}:${mi}`; if (!fired("dex-family", k)) { mark("dex-family", k); runDexFamily(); } }
+  // giants beat :31 (27-d) — local successor of giants-beat.yml: the ours-row volume meter must never go stale on an Actions-minutes wall (the meter IS the owner's window into the DEX)
+  if (mi === 31) { const k = keyOf(d, "h"); if (!fired("giants", k)) { mark("giants", k); run("giants", CONSOLE, "dex/giants.mjs", []); } }
   if ((ho === 3 || ho === 15) && mi === 13) { const k = keyOf(d, "h"); if (!fired("grid-pulse", k)) { mark("grid-pulse", k); run("grid-pulse", CONSOLE, "agents/grid-pulse.mjs", []); } }
   if (mi === 17 && ho % 2 === 0) { const k = keyOf(d, "h"); if (!fired("office-ci-lite", k)) { mark("office-ci-lite", k); officeCiLite(); } }
   // office-heartbeat — hourly at :41 (3-b: was every-2h; the owner measured a
@@ -504,6 +506,6 @@ Bun.serve({
   }),
 });
 
-log("local-beats scheduler UP (flush-durable build 2026-10-13, 3-b office-hourly, 27-b arteries+retro, 27-d dex-family :11/:41) — beats: money-watch 2h:33, grid-pulse 03:13/15:13, dex-mirror h:52, dex-family h:11/h:41, office-ci-lite 2h:17, office-heartbeat h:41, flush :09/:24/:39/:54, sbx-arteries grid :05/:35 · tick :21 · wallet :40 · fleet 2h:25, office-retro Thu 07:43 + 26h-catchup, boot catch-up dex-mirror");
+log("local-beats scheduler UP (flush-durable build 2026-10-13, 3-b office-hourly, 27-b arteries+retro, 27-d dex-family :11/:41 + giants :31) — beats: money-watch 2h:33, grid-pulse 03:13/15:13, dex-mirror h:52, dex-family h:11/h:41, giants h:31, office-ci-lite 2h:17, office-heartbeat h:41, flush :09/:24/:39/:54, sbx-arteries grid :05/:35 · tick :21 · wallet :40 · fleet 2h:25, office-retro Thu 07:43 + 26h-catchup, boot catch-up dex-mirror");
 setInterval(tick, 60_000);
 tick();
