@@ -89,7 +89,7 @@ function publish(cwd: string, name: string, redactFiles: string[]): string {
     ${redactCmd}
     git add -A dex 2>/dev/null || true
     if ! git diff --cached --quiet; then
-      git -c user.name="local-beats" -c user.email="local-beats@users.noreply.github.com" commit -q -m "${name}: local beat · $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+      git -c user.name="local-beats" -c user.email="local-beats@agents.roshpinacare-sys" commit -q -m "${name}: local beat · $(date -u +%Y-%m-%dT%H:%M:%SZ)"
       git push -q origin HEAD
       echo "PUSHED"
     else
@@ -130,7 +130,7 @@ function publishFleet(name: string, paths: string[]): string {
     cd "${FLEETHQ}"
     git add ${paths.join(" ")} 2>/dev/null || true
     if ! git diff --cached --quiet; then
-      git -c user.name="local-beats" -c user.email="local-beats@users.noreply.github.com" commit -q -m "${name}: local heartbeat · $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+      git -c user.name="local-beats" -c user.email="local-beats@agents.roshpinacare-sys" commit -q -m "${name}: local heartbeat · $(date -u +%Y-%m-%dT%H:%M:%SZ)"
       git -c rebase.autoStash=true pull --rebase -q origin main || true
       git push -q origin main
       echo "PUSHED"
