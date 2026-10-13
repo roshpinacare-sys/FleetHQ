@@ -39,6 +39,7 @@ jobs:
         run: node tools/identity-patrol.mjs
 
       - name: Publish receipt (append-safe, FF-only, race-proof)
+        if: always()   # publish even on VIOLATION — the finding IS the receipt
         run: |
           set -euo pipefail
           git config user.name  "roshpinacare-sys"
