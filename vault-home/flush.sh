@@ -23,7 +23,12 @@ ESTATE="${AGENT_HQ_FLEET_DIR:-/home/z/estate}"
 FLEET="$ESTATE/FleetHQ"
 QUEUE="$FLEET/receipts/push-queue.json"
 OWNER_REPO="roshpinacare-sys"
-REPOS=(Console Domain FleetHQ)
+# 27-b (2026-10-13): Sandbox joined the drain — the four office arteries
+# (wallet/grid/fleet/sovereign-tick in Domain/office/data.json) are fed by
+# Sandbox receipts; local sbx-* beats commit them in the Sandbox clone and
+# THIS drain is what carries them to origin (the private repo's Actions are
+# minutes-dead). A private repo is drained by the same PAT law as the rest.
+REPOS=(Console Domain FleetHQ Sandbox)
 AT="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
 
 # ---------- credential hunt ----------

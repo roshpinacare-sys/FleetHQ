@@ -45,6 +45,7 @@ import { join } from "node:path";
 const CONSOLE = "/home/z/estate/Console";
 const DOMAIN = "/home/z/estate/Domain";
 const FLEETHQ = "/home/z/estate/FleetHQ";
+const SANDBOX = "/home/z/estate/Sandbox";
 const LOG = "/tmp/local-beats.log";
 const BOOT = Date.now();
 const running = new Set();
@@ -147,6 +148,110 @@ function publishFleet(name: string, paths: string[]): string {
 // life (READ-ONLY socket capture) and give the mirror/state a git body so
 // the public page never renders a stale office. Honesty law: nothing is
 // invented — when the office is quiet, the capture says so.
+// ---- Sandbox artery beats (27-b, 2026-10-13) --------------------------------
+// ROOT CAUSE: the four office arteries in Domain/office/data.json (wallet /
+// grid / fleet / sovereign-tick) are fed by Sandbox receipts — written by
+// Sandbox Actions (artery-*.yml, sovereign.yml). The Sandbox repo is PRIVATE
+// → Actions minutes wall (measured: wallet frozen 23h, fleet 26h) → verdict
+// AGING 4/7. THE LOCAL SUCCESSOR LAW (same as office-heartbeat): same engine
+// scripts, same cadences, receipts committed in the Sandbox clone; the beat
+// pushes with the estate credential (GIT_ASKPASS + GIT_PAT from .env.local)
+// and flush.sh (REPOS now includes Sandbox) drains whatever the push missed.
+// Honesty: the scripts measure for real — a red verdict lands as a red
+// receipt; nothing is faked to green (grid-watch 07:39Z ERROR stays ERROR).
+const GIT_ASKPASS = "/home/z/.gitcred/askpass.sh";
+
+function sandboxEnv(): Record<string, string> {
+  const env = { ...envFor() } as Record<string, string>;
+  // the engine scripts read ECO_WALLET_TOKEN for cross-repo API reads + the
+  // private wallet clone — the estate PAT is the sanctioned local stand-in
+  if (!env.ECO_WALLET_TOKEN && env.GITHUB_PAT) env.ECO_WALLET_TOKEN = env.GITHUB_PAT;
+  if (env.GITHUB_PAT) {
+    env.GIT_PAT = env.GITHUB_PAT;
+    if (existsSync(GIT_ASKPASS)) env.GIT_ASKPASS = GIT_ASKPASS;
+    env.GIT_TERMINAL_PROMPT = "0";
+  }
+  return env;
+}
+
+function publishSandbox(name: string): string {
+  const script = `
+    set -e
+    cd "${SANDBOX}"
+    git add receipts 2>/dev/null || true
+    if ! git diff --cached --quiet; then
+      git -c user.name="local-beats" -c user.email="local-beats@users.noreply.github.com" commit -q -m "${name}: local artery · $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+      git -c rebase.autoStash=true pull --rebase -X theirs -q origin main || true
+      git push -q origin main 2>/dev/null || echo "push deferred (flush drains)"
+    else
+      echo "NO-CHANGE"
+    fi`;
+  const pub = spawnSync("bash", ["-c", script], { cwd: SANDBOX, env: { ...sandboxEnv() } as NodeJS.ProcessEnv, encoding: "utf8", timeout: 3 * 60_000 });
+  return ((pub.stdout || "") + (pub.stderr ? " ERR:" + pub.stderr.slice(-120) : "")).trim().slice(-160);
+}
+
+function runSandbox(name: string, script: string, timeoutMin: number) {
+  if (running.has(name)) { log(`${name}: skipped — previous flight still running`); return; }
+  running.add(name);
+  try {
+    const pull = spawnSync("git", ["-c", "rebase.autoStash=true", "pull", "--rebase", "-X", "theirs", "-q", "origin", "main"], { cwd: SANDBOX, encoding: "utf8" });
+    if (pull.status !== 0) log(`${name}: pull note exit=${pull.status} ${(pull.stderr || "").slice(-100)}`);
+    const res = spawnSync("node", [script], { cwd: SANDBOX, env: { ...sandboxEnv() } as NodeJS.ProcessEnv, encoding: "utf8", timeout: timeoutMin * 60_000 });
+    const out = (res.stdout || "").slice(-500).replace(/\n+/g, " | ");
+    const err = (res.stderr || "").slice(-300).replace(/\n+/g, " | ");
+    log(`${name}: exit=${res.status} out="${out}"${err ? ` err="${err}"` : ""}`);
+    const verdict = publishSandbox(name);
+    log(`${name}: publish="${verdict}"`);
+  } catch (e) {
+    log(`${name}: FATAL ${(e as Error).message.slice(0, 200)} — scheduler survives`);
+  } finally {
+    running.delete(name);
+  }
+}
+
+// ---- office-retro beat (27-b, 2026-10-13) -----------------------------------
+// ROOT CAUSE: office/RETRO-LATEST.md + retro-state.json are written by the
+// WEEKLY Actions lane (office-retro.yml, Thursday 07:43 UTC) — the only
+// writer. Between runs (and through sandbox wipes) the lessons view freezes.
+// LOCAL WIRING: the same zero-dep loop (node office/retro.mjs — derives from
+// the live fleet bus/digest/findings, invents nothing) runs HERE:
+//   · the published weekly slot (Thu 07:43 UTC — same cadence law), and
+//   · a staleness catch-up: generatedAt older than 26h (the officeCi fresh
+//     law) → one run per day. A wipe can no longer leave the office without
+//     its lessons.
+// The office-pages (Pages) publish stays with the Actions lane — publish-
+// retro.sh is GH_TOKEN-driven and the local lane commits the measured lane
+// files to main (BACKLOG/RETRO-LATEST/retro-state/PROPOSALS).
+function retroStaleHours(): number | null {
+  try {
+    const s = JSON.parse(readFileSync(join(FLEETHQ, "office", "retro-state.json"), "utf8")) as { generatedAt?: string };
+    if (!s.generatedAt) return null;
+    return (Date.now() - new Date(s.generatedAt).getTime()) / 3_600_000;
+  } catch { return null; }
+}
+
+function retroBeat() {
+  if (running.has("office-retro")) { log("office-retro: skipped — previous flight still running"); return; }
+  running.add("office-retro");
+  try {
+    // 3-c refs law: ingested upstream text is scrubbed names → acct-NN refs;
+    // the map lives untracked in the Console clone — pass it as the env the
+    // Actions lane passes as its secret. Absent map = honest no-op note.
+    const env: Record<string, string> = { ...envFor() } as Record<string, string>;
+    try { env.FLEET_ROSTER_MAP = readFileSync(join(CONSOLE, "agents", ".roster-map.local.json"), "utf8").trim(); } catch { /* absent — retro logs roster-unresolved honestly */ }
+    const res = spawnSync("node", ["office/retro.mjs"], { cwd: FLEETHQ, env: env as NodeJS.ProcessEnv, encoding: "utf8", timeout: 8 * 60_000 });
+    const out = (res.stdout || "").slice(-600).replace(/\n+/g, " | ");
+    const err = (res.stderr || "").slice(-300).replace(/\n+/g, " | ");
+    log(`office-retro: exit=${res.status} out="${out}"${err ? ` err="${err}"` : ""}`);
+    const pub = publishFleet("office-retro", ["office/BACKLOG.md", "office/RETRO-LATEST.md", "office/retro-state.json", "office/PROPOSALS"]);
+    log(`office-retro: publish="${pub}"`);
+  } catch (e) {
+    log(`office-retro: FATAL ${(e as Error).message.slice(0, 150)} — scheduler survives`);
+  } finally {
+    running.delete("office-retro");
+  }
+}
+
 function officeHeartbeat() {
   if (running.has("office-heartbeat")) return;
   running.add("office-heartbeat");
@@ -254,6 +359,21 @@ function tick() {
   // 3h-old capturedAt in the aging band. A 30s read-only socket capture per
   // hour is cheap; a missed slot now ages the state ≤ ~65min, not ≤ ~125min).
   if (mi === 41) { const k = keyOf(d, "h"); if (!fired("office-heartbeat", k)) { mark("office-heartbeat", k); officeHeartbeat(); } }
+  // ---- Sandbox arteries (27-b): same cadences as their Sandbox Actions crons
+  // (grid */30, tick hourly, wallet hourly :40, fleet 2h:25) — the veins that
+  // died on the private-repo Actions minutes wall, now local (see runSandbox).
+  if (mi === 5 || mi === 35) { const k = `${keyOf(d, "h")}:${mi}`; if (!fired("sbx-grid", k)) { mark("sbx-grid", k); runSandbox("sbx-grid", "engine/grid-watch.mjs", 4); } }
+  if (mi === 21) { const k = keyOf(d, "h"); if (!fired("sbx-tick", k)) { mark("sbx-tick", k); runSandbox("sbx-tick", "engine/sovereign-tick.mjs", 3); } }
+  if (mi === 40) { const k = keyOf(d, "h"); if (!fired("sbx-wallet", k)) { mark("sbx-wallet", k); runSandbox("sbx-wallet", "engine/wallet-verify.mjs", 9); } }
+  if (mi === 25 && ho % 2 === 0) { const k = keyOf(d, "h"); if (!fired("sbx-fleet", k)) { mark("sbx-fleet", k); runSandbox("sbx-fleet", "engine/fleet-verify.mjs", 14); } }
+  // ---- office-retro (27-b): the published weekly slot + a 26h staleness
+  // catch-up (1/day max) so a wipe or a dead Actions lane cannot leave the
+  // office without its lessons (retro derives from live measurements only).
+  if (d.getUTCDay() === 4 && ho === 7 && mi === 43) { const k = keyOf(d, "h"); if (!fired("retro-weekly", k)) { mark("retro-weekly", k); retroBeat(); } }
+  {
+    const stale = retroStaleHours();
+    if (stale !== null && stale > 26) { const k = keyOf(d, "d"); if (!fired("retro-catchup", k)) { mark("retro-catchup", k); log(`office-retro: catch-up fired (retro-state generatedAt ${stale.toFixed(1)}h old > 26h law)`); retroBeat(); } }
+  }
   // flush every 15min at :09/:24/:39/:54 — dedupe key PER SLOT (four fires per
   // hour, so the hourly key used by the other beats would swallow three of them)
   if (mi % 15 === 9) { const k = `${keyOf(d, "h")}:${mi}`; if (!fired("flush", k)) { mark("flush", k); flushBeat(); } }
@@ -264,6 +384,6 @@ function tick() {
   }
 }
 
-log("local-beats scheduler UP (flush-durable build 2026-10-13, 3-b office-hourly) — beats: money-watch 2h:33, grid-pulse 03:13/15:13, dex-mirror h:52, office-ci-lite 2h:17, office-heartbeat h:41, flush :09/:24/:39/:54, boot catch-up dex-mirror");
+log("local-beats scheduler UP (flush-durable build 2026-10-13, 3-b office-hourly, 27-b arteries+retro) — beats: money-watch 2h:33, grid-pulse 03:13/15:13, dex-mirror h:52, office-ci-lite 2h:17, office-heartbeat h:41, flush :09/:24/:39/:54, sbx-arteries grid :05/:35 · tick :21 · wallet :40 · fleet 2h:25, office-retro Thu 07:43 + 26h-catchup, boot catch-up dex-mirror");
 setInterval(tick, 60_000);
 tick();
