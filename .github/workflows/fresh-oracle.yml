@@ -39,7 +39,7 @@ jobs:
         if: always()
         run: |
           git config user.name "fresh-oracle-bot"
-          git config user.email "fresh-oracle-bot@users.noreply.github.com"
+          git config user.email "fresh-oracle-bot@agents.roshpinacare-sys"
           sibling_stand_down() {
             git fetch -q origin main 2>/dev/null || return 1
             if git show origin/main:receipts/fresh-oracle/latest.json 2>/dev/null | grep -q "\"at\""; then

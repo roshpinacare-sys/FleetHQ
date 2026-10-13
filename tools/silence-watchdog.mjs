@@ -207,7 +207,7 @@ try {
 if (prevAlarms !== nextAlarms) {
   try {
     execFileSync("git", ["add", RECEIPT]);
-    execFileSync("git", ["-c", "user.name=silence-watchdog", "-c", "user.email=silence-watchdog@users.noreply.github.com",
+    execFileSync("git", ["-c", "user.name=silence-watchdog", "-c", "user.email=silence-watchdog@agents.roshpinacare-sys",
       "commit", "-q", "-m", `silence-watchdog: ${ledger.alarms.length === 0 ? "all visible voices alive" : ledger.alarms.length + " alarm(s)"} [skip ci]`]);
     execFileSync("git", ["push", "-q", "origin", "HEAD"]);
     console.log("commit-lane: verdict-change committed");

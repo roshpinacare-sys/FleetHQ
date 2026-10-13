@@ -42,7 +42,7 @@ jobs:
             exit 0
           fi
           git config user.name "opens-closer-bot"
-          git config user.email "opens-closer-bot@users.noreply.github.com"
+          git config user.email "opens-closer-bot@agents.roshpinacare-sys"
           git add office/state/opens-closer.json
           if git diff --cached --quiet; then echo "no-delta: nothing to commit"; exit 0; fi
           git commit -m "opens-closer: measured freshness ledger + revival dispatches [skip ci]"

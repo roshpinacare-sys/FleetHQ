@@ -32,7 +32,7 @@ jobs:
       - name: Commit scan (append-only, rebase-first, no force)
         run: |
           git config user.name "value-scan-bot"
-          git config user.email "value-scan-bot@users.noreply.github.com"
+          git config user.email "value-scan-bot@agents.roshpinacare-sys"
           git add office/state/value-scan.json
           if git diff --cached --quiet; then echo "no-delta: nothing to commit"; exit 0; fi
           git commit -m "value-scan: opportunities from measured evidence [skip ci]"
