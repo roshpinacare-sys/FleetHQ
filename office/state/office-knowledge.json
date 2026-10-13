@@ -1,0 +1,59 @@
+{
+  "schema": "office-knowledge/1",
+  "generatedAt": "2026-10-13T10:25:53.137Z",
+  "roster": {
+    "crew": 6,
+    "workers": 5,
+    "lead": "aluf",
+    "ids": [
+      "aluf",
+      "gal",
+      "erez",
+      "tamar",
+      "shachar",
+      "yarden"
+    ],
+    "source": "measured from mini-services/agent-hq/src/cast.ts (CREW — 1 lead + 5 workers)",
+    "note": "counts.agent in office-state.json is a socket-EVENT counter for the capture window (tools/office-state-capture.ts bumps it on every 'agent' state-change event) — NOT a headcount"
+  },
+  "shifts": {
+    "todayCount": 8,
+    "lastShiftAt": "2026-10-13T09:45:59.721Z",
+    "lastShiftTitle": "משמרת-עורק #17 נפתחה (deterministic-keyless, STASIS-safe) — ראש-משמרת: tamar",
+    "cumulative": 17,
+    "source": "measured from Domain agents/office-events.jsonl (append-only journal, kind=shift-start, git-committed) + Domain agents/office-memory.json (cumulative=17)"
+  },
+  "lessons": {
+    "count": 4,
+    "latest": [
+      {
+        "at": "2026-10-12T20:40:52.826Z",
+        "title": "scribe 1 — wallet: no receipts yet (artery young)"
+      },
+      {
+        "at": "2026-10-13T01:40:41.404Z",
+        "title": "scribe 2 — wallet 24h verdicts: {\"BLOCKED\":3} · failing laws: {}"
+      },
+      {
+        "at": "2026-10-13T07:07:55.186Z",
+        "title": "scribe 3 — wallet 24h verdicts: {\"BLOCKED\":5} · failing laws: {}"
+      },
+      {
+        "at": "2026-10-13T10:19:55.784Z",
+        "title": "scribe 4 — wallet 24h verdicts: {\"BLOCKED\":7,\"PASS\":1} · failing laws: {}"
+      }
+    ],
+    "source": "measured from Autonomy ops/lessons/ledger.md ('## scribe #N' headers)",
+    "cadence": "artery-scribe.yml: daily cron 03:05Z + repository_dispatch scribe-tick; measured gaps 3.2-5.4h; latest scribe #4 2026-10-13T10:19:55Z"
+  },
+  "retro": {
+    "at": "2026-10-11T23:56:36.105Z",
+    "path": "office/RETRO-LATEST.md",
+    "cadence": "office-retro.yml weekly Thursday 07:43 UTC — next 2026-10-15"
+  },
+  "recruitment": {
+    "rolesNeeded": 4,
+    "staffed": 0,
+    "note": "HONEST: office-recruit (receipts/recruitment/live.json) emits rolesNeeded SIGNALS only — 1 operator-orders-executor + 3 executors for open proposals/work-orders. Zero hiring receipts exist anywhere under receipts/ ; no roster change ever landed. Recruits are wanted-roles, not staff. Crew law stays 6."
+  }
+}
