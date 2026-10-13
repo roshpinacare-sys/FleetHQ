@@ -94,8 +94,18 @@ function publish(cwd: string, name: string, redactFiles: string[]): string {
       echo "PUSHED"
     else
       echo "NO-CHANGE"
-    fi`], { cwd, encoding: "utf8", timeout: 3 * 60_000 });
+    fi`], { cwd, encoding: "utf8", timeout: 3 * 60_000, env: pubEnv() });
   return (pub.stdout || "ERR " + (pub.stderr || "")).trim().slice(-160);
+}
+
+// estate credential for every Console/Domain publish (27-d): push lands directly,
+// flush stays the fallback. Same law as publishDexFamily.
+function pubEnv(): NodeJS.ProcessEnv {
+  const e = { ...envFor() } as NodeJS.ProcessEnv;
+  if (e.GITHUB_PAT && !e.GIT_PAT) e.GIT_PAT = e.GITHUB_PAT;
+  if (existsSync(GIT_ASKPASS)) e.GIT_ASKPASS = GIT_ASKPASS;
+  e.GIT_TERMINAL_PROMPT = "0";
+  return e;
 }
 
 function run(name: string, cwd: string, script: string, redactFiles: string[] = []) {
