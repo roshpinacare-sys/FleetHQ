@@ -46,6 +46,7 @@ jobs:
           # embedded snapshot and gates render honest-unknown (by design). The owner
           # may set a read-only FLEET_READ_PAT secret to light the private raws up.
           GH_TOKEN: ${{ secrets.FLEET_READ_PAT || secrets.GITHUB_TOKEN }}
+          FLEET_ROSTER_MAP: ${{ secrets.FLEET_ROSTER_MAP }} # 3-c refs law: ingested upstream text is scrubbed names -> acct-NN refs
         run: node office/retro.mjs
 
       - name: Publish retro to office-pages (rebase-first, no force-push, worktree-isolated)
