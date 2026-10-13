@@ -1,8 +1,8 @@
 {
-  "capturedAt": "2026-10-13T15:10:02.424Z",
+  "capturedAt": "2026-10-13T15:41:17.148Z",
   "connected": true,
   "backend": "live",
-  "statusHe": "צוות חי — זיכרון שוחזר מהגיט (22 משמרות, 14 לקחים)",
+  "statusHe": "צוות חי — זיכרון שוחזר מהגיט (21 משמרות, 14 לקחים)",
   "mode": null,
   "agents": [
     {
@@ -10,45 +10,46 @@
       "state": "idle",
       "activity": "",
       "station": "wall",
-      "since": 1791904131076,
-      "taskId": "t1820"
+      "since": 1791889126293,
+      "taskId": "t1818"
     },
     {
       "id": "gal",
-      "state": "waiting_user",
-      "activity": "ממתין להכרעה אוטונומית",
-      "station": "podium",
-      "since": 1791904201640,
-      "taskId": "t1820"
+      "state": "reading",
+      "activity": "קורא truth-history — סיור-רענון",
+      "station": "library",
+      "since": 1791889075603,
+      "taskId": "t1796"
     },
     {
       "id": "erez",
       "state": "idle",
       "activity": "",
       "station": "desk",
-      "since": 1791904107315,
-      "taskId": "t1820"
+      "since": 1791889115928
     },
     {
       "id": "tamar",
-      "state": "reading",
-      "activity": "קורא fleet-roster — סיור-רענון",
-      "station": "library",
-      "since": 1791904174119
+      "state": "idle",
+      "activity": "",
+      "station": "desk",
+      "since": 1791889085690,
+      "taskId": "t1818"
     },
     {
       "id": "shachar",
       "state": "idle",
       "activity": "",
       "station": "desk",
-      "since": 1791904121200
+      "since": 1791889074393,
+      "taskId": "t1818"
     },
     {
       "id": "yarden",
       "state": "idle",
       "activity": "",
       "station": "desk",
-      "since": 1791904136397
+      "since": 1791888967363
     }
   ],
   "tasks": [
@@ -2427,66 +2428,39 @@
       "durationMs": 137586
     },
     {
-      "id": "t1820",
-      "title": "מחקר רשת: חפשי חדשות על סוכנים אוטונומיים וכתבי דוח עם מקורות — השתמשי ב-web_search",
-      "description": "מחקר רשת: חפשי חדשות על סוכנים אוטונומיים וכתבי דוח עם מקורות — השתמשי ב-web_search",
-      "status": "doing",
-      "assignee": "gal",
+      "id": "t1818",
+      "title": "סיור שגרה: סרוק את ספרי הצי ודווח מה ישן או דורש בדיקה",
+      "description": "סיור שגרה: סרוק את ספרי הצי ודווח מה ישן או דורש בדיקה",
+      "status": "done",
+      "assignee": "shachar",
       "dependsOn": [],
-      "why": "ספרי הדקס, המסחר וההגיון הפנימי",
+      "why": "מדדים, מפקד ולמידה של הצי",
       "matchBy": "fit",
       "createdBy": "aluf",
-      "createdAt": 1791903914744,
-      "updatedAt": 1791904132206,
-      "startedAt": 1791904132206,
-      "summary": "[redo 1] בצעי חיפוש אינטרנטי (web_search) על חדשות עדכניות בנושא סוכנים אוטונומיים, אספי לפחות 3 מקורות חדשותיים אמינים, וכתבי דוח מסודר הכולל סיכום של המידע, ניתוח והקשר, והצגת הציטוטים והקישורים למקורות. ודאי לכלול כותרות, תאריכים וקישורים מלאים לכל מקור.",
-      "durationMs": 176883
+      "createdAt": 1791888988035,
+      "updatedAt": 1791889094032,
+      "startedAt": 1791888988035,
+      "summary": "סיור שגרה הושלם. ספרי צי ישנים/דורשים בדיקה: fleet-indicators (47.9h, verdict DEGRADED) — econ-book 158h, curation-book 164.4h, money-ledger 158h; F1 Population Health 6/9 DECLINE, F4 Governance 71/76 DECLINE, F8 Autonomy 0/7d HELD. fleet-census בן 109.8h דורש רענון. pulse-book (22.4h) — advisoryTriag STALE-NOT-JOINED גיל 213.3h. learning-summary (12.7h) תקין. 3/4 ספרים מרכזיים דורשים תשומת לב.",
+      "durationMs": 86358
     }
   ],
   "books": 22,
   "memory": {
-    "shifts": 22,
+    "shifts": 23,
     "lessons": 14
   },
   "counts": {
     "agent": 6,
     "task": 163,
-    "log": 1,
-    "feed": 1,
-    "decision": 1,
+    "log": 0,
+    "feed": 0,
+    "decision": 0,
     "report": 0,
     "goal": 0,
     "bubble": 0
   },
-  "feed": [
-    {
-      "kind": "decision",
-      "text": "המפעיל האוטונומי הכריע: ספק מפתח API",
-      "at": 1791904208642
-    }
-  ],
+  "feed": [],
   "reports": [],
-  "decisions": [
-    {
-      "id": "d1829",
-      "agentId": "gal",
-      "kind": "question",
-      "question": "האם ניתן לספק מפתח TAVILY_API_KEY תקף או להפעיל חיפוש אינטרנטי דרך ערוץ אחר?",
-      "options": [
-        "ספק מפתח API",
-        "הפעל חיפוש דרך מקור אחר",
-        "המשך ללא חיפוש"
-      ],
-      "context": "החיפוש נכשל עקב חסר מפתח API. צריך מפתח תקף כדי לבצע web_search.",
-      "status": "answered",
-      "taskId": "t1820",
-      "createdAt": 1791904201640,
-      "answer": {
-        "option": "ספק מפתח API",
-        "text": "מדיניות המפעיל האוטונומי: הנתיב הבטוח — המשך",
-        "ts": 1791904208641
-      }
-    }
-  ],
+  "decisions": [],
   "lastError": null
 }
