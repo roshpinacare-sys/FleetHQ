@@ -1,55 +1,55 @@
 {
-  "capturedAt": "2026-10-12T15:25:14.162Z",
+  "capturedAt": "2026-10-13T02:07:53.452Z",
   "connected": true,
   "backend": "live",
-  "statusHe": "צוות חי — זיכרון שוחזר מהגיט (70 משמרות, 20 לקחים)",
+  "statusHe": "צוות חי — זיכרון שוחזר מהגיט (9 משמרות, 7 לקחים)",
   "mode": null,
   "agents": [
     {
       "id": "aluf",
-      "state": "thinking",
-      "activity": "מתכנן את היעד…",
+      "state": "idle",
+      "activity": "",
       "station": "wall",
-      "since": 1791818658709,
-      "taskId": "t1637"
+      "since": 1791857275731,
+      "taskId": "t1698"
     },
     {
       "id": "gal",
       "state": "idle",
       "activity": "",
       "station": "desk",
-      "since": 1791818709919,
-      "taskId": "t1637"
+      "since": 1791857270018,
+      "taskId": "t1698"
     },
     {
       "id": "erez",
-      "state": "reading",
-      "activity": "קורא dex-book",
-      "station": "library",
-      "since": 1791818740652,
-      "taskId": "t1657"
+      "state": "walking",
+      "activity": "יוצא להפסקת קפה",
+      "station": "coffee",
+      "since": 1791857300046,
+      "taskId": "t1682"
     },
     {
       "id": "tamar",
       "state": "idle",
       "activity": "",
       "station": "desk",
-      "since": 1791818670297
+      "since": 1791857229615
     },
     {
       "id": "shachar",
-      "state": "idle",
-      "activity": "",
+      "state": "thinking",
+      "activity": "קורא את המשימה",
       "station": "desk",
-      "since": 1791818637270,
-      "taskId": "t1637"
+      "since": 1791857276942,
+      "taskId": "t1698"
     },
     {
       "id": "yarden",
       "state": "idle",
       "activity": "הפסקת קפה — לגימה ורענון",
       "station": "coffee",
-      "since": 1791818738647
+      "since": 1791857297946
     }
   ],
   "tasks": [
@@ -1912,7 +1912,7 @@
       "createdAt": 1791763287322,
       "updatedAt": 1791763473693,
       "startedAt": 1791763380145,
-      "summary": "Syzygy Audit: fleet-roster vs fleet-census Cross-Check\n\nCross-check completed between fleet-roster (SAOS-FLEET-ROSTER/1, asOf 2026-10-04T22:06:00Z) and fleet-census (asOf 2026-10-08T21:06:44.486Z).\n\nKEY FINDINGS:\n\n1. HEARTBEAT GAP: 95.01 hours — fleet-roster is materially staler than fleet-census.\n\n2. AGENT ROSTER MISMATCH:\n   - fleet-roster lists 12 steemFleet agents: acct-01, acct-02, acct-03…",
+      "summary": "Syzygy Audit: fleet-roster vs fleet-census Cross-Check\n\nCross-check completed between fleet-roster (SAOS-FLEET-ROSTER/1, asOf 2026-10-04T22:06:00Z) and fleet-census (asOf 2026-10-08T21:06:44.486Z).\n\nKEY FINDINGS:\n\n1. HEARTBEAT GAP: 95.01 hours — fleet-roster is materially staler than fleet-census.\n\n2. AGENT ROSTER MISMATCH:\n   - fleet-roster lists 12 steemFleet agents: acct-01, acct-02, israelne",
       "durationMs": 67338
     },
     {
@@ -2252,93 +2252,118 @@
       "durationMs": 120670
     },
     {
-      "id": "t1637",
-      "title": "Collect recent news on autonomous agents",
-      "description": "Use web_search to gather the latest news articles and reports on autonomous agents, ensuring coverage of major developments and emerging trends. Reference truth-history for contextual background.",
+      "id": "t1638",
+      "title": "סיור שגרה: סרוק את ספרי הצי ודווח מה ישן או דורש בדיקה",
+      "description": "סיור שגרה: סרוק את ספרי הצי ודווח מה ישן או דורש בדיקה",
       "status": "done",
       "assignee": "shachar",
       "dependsOn": [],
-      "why": "intelligence expertise",
-      "matchBy": "llm",
-      "createdBy": "aluf",
-      "createdAt": 1791818363323,
-      "updatedAt": 1791818479743,
-      "startedAt": 1791818364370,
-      "summary": "",
-      "durationMs": 97641
-    },
-    {
-      "id": "t1657",
-      "title": "ייצור תוכן: גבשי דוח מצב-שוטף מהספרים הטריים לפרסום-עתידי והגישי לשער-הביקורת",
-      "status": "doing",
-      "description": "ייצור תוכן: גבשי דוח מצב-שוטף מהספרים הטריים לפרסום-עתידי והגישי לשער-הביקורת",
-      "assignee": "erez",
-      "dependsOn": [],
-      "why": "ביקורות, טענות וחוזי יכולת",
+      "why": "מדדים, מפקד ולמידה של הצי",
       "matchBy": "fit",
       "createdBy": "aluf",
-      "createdAt": 1791818721816,
-      "updatedAt": 1791818721817,
-      "startedAt": 1791818721817
+      "createdAt": 1791833601824,
+      "updatedAt": 1791833860007,
+      "startedAt": 1791833733961,
+      "summary": "סיור שגרה הושלם. ארבעת ספרי הצי הראשיים: fleet-indicators (32.5 שעות), fleet-census (94.4 שעות), pulse-book (7.1 שעות), learning-summary (48.7 שעות) — כולם מתחת ל-30 יום (720 שעות). ממצאים דורשי בדיקה: 1) fleet-indicators מראה 3 מדדים בירידה (DECLINE): F1 Population Health 6/9 ספרים טריים (שבירה 7/9), F4 Governance Conformity 71/76 CRs נשפטו (שבירה 100%), F9 Autonomy Receipts 0/7 ימים (שבירה ≥5). ",
+      "durationMs": 87571
+    },
+    {
+      "id": "t1651",
+      "title": "מחקר רשת: חפשי חדשות על סוכנים אוטונומיים וכתבי דוח עם מקורות — השתמשי ב-web_search",
+      "description": "מחקר רשת: חפשי חדשות על סוכנים אוטונומיים וכתבי דוח עם מקורות — השתמשי ב-web_search",
+      "status": "done",
+      "assignee": "gal",
+      "dependsOn": [],
+      "why": "ספרי הדקס, המסחר וההגיון הפנימי",
+      "matchBy": "fit",
+      "createdBy": "aluf",
+      "createdAt": 1791845479378,
+      "updatedAt": 1791845768821,
+      "startedAt": 1791845479379,
+      "summary": "",
+      "durationMs": 246152
+    },
+    {
+      "id": "t1670",
+      "title": "סיור שגרה: סרוק את ספרי הצי ודווח מה ישן או דורש בדיקה",
+      "description": "סיור שגרה: סרוק את ספרי הצי ודווח מה ישן או דורש בדיקה",
+      "status": "done",
+      "assignee": "shachar",
+      "dependsOn": [],
+      "why": "מדדים, מפקד ולמידה של הצי",
+      "matchBy": "fit",
+      "createdBy": "aluf",
+      "createdAt": 1791846836130,
+      "updatedAt": 1791846945684,
+      "startedAt": 1791846836131,
+      "summary": "",
+      "durationMs": 74545
+    },
+    {
+      "id": "t1682",
+      "title": "סיור שגרה: צלב בין שני ספרי צי ודווח על פערים שנמצאו",
+      "description": "סיור שגרה: צלב בין שני ספרי צי ודווח על פערים שנמצאו",
+      "status": "done",
+      "assignee": "gal",
+      "dependsOn": [],
+      "why": "ספרי הדקס, המסחר וההגיון הפנימי",
+      "matchBy": "fit",
+      "createdBy": "aluf",
+      "createdAt": 1791847154575,
+      "updatedAt": 1791856863946,
+      "startedAt": 1791847154575,
+      "summary": "סיור שגרה הושלם: צלב dex-book ↔ fills-ledger בוצע. פערים עיקריים: (1) אין מונים מספריים משותפים — מבנים שונים לחלוטין (נתוני שוק חיים מול רשומת ביצועים סגורה). (2) פער גיל ספרים 4.7 שעות (dex-book 6.1h, fills-ledger 10.8h). (3) אין הצלבת מחירים נוכחיים. נתונים מדודים: dex-book heartbeat 2026-10-12T17:10:30.508Z, fills-ledger heartbeat 2026-10-12T12:28:13.514Z, totalRealizedSwaphive 3.466847, count",
+      "durationMs": 56972
+    },
+    {
+      "id": "t1698",
+      "title": "סיור שגרה: סרוק את ספרי הצי ודווח מה ישן או דורש בדיקה",
+      "description": "סיור שגרה: סרוק את ספרי הצי ודווח מה ישן או דורש בדיקה",
+      "status": "doing",
+      "assignee": "shachar",
+      "dependsOn": [],
+      "why": "מדדים, מפקד ולמידה של הצי",
+      "matchBy": "fit",
+      "createdBy": "aluf",
+      "createdAt": 1791857090755,
+      "updatedAt": 1791857275841,
+      "startedAt": 1791857275841,
+      "summary": "[redo 2] העובד לא סיפק דוח סריקה בפועל — יש להריץ שאילתה מול ספרי הצי, להוציא רשומות עם תאריך בדיקה אחרון לפני יותר מ-12 חודשים או סטטוס 'דורש בדיקה', ולהחזיר את הרשימה כפלט המשימה.",
+      "durationMs": 69222
     }
   ],
   "books": 22,
   "memory": null,
   "counts": {
-    "agent": 8,
+    "agent": 6,
     "task": 2,
-    "log": 13,
-    "feed": 2,
+    "log": 4,
+    "feed": 0,
     "decision": 0,
     "report": 0,
-    "goal": 2,
-    "bubble": 3
+    "goal": 0,
+    "bubble": 2
   },
   "feed": [
     {
-      "kind": "bubble:erez",
-      "text": " mqdesh et dex-book.",
-      "at": 1791818740652
-    },
-    {
       "kind": "bubble:yarden",
       "text": "לגימה מהירה — וחוזרים לעבודה.",
-      "at": 1791818738647
-    },
-    {
-      "kind": "bubble:erez",
-      "text": "מ מח paycheck.",
-      "at": 1791818731497
-    },
-    {
-      "kind": "goal",
-      "text": "{\"id\":\"g1655\",\"text\":\"ייצור תוכן: גבשי דוח מצב-שוטף מהספרים הטריים לפרסום-עתידי והגישי לשער-הביקורת\",\"status\":\"active\",\"progress\":0.94,\"createdAt\":1791818657808,\"updatedAt\":1791818723144,\"origin\":\"pat",
-      "at": 1791818723144
+      "at": 1791857297946
     },
     {
       "kind": "task",
-      "text": "doing: ייצור תוכן: גבשי דוח מצב-שוטף מהספרים הטריים לפרסום-עתידי והגישי לשער-הביקורת",
-      "at": 1791818721819
+      "text": "doing: סיור שגרה: סרוק את ספרי הצי ודווח מה ישן או דורש בדיקה",
+      "at": 1791857275842
     },
     {
-      "kind": "goal",
-      "text": "{\"id\":\"g1655\",\"text\":\"ייצור תוכן: גבשי דוח מצב-שוטף מהספרים הטריים לפרסום-עתידי והגישי לשער-הביקורת\",\"status\":\"active\",\"progress\":0.05,\"createdAt\":1791818657808,\"updatedAt\":1791818721817,\"origin\":\"pat",
-      "at": 1791818721819
-    },
-    {
-      "kind": "system",
-      "text": "לא התקבלה תוכנית מיושרת-יעד — הראש-המטה מקצה את היעד עצמו לארז (התאמת FIT)",
-      "at": 1791818721819
+      "kind": "bubble:aluf",
+      "text": "שחר, צריך עידון: העובד לא סיפק דוח סריקה בפועל — יש להריץ שאילתה מול ספרי הצי, להוציא רשומות עם תאריך בדיקה אחרון לפני יותר מ-12 חודשים או סטטוס 'דורש בדיקה', ולהחזיר את הרשימה כפלט המשימה.",
+      "at": 1791857275734
     },
     {
       "kind": "task",
-      "text": "משימה חדשה: ייצור תוכן: גבשי דוח מצב-שוטף מהספרים הטריים לפרסום-עתידי והגישי לשער-הביקורת",
-      "at": 1791818721819
-    },
-    {
-      "kind": "task",
-      "text": "todo: ייצור תוכן: גבשי דוח מצב-שוטף מהספרים הטריים לפרסום-עתידי והגישי לשער-הביקורת",
-      "at": 1791818721819
+      "text": "todo: סיור שגרה: סרוק את ספרי הצי ודווח מה ישן או דורש בדיקה",
+      "at": 1791857275732
     }
   ],
   "reports": [],
