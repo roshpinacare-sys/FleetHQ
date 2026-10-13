@@ -134,14 +134,39 @@ else
 fi
 
 # ---------------------------------------------------------------- 5. clones
-log "stage5: estate clones (public repos — anonymous)"
-for r in Console Domain FleetHQ; do
+# WIPE-#4 LESSON (2026-10-13): a FULL clone of FleetHQ died mid-boot (receipts
+# jsonl history bloats the pack; the boot OOM'd with the web app also starting).
+# --filter=blob:none keeps the commit graph (ahead/behind math intact) and
+# fetches blobs only for the checked-out tree — measured 20s vs death.
+# Sandbox holds the organism-console feeds (ops/office/potential.json,
+# ops/flow/flow-map.json, proof/out/KEY-PROOF-LATEST.json, ops/TOKEN-TRUTH.md)
+# and is PRIVATE — needs GIT_PAT in the env; absent token = fail-honest warn,
+# the console shows those feeds as declared-missing (never faked).
+log "stage5: estate clones (public anonymous + private Sandbox via GIT_PAT)"
+for r in Console Domain; do
   if [ ! -d "$ESTATE/$r/.git" ]; then
     git clone -q "$ORG/$r.git" "$ESTATE/$r" && log "  cloned $r" || log "  CLONE FAILED $r"
   else
     log "  $r present"
   fi
 done
+if [ ! -d "$ESTATE/FleetHQ/.git" ]; then
+  git clone -q --filter=blob:none "$ORG/FleetHQ.git" "$ESTATE/FleetHQ" && log "  cloned FleetHQ (blob:none)" || log "  CLONE FAILED FleetHQ"
+else
+  log "  FleetHQ present"
+fi
+if [ ! -d "$ESTATE/Sandbox/.git" ]; then
+  if [ -n "${GIT_PAT:-}" ]; then
+    git clone -q --filter=blob:none "https://x-access-token:${GIT_PAT}@${ORG#https://}/Sandbox.git" "$ESTATE/Sandbox" \
+      && git -C "$ESTATE/Sandbox" remote set-url origin "$ORG/Sandbox.git" \
+      && log "  cloned Sandbox (private; token stripped from remote after clone)" \
+      || log "  CLONE FAILED Sandbox (check GIT_PAT scope)"
+  else
+    log "  WARN: Sandbox NOT cloned — GIT_PAT absent in env; organism-console feeds will show declared-missing (fail-honest)"
+  fi
+else
+  log "  Sandbox present"
+fi
 
 # ---------------------------------------------------------------- 6. installs
 if [ "$INSTALL" = "1" ]; then
