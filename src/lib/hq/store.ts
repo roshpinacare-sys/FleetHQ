@@ -111,6 +111,10 @@ interface HqBridgeState {
   broadcast: BroadcastInfo | null;
   /** הצוות כבר הצטרף לעמדותיו (פעם-אחת) — בלי לידה-בדלת בכל סנכרון */
   broadcastJoined: boolean;
+  /** התכנסות-הכרעות (T22): יש סדר-עבודה פתוח P0 → ראש-המטה והמבקרים
+   *  מתכנסים לדוכן-ההחלטות. חוק-אמת: נגזר מהפנקס הנמדד, לא מאנימציה. */
+  assembly: boolean;
+  syncAssembly(openP0: boolean): void;
 
   bindUi(ui: UiBindings): void;
   setLang(l: Lang): void;
@@ -187,6 +191,23 @@ export const useHq = create<HqBridgeState>((set, get) => ({
   truth: null,
   broadcast: null,
   broadcastJoined: false,
+  assembly: false,
+
+  /** חוק-ההתכנסות (T22): פנקס-ההכרעות נמדד — כשיש סדר-עבודה פתוח P0
+   *  ראש-המטה, המבקר-הפנימי והכלכלנית מתכנסים לדוכן; כשאין — חוזרים
+   *  למצב-האמת המדווח. התנועה עצמה חוקית (syncState), הדלקה מזויפת אין. */
+  syncAssembly(openP0) {
+    if (get().assembly === openP0) return;
+    set({ assembly: openP0 });
+    const brains = get().brains;
+    if (openP0) {
+      for (const id of ['aluf', 'erez', 'tamar']) {
+        brains.get(id)?.syncState('checking', 'podium', 'מתכנס סביב פנקס-ההכרעות');
+      }
+    } else {
+      syncBrains(brains, get().snap.agents);
+    }
+  },
 
   bindUi(ui) { set({ ui }); },
 
@@ -237,6 +258,13 @@ export const useHq = create<HqBridgeState>((set, get) => ({
       set({ broadcastJoined: true });
     } else {
       syncBrains(get().brains, agents);
+    }
+    // התכנסות-הכרעות (T22) — אם היא פעילה, היא גוברת על סנכרון-הפורמן
+    // לסוכני-ההתכנסות בלבד (אחרת הסנכרון-המחזורי היה מחזיר אותם מהדוכן)
+    if (get().assembly) {
+      for (const id of ['aluf', 'erez', 'tamar']) {
+        get().brains.get(id)?.syncState('checking', 'podium', 'מתכנס סביב פנקס-ההכרעות');
+      }
     }
   },
   syncAgent(a) {

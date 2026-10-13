@@ -21,6 +21,7 @@ import { memo, useEffect, useState } from 'react';
 import { bus, director, type PresetId } from '@/lib/hq/world';
 import { CAMERA_PRESETS } from '@/lib/hq/contract';
 import { useHq, type Lang } from '@/lib/hq/store';
+import { useDecisions } from '@/lib/hq/decisions';
 import { BEAT_STALE_MS } from '@/lib/hq/broadcast';
 import { setTour } from './CameraDirector';
 
@@ -114,14 +115,16 @@ const BroadcastPanel = memo(function BroadcastPanel({ lang }: { lang: Lang }) {
 const RoomHud = memo(function RoomHud({ lang }: { lang: Lang }) {
   const goal = useHq((s) => s.snap.goal);
   const tasks = useHq((s) => s.snap.tasks);
-  const decisions = useHq((s) => s.snap.decisions);
   const journal = useHq((s) => s.feedJournal);
+  const queue = useDecisions((s) => s.queue);
+  const foreman = useDecisions((s) => s.foreman);
   const he = lang === 'he';
   const count = (st: string) => tasks.filter((t) => t.status === st).length;
   const done = count('done');
   const active = count('todo') + count('doing') + count('review') + count('blocked');
-  const openD = decisions.filter((d) => d.status === 'open').length;
-  const answeredD = decisions.length - openD;
+  // פנקס-ההכרעות (T22) — המדידה בענן, לא הסנאפשוט הריק של הפורמן
+  const openD = (queue?.ok ? queue.open : 0) + (foreman?.ok ? foreman.items.filter((x) => x.status === 'open').length : 0);
+  const p0 = queue?.ok ? queue.p0 : 0;
   return (
     <div
       className="pointer-events-none absolute start-3 top-3 z-10 flex max-w-[64%] flex-col gap-2"
@@ -145,7 +148,9 @@ const RoomHud = memo(function RoomHud({ lang }: { lang: Lang }) {
           {he ? `לוח: ${done} בוצעו · ${active} פתוחות` : `Wall: ${done} done · ${active} open`}
         </span>
         <span className="sl-panel px-3 py-2 text-[12px] font-semibold text-[color:var(--ink-2)]">
-          {he ? `הכרעות: ${answeredD} הוכרעו${openD ? ` · ${openD} פתוחות` : ''}` : `Decisions: ${answeredD} resolved${openD ? ` · ${openD} open` : ''}`}
+          {he
+            ? `הכרעות: ${openD} פתוחות${p0 > 0 ? ` · ${p0} חמורות` : ''}`
+            : `Decisions: ${openD} open${p0 > 0 ? ` · ${p0} critical` : ''}`}
         </span>
         {journal && (journal.rescuedCount != null || journal.reviewRoundsTotal != null) && (
           <span className="sl-panel px-3 py-2 text-[12px] font-semibold text-[color:var(--ink-3)]">

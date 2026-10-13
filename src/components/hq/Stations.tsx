@@ -21,6 +21,7 @@ import {
   makeReceptionScreen, makeSignTexture,
 } from '@/lib/hq/textures';
 import { useHq } from '@/lib/hq/store';
+import { useDecisions } from '@/lib/hq/decisions';
 import { bus } from '@/lib/hq/world';
 import { STATE_COLORS, TASK_COL, type AgentState } from '@/lib/hq/protocol';
 import { GitWallSync, gitBoard } from './GitWallData';
@@ -412,10 +413,12 @@ function Podium({ mats }: { mats: OfficeMats }) {
   const focus = useFocus('podium', 'podium');
   const [x, z] = to3(PODIUM.x, PODIUM.y);
   const ringMat = useRef<THREE.MeshStandardMaterial>(null);
-  // אינדיקטור מצב יחיד ומרוסן: טבעת אחת נדלקת רק כשהכרעה באמת פתוחה (אמת מהפורמן)
+  // אינדיקטור מצב יחיד ומרוסן (T22): הטבעת נדלקת רק כשפנקס-ההכרעות הנמדד
+  // (ops-intake/ops-forge/הפורמן) מציג הכרעה פתוחה — לא אנימציה ולא תקווה
   const open = useRef(0);
   useFrame((_, dt) => {
-    const isOpen = useHq.getState().snap.decisions.some((d) => d.status === 'open');
+    const led = useDecisions.getState();
+    const isOpen = led.loaded && led.openCount > 0;
     open.current += ((isOpen ? 1 : 0) - open.current) * Math.min(1, dt * 4);
     if (ringMat.current) {
       ringMat.current.opacity = 0.12 + open.current * 0.55;

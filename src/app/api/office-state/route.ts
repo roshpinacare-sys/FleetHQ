@@ -90,7 +90,9 @@ export async function GET() {
     pulse: box(pulse),
     beacon: box(beacon),
     git: commits
-      ? { ok: true, commits, fetchedAt: commits.fetchedAt, ageMs: ageMs(commits.fetchedAt) }
+      // [T22-תיקון-באג] commits הוא AtomBox ({commits[], fetchedAt}) — ה-wire חייב
+      // להחזיר את המערך עצמו, לא את הקופסה (נמדד: קריסת .map בקיר-הגיט)
+      ? { ok: true, commits: commits.commits, fetchedAt: commits.fetchedAt, ageMs: ageMs(commits.fetchedAt) }
       : { ok: false, error: 'unavailable' },
   };
 
