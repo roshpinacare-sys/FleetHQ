@@ -1080,3 +1080,29 @@ Stage Summary:
 - כלוב: node tools/git-cage.mjs --selftest = 6/6 PASS (רשת-חסומה, בריחה-כלפי-מעלה-חסומה, עבודה-חוקית-חיה) — מוכן-לחיבור-לכל-ספון-סוכן (ops-forge וכו').
 - UI: לשונית-הנדסה חיה-ב-1440 וב-390 (אין-overflow); אפס-שגיאות-קונסול; dev.log נקי (200-בלבד).
 - COORDINATION: state/app/* הוא-מרחב-האפליקציה (לא-נוגעים ב-state/keys/* של-האיבר); כל-כתיבה-דרך git-state.ts (אופטימיות+readback); הבאים-לפי-פסק-הדין: A4-חוזה-מיוצר+CI, A9-ענף-לכל-סדר-עבודה, A3-QUEUE-גרף; לחבר-את-הכלוב-לכל-ספון-קיים.
+
+---
+Task ID: T26-sharp-engineering-wave2
+Agent: zai-code (main session)
+Task: "תמשיך" — גל-הנדסה שני מפסק-הדין (T24/T25): האימוצים שנותרו A9/A6/A3/A8/A7 כמנגנונים-חיים-מדודים; בלי-דרישות-מפתחות-חדשות (מלאי-קיים נבדק: PAT חי).
+
+Work Log:
+- READ-FIRST: worklog (T8→T25) + t24/agentcraft-verdict.json — סדר-האימוץ הקנוני: נותרו A3, A9, A6, A8, A7 (A2/A4/A5/A1/A12/A10/A11 נמסרו ב-T25). מדידות-פתיחה: אפליקציה 200, QUEUE חי (ops/QUEUE.json), RECEIPTS.jsonl נושא orderId מקושר — חוק-הסגירה-המוכחת חישובי.
+- A9 (שער-מיזוג ריבוני): src/lib/git-state.ts — נקודת-חנק אחת: SOVEREIGN_PATHS (state/keys/**, state/app/engineering.json) דורשים authority='sovereign'+ownerVerified=true (המסלול אימת טוקן-בעלים בפועל); יישוב='receipt' מחייב receiptRef≥8; אפס-כתיבה-אנונימית-לנתיבי-ריבונות.
+- A6 (תשתית-דמה): אותו-מודול — מאגר-נדיף (globalThis) עם אותם-חוקים בדיוק (אופטימיות-baseSha, readback-MD5, הסגר-פגום, שער); נעילה-כפולה: SIM=1 בסביבה **וגם** x-sim:1 בבקשה — בלי-השניים 403 fail-closed. decisions-cycle קיבל מסילת-דמה מלאה.
+- A3 (גרף-תור): src/lib/queue-graph.ts + /api/queue-graph — גרף אמת משני-מקורות: סדרות-פר-ריפו (ראש=הותיק; השאר חסומים-על-ידו), dependsOn מפורש+מעגלים, stale≥48ש', chronic≥7י', עריריים, סגירות-מוכחות מול RECEIPTS; חי: 3 פתוחים, 3 מוכנים, 0 חסומים, 2 עריריים, 66/82 סגירות-מוכחות — **ממצא-חריף חדש: 3 קבלות-על-סדרים-פתוחים ("קבלה-לא-סוגרת")** — ops-forge רושם קבלות על סדרים שלא נסגרו.
+- A8 (מדידת-עלות): settle קיבל costUsd (לא-שלילי, 2 ספרות) + סיכום-עלות ב-/api/engineering GET (settled/withCost/totalUsd) + שדה-עלות בטופס-היישוב.
+- A7 (ניגודיות): tools/check-contrast.mjs — מדידת WCAG מול --surface/--surface-2: **20 כישלונות נמדדו** (כולל --ink-3 3.27, --st-ok 2.15, --accent-כטקסט 3.58); תיקון-פלטה ב-globals.css (--ink-3→#6d6455, --accent→#9c5410, כל-6 צבעי-המצב הוכהו לדרגות-AA); טקסט-כפתורי-האקסנט הופך-שחור→לבן (8 מקומות); --line/--line-strong מדווחים-כדקורטיביים; דפוס-כפתור לבן-על-accent נוסף-לחוק. **פסק-סופי: PASS 25/25.**
+- tools/mech-selftest.ts — selftest-CLI על-המנגנון (כמו git-cage --selftest): 10 בדיקות — gate: מוגן-בלי-בעלים→חסום, מוגן-עם-בעלים→ok+readback, קבלה-קצרה→חסום, קבלה-תקינה→ok; sim: read-null→write→conflict→readback, הסגר-פגום, ניקוי-מדוד. **10/10 PASS (exit 0).**
+- מחזור-זהב בדמה (curl על השרת החי, SIM=1): ask→sim-000001, answer→sim-000002, settle-בלי-קבלה→400, settle-עם-קבלה+costUsd 0.42→sim-000003 (העלות נרשמה), answer-אחרי-settle→400, reopen-בלי-בעלים→401, **אמת-גיט לא-נגעה: REAL_BEFORE==REAL_AFTER (sha זהה)**; simselftest-בלי-בעלים→401 (חוק-השער-ב-API נשמר).
+- תיקון-תפעולי: השרת המקומי הופל-והוקם-מחדש דרך start-stop-daemon (נתיב-מלא /usr/local/bin/bun) עם SIM=1 — nohup/setsid נקטלו-אחרת; ההתחלה-החדשה שורדת-גבולות-פקודה (pidfile /tmp/nextdev.pid).
+- UI: Engineering.tsx — סעיף "גרף-התור (A3)" חי (health-chips + 12 עד-12 פריטים עם blockedBy/ערירי/כרוני/קבלה-לא-סוגרת), כפתור "בדיקת-דמה+שער" (בעלים) + לוח-תוצאות-הדמה מהגיט, שדה-עלות ביישוב; mפת-האימוצים כעת 12 מנגנונים (A2-A12).
+- כספת: Autonomy state/app/engineering.json עודכן (commit 9dc66c218, readback MATCH — מפת-אימוצים 12 + תוצאות-הדמה); OWNER-CHANNEL attest (Sandbox inbox.jsonl, commit 9cc76ca62, readback MATCH, role=agent zai-code-t26).
+- BROWSER-VERIFIED (agent-browser): 1440 — לשונית-הנדסה: מפת-אימוצים כולל A9/A6/A3/A8/A7 עם-המדידות, כלוב PASS 6/6, לוח-הדמה PASS "לא-נגענו" עם כל-הבדיקות ✓, גרף-התור חי (66/82, 3-קבלות-על-פתוח); 390 — אפס-overflow; קונסול אפס-שגיאות (רק אזהרת-THREE ישנה); lint 0/0.
+
+Stage Summary:
+- כל-12-האימוצים מפסק-הדין עכשיו מנגנונים-חיים-מדודים — פסק-הדין הומר-במלואו לתשתית. הרשת עכשיו: כלובה-סוכנים (A2), שוערת-כוונות (A5), מכריעה-עם-אפקט (A1), שומרת-סשנים (A12), **חוסמת-כתיבה-ריבונית-אנונימית (A9), מדמה-בלי-לגעת (A6), מודדת-תור-כגרף (A3), מודדת-עלות (A8), ומדדה-ותיקנה-את-הניגודיות-שלה (A7)**.
+- הממצא-החריף-החדש-מהגרף: 3-קבלות-על-סדרים-פתוחים ב-ops-forge — קבלה-שאינה-סוגרת = פער-סגירה-מדיד; הגרף מציג-אותן לכל-הבעלים.
+- הפלטה-שלנו הייתה לא-נגישה (20-כישלונות WCAG) — תוקנה-ומדידה-אוטומטית-קבועה (check-contrast) כדי-שלא-תחזור.
+- למעבירי-המשרה: אל-תכתבו-ישירות ל-state/keys/** או engineering.json דרך-האפליקציה בלי-בעלים — השער חוסם (וזה-החוק); בדיקת-מנגנון בלי-בעלים: bun tools/mech-selftest.ts; מסילת-QA: SIM=1 בסביבה + x-sim:1 בבקשה, אפס-נגיעה-באמת.
+- COORDINATION: tools/mech-selftest.ts ו-tools/check-contrast.mjs הם-החוקים-המדידים; הם-רצים-גם-מה-API-הריבוני (בעלים) וגם-כ-CLI (מסילה) — אותם-חוקים.

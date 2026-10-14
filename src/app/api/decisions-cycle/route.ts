@@ -13,7 +13,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { randomBytes } from 'crypto';
 import { db } from '@/lib/db';
 import { assertIntent } from '@/lib/intent-gate';
-import { readJsonState, updateJsonState } from '@/lib/git-state';
+import { readJsonState, updateJsonState, simRequested } from '@/lib/git-state';
 
 export const revalidate = 0;
 
@@ -37,6 +37,8 @@ export interface CycleDecision {
   openedAt: string;
   answers: CycleAnswer[];
   receiptRef?: string;
+  /** A8: עלות-האפקט המדודה (USD) — נרשמת עם הקבלה, נספרת בפנקס-ההנדסה */
+  costUsd?: number;
   settledAt?: string;
   reopenedAt?: string;
   reopenNote?: string;
@@ -57,8 +59,9 @@ async function ownerAuthed(token: string | undefined): Promise<boolean> {
 }
 
 // ─────────────── GET ───────────────
-export async function GET() {
-  const st = await readJsonState<CycleState>(REPO, PATH);
+export async function GET(req: NextRequest) {
+  const sim = simRequested(req.headers.get('x-sim') === '1');
+  const st = await readJsonState<CycleState>(REPO, PATH, 'main', sim);
   const state = st.data ?? FRESH_STATE;
   const decisions = [...(state.decisions ?? [])].reverse(); // חדש-ראשון
   return NextResponse.json(
@@ -76,7 +79,7 @@ export async function GET() {
       },
       fetchedAt: new Date().toISOString(),
     },
-    { headers: { 'x-cycle-source': st.ok ? 'git' : 'git-error' } },
+    { headers: { 'x-cycle-source': st.ok ? (sim ? 'sim' : 'git') : 'git-error' } },
   );
 }
 
@@ -91,6 +94,7 @@ interface PostBody {
   text?: string;
   sideEffect?: string;
   receiptRef?: string;
+  costUsd?: number;
   reopenNote?: string;
 }
 
@@ -119,6 +123,12 @@ export async function POST(req: NextRequest) {
   const gate = assertIntent(req, 'decisions-cycle', intent, 'agent');
   if (gate) return gate;
 
+  // A6: תשתית-דמה — נעילה-כפולה (סביבה+בקשה); בלי-השניים = דחייה ולא גיט-אמת
+  const sim = simRequested(req.headers.get('x-sim') === '1');
+  if (req.headers.get('x-sim') === '1' && !sim) {
+    return NextResponse.json({ ok: false, error: 'sim-disabled — נדרש SIM=1 בסביבת-השרת (fail-closed)' }, { status: 403 });
+  }
+
   // reopen = הריבונות בלבד (פתיחת-מחדש של הכרעה-סגורה דורשת בעלים)
   if (action === 'reopen' && !(await ownerAuthed(req.headers.get('x-owner-token') ?? undefined))) {
     return NextResponse.json({ ok: false, error: 'reopen מותר לבעלים בלבד (נדרשת כניסת-מנהל)' }, { status: 401 });
@@ -129,7 +139,7 @@ export async function POST(req: NextRequest) {
   const res = await updateJsonState<CycleState>(
     REPO,
     PATH,
-    `decisions-cycle: ${action} [T25]`,
+    `decisions-cycle: ${action}${sim ? ' [sim]' : ''} [T26]`,
     (current) => {
       const state: CycleState = current?.schema === 'decisions.cycle/1' ? current : FRESH_STATE;
       const decisions = [...(state.decisions ?? [])];
@@ -184,7 +194,12 @@ export async function POST(req: NextRequest) {
         if (receiptRef.length < 8) {
           return { next: state, abort: { error: 'settle חייב receiptRef — אין-סגירה-בלי-קבלת-אפקט (מינימום 8 תווים)' } };
         }
+        // A8: עלות-מדודה (אופציונלית) — מספר לא-שלילי, עד 2 ספרות-עשרוניות
+        const cost = typeof body.costUsd === 'number' && Number.isFinite(body.costUsd) && body.costUsd >= 0
+          ? Math.round(body.costUsd * 100) / 100
+          : undefined;
         dec.receiptRef = receiptRef;
+        if (cost !== undefined) dec.costUsd = cost;
         dec.status = 'settled';
         dec.settledAt = now;
         return { next: { ...state, updatedAt: now, decisions } };
@@ -199,6 +214,8 @@ export async function POST(req: NextRequest) {
       dec.reopenNote = clean(body.reopenNote, 300) || undefined;
       return { next: { ...state, updatedAt: now, decisions } };
     },
+    'main',
+    { sim },
   );
 
   if (!res.ok) {

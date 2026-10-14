@@ -186,7 +186,7 @@ export function OwnerChat() {
               <button
                 type="button"
                 onClick={() => void submitSecret(gate === 'unclaimed' ? 'claim' : 'verify')}
-                className="h-11 rounded-md bg-[color:var(--accent,#b88a3a)] px-3 text-[13px] font-bold text-black transition hover:brightness-110 disabled:opacity-50"
+                className="h-11 rounded-md bg-[color:var(--accent,#b88a3a)] px-3 text-[13px] font-bold text-white transition hover:brightness-110 disabled:opacity-50"
                 disabled={gate === 'loading' || secret.length < 8}
               >
                 {gate === 'unclaimed' ? 'קביעת-מפתח-וכניסה' : 'כניסת-מנהל'}
@@ -252,7 +252,7 @@ export function OwnerChat() {
                   type="button"
                   onClick={() => void send(draft, 'decider')}
                   disabled={sending || !draft.trim()}
-                  className="h-11 rounded-md bg-[color:var(--accent,#b88a3a)] px-3 text-[12.5px] font-bold text-black transition hover:brightness-110 disabled:opacity-50"
+                  className="h-11 rounded-md bg-[color:var(--accent,#b88a3a)] px-3 text-[12.5px] font-bold text-white transition hover:brightness-110 disabled:opacity-50"
                 >
                   {sending ? '…' : 'שלח'}
                 </button>
