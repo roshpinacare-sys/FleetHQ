@@ -485,7 +485,7 @@ function Podium({ mats }: { mats: OfficeMats }) {
       </mesh>
       {/* R54: הפלטה רק כשקורה משהו; קטנה, צמודה מעל-הדוכן (1.78מ'),
        * והשלט-השני (ניאון כפול) נמחק — השם כבר על קיר-הדוכן */}
-      {plateOn && <Billboard position={[0, 1.78, 0]} tex={plate.tex} scale={[1.18, 0.37, 1]} />}
+      {plateOn && <Billboard position={[0, 1.78, 0]} tex={plate.tex} scale={[1.18, 0.37]} />}
     </group>
   );
 }
