@@ -1,54 +1,54 @@
 {
-  "capturedAt": "2026-10-14T01:07:55.124Z",
+  "capturedAt": "2026-10-14T01:43:53.498Z",
   "connected": true,
   "backend": "live",
-  "statusHe": "צוות חי — זיכרון שוחזר מהגיט (27 משמרות, 18 לקחים)",
+  "statusHe": "צוות חי — זיכרון שוחזר מהגיט (29 משמרות, 19 לקחים)",
   "mode": null,
   "agents": [
     {
       "id": "aluf",
-      "state": "idle",
-      "activity": "",
+      "state": "thinking",
+      "activity": "מתכנן את היעד…",
       "station": "wall",
-      "since": 1791939955253,
-      "taskId": "t1895"
+      "since": 1791942254327,
+      "taskId": "t1938"
     },
     {
       "id": "gal",
-      "state": "reading",
-      "activity": "קורא dex-book",
-      "station": "library",
-      "since": 1791940090795,
-      "taskId": "t1895"
+      "state": "idle",
+      "activity": "",
+      "station": "desk",
+      "since": 1791942233483,
+      "taskId": "t1938"
     },
     {
       "id": "erez",
       "state": "idle",
       "activity": "",
       "station": "desk",
-      "since": 1791939890199
+      "since": 1791942059649,
+      "taskId": "t1938"
     },
     {
       "id": "tamar",
       "state": "reading",
-      "activity": "קורא econ-book — סיור-רענון",
+      "activity": "קורא sovereign-policy — סיור-רענון",
       "station": "library",
-      "since": 1791940046802
+      "since": 1791942205173
     },
     {
       "id": "shachar",
-      "state": "error",
-      "activity": "תקלה — ראה יומן",
+      "state": "idle",
+      "activity": "",
       "station": "desk",
-      "since": 1791939953152,
-      "taskId": "t1895"
+      "since": 1791942066183
     },
     {
       "id": "yarden",
       "state": "idle",
       "activity": "",
       "station": "desk",
-      "since": 1791940009074
+      "since": 1791942167433
     }
   ],
   "tasks": [
@@ -2492,34 +2492,67 @@
       "id": "t1895",
       "title": "Collect recent news on autonomous agents",
       "description": "Use web_search to gather articles, press releases, and reports published in the last 30 days about autonomous agents.",
-      "status": "doing",
+      "status": "done",
       "assignee": "gal",
       "dependsOn": [],
       "why": "ספרי הדקס, המסחר וההגיון הפנימי",
       "matchBy": "fit",
       "createdBy": "aluf",
       "createdAt": 1791927457508,
-      "updatedAt": 1791939998278,
-      "startedAt": 1791939998278,
-      "durationMs": 156043
+      "updatedAt": 1791941242990,
+      "startedAt": 1791941053781,
+      "durationMs": 128124,
+      "summary": "Report saved: 'Autonomous Agents News Collection - Book Audit'. Queried all 4 books (market-grid at 2026-10-14T00:35:05.169Z, dex-book at 2026-10-13T22:49:06.962Z, truth-history with 100+ runs latest 2026-10-13T19:14:24.404Z, fills-ledger at 2026-10-12T12:28:13.514Z with 3.466847 SWAP.HIVE realized). None contain autonomous agents news. web_search tool required for actual news collection. [אושר בכנות לאחר 2 עידונים — הערת ראש-המטה: The task needs to use the 'web_search' tool to collect recent ne"
+    },
+    {
+      "id": "t1938",
+      "title": "מחקר רשת: חפשי חדשות על סוכנים אוטונומיים וכתבי דוח עם מקורות — השתמשי ב-web_search",
+      "description": "מחקר רשת: חפשי חדשות על סוכנים אוטונומיים וכתבי דוח עם מקורות — השתמשי ב-web_search",
+      "status": "done",
+      "assignee": "gal",
+      "dependsOn": [],
+      "why": "ספרי הדקס, המסחר וההגיון הפנימי",
+      "matchBy": "fit",
+      "createdBy": "aluf",
+      "createdAt": 1791941900657,
+      "updatedAt": 1791942066990,
+      "startedAt": 1791941987164,
+      "summary": "",
+      "durationMs": 49091
     }
   ],
   "books": 22,
   "memory": {
-    "shifts": 27,
-    "lessons": 18
+    "shifts": 30,
+    "lessons": 19
   },
   "counts": {
     "agent": 6,
-    "task": 167,
+    "task": 168,
     "log": 4,
-    "feed": 0,
+    "feed": 3,
     "decision": 0,
     "report": 0,
-    "goal": 0,
-    "bubble": 0
+    "goal": 1,
+    "bubble": 1
   },
-  "feed": [],
+  "feed": [
+    {
+      "kind": "bubble:aluf",
+      "text": "לא נתקעים על אותה זווית — משמרת חדשה יוצאת לדרך.",
+      "at": 1791942253431
+    },
+    {
+      "kind": "goal",
+      "text": "המפעיל האוטונומי בחר סיור לפי מצב הספרים והגיט — מחקר רשת: חפשי חדשות על סוכנים אוטונומיים וכתבי דוח עם מקורות — השתמשי ב-web_search",
+      "at": 1791942253431
+    },
+    {
+      "kind": "goal",
+      "text": "{\"id\":\"g1950\",\"text\":\"מחקר רשת: חפשי חדשות על סוכנים אוטונומיים וכתבי דוח עם מקורות — השתמשי ב-web_search\",\"status\":\"planning\",\"progress\":0,\"createdAt\":1791942253425,\"updatedAt\":1791942253425,\"origin\"",
+      "at": 1791942253431
+    }
+  ],
   "reports": [],
   "decisions": [],
   "lastError": null
