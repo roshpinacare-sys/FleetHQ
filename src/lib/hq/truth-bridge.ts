@@ -43,7 +43,7 @@ interface OfficeLiveRaw {
 
 function mapBooks(raw: OfficeLiveRaw | null): { ok: boolean; at?: string; list?: { name: string; ageHours: number | null; fresh: boolean; empty: boolean }[] } {
   const list = raw?.books?.list;
-  if (!Array.isArray(list)) return { ok: false, error: 'unavailable' };
+  if (!Array.isArray(list)) return { ok: false };
   const out: { name: string; ageHours: number | null; fresh: boolean; empty: boolean }[] = [];
   for (const b of list) {
     if (!b || typeof b !== 'object' || typeof b.name !== 'string' || !b.name) continue;
@@ -54,7 +54,7 @@ function mapBooks(raw: OfficeLiveRaw | null): { ok: boolean; at?: string; list?:
       empty: b.empty === true,
     });
   }
-  return { ok: out.length > 0, ...(raw?.generatedAt ? { at: raw.generatedAt } : {}), ...(out.length ? { list: out } : { error: 'unavailable' }) };
+  return { ok: out.length > 0, ...(raw?.generatedAt ? { at: raw.generatedAt } : {}), ...(out.length ? { list: out } : {}) };
 }
 
 /** איסוף ישיר מהמקורות (סטטי, ללא שרת) — כנות זהה: מה שנכשל נשאר לא-זמין */

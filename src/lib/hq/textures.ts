@@ -370,7 +370,7 @@ export class DynTex {
 export function makeMonitorScreen(agentName: string, agentColor: string): {
   tex: THREE.CanvasTexture;
   setLogs: (lines: { kind: string; text: string }[]) => void;
-  setWork: (w: { stateHe: string; stateCol: string; activity: string; task: string; taskStatusHe: string }) => void;
+  setWork: (w: { stateHe: string; stateCol: string; activity: string; task: string; taskStatusHe: string } | null) => void;
   update: (now: number) => void;
 } {
   const lines: { kind: string; text: string }[] = [];
