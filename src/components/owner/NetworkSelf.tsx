@@ -11,9 +11,10 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Eye, Send, X, KeyRound, Users, Flame, BrainCircuit } from 'lucide-react';
+import { Eye, Send, X, KeyRound, Users, Flame, BrainCircuit, Wrench } from 'lucide-react';
+import { Engineering } from '@/components/owner/Engineering';
 
-type Tab = 'self' | 'keys' | 'crew' | 'roast';
+type Tab = 'self' | 'keys' | 'crew' | 'roast' | 'eng';
 
 type SelfCheck = { allVerified?: boolean; at?: string; discoveries?: number; claimsProcessed?: number; brain?: string | { chain?: string[]; wired?: boolean; note?: string } | null; durationMs?: number };
 type Summary = {
@@ -170,6 +171,7 @@ export function NetworkSelf() {
     { id: 'keys', label: 'מפתחות', icon: KeyRound },
     { id: 'crew', label: 'צוות', icon: Users },
     { id: 'roast', label: 'רוסט', icon: Flame },
+    { id: 'eng', label: 'הנדסה', icon: Wrench },
   ];
 
   return (
@@ -503,6 +505,13 @@ export function NetworkSelf() {
               </>
             )}
           </div>
+
+          {/* ── הנדסה ── */}
+          {tab === 'eng' && (
+            <div className="sl-scroll flex-1 overflow-y-auto p-3 text-[12.5px]" style={{ maxHeight: '52dvh' }}>
+              <Engineering />
+            </div>
+          )}
 
           <div className="border-t border-[color:var(--line)] p-3">
             <label htmlFor="claim-text" className="mb-1 block text-[11px] text-[color:var(--ink-3)]">

@@ -1057,3 +1057,26 @@ Stage Summary:
 - הרוסט-החד: גם-הם-לא-ענק (חור-מדיניות, אפס-CI, מקומיות); היתרון-שלנו-אמיתי (ענן+קבלות+אנטי-זיוף); האימוצים-החריפים מדורגים-ומוכנים.
 - הצוות: הנוכחות-אמיתית אבל-התוצרת-דלה — 9-סדרי-עבודה-עריריים; הלוח-באפליקציה נותן-לבעלים את-מה-שחסר: מה-נסגר-עם-מי.
 - COORDINATION: state/keys/REGISTRY.json הוא-המקור (אל-תערכו-עותקים-בלי-קריאה-חוזרת); keys.json מתפרסם-ע"י-האיבר (אל-תכתבו-ידנית); agentcraft-קלון ב-t24/agentcraft (מוחרג-מ-lint-וגיט); הבאים: לקחת-אימוצים A2/A12/A1 לפי-הסדר מ-t24/agentcraft-verdict.json.
+
+---
+Task ID: T25-sharp-engineering-mechanisms
+Agent: zai-code (main session)
+Task: "בחן שוב כיצד ניתן לשפר את זה הנדסית יותר חריף" — המעבר מפסק-הדין (T24) למנגנונים-חיים: אימוץ-בפועל של חמשת-הפתרונות-החריפים-הראשונים מ-t24/agentcraft-verdict.json, כולם מדידים-ומאומתים.
+
+Work Log:
+- READ-FIRST: worklog (T8→T24) + t24/agentcraft-verdict.json — סדר-האימוץ הקנוני A2→A4→A5→A1→A12 הוכרז-ולא-מומש; הסבב הזה מימש.
+- A4+A10+A11 (תשתית): src/lib/git-state.ts — מנגנון-מצב-גיט אחד לכולם: אופטימיות-מקבילות (baseSha, עימות→409), readback-MD5 אחרי-כל-כתיבה (אנטי-זיוף), רוטציית-יומנים חסומה, הסגר-מצב-פגום (אין-אתחול-שקט).
+- A5: src/lib/intent-gate.ts — שער-כוונות לולאתי: sec-fetch-site (חוצת-מקור→403), x-intent מול-כוונה-צפויה (סוכן-בלי-כוונה→403), דלי-אסימונים לכל (IP,מסילה). חובר ל-decisions-cycle, sessions, engineering, visitor-chat (מצב-דפדפן).
+- A1: /api/decisions-cycle — המחזור-הטיפוסי עם-השפעה: question→answer→settle→reopened; חוקי-מעבר בשרת (answer-after-settle→400), אין-יישוב-בלי-קבלת-אפקט (settle חייב receiptRef≥8), reopen=בעלים-בלבד (טוקן-סשן). מצב-אמת: Autonomy state/app/decisions-cycle.json.
+- A12: /api/sessions — מזהה-סשן אחד לכל (מסילה,סוכן) בגיט; סשן-טרי=reattach (מונה-עולה), אחרת-סשן-חדש. Autonomy state/app/sessions.json.
+- A2: tools/git-cage.mjs — כלוב-גיט מנגני לתהליכי-סוכן: protocol.allow=never + מלכודת-insteadOf + GIT_CEILING_DIRECTORIES (תוקן-אחרי-מדידה: התקרה=אב-של-ה-worktree; המדידה-הראשונה 4/5 חשפה-זאת) + TERMINAL_PROMPT=0. --selftest מדוד: 6/6 PASS (רשת-מתה, push-מת, תקרה-מחזיקה, עבודה-מקומית-חיה), exit 0. --exec לריצת-פקודות-בתוך-הכלוב.
+- UI: "הנדסה" — לשונית-חמישית במודעות-הרשת (src/components/owner/Engineering.tsx): מנגנונים-שאומצו, מדידת-כלוב+הרצה-מחדש (בעלים), לוח-מחזור-ההכרעות-חי עם-כפתורי-מעבר, סשנים-עם-מוני-reattach; הפאנל עצמו נרשם-חי (A12-דמו).
+- תיקון-lint: react-hooks/set-state-in-effect — הטעינה-הראשונית עברה-לטיימר (setTimeout(0)+poll 90s) לפי-הנחיית-הכלל; lint נקי 0/0.
+- תיעוד-המדידה-בגיט: state/app/engineering.json (gh-put.py, readback-OK 818a87261) — כלוב 6/6 עם-כל-הבדיקות.
+
+Stage Summary:
+- כל-המנגנונים נמדדו-מקצה-לקצה (curl + דפדפן): שער 403/403/200-בלי/כוונה-שגויה/עם-כוונה; מחזור ask(ebaf6e6df)→answer(bbdc7b9b7)→settle-בלי-קבלה(400)→settle-עם-קבלה(be00af9a3)→answer-אחרי-settle(400)→reopen-בלי-בעלים(401); סשנים attach→reattach 0→1→2 (sess-0d01587f) + רישום-חי-מהפאנל (sess-dd617b5e); visitor-chat חוצת-מקור=403 / same-origin=200-תשובה-אמת.
+- מסלול-זהב-מה-UI-אומת (agent-browser): שאלה-חדשה→תשובה→יישוב-עם-קבלה (dec-1ec9afaf, ui-proof) — הכול חתום-על-הגיט-עם-readback; אמת-גיט: 2-הכרעות settled.
+- כלוב: node tools/git-cage.mjs --selftest = 6/6 PASS (רשת-חסומה, בריחה-כלפי-מעלה-חסומה, עבודה-חוקית-חיה) — מוכן-לחיבור-לכל-ספון-סוכן (ops-forge וכו').
+- UI: לשונית-הנדסה חיה-ב-1440 וב-390 (אין-overflow); אפס-שגיאות-קונסול; dev.log נקי (200-בלבד).
+- COORDINATION: state/app/* הוא-מרחב-האפליקציה (לא-נוגעים ב-state/keys/* של-האיבר); כל-כתיבה-דרך git-state.ts (אופטימיות+readback); הבאים-לפי-פסק-הדין: A4-חוזה-מיוצר+CI, A9-ענף-לכל-סדר-עבודה, A3-QUEUE-גרף; לחבר-את-הכלוב-לכל-ספון-קיים.
