@@ -1147,3 +1147,24 @@ Stage Summary:
 - הספון-הראשי-כלוא: ops-forge (המבצע-הענני) נולד-עם-כלוב-מדוד ומסרב-לרוץ-אם-הוא-מנופץ — המסילה-החדה-ביותר של-הרשת נסגרה.
 - האדומים: 0-פתוחים-בתור (79/83 סגירות-מוכחות); compute-canary (רעש-אימייל, מפר-חוק-T23) מושבת-עם-קבלה; office-3d ירוק-אחרי-שורש-שנמדד.
 - COORDINATION: החוזה-מיוצר-מ-contract-facts.ts בלבד — אל-תערכו-את state/app/contract.json ידנית (ה-CI יתפוס); כל-שינוי-חוק = עריכה במקור → node tools/gen-contract.mjs → פרסום; הכלוב ב-forge.mjs הוא fail-closed — אל-תשחררו-אותו; engineering.json = נתיב-ריבונות (authority=sovereign בלבד).
+
+---
+Task ID: T29
+Agent: zai-code (main lane, round 14 "תמשיך" trace 1a13932f86049e6d)
+Task: המשך-הגל-החריף (Round 13→12→10→9): A11 מלא, סגירות-תור, ויעל-קור, הכל-מדוד-ומאומת
+
+Work Log:
+- אודיט-פתיחה: git log נקי (T24-T28 קיימים), עץ-עבודה נקי; מדידה-חיה של queue-graph/engineering/keys-registry.
+- A11 מלא (הרוסט-האחרון-שלא-נסגר): quarantineCorruptState ב-git-state.ts — עדות ל-<path>.corrupt-<ts> (תקרה 256KB) + אתחול-מדווח {_reinit} + דיווח-תיבה-חסום (quarantine-inbox.jsonl). הכל דרך writeGitFile (אופטימיות+readback-MD5).
+- [תיקון-באג] ענף-ההסגר ב-updateJsonState היה קוד-מת מ-T26: קריאה-פגומה נושאת ok:false וה-if-הראשון בלע-אותה. נתפס על-ידי ה-selftest-החדש, תוקן (corrupt נבדק ראשון).
+- mech-selftest/2: 13/13 PASS אפס-רשת (בדיקות-הסגר-מלא: עדות-גולמית מדויקת, _reinit.law=A11, תיבה, מאגר-נדיף 5 קבצים).
+- queue-close.mjs: סגירה-מוכחת-קבלה של QUEUE-20261012-10 + QUEUE-20261013-14 (terminal-receipt [T27]) → ops-intake commit 82d740da1, readback MATCH; גרף-חי: provenClosed 71→85, פתוח 4→2 (שני P2-gridwatch כנים — האדומים שילהו-עצמם: fleet-health totals red=0, alerts=0; הסדר-הבא של intake יסגור-אותם).
+- instrumentation.ts: חימום-מקורות-אמת בעליית-השרת (14 מקורות gh-truth, דינמי-בלבד — Edge-אזהרה חוסלה). מדידה: steady-state 5-10ms לכל-ה-APIים החמים (לפני: 400-850ms קור).
+- engineering.json פורסם ל-Autonomy (commit f4d77ada4, readback MATCH): חוק-A11-המלא + רישום-13/13 מ-CLI; ה-API-וה-UI מציגים (אומת ב-curl).
+- אימות-דפדפן: המשרד-ה-3D חי (13-חיות, AGING/דיבור-2/7), לוח-הבקרה: 34-ריפו, 311-workflows, 0-אדומים; פנקס-ההנדסה-חי-בפנל-הרשת. lint 0/0.
+
+Stage Summary:
+- הרוסט-המלא של agentcraft (A1-A12) כעת סגור-כולו-כולל-A11-מלא.
+- שינויים: src/lib/git-state.ts, src/app/api/engineering/route.ts, tools/mech-selftest.ts, tools/queue-close.mjs, tools/engineering-a11.mjs, src/instrumentation.ts.
+- קומיטים: מקומי-T29 (git log -1), 82d740da1 (ops-intake), f4d77ada4 (Autonomy).
+- פתוח-כנה: 2 סדרי-P2-gridwatch (measured-unmatched; האדומים-נעלמו-בבריאות-הצי-החיה), 5 פערי-בעלים במחסן-המפתחות (סוד-מוח, owner-hive, CEX, מעטפות-ישנות, דלק-EVM).
