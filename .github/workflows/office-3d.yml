@@ -163,6 +163,20 @@ jobs:
     steps:
       - name: Checkout FleetHQ (the baked room)
         uses: actions/checkout@v5
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - name: Install + prisma generate (the room imports the same src tree)
+        run: |
+          bun install --frozen-lockfile
+          bunx prisma generate
+      - name: Build the room bundle (vite → dist-office3d)
+        # The deploy below copies dist-office3d — the vite outDir (tools/office3d-static
+        # vite.config.ts, base './'). It is a BUILD ARTIFACT, never committed: this job
+        # was born-red 4× (04:06→05:51Z) because nothing built it in CI. The manual
+        # deploys this job automates always ran `bun run office3d:build` first.
+        run: bun run office3d:build
       - name: Deploy the fresh bundle into Domain/office3d
         env:
           GIT_PAT: ${{ secrets.OFFICE_GIT_PAT }}
