@@ -1,12 +1,13 @@
-# identity-patrol — סיור-זהויות כלל-הצי (2026-10-14T17:26:59.069Z)
+# identity-patrol — סיור-זהויות כלל-הצי (2026-10-14T17:35:40.871Z)
 
-**פסק: VIOLATION** — 36 ריפואים נסרקו (30 קומיטים אחרונים כל-אחד) · הפרות: 29 · דולגו: 1
+**פסק: VIOLATION** — 36 ריפואים נסרקו (30 קומיטים אחרונים כל-אחד) · הפרות: 30 · דולגו: 1
 
 חוק: DECISIONS #10 — אין NAME@users.noreply.github.com פרט-ל-owner ו-github-actions[bot]; בוטים חותמים @agents.roshpinacare-sys.
 
 ## הפרות
-- `Autonomy` e49072457d — author:saos-fleet@users.noreply.github.com + committer:saos-fleet@users.noreply.github.com — "artery hardening (R339/R342): sovereign-tick + weekly-retro single-shot push -> bounded re"
-- `Autonomy` f0e0064c3f — author:saos-fleet@users.noreply.github.com + committer:saos-fleet@users.noreply.github.com — "hygiene redaction (leak-scan law T-41: fix the source, not the scan): key-pointer filename"
+- `Autonomy` ddbfcf3955 — author:41898282+github-actions[bot]@users.noreply.github.com — "office-growth: VALUE-MAP measured [ci]"
+- `Autonomy` 719101edcb — author:41898282+github-actions[bot]@users.noreply.github.com — "office-growth: work-orders measured [ci]"
+- `Autonomy` b7618283a8 — author:41898282+github-actions[bot]@users.noreply.github.com — "office-growth: potential.json measured [ci]"
 - `Zip` fb14fbf71e — author:weave-anchor-zero[bot]@users.noreply.github.com + committer:weave-anchor-zero[bot]@users.noreply.github.com — "weave-anchor-zero: 2026-10-14T17:21:13.211Z · cp#1628 · Z Chain 9369 gasPrice 0x0 · att 16"
 - `Zip` c16efa2162 — author:weave-anchor[bot]@users.noreply.github.com + committer:weave-anchor[bot]@users.noreply.github.com — "weave-anchor: 2026-10-14T17:20:31.763Z · cp#1627 · 1/3 chains · att 1686 · market 0s/0r"
 - `Zip` 2fc8968e36 — author:weave-anchor-zero[bot]@users.noreply.github.com + committer:weave-anchor-zero[bot]@users.noreply.github.com — "weave-anchor-zero: 2026-10-14T12:05:48.211Z · cp#1626 · Z Chain 9369 gasPrice 0x0 · att 16"
@@ -24,7 +25,6 @@
 - `Zip` 23926dbc01 — author:weave-anchor-zero[bot]@users.noreply.github.com + committer:weave-anchor-zero[bot]@users.noreply.github.com — "weave-anchor-zero: 2026-10-13T07:48:42.242Z · cp#1612 · Z Chain 9369 gasPrice 0x0 · att 16"
 - `Zip` 3b2927284f — author:weave-anchor-zero[bot]@users.noreply.github.com + committer:weave-anchor-zero[bot]@users.noreply.github.com — "weave-anchor-zero: 2026-10-13T02:12:44.155Z · cp#1611 · Z Chain 9369 gasPrice 0x0 · att 16"
 - `Zip` 9f8883692f — author:weave-anchor-zero[bot]@users.noreply.github.com + committer:weave-anchor-zero[bot]@users.noreply.github.com — "weave-anchor-zero: 2026-10-13T00:49:28.079Z · cp#1610 · Z Chain 9369 gasPrice 0x0 · att 16"
-- `Zip` 5540c33bb0 — author:weave-anchor-zero[bot]@users.noreply.github.com + committer:weave-anchor-zero[bot]@users.noreply.github.com — "weave-anchor-zero: 2026-10-13T00:32:46.362Z · cp#1609 · Z Chain 9369 gasPrice 0x0 · att 16"
 
 ## דולגו בכנות
 - sanbox — commits API 409
