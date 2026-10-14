@@ -22,6 +22,7 @@ import { CAMERA_PRESETS } from '@/lib/hq/contract';
 import { useHq } from '@/lib/hq/store';
 import { director, type PresetId } from '@/lib/hq/world';
 import { computeFreshness } from '@/components/hq/GitWallData';
+import { buildSnapshot } from '@/lib/hq/truth';
 import type { GitPulse, RepoFleetView } from '@/components/agent-hq/types';
 import { keyMatches, OP_SESSION_KEY } from './operator-gate';
 import './hud.css';
@@ -106,6 +107,34 @@ function digestToGitPulse(d: Digest): GitPulse {
 const REFRESH_MS = 10 * 60 * 1000; // רענון כל 10 דקות
 
 function StaticAdapter({ onChip }: { onChip: (c: Chip) => void }) {
+  // R53 FOREMAN-TRUTH PULLER: the static room used to feed itself ONLY from
+  // digest.json — so the crew showed idle placeholders, the task wall stayed
+  // empty and the decisions podium was blind (measured live: the office's own
+  // state book carried 10 decisions while the room showed 0/0). Now the room
+  // also polls the office's REAL state book (public raw, CORS-open) every 45s
+  // and merges: agents (real states/activities), tasks, decisions (the podium
+  // lights), reports, feed bubbles. Git stays digest-owned (merge preserves
+  // snap.git — the bridge's full syncGit would have regressed the wall).
+  useEffect(() => {
+    let alive = true;
+    const pullForemanTruth = async () => {
+      try {
+        const res = await fetch(
+          'https://raw.githubusercontent.com/roshpinacare-sys/FleetHQ/main/office/state/office-state.json',
+          { cache: 'no-store', signal: AbortSignal.timeout(9000) },
+        );
+        if (!res.ok || !alive) return;
+        const state = (await res.json()) as Parameters<typeof buildSnapshot>[0];
+        const st = useHq.getState();
+        const snap = buildSnapshot(state, null, null);
+        st.syncSnapshot({ ...snap, git: st.snap.git });
+        for (const f of snap.feed) if (f.agentId && f.text) st.syncBubble(f.agentId, f.text);
+      } catch { /* honest static continues — digest still owns the wall */ }
+    };
+    void pullForemanTruth();
+    const iv = setInterval(pullForemanTruth, 45_000);
+    return () => { alive = false; clearInterval(iv); };
+  }, []);
   useEffect(() => {
     let alive = true;
     // זריעה-כנה טרם-השליפה: סטטי, לא "מתחבר" — המסך לעולם לא ייראה LIVE
