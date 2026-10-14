@@ -1,47 +1,46 @@
 {
-  "capturedAt": "2026-10-13T21:39:17.696Z",
+  "capturedAt": "2026-10-14T01:07:55.124Z",
   "connected": true,
   "backend": "live",
-  "statusHe": "צוות חי — זיכרון שוחזר מהגיט (24 משמרות, 15 לקחים)",
+  "statusHe": "צוות חי — זיכרון שוחזר מהגיט (27 משמרות, 18 לקחים)",
   "mode": null,
   "agents": [
     {
       "id": "aluf",
       "state": "idle",
-      "activity": "משגיח מהלוח",
+      "activity": "",
       "station": "wall",
-      "since": 1791927457508,
-      "taskId": "t1881"
+      "since": 1791939955253,
+      "taskId": "t1895"
     },
     {
       "id": "gal",
-      "state": "idle",
-      "activity": "",
-      "station": "desk",
-      "since": 1791927430013,
-      "taskId": "t1881"
+      "state": "reading",
+      "activity": "קורא dex-book",
+      "station": "library",
+      "since": 1791940090795,
+      "taskId": "t1895"
     },
     {
       "id": "erez",
       "state": "idle",
       "activity": "",
       "station": "desk",
-      "since": 1791927582903,
-      "taskId": "t1881"
+      "since": 1791939890199
     },
     {
       "id": "tamar",
       "state": "reading",
-      "activity": "קורא sovereign-policy — סיור-רענון",
+      "activity": "קורא econ-book — סיור-רענון",
       "station": "library",
-      "since": 1791927529393
+      "since": 1791940046802
     },
     {
       "id": "shachar",
-      "state": "reading",
-      "activity": "סורק את מדף הספרים",
-      "station": "library",
-      "since": 1791927577649,
+      "state": "error",
+      "activity": "תקלה — ראה יומן",
+      "station": "desk",
+      "since": 1791939953152,
       "taskId": "t1895"
     },
     {
@@ -49,7 +48,7 @@
       "state": "idle",
       "activity": "",
       "station": "desk",
-      "since": 1791927491664
+      "since": 1791940009074
     }
   ],
   "tasks": [
@@ -2494,81 +2493,34 @@
       "title": "Collect recent news on autonomous agents",
       "description": "Use web_search to gather articles, press releases, and reports published in the last 30 days about autonomous agents.",
       "status": "doing",
-      "assignee": "shachar",
+      "assignee": "gal",
       "dependsOn": [],
-      "why": "intelligence gathering",
-      "matchBy": "llm",
+      "why": "ספרי הדקס, המסחר וההגיון הפנימי",
+      "matchBy": "fit",
       "createdBy": "aluf",
       "createdAt": 1791927457508,
-      "updatedAt": 1791927458853,
-      "startedAt": 1791927458853
+      "updatedAt": 1791939998278,
+      "startedAt": 1791939998278,
+      "durationMs": 156043
     }
   ],
   "books": 22,
   "memory": {
-    "shifts": 25,
-    "lessons": 16
+    "shifts": 27,
+    "lessons": 18
   },
   "counts": {
     "agent": 6,
     "task": 167,
-    "log": 6,
-    "feed": 4,
-    "decision": 2,
+    "log": 4,
+    "feed": 0,
+    "decision": 0,
     "report": 0,
     "goal": 0,
-    "bubble": 2
+    "bubble": 0
   },
-  "feed": [
-    {
-      "kind": "bubble:shachar",
-      "text": "אין כלי web_search, בודקת ספרים זמינים למידע רלוונטי.",
-      "at": 1791927577649
-    },
-    {
-      "kind": "decision",
-      "text": "המפעיל האוטונומי הכריע: מדיניות המפעיל האוטונומי: הנתיב הבטוח — המשך",
-      "at": 1791927571276
-    },
-    {
-      "kind": "decision",
-      "text": "שאלה למפעיל האוטונומי: איך אפשר לגשת לכלי web_search עבור חיפוש חדשות על סוכנים אוטונומיים?",
-      "at": 1791927564276
-    },
-    {
-      "kind": "bubble:shachar",
-      "text": "אישור מהמפעיל, המשך המשימה.",
-      "at": 1791927564275
-    }
-  ],
+  "feed": [],
   "reports": [],
-  "decisions": [
-    {
-      "id": "d1901",
-      "agentId": "shachar",
-      "kind": "question",
-      "question": "איך אפשר לגשת לכלי web_search עבור חיפוש חדשות על סוכנים אוטונומיים?",
-      "options": [],
-      "context": "בקשה לגישה לכלי חיפוש רשת",
-      "status": "open",
-      "taskId": "t1895",
-      "createdAt": 1791927564275
-    },
-    {
-      "id": "d1901",
-      "agentId": "shachar",
-      "kind": "question",
-      "question": "איך אפשר לגשת לכלי web_search עבור חיפוש חדשות על סוכנים אוטונומיים?",
-      "options": [],
-      "context": "בקשה לגישה לכלי חיפוש רשת",
-      "status": "answered",
-      "taskId": "t1895",
-      "createdAt": 1791927564275,
-      "answer": {
-        "text": "מדיניות המפעיל האוטונומי: הנתיב הבטוח — המשך",
-        "ts": 1791927571276
-      }
-    }
-  ],
+  "decisions": [],
   "lastError": null
 }
