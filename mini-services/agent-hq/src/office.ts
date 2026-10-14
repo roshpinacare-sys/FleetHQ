@@ -67,6 +67,33 @@ const MAX_WORKER_STARTS_PER_TICK = 2;
 // silently approved. Aligned tasks get at most MAX_REDOS bounded redos.
 const MAX_REDOS = 2;
 
+// RESCUE DECAY LAW (born measured — trace 1a1393ed, C-2d): the one-shot rescue
+// left a hole — a task that was rescued and blocked AGAIN parked forever
+// (measured live: t1083/t1852/t1971 sat in `rescued` with attempts=3, invisible
+// to dispatch, poisoning the decider's engClean on every beat). The completed
+// law: rescue is BOUNDED-AND-DECAYED —
+//   · a never-rescued blocked task is rescued immediately (the original law,
+//     unchanged);
+//   · a rescued-and-reblocked task becomes eligible again after PARK_DECAY_MS
+//     (one honest re-probe per outage era — a task parked by a dead provider
+//     should complete when the provider heals, not rot);
+//   · a task that burned MAX_RESCUES_PER_TASK rescues and blocked again is
+//     closed `cancelled` by the lead — deterministic, on the record.
+// No task parks forever: D2 reads clean or the room is honestly busy.
+const MAX_RESCUES_PER_TASK = 3;
+const PARK_DECAY_MS = 6 * 60 * 60_000; // 6h — the "is the environment still broken?" probe interval
+
+export function rescueEligible(
+  t: Pick<Task, 'status' | 'updatedAt'>,
+  rescueCount: number,
+  now: number,
+): boolean {
+  if (t.status !== 'blocked') return false;
+  if (rescueCount <= 0) return true; // never rescued — the original one-shot law
+  if (rescueCount >= MAX_RESCUES_PER_TASK) return false;
+  return now - t.updatedAt >= PARK_DECAY_MS;
+}
+
 // ---- LLM task-matching: deterministic fit fallback ---------------------------------------
 // When the model plans (or rescues), every task must land with the RIGHT worker.
 // The primary matcher is the model itself (it returns a one-line "why" per task).
@@ -703,6 +730,7 @@ export class Office {
         taskAttempts: Object.fromEntries(this.taskAttempts),
         reviewAttempts: Object.fromEntries(this.reviewAttempts),
         rescued: [...this.rescued],
+        rescueCounts: Object.fromEntries(this.rescueCounts),
         decisions: [...this.decisions.values()].map(scrubDurableDecision),
         reports: this.reports.slice(0, 60).map(scrubDurableReport),
         ...(this.goal ? { goal: { ...this.goal, text: scrubSecrets(this.goal.text) } } : {}),
@@ -765,6 +793,7 @@ export class Office {
         taskAttempts?: Record<string, number>;
         reviewAttempts?: Record<string, number>;
         rescued?: string[];
+        rescueCounts?: Record<string, number>;
         decisions?: Decision[];
         reports?: Report[];
         goal?: Goal;
@@ -793,6 +822,10 @@ export class Office {
       for (const [k, v] of Object.entries(d.taskAttempts ?? {})) if (typeof v === 'number') this.taskAttempts.set(k, v);
       for (const [k, v] of Object.entries(d.reviewAttempts ?? {})) if (typeof v === 'number') this.reviewAttempts.set(k, v);
       for (const id of d.rescued ?? []) if (typeof id === 'string') this.rescued.add(id);
+      for (const [k, v] of Object.entries(d.rescueCounts ?? {})) if (typeof v === 'number') this.rescueCounts.set(k, v);
+      // migration law: a pre-decay rescued id without a count spent exactly one
+      // rescue — seed it honestly so history cannot buy a free second shot
+      for (const id of this.rescued) if (!this.rescueCounts.has(id)) this.rescueCounts.set(id, 1);
       for (const dec of d.decisions ?? []) {
         if (!dec || typeof dec.id !== 'string') continue;
         if (dec.status === 'open') {
@@ -1346,8 +1379,18 @@ export class Office {
     if (this.status.backend === 'sim') return; // sim drives itself
     this.maybePatrol();
     this.maybeBreak(); // Task 52: idle ≠ statue — honest coffee breaks keep the room alive
-    // lead rescue duty: a blocked task gets one reassignment to a fresh worker
-    const blockedTask = [...this.tasks.values()].find((t) => t.status === 'blocked' && !this.rescued.has(t.id));
+    // lead rescue duty — the decayed law (see RESCUE DECAY LAW): immediate for
+    // a never-rescued task; after PARK_DECAY_MS for a reblocked one; and a task
+    // past MAX_RESCUES_PER_TASK that blocked again is closed cancelled on the
+    // record — deterministic, no LLM, the feed is the owner's surface.
+    const nowMs = Date.now();
+    const blockedTasks = [...this.tasks.values()].filter((t) => t.status === 'blocked');
+    const expired = blockedTasks.filter((t) => (this.rescueCounts.get(t.id) ?? 0) >= MAX_RESCUES_PER_TASK);
+    if (expired.length) {
+      for (const t of expired) this.closeExpiredBlocked(t);
+      return;
+    }
+    const blockedTask = blockedTasks.find((t) => rescueEligible(t, this.rescueCounts.get(t.id) ?? 0, nowMs));
     const leadRt = this.agents.get(LEAD)!;
     if (blockedTask && !leadRt.running) {
       void this.leadRescue(blockedTask);
@@ -1391,6 +1434,8 @@ export class Office {
   }
 
   private rescued = new Set<string>();
+  /** lifetime rescue count per task — the decayed law's memory (persisted) */
+  private rescueCounts = new Map<string, number>();
   private patrolPending = false;
 
   /**
@@ -1581,6 +1626,7 @@ export class Office {
     rt.running = true;
     try {
       this.rescued.add(task.id);
+      this.rescueCounts.set(task.id, (this.rescueCounts.get(task.id) ?? 0) + 1);
       this.setState(LEAD, 'walking', 'ניגש לחסימה על הלוח', 'wall', task.id);
       await sleep(1000);
       const busy = new Set([...this.tasks.values()].filter((t) => t.status === 'doing').map((t) => t.assignee));
@@ -1598,6 +1644,20 @@ export class Office {
     } finally {
       rt.running = false;
     }
+  }
+
+  /** The honest terminal for a task that burned every rescue and blocked again:
+   *  deterministic cancellation with the measured history on the record. The
+   *  feed line is the owner's surface; the journal line is the audit trail.
+   *  No LLM, no room theater — pure bookkeeping (the decider reads clean). */
+  private closeExpiredBlocked(t: Task) {
+    const rescues = this.rescueCounts.get(t.id) ?? 0;
+    this.patchTask(t.id, {
+      status: 'cancelled',
+      summary: `נסגרה בכנות: ${rescues} חילוצים, ${rescues + 1} עובדים מתאימים נכשלו — לא ברת-השלמה בחדר זה כרגע`,
+    });
+    this.feedPush('system', `המשימה "${t.title.slice(0, 80)}" נסגרה לאחר ${rescues} חילוצים שנכשלו — סופה על-הלוח, לא בחניקה`, LEAD);
+    this.log(LEAD, 'result', `expired-blocked closed: ${t.id} after ${rescues} rescues`);
   }
 
   // ---- worker loop (real LLM, real tools) ------------------------------------------------
