@@ -103,6 +103,9 @@ jobs:
             echo "NO-CHANGE: office wrote nothing new into the books this shift (honest)"
           else
             if [ -z "$GIT_PAT" ]; then echo "SKIP-PUSH: no PAT secret — changes stay local (honest)"; exit 0; fi
+            # self-heal (המסילה-השנייה): aborts ONLY — לעולם לא reset --hard כאן:
+            # ה-clone הטרי מחזיק את כתבי-המשמרת של הצוות (measured exit-1 book-loss @ 02:00Z).
+            git rebase --abort 2>/dev/null || true; git merge --abort 2>/dev/null || true
             # [R41 race-safe] המשרד-עצמו רץ-ברקע ומתעסק-באינדקס — commit עלול-למצוא
             # "nothing to commit" בין-diff-ל-commit. זה-מצב-כן-ושקט, לא-כשל (מקור-אימיילי-כשל-מיותרים).
             if ! git commit -m "office-heartbeat: crew shift persisted — memory/journal/tasks [skip ci]" 2>/tmp/r41-commit.err; then
