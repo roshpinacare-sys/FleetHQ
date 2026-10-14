@@ -17,12 +17,16 @@ name: office-heartbeat
 
 on:
   schedule:
-    # two independent cron lines — GitHub skips schedule fires probabilistically
-    # (measured 2026-10-14: only 3 schedule runs in ~15h despite hourly cron);
-    # two lines double the fire opportunities, the shift engine itself stays idempotent
-    - cron: '41 * * * *'
+    # R58 (owner directive: "לא רואים עבודה ממש במשרד" — the office must be
+    # SEEN working, not just be working): the state snapshot the room eats is
+    # only as fresh as the last shift. Hourly shifts left the public room
+    # showing a frozen idle crew for 45+ minutes of every hour (measured:
+    # capturedAt 34min old at 16:08Z). Cadence raised to every 15 minutes —
+    # the shift engine itself stays idempotent (NO-CHANGE is honest silence,
+    # not an error), and GitHub schedule-skip is outlived by 4 offsets/hour.
+    - cron: '9,24,39,54 * * * *'
     - cron: '13 */2 * * *'
-  workflow_dispatch: {}
+  workflow_dispatch: {}  workflow_dispatch: {}
 
 permissions:
   contents: write
