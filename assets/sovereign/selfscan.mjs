@@ -156,15 +156,18 @@ for (const repo of REPOS) {
           writeFileSync(`${CLAIMS}/claim-${prior.sig}.json`, JSON.stringify(prior, null, 2));
         }
       } else if (!failing && !isStale) {
-        // honest resolution: if an open (or escalated needs-operator) claim for this
-        // pair exists, mark resolved — the scan saw it green, or the workflow was
-        // archived/deleted (an archived workflow has NOTHING left to heal; the
-        // escalated issue closes with that evidence via triage's lifecycle)
+        // honest resolution: a claim whose subject is no longer failing resolves with
+        // evidence — the scan saw it green (workflow recovered) or archived/deleted
+        // (nothing left to heal). This includes escalated needs-operator claims: the
+        // operator issue closes WITH the evidence via triage's lifecycle (anti-storm
+        // law §2 — resolution closes the claim, the inbox stays clean). Moot
+        // skill-repair proposals (harness) retire the same way.
         for (const [s, c] of claimsSeen) {
-          if ((c.status === 'open' || (archived && c.status === 'needs-operator')) && c.repo === repo && disp(c.workflow) === name && (c.kind === 'failing' || (archived && c.kind === 'skill-repair'))) {
+          if ((c.status === 'open' || c.status === 'needs-operator') && c.repo === repo && disp(c.workflow) === name && (c.kind === 'failing' || c.kind === 'skill-repair')) {
             c.status = 'resolved'; c.resolvedAt = stamp;
             c.resolveEvidence = { runUrl: r.html_url, conclusion: r.conclusion };
             if (archived) c.resolveEvidence.note = `workflow state=${wstate} (archived) at HEAD — the failure is archaeological, the file no longer exists, nothing left to heal`;
+            else if (c.status === 'needs-operator' || c.kind === 'skill-repair') c.resolveEvidence.note = `subject workflow recovered — measured conclusion=${r.conclusion} at scan time; the escalation is retired by observation`;
             writeFileSync(`${CLAIMS}/claim-${s}.json`, JSON.stringify(c, null, 2));
           }
         }
