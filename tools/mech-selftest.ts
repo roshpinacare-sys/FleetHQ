@@ -9,7 +9,7 @@
  * הרצה: bun tools/mech-selftest.ts
  */
 import {
-  simReset, simStats, writeGitFile, readGitFile, readJsonState, gateVerdict, simPut,
+  simReset, simStats, writeGitFile, readGitFile, readJsonState, updateJsonState, gateVerdict, simPut,
 } from '../src/lib/git-state';
 
 interface Check { check: string; want: string; got: string; pass: boolean }
@@ -51,15 +51,29 @@ simPut('Autonomy/main/state/app/sim-broken.json', '{broken');
 const broken = await readJsonState(REPO, 'state/app/sim-broken.json', 'main', true);
 push('sim: הסגר-פגום', 'corrupt מדווח', broken.corrupt ? 'corrupt' : 'silent', broken.corrupt === true);
 
+// 6b. A11-מלא [T29]: updateJsonState על-פגום → הסגר בפועל (עדות+אתחול+תיבה)
+simPut('Autonomy/main/state/app/sim-broken2.json', '{"x":[1,');
+const q = await updateJsonState<Record<string, unknown>>(REPO, 'state/app/sim-broken2.json', 'sim attack', (c) => ({ next: c ?? {} }), 'main', { sim: true });
+const qq = q.quarantined;
+push('sim: הסגר-מלא מופעל', 'עדות+אתחול+תיבה', qq ? `q=${qq.quarantinedOk}/${qq.reinitOk}/${qq.inboxOk}` : 'none', !q.ok && !!qq && qq.quarantinedOk && qq.reinitOk && qq.inboxOk);
+
+// 6c. העדות נשמרה גולמית-במדויק
+const ev = await readGitFile(REPO, qq?.quarantinedTo ?? 'state/app/none', 'main', true);
+push('sim: עדות-גולמית', '{"x":[1,', ev.text ?? 'null', ev.text === '{"x":[1,');
+
+// 6d. המקור אותחל-מדווח — JSON תקני עם _reinit.law=A11
+const re = await readJsonState<{ _reinit?: { law?: string } }>(REPO, 'state/app/sim-broken2.json', 'main', true);
+push('sim: אתחול-מדווח', '_reinit.law=A11', re.ok ? (re.data?._reinit?.law ?? 'no-law') : 'fail', re.ok && re.data?._reinit?.law === 'A11');
+
 // 7. אימות-נגישה-אמת: קריאה-אמת בלי-sim עדיין עוברת-דרך-הרשת (לא נוגעים — רק קוראים)
 const realRead = await readJsonState<Record<string, unknown>>(REPO, 'state/app/engineering.json');
 push('אמת: קריאת-גיט אמיתית', 'ok', realRead.ok ? 'ok' : (realRead.error ?? 'fail'), realRead.ok);
 
 const stats = simStats();
-// אחרי simReset-האמצעי נותרו בדיוק שני-קבצי-סעיף-הדמה (cycle+broken) — חוק-הניקוי
-push('sim: מאגר-נדיף', '2 קבצים (ניקוי-מדוד)', `${stats.files} קבצים / ${stats.ops} פעולות`, stats.files === 2);
+// אחרי simReset-האמצעי: cycle(1) + broken(1) + broken2+עדות+תיבה(3) = 5 — חוק-הניקוי
+push('sim: מאגר-נדיף', '5 קבצים (ניקוי-מדוד)', `${stats.files} קבצים / ${stats.ops} פעולות`, stats.files === 5);
 simReset();
 
 const pass = checks.every((c) => c.pass);
-console.log(JSON.stringify({ tool: 'mech-selftest/1 [T26]', pass, checks }, null, 2));
+console.log(JSON.stringify({ tool: 'mech-selftest/2 [T29]', pass, checks }, null, 2));
 process.exit(pass ? 0 : 1);
