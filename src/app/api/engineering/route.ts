@@ -73,7 +73,7 @@ const FRESH: EngState = {
     A3: 'גרף-תור — /api/queue-graph (סדרות-פר-ריפו, חסימות, stale/chronic, סגירות-מוכחות מול RECEIPTS)',
     A8: 'מדידת-עלות — costUsd ביישוב-הכרעה + סיכום-עלות בפנקס-זה',
     A7: 'ניגודיות מדודה — tools/check-contrast.mjs (WCAG 4.5:1 על הפלטה מול רקעי-הפאנל)',
-    A11: 'הסגר-מצב-פגום — corrupt מדווח ולא מושתק ב-updateJsonState',
+    A11: 'הסגר-מצב-פגום מלא [T29] — עדות <path>.corrupt-<ts> + אתחול-מדווח {_reinit} + דיווח-תיבה (quarantineCorruptState ב-git-state)',
     A4: 'אופטימיות-מקבילות — baseSha + 409 בכל-כתיבה (git-state)',
   },
 };
@@ -194,6 +194,20 @@ async function runSimSelftest(): Promise<{ checks: SimCheck[]; pass: boolean; re
   simPut('Autonomy/main/state/app/sim-broken.json', '{broken');
   const broken = await readJsonState(REPO, 'state/app/sim-broken.json', 'main', true);
   push('sim: הסגר-פגום', 'corrupt מדווח', broken.corrupt ? 'corrupt' : 'silent', broken.corrupt === true);
+
+  // 5b. A11-מלא [T29]: updateJsonState על-פגום → הסגר בפועל (עדות+אתחול+תיבה)
+  simPut('Autonomy/main/state/app/sim-broken2.json', '{"x":[1,');
+  const qa = await updateJsonState<Record<string, unknown>>(REPO, 'state/app/sim-broken2.json', 'sim attack', (c) => ({ next: c ?? {} }), 'main', { sim: true });
+  const qq = qa.quarantined;
+  push('sim: הסגר-מלא מופעל', 'עדות+אתחול+תיבה', qq ? `q=${qq.quarantinedOk}/${qq.reinitOk}/${qq.inboxOk}` : 'none', !qa.ok && !!qq && qq.quarantinedOk && qq.reinitOk && qq.inboxOk);
+
+  // 5c. העדות נשמרה גולמית-במדויק
+  const evr = await readGitFile(REPO, qq?.quarantinedTo ?? 'state/app/none', 'main', true);
+  push('sim: עדות-גולמית', '{"x":[1,', evr.text ?? 'null', evr.text === '{"x":[1,');
+
+  // 5d. המקור אותחל-מדווח — JSON תקני עם _reinit.law=A11
+  const rer = await readJsonState<{ _reinit?: { law?: string } }>(REPO, 'state/app/sim-broken2.json', 'main', true);
+  push('sim: אתחול-מדווח', '_reinit.law=A11', rer.ok ? (rer.data?._reinit?.law ?? 'no-law') : 'fail', rer.ok && rer.data?._reinit?.law === 'A11');
 
   const stats = simStats();
 

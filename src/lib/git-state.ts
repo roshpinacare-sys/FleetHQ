@@ -6,7 +6,11 @@
  *  · אופטימיות-מקבילות (A4): כתיבה נושאת baseSha שנקרא; התנגשות → 409 עם המצב-הטרי.
  *  · אנטי-זיוף: אחרי כל-כתיבה readback עם MD5 — אימות עצמי או דיווח-כישלון כנה.
  *  · חוק-רוטציה (A10): יומני-JSONL חסומים (bound) — שורות-ישנות נשמטות, אין-גידול-ללא-גבול.
- *  · הסגר-פגום (A11): JSON שאינו-תקני לא מושתק בשקט — מדווח corrupt עם הקשר.
+ *  · הסגר-פגום (A11, מלא [T29]): JSON שאינו-תקני לא מושתק בשקט —
+ *      (1) העדות נשמרת: התוכן-הפגום מועתק ל-<path>.corrupt-<ts> (rename-צד),
+ *      (2) אתחול-מדווח: המקור מוחלף בשלד {_reinit} תקני,
+ *      (3) דיווח-תיבה: שורה-חסומה ב-quarantine-inbox.jsonl ליד המצב.
+ *    הכל באותם-חוקי-כתיבה (אופטימיות+readback) — ובדמה אפס-רשת.
  * אין-כאן שום-המצאה: כל-כשל חוזר ככשל, כל-הצלחה מאומתת-בקריאה-חוזרת.
  */
 import { createHash } from 'crypto';
@@ -219,6 +223,8 @@ export interface JsonStateRead<T> {
   error?: string;
   /** A11: הקובץ קיים אך שבור — לא מושתק בשקט */
   corrupt?: boolean;
+  /** A11 [T29]: הטקסט-הגולמי-הפגום — חומר-ההסגר (מוחזר רק כשcorrupt) */
+  raw?: string;
 }
 
 export async function readJsonState<T>(
@@ -234,8 +240,99 @@ export async function readJsonState<T>(
   try {
     return { ok: true, data: JSON.parse(r.text) as T, sha: r.sha };
   } catch (e) {
-    return { ok: false, data: null, sha: r.sha, corrupt: true, error: e instanceof Error ? `corrupt: ${e.message}` : 'corrupt' };
+    return { ok: false, data: null, sha: r.sha, corrupt: true, raw: r.text, error: e instanceof Error ? `corrupt: ${e.message}` : 'corrupt' };
   }
+}
+
+// ─────────────── A11 מלא: הסגר-מצב-פגום [T29] ───────────────
+/**
+ * חוק (מהרוסט A11 — "rename .corrupt-<ts> + אתחול-מדווח ל-inbox", נותר חצי-מנגנון עד T29):
+ * מצב-פגום לא נשאר במקומו ולא נמחק — הוא מוסגר בשלושה-צעדים-מאומתים:
+ *   1. העדות: <path>.corrupt-<ts> עם התוכן-הגולמי (תקרה 256KB — דפורמציה-לא-בעיה,
+ *      פרטיות-ותקרת-גודל כן).
+ *   2. אתחול-מדווח: המקור מוחלף בשלד {_reinit} תקני — הצרכנים מקבלים מצב-חוקי
+ *      ומזוהה, ואין-שתיקה.
+ *   3. דיווח: שורה-חסומה (A10) ב-quarantine-inbox.jsonl ליד המצב.
+ * כל-הצעדים דרך writeGitFile — אופטימיות, readback-MD5, ובדמה אפס-רשת.
+ */
+export interface QuarantineReport {
+  ok: boolean;
+  /** md5 של התוכן-הפגום — זיהוי-העדות */
+  evidenceSha: string;
+  bytes: number;
+  /** נתיב-ההסגר (אם הצליח) */
+  quarantinedTo?: string;
+  quarantinedOk: boolean;
+  reinitOk: boolean;
+  inboxOk: boolean;
+  errors: string[];
+}
+
+const QUARANTINE_MAX_CHARS = 262_144;
+const INBOX_BOUND = 200;
+const corruptTs = () => new Date().toISOString().replace(/[:.]/g, '-');
+
+export async function quarantineCorruptState(
+  repo: string,
+  path: string,
+  raw: string,
+  opts: { ref?: string; sim?: boolean; reason?: string; corruptBlobSha?: string } = {},
+): Promise<QuarantineReport> {
+  const ref = opts.ref ?? 'main';
+  const errors: string[] = [];
+  const bytes = Buffer.byteLength(raw, 'utf-8');
+  const evidenceSha = md5hex(raw);
+  const evidence =
+    raw.length > QUARANTINE_MAX_CHARS
+      ? raw.slice(0, QUARANTINE_MAX_CHARS) + `\n<!-- A11-truncated @ ${QUARANTINE_MAX_CHARS} chars -->`
+      : raw;
+  const qPath = `${path}.corrupt-${corruptTs()}`;
+
+  // 1. העדות-נשמרת (קובץ-חדש — בלי baseSha)
+  const q = await writeGitFile(repo, qPath, evidence, {
+    message: `A11: הסגר-מצב-פגום ${path} → ${qPath.split('/').pop()}`, ref, sim: opts.sim,
+  });
+  const quarantinedOk = q.ok;
+  if (!q.ok) errors.push(`evidence: ${q.error ?? 'fail'}`);
+
+  // 2. אתחול-מדווח של המקור — עם ה-blob-sha שנקרא (אופטימיות-מלאה)
+  const skeleton = {
+    _reinit: {
+      law: 'A11',
+      path,
+      quarantinedAt: new Date().toISOString(),
+      evidence: qPath,
+      evidenceSha,
+      bytes,
+      reason: opts.reason ?? 'JSON.parse failed',
+      note: 'המקור הוסגר כפגום והוחלף באתחול-מדווח; שחזור-ידני אפשר מקובץ-ההסגר',
+    },
+  };
+  const wr = await writeGitFile(repo, path, JSON.stringify(skeleton, null, 2) + '\n', {
+    baseSha: opts.corruptBlobSha, message: `A11: אתחול-מדווח ${path} (המקור הוסגר)`, ref, sim: opts.sim,
+  });
+  const reinitOk = wr.ok;
+  if (!wr.ok) errors.push(`reinit: ${wr.error ?? 'fail'}`);
+
+  // 3. דיווח-תיבה — חסום לפי A10
+  const dir = path.includes('/') ? path.slice(0, path.lastIndexOf('/') + 1) : '';
+  const line = JSON.stringify({
+    at: new Date().toISOString(), law: 'A11', repo, path,
+    evidence: qPath, evidenceSha, bytes, action: 'quarantine+reinit',
+    evidenceOk: quarantinedOk, reinitOk,
+  });
+  const inbox = await appendJsonlBounded(repo, `${dir}quarantine-inbox.jsonl`, line, {
+    bound: INBOX_BOUND, message: `A11: דיווח-הסגר ${path}`, ref, sim: opts.sim,
+  });
+  const inboxOk = inbox.ok;
+  if (!inbox.ok) errors.push(`inbox: ${inbox.error ?? 'fail'}`);
+
+  return {
+    ok: quarantinedOk && reinitOk && inboxOk,
+    evidenceSha, bytes,
+    ...(quarantinedOk ? { quarantinedTo: qPath } : {}),
+    quarantinedOk, reinitOk, inboxOk, errors,
+  };
 }
 
 // ─────────────── כתיבה ───────────────
@@ -304,15 +401,21 @@ export async function updateJsonState<T>(
   mutate: (current: T | null) => { next: T; abort?: { error: string; status?: number } },
   ref = 'main',
   opts: { sim?: boolean; gate?: WriteGate } = {},
-): Promise<GitWrite & { current?: T | null }> {
+): Promise<GitWrite & { current?: T | null; quarantined?: QuarantineReport }> {
   // fresh=true: baseSha שמזין-כתיבה חייב להיות טרי (שלא-נוצרו-התנגשויות-שווא)
   const read = await readJsonState<T>(repo, path, ref, opts.sim, { fresh: true });
-  if (!read.ok) {
-    return { ok: false, error: read.corrupt ? `state-corrupt: ${read.error}` : `read-failed: ${read.error}` };
-  }
+  // [T29-תיקון-באג] corrupt בדיקה ראשונה: קריאה-פגומה נושאת ok:false — הבדיקה
+  // הישנה (!read.ok) בלעה-את-הענף-הפגום והפכה את ההסגר לקוד-מת (נמדד ב-selftest).
   if (read.corrupt) {
-    // A11: הסגר — לא מאתחלים בשקט; כותבים מדווחים ומשאירים לריפוי-ידני
-    return { ok: false, error: `state-corrupt-quarantined: ${read.error}` };
+    // A11 מלא [T29]: הסגר בפועל — עדות + אתחול-מדווח + דיווח-תיבה; ואז fail-closed
+    // כנה למסלול-הקורא (יכול לחזור על עצמו מול השלד-התקני)
+    const q = await quarantineCorruptState(repo, path, read.raw ?? '', {
+      ref, sim: opts.sim, reason: read.error, corruptBlobSha: read.sha,
+    });
+    return { ok: false, error: `state-corrupt-quarantined: ${read.error}`, quarantined: q };
+  }
+  if (!read.ok) {
+    return { ok: false, error: `read-failed: ${read.error}` };
   }
   const applied = mutate(read.data);
   if (applied.abort) return { ok: false, error: applied.abort.error, current: read.data };
