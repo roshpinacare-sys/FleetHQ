@@ -150,3 +150,37 @@ jobs:
             fi
             echo "- page: https://roshpinacare-sys.github.io/FleetHQ/"
           } >> "$GITHUB_STEP_SUMMARY"
+
+  deploy-room:
+    # R53: the room bundle used to reach Domain/office3d only by manual agent
+    # deploys (measured: 5h+ staleness windows, the owner saw a dead room
+    # while the room itself was fine). Now every bake auto-deploys the fresh
+    # bundle to Domain Pages via OFFICE_GIT_PAT (the same credential the
+    # office-heartbeat uses for the books).
+    needs: bake-and-publish
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout FleetHQ (the baked room)
+        uses: actions/checkout@v5
+      - name: Deploy the fresh bundle into Domain/office3d
+        env:
+          GIT_PAT: ${{ secrets.OFFICE_GIT_PAT }}
+        run: |
+          [ -n "$GIT_PAT" ] || { echo "SKIP-DEPLOY: no OFFICE_GIT_PAT — room stays on previous bundle (honest)"; exit 0; }
+          git clone --depth 3 "https://x-access-token:${GIT_PAT}@github.com/roshpinacare-sys/Domain.git" /tmp/domain-deploy
+          rm -rf /tmp/domain-deploy/office3d
+          cp -r dist-office3d /tmp/domain-deploy/office3d
+          cd /tmp/domain-deploy
+          git config user.name  "roshpinacare-sys"
+          git config user.email "326012154+roshpinacare-sys@users.noreply.github.com"
+          git add -A office3d
+          if git diff --cached --quiet; then echo "NO-CHANGE: room bundle identical to live"; exit 0; fi
+          git commit -m "office3d: auto-deploy fresh room bundle (office-3d bake) [skip ci]"
+          ok=0
+          for i in 1 2 3 4 5; do
+            git -c rebase.autoStash=true pull --rebase -X theirs -q origin main 2>/dev/null || true
+            if git push -q origin main; then ok=1; echo "DEPLOYED (attempt $i): room bundle live on Domain Pages"; break; fi
+            sleep $((6 + RANDOM % 8))
+          done
+          [ "$ok" = "1" ] || echo "named terminal: deploy-deferred — bundle committed locally? no: kept in bake artifacts, next bake re-lands it"
