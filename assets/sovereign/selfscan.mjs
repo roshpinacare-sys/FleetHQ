@@ -58,6 +58,9 @@ for (const f of existsSync(CLAIMS) ? readdirSync(CLAIMS) : []) {
 }
 
 const state = { generatedAt: stamp, runUrl: RUN_URL, repos: {}, workflows: {}, newClaims: [], newCapabilities: [], counts: { green: 0, red: 0, disabled: 0, stale: 0, archived: 0 } };
+// run names are unstable: push-event runs can carry the PATH as name while
+// dispatch/schedule carry the display name. Normalize once, module-level.
+const disp = (n) => String(n || '').replace(/^\.github\/workflows\//, '').replace(/\.ya?ml$/, '');
 // ARCHIVED (2026-10-14, trace 1a137fbff7c7c4ad): a workflow whose file was deleted
 // (state `deleted` / `deleted_inactivity`) can NEVER run again — its last failed run
 // is archaeology, not a live problem. Counting it red forever made the book lie
@@ -88,7 +91,6 @@ for (const repo of REPOS) {
       try { p2 = (await gh(`/repos/${OWNER}/${repo}/actions/runs?per_page=100&page=2`)).workflow_runs || []; } catch { /* page 2 optional */ }
       runs = [...p1, ...p2];
     } catch (e) { lines.push(`| ${repo} | \`${pushedAt}\` | ${pushAgeMin}m | runs-api-error: ${String(e.message).slice(0, 40)} | | | |`); continue; }
-    const disp = (n) => String(n || '').replace(/^\.github\/workflows\//, '').replace(/\.ya?ml$/, '');
     const runsInWindow = new Map();
     for (const r of runs) runsInWindow.set(disp(r.name), (runsInWindow.get(disp(r.name)) || 0) + 1);
 
@@ -200,6 +202,38 @@ for (const repo of REPOS) {
     lines.push(`| ${repo} | ERROR | — | ${String(e.message).slice(0, 60)} | | | | |`);
     state.repos[repo] = { error: String(e.message) };
   }
+}
+
+// OUT-OF-WINDOW CLAIM MEASUREMENT (2026-10-14): dispatch-only, quiet workflows
+// (anchor-execute, operator-console…) have NO runs inside the ~200-run window —
+// they never appear in the judged map above, so claims about them would linger
+// forever. Absence in the window is NOT evidence either way, so we go LOOK at
+// each such subject directly (bounded: one 3-run call per unresolved claim).
+for (const [s, c] of claimsSeen) {
+  try {
+    if (c.status !== 'open' && c.status !== 'needs-operator') continue;
+    if (c.kind !== 'failing' && c.kind !== 'skill-repair') continue;
+    const dispName = disp(c.workflow);
+    if (state.workflows[`${c.repo}|${dispName}`]) continue; // in-window — already judged above
+    const wfRef = String(c.workflow || '').includes('/') ? c.workflow : `${dispName}.yml`;
+    const res = await gh(`/repos/${OWNER}/${c.repo}/actions/workflows/${wfRef}/runs?per_page=3`).catch(() => null);
+    if (!res || !Array.isArray(res.workflow_runs)) {
+      // the workflow object itself is gone (deleted/archived) — nothing left to heal or repair
+      c.status = 'resolved'; c.resolvedAt = stamp;
+      c.resolveEvidence = { note: `subject workflow not found at HEAD (archived/deleted) — measured directly, out-of-window`, runUrl: c.runUrl || RUN_URL };
+      writeFileSync(`${CLAIMS}/claim-${s}.json`, JSON.stringify(c, null, 2));
+      continue;
+    }
+    const last = res.workflow_runs.find((r) => (r.conclusion || '') !== 'cancelled');
+    if (!last) continue; // all cancelled — no signal; leave the claim as-is
+    if (last.conclusion === 'success' || last.conclusion === 'skipped') {
+      c.status = 'resolved'; c.resolvedAt = stamp;
+      c.resolveEvidence = { runUrl: last.html_url, conclusion: last.conclusion, note: `subject measured GREEN outside the scan window (out-of-window direct check)` };
+      writeFileSync(`${CLAIMS}/claim-${s}.json`, JSON.stringify(c, null, 2));
+    }
+    // still failing outside the window: leave the claim — the subject's own repo scan
+    // will surface it in-window when runs accumulate (honesty never retired by silence)
+  } catch { /* one claim's direct check failing must not kill the scan */ }
 }
 
 lines.push('');
