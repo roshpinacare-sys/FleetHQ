@@ -1,27 +1,27 @@
-# identity-patrol — סיור-זהויות כלל-הצי (2026-10-14T00:55:01.031Z)
+# identity-patrol — סיור-זהויות כלל-הצי (2026-10-14T01:23:02.305Z)
 
-**פסק: VIOLATION** — 34 ריפואים נסרקו (30 קומיטים אחרונים כל-אחד) · הפרות: 58 · דולגו: 0
+**פסק: VIOLATION** — 34 ריפואים נסרקו (30 קומיטים אחרונים כל-אחד) · הפרות: 54 · דולגו: 0
 
 חוק: DECISIONS #10 — אין NAME@users.noreply.github.com פרט-ל-owner ו-github-actions[bot]; בוטים חותמים @agents.roshpinacare-sys.
 
 ## הפרות
-- `Sandbox` a137583d9f — author:local-beats@users.noreply.github.com + committer:local-beats@users.noreply.github.com — "sbx-grid: local artery · 2026-10-13T16:05:05Z"
-- `Sandbox` 5e197e1e5c — author:local-beats@users.noreply.github.com + committer:local-beats@users.noreply.github.com — "sbx-wallet: local artery · 2026-10-13T15:41:00Z"
-- `Sandbox` dc7c4451e6 — author:local-beats@users.noreply.github.com + committer:local-beats@users.noreply.github.com — "sbx-grid: local artery · 2026-10-13T15:35:03Z"
-- `Sandbox` bf9bffcf09 — author:local-beats@users.noreply.github.com — "sbx-tick: local artery · 2026-10-13T15:21:42Z"
-- `Sandbox` b48672f3cf — author:local-beats@users.noreply.github.com + committer:local-beats@users.noreply.github.com — "sbx-grid: local artery · 2026-10-13T15:05:58Z"
-- `Sandbox` 1779885898 — author:local-beats@users.noreply.github.com + committer:local-beats@users.noreply.github.com — "sbx-wallet: local artery · 2026-10-13T14:41:07Z"
-- `Sandbox` 9f2388da38 — author:local-beats@users.noreply.github.com + committer:local-beats@users.noreply.github.com — "sbx-grid: local artery · 2026-10-13T14:35:18Z"
-- `Sandbox` d3518c7129 — author:local-beats@users.noreply.github.com + committer:local-beats@users.noreply.github.com — "sbx-fleet: local artery · 2026-10-13T14:26:27Z"
-- `Sandbox` e4f7bc5b74 — author:local-beats@users.noreply.github.com + committer:local-beats@users.noreply.github.com — "sbx-tick: local artery · 2026-10-13T14:21:06Z"
-- `Sandbox` dcf2ebe531 — author:local-beats@users.noreply.github.com + committer:local-beats@users.noreply.github.com — "sbx-grid: local artery · 2026-10-13T14:05:08Z"
-- `Autonomy` ff753f809d — author:41898282+github-actions[bot]@users.noreply.github.com — "token-truth: measured fleet tokens (metadata only) [ci]"
-- `sovereign-lighthouse` 7d89a25da9 — author:identity-leak-remediation@users.noreply.github.com + committer:identity-leak-remediation@users.noreply.github.com — "identity-leak remediation (3-c follow-up): pulses-history rows scrubbed to estate refs (wr"
-- `sovereign-lighthouse` 7617219075 — author:3c-remediation@users.noreply.github.com + committer:3c-remediation@users.noreply.github.com — "identity-leak remediation (3-c): refs scrub for mirrored commit messages + state.json scru"
-- `sovereign-lighthouse` b0c49927a8 — author:actions@users.noreply.github.com + committer:actions@users.noreply.github.com — "pulse: 2026-10-12T22:49:56Z [skip ci]"
-- `sovereign-lighthouse` 69d77545c0 — author:actions@users.noreply.github.com + committer:actions@users.noreply.github.com — "pulse: 2026-10-12T21:26:55Z [skip ci]"
-- `sovereign-lighthouse` 8bf6090254 — author:actions@users.noreply.github.com + committer:actions@users.noreply.github.com — "pulse: 2026-10-12T19:47:04Z [skip ci]"
-- `sovereign-lighthouse` 87bad0d868 — author:actions@users.noreply.github.com + committer:actions@users.noreply.github.com — "pulse: 2026-10-12T19:31:24Z [skip ci]"
-- `sovereign-lighthouse` 8b2e1f3e6c — author:actions@users.noreply.github.com + committer:actions@users.noreply.github.com — "pulse: 2026-10-12T18:01:20Z [skip ci]"
-- `Project-files` 8e33dd2efb — author:archive-keeper[bot]@users.noreply.github.com + committer:archive-keeper[bot]@users.noreply.github.com — "archive-keeper: PASS at 2026-10-08T09:04:52Z"
-- `Project-files` 5b4b15f215 — author:archive-keeper[bot]@users.noreply.github.com + committer:archive-keeper[bot]@users.noreply.github.com — "archive-keeper: PASS at 2026-10-07T20:17:00Z"
+- `Zip` 7483d86cdc — author:weave-anchor-zero[bot]@users.noreply.github.com + committer:weave-anchor-zero[bot]@users.noreply.github.com — "weave-anchor-zero: 2026-10-14T01:17:02.096Z · cp#1621 · Z Chain 9369 gasPrice 0x0 · att 16"
+- `Zip` fd85e73142 — author:weave-anchor-zero[bot]@users.noreply.github.com + committer:weave-anchor-zero[bot]@users.noreply.github.com — "weave-anchor-zero: 2026-10-13T22:37:22.007Z · cp#1620 · Z Chain 9369 gasPrice 0x0 · att 16"
+- `Zip` 8870cbc774 — author:weave-anchor-zero[bot]@users.noreply.github.com + committer:weave-anchor-zero[bot]@users.noreply.github.com — "weave-anchor-zero: 2026-10-13T21:35:18.785Z · cp#1619 · Z Chain 9369 gasPrice 0x0 · att 16"
+- `Zip` 14b0ced4e7 — author:weave-heart[bot]@users.noreply.github.com + committer:weave-heart[bot]@users.noreply.github.com — "weave-heart: beat 2026-10-13T21:22:28.202Z · seq 1677 · 1676 att · 1676/1676 sig · market "
+- `Zip` 9a419aeced — author:weave-anchor-zero[bot]@users.noreply.github.com + committer:weave-anchor-zero[bot]@users.noreply.github.com — "weave-anchor-zero: 2026-10-13T21:21:29.581Z · cp#1615 · Z Chain 9369 gasPrice 0x0 · att 16"
+- `Zip` 5555e0f72f — author:weave-anchor-zero[bot]@users.noreply.github.com + committer:weave-anchor-zero[bot]@users.noreply.github.com — "weave-anchor-zero: 2026-10-13T16:06:11.588Z · cp#1614 · Z Chain 9369 gasPrice 0x0 · att 16"
+- `Zip` fafc40cdf4 — author:weave-anchor-zero[bot]@users.noreply.github.com + committer:weave-anchor-zero[bot]@users.noreply.github.com — "weave-anchor-zero: 2026-10-13T13:01:16.947Z · cp#1613 · Z Chain 9369 gasPrice 0x0 · att 16"
+- `Zip` 23926dbc01 — author:weave-anchor-zero[bot]@users.noreply.github.com + committer:weave-anchor-zero[bot]@users.noreply.github.com — "weave-anchor-zero: 2026-10-13T07:48:42.242Z · cp#1612 · Z Chain 9369 gasPrice 0x0 · att 16"
+- `Zip` 3b2927284f — author:weave-anchor-zero[bot]@users.noreply.github.com + committer:weave-anchor-zero[bot]@users.noreply.github.com — "weave-anchor-zero: 2026-10-13T02:12:44.155Z · cp#1611 · Z Chain 9369 gasPrice 0x0 · att 16"
+- `Zip` 9f8883692f — author:weave-anchor-zero[bot]@users.noreply.github.com + committer:weave-anchor-zero[bot]@users.noreply.github.com — "weave-anchor-zero: 2026-10-13T00:49:28.079Z · cp#1610 · Z Chain 9369 gasPrice 0x0 · att 16"
+- `Zip` 5540c33bb0 — author:weave-anchor-zero[bot]@users.noreply.github.com + committer:weave-anchor-zero[bot]@users.noreply.github.com — "weave-anchor-zero: 2026-10-13T00:32:46.362Z · cp#1609 · Z Chain 9369 gasPrice 0x0 · att 16"
+- `Zip` 5629c4a34b — author:weave-anchor-zero[bot]@users.noreply.github.com + committer:weave-anchor-zero[bot]@users.noreply.github.com — "weave-anchor-zero: 2026-10-13T00:02:14.921Z · cp#1608 · Z Chain 9369 gasPrice 0x0 · att 16"
+- `Zip` 62608ed650 — author:weave-ecosystem[bot]@users.noreply.github.com + committer:weave-ecosystem[bot]@users.noreply.github.com — "weave-ecosystem: 2026-10-13T00:02:12Z · dup=0.2077 · G6 daily enforcement · domain-twin [s"
+- `Zip` d3b908b88f — author:weave-anchor-zero[bot]@users.noreply.github.com + committer:weave-anchor-zero[bot]@users.noreply.github.com — "weave-anchor-zero: 2026-10-12T23:06:00.189Z · cp#1607 · Z Chain 9369 gasPrice 0x0 · att 16"
+- `Zip` b5c81f5f75 — author:weave-heart[bot]@users.noreply.github.com + committer:weave-heart[bot]@users.noreply.github.com — "weave-heart: beat 2026-10-12T23:05:32.237Z · seq 1665 · 1664 att · 1664/1664 sig · market "
+- `Zip` f90a33ac8d — author:secret-triage@users.noreply.github.com + committer:secret-triage@users.noreply.github.com — "gitleaksignore: archive-ledger follow-up triage — full current finding set (lines 25238-25"
+- `Zip` 9006e1ae37 — author:secret-triage@users.noreply.github.com + committer:secret-triage@users.noreply.github.com — "gitleaksignore: owner-voice-archive triage — measured false-positive classes (0x blockchai"
+- `Zip` dd1bebbf40 — author:weave-anchor-zero[bot]@users.noreply.github.com + committer:weave-anchor-zero[bot]@users.noreply.github.com — "weave-anchor-zero: 2026-10-12T20:43:16.720Z · cp#1602 · Z Chain 9369 gasPrice 0x0 · att 16"
+- `Zip` bc132d1abb — author:weave-ecosystem[bot]@users.noreply.github.com + committer:weave-ecosystem[bot]@users.noreply.github.com — "weave-ecosystem: 2026-10-12T20:43:12Z · dup=0.2093 · G6 daily enforcement · domain-twin [s"
+- `Zip` 0ffb0c0ddb — author:weave-anchor-zero[bot]@users.noreply.github.com + committer:weave-anchor-zero[bot]@users.noreply.github.com — "weave-anchor-zero: 2026-10-12T20:10:42.172Z · cp#1601 · Z Chain 9369 gasPrice 0x0 · att 16"
