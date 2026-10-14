@@ -30,7 +30,7 @@ jobs:
         with: { fetch-depth: 1 }
 
       - uses: actions/setup-node@v5
-        with: { node-version: 20 }
+        with: { node-version: 22 }
 
       - name: Policy engine selftest (12 vectors — a test MAY fail loudly)
         run: node sovereign/stack/policy/policy-engine.mjs --selftest
