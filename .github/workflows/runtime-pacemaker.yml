@@ -33,7 +33,7 @@ on:
   # הוחמצו). workflow_run הוא טריגר-אירוע — לא-תלוי-רישום-scheduler. כל סיום של
   # lanes ותיקים-שמוכח-שהם-יורים מזניק מחזור-פצמר — הקצב לעולם לא נשען רק על cron.
   workflow_run:
-    workflows: [value-scan, sovereign-decider, opens-closer, office-heartbeat, office-ci]
+    workflows: [value-scan, sovereign-decider, opens-closer, office-heartbeat, office-ci, sovereign-selfscan, claims-triage, sovereign-policy-gate, sovereign-harness, sovereign-identity, self-book, identity-patrol]
     types: [completed]
 
 permissions:

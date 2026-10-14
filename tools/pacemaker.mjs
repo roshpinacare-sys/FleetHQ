@@ -62,6 +62,27 @@ const TARGETS = [
   // will also re-ignite it if it ever goes stale — mutual watch, no single point.
   { repo: 'FleetHQ',   wf: 'runtime-pacemaker.yml', slaMin: 40,  why: 'meta-voice' },
   { repo: 'Console',   wf: 'runtime-pacemaker.yml', slaMin: 40,  why: 'second-host meta-voice' },
+  // ── FleetHQ sovereign stack (landed 2026-10-13/14, task-32 lane) ─────────────
+  // Measured 2026-10-14T00:44Z: since 22:30Z the platform scheduler delivered 9 of
+  // ~55 expected schedule fires on this repo (many OFF-SLOT), silenced 100% of the
+  // new workflows' schedule registration, and selfscan's own cron was daily-not-
+  // hourly. The immune system + the three stack layers must never ride the clock.
+  { repo: 'FleetHQ',   wf: 'sovereign-selfscan.yml',    slaMin: 130, why: 'network self-awareness; cadence 60' },
+  { repo: 'FleetHQ',   wf: 'claims-triage.yml',         slaMin: 70,  why: 'autonomy decision ladder; cadence 30' },
+  { repo: 'FleetHQ',   wf: 'sovereign-policy-gate.yml', slaMin: 70,  why: 'refuse-to-sign gate; cadence 30' },
+  { repo: 'FleetHQ',   wf: 'self-book.yml',             slaMin: 70,  why: 'self ledger; cadence 30' },
+  { repo: 'FleetHQ',   wf: 'identity-patrol.yml',       slaMin: 70,  why: 'identity law patrol; cadence 30' },
+  { repo: 'FleetHQ',   wf: 'sovereign-identity.yml',    slaMin: 130, why: 'identity layer; cadence 60' },
+  { repo: 'FleetHQ',   wf: 'sovereign-harness.yml',     slaMin: 130, why: 'unattended runtime layer; cadence 60' },
+  { repo: 'FleetHQ',   wf: 'value-scan.yml',            slaMin: 70,  why: 'value measurement; cadence 30' },
+  { repo: 'FleetHQ',   wf: 'sovereign-decider.yml',     slaMin: 130, why: 'decision organ; cadence 60' },
+  // Domain — the owner-facing office window + the standing DEX volume mandate
+  // (chain i=6, trace 1a135930da12227d). Domain's own ymls already measured the
+  // scheduler skipping slots (T25 note in dex-beat.yml); pacemaker is the third net.
+  { repo: 'Domain',    wf: 'office-pulse.yml',          slaMin: 60,  why: 'office window generator; cadence 20' },
+  { repo: 'Domain',    wf: 'office-worldbeat.yml',      slaMin: 70,  why: 'self-carrying heart; backstop lane' },
+  { repo: 'Domain',    wf: 'dex-beat.yml',              slaMin: 130, why: 'DEX volume mandate; cadence 60 dual-window' },
+  { repo: 'Domain',    wf: 'dex-activation.yml',        slaMin: 70,  why: 'DEX ignition maintenance; cadence 30' },
 ];
 
 const H = (tok) => ({

@@ -5,7 +5,7 @@ name: sovereign-selfscan
 
 on:
   schedule:
-    - cron: "21 5 * * *"   # hourly :21 (odd minute — fleet cron hygiene)
+    - cron: "21 * * * *"   # hourly :21 (odd minute — fleet cron hygiene; was 21 5 = DAILY, scheduler-registration also silenced — pacemaker lane now carries it)
   workflow_dispatch:
 
 permissions:
