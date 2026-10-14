@@ -156,10 +156,12 @@ for (const repo of REPOS) {
           writeFileSync(`${CLAIMS}/claim-${prior.sig}.json`, JSON.stringify(prior, null, 2));
         }
       } else if (!failing && !isStale) {
-        // honest resolution: if an open claim for this pair exists, mark resolved (the scan saw it green,
-        // or the workflow was archived/deleted — an archived workflow has nothing left to heal)
+        // honest resolution: if an open (or escalated needs-operator) claim for this
+        // pair exists, mark resolved — the scan saw it green, or the workflow was
+        // archived/deleted (an archived workflow has NOTHING left to heal; the
+        // escalated issue closes with that evidence via triage's lifecycle)
         for (const [s, c] of claimsSeen) {
-          if (c.status === 'open' && c.repo === repo && c.workflow === name && c.kind === 'failing') {
+          if ((c.status === 'open' || (archived && c.status === 'needs-operator')) && c.repo === repo && disp(c.workflow) === name && c.kind === 'failing') {
             c.status = 'resolved'; c.resolvedAt = stamp;
             c.resolveEvidence = { runUrl: r.html_url, conclusion: r.conclusion };
             if (archived) c.resolveEvidence.note = `workflow state=${wstate} (archived) at HEAD — the failure is archaeological, the file no longer exists, nothing left to heal`;
