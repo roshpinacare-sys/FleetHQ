@@ -7,6 +7,7 @@
  *   תשובה מיידית מהמטבע-הישן, רענון ברקע. אין חסימה של 8 שניות.
  * · כל תשובה נושאת fetchedAt + ageMs — כנות-מלאה לגבי טריות הנתון.
  */
+import { resolveGithubPat } from '@/lib/gh-pat';
 
 const RAW = 'https://raw.githubusercontent.com';
 const API = 'https://api.github.com';
@@ -16,15 +17,8 @@ const ORG = 'roshpinacare-sys';
 const PRIVATE_REPOS = new Set(['Sandbox', 'saos-runtime', 'sovereign-beacon', 'sovereign-lighthouse']);
 
 function pat(): string {
-  const env = (process.env.GH_PAT || '').trim();
-  if (env) return env;
-  try {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const { readFileSync } = require('fs') as typeof import('fs');
-    return readFileSync('/home/z/my-project/upload/pat.env', 'utf-8').replace(/[\r\n\s]/g, '');
-  } catch {
-    return '';
-  }
+  // [T24] פותר-אסימון אחיד — צורה-תקינה או אין
+  return resolveGithubPat();
 }
 
 export interface TruthResult<T> {
