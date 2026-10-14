@@ -7,7 +7,7 @@
   "firstSeenAt": "2026-10-14T20:48:29.475Z",
   "lastSeenAt": "2026-10-14T23:00:30.179Z",
   "lastConcl": "failure",
-  "status": "open",
+  "status": "quarantined",
   "attempts": 2,
   "evidence": {
     "runUrl": "https://github.com/roshpinacare-sys/saos-runtime/actions/runs/38630424742",
@@ -22,9 +22,11 @@
     "at": "2026-10-14T20:48:29.475Z"
   },
   "lastAction": {
-    "action": "redispatch",
-    "reason": "young failure — one self-heal attempt before quarantine",
-    "at": "2026-10-14T22:30:28.012Z",
-    "runUrl": "https://github.com/roshpinacare-sys/FleetHQ/actions/runs/38648097572"
-  }
+    "action": "quarantine",
+    "reason": "failing on schedule (49 runs in window), 2 unchanged observations — disabling schedule; fix lands via claim resolution, not email pressure",
+    "at": "2026-10-14T23:53:52.803Z",
+    "runUrl": "https://github.com/roshpinacare-sys/FleetHQ/actions/runs/38656830190"
+  },
+  "quarantinedAt": "2026-10-14T23:53:52.803Z",
+  "quarantineReason": "failing on schedule (49 runs in window), 2 unchanged observations — disabling schedule; fix lands via claim resolution, not email pressure"
 }
