@@ -103,12 +103,15 @@ jobs:
             echo "NO-CHANGE: office wrote nothing new into the books this shift (honest)"
           else
             if [ -z "$GIT_PAT" ]; then echo "SKIP-PUSH: no PAT secret — changes stay local (honest)"; exit 0; fi
-            # self-heal: rebase/merge aborts ONLY. NEVER `git reset --hard` here —
-            # the fresh clone holds the crew's unstaged shift-writes; reset --hard
-            # destroyed them (measured exit 1 "nothing to commit" @ 02:00Z, books lost).
-            # Commit runs BEFORE any pull, so no half-merge state can exist here.
-            git rebase --abort 2>/dev/null || true; git merge --abort 2>/dev/null || true
-            git commit -m "office-heartbeat: crew shift persisted — memory/journal/tasks [skip ci]"
+            # [R41 race-safe] המשרד-עצמו רץ-ברקע ומתעסק-באינדקס — commit עלול-למצוא
+            # "nothing to commit" בין-diff-ל-commit. זה-מצב-כן-ושקט, לא-כשל (מקור-אימיילי-כשל-מיותרים).
+            if ! git commit -m "office-heartbeat: crew shift persisted — memory/journal/tasks [skip ci]" 2>/tmp/r41-commit.err; then
+              if grep -q "nothing to commit" /tmp/r41-commit.err 2>/dev/null; then
+                echo "NO-CHANGE (race-safe): staged set vanished between diff and commit — honest nothing-to-persist"
+                exit 0
+              fi
+              cat /tmp/r41-commit.err; exit 1
+            fi
             git -c rebase.autoStash=true pull --rebase -q origin main || true
             ok=0
             for i in 1 2 3 4 5 6 7 8; do
@@ -134,9 +137,14 @@ jobs:
           if git diff --cached --quiet; then
             echo "NO-CHANGE: nothing new to publish"
           else
-            # aborts ONLY — never reset --hard after git add (measured exit-1 book-loss @ 02:00Z)
-            git rebase --abort 2>/dev/null || true; git merge --abort 2>/dev/null || true
-            git commit -m "office-heartbeat: public office state captured [skip ci]"
+            # [R41 race-safe] כמו-השלב-הקודם: commit-ריק-במירוץ = שקט-כן, לא-אדום
+            if ! git commit -m "office-heartbeat: public office state captured [skip ci]" 2>/tmp/r41-commit2.err; then
+              if grep -q "nothing to commit" /tmp/r41-commit2.err 2>/dev/null; then
+                echo "NO-CHANGE (race-safe): nothing-to-publish after race"
+                exit 0
+              fi
+              cat /tmp/r41-commit2.err; exit 1
+            fi
             git -c rebase.autoStash=true pull --rebase -q origin main || true
             ok=0
             for i in 1 2 3 4 5 6 7 8; do
