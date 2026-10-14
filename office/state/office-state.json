@@ -1,5 +1,5 @@
 {
-  "capturedAt": "2026-10-14T02:07:49.458Z",
+  "capturedAt": "2026-10-14T02:31:00.049Z",
   "connected": true,
   "backend": "live",
   "statusHe": "צוות חי — זיכרון שוחזר מהגיט (31 משמרות, 20 לקחים)",
@@ -7,48 +7,49 @@
   "agents": [
     {
       "id": "aluf",
-      "state": "thinking",
-      "activity": "מתכנן את היעד…",
-      "station": "wall",
-      "since": 1791943655843,
-      "taskId": "t1971"
+      "state": "writing",
+      "activity": "כותב סיכום מבצע",
+      "station": "library",
+      "since": 1791945011794,
+      "taskId": "t2005"
     },
     {
       "id": "gal",
       "state": "error",
       "activity": "תקלה — ראה יומן",
       "station": "desk",
-      "since": 1791943617942,
-      "taskId": "t1971"
+      "since": 1791944918727,
+      "taskId": "t2005"
     },
     {
       "id": "erez",
-      "state": "error",
-      "activity": "תקלה — ראה יומן",
+      "state": "idle",
+      "activity": "",
       "station": "desk",
-      "since": 1791943651339,
-      "taskId": "t1971"
+      "since": 1791944988882,
+      "taskId": "t2005"
     },
     {
       "id": "tamar",
       "state": "reading",
-      "activity": "קורא sovereign-state — סיור-רענון",
+      "activity": "קורא econ-book — סיור-רענון",
       "station": "library",
-      "since": 1791943641149
+      "since": 1791945031701
     },
     {
       "id": "shachar",
       "state": "idle",
       "activity": "",
       "station": "desk",
-      "since": 1791943588243
+      "since": 1791945003196,
+      "taskId": "t2005"
     },
     {
       "id": "yarden",
       "state": "idle",
       "activity": "",
       "station": "desk",
-      "since": 1791943603430
+      "since": 1791944993984
     }
   ],
   "tasks": [
@@ -2550,6 +2551,38 @@
       "updatedAt": 1791943651339,
       "startedAt": 1791943649859,
       "durationMs": 144015
+    },
+    {
+      "id": "t1995",
+      "title": "מחקר רשת: קראי דף ציבורי רלוונטי לתחומי המשרד וסכמי ממצאים — השתמשי ב-read_page",
+      "description": "מחקר רשת: קראי דף ציבורי רלוונטי לתחומי המשרד וסכמי ממצאים — השתמשי ב-read_page",
+      "status": "done",
+      "assignee": "gal",
+      "dependsOn": [],
+      "why": "ספרי הדקס, המסחר וההגיון הפנימי",
+      "matchBy": "fit",
+      "createdBy": "aluf",
+      "createdAt": 1791944735796,
+      "updatedAt": 1791944891583,
+      "startedAt": 1791944735797,
+      "summary": "הדו\"ח נכתב בהצלחה.",
+      "durationMs": 132229
+    },
+    {
+      "id": "t2005",
+      "title": "סיור שגרה: צלב בין שני ספרי צי ודווח על פערים שנמצאו",
+      "description": "סיור שגרה: צלב בין שני ספרי צי ודווח על פערים שנמצאו",
+      "status": "done",
+      "assignee": "erez",
+      "dependsOn": [],
+      "why": "ביקורות, טענות וחוזי יכולת",
+      "matchBy": "fit",
+      "createdBy": "aluf",
+      "createdAt": 1791944897223,
+      "updatedAt": 1791945011178,
+      "startedAt": 1791944925967,
+      "summary": "Cross-scan complete. fleet-roster ↔ fleet-indicators gap report saved. 5 gaps found: (1) 156.9h heartbeat drift — roster 6.5 days older; (2) coverage mismatch — 13 roster accounts vs 9 indicator books, 4 accounts untracked; (3) 5 banned/retired capital entries have zero custody-health indicators; (4) 3 of 9 indicator books stale (158-164h), F1 Population Health DECLINE at 6/9; (5) 0 autonomy recei",
+      "durationMs": 62915
     }
   ],
   "books": 22,
@@ -2559,7 +2592,7 @@
   },
   "counts": {
     "agent": 6,
-    "task": 170,
+    "task": 172,
     "log": 0,
     "feed": 0,
     "decision": 0,
