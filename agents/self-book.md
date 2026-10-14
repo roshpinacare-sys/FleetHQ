@@ -1,15 +1,12 @@
-# ספר-המודעות-העצמית של הרשת — 2026-10-14T13:06:25.634Z
+# ספר-המודעות-העצמית של הרשת — 2026-10-14T14:40:26.255Z
 
-**36 ריפואים** (13 ציבוריים · 23 פרטיים) · **219 מכונות-יכולת** · **17 פעילים בשעה האחרונה** · תמונה-קודמת: 2026-10-14T12:43:32.676Z
-
-## 🌱 ריפואים-חדשים שנולדו מאז-התמונה (הבעלים בונה — והרשת רואה)
-- **sanbox**
+**36 ריפואים** (13 ציבוריים · 23 פרטיים) · **222 מכונות-יכולת** · **17 פעילים בשעה האחרונה** · תמונה-קודמת: 2026-10-14T13:06:25.634Z
 
 ## ⚙️ מכונות-חדשות/שהוסרו מאז-התמונה
-- SovereignConsole:  −office-mirror.yml
+- Domain: +dex-watchdog.yml, +press-bake.yml, +public-loops-bake.yml
 
 ## 💓 פעיל-עכשיו (דחיפה בשעה האחרונה)
-FleetHQ · Domain · Sandbox · ops-intake · Autonomy · sanbox · SovereignConsole · sovereign-lighthouse · Pulse · Console · saos-dex · saos-runtime · steem · saos-desk · GridWatch · Zip · Project-files
+FleetHQ · Console · saos-dex · Autonomy · Domain · Pulse · saos-desk · saos-runtime · steem · sovereign-lighthouse · sovereign-runner-kit · roshpinacare-sys.github.io · ops-forge · GridWatch · ops-intake · sovereign-beacon · roshpina
 
 ## 🧠 מפת-היכולות של הצי (המכונות והריפואים-בהן-הן-חיות)
 - **gitleaks** → Adsmarket, Console, Defi, Domain, Project-files, Saosmartwallet (+11)
@@ -21,15 +18,10 @@ FleetHQ · Domain · Sandbox · ops-intake · Autonomy · sanbox · SovereignCon
 - **token-forge** → Domain, Sandbox, steem
 - **runtime-pacemaker** → Console, FleetHQ
 - **agent-verify** → Console, Domain
-- **canary** → Defi, Domain
+- **estate-scrub** → Console, Domain
+- **ci** → saos-dex, saos-sovereign-foundry
 - **dex-beat** → Domain, saos-dex
 - **dex-grid** → Domain, saos-dex
-- **estate-scrub** → Console, Domain
-- **exposure-gate** → Domain, TruthRail
-- **weave-anchor-lines** → Domain, Zip
-- **weave-ecosystem** → Domain, Zip
-- **weave-heart** → Domain, Zip
-- **web-publish** → Domain, Zip
 - **artery-catchup** → Autonomy, Sandbox
 - **artery-decision-truth** → Autonomy, Sandbox
 - **artery-fleet** → Autonomy, Sandbox
@@ -37,5 +29,10 @@ FleetHQ · Domain · Sandbox · ops-intake · Autonomy · sanbox · SovereignCon
 - **artery-grid** → Autonomy, Sandbox
 - **artery-integrity** → Autonomy, Sandbox
 - **artery-participation** → Autonomy, Sandbox
+- **artery-scribe** → Autonomy, Sandbox
+- **artery-wallet** → Autonomy, Sandbox
+- **artery-watch** → Autonomy, Sandbox
+- **evo-windows-staleness** → Autonomy, Sandbox
+- **federation** → Autonomy, Sandbox
 
 *חוק: הספר-הזה הוא העין-העצמית של הרשת — נכתב-רק-ממדידה (API), ללא-המצאה, git-only, שורד-מחיקת-סנדבוקסים.*
