@@ -44,6 +44,8 @@ export interface GraphNode {
   orphan: boolean;
   /** קבלה-קיימת-על-סדר-פתוח — לא סוגרת (דווח כנה) */
   openReceipt?: string;
+  /** terminal receipt on an open order — resolved out-of-band, closure-eligible [T27] */
+  openReceiptTerminal?: boolean;
 }
 
 export interface QueueGraph {
@@ -61,10 +63,21 @@ export interface QueueGraph {
     receipts: number;
     provenClosed: number;
     openWithReceipt: number;
+    openWithTerminalReceipt: number;
   };
   receiptsFetchedAt: string;
   queueFetchedAt: string;
   fetchedAt: string;
+}
+
+/** Terminal receipt = the order was resolved outside the executor path
+ * (skipped / handed off via escalation / declared refused). Such receipts are
+ * closure-eligible: the owner should close the order — it must not float open forever.
+ * Opposite: receipts that declare waiting ('ממתין', 'measured-unmatched') = real work
+ * still pending; they stay open honestly. */
+function isTerminalReceipt(result: string): boolean {
+  const r = result ?? '';
+  return r.includes('דולג') || r.includes('הסלמה') || /skipped|escalated|refused/i.test(r);
 }
 
 const STALE_H = 48;
@@ -153,6 +166,7 @@ export async function buildQueueGraph(): Promise<QueueGraph> {
       chronic: openH > CHRONIC_H,
       orphan: !['gridwatch-owned'].includes(o.kind),
       openReceipt: recs.length ? (recs[recs.length - 1].result ?? 'receipt').slice(0, 80) : undefined,
+      openReceiptTerminal: recs.length > 0 && isTerminalReceipt(recs[recs.length - 1].result ?? ''),
     };
   });
 
@@ -166,6 +180,7 @@ export async function buildQueueGraph(): Promise<QueueGraph> {
     if (r.orderId && !openIds.has(r.orderId)) provenClosed++;
   }
   const openWithReceipt = open.filter((o) => (receiptByOrder.get(o.id) ?? []).length > 0).length;
+  const openWithTerminalReceipt = nodes.filter((n) => n.openReceiptTerminal).length;
 
   return {
     ok: true,
@@ -181,6 +196,7 @@ export async function buildQueueGraph(): Promise<QueueGraph> {
       receipts: receipts.length,
       provenClosed,
       openWithReceipt,
+      openWithTerminalReceipt,
     },
     receiptsFetchedAt: recRes.fetchedAt ?? fetchedAt,
     queueFetchedAt: queueRes.fetchedAt,
@@ -193,7 +209,7 @@ function emptyGraph(fetchedAt: string, error: string, receiptsFetchedAt: string,
     ok: false,
     error,
     nodes: [],
-    health: { total: 0, ready: 0, blocked: 0, stale: 0, chronic: 0, orphan: 0, cycles: 0, receipts: 0, provenClosed: 0, openWithReceipt: 0 },
+    health: { total: 0, ready: 0, blocked: 0, stale: 0, chronic: 0, orphan: 0, cycles: 0, receipts: 0, provenClosed: 0, openWithReceipt: 0, openWithTerminalReceipt: 0 },
     receiptsFetchedAt,
     queueFetchedAt,
     fetchedAt,
