@@ -477,8 +477,8 @@ function Podium({ mats }: { mats: OfficeMats }) {
         <torusGeometry args={[0.8, 0.016, 10, 72]} />
         <meshStandardMaterial ref={ringMat} color="#e07b54" emissive="#e07b54" emissiveIntensity={0.7} transparent opacity={0.12} toneMapped={false} />
       </mesh>
-      <Billboard position={[0, 2.62, 0]} tex={plate.tex} scale={[1.9, 0.89]} />
-      <Billboard position={[0, 1.98, 0]} tex={useMemo(() => makeSignTexture('דוכן ההחלטות', '#e07b54'), [])} scale={[1.5, 0.34]} />
+      <Billboard position={[0, 2.46, 0]} tex={plate.tex} scale={[1.85, 0.87]} />
+      <Billboard position={[0, 1.92, 0]} tex={useMemo(() => makeSignTexture('דוכן ההחלטות', '#e07b54'), [])} scale={[1.42, 0.32]} />
     </group>
   );
 }
