@@ -105,7 +105,13 @@ jobs:
             if [ -z "$GIT_PAT" ]; then echo "SKIP-PUSH: no PAT secret — changes stay local (honest)"; exit 0; fi
             git commit -m "office-heartbeat: crew shift persisted — memory/journal/tasks [skip ci]"
             git -c rebase.autoStash=true pull --rebase -q origin main || true
-            git push -q origin main && echo "PERSISTED: office memory committed to Domain"
+            ok=0
+            for i in 1 2 3 4 5 6 7 8; do
+              git -c rebase.autoStash=true pull --rebase -X theirs -q origin main 2>/dev/null || true
+              if git push -q origin main; then ok=1; echo "PUBLISHED (attempt $i): office memory committed"; break; fi
+              sleep $((5 + RANDOM % 11))
+            done
+            [ "$ok" = "1" ] || echo "named terminal: publish-deferred — book kept on disk, next heartbeat re-lands it (anti-storm law §5)"
           fi
 
       - name: publish office state into FleetHQ (the page eats this)
@@ -123,7 +129,13 @@ jobs:
           else
             git commit -m "office-heartbeat: public office state captured [skip ci]"
             git -c rebase.autoStash=true pull --rebase -q origin main || true
-            git push -q origin main && echo "PUBLISHED: office state live for the page"
+            ok=0
+            for i in 1 2 3 4 5 6 7 8; do
+              git -c rebase.autoStash=true pull --rebase -X theirs -q origin main 2>/dev/null || true
+              if git push -q origin main; then ok=1; echo "PUBLISHED (attempt $i): office state live"; break; fi
+              sleep $((5 + RANDOM % 11))
+            done
+            [ "$ok" = "1" ] || echo "named terminal: publish-deferred — book kept on disk, next heartbeat re-lands it (anti-storm law §5)"
           fi
 
       - name: build + commit office-knowledge.json (measured roster/shifts/lessons/retro/recruitment book — T23-B)
@@ -138,7 +150,13 @@ jobs:
           else
             git commit -m "office-heartbeat: office-knowledge.json refreshed (measured) [skip ci]"
             git -c rebase.autoStash=true pull --rebase -q origin main || true
-            git push -q origin main && echo "PUBLISHED: office-knowledge.json live for the page"
+            ok=0
+            for i in 1 2 3 4 5 6 7 8; do
+              git -c rebase.autoStash=true pull --rebase -X theirs -q origin main 2>/dev/null || true
+              if git push -q origin main; then ok=1; echo "PUBLISHED (attempt $i): office-knowledge.json live"; break; fi
+              sleep $((5 + RANDOM % 11))
+            done
+            [ "$ok" = "1" ] || echo "named terminal: publish-deferred — book kept on disk, next heartbeat re-lands it (anti-storm law §5)"
           fi
           # READBACK VERIFY — the published book must be reachable on origin;
           # byte-exact OR a strictly newer sibling book (fleet race) both pass.
