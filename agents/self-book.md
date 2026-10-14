@@ -1,9 +1,9 @@
-# ספר-המודעות-העצמית של הרשת — 2026-10-14T08:52:26.081Z
+# ספר-המודעות-העצמית של הרשת — 2026-10-14T10:06:33.777Z
 
-**34 ריפואים** (13 ציבוריים · 21 פרטיים) · **220 מכונות-יכולת** · **12 פעילים בשעה האחרונה** · תמונה-קודמת: 2026-10-14T07:41:03.934Z
+**34 ריפואים** (13 ציבוריים · 21 פרטיים) · **220 מכונות-יכולת** · **14 פעילים בשעה האחרונה** · תמונה-קודמת: 2026-10-14T08:52:26.081Z
 
 ## 💓 פעיל-עכשיו (דחיפה בשעה האחרונה)
-Autonomy · FleetHQ · saos-runtime · steem · saos-dex · Domain · sovereign-lighthouse · Console · Sandbox · Pulse · GridWatch · Project-files
+FleetHQ · Domain · Autonomy · saos-runtime · steem · Pulse · saos-dex · Console · Sandbox · GridWatch · Project-files · sovereign-beacon · sovereign-lighthouse · roshpina
 
 ## 🧠 מפת-היכולות של הצי (המכונות והריפואים-בהן-הן-חיות)
 - **gitleaks** → Adsmarket, Console, Defi, Domain, Project-files, Saosmartwallet (+11)
@@ -13,6 +13,17 @@ Autonomy · FleetHQ · saos-runtime · steem · saos-dex · Domain · sovereign-
 - **sovereign-decider** → Autonomy, FleetHQ, Sandbox
 - **value-scan** → Autonomy, FleetHQ, Sandbox
 - **token-forge** → Domain, Sandbox, steem
+- **runtime-pacemaker** → Console, FleetHQ
+- **agent-verify** → Console, Domain
+- **canary** → Defi, Domain
+- **dex-beat** → Domain, saos-dex
+- **dex-grid** → Domain, saos-dex
+- **estate-scrub** → Console, Domain
+- **exposure-gate** → Domain, TruthRail
+- **weave-anchor-lines** → Domain, Zip
+- **weave-ecosystem** → Domain, Zip
+- **weave-heart** → Domain, Zip
+- **web-publish** → Domain, Zip
 - **artery-catchup** → Autonomy, Sandbox
 - **artery-decision-truth** → Autonomy, Sandbox
 - **artery-fleet** → Autonomy, Sandbox
@@ -20,16 +31,5 @@ Autonomy · FleetHQ · saos-runtime · steem · saos-dex · Domain · sovereign-
 - **artery-grid** → Autonomy, Sandbox
 - **artery-integrity** → Autonomy, Sandbox
 - **artery-participation** → Autonomy, Sandbox
-- **artery-scribe** → Autonomy, Sandbox
-- **artery-wallet** → Autonomy, Sandbox
-- **artery-watch** → Autonomy, Sandbox
-- **evo-windows-staleness** → Autonomy, Sandbox
-- **federation** → Autonomy, Sandbox
-- **fleet-heal** → Autonomy, Sandbox
-- **fleet-yield** → Autonomy, Sandbox
-- **hive-probe** → Autonomy, Sandbox
-- **key-proof** → Autonomy, Sandbox
-- **office-growth** → Autonomy, Sandbox
-- **profit-oracle** → Autonomy, Sandbox
 
 *חוק: הספר-הזה הוא העין-העצמית של הרשת — נכתב-רק-ממדידה (API), ללא-המצאה, git-only, שורד-מחיקת-סנדבוקסים.*
