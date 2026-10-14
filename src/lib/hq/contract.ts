@@ -157,8 +157,11 @@ export const CAMERA_PRESETS: CameraPreset[] = [
     // itself at its top (1.12m), from ENE along the lectern's actual front
     // normal (yaw = its own rotation), slightly elevated so the glow strip,
     // the mic and the open-decision ring all read in one frame.
-    target: [podium3[0] + 0.42, 1.12, podium3[1] - 0.3],
-    yaw: Math.PI * 0.42, pitch: 0.19, dist: 3.0, minDist: 1.8, maxDist: 7,
+    // R53: the podium now carries the live explained plate (what it serves +
+    // latest measured decision). The preset frames plate + lectern + ring in
+    // one shot: target mid-plate height, slightly wider, steeper pitch.
+    target: [podium3[0] + 0.42, 1.72, podium3[1] - 0.3],
+    yaw: Math.PI * 0.42, pitch: 0.3, dist: 3.7, minDist: 1.9, maxDist: 7,
   },
   {
     id: 'library', label: { he: 'הספרייה', en: 'Library' },
