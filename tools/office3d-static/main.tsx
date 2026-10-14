@@ -21,6 +21,7 @@ import { Office3D } from '@/components/hq/Office3D';
 import { CAMERA_PRESETS } from '@/lib/hq/contract';
 import { useHq } from '@/lib/hq/store';
 import { director, type PresetId } from '@/lib/hq/world';
+import { setTour } from '@/components/hq/CameraDirector';
 import { computeFreshness } from '@/components/hq/GitWallData';
 import { buildSnapshot } from '@/lib/hq/truth';
 import type { GitPulse, RepoFleetView } from '@/components/agent-hq/types';
@@ -212,10 +213,18 @@ function TopBar({ chip }: { chip: Chip }) {
 
 function PresetDeck() {
   const [active, setActive] = useState<PresetId>(director.preset);
+  // R54 — סיור-מודרך = הפעלה-מפורשת-בלבד (מילת-הבעלים: "שלא מעבירים את
+  // העכבר זה מסתובב"). הכפתור הוא הדרך-היחידה להתחיל; כל קלט עוצר.
+  const [tourOn, setTourOn] = useState(director.tour);
   useEffect(() => {
     const on = (e: Event) => setActive((e as CustomEvent<PresetId>).detail);
     window.addEventListener('hq-camera-preset', on as EventListener);
-    return () => window.removeEventListener('hq-camera-preset', on as EventListener);
+    const onTour = (e: Event) => setTourOn(Boolean((e as CustomEvent<{ on: boolean }>).detail?.on));
+    window.addEventListener('hq-camera-tour', onTour as EventListener);
+    return () => {
+      window.removeEventListener('hq-camera-preset', on as EventListener);
+      window.removeEventListener('hq-camera-tour', onTour as EventListener);
+    };
   }, []);
   return (
     <nav className="hud-deck" aria-label="נקודות תצפית בחדר">
@@ -231,8 +240,15 @@ function PresetDeck() {
           {p.label.he}
         </button>
       ))}
-      {/* פתיח-סשן: הסיור-המודרך של 11-a נשלט-עצמית — כל קלט מחזיר שליטה;
-          אין כפתור-דילוג נפרד (מיזוג exec-14 ∩ 11-a: מנגנון אחד, לא שניים) */}
+      <button
+        type="button"
+        className={'hud-btn' + (tourOn ? ' hud-btn-active' : '')}
+        aria-pressed={tourOn}
+        title="סיור מודרך בתחנות החדר — כל קלט עוצר"
+        onClick={() => setTour(!tourOn)}
+      >
+        {tourOn ? 'עצור סיור' : 'סיור מודרך'}
+      </button>
     </nav>
   );
 }

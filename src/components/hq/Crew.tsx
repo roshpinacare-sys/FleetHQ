@@ -500,6 +500,10 @@ function HumanAgent({ id, assets }: { id: string; assets: CrewAssets }) {
   const group = useRef<THREE.Group>(null);
   const inner = useRef<THREE.Group>(null);
   const shadowRef = useRef<THREE.Mesh>(null);
+  // R54 — עיגון-השלטים: refs לפלטה/בועה לשליטת-LOD (הסתרה-במרחק + אוקלוזיה)
+  const plateSpr = useRef<THREE.Sprite>(null);
+  const bubbleSpr = useRef<THREE.Sprite>(null);
+  const lodV = useMemo(() => new THREE.Vector3(), []);
   const curWeight = useRef<Record<string, number>>({ idle: 1, walk: 0, sit: 0, type: 0, write: 0, think: 0, talk: 0 });
   const lastGesture = useRef<{ name: string; until: number }>({ name: '', until: 0 });
   const lastBubbleTxt = useRef('');
@@ -690,6 +694,29 @@ function HumanAgent({ id, assets }: { id: string; assets: CrewAssets }) {
       shadowRef.current.position.set(x, 0.015, z);
     }
 
+    // R54 — חוק-השלטים ("הבנות מרחפות באוויר"): הפלטה והבועה אינן רהיט-קבוע.
+    // · אוקלוזיה אמת: depthTest=true (מאחורי-קיר/מסך — לא נצבעות דרך)
+    // · LOD-מרחק: נעלמות החל מ-~9.5מ' עם דהייה — מבט-כללי נקי, קרבה = פירוט
+    // · בועה: רק כשיש מה לומר (חלון-הדיבור הנמדד), אחרת אפס-רישום
+    const cam = state.camera;
+    if (plateSpr.current) {
+      plateSpr.current.getWorldPosition(lodV);
+      const d = lodV.distanceTo(cam.position);
+      const vis = d < 9.5;
+      plateSpr.current.visible = vis;
+      const m = plateSpr.current.material as THREE.SpriteMaterial;
+      m.opacity = vis ? Math.min(0.98, Math.max(0.22, 1.55 - d / 7.5)) : 0;
+    }
+    if (bubbleSpr.current) {
+      bubbleSpr.current.getWorldPosition(lodV);
+      const d = lodV.distanceTo(cam.position);
+      const has = lastBubbleTxt.current !== '' && now < sayUntil.current + 6.5;
+      const vis = has && d < 9.5;
+      bubbleSpr.current.visible = vis;
+      const m = bubbleSpr.current.material as THREE.SpriteMaterial;
+      m.opacity = vis ? Math.min(0.98, Math.max(0.3, 1.55 - d / 7.5)) : 0;
+    }
+
     mixer.update(dt);
     // מיזוג-החיים (משרד אחד): שכבה פרוצדורלית עדינה אחרי-המיקסר — קפיצת-הילוך,
     // נטייה, העברת-משקל, נשימה-בראש (מה שנמדד ב-v2 ועבר למקור המוביל).
@@ -714,14 +741,15 @@ function HumanAgent({ id, assets }: { id: string; assets: CrewAssets }) {
       </mesh>
       <group ref={inner} onClick={focus}>
         <primitive object={model} />
-        {/* שלט שם — Task 47: הוקטן ב-40% (היה 1.7×0.53מ' — כיסה את החדר
-         * בכל תצפית ונראה כפאנל-UI מרחף; נמדד בצילומי-בסיס) */}
-        <sprite position={[0, 2.06, 0]} scale={[1.02, 0.32, 1]}>
-          <spriteMaterial map={plate.tex} transparent depthWrite={false} depthTest={false} opacity={0.96} />
+        {/* שלט שם — R54: קומפקטי, צמוד-לראש (1.86מ'), נוקלד מאחורי-קירות
+         * (depthTest=true) ונעלם-במרחק (LOD ב-useFrame) — היה פאנל-שחור
+         * ענקי שצף דרך-הכל בכל תצפית (נמדד בצילומי-בסיס) */}
+        <sprite ref={plateSpr} position={[0, 1.86, 0]} scale={[0.86, 0.27, 1]}>
+          <spriteMaterial map={plate.tex} transparent depthWrite={false} depthTest opacity={0.95} />
         </sprite>
-        {/* בועת דיבור */}
-        <sprite position={[0, 2.52, 0]} scale={[1.02, 0.3, 1]}>
-          <spriteMaterial map={bubble.tex} transparent depthWrite={false} depthTest={false} opacity={0.96} />
+        {/* בועת דיבור — מעוגנת מעל-השלט, אותו חוק-עיגון */}
+        <sprite ref={bubbleSpr} position={[0, 2.3, 0]} scale={[0.92, 0.26, 1]}>
+          <spriteMaterial map={bubble.tex} transparent depthWrite={false} depthTest opacity={0.95} />
         </sprite>
       </group>
     </group>

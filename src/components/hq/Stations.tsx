@@ -7,7 +7,7 @@
  */
 'use client';
 
-import { useMemo, useRef, useEffect } from 'react';
+import { useMemo, useRef, useEffect, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import {
@@ -314,11 +314,11 @@ function LeadTable({ mats }: { mats: OfficeMats }) {
           <meshStandardMaterial color="#dfe8ea" transparent opacity={0.5} roughness={0.1} metalness={0.1} />
         </mesh>
       ))}
-      {/* שני כיסאות אורחים */}
-      <group rotation-y={Math.PI * 0.8}>
-        <group position={[0, 0, -1.35]}><Chair seatColor="#8a6b3f" mats={mats} /></group>
-        <group position={[1.15, 0, -0.75]} rotation-y={-0.8}><Chair seatColor="#8a6b3f" mats={mats} /></group>
-      </group>
+      {/* R54 — שני כיסאות אורחים — סדר-הנדסי: מערבית לשולחן, פונים מזרחה
+       * אל-השולחן, סימטריים ומקורבים — היו מפוזרים בזוויות-רנדומליות
+       * ("כיסאות הפוכים" — נמדד בצילומי-בסיס) */}
+      <group position={[-1.38, 0, 0.46]} rotation-y={-Math.PI / 2}><Chair seatColor="#8a6b3f" mats={mats} /></group>
+      <group position={[-1.38, 0, -0.46]} rotation-y={-Math.PI / 2}><Chair seatColor="#8a6b3f" mats={mats} /></group>
       <Billboard position={[0, 1.85, 0]} tex={plate.tex} scale={[0.92, 0.29]} />
     </group>
   );
@@ -412,16 +412,21 @@ function Podium({ mats }: { mats: OfficeMats }) {
   const focus = useFocus('podium', 'podium');
   const [x, z] = to3(PODIUM.x, PODIUM.y);
   const ringMat = useRef<THREE.MeshStandardMaterial>(null);
-  // R53: הדוכן מסביר-את-עצמו — מסך-חי עם-מה-הוא-משרת + ההכרעה-האחרונה-הנמדדת
-  // (מסנכרון החנות בלבד; בלי-החלטות = כנות-ריק). הטבעת נשארת-האינדיקטור-החד.
+  // R54 (מילת-הבעלים: "הדוכן לא צריך הסבר אם לא קורה בו כלום"):
+  // הפלטה מופיעה רק כשיש מה לומר — הכרעה פתוחה, או נפתרה בחלון 45 דק'.
+  // דוכן-שקט = דוכן-נקי (עמוד + מיקרופון + טבעת-קרקע). בלי שאלות-אנגלית
+  // מרחפות באוויר — הפירוט נשאר בפאנל-הצד, בשפה-המקצועית של המשרד.
   const plate = useMemo(() => makeDecisionPodiumPlate(), []);
   const decisions = useHq((s) => s.snap.decisions);
+  const [plateOn, setPlateOn] = useState(false);
   useEffect(() => {
     const openCount = decisions.filter((d) => d.status === 'open').length;
     const answered = decisions.length - openCount;
     const newest = decisions.length
       ? decisions.reduce((a, b) => (b.createdAt > a.createdAt ? b : a))
       : null;
+    const fresh = !!newest && Date.now() - newest.createdAt < 45 * 60_000;
+    setPlateOn(openCount > 0 || fresh);
     plate.set(
       newest ? { question: newest.question, status: newest.status, createdAt: newest.createdAt } : null,
       openCount,
@@ -434,7 +439,7 @@ function Podium({ mats }: { mats: OfficeMats }) {
     const isOpen = useHq.getState().snap.decisions.some((d) => d.status === 'open');
     open.current += ((isOpen ? 1 : 0) - open.current) * Math.min(1, dt * 4);
     if (ringMat.current) {
-      ringMat.current.opacity = 0.12 + open.current * 0.55;
+      ringMat.current.opacity = 0.14 + open.current * 0.6;
       ringMat.current.emissiveIntensity = 0.7 + open.current * 1.8;
     }
   });
@@ -472,13 +477,15 @@ function Podium({ mats }: { mats: OfficeMats }) {
           <primitive object={mats.metal} attach="material" />
         </mesh>
       </group>
-      {/* אינדיקטור יחיד: הכרעה פתוחה = טבעת דולקת; סגורה = כמעט שקופה */}
-      <mesh position={[0, 1.35, 0]} rotation-x={Math.PI / 2}>
-        <torusGeometry args={[0.8, 0.016, 10, 72]} />
-        <meshStandardMaterial ref={ringMat} color="#e07b54" emissive="#e07b54" emissiveIntensity={0.7} transparent opacity={0.12} toneMapped={false} />
+      {/* אינדיקטור יחיד: הכרעה פתוחה = טבעת דולקת; סגורה = כמעט שקופה.
+       * R54: הטבעת יושבת על-שפת-הבימה (פס-תאורה פיזי) — לא הילה מרחפת בגובה 1.35מ' */}
+      <mesh position={[0, 0.215, 0]} rotation-x={Math.PI / 2}>
+        <torusGeometry args={[1.36, 0.018, 10, 72]} />
+        <meshStandardMaterial ref={ringMat} color="#e07b54" emissive="#e07b54" emissiveIntensity={0.7} transparent opacity={0.14} toneMapped={false} />
       </mesh>
-      <Billboard position={[0, 2.46, 0]} tex={plate.tex} scale={[1.85, 0.87]} />
-      <Billboard position={[0, 1.92, 0]} tex={useMemo(() => makeSignTexture('דוכן ההחלטות', '#e07b54'), [])} scale={[1.42, 0.32]} />
+      {/* R54: הפלטה רק כשקורה משהו; קטנה, צמודה מעל-הדוכן (1.78מ'),
+       * והשלט-השני (ניאון כפול) נמחק — השם כבר על קיר-הדוכן */}
+      {plateOn && <Billboard position={[0, 1.78, 0]} tex={plate.tex} scale={[1.18, 0.37, 1]} />}
     </group>
   );
 }
@@ -650,16 +657,27 @@ function Reception({ mats }: { mats: OfficeMats }) {
         <boxGeometry args={[2.9, 0.04, 0.05]} />
         <meshStandardMaterial color="#54d8c0" emissive="#54d8c0" emissiveIntensity={2} toneMapped={false} />
       </mesh>
-      {/* מסך ברוכים-הבאים מוטה על הדלפק — פונה למבקר מהדרום */}
-      <group position={[-0.95, 1.42, 0.14]} rotation-y={0.45} rotation-x={-0.1}>
-        <mesh castShadow>
-          <boxGeometry args={[0.62, 0.44, 0.03]} />
-          <primitive object={mats.screenDark} attach="material" />
+      {/* מסך ברוכים-הבאים — R54: עומד על-הדלפק בעמידה אמת (תושבת: בסיס+תורן),
+       * נטייה מינימלית — היה מרחף 4סמ' מעל-השיש מוטה בלי תמיכה */}
+      <group position={[-0.95, 0, 0.16]} rotation-y={0.45}>
+        <mesh position={[0, 1.175, 0]}>
+          <cylinderGeometry args={[0.09, 0.11, 0.03, 16]} />
+          <primitive object={mats.metal} attach="material" />
         </mesh>
-        <mesh position={[0, 0, 0.017]} rotation-y={0}>
-          <planeGeometry args={[0.56, 0.38]} />
-          <meshBasicMaterial map={tex.tex} toneMapped={false} />
+        <mesh position={[0, 1.28, -0.02]}>
+          <cylinderGeometry args={[0.022, 0.022, 0.2, 10]} />
+          <primitive object={mats.metal} attach="material" />
         </mesh>
+        <group position={[0, 1.44, 0]} rotation-x={-0.05}>
+          <mesh castShadow>
+            <boxGeometry args={[0.62, 0.44, 0.03]} />
+            <primitive object={mats.screenDark} attach="material" />
+          </mesh>
+          <mesh position={[0, 0, 0.017]} rotation-y={0}>
+            <planeGeometry args={[0.56, 0.38]} />
+            <meshBasicMaterial map={tex.tex} toneMapped={false} />
+          </mesh>
+        </group>
       </group>
       {/* פרח באגרטל */}
       <group position={[1.2, 1.16, 0]}>

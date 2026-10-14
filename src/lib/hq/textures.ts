@@ -296,48 +296,33 @@ export function makeDecisionPodiumPlate(): {
   let latest: { question: string; status: string; createdAt: number | null } | null = null;
   let openCount = 0;
   let answeredCount = 0;
-  const dyn = new DynTex(768, 360, (ctx, w, h) => {
-    ctx.fillStyle = '#0e0b08'; ctx.fillRect(0, 0, w, h);
+  // R54 — פלטה-קומפקטית עברית-בלבד (היתה 768×360 עם שאלת-האנגלית הגולמית
+  // מרחפת בחדר — נמדד). מה-נשאר: מצב-ההכרעה + גיל + ספירות. הפירוט — בפאנל.
+  const dyn = new DynTex(640, 200, (ctx, w, h) => {
+    ctx.fillStyle = 'rgba(14,11,8,0.92)'; ctx.fillRect(0, 0, w, h);
     const accent = openCount > 0 ? '#e07b54' : '#5a4636';
-    const glow = ctx.createRadialGradient(w / 2, h / 2, 20, w / 2, h / 2, w * 0.6);
-    glow.addColorStop(0, accent + '2b'); glow.addColorStop(1, 'rgba(0,0,0,0)');
-    ctx.fillStyle = glow; ctx.fillRect(0, 0, w, h);
-    ctx.direction = 'rtl'; ctx.textBaseline = 'middle';
-    // כותרת
-    ctx.textAlign = 'right';
-    ctx.fillStyle = '#f2e5d8'; ctx.font = "700 54px 'Heebo','Assistant',system-ui,sans-serif";
-    ctx.fillText('דוכן ההחלטות', w - 28, 52);
-    // נקודת-מצב
-    ctx.beginPath(); ctx.arc(34, 52, 10, 0, 7); ctx.fillStyle = openCount > 0 ? '#e07b54' : '#4f6b57'; ctx.fill();
-    // מה-הוא-משרת
-    ctx.textAlign = 'right'; ctx.fillStyle = '#b9a68f'; ctx.font = "500 27px 'Heebo','Assistant',system-ui,sans-serif";
-    ctx.fillText('כאן מוכרעות שאלות-הסוכנים והכרעות-הריבונות', w - 28, 108);
-    ctx.fillStyle = '#8d7c68'; ctx.font = "500 24px 'Heebo','Assistant',system-ui,sans-serif";
-    ctx.fillText('הטבעת נדלקת בזמן הכרעה פתוחה', w - 28, 146);
-    // ההכרעה-האחרונה (נמדדת)
-    ctx.fillStyle = 'rgba(224,123,84,0.14)'; ctx.fillRect(0, 178, w, 118);
-    ctx.strokeStyle = 'rgba(224,123,84,0.3)'; ctx.beginPath(); ctx.moveTo(28, 178); ctx.lineTo(w - 28, 178); ctx.stroke();
-    if (latest && latest.question) {
+    // פס-עוגן בצד — במקום זוהר-מסך-ענק
+    ctx.fillStyle = accent; ctx.fillRect(0, 0, 8, h);
+    ctx.direction = 'rtl'; ctx.textBaseline = 'middle'; ctx.textAlign = 'right';
+    // כותרת-קטנה + נקודת-מצב
+    ctx.beginPath(); ctx.arc(w - 26, 34, 8, 0, 7); ctx.fillStyle = openCount > 0 ? '#e07b54' : '#4f6b57'; ctx.fill();
+    ctx.fillStyle = '#f2e5d8'; ctx.font = "700 34px 'Heebo','Assistant',system-ui,sans-serif";
+    ctx.fillText('דוכן ההחלטות', w - 48, 34);
+    // מצב-ההכרעה האחרונה — עברית בלבד, נמדד
+    if (latest) {
       const isOpen = latest.status !== 'answered';
-      ctx.fillStyle = isOpen ? '#e07b54' : '#7BA05B';
-      ctx.beginPath(); ctx.arc(w - 44, 208, 8, 0, 7); ctx.fill();
-      ctx.font = "600 29px 'Heebo','Assistant',system-ui,sans-serif";
-      ctx.fillStyle = '#efe3d4';
-      const q = latest.question.length > 38 ? latest.question.slice(0, 36) + '…' : latest.question;
-      ctx.fillText(q, w - 66, 208);
       const mins = latest.createdAt ? Math.max(0, Math.round((Date.now() - latest.createdAt) / 60000)) : null;
-      const ago = mins == null ? '' : mins < 1 ? 'עכשיו' : mins < 60 ? `לפני ${mins} דק'` : `לפני ${Math.floor(mins / 60)} שע'`;
-      ctx.fillStyle = '#9b8a76'; ctx.font = "500 24px 'Heebo','Assistant',system-ui,sans-serif";
-      ctx.fillText(`${isOpen ? 'פתוחה — ממתינה להכרעה' : 'נפתרה'}${ago ? ' · ' + ago : ''}`, w - 28, 254);
+      const ago = mins == null ? '' : mins < 1 ? 'עכשיו' : mins < 60 ? ` · לפני ${mins} דק'` : ` · לפני ${Math.floor(mins / 60)} שע'`;
+      ctx.fillStyle = isOpen ? '#e8a583' : '#9dc38a';
+      ctx.font = "600 30px 'Heebo','Assistant',system-ui,sans-serif";
+      ctx.fillText(isOpen ? `הכרעה פתוחה — ממתינה להכרעה${ago}` : `האחרונה נפתרה${ago}`, w - 28, 92);
     } else {
-      ctx.fillStyle = '#9b8a76'; ctx.font = "500 26px 'Heebo','Assistant',system-ui,sans-serif";
-      ctx.fillText('אין הכרעות שנמדדו עדיין — הדוכן ריק וכנה', w - 28, 236);
+      ctx.fillStyle = '#9b8a76'; ctx.font = "500 28px 'Heebo','Assistant',system-ui,sans-serif";
+      ctx.fillText('אין הכרעות שנמדדו עדיין', w - 28, 92);
     }
     // ספירות
-    ctx.textAlign = 'left'; ctx.fillStyle = '#c9b8a2'; ctx.font = "600 25px 'Heebo','Assistant',system-ui,sans-serif";
-    ctx.fillText(`פתוחות: ${openCount}  ·  נפתרו: ${answeredCount}`, 28, 322);
-    ctx.textAlign = 'right'; ctx.fillStyle = '#6f6153'; ctx.font = "500 21px 'Heebo','Assistant',system-ui,sans-serif";
-    ctx.fillText('מקור: יומן המשרד האמיתי', w - 28, 322);
+    ctx.textAlign = 'left'; ctx.fillStyle = '#c9b8a2'; ctx.font = "600 24px 'Heebo','Assistant',system-ui,sans-serif";
+    ctx.fillText(`פתוחות: ${openCount}  ·  נפתרו: ${answeredCount}`, 26, 158);
   });
   return {
     tex: dyn.tex,
@@ -441,26 +426,28 @@ export function makeNameplate(
 ): { tex: THREE.CanvasTexture; set: (activity: string, stateCol: string) => void; update: (now: number) => void } {
   let activity = '';
   let stateCol = '#71717a';
-  const dyn = new DynTex(512, 160, (ctx, w, h) => {
+  // R54 — שלט-שם-קומפקטי (היה 512×160 פאנל-שחור-כבד — נמדד כמסה מרחפת).
+  // גוף שקוף-ירוק-חלש, טיפוגרפיה צמודה: שם + תפקיד + שורת-מצב.
+  const dyn = new DynTex(480, 132, (ctx, w, h) => {
     ctx.clearRect(0, 0, w, h);
-    // גוף שלט
-    ctx.fillStyle = 'rgba(12,12,14,0.88)';
-    roundRect(ctx, 6, 6, w - 12, h - 12, 18); ctx.fill();
-    // פס צבע
+    // גוף שלט — שקוף, קל-משקל
+    ctx.fillStyle = 'rgba(14,14,17,0.74)';
+    roundRect(ctx, 4, 4, w - 8, h - 8, 14); ctx.fill();
+    // פס צבע דק
     ctx.fillStyle = color;
-    roundRect(ctx, 6, 6, 14, h - 12, 7); ctx.fill();
+    roundRect(ctx, 4, 4, 9, h - 8, 4.5); ctx.fill();
     ctx.direction = 'rtl'; ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
-    ctx.fillStyle = '#f4f2ee'; ctx.font = "700 44px 'Heebo',system-ui,sans-serif";
-    ctx.fillText(name, w - 92, 44);
-    ctx.fillStyle = color; ctx.font = "500 27px 'Heebo',system-ui,sans-serif";
-    ctx.fillText(title, w - 92, 88);
-    ctx.fillStyle = 'rgba(210,208,202,0.85)'; ctx.font = "400 24px 'Heebo',system-ui,sans-serif";
-    const act = activity.length > 30 ? activity.slice(0, 29) + '…' : activity;
-    ctx.fillText(act || '—', w - 92, 128);
+    ctx.fillStyle = '#f4f2ee'; ctx.font = "700 36px 'Heebo',system-ui,sans-serif";
+    ctx.fillText(name, w - 74, 34);
+    ctx.fillStyle = color; ctx.font = "500 21px 'Heebo',system-ui,sans-serif";
+    ctx.fillText(title, w - 74, 68);
+    ctx.fillStyle = 'rgba(214,212,206,0.82)'; ctx.font = "400 20px 'Heebo',system-ui,sans-serif";
+    const act = activity.length > 34 ? activity.slice(0, 33) + '…' : activity;
+    ctx.fillText(act || '—', w - 74, 100);
     // נקודת מצב
     ctx.fillStyle = stateCol;
-    ctx.shadowColor = stateCol; ctx.shadowBlur = 12;
-    ctx.beginPath(); ctx.arc(w - 44, 44, 10, 0, 7); ctx.fill();
+    ctx.shadowColor = stateCol; ctx.shadowBlur = 10;
+    ctx.beginPath(); ctx.arc(w - 36, 34, 8, 0, 7); ctx.fill();
     ctx.shadowBlur = 0;
   });
   return {
@@ -531,11 +518,19 @@ export function makeTaskWallTexture(): { tex: THREE.CanvasTexture; set: (tasks: 
         ctx.fillStyle = t.color || col;
         roundRect(ctx, cx, cy, 10, 108, 5); ctx.fill();
         ctx.direction = 'rtl'; ctx.textAlign = 'right';
-        ctx.fillStyle = '#26221c'; ctx.font = "600 25px 'Heebo',system-ui,sans-serif";
-        const tt = t.title.length > 26 ? t.title.slice(0, 25) + '…' : t.title;
+        ctx.fillStyle = '#26221c'; ctx.font = "600 21px 'Heebo',system-ui,sans-serif";
+        // R54 — הכתובת נשארת-בתוך-הכרטיס (נמדד: גלישה-מחוץ-לכרטיס בכרטיסים
+        // ארוכים) — חיתוך-מדידה לפי-רוחב-אמת + אליפסיס
+        const maxW = cwid - 40;
+        let tt = t.title;
+        while (tt.length > 6 && ctx.measureText(tt).width > maxW) tt = tt.slice(0, -2);
+        if (tt !== t.title) tt = tt.slice(0, -1) + '…';
         ctx.fillText(tt, cx + cwid - 22, cy + 34);
-        ctx.fillStyle = '#6b6459'; ctx.font = "500 21px 'Heebo',system-ui,sans-serif";
-        ctx.fillText(t.assignee || '', cx + cwid - 22, cy + 74);
+        ctx.fillStyle = '#6b6459'; ctx.font = "500 20px 'Heebo',system-ui,sans-serif";
+        let asn = t.assignee || '';
+        while (asn.length > 4 && ctx.measureText(asn).width > maxW) asn = asn.slice(0, -2);
+        if (asn !== (t.assignee || '')) asn = asn.slice(0, -1) + '…';
+        ctx.fillText(asn, cx + cwid - 22, cy + 74);
       });
     });
   });
