@@ -1,20 +1,945 @@
 <!doctype html>
 <html lang="he" dir="rtl">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>מפקדת הצי — המשרד התלת-מימדי | FleetHQ</title>
-    <meta
-      name="description"
-      content="המשרד החי בתלת-מימד של מפקדת הצי: אור-יום לפי שעון-ירושלים, נוכחות-חיה של הסוכנים, קיר-אמת של הגיט עם מד-טריות — אפס בקאנד, אפס סודות."
-    />
-    <style>
-      /* טעינה טרום-React: רקע אור-יום, אפס הבהוב שחור */
-      html, body { margin: 0; background: #f3f1ec; }
-    </style>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="./main.tsx"></script>
-  </body>
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>מפקדת הצי — המשרד החי v3 (מיינקראפט-ריאליסטי · אפס-CDN)</title>
+<meta name="description" content="המשרד התלת-מימדי של הריבונות: הבנות-קרקע בלבד, כיסאות מסודרים מול המסכים, תנועת-גוף אמת, מצלמה שמסתובבת לבדה כשלא נוגעים. מוזן מספרים פומביים בלבד — אפס נתונים פיקטיביים." />
+<style>
+  :root{
+    --bg:#d9d2c3; --panel:rgba(24,19,14,.94); --panel2:rgba(32,26,19,.96); --line:#463b2c;
+    --ink:#f3ede2; --ink2:#c9bfae; --ink3:#978c78;
+    --ok:#2fae63; --warn:#d9a13b; --err:#d95c4a; --accent:#e0a458; --coffee:#a1794f;
+  }
+  *{box-sizing:border-box} html,body{margin:0;height:100%;overflow:hidden;background:var(--bg)}
+  body{font-family:system-ui,-apple-system,"Segoe UI","Noto Sans Hebrew",Arial,sans-serif;color:var(--ink)}
+  #app{position:fixed;inset:0} canvas{display:block}
+  .hud{position:fixed;z-index:10;pointer-events:none} .hud *{pointer-events:auto}
+  #topbar{top:0;right:0;left:0;display:flex;flex-wrap:wrap;gap:6px;align-items:center;
+    padding:8px 12px;padding-top:max(8px,env(safe-area-inset-top));
+    background:linear-gradient(180deg,rgba(24,19,14,.85),rgba(24,19,14,0))}
+  .chip{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;
+    background:var(--panel2);border:1px solid var(--line);border-radius:999px;padding:4px 10px;color:var(--ink2)}
+  .chip b{color:var(--ink)} .chip .val{font-variant-numeric:tabular-nums}
+  .dot{width:8px;height:8px;border-radius:50%;background:var(--ink3)}
+  .dot.ok{background:var(--ok);box-shadow:0 0 8px var(--ok)} .dot.warn{background:var(--warn)}
+  .dot.err{background:var(--err);box-shadow:0 0 6px var(--err)} .dot.pulse{animation:pulse 1.6s infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+  #title{font-size:14px;font-weight:800;color:var(--ink)}
+  #subtitle{font-size:11px;color:var(--ink3)}
+  #feeds{top:52px;right:12px;display:flex;flex-direction:column;gap:4px;font-size:11px}
+  #feeds .f{display:flex;gap:6px;align-items:center;background:rgba(24,19,14,.85);border:1px solid var(--line);
+    border-radius:8px;padding:3px 8px;color:var(--ink2)} #feeds .f b{color:var(--ink)}
+  #viewbar{bottom:14px;left:50%;transform:translateX(-50%);display:flex;gap:6px;flex-wrap:wrap;justify-content:center;
+    padding-bottom:env(safe-area-inset-bottom)}
+  .vbtn{font-size:12px;font-weight:700;color:var(--ink2);background:rgba(32,26,19,.94);
+    border:1px solid var(--line);border-radius:10px;padding:8px 13px;cursor:pointer;transition:.15s;min-height:32px}
+  .vbtn:hover{color:var(--ink);border-color:var(--accent)} .vbtn.active{background:var(--accent);color:#191410;border-color:var(--accent)}
+  #card{top:64px;left:12px;width:248px;display:none;background:var(--panel);border:1px solid var(--line);
+    border-radius:14px;padding:12px 14px;box-shadow:0 8px 30px rgba(0,0,0,.4)}
+  #card h3{margin:0 0 2px;font-size:15px} #card .sub{font-size:12px;color:var(--ink2);margin-bottom:8px}
+  #card .kv{display:flex;justify-content:space-between;gap:8px;font-size:12px;padding:3px 0;border-top:1px dashed var(--line)}
+  #card .kv span:first-child{color:var(--ink3)} #card .act{font-size:12px;color:var(--ink2);margin-top:8px;line-height:1.55}
+  #card .x{position:absolute;top:6px;left:8px;background:none;border:none;color:var(--ink3);cursor:pointer;font-size:15px}
+  #legend{bottom:14px;right:12px;display:flex;flex-direction:column;gap:4px;font-size:11px;color:var(--ink2);
+    background:rgba(24,19,14,.85);border:1px solid var(--line);border-radius:12px;padding:8px 10px;max-width:200px}
+  #legend .row{display:flex;align-items:center;gap:6px} #legend .sw{width:9px;height:9px;border-radius:3px;flex:0 0 auto}
+  #hint{position:fixed;bottom:56px;left:50%;transform:translateX(-50%);font-size:11px;color:var(--ink3);
+    background:rgba(24,19,14,.7);border-radius:8px;padding:3px 10px;z-index:9;pointer-events:none;transition:opacity .5s}
+  @media (max-width:820px){ #feeds{display:none} #legend{display:none} #subtitle{display:none} #card{width:210px} }
+</style>
+
+</head>
+<body>
+<div id="app"></div>
+
+<div class="hud" id="topbar">
+  <span id="title">מפקדת הצי — המשרד החי v3</span>
+  <span class="chip"><span class="dot pulse" id="verdict-dot"></span><b id="verdict">טוען…</b></span>
+  <span class="chip">צוות <b class="val" id="crew-count">—</b></span>
+  <span class="chip">משימות <b class="val" id="tasks-count">—</b></span>
+  <span class="chip">הכרעות <b class="val" id="decisions-count">—</b></span>
+  <span class="chip" id="clock-chip">🕐 <b class="val" id="clock">—</b></span>
+  <span id="subtitle">הכל על-הקרקע · כיסאות מול-מסכים · המצלמה מסתובבת לבדה כשלא נוגעים</span>
+</div>
+
+<div class="hud" id="feeds"></div>
+
+<div class="hud" id="viewbar">
+  <button class="vbtn active" data-preset="overview">תצפית כללית</button>
+  <button class="vbtn" data-preset="crew">אזור הצוות</button>
+  <button class="vbtn" data-preset="podium">הדוכן</button>
+  <button class="vbtn" data-preset="wall">לוח-המשימות</button>
+  <button class="vbtn" data-preset="git">קיר-הגיט</button>
+  <button class="vbtn" data-preset="library">הספרייה</button>
+  <button class="vbtn" data-preset="reception">קבלה</button>
+</div>
+
+<div class="hud" id="legend">
+  <div class="row"><span class="sw" style="background:#2fae63"></span> עובד</div>
+  <div class="row"><span class="sw" style="background:#d9a13b"></span> פנוי</div>
+  <div class="row"><span class="sw" style="background:#a1794f"></span> הפסקת קפה</div>
+  <div class="row"><span class="sw" style="background:#d95c4a"></span> תקלה</div>
+</div>
+
+<div class="hud" id="card">
+  <button class="x" id="card-x">✕</button>
+  <h3 id="card-name">—</h3>
+  <div class="sub" id="card-state">—</div>
+  <div class="kv"><span>עמדה</span><b id="card-station">—</b></div>
+  <div class="kv"><span>מאז</span><b id="card-since">—</b></div>
+  <div class="act" id="card-act">—</div>
+</div>
+
+<div id="hint">גרירה = סיבוב · גלגלת = מרחק · בלי מגע — המצלמה ממשיכה להסתובב לבדה</div>
+
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from './vendor/OrbitControls.js';
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ * מפקדת הצי — החדר החי v3 · חוקי-הבעלים (הדירקטיבה החריפה, trace 1a13959524a6fd11):
+ *  · אפס הבניות מרחפות — כל חפץ ניצב על הקרקע במדידה (y מחושב מהבסיס).
+ *  · אפס כיסאות הפוכים — כל כיסא פונה בדיוק למסך שלו; כל מסך פונה בדיוק לכיסא.
+ *  · אפס בלאגן מסכים — מסך אחד לתחנה, לוחות אחידים ומיושרים בקירות.
+ *  · תנועת-גוף אמת — הליכה על מסילות-רצפה, ישיבה על הכיסא, הקלדה, קפה.
+ *  · נוחות-צפייה — בלי לגעת בעכבר המצלמה ממשיכה להסתובב (turntable), מגע עוצר,
+ *    8 שניות של מנוחה מחזירות את הסיבוב.
+ *  · הדוכן — שקט כשאין בו כלום. אף הסבר על-אין.
+ *  · אמת-בעצמנו — הכל מספרים פומביים; פיד שנפל מוצג כנפל; אין צוות מומצא.
+ * ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ─── פידים פומביים (אותם ספרים שהחדר הקודם ניזון מהם — אפס סודות) ───────── */
+/* כל הספרים ציבוריים עם CORS=* — אותן כתובות מדויקות בסנדבוקס ובייצור */
+const FEEDS = {
+  foreman:  'https://raw.githubusercontent.com/roshpinacare-sys/FleetHQ/main/office/state/office-state.json',
+  pulse:    'https://roshpinacare-sys.github.io/Domain/office/data.json',
+  live:     'https://roshpinacare-sys.github.io/Domain/agents/office-live.json',
+  grid:     'https://roshpinacare-sys.github.io/Domain/agents/grid-truth.json',
+  recruit:  'https://roshpinacare-sys.github.io/Domain/agents/recruitment.json',
+  ventures: 'https://roshpinacare-sys.github.io/Domain/agents/ventures.json',
+};
+const FRESH_MIN = { foreman:130, pulse:30, live:150, grid:95, recruit:1600, ventures:1600 };
+const FEED_HE   = { foreman:'פורמן', pulse:'דופק', live:'ספרים', grid:'הון', recruit:'גיוס', ventures:'מיזמים' };
+const STATE_HE  = { working:'עובד', idle:'פנוי', error:'תקלה', asleep:'ישן', coffee:'הפסקת קפה', walking:'בדרך' };
+const STATE_COLOR = { working:0x2fae63, idle:0xd9a13b, error:0xd95c4a, asleep:0x7f8ea3, coffee:0xa1794f, walking:0xd9a13b };
+const STATION_HE = { desk:'עמדת עבודה', wall:'לוח-המשימות', coffee:'פינת הקפה', reception:'הקבלה', podium:'הדוכן' };
+const POLL_MS = 45000, RETRY_MS = 30000;
+const isLite = matchMedia('(max-width: 820px)').matches || (navigator.hardwareConcurrency ?? 8) <= 4;
+
+const W = {
+  agents: new Map(),      // id → {mesh parts, fsm, feed}
+  decisions: [], tasks: [], booksCount: 0, memory: null,
+  feeds: {}, verdict: 'UNKNOWN', desks: [], chairs: [], podTex: null, wallTex: null, gitTex: null,
+  night: false, ready: false, selected: null,
+};
+
+/* ─── תמונות-בד 16×16 בסגנון-מיינקראפט (NearestFilter — פיקסלים חדים) ──────── */
+function pixTex(size, painter, repeat = 1) {
+  const cv = document.createElement('canvas'); cv.width = cv.height = size;
+  const ctx = cv.getContext('2d'); painter(ctx, size);
+  const t = new THREE.CanvasTexture(cv);
+  t.magFilter = THREE.NearestFilter; t.minFilter = THREE.NearestFilter;
+  t.colorSpace = THREE.SRGBColorSpace; t.wrapS = t.wrapT = THREE.RepeatWrapping;
+  t.repeat.set(repeat, repeat); return t;
+}
+const rnd = (seed) => { let s = seed >>> 0; return () => (s = (s * 1664525 + 1013904223) >>> 0) / 4294967296; };
+function noiseFill(ctx, size, base, amp, seed) {
+  const r = rnd(seed);
+  for (let y = 0; y < size; y++) for (let x = 0; x < size; x++) {
+    const d = (r() - .5) * 2 * amp;
+    ctx.fillStyle = `rgb(${base[0]+d|0},${base[1]+d|0},${base[2]+d|0})`;
+    ctx.fillRect(x, y, 1, 1);
+  }
+}
+const TEX = {};
+function buildTextures() {
+  // רצפת-אלון
+  TEX.floor = pixTex(16, (c, s) => {
+    noiseFill(c, s, [168, 132, 84], 10, 11);
+    c.fillStyle = 'rgba(74,54,32,.85)';
+    for (let y = 0; y < s; y += 8) c.fillRect(0, y, s, 1);
+    for (let y = 0; y < s; y += 8) c.fillRect(((y / 8) % 2) * 8, y, 1, 8);
+  }, 24);
+  // שטיח (חם-זית)
+  TEX.carpet = pixTex(16, (c, s) => { noiseFill(c, s, [122, 104, 66], 7, 21); }, 10);
+  // קיר-טיח
+  TEX.wall = pixTex(16, (c, s) => { noiseFill(c, s, [224, 216, 198], 6, 31); }, 1);
+  // אבן-בסיס (מסד)
+  TEX.base = pixTex(16, (c, s) => {
+    noiseFill(c, s, [128, 122, 112], 9, 41);
+    c.fillStyle = 'rgba(60,56,50,.6)';
+    c.fillRect(0, 7, s, 1); c.fillRect(0, 15, s, 1); c.fillRect(7, 0, 1, 8); c.fillRect(3, 8, 1, 8);
+  }, 1);
+  // קרשי-אלון (רהיטים)
+  TEX.plank = pixTex(16, (c, s) => {
+    noiseFill(c, s, [178, 138, 88], 9, 51);
+    c.fillStyle = 'rgba(96,68,38,.7)';
+    for (let y = 3; y < s; y += 5) c.fillRect(0, y, s, 1);
+  }, 1);
+  // אלון-כהה (רגליים/מסגרות)
+  TEX.dark = pixTex(16, (c, s) => {
+    noiseFill(c, s, [94, 70, 44], 8, 61);
+    c.fillStyle = 'rgba(40,28,16,.6)'; c.fillRect(0, 7, s, 1);
+  }, 1);
+  // זכוכית
+  TEX.glass = pixTex(16, (c, s) => {
+    c.fillStyle = 'rgba(210,228,238,.28)'; c.fillRect(0, 0, s, s);
+    c.fillStyle = 'rgba(255,255,255,.55)';
+    c.fillRect(0, 0, s, 1); c.fillRect(0, s - 1, s, 1); c.fillRect(0, 0, 1, s); c.fillRect(s - 1, 0, 1, s);
+  }, 1);
+  // אבן-זוהרת (נורות-תקרה)
+  TEX.glow = pixTex(16, (c, s) => {
+    noiseFill(c, s, [232, 190, 110], 14, 71);
+    c.fillStyle = 'rgba(255,236,180,.9)';
+    for (let i = 0; i < 9; i++) c.fillRect(rnd(9)() * 15 | 0, rnd(10)() * 15 | 0, 2, 2);
+  }, 1);
+  // מתכת (רגלי-מסך/דוכן)
+  TEX.metal = pixTex(16, (c, s) => { noiseFill(c, s, [104, 106, 110], 7, 81); }, 1);
+  // עלווה
+  TEX.leaf = pixTex(16, (c, s) => {
+    noiseFill(c, s, [72, 110, 58], 16, 91);
+    c.fillStyle = 'rgba(34,58,28,.5)';
+    for (let i = 0; i < 12; i++) c.fillRect(rnd(92)() * 15 | 0, rnd(93)() * 15 | 0, 1, 1);
+  }, 1);
+  // עפר-עציץ
+  TEX.dirt = pixTex(16, (c, s) => { noiseFill(c, s, [116, 84, 56], 12, 101); }, 1);
+  // חמרה-עציץ
+  TEX.pot = pixTex(16, (c, s) => { noiseFill(c, s, [150, 92, 60], 9, 111); }, 1);
+  // ספרים-על-מדף
+  TEX.books = pixTex(16, (c, s) => {
+    noiseFill(c, s, [130, 60, 44], 10, 121);
+    c.fillStyle = 'rgba(0,0,0,.25)'; for (let x = 0; x < s; x += 4) c.fillRect(x, 0, 1, s);
+  }, 1);
+  // חלון-שמיים (מוחלף לפי שעון-ירושלים)
+  TEX.sky = new THREE.MeshBasicMaterial({ color: 0xbfd7e8 });
+  TEX.skyN = new THREE.MeshBasicMaterial({ color: 0x141b26 });
+}
+
+const matCache = new Map();
+function mat(tex, opts = {}) {
+  const key = (tex.uuid ?? tex) + JSON.stringify(opts);
+  if (!matCache.has(key)) matCache.set(key, new THREE.MeshStandardMaterial({
+    map: tex ?? null, roughness: .92, metalness: .04, ...opts }));
+  return matCache.get(key);
+}
+const SOLID = {};
+function buildSolids() {
+  SOLID.wall  = mat(TEX.wall);
+  SOLID.base  = mat(TEX.base);
+  SOLID.plank = mat(TEX.plank);
+  SOLID.dark  = mat(TEX.dark);
+  SOLID.metal = mat(TEX.metal);
+  SOLID.leaf  = new THREE.MeshStandardMaterial({ map: TEX.leaf, roughness: 1, flatShading: true });
+  SOLID.pot   = mat(TEX.pot);
+  SOLID.dirt  = mat(TEX.dirt);
+  SOLID.books = mat(TEX.books);
+  SOLID.glow  = new THREE.MeshStandardMaterial({ map: TEX.glow, emissive: 0xffc36b, emissiveIntensity: .9, roughness: .6 });
+  SOLID.glass = new THREE.MeshStandardMaterial({ map: TEX.glass, transparent: true, roughness: .15, metalness: .1 });
+  SOLID.screenOff = new THREE.MeshStandardMaterial({ color: 0x1c2126, roughness: .4, metalness: .2 });
+}
+
+const BOX = new THREE.BoxGeometry(1, 1, 1);
+/* box — כל בלוק נולד על-הקרקע: מקור y = בסיס-החפץ (groundY), הריחוף אסור מכלי-ראשון */
+function box(P, w, h, d, material, x, yBottom, z, ry = 0, shadows = true) {
+  const m = new THREE.Mesh(BOX, material);
+  m.scale.set(w, h, d); m.position.set(x, yBottom + h / 2, z); m.rotation.y = ry;
+  if (shadows && !isLite) { m.castShadow = true; m.receiveShadow = true; }
+  P.add(m); return m;
+}
+
+/* ─── הסצנה ──────────────────────────────────────────────────────────────── */
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0xd9d2c3);
+scene.fog = new THREE.Fog(0xd9d2c3, 26, 60);
+const camera = new THREE.PerspectiveCamera(52, innerWidth / innerHeight, .1, 120);
+camera.position.set(14, 9.6, 16);
+const renderer = new THREE.WebGLRenderer({ antialias: !isLite, powerPreference: 'high-performance' });
+renderer.setSize(innerWidth, innerHeight);
+renderer.setPixelRatio(Math.min(devicePixelRatio, isLite ? 1 : 2));
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+if (!isLite) { renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap; }
+document.getElementById('app').appendChild(renderer.domElement);
+
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true; controls.dampingFactor = .08;
+controls.minDistance = 3.5; controls.maxDistance = 30;
+// מוט-מצלמה: תמיד מביטה-מלמעלה-אל-החדר — לעולם לא נתקעת מאחורי קיר (חוק-הנוחות)
+controls.minPolarAngle = .12; controls.maxPolarAngle = 1.08;
+controls.target.set(0, 1.1, 0);
+controls.autoRotate = true; controls.autoRotateSpeed = .55;  // חוק-הבעלים: בלי מגע — היא מסתובבת
+
+/* אור-יום לפי שעון-ירושלים */
+const sun = new THREE.DirectionalLight(0xfff2dd, 2.6);
+sun.position.set(14, 18, 8);
+if (!isLite) { sun.castShadow = true; sun.shadow.mapSize.set(2048, 2048);
+  const sc = sun.shadow.camera; sc.left = -14; sc.right = 14; sc.top = 12; sc.bottom = -12; sc.far = 60;
+  sun.shadow.bias = -.0004; }
+scene.add(sun);
+scene.add(new THREE.HemisphereLight(0xfff6e6, 0x6b5b45, 1.15));
+const roomGlow = new THREE.PointLight(0xffd9a0, 30, 26, 1.8); roomGlow.position.set(0, 3.4, 0); scene.add(roomGlow);
+
+function jerusalemHour() {
+  const now = new Date();
+  const j = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Jerusalem' }));
+  return j.getHours() + j.getMinutes() / 60;
+}
+
+/* ─── העולם: חדר 20×12, קירות גובה-4, הכל על-הקרקע ───────────────────────── */
+const RX = 10, RZ = 6, WH = 4;   // חצי-רוחב, חצי-עומק, גובה-קיר
+function buildWorld() {
+  const P = new THREE.Group(); scene.add(P);
+  // רצפה — משטח אחד חי (ריצוף אלון) + שטיח-מרכז
+  const floor = new THREE.Mesh(new THREE.PlaneGeometry(RX * 2, RZ * 2), mat(TEX.floor));
+  floor.rotation.x = -Math.PI / 2; if (!isLite) floor.receiveShadow = true; P.add(floor);
+  const carpet = new THREE.Mesh(new THREE.PlaneGeometry(15, 7.4), mat(TEX.carpet));
+  carpet.rotation.x = -Math.PI / 2; carpet.position.set(0, .012, .2); if (!isLite) carpet.receiveShadow = true; P.add(carpet);
+  // מסד-אבן לכל-הקירות (עוגן-קרקע)
+  box(P, RX * 2, .5, .3, SOLID.base, 0, 0, -RZ);            // צפון
+  box(P, .3, .5, RZ * 2, SOLID.base, -RX, 0, 0);            // מערב
+  box(P, .3, .5, RZ * 2, SOLID.base,  RX, 0, 0);            // מזרח
+  box(P, RX * 2, .5, .3, SOLID.base, 0, 0, RZ);             // דרום (חתוך-בובנים — נמוך)
+  // קיר-צפון/מערב/מזרח בגובה-מלא (עליהם חלונות, ספרייה וקיר-הגיט)
+  box(P, RX * 2, WH, .3, SOLID.wall, 0, .5, -RZ);
+  box(P, .3, WH, RZ * 2, SOLID.wall, -RX, .5, 0);
+  box(P, .3, WH, RZ * 2, SOLID.wall,  RX, .5, 0);
+  // קיר-דרום = חתוך-בובנים: נמוך (0.95) כדי שהחדר נראה-תמיד מבחוץ — ובו פתח-כניסה אמת (x 4.2..5.8)
+  box(P, 14.2, .95, .3, SOLID.wall, -2.9, .5, RZ);
+  box(P, 4.2, .95, .3, SOLID.wall,  7.9, .5, RZ);
+  box(P, .3, 2.3, .3, SOLID.dark, 4.2, .5, RZ); box(P, .3, 2.3, .3, SOLID.dark, 5.8, .5, RZ); // משקופים
+  box(P, 1.9, .3, .3, SOLID.dark, 5, 2.8, RZ);                // קורת-משקוף
+  box(P, 1.6, .04, .9, SOLID.dark, 5, 0, RZ - .75, 0, false); // שטיח-כניסה (על-הקרקע)
+  // תקרה — נראית-רק-מבפנים (dollhouse): מבחוץ-מעל רואים-לתוך-החדר, מבפנים יש תקרה אמת
+  const ceil = new THREE.Mesh(new THREE.PlaneGeometry(RX * 2, RZ * 2),
+    new THREE.MeshStandardMaterial({ map: (() => { const t = TEX.plank.clone(); t.repeat.set(20, 12); t.needsUpdate = true; return t; })(), roughness: .95 }));
+  ceil.rotation.x = Math.PI / 2; ceil.position.y = WH; P.add(ceil);   // פני-הפליין למטה → גלויה רק-מלמטה
+  // חלונות-צפון (3) — שמש/ירח לפי שעון-ירושלים
+  W.windows = [];
+  for (let i = -1; i <= 1; i++) {
+    const g = new THREE.Group(); g.position.set(i * 6.2, 1.7, -RZ + .16);
+    const fr = new THREE.Mesh(new THREE.PlaneGeometry(4.2, 2.5), SOLID.dark); g.add(fr);
+    const sky = new THREE.Mesh(new THREE.PlaneGeometry(3.9, 2.2), W.night ? TEX.skyN : TEX.sky);
+    sky.position.z = .02; g.add(sky); W.windows.push(sky);
+    box(g, 4.3, .12, .1, SOLID.plank, 0, -1.3, .05); box(g, 4.3, .12, .1, SOLID.plank, 0, 1.18, .05);
+    box(g, .12, 2.5, .1, SOLID.plank, 0, -1.25, .05);
+    P.add(g);
+  }
+  // מנורות-תקרה — שטוחות-על-התקרה (מחוברות-במלואן, שום-דבר-לא-תלוי-מ-אין)
+  for (const [lx, lz] of [[-5, -2.4], [5, -2.4], [-5, 2.4], [5, 2.4]])
+    box(P, .9, .12, .9, SOLID.glow, lx, WH - .14, lz, 0, false);
+  buildWorkstations(P);
+  buildPodium(P);
+  buildBoards(P);
+  buildLibrary(P);
+  buildReception(P);
+  buildCoffee(P);
+  buildPlants(P);
+}
+
+/* ─── תחנות-הצוות: 2 שורות × 3 — מסך על-קצה-השולחן-הרחוק פונה לכיסא, כיסא דחוף-פנימה ── */
+function buildWorkstations(P) {
+  W.desks = [];
+  // screenSign: +1 = מסך על קצה-ה-z השלילי ופניו ל+ z (הכיסא שבצד-המסדרון)
+  const rows = [
+    { z: -3.4, chairZ: -2.3, sitZ: -2.34, screenDz: -.24, screenRy: 0, chairRy: Math.PI },
+    { z: +3.4, chairZ: +2.3, sitZ: +2.34, screenDz: +.24, screenRy: Math.PI, chairRy: 0 },
+  ];
+  const xs = [-6, 0, 6];
+  let idx = 0;
+  for (const row of rows) for (const x of xs) {
+    const g = new THREE.Group(); g.position.set(x, 0, row.z);
+    const kbZ = -row.screenDz;                                   // המקלדת בצד-היושב
+    // שולחן: רגליים על-הקרקע, פלטה עליונה
+    box(g, 1.9, .1, .95, SOLID.plank, 0, .95, 0);
+    for (const [lx, lz] of [[-.82, -.36], [.82, -.36], [-.82, .36], [.82, .36]])
+      box(g, .12, .95, .12, SOLID.dark, lx, 0, lz);
+    // מסך אחד לתחנה: רגל-מתכת על-השולחן + מסגרת + פאת-זוהר פונה לכיסא
+    box(g, .1, .32, .1, SOLID.metal, 0, 1.05, row.screenDz);
+    box(g, .78, .5, .07, SOLID.dark, 0, 1.37, row.screenDz, row.screenRy, false);
+    const scr = new THREE.Mesh(new THREE.PlaneGeometry(.66, .38),
+      new THREE.MeshStandardMaterial({ color: 0x0e1116, emissive: 0xe0a458, emissiveIntensity: .55, roughness: .35 }));
+    scr.position.set(0, 1.37, row.screenDz + (row.screenDz < 0 ? .045 : -.045));
+    scr.rotation.y = row.screenRy; g.add(scr);
+    // מקלדת + עכבר + כוס — בקו אחד מסודר בצד-היושב
+    box(g, .5, .035, .16, SOLID.dark, 0, 1.05, kbZ, 0, false);
+    box(g, .1, .03, .14, SOLID.dark, .34, 1.05, kbZ, 0, false);
+    box(g, .12, .14, .12, SOLID.pot, -.5, 1.05, kbZ, 0, false);
+    // כיסא: פונה בדיוק למסך (רוטציה-אחידה לכל-השורה), דחוף אל-השולחן
+    const ch = new THREE.Group(); ch.position.set(0, 0, row.chairZ - row.z); ch.rotation.y = row.chairRy;
+    box(ch, .52, .09, .5, SOLID.plank, 0, .5, 0, 0, false);
+    box(ch, .5, .58, .09, SOLID.plank, 0, .59, .245, 0, false); // משען-גב מאחורי-היושב (רחוק-מהשולחן)
+    for (const [lx, lz] of [[-.2, -.18], [.2, -.18], [-.2, .18], [.2, .18]])
+      box(ch, .07, .5, .07, SOLID.dark, lx, 0, lz, 0, false);
+    g.add(ch);
+    P.add(g);
+    W.desks.push({ g, scr, x, z: row.z, chairZ: row.chairZ, sitZ: row.sitZ, chairRy: row.chairRy, screenRy: row.screenRy, idx: idx++ });
+  }
+}
+
+/* ─── דוכן-ההחלטות: לוחן עומד-על-הקרקע + מסך-סטנד עם רגליים עד-הרצפה ─────── */
+function buildPodium(P) {
+  const g = new THREE.Group(); g.position.set(-7.2, 0, 3.6); g.rotation.y = Math.PI * .12;
+  // לוחן (עמדת-דיבור) — קרקע→1.25
+  box(g, .8, .18, .62, SOLID.plank, 0, 0, .1);            // בסיס
+  box(g, .62, 1.05, .44, SOLID.plank, 0, .18, .1);
+  const slope = box(g, .66, .08, .5, SOLID.dark, 0, 1.23, .06, 0, false); slope.rotation.x = -.35;
+  // מסך-הדוכן: שני עמודים מהקרקע + קורה + המסך על-הקורה (נושא-ממש)
+  const stand = new THREE.Group(); stand.position.set(0, 0, -1.15);
+  box(stand, .16, 1.55, .16, SOLID.metal, -.9, 0, 0); box(stand, .16, 1.55, .16, SOLID.metal, .9, 0, 0);
+  box(stand, 1.96, .12, .12, SOLID.metal, 0, 1.55, 0);
+  W.podCanvas = document.createElement('canvas'); W.podCanvas.width = 768; W.podCanvas.height = 432;
+  W.podTex = new THREE.CanvasTexture(W.podCanvas); W.podTex.colorSpace = THREE.SRGBColorSpace;
+  const podScr = new THREE.Mesh(new THREE.PlaneGeometry(2.9, 1.63),
+    new THREE.MeshBasicMaterial({ map: W.podTex, transparent: true, opacity: 0 }));
+  podScr.position.set(0, 2.42, .02); stand.add(podScr);
+  box(stand, 3.05, 1.75, .08, SOLID.dark, 0, 1.62, -.045);
+  g.add(stand);
+  P.add(g);
+  W.podMat = podScr.material;
+}
+
+/* ─── לוח-המשימות (מערב) + קיר-הגיט (מזרח): לוח אחד מיושר לכל-ספר ──────────── */
+function buildBoards(P) {
+  // לוח-משימות: מסגרת-עץ עם לוח-בד חי
+  W.wallCanvas = document.createElement('canvas'); W.wallCanvas.width = 768; W.wallCanvas.height = 432;
+  W.wallTex = new THREE.CanvasTexture(W.wallCanvas); W.wallTex.colorSpace = THREE.SRGBColorSpace;
+  const bg = box(P, .14, 2.0, 3.3, SOLID.plank, -RX + .07, 1.05, -.2);
+  const tb = new THREE.Mesh(new THREE.PlaneGeometry(3.1, 1.8), new THREE.MeshBasicMaterial({ map: W.wallTex }));
+  tb.position.set(-RX + .16, 2.05, -.2); tb.rotation.y = Math.PI / 2; P.add(tb);
+  box(P, .1, 2.1, 3.4, SOLID.dark, -RX + .12, 1.0, -.2);
+  W.taskBoardMesh = tb;
+  // קיר-הגיט: 13 ספרים — סוללת-תאים אחת מיושרת (אפס בלאגן)
+  W.gitCanvas = document.createElement('canvas'); W.gitCanvas.width = 896; W.gitCanvas.height = 512;
+  W.gitTex = new THREE.CanvasTexture(W.gitCanvas); W.gitTex.colorSpace = THREE.SRGBColorSpace;
+  box(P, .14, 2.45, 4.0, SOLID.plank, RX - .07, 1.0, -.4);
+  const gw = new THREE.Mesh(new THREE.PlaneGeometry(3.8, 2.25), new THREE.MeshBasicMaterial({ map: W.gitTex }));
+  gw.position.set(RX - .16, 2.22, -.4); gw.rotation.y = -Math.PI / 2; P.add(gw);
+  W.gitMesh = gw;
+}
+
+/* ─── הספרייה (מערב-צפון): מדפים על-הקרקע, 13 ספרים עומדים-על-הקרש ─────────── */
+function buildLibrary(P) {
+  W.bookSpines = [];
+  const bx = -RX + .45;
+  for (let s = 0; s < 3; s++) {
+    const g = new THREE.Group(); g.position.set(bx, 0, -4.4 + s * 1.1); g.rotation.y = Math.PI / 2;
+    box(g, 1.0, .1, .3, SOLID.plank, 0, 0, 0);                 // לוח-תחתון (בסיס קרקעי)
+    box(g, 1.0, .1, .3, SOLID.plank, 0, .8, 0);
+    box(g, 1.0, .1, .3, SOLID.plank, 0, 1.6, 0);
+    box(g, .1, 1.7, .3, SOLID.dark, -.5, 0, 0); box(g, .1, 1.7, .3, SOLID.dark, .5, 0, 0);
+    box(g, 1.0, .1, .28, SOLID.dark, 0, .4, 0);                // מדפים-ביניים
+    box(g, 1.0, .1, .28, SOLID.dark, 0, 1.2, 0);
+    P.add(g);
+  }
+  // 13 הספרים החיים — ממוספרים ומיושרים על-המדף האמצעי
+  for (let b = 0; b < 13; b++) {
+    const row = b % 3, col = Math.floor(b / 3) % 5;
+    const spine = box(P, .09, .3, .22, SOLID.books, bx + .1, 1.2 + .05, -4.62 + row * 1.1 - .36 + col * .18, 0, false);
+    W.bookSpines.push(spine);
+  }
+}
+
+/* ─── הקבלה (דרום-מזרח ליד-הדלת) ─────────────────────────────────────────── */
+function buildReception(P) {
+  const g = new THREE.Group(); g.position.set(7.4, 0, 4.7); g.rotation.y = Math.PI; // דלפק פונה-צפונה אל-החדר
+  box(g, 1.9, 1.0, .55, SOLID.plank, 0, 0, 0);
+  box(g, 2.05, .08, .68, SOLID.dark, 0, 1.0, 0);
+  box(g, .12, 1.0, .12, SOLID.dark, -.8, 0, .18); box(g, .12, 1.0, .12, SOLID.dark, .8, 0, .18);
+  P.add(g);
+}
+
+/* ─── פינת-הקפה (מזרח-צפון): דלפק על-הקרקע + מכונה + קומקום ───────────────── */
+function buildCoffee(P) {
+  const g = new THREE.Group(); g.position.set(8.9, 0, -4.6); g.rotation.y = Math.PI / 2;
+  box(g, 2.2, .95, .7, SOLID.plank, 0, 0, 0);
+  box(g, 2.34, .07, .82, SOLID.dark, 0, .95, 0);
+  box(g, .5, .62, .42, SOLID.metal, -.7, 1.02, -.05);           // מכונה
+  box(g, .42, .2, .36, SOLID.dark, -.7, 1.33, -.05, 0, false);  // ראש-המכונה
+  box(g, .26, .34, .26, SOLID.metal, .45, 1.02, -.1, 0, false); // קומקום
+  box(g, .12, .14, .12, SOLID.pot, .1, 1.02, .1, 0, false);     // כוס
+  box(g, .12, .14, .12, SOLID.pot, .22, 1.02, -.14, 0, false);
+  P.add(g);
+}
+
+/* ─── צמחים בפינות — עציץ על-הקרקע ───────────────────────────────────────── */
+function buildPlants(P) {
+  for (const [x, z] of [[-9.3, 5.3], [9.3, 5.3], [-9.3, -5.4]]) {
+    box(P, .5, .45, .5, SOLID.pot, x, 0, z);
+    box(P, .42, .1, .42, SOLID.dirt, x, .45, z, 0, false);
+    const leaf = new THREE.Mesh(new THREE.ConeGeometry(.5, 1.25, 7), SOLID.leaf);
+    leaf.position.set(x, 1.15, z); if (!isLite) leaf.castShadow = true; P.add(leaf);
+  }
+}
+
+/* ─── הצוות: גוף-בלוקים אמיתי + FSM (הליכה/ישיבה/הקלדה/קפה) ──────────────── */
+const PALETTE = [0x8a5a2e, 0x4d7a4f, 0x9c4a3a, 0x6b7a3f, 0x7f5a7a, 0x5f7a7a, 0xa1794f, 0x706a4e];
+const SKINS = [0xe8c39e, 0xd9a877, 0xc78e5e, 0xb87a4e];
+function agentFaceTex(id, skin) {
+  const r = rnd([...id].reduce((a, c) => a + c.charCodeAt(0), 7));
+  const hair = [0x2e2318, 0x4e3420, 0x1e1a14, 0x5c4322][Math.floor(r() * 4)];
+  return pixTex(8, (c) => {
+    c.fillStyle = `#${skin.toString(16).padStart(6, '0')}`; c.fillRect(0, 0, 8, 8);
+    c.fillStyle = `#${hair.toString(16).padStart(6, '0')}`; c.fillRect(0, 0, 8, 2); c.fillRect(0, 2, 1, 1); c.fillRect(7, 2, 1, 1);
+    c.fillStyle = '#ffffff'; c.fillRect(1, 3, 2, 1); c.fillRect(5, 3, 2, 1);
+    c.fillStyle = '#3a2e22'; c.fillRect(2, 3, 1, 1); c.fillRect(6, 3, 1, 1);
+    c.fillStyle = '#8a5a44'; c.fillRect(3, 5, 2, 1);
+  });
+}
+function makeAgentMesh(id) {
+  const g = new THREE.Group();
+  const r = rnd([...id].reduce((a, c) => a + c.charCodeAt(0) * 31, 3));
+  const shirt = PALETTE[Math.floor(r() * PALETTE.length)];
+  const skin = SKINS[Math.floor(r() * SKINS.length)];
+  const shirtM = new THREE.MeshStandardMaterial({ color: shirt, roughness: .85 });
+  const pantsM  = new THREE.MeshStandardMaterial({ color: 0x4a4038, roughness: .85 });
+  const skinM   = new THREE.MeshStandardMaterial({ color: skin, roughness: .8 });
+  const faceM   = new THREE.MeshStandardMaterial({ map: agentFaceTex(id, skin), roughness: .8 });
+  const hairM   = new THREE.MeshStandardMaterial({ color: [0x2e2318, 0x4e3420, 0x1e1a14, 0x5c4322][Math.floor(r() * 4)], roughness: .9 });
+  const head = new THREE.Group(); head.position.y = 1.95;   // צוואר-ציר
+  const hFace = new THREE.Mesh(BOX, [hairM, hairM, skinM, faceM, skinM, hairM]); // פנים רק-מלפנים (+z)
+  hFace.scale.set(.5, .5, .5); hFace.position.y = .25; head.add(hFace);
+  const hHair = new THREE.Mesh(BOX, hairM);
+  hHair.scale.set(.54, .1, .54); hHair.position.y = .5; head.add(hHair);
+  g.add(head);
+  const torso = new THREE.Mesh(BOX, shirtM); torso.scale.set(.5, .72, .26); torso.position.y = 1.24; g.add(torso);
+  const mkArm = (side) => {
+    const pivot = new THREE.Group(); pivot.position.set(side * .375, 1.56, 0);
+    const a = new THREE.Mesh(BOX, shirtM); a.scale.set(.22, .68, .22); a.position.y = -.34; pivot.add(a);
+    const hand = new THREE.Mesh(BOX, skinM); hand.scale.set(.23, .16, .23); hand.position.y = -.72; pivot.add(hand);
+    g.add(pivot); return pivot;
+  };
+  const mkLeg = (side) => {
+    const pivot = new THREE.Group(); pivot.position.set(side * .125, .88, 0);
+    const l = new THREE.Mesh(BOX, pantsM); l.scale.set(.23, .88, .23); l.position.y = -.44; pivot.add(l);
+    g.add(pivot); return pivot;
+  };
+  const armL = mkArm(-1), armR = mkArm(1), legL = mkLeg(-1), legR = mkLeg(1);
+  if (!isLite) g.traverse(o => { if (o.isMesh) { o.castShadow = true; } });
+  // תג-שם — קטן, מעל-הראש (מהספר-הפומבי בלבד)
+  const tag = makeNameTag(id); tag.position.y = 2.62; g.add(tag);
+  return { g, head, torso, armL, armR, legL, legR, tag };
+}
+function makeNameTag(id) {
+  const cv = document.createElement('canvas'); cv.width = 256; cv.height = 64;
+  const c = cv.getContext('2d');
+  c.fillStyle = 'rgba(20,16,12,.72)'; c.beginPath(); c.roundRect(48, 8, 160, 46, 12); c.fill();
+  c.fillStyle = '#f3ede2'; c.font = '600 30px system-ui, Arial'; c.textAlign = 'center'; c.textBaseline = 'middle';
+  c.fillText(id, 128, 32);
+  const t = new THREE.CanvasTexture(cv); t.colorSpace = THREE.SRGBColorSpace;
+  const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: t, depthTest: true, transparent: true }));
+  sp.scale.set(.9, .225, 1); return sp;
+}
+
+/* מסילות-רצפה: מסדרון-מרכזי + מסדרון-מזרחי + גישה-ישרה לכל-עמדה (אף-קיר-חיכוך) */
+const AISLE_Z = 0, EAST_X = 7.9;
+const STATIONS = {
+  wallSpots: [[-8.5, -1.4], [-8.5, 0], [-8.5, 1.4]],
+  coffeeSpots: [[7.9, -4.2], [7.9, -5.0], [8.3, -3.3]],
+  reception: [7.4, 3.9],
+  door: [5.0, 7.0],          // מחוץ-לפתח — הצוות נכנס דרך-הפתח בפועל
+};
+function routeTo(from, to) {
+  // פשרה-כנה ופשוטה: ירידה-למסדרון → הליכה-במסדרון → גישה-ישרה-קצרה
+  const pts = [];
+  const onAisleZ = Math.abs(from.z - AISLE_Z) < .9 ? from.z : AISLE_Z;
+  const via = [from.x, AISLE_Z];
+  if (Math.abs(from.z - AISLE_Z) > .9) pts.push(via);
+  const eastNeeded = to.x > 6.8 || from.x > 6.8;
+  if (eastNeeded) {
+    if (Math.abs(from.x - EAST_X) > .9) pts.push([EAST_X, from.z > 0 ? Math.min(from.z, AISLE_Z) : AISLE_Z]);
+    pts.push([EAST_X, Math.abs(to.x - EAST_X) < 1.6 ? to.z : AISLE_Z]);
+    pts.push([to.x, to.z]);
+  } else {
+    if (Math.abs(to.x - from.x) > .35 && Math.abs(to.z - AISLE_Z) > .9) pts.push([to.x, AISLE_Z]);
+    pts.push([to.x, to.z]);
+  }
+  return pts;
+}
+function spawnAgent(id, feed) {
+  const parts = makeAgentMesh(id);
+  const a = {
+    id, feed, parts, pos: new THREE.Vector3(STATIONS.door[0], 0, STATIONS.door[1]),
+    yaw: Math.PI, phase: Math.random() * 6, mode: 'arrive', target: null, path: [], since: feed.since ?? Date.now(),
+    sitTarget: null, activity: feed.activity || '',
+  };
+  parts.g.position.copy(a.pos); scene.add(parts.g);
+  W.agents.set(id, a);
+  dispatchAgent(a);
+  return a;
+}
+function dispatchAgent(a) {
+  const st = a.feed?.station ?? 'desk';
+  if (st === 'coffee') a.target = pick(STATIONS.coffeeSpots, a.pos), a.mode = 'go-coffee';
+  else if (st === 'wall') a.target = pick(STATIONS.wallSpots, a.pos), a.mode = 'go-wall';
+  else if (st === 'reception') a.target = STATIONS.reception, a.mode = 'go-reception';
+  else {
+    // תחנת-שולחן: מושב קבוע-יציב (האש של השם → אותו-כיסא תמיד — אפס קפיצות)
+    const d = W.desks[[...a.id].reduce((s, c) => s + c.charCodeAt(0), 0) % Math.max(1, W.desks.length)];
+    a.desk = d ?? null;
+    if (d) { a.sitTarget = { x: d.x, z: d.sitZ }; a.target = a.sitTarget; a.mode = 'go-desk'; }
+    else { a.target = pick(STATIONS.wallSpots, a.pos); a.mode = 'go-wall'; }
+  }
+  a.path = routeTo(a.pos, a.target);
+}
+const pick = (spots, pos) => spots.reduce((b, s) =>
+  ((s[0] - pos.x) ** 2 + (s[1] - pos.z) ** 2) < ((b[0] - pos.x) ** 2 + (b[1] - pos.z) ** 2) ? s : b, spots[0]);
+
+/* עדכון-פוזה — תנועת-גוף אמת: רגליים/ידיים נדנדות, גוף-קופץ קלות, ראש-מביט-הלאה */
+function poseWalk(a, dt) {
+  const p = a.parts, sp = 2.6;
+  a.phase += dt * sp * 1.9;
+  const sw = Math.sin(a.phase);
+  p.legL.rotation.x = sw * .62; p.legR.rotation.x = -sw * .62;
+  p.armL.rotation.x = -sw * .5; p.armR.rotation.x = sw * .5;
+  p.g.position.y = Math.abs(Math.cos(a.phase)) * .045;
+  p.head.rotation.x = Math.sin(a.phase * .5) * .04;
+}
+function poseSit(a, t, typing) {
+  const p = a.parts;
+  p.legL.rotation.x = -1.42; p.legR.rotation.x = -1.42;
+  p.armL.rotation.x = -1.05 + (typing ? Math.sin(t * 7.3) * .07 : .0);
+  p.armR.rotation.x = -1.05 + (typing ? -Math.sin(t * 6.1) * .07 : .0);
+  p.armL.rotation.z = .12; p.armR.rotation.z = -.12;
+  p.g.position.y = -.33;  // האגן בדיוק-על-הכיסא (מושב 0.59) — שום-צפה
+}
+function poseStand(a, t) {
+  const p = a.parts;
+  p.legL.rotation.x = 0; p.legR.rotation.x = 0;
+  p.armL.rotation.x = Math.sin(t * 1.2 + a.phase) * .05;
+  p.armR.rotation.x = -Math.sin(t * 1.1 + a.phase) * .05;
+  p.armL.rotation.z = 0; p.armR.rotation.z = 0;
+  p.g.position.y = 0;
+}
+function lerpAngle(a, b, k) { let d = ((b - a + Math.PI) % (Math.PI * 2)) - Math.PI; if (d < -Math.PI) d += Math.PI * 2; return a + d * k; }
+
+function stepAgent(a, dt, t) {
+  const p = a.parts;
+  if (a.mode === 'walk' || a.mode.startsWith('go-')) {
+    const wp = a.path[0];
+    if (!wp) { // הגיע
+      if (a.mode === 'go-desk' && a.desk) a.mode = 'sit';
+      else if (a.mode === 'go-coffee') a.mode = 'coffee';
+      else a.mode = 'stand';
+      a.yawT = a.mode === 'coffee' ? Math.PI * .5 + .35 : (a.mode === 'sit' ? a.desk.chairRy : a.yaw);
+    } else {
+      const dx = wp[0] - a.pos.x, dz = wp[1] - a.pos.z, dist = Math.hypot(dx, dz);
+      const speed = 1.65;
+      if (dist < .12) a.path.shift();
+      else {
+        a.pos.x += dx / dist * speed * dt; a.pos.z += dz / dist * speed * dt;
+        a.yawT = Math.atan2(dx, dz);
+      }
+      a.yaw = lerpAngle(a.yaw, a.yawT ?? a.yaw, Math.min(1, dt * 9));
+      p.g.rotation.y = a.yaw; p.g.position.set(a.pos.x, p.g.position.y, a.pos.z);
+      poseWalk(a, dt);
+    }
+  }
+  if (a.mode === 'sit' && a.desk) {
+    p.g.position.set(a.sitTarget.x, p.g.position.y, a.sitTarget.z);
+    p.g.rotation.y = lerpAngle(p.g.rotation.y, a.desk.chairRy, Math.min(1, dt * 6));
+    poseSit(a, t, a.feed?.state === 'working');
+    p.head.rotation.x = .16;  // מביט-במסך
+  }
+  if (a.mode === 'stand' || a.mode === 'coffee' || a.mode === 'arrive') {
+    poseStand(a, t);
+    if (a.mode === 'coffee') { p.armR.rotation.x = -1.25; p.armR.rotation.z = -.15; }  // מחזיק-כוס
+    if (a.mode === 'arrive') a.mode = 'stand';
+  }
+}
+
+/* ─── מצלמה: נקודות-תצפית + סיבוב-עצלן (חוק-הבעלים) ───────────────────────── */
+const PRESETS = {
+  overview:  { t: [0, 1.0, .2],    pos: [14, 9.6, 16] },
+  crew:      { t: [0, 1.0, .3],    pos: [1.2, 5.4, 10.6] },
+  podium:    { t: [-7.2, 1.9, 3.0], pos: [-2.4, 2.6, 8.6] },
+  wall:      { t: [-9.4, 1.9, -.2], pos: [-3.4, 2.3, 3.4] },
+  git:       { t: [9.5, 2.1, -.4], pos: [3.2, 2.4, 4.6] },
+  library:   { t: [-9.2, 1.5, -3.4], pos: [-4.2, 2.1, .8] },
+  reception: { t: [7.4, 1.3, 4.7], pos: [4.2, 2.2, 1.6] },
+};
+let camTween = null, lastTouch = 0, manualHold = false;
+function glideTo(preset) {
+  const P = PRESETS[preset]; if (!P) return;
+  camTween = { from: camera.position.clone(), to: new THREE.Vector3(...P.pos),
+    tFrom: controls.target.clone(), tTo: new THREE.Vector3(...P.t), k: 0 };
+}
+function setPreset(id, fromUser = true) {
+  document.querySelectorAll('.vbtn').forEach(b => b.classList.toggle('active', b.dataset.preset === id));
+  glideTo(id);
+  if (fromUser) { lastTouch = performance.now(); manualHold = false; controls.autoRotate = false; }
+}
+window.addEventListener('hq-camera-preset', e => { if (e?.detail) setPreset(e.detail, false); });
+controls.addEventListener('start', () => { manualHold = true; controls.autoRotate = false; camTween = null; lastTouch = performance.now(); });
+controls.addEventListener('end', () => { lastTouch = performance.now(); manualHold = false; });
+document.querySelectorAll('.vbtn').forEach(b => b.addEventListener('click', () => setPreset(b.dataset.preset)));
+let idleResumed = false;
+function cameraTick(dt, now) {
+  if (camTween) {
+    camTween.k = Math.min(1, camTween.k + dt / 1.4);
+    const e = 1 - Math.pow(1 - camTween.k, 3);
+    camera.position.lerpVectors(camTween.from, camTween.to, e);
+    controls.target.lerpVectors(camTween.tFrom, camTween.tTo, e);
+    if (camTween.k >= 1) camTween = null;
+  } else if (!manualHold && now - lastTouch > 8000) {
+    if (!controls.autoRotate) { controls.autoRotate = true; idleResumed = true; }
+  }
+  controls.update();
+}
+
+/* ─── לוחות-בד חיים: מסכי-תחנות / לוח-משימות / קיר-גיט / דוכן ─────────────── */
+const nf = new Intl.NumberFormat('en-US');
+function ageMin(iso) { try { return Math.max(0, (Date.now() - new Date(iso).getTime()) / 60000) | 0; } catch { return null; } }
+function heAge(m) { return m == null ? '—' : (m < 1 ? 'עכשיו' : m < 60 ? `${m}ד'` : `${Math.floor(m / 60)}ש'`); }
+
+function drawDeskScreens() {
+  for (const d of W.desks) {
+    // עדכון-זוהר לפי מצב-היושב: עובד=חם, פנוי=נמוך, אין-יושב=שקט-כהה
+    const sitter = [...W.agents.values()].find(a => a.desk === d && a.mode === 'sit');
+    const working = sitter?.feed?.state === 'working';
+    d.scr.material.emissiveIntensity = sitter ? (working ? .85 : .4) : .12;
+  }
+}
+function drawTaskBoard() {
+  const c = W.wallCanvas, x = c.getContext('2d');
+  x.fillStyle = '#e8e0cf'; x.fillRect(0, 0, c.width, c.height);
+  x.fillStyle = '#6b6459'; x.font = '700 30px system-ui, Arial'; x.textAlign = 'right';
+  x.fillText('לוח-המשימות · הפורמן', c.width - 26, 46);
+  x.fillStyle = '#948a79'; x.font = '500 20px system-ui, Arial';
+  x.fillText(W.tasks.length ? `${W.tasks.length} משימות חיות` : '—', c.width - 26, 76);
+  const cols = 3, cw = (c.width - 52) / cols;
+  for (let i = 0; i < cols; i++) {
+    x.fillStyle = 'rgba(0,0,0,.06)'; x.fillRect(26 + i * cw, 100, cw - 14, c.height - 130);
+  }
+  const tasks = W.tasks.slice(0, 9);
+  tasks.forEach((t, i) => {
+    const col = i % 3, row = Math.floor(i / 3);
+    const px = 26 + col * cw + 8, py = 112 + row * 96;
+    x.fillStyle = '#f7f2e8'; x.strokeStyle = 'rgba(0,0,0,.18)';
+    x.beginPath(); x.roundRect(px, py, cw - 30, 84, 8); x.fill(); x.stroke();
+    x.fillStyle = '#3a342a'; x.font = '600 17px system-ui, Arial'; x.textAlign = 'right';
+    x.fillText(String(t.title ?? '').slice(0, 30), px + cw - 44, py + 30);
+    x.fillStyle = '#8a7f6c'; x.font = '500 14px system-ui, Arial';
+    x.fillText(String(t.agentId ?? '—'), px + cw - 44, py + 58);
+  });
+  if (!tasks.length) {
+    x.fillStyle = '#948a79'; x.font = '600 22px system-ui, Arial'; x.textAlign = 'center';
+    x.fillText(W.feeds.foreman?.ok ? 'אין משימות פתוחות כרגע' : 'פיד-הפורמן נפל — אמת-בעצמך', c.width / 2, c.height / 2);
+  }
+  W.wallTex.needsUpdate = true;
+}
+function drawGitWall() {
+  const c = W.gitCanvas, x = c.getContext('2d');
+  x.fillStyle = '#221c16'; x.fillRect(0, 0, c.width, c.height);
+  x.fillStyle = '#e0a458'; x.font = '700 32px system-ui, Arial'; x.textAlign = 'right';
+  x.fillText('קיר-הגיט · ' + (W.booksCount || '—') + ' ספרים', c.width - 26, 52);
+  const books = W.gitBooks ?? [];
+  const cols = 4, rows = Math.ceil(Math.max(books.length, 1) / cols);
+  const cw = (c.width - 48) / cols, ch = (c.height - 100) / rows;
+  for (let i = 0; i < books.length; i++) {
+    const b = books[i], col = i % cols, row = Math.floor(i / cols);
+    const px = 24 + col * cw, py = 84 + row * ch;
+    const state = b.fresh ? 'ok' : 'stale';
+    const ageHe = b.hours == null ? '—' : b.hours < 1 ? 'פחות-משעה' : b.hours < 24 ? `${Math.round(b.hours)} שע'` : `${Math.floor(b.hours / 24)} ימ'`;
+    x.fillStyle = '#2a231b'; x.strokeStyle = state === 'ok' ? 'rgba(47,174,99,.55)' : 'rgba(217,92,74,.55)';
+    x.beginPath(); x.roundRect(px, py, cw - 18, ch - 16, 10); x.fill(); x.stroke();
+    x.fillStyle = '#f3ede2'; x.font = '700 19px system-ui, Arial'; x.textAlign = 'right';
+    x.fillText(String(b.he ?? '—').replace(/\s*\([^)]*\)\s*/, ' ').slice(0, 16), px + cw - 32, py + 32);
+    x.fillStyle = b.empty ? '#8f8574' : state === 'ok' ? '#2fae63' : '#d95c4a';
+    x.font = '600 16px system-ui, Arial';
+    x.fillText(b.empty ? 'ריק-תוכן' : state === 'ok' ? `חי · ${ageHe}` : `ישן · ${ageHe}`, px + cw - 32, py + 58);
+    x.beginPath(); x.arc(px + 26, py + 28, 7, 0, 7); x.fill();
+  }
+  if (!books.length) {
+    x.fillStyle = '#8f8574'; x.font = '600 22px system-ui, Arial'; x.textAlign = 'center';
+    x.fillText(W.feeds.live?.ok ? 'אין ספרים בפיד' : 'פיד-הספרים נפל — אמת-בעצמך', c.width / 2, c.height / 2);
+  }
+  W.gitTex.needsUpdate = true;
+}
+/* הדוכן — חוק-הבעלים: אם לא קורה בו כלום, הוא שקט. אף-הסבר-על-אין. */
+function drawPodium() {
+  if (!W.podMat) return;
+  const dec = W.decisions;
+  if (!dec?.length) { W.podMat.opacity = 0; W.podMat.transparent = true; return; }  // שקט מוחלט
+  const c = W.podCanvas, x = c.getContext('2d');
+  const last = dec[0], age = ageMin(last.at ?? last.createdAt ?? last.since);
+  x.fillStyle = 'rgba(18,14,10,.88)'; x.fillRect(0, 0, c.width, c.height);
+  x.strokeStyle = 'rgba(224,164,88,.5)'; x.lineWidth = 3; x.strokeRect(6, 6, c.width - 12, c.height - 12);
+  x.fillStyle = '#e0a458'; x.font = '800 34px system-ui, Arial'; x.textAlign = 'right';
+  x.fillText('דוכן-ההחלטות', c.width - 30, 58);
+  x.fillStyle = '#c9bfae'; x.font = '600 24px system-ui, Arial';
+  x.fillText(`פתוחות ${dec.filter(d => !d.resolved).length} · נפתרו ${dec.filter(d => d.resolved).length}`, c.width - 30, 96);
+  // השאלה — גודל-פונט שנמדד-בפועל עד-שהיא-נכנסת (אף-קטיעה)
+  const q = String(last.question ?? last.title ?? '');
+  let qs = 27;
+  x.fillStyle = '#f3ede2';
+  do { x.font = `600 ${qs}px system-ui, Arial`; qs -= 1; } while (x.measureText(q).width > c.width - 60 && qs > 12);
+  x.fillText(q, c.width - 30, 162);
+  x.fillStyle = '#948a79'; x.font = '500 21px system-ui, Arial';
+  x.fillText(`${last.agentId ?? '—'} · ${age == null ? '—' : heAge(age)} · מקור: ספר-ההכרעות הפומבי`, c.width - 30, 205);
+  x.fillStyle = '#7f8ea3'; x.font = '500 18px system-ui, Arial'; x.textAlign = 'left';
+  x.fillText('muted — the podium speaks only when a decision exists', 30, c.height - 28);
+  W.podTex.needsUpdate = true;
+  W.podMat.opacity = 1;
+}
+
+/* ─── HUD ─────────────────────────────────────────────────────────────────── */
+function hudVerdict() {
+  const el = document.getElementById('verdict'), d = document.getElementById('verdict-dot');
+  el.textContent = W.statusHe ?? (W.verdict === 'ALIVE' ? 'המשרד חי' : W.verdict);
+  d.className = 'dot pulse ' + (W.verdict === 'ALIVE' ? 'ok' : W.verdict === 'DEGRADED' ? 'warn' : W.verdict === 'DEAD' ? 'err' : '');
+}
+function hudFeeds() {
+  const box = document.getElementById('feeds'); box.innerHTML = '';
+  for (const [id, f] of Object.entries(W.feeds)) {
+    const age = f.ageMin, cap = FRESH_MIN[id];
+    const state = !f.ok ? 'err' : age == null ? '' : age <= cap * .4 ? 'ok' : age <= cap ? 'warn' : 'err';
+    const div = document.createElement('div'); div.className = 'f';
+    div.innerHTML = `<span class="dot ${state}"></span>${FEED_HE[id]} <b>${f.ok ? (age == null ? '—' : heAge(age)) : 'נפל'}</b>`;
+    box.appendChild(div);
+  }
+}
+function hudCounts() {
+  document.getElementById('crew-count').textContent = W.agents.size || '0';
+  document.getElementById('tasks-count').textContent = W.tasks.length ? nf.format(W.tasks.length) : '—';
+  document.getElementById('decisions-count').textContent = W.decisions?.length ? nf.format(W.decisions.length) : '0';
+}
+function hudClock() {
+  const h = jerusalemHour();
+  document.getElementById('clock').textContent =
+    new Date().toLocaleTimeString('he-IL', { timeZone: 'Asia/Jerusalem', hour: '2-digit', minute: '2-digit' });
+}
+function showCard(agent) {
+  W.selected = agent.id;
+  const c = document.getElementById('card'); c.style.display = 'block';
+  document.getElementById('card-name').textContent = agent.id;
+  document.getElementById('card-state').textContent = STATE_HE[agent.feed?.state] ?? agent.feed?.state ?? '—';
+  document.getElementById('card-station').textContent = STATION_HE[agent.feed?.station] ?? agent.feed?.station ?? '—';
+  const m = agent.since ? Math.max(0, (Date.now() - agent.since) / 60000) | 0 : null;
+  document.getElementById('card-since').textContent = m == null ? '—' : heAge(m);
+  document.getElementById('card-act').textContent = agent.activity || '—';
+}
+document.getElementById('card-x').onclick = () => { document.getElementById('card').style.display = 'none'; W.selected = null; };
+renderer.domElement.addEventListener('pointerdown', (e) => {
+  const ray = new THREE.Raycaster();
+  const v = new THREE.Vector2((e.clientX / innerWidth) * 2 - 1, -(e.clientY / innerHeight) * 2 + 1);
+  ray.setFromCamera(v, camera);
+  const hits = ray.intersectObjects([...W.agents.values()].map(a => a.parts.g), true);
+  if (hits.length) {
+    let o = hits[0].object; while (o && !W.agents.has(o.userData?.agentId)) o = o.parent;
+    const id = o?.userData?.agentId ?? [...W.agents.values()].find(a => a.parts.g === hits[0].object.parent)?.id;
+    if (id) showCard(W.agents.get(id));
+  }
+});
+setTimeout(() => { document.getElementById('hint').style.opacity = '0'; }, 9000);
+
+/* ─── טעינת-אמת ───────────────────────────────────────────────────────────── */
+async function loadFeed(url, ac) {
+  try {
+    const r = await fetch(url, { signal: ac.signal, cache: 'no-store' });
+    if (!r.ok) return { ok: false, note: `HTTP ${r.status}` };
+    return { ok: true, data: await r.json() };
+  } catch (e) { return { ok: false, note: e?.name === 'AbortError' ? 'timeout' : 'network' }; }
+}
+async function refreshTruth() {
+  const ac = new AbortController(); const to = setTimeout(() => ac.abort(), 12000);
+  const [foreman, pulse, live, grid, recruit, ventures] = await Promise.all([
+    loadFeed(FEEDS.foreman, ac), loadFeed(FEEDS.pulse, ac), loadFeed(FEEDS.live, ac),
+    loadFeed(FEEDS.grid, ac), loadFeed(FEEDS.recruit, ac), loadFeed(FEEDS.ventures, ac),
+  ]);
+  clearTimeout(to);
+  const mk = (r) => ({ ok: r.ok, ageMin: r.ok && r.data?.capturedAt ? ageMin(r.data.capturedAt) : r.ok && r.data?.generatedAt ? ageMin(r.data.generatedAt) : null, data: r.data });
+  W.feeds = { foreman: mk(foreman), pulse: mk(pulse), live: mk(live), grid: mk(grid), recruit: mk(recruit), ventures: mk(ventures) };
+
+  const fb = foreman.data;
+  if (foreman.ok && fb) {
+    W.statusHe = fb.statusHe ?? null;
+    W.tasks = Array.isArray(fb.tasks) ? fb.tasks : [];
+    W.decisions = Array.isArray(fb.decisions) ? fb.decisions.filter(d => d) : [];
+    W.booksCount = fb.books ?? fb.counts?.book ?? null;
+    W.memory = fb.memory ?? null;
+    // סנכרון-הצוות: מהספר בלבד — אם אין פורמן, אין צוות (אין-המצאה)
+    const feedAgents = Array.isArray(fb.agents) ? fb.agents : [];
+    for (const fa of feedAgents) {
+      if (!fa?.id) continue;
+      const ex = W.agents.get(fa.id);
+      if (ex) {
+        const prevSt = ex.feed?.station, prevState = ex.feed?.state;
+        ex.feed = fa; ex.since = fa.since ?? ex.since; ex.activity = fa.activity || '';
+        if (prevSt !== fa.station || prevState !== fa.state) dispatchAgent(ex);
+      } else spawnAgent(fa.id, fa);
+    }
+    for (const id of [...W.agents.keys()]) if (!feedAgents.some(fa => fa?.id === id)) { // ירד-מהרוסטר — יוצא-דרך-הפתח
+      const a = W.agents.get(id);
+      a.mode = 'go-door'; a.desk = null; a.leaving = true; a.target = [STATIONS.door[0], 7.2]; a.path = routeTo(a.pos, a.target);
+      W.agents.delete(id); W.leavingAgents ??= []; W.leavingAgents.push(a);
+    }
+  }
+  const lv = live.data;
+  if (live.ok && lv?.books?.list) {
+    W.gitBooks = lv.books.list.slice(0, 12).map(b => ({
+      he: b.name, fresh: !!b.fresh, empty: !!b.empty, hours: b.ageHours,
+    }));
+    W.booksCount = lv.books.total ?? W.booksCount;
+  }
+  W.verdict = pulse.ok ? (pulse.data?.verdict ?? 'UNKNOWN') : W.verdict;
+  hudVerdict(); hudFeeds(); hudCounts(); drawTaskBoard(); drawGitWall(); drawPodium(); drawDeskScreens();
+}
+
+/* ─── לילה/יום ────────────────────────────────────────────────────────────── */
+function applyDaylight() {
+  const h = jerusalemHour();
+  W.night = h < 6 || h >= 19;
+  for (const s of W.windows) s.material = W.night ? TEX.skyN : TEX.sky;
+  sun.intensity = W.night ? .5 : 2.6;
+  sun.color.setHex(W.night ? 0xbfd0e8 : 0xfff2dd);
+  scene.background.setHex(W.night ? 0x14110d : 0xd9d2c3);
+  scene.fog.color.setHex(W.night ? 0x14110d : 0xd9d2c3);
+  roomGlow.intensity = W.night ? 52 : 30;
+  document.body.style.background = W.night ? '#14110d' : '#d9d2c3';
+}
+
+/* ─── לולאת-חיים ──────────────────────────────────────────────────────────── */
+buildTextures(); buildSolids(); buildWorld(); applyDaylight();
+let frames = 0;
+const clock = new THREE.Clock();
+function loop() {
+  requestAnimationFrame(loop);
+  const dt = Math.min(.05, clock.getDelta()), t = clock.elapsedTime, now = performance.now();
+  for (const a of W.agents.values()) stepAgent(a, dt, t);
+  if (W.leavingAgents) {
+    for (const a of W.leavingAgents) {
+      stepAgent(a, dt, t);
+      if (a.pos.z > 6.6) {
+        scene.remove(a.parts.g); W.leavingAgents = W.leavingAgents.filter(x => x !== a);
+      }
+    }
+    if (!W.leavingAgents.length) W.leavingAgents = null;
+  }
+  cameraTick(dt, now);
+  // נשימה-עדינה למסכים (חיות-בלי-קלט)
+  if ((frames & 15) === 0) drawDeskScreens();
+  renderer.render(scene, camera);
+  frames++;
+  // חוזה-האפייה (office-3d bake): פריים-אמת ראשון — נמדד מהרנדרר
+  if (!W.ready && frames > 12 && renderer.info.render.calls > 6) {
+    W.ready = true;
+    window.__hqRoomReady = true;
+    console.log('[office3d-v3] first real frame — draw calls:', renderer.info.render.calls);
+  }
+}
+window.__hq = { gl: renderer };  // גיבוי-חוזה: draw-calls נמדד-מהרנדרר
+window.__hqDebug = () => ({ autoRotate: controls.autoRotate, idleForMs: performance.now() - lastTouch,
+  azimuth: (() => { const o = controls.getAzimuthalAngle(); return Math.round(o * 100) / 100; })(),
+  drawCalls: renderer.info.render.calls });
+window.addEventListener('resize', () => {
+  camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth, innerHeight);
+});
+setInterval(hudClock, 30000); hudClock();
+setInterval(applyDaylight, 5 * 60000);
+refreshTruth();
+setInterval(refreshTruth, POLL_MS);
+loop();
+</script>
+</body>
 </html>
