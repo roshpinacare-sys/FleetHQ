@@ -35,7 +35,7 @@ jobs:
       - name: Setup Node 20
         uses: actions/setup-node@v5
         with:
-          node-version: 20
+          node-version: 22
 
       - name: Selftest (offline — the loop's laws must be green before any live run)
         run: node office/retro.mjs --selftest
