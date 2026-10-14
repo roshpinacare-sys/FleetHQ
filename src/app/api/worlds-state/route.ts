@@ -84,6 +84,34 @@ async function fetchVerify(): Promise<VerifyWire | null> {
 }
 
 /** מדידת-שרשרת ישירה — המרה מדויקת (ביקורת-אמת עצמאית למשואה) */
+// [T27 perf] SWR cache for chain measurement: a live round-trip to Steem costs ~0.8-1s per request.
+// Display law — the measurement is presented with its fetchedAt, single-flight background refresh.
+// A 60s TTL does not change the treasury picture (vesting calculations move slowly), but the endpoint
+// goes from ~1s to tens of ms on warm cache.
+const chainG = globalThis as unknown as {
+  __chainCache?: { at: number; chain: ChainWire | null };
+  __chainInflight?: Promise<ChainWire | null>;
+};
+const CHAIN_TTL_MS = 60_000;
+
+async function measureChainCached(): Promise<ChainWire | null> {
+  const cache = chainG.__chainCache;
+  const age = cache ? Date.now() - cache.at : Infinity;
+  if (cache && age < CHAIN_TTL_MS) return cache.chain;
+  if (chainG.__chainInflight) return cache ? cache.chain : chainG.__chainInflight;
+  const p = measureChain()
+    .then((c) => {
+      chainG.__chainCache = { at: Date.now(), chain: c };
+      return c;
+    })
+    .finally(() => {
+      chainG.__chainInflight = undefined;
+    });
+  chainG.__chainInflight = p;
+  if (cache) return cache.chain;
+  return p;
+}
+
 async function measureChain(): Promise<ChainWire | null> {
   const POST = 'https://api.steemit.com';
   try {
@@ -126,7 +154,7 @@ export async function GET() {
     fetchTruth<ValueScanWire>('Sandbox', 'ops/sovereign/VALUE-SCAN/state.json', { ttlMs: TTL_MS }),
     fetchTruth<DecisionsWire>('Sandbox', 'ops/sovereign/DECIDER/state.json', { ttlMs: TTL_MS }),
     fetchTruth<ForemanWire>('FleetHQ', 'office/state/office-state.json', { ttlMs: TTL_MS }),
-    measureChain(),
+    measureChainCached(),
     fetchVerify(),
     // [T-watch] מישור-הבקרה — GridWatch ריפו ציבורי; TTL 120s (ה-watch עצמו רץ כל 30 דק')
     fetchTruth<FleetHealthWire>('GridWatch', 'state/fleet-health.json', { ttlMs: 120_000 }),

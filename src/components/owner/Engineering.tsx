@@ -61,13 +61,13 @@ type SimResult = { at: string; pass: boolean; checks: SimCheck[]; realGitUntouch
 type QueueNode = {
   id: string; repo: string; severity: string; kind: string; title: string;
   ageH: number; openH: number; ready: boolean; blockedBy: string[];
-  stale: boolean; chronic: boolean; orphan: boolean; openReceipt?: string;
+  stale: boolean; chronic: boolean; orphan: boolean; openReceipt?: string; openReceiptTerminal?: boolean;
 };
 type QueueData = {
   ok: boolean;
   error?: string;
   nodes: QueueNode[];
-  health: { total: number; ready: number; blocked: number; stale: number; chronic: number; orphan: number; cycles: number; receipts: number; provenClosed: number; openWithReceipt: number };
+  health: { total: number; ready: number; blocked: number; stale: number; chronic: number; orphan: number; cycles: number; receipts: number; provenClosed: number; openWithReceipt: number; openWithTerminalReceipt: number };
   fetchedAt: string;
 };
 type CostData = { settled: number; withCost: number; totalUsd: number };
@@ -355,7 +355,10 @@ export function Engineering() {
               <span className="rounded border border-[color:var(--line)] px-1.5 py-0.5">מעגלים: <b>{queue.health.cycles}</b></span>
               <span className="rounded border border-[color:var(--line)] px-1.5 py-0.5">סגירות-מוכחות: <b>{queue.health.provenClosed}</b> מתוך {queue.health.receipts} קבלות</span>
               {queue.health.openWithReceipt > 0 && (
-                <span className="rounded border px-1.5 py-0.5" style={{ borderColor: 'var(--st-attention)', color: 'var(--st-attention)' }}>קבלה-על-פתוח: <b>{queue.health.openWithReceipt}</b></span>
+                <span className="rounded border px-1.5 py-0.5" style={{ borderColor: 'var(--st-attention)', color: 'var(--st-attention)' }}>
+                  קבלה-על-פתוח: <b>{queue.health.openWithReceipt}</b>
+                  {queue.health.openWithTerminalReceipt > 0 && <> (מהן <b>{queue.health.openWithTerminalReceipt}</b> טרמינליות — סגירה-נדרשת-מהבעלים)</>}
+                </span>
               )}
             </div>
             <ul className="max-h-44 space-y-0.5 overflow-y-auto text-[10px]">
@@ -366,7 +369,7 @@ export function Engineering() {
                     <span className="block text-[9px] text-[color:var(--ink-3)]">
                       {n.repo} · {n.kind}{n.orphan ? ' · ערירי' : ''}{n.stale ? ' · stale' : ''}{n.chronic ? ` · כרוני ${Math.round(n.openH / 24)}י׳` : ''}
                       {n.blockedBy.length > 0 ? ` · חסום-על-ידי ${n.blockedBy.join(',')}` : ''}
-                      {n.openReceipt ? ' · קבלה-לא-סוגרת' : ''}
+                      {n.openReceiptTerminal ? ' · קבלה-טרמינלית — דרושה-סגירה' : n.openReceipt ? ' · קבלה-לא-סוגרת (ממתין-עבודה)' : ''}
                     </span>
                   </span>
                   <span className="shrink-0 rounded px-1 py-0.5 text-[9px] font-bold" style={{

@@ -138,18 +138,78 @@ export interface GitRead {
   error?: string;
 }
 
-export async function readGitFile(repo: string, path: string, ref = 'main', sim = false): Promise<GitRead> {
-  if (sim) {
-    // A6: קריאה-מהמאגר-הנדיף — אותן-חוקים (404 חוקי כשאין; sha=md5)
-    const text = simGet(`${repo}/${ref}/${path}`);
-    return { ok: true, text: text ?? null, sha: text === undefined ? undefined : md5hex(text), via: 'api' };
-  }
+// ── SWR read-cache [T27-שיפור-ביצועים] ──
+/**
+ * חוק (מהמדידה: engineering GET = 2×readGitFile×~0.45ש' כל-בקשה בלי קאש):
+ * קריאות-תצוגה מוגשות מקאש SWR (TTL 30ש', מיידי-גם-כשישן + רענון-רקע
+ * single-flight), אבל — וזה-החוק-המחמיר — **כל-קריאה-שמזינה-כתיבה טרייה-תמיד**:
+ * readback אחרי-כתיבה, קריאת-baseSha ב-updateJsonState/appendJsonlBounded —
+ * מדלגים-על-הקאש במפורש (fresh). כתיבה מוצלחת מזריעה-קאש בתוכן-החדש,
+ * כדי-שהתצוגה-תראה מיד את-מה-שאומת. אפס-שינוי-התנהגות במסילת-הכתיבה.
+ */
+interface ReadCacheEntry { at: number; result: GitRead }
+const cacheG = globalThis as unknown as {
+  __gitReadCache?: Map<string, ReadCacheEntry>;
+  __gitReadInflight?: Map<string, Promise<GitRead>>;
+};
+const readTtlMs = 30_000;
+const readKey = (repo: string, path: string, ref: string) => `${repo}/${ref}/${path}`;
+
+export function readCacheStats(): { files: number; inflight: number } {
+  return { files: cacheG.__gitReadCache?.size ?? 0, inflight: cacheG.__gitReadInflight?.size ?? 0 };
+}
+
+async function fetchGitFile(repo: string, path: string, ref: string): Promise<GitRead> {
   const got = await ghCall('GET', `/repos/${ORG}/${repo}/contents/${path}?ref=${ref}`);
   if (got.status === 404) return { ok: true, text: null, via: 'api' }; // עדיין-לא-קיים — מצב-חוקי
   if (got.status !== 200) return { ok: false, text: null, via: 'api', error: `http-${got.status}` };
   const sha = got.body.sha as string | undefined;
   const text = Buffer.from((got.body.content as string) ?? '', 'base64').toString('utf-8');
   return { ok: true, text, sha, via: 'api' };
+}
+
+function seedReadCache(repo: string, path: string, ref: string, result: GitRead): void {
+  (cacheG.__gitReadCache ??= new Map()).set(readKey(repo, path, ref), { at: Date.now(), result });
+}
+
+export async function readGitFile(
+  repo: string,
+  path: string,
+  ref = 'main',
+  sim = false,
+  opts: { fresh?: boolean } = {},
+): Promise<GitRead> {
+  if (sim) {
+    // A6: קריאה-מהמאגר-הנדיף — אותן-חוקים (404 חוקי כשאין; sha=md5)
+    const text = simGet(`${repo}/${ref}/${path}`);
+    return { ok: true, text: text ?? null, sha: text === undefined ? undefined : md5hex(text), via: 'api' };
+  }
+  const key = readKey(repo, path, ref);
+  const cache = (cacheG.__gitReadCache ??= new Map());
+  const inflight = (cacheG.__gitReadInflight ??= new Map());
+
+  if (opts.fresh) {
+    const got = await fetchGitFile(repo, path, ref);
+    if (got.ok) seedReadCache(repo, path, ref, got);
+    return got;
+  }
+
+  const entry = cache.get(key);
+  const age = entry ? Date.now() - entry.at : Infinity;
+  if (entry && age < readTtlMs) return entry.result; // טרי — מוגש מיד
+
+  // ישן-או-חסר: רענון single-flight; ישן מוגש מיד בזמן-הרענון (SWR)
+  const running = inflight.get(key);
+  if (running) return entry ? entry.result : running;
+  const p = fetchGitFile(repo, path, ref)
+    .then((res) => {
+      if (res.ok) seedReadCache(repo, path, ref, res);
+      return res;
+    })
+    .finally(() => inflight.delete(key));
+  inflight.set(key, p);
+  if (entry) return entry.result; // SWR: הישן מוגש, הרענון ברקע
+  return p;
 }
 
 export interface JsonStateRead<T> {
@@ -161,8 +221,14 @@ export interface JsonStateRead<T> {
   corrupt?: boolean;
 }
 
-export async function readJsonState<T>(repo: string, path: string, ref = 'main', sim = false): Promise<JsonStateRead<T>> {
-  const r = await readGitFile(repo, path, ref, sim);
+export async function readJsonState<T>(
+  repo: string,
+  path: string,
+  ref = 'main',
+  sim = false,
+  opts: { fresh?: boolean } = {},
+): Promise<JsonStateRead<T>> {
+  const r = await readGitFile(repo, path, ref, sim, opts);
   if (!r.ok) return { ok: false, data: null, error: r.error };
   if (r.text === null) return { ok: true, data: null, sha: r.sha }; // ראשית-עולם
   try {
@@ -221,8 +287,9 @@ export async function writeGitFile(
     return { ok: false, error: `http-${put.status}` };
   }
   const commit = ((put.body.commit as Record<string, unknown> | undefined)?.sha as string | undefined)?.slice(0, 9);
-  // אנטי-זיוף: readback עם MD5 (חוק gh-put — הצלחה לא-אומתת = כישלון)
-  const rb = await readGitFile(repo, path, ref);
+  // אנטי-זיוף: readback עם MD5 (חוק gh-put — הצלחה לא-אומתת = כישלון).
+  // fresh=true: הקריאה-שמאמתת-כתיבה חייבת לעבור-על-הרשת, לא-מקאש.
+  const rb = await readGitFile(repo, path, ref, false, { fresh: true });
   if (!rb.ok || rb.text === null || md5hex(rb.text) !== md5hex(content)) {
     return { ok: false, readbackFailed: true, error: 'readback-mismatch' };
   }
@@ -238,7 +305,8 @@ export async function updateJsonState<T>(
   ref = 'main',
   opts: { sim?: boolean; gate?: WriteGate } = {},
 ): Promise<GitWrite & { current?: T | null }> {
-  const read = await readJsonState<T>(repo, path, ref, opts.sim);
+  // fresh=true: baseSha שמזין-כתיבה חייב להיות טרי (שלא-נוצרו-התנגשויות-שווא)
+  const read = await readJsonState<T>(repo, path, ref, opts.sim, { fresh: true });
   if (!read.ok) {
     return { ok: false, error: read.corrupt ? `state-corrupt: ${read.error}` : `read-failed: ${read.error}` };
   }
@@ -261,7 +329,7 @@ export async function appendJsonlBounded(
   line: string,
   opts: { bound: number; message: string; ref?: string; sim?: boolean; gate?: WriteGate },
 ): Promise<GitWrite> {
-  const read = await readGitFile(repo, path, opts.ref ?? 'main', opts.sim);
+  const read = await readGitFile(repo, path, opts.ref ?? 'main', opts.sim, { fresh: true });
   if (!read.ok) return { ok: false, error: read.error };
   const existing = (read.text ?? '').split('\n').map((l) => l.trim()).filter(Boolean);
   const lines = [...existing, line].slice(-opts.bound);
