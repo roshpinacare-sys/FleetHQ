@@ -33,12 +33,21 @@ jobs:
         with: { node-version: 20 }
 
       - name: Score the fleet (skill-health)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SOVEREIGN_PAT: ${{ secrets.SOVEREIGN_PAT }}
         run: node sovereign/stack/runtime/run-scores.mjs
 
       - name: Self-heal proposals (skill-repair, deduped, runaway-guarded)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SOVEREIGN_PAT: ${{ secrets.SOVEREIGN_PAT }}
         run: node sovereign/stack/runtime/self-heal.mjs
 
       - name: Serve the MCP edge (issue-label transport)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SOVEREIGN_PAT: ${{ secrets.SOVEREIGN_PAT }}
         run: node sovereign/stack/runtime/mcp/mcp-router.mjs
 
       - name: Publish scores + skills (defer-not-fail, rebase-before-push)

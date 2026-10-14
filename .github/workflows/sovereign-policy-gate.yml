@@ -36,6 +36,9 @@ jobs:
         run: node sovereign/stack/policy/policy-engine.mjs --selftest
 
       - name: Gate the live capital books (exit 0 always)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SOVEREIGN_PAT: ${{ secrets.SOVEREIGN_PAT }}
         run: node sovereign/stack/policy/policy-gate.mjs
 
       - name: Publish verdicts (defer-not-fail, rebase-before-push)

@@ -29,13 +29,19 @@ async function raw(path) {
   return res.text();
 }
 
-async function openDedupedIssue(title, body) {
+async function openDedupedIssue(title, body, refKind = null) {
   if (!TOKEN) { console.log(`(no token) would file issue: ${title}`); return; }
   try {
     const res = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/issues?state=open&per_page=100`, { headers: { Authorization: `Bearer ${TOKEN}`, Accept: 'application/vnd.github+json', 'User-Agent': 'sovereign-policy-gate' } });
     if (!res.ok) { console.error(`issue search failed: ${res.status}`); return; }
     const existing = await res.json();
     if (existing.some(i => i.title === title)) return;
+    // anti-storm refinement: an open issue already covering this ref+kind suppresses the duplicate
+    if (refKind) {
+      const [ref, kind] = refKind;
+      const covered = existing.some(i => `${i.title}\n${i.body || ''}`.includes(`ref: \`${ref}\``) && `${i.title}\n${i.body || ''}`.includes(kind));
+      if (covered) { console.log(`covered by open issue — suppressed: ${title}`); return; }
+    }
     const cr = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/issues`, {
       method: 'POST',
       headers: { Authorization: `Bearer ${TOKEN}`, Accept: 'application/vnd.github+json', 'Content-Type': 'application/json', 'User-Agent': 'sovereign-policy-gate' },
@@ -102,7 +108,7 @@ function fileViolation(kind, ref, reasons, extra = {}) {
       `**Layer 2 (PolicyAVS guardrail)**: the validator network REFUSES to sign.\n\n`
       + reasons.map(r => `- ${r}`).join('\n')
       + `\n\n- ref: \`${ref}\`\n- kind: \`${kind}\`\n- sig: \`${sig}\`\n- run: ${RUN_URL}\n`
-      + `- law: this issue never re-opens for the same signature; persistent offenders are quarantined by claims-triage (the slashing analogue).`);
+      + `- law: this issue never re-opens for the same signature; persistent offenders are quarantined by claims-triage (the slashing analogue).`, [ref, kind]);
   }
 }
 

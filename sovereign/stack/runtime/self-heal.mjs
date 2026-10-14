@@ -36,9 +36,10 @@ if (existsSync(CLAIMS)) for (const f of readdirSync(CLAIMS)) { try { const c = J
 async function listOpenIssues(label) {
   if (!TOKEN) return [];
   try {
-    const res = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/issues?state=open&labels=${label}&per_page=100`, { headers: { Authorization: `Bearer ${TOKEN}`, Accept: 'application/vnd.github+json', 'User-Agent': 'sovereign-self-heal' } });
+    const res = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/issues?state=open&per_page=100`, { headers: { Authorization: `Bearer ${TOKEN}`, Accept: 'application/vnd.github+json', 'User-Agent': 'sovereign-self-heal' } });
     if (!res.ok) return [];
-    return res.json();
+    const all = await res.json();
+    return label ? all.filter(i => (i.labels || []).some(l => l.name === label)) : all;
   } catch { return []; }
 }
 async function openDedupedIssue(title, body, labels) {
@@ -66,6 +67,11 @@ function diagnose(r) {
 
 // ---- runaway guard
 const openRepairs = await listOpenIssues('skill-repair');
+// anti-storm refinement: if ANY open issue already covers this workflow (triage,
+// selfscan, or a prior repair proposal), the harness does NOT file a duplicate —
+// the claim file still lands for the registry.
+const allOpen = await listOpenIssues(null);
+const covers = (repo, name) => allOpen.some(i => `${i.title}\n${i.body || ''}`.includes(`${repo}/${name}`) || `${i.title}\n${i.body || ''}`.includes(name));
 if (openRepairs.length > 10) {
   await openDedupedIssue('skill-repair runaway: >10 open proposals — harness going quiet for 24h',
     `**Layer 3 runaway guard** (policy.json#escalation.selfHealRunaway).\n\nopen proposals: ${openRepairs.length}\n\nThe harness stops proposing until this issue is closed. Run: ${RUN_URL}`,
@@ -82,7 +88,7 @@ for (const r of criticals) {
   const sig = sig8(`skill-repair|${r.repo}|${r.name}|${r.lastConcl}`);
   const claim = { sig, kind: 'skill-repair', repo: r.repo, workflow: r.name, family: d.family, lastConcl: r.lastConcl, firstSeenAt: stamp, lastSeenAt: stamp, status: 'open', runUrl: RUN_URL };
   try { writeFileSync(`${CLAIMS}/claim-${sig}.json`, JSON.stringify(claim, null, 2) + '\n'); } catch {}
-  if (seen.has(sig)) continue;
+  if (seen.has(sig) || covers(r.repo, r.name)) { if (seen.has(sig)) continue; console.log(`covered by an open issue — claim-only: ${r.repo}/${r.name}`); continue; }
   await openDedupedIssue(
     `skill-repair [${d.family}]: ${r.repo}/${r.name} — ${r.lastConcl} (sig ${sig})`,
     `**Layer 3 self-heal proposal** (autoApply: \`${policy.autonomy?.autoApply}\` — proposals only, no code rewritten by the harness)\n\n`
