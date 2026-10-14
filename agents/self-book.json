@@ -1,71 +1,44 @@
 {
  "protocol": "SAOS-SELF-BOOK/1",
- "at": "2026-10-14T03:24:46.040Z",
- "prevAt": "2026-10-14T01:55:31.720Z",
+ "at": "2026-10-14T04:44:09.359Z",
+ "prevAt": "2026-10-14T03:24:46.040Z",
  "law": "הרשת מודעת לעצמה: מלאי-מלא + חדשנות + יכולות, כל 30 דק', git-only",
  "totals": {
   "repos": 34,
   "publicRepos": 13,
   "privateRepos": 21,
   "machines": 219,
-  "aliveLastHour": 27
+  "aliveLastHour": 14
  },
  "newSincePrev": {
   "newRepos": [],
-  "newWorkflows": [
-   {
-    "repo": "steem",
-    "added": [
-     "presence-matrix.yml"
-    ],
-    "removed": []
-   },
-   {
-    "repo": "Autonomy",
-    "added": [
-     "floating-builds.yml"
-    ],
-    "removed": []
-   }
-  ],
-  "rootChangedCount": 6,
+  "newWorkflows": [],
+  "rootChangedCount": 7,
   "rootChanged": [
+   "FleetHQ",
    "Domain",
+   "sovereign-lighthouse",
+   "Pulse",
    "saos-runtime",
    "roshpina",
-   "Pulse",
-   "sovereign-lighthouse",
    "sovereign-beacon"
   ]
  },
  "aliveLastHour": [
-  "saos-dex",
+  "Autonomy",
   "FleetHQ",
-  "Sandbox",
   "Domain",
   "Console",
-  "saos-runtime",
-  "steem",
-  "roshpina",
-  "Autonomy",
-  "ops-intake",
-  "Pulse",
+  "GridWatch",
   "sovereign-lighthouse",
-  "saos-agents",
-  "Defi",
-  "sandbox-private",
-  "saos-control-center",
-  "Saosmartwallet",
-  "Adsmarket",
-  "anchor-baseline",
-  "saos-jummper",
-  "saos-sovereign-foundry",
-  "saos-sovereign-platform",
-  "Sdk",
-  "SovereignConsole",
+  "Pulse",
+  "steem",
+  "saos-runtime",
+  "Sandbox",
+  "saos-dex",
   "Project-files",
-  "sovereign-beacon",
-  "Zip"
+  "roshpina",
+  "sovereign-beacon"
  ],
  "capabilities": [
   {
@@ -154,34 +127,6 @@
     "Domain",
     "Sandbox",
     "steem"
-   ]
-  },
-  {
-   "machine": "ci",
-   "repos": [
-    "saos-dex",
-    "saos-sovereign-foundry"
-   ]
-  },
-  {
-   "machine": "dex-beat",
-   "repos": [
-    "Domain",
-    "saos-dex"
-   ]
-  },
-  {
-   "machine": "dex-grid",
-   "repos": [
-    "Domain",
-    "saos-dex"
-   ]
-  },
-  {
-   "machine": "runtime-pacemaker",
-   "repos": [
-    "Console",
-    "FleetHQ"
    ]
   },
   {
@@ -353,6 +298,13 @@
    ]
   },
   {
+   "machine": "runtime-pacemaker",
+   "repos": [
+    "Console",
+    "FleetHQ"
+   ]
+  },
+  {
    "machine": "agent-verify",
    "repos": [
     "Console",
@@ -364,6 +316,20 @@
    "repos": [
     "Defi",
     "Domain"
+   ]
+  },
+  {
+   "machine": "dex-beat",
+   "repos": [
+    "Domain",
+    "saos-dex"
+   ]
+  },
+  {
+   "machine": "dex-grid",
+   "repos": [
+    "Domain",
+    "saos-dex"
    ]
   },
   {
@@ -409,27 +375,70 @@
    ]
   },
   {
-   "machine": "arb-scan",
+   "machine": "ci",
    "repos": [
-    "saos-dex"
+    "saos-dex",
+    "saos-sovereign-foundry"
    ]
   },
   {
-   "machine": "grid-trigger",
+   "machine": "claims-intake",
    "repos": [
-    "saos-dex"
+    "Autonomy"
    ]
   },
   {
-   "machine": "llm-bridge",
+   "machine": "compute-rearm",
    "repos": [
-    "saos-dex"
+    "Autonomy"
    ]
   },
   {
-   "machine": "mm-supremacy",
+   "machine": "estate-relay",
    "repos": [
-    "saos-dex"
+    "Autonomy"
+   ]
+  },
+  {
+   "machine": "estate-vault",
+   "repos": [
+    "Autonomy"
+   ]
+  },
+  {
+   "machine": "floating-builds",
+   "repos": [
+    "Autonomy"
+   ]
+  },
+  {
+   "machine": "network-awareness",
+   "repos": [
+    "Autonomy"
+   ]
+  },
+  {
+   "machine": "network-self-awareness",
+   "repos": [
+    "Autonomy"
+   ]
+  },
+  {
+   "machine": "operator-routing",
+   "repos": [
+    "Autonomy"
+   ]
+  },
+  {
+   "machine": "run-score",
+   "repos": [
+    "Autonomy"
+   ]
+  },
+  {
+   "machine": "selfhood",
+   "repos": [
+    "Autonomy"
    ]
   },
   {
@@ -473,71 +482,63 @@
    "repos": [
     "FleetHQ"
    ]
-  },
-  {
-   "machine": "opens-closer",
-   "repos": [
-    "FleetHQ"
-   ]
-  },
-  {
-   "machine": "self-book",
-   "repos": [
-    "FleetHQ"
-   ]
-  },
-  {
-   "machine": "silence-watchdog",
-   "repos": [
-    "FleetHQ"
-   ]
-  },
-  {
-   "machine": "sovereign-harness",
-   "repos": [
-    "FleetHQ"
-   ]
-  },
-  {
-   "machine": "sovereign-identity",
-   "repos": [
-    "FleetHQ"
-   ]
-  },
-  {
-   "machine": "sovereign-policy-gate",
-   "repos": [
-    "FleetHQ"
-   ]
   }
  ],
  "repos": [
   {
-   "name": "saos-dex",
-   "private": true,
-   "description": "SAOS-DEX — הבורסה הריבונית: ספר-הזמנות דטרמיניסטי + AMM 30bps + ארנת-חיילים אוטונומית (מורשת saos-dex + grid98)",
-   "createdAt": "2026-09-07T13:27:19Z",
-   "pushedAt": "2026-10-14T03:24:45Z",
+   "name": "Autonomy",
+   "private": false,
+   "description": "המוח הריבוני על דקות-ציבור: עורקי-ההחלטה, הלמידה, הצמיחה — רץ 24/7 ללא תלות בשום סנדבוקס. Public compute, private memory",
+   "createdAt": "2026-10-12T20:33:22Z",
+   "pushedAt": "2026-10-14T04:44:05Z",
    "workflows": [
-    "arb-scan.yml",
-    "ci.yml",
-    "dex-beat.yml",
-    "dex-grid.yml",
-    "gitleaks.yml",
-    "grid-trigger.yml",
+    "artery-catchup.yml",
+    "artery-decision-truth.yml",
+    "artery-fleet.yml",
+    "artery-flow.yml",
+    "artery-grid.yml",
+    "artery-integrity.yml",
+    "artery-participation.yml",
+    "artery-scribe.yml",
+    "artery-wallet.yml",
+    "artery-watch.yml",
+    "claims-intake.yml",
+    "compute-rearm.yml",
+    "estate-relay.yml",
+    "estate-vault.yml",
+    "evo-windows-staleness.yml",
+    "federation.yml",
+    "fleet-heal.yml",
+    "fleet-yield.yml",
+    "floating-builds.yml",
+    "fresh-oracle.yml",
+    "hive-probe.yml",
     "identity-guard.yml",
-    "llm-bridge.yml",
-    "mm-supremacy.yml",
-    "workflow-yaml-guard.yml"
+    "key-proof.yml",
+    "network-awareness.yml",
+    "network-self-awareness.yml",
+    "office-growth.yml",
+    "operator-routing.yml",
+    "profit-oracle.yml",
+    "research-lane.yml",
+    "retro.yml",
+    "run-score.yml",
+    "selfhood.yml",
+    "sovereign-decider.yml",
+    "sovereign-state.yml",
+    "sovereign.yml",
+    "token-watchdog.yml",
+    "value-scan.yml",
+    "verifier.yml"
    ],
-   "treeSig": ".env.example:2447|.gitignore:2903|.gitleaksignore:497|AGENT-BRIEFING.md:1121|ARCHITECTURE_ROADMAP.md:9046|CHANGELOG.md:3262|CHAOS_TEST_RESULTS.md:3417|CONTROLS-THAT-EXIST.md:1141|DECISIONS.md:9335|DEPLOYMENT_CHECKLIST.md:8155|EPOCH-PATCH-SPEC.md:9972|FLEET-NOTE.md:1088|LIQUIDITY_STRATEGY.md:5927|NETWORK-SUMMARY.md:19274|PHISHING_DEFENSE.md:5364|README.md:7088|RELAY-PATCH-2.md:1129|STATUS.md:25325|bun.lock:56803|cloud-beat.ts:50899|door-first-drop.ts:7578|door-full-cycle.ts:12185|door-money-market.ts:9945|grid-beat.ts:49082|next.config.ts:644|package.json:2487|postcss.config.mjs:94|save-first-cycle.ts:9548|sbd-rail-first-cycle.ts:6118|t15-selftest-results.json:920|tsconfig.json:777|ve-first-cycle.ts:10685"
+   "treeSig": "NETWORK-MANIFEST.md:6951|README.md:2960|SECURITY.md:3714"
   },
   {
    "name": "FleetHQ",
    "private": false,
    "description": "Fleet HQ — a live operations room where real AI agents plan, work and report on your data books in real time. מפקדת הצי",
    "createdAt": "2026-10-07T23:26:07Z",
-   "pushedAt": "2026-10-14T03:24:41Z",
+   "pushedAt": "2026-10-14T04:44:02Z",
    "workflows": [
     "claims-triage.yml",
     "fresh-oracle.yml",
@@ -559,58 +560,14 @@
     "sovereign-selfscan.yml",
     "value-scan.yml"
    ],
-   "treeSig": ".env.example:2902|.gitattributes:148|.gitignore:2668|Caddyfile:493|DESIGN.md:17516|FLEET-BINDING.md:3149|LICENSE:1073|MEMORY.md:23709|README.md:14559|SECURITY.md:4559|SOVEREIGNTY.md:31644|bun.lock:365334|components.json:430|eslint.config.mjs:2195|next.config.ts:1347|package.json:3662|postcss.config.mjs:81|sovereign-agent.env.example:577|tailwind.config.ts:1696|tsconfig.json:760|v4-index-top.png:126096|worklog.md:165212"
-  },
-  {
-   "name": "Sandbox",
-   "private": true,
-   "description": "",
-   "createdAt": "2026-10-09T11:00:27Z",
-   "pushedAt": "2026-10-14T03:24:40Z",
-   "workflows": [
-    "agent-access.yml",
-    "agent-roster-reseal.yml",
-    "artery-catchup.yml",
-    "artery-decision-truth.yml",
-    "artery-fleet.yml",
-    "artery-flow.yml",
-    "artery-grid.yml",
-    "artery-integrity.yml",
-    "artery-participation.yml",
-    "artery-scribe.yml",
-    "artery-wallet.yml",
-    "artery-watch.yml",
-    "compute-canary.yml",
-    "evo-windows-staleness.yml",
-    "federation.yml",
-    "fleet-heal.yml",
-    "fleet-yield.yml",
-    "fresh-oracle.yml",
-    "hive-probe.yml",
-    "identity-guard.yml",
-    "key-proof.yml",
-    "office-growth.yml",
-    "pages.yml",
-    "profit-oracle.yml",
-    "research-lane.yml",
-    "retro.yml",
-    "sovereign-decider.yml",
-    "sovereign-invariants.yml",
-    "sovereign-state.yml",
-    "sovereign.yml",
-    "token-forge.yml",
-    "token-watchdog.yml",
-    "value-scan.yml",
-    "verifier.yml"
-   ],
-   "treeSig": ".gitignore:257|AGENT-LEDGER.md:1089|README.md:11678|SECURITY.md:3714|worklog.md:42728"
+   "treeSig": ".env.example:2902|.gitattributes:148|.gitignore:2668|Caddyfile:493|DESIGN.md:17516|FLEET-BINDING.md:3149|LICENSE:1073|MEMORY.md:23709|README.md:14559|SECURITY.md:4559|SOVEREIGNTY.md:31644|bun.lock:365334|components.json:430|eslint.config.mjs:2195|next.config.ts:1347|package.json:3662|postcss.config.mjs:81|sovereign-agent.env.example:577|tailwind.config.ts:1696|tsconfig.json:760|v4-index-top.png:126096|worklog.md:169938"
   },
   {
    "name": "Domain",
    "private": false,
    "description": "",
    "createdAt": "2026-09-19T23:39:18Z",
-   "pushedAt": "2026-10-14T03:24:33Z",
+   "pushedAt": "2026-10-14T04:42:49Z",
    "workflows": [
     "adsmarket-panel.yml",
     "agent-verify.yml",
@@ -703,14 +660,14 @@
     "web-publish.yml",
     "workflow-yaml-guard.yml"
    ],
-   "treeSig": ".gitignore:65|.gitleaks.toml:603|.gitleaksignore:4004|.nojekyll:0|404.html:4945|AGENTS.md:9642|BLOC.md:8163|CUA-ADOPTION.md:4616|FATE-DEFENSE.md:12504|FLEET-NOTE.md:5938|GRID-STATUS.md:4981|README.md:23405|STATE-REPORT-20261012.md:1129|STATE-REPORT-20261013.md:1129|VOICE.md:3637|acid-engine.js:38285|acid.html:42701|bun.lock:339|defi.html:42150|deposits.html:30799|dev.html:36754|favicon.svg:449|feature_list.json:123276|gate-crypto.js:18042|gate.html:29316|giant-standard.html:32945|giants.html:53166|index.html:68659|init.sh:3624|manifest.webmanifest:510|mirror-report.json:1362|mirror.json:73652|money.html:45976|net.html:28233|package.json:59|products.html:21749|readiness.html:32035|render.mjs:11979|reports.html:9537|roast.html:2474|robots.txt:179|runner-kit.html:24818|saos-live.js:36274|saos-live.json:1155|sitemap.html:14390|sitemap.xml:9135|sovereign.html:39015|standard.html:30747|status.json:4112|truth.html:30987|versus.html:29800|wallet.html:172086"
+   "treeSig": ".gitignore:65|.gitleaks.toml:603|.gitleaksignore:4004|.nojekyll:0|404.html:4945|AGENTS.md:9642|BLOC.md:8163|CUA-ADOPTION.md:4616|FATE-DEFENSE.md:12504|FLEET-NOTE.md:5938|GRID-STATUS.md:5036|README.md:23405|STATE-REPORT-20261012.md:1129|STATE-REPORT-20261013.md:1129|VOICE.md:3637|acid-engine.js:38285|acid.html:42701|bun.lock:339|defi.html:42150|deposits.html:30799|dev.html:36754|favicon.svg:449|feature_list.json:123276|gate-crypto.js:18042|gate.html:29316|giant-standard.html:32945|giants.html:53166|index.html:68659|init.sh:3624|manifest.webmanifest:510|mirror-report.json:1362|mirror.json:73652|money.html:45976|net.html:28233|package.json:59|products.html:21749|readiness.html:32035|render.mjs:11979|reports.html:9537|roast.html:2474|robots.txt:179|runner-kit.html:24818|saos-live.js:36274|saos-live.json:1155|sitemap.html:14390|sitemap.xml:9135|sovereign.html:39015|standard.html:30747|status.json:43958|truth.html:30987|versus.html:29800|wallet.html:172086"
   },
   {
    "name": "Console",
    "private": false,
    "description": "",
    "createdAt": "2026-09-14T18:29:10Z",
-   "pushedAt": "2026-10-14T03:23:59Z",
+   "pushedAt": "2026-10-14T04:42:42Z",
    "workflows": [
     "agent-verify.yml",
     "agents-watch.yml",
@@ -737,11 +694,65 @@
    "treeSig": ".gitattributes:148|.gitignore:204|.gitleaks.toml:3551|.gitleaksignore:1813|.nojekyll:0|404.html:7032|AGENTS.md:2924|BLOC.md:7061|DESIGN.md:9376|ESTATE-INDEX.md:4617|FLEET-LOG.md:9087|README.md:5802|SYSTEM-ACTIVATION-REPORT.md:5660|acid-engine.js:38285|acid.html:49217|defi.html:51772|deposits.html:40008|dev.html:38931|feature_list.json:2175|gate-crypto.js:18042|gate.html:35378|giants.html:54081|index.html:221967|init.sh:988|ledger.json:3182589|manifest.webmanifest:633|mirror.json:73371|money.html:54715|net.html:28205|readiness.html:43246|render.mjs:9774|roast.html:2433|robots.txt:88|saos-live.js:36278|saos-live.json:1155|sitemap.xml:10067|sovereign-anchor.html:34726|sovereign.html:53054|status.json:4112|truth.html:39985|versus.html:41665|wallet.html:137075"
   },
   {
+   "name": "GridWatch",
+   "private": false,
+   "description": "Fleet control plane: measures every repo & workflow health, auto-remediates failures, feeds the sovereign decider. The g",
+   "createdAt": "2026-10-12T20:06:08Z",
+   "pushedAt": "2026-10-14T04:38:22Z",
+   "workflows": [
+    "flow-map.yml",
+    "grid-watch.yml",
+    "identity-guard.yml"
+   ],
+   "treeSig": "README.md:1261|grid-watch.mjs:22625"
+  },
+  {
+   "name": "sovereign-lighthouse",
+   "private": false,
+   "description": "מגדלור ריבוני — Sovereign Lighthouse: זיכרון חוץ-מכונה עצמאי (RTL עברית)",
+   "createdAt": "2026-10-10T06:53:25Z",
+   "pushedAt": "2026-10-14T04:36:57Z",
+   "workflows": [
+    "estate-redboard.yml",
+    "lighthouse-pulse.yml"
+   ],
+   "treeSig": "README.md:1637|REVIVAL-2026-10-11.md:1310|grid.json:25216|index.html:6140|state.json:70966"
+  },
+  {
+   "name": "Pulse",
+   "private": false,
+   "description": "Pulse — איבר-הדופק של הרשת · fleet heartbeat: autonomous census every 30min on GitHub Actions (public = unlimited free m",
+   "createdAt": "2026-10-12T19:43:19Z",
+   "pushedAt": "2026-10-14T04:30:27Z",
+   "workflows": [
+    "heartbeat.yml",
+    "identity-guard.yml"
+   ],
+   "treeSig": "BENCHMARK.md:7982|BOOTSTRAP.md:6088|CHANGELOG.md:1115|DECISIONS.md:21558|PROMPTS.md:2025|README.md:2976|VERSION.md:448|index.html:13431"
+  },
+  {
+   "name": "steem",
+   "private": true,
+   "description": "SAOS — Steem AI Agent OS sovereign cycle (Task 114 snapshot restored) — PRIVATE",
+   "createdAt": "2026-09-07T11:47:10Z",
+   "pushedAt": "2026-10-14T04:27:51Z",
+   "workflows": [
+    "ci-probe.yml",
+    "gitleaks.yml",
+    "identity-guard.yml",
+    "presence-matrix.yml",
+    "social-cadence.yml",
+    "sovereign-cycle.yml",
+    "token-forge.yml"
+   ],
+   "treeSig": ".gitignore:4055|.gitleaks.toml:2300|.gitleaksignore:179433|AGENT-BRIEFING.md:13240|AGENTS.md:3350|CONTROLS-THAT-EXIST.md:10891|CRITICAL-KEY-EXPOSURE.md:11613|CRITICAL-R11-KEY-BROADCAST.md:1174|Caddyfile:961|ENGINEER_BRIEF.md:11029|FLEET-NOTE.md:1088|MANIFEST.txt:2378|PATCH-SPEC-P11.md:5198|README.md:57980|THE_WEAVE.md:12642|bun.lock:358946|components.json:430|eslint.config.mjs:2269|feature_list.json:2807|init.sh:1303|next.config.ts:866|package.json:3685|postcss.config.mjs:81|progress.md:1124|session-handoff.md:1031|tailwind.config.ts:1696|tsconfig.json:730|worklog.md:904391"
+  },
+  {
    "name": "saos-runtime",
    "private": false,
    "description": "SAOS sovereign runtime host — Actions runner heartbeat; clones the private engine tree at runtime (R244). No keys, no se",
    "createdAt": "2026-10-07T16:44:12Z",
-   "pushedAt": "2026-10-14T03:23:45Z",
+   "pushedAt": "2026-10-14T04:27:18Z",
    "workflows": [
     "army-ladder.yml",
     "blurt-revival.yml",
@@ -759,46 +770,17 @@
     "system-map.yml",
     "treasury-ladder.yml"
    ],
-   "treeSig": ".gitignore:43|STATUS.md:2681|blurt-nodes.json:561|package-lock.json:1098|package.json:296"
+   "treeSig": ".gitignore:43|STATUS.md:2678|blurt-nodes.json:561|package-lock.json:1098|package.json:296"
   },
   {
-   "name": "steem",
+   "name": "Sandbox",
    "private": true,
-   "description": "SAOS — Steem AI Agent OS sovereign cycle (Task 114 snapshot restored) — PRIVATE",
-   "createdAt": "2026-09-07T11:47:10Z",
-   "pushedAt": "2026-10-14T03:23:44Z",
+   "description": "",
+   "createdAt": "2026-10-09T11:00:27Z",
+   "pushedAt": "2026-10-14T04:25:21Z",
    "workflows": [
-    "ci-probe.yml",
-    "gitleaks.yml",
-    "identity-guard.yml",
-    "presence-matrix.yml",
-    "social-cadence.yml",
-    "sovereign-cycle.yml",
-    "token-forge.yml"
-   ],
-   "treeSig": ".gitignore:4055|.gitleaks.toml:2300|.gitleaksignore:179433|AGENT-BRIEFING.md:13240|AGENTS.md:3350|CONTROLS-THAT-EXIST.md:10891|CRITICAL-KEY-EXPOSURE.md:11613|CRITICAL-R11-KEY-BROADCAST.md:1174|Caddyfile:961|ENGINEER_BRIEF.md:11029|FLEET-NOTE.md:1088|MANIFEST.txt:2378|PATCH-SPEC-P11.md:5198|README.md:57980|THE_WEAVE.md:12642|bun.lock:358946|components.json:430|eslint.config.mjs:2269|feature_list.json:2807|init.sh:1303|next.config.ts:866|package.json:3685|postcss.config.mjs:81|progress.md:1124|session-handoff.md:1031|tailwind.config.ts:1696|tsconfig.json:730|worklog.md:904391"
-  },
-  {
-   "name": "roshpina",
-   "private": true,
-   "description": "Roshpina — Sovereign Trust & Value Platform: profit (fee engine + cost arbitrage) + protection (fail-closed guard, hash-",
-   "createdAt": "2026-09-07T13:25:36Z",
-   "pushedAt": "2026-10-14T03:20:51Z",
-   "workflows": [
-    "controls-audit.yml",
-    "gitleaks.yml",
-    "sovereign-invariants-i38.yml",
-    "workflow-yaml-guard.yml"
-   ],
-   "treeSig": ".gitignore:172|.gitleaksignore:497|2026-09-11-roast-78-addendum.md:1199|AGENT-BRIEFING.md:1225|CONTROLS-THAT-EXIST.md:1245|CRITICAL-R11-KEY-BROADCAST.md:1179|FLEET-NOTE.md:1088|PATCH-SPEC-P10.md:10172|README.md:2299|SAOS-BRIEFING-2026-09-11-ROAST-80.md:1207|SAOS-BRIEFING-2026-09-11-ROAST-84.md:1207|SAOS-COIN-DOSSIER-2026-09-12-V77.md:1203|SAOS-DAILY-REPORT-2026-09-11-ADSMARKET.md:1227|SAOS-DAILY-REPORT-2026-09-11-FOUNDRY.md:1219|SAOS-DAILY-REPORT-2026-09-11.md:1187|SAOS-PULSE-2026-09-11-H16-COMPLETE.md:1223|SAOS-PULSE-2026-09-11-H16-SIX-OF-SIX.md:1231|SAOS-PULSE-2026-09-11-H17-REPEAT.md:1215|SAOS-PULSE-2026-09-11-H18-THIRD-CYCLE.md:1235|SAOS-PULSE-2026-09-11-H19-FOURTH-CYCLE.md:1239|SAOS-PULSE-2026-09-11-H20-FULL-MATRIX-CONSOLIDATION-2.md:1297|SAOS-PULSE-2026-09-11-H20-FULL-MATRIX-CONSOLIDATION.md:1291|SAOS-PULSE-2026-09-11-H21-SIXTH-CYCLE.md:1235|SAOS-PULSE-2026-09-11-H22-H23-AUTOMATION.md:1247|SAOS-STRATEGY-2026-09-11-ADSMARKET.md:1211|bun.lock:298891|components.json:430|eslint.config.mjs:1112|kernel-smoke.ts:36442|next.config.ts:233|package.json:3017|postcss.config.mjs:81|tailwind.config.ts:1696|tsconfig.json:821"
-  },
-  {
-   "name": "Autonomy",
-   "private": false,
-   "description": "המוח הריבוני על דקות-ציבור: עורקי-ההחלטה, הלמידה, הצמיחה — רץ 24/7 ללא תלות בשום סנדבוקס. Public compute, private memory",
-   "createdAt": "2026-10-12T20:33:22Z",
-   "pushedAt": "2026-10-14T03:18:38Z",
-   "workflows": [
+    "agent-access.yml",
+    "agent-roster-reseal.yml",
     "artery-catchup.yml",
     "artery-decision-truth.yml",
     "artery-fleet.yml",
@@ -809,71 +791,110 @@
     "artery-scribe.yml",
     "artery-wallet.yml",
     "artery-watch.yml",
-    "claims-intake.yml",
-    "compute-rearm.yml",
-    "estate-relay.yml",
-    "estate-vault.yml",
+    "compute-canary.yml",
     "evo-windows-staleness.yml",
     "federation.yml",
     "fleet-heal.yml",
     "fleet-yield.yml",
-    "floating-builds.yml",
     "fresh-oracle.yml",
     "hive-probe.yml",
     "identity-guard.yml",
     "key-proof.yml",
-    "network-awareness.yml",
-    "network-self-awareness.yml",
     "office-growth.yml",
-    "operator-routing.yml",
+    "pages.yml",
     "profit-oracle.yml",
     "research-lane.yml",
     "retro.yml",
-    "run-score.yml",
-    "selfhood.yml",
     "sovereign-decider.yml",
+    "sovereign-invariants.yml",
     "sovereign-state.yml",
     "sovereign.yml",
+    "token-forge.yml",
     "token-watchdog.yml",
     "value-scan.yml",
     "verifier.yml"
    ],
-   "treeSig": "NETWORK-MANIFEST.md:6951|README.md:2960|SECURITY.md:3714"
+   "treeSig": ".gitignore:257|AGENT-LEDGER.md:1089|README.md:11678|SECURITY.md:3714|worklog.md:42728"
+  },
+  {
+   "name": "saos-dex",
+   "private": true,
+   "description": "SAOS-DEX — הבורסה הריבונית: ספר-הזמנות דטרמיניסטי + AMM 30bps + ארנת-חיילים אוטונומית (מורשת saos-dex + grid98)",
+   "createdAt": "2026-09-07T13:27:19Z",
+   "pushedAt": "2026-10-14T04:22:25Z",
+   "workflows": [
+    "arb-scan.yml",
+    "ci.yml",
+    "dex-beat.yml",
+    "dex-grid.yml",
+    "gitleaks.yml",
+    "grid-trigger.yml",
+    "identity-guard.yml",
+    "llm-bridge.yml",
+    "mm-supremacy.yml",
+    "workflow-yaml-guard.yml"
+   ],
+   "treeSig": ".env.example:2447|.gitignore:2903|.gitleaksignore:497|AGENT-BRIEFING.md:1121|ARCHITECTURE_ROADMAP.md:9046|CHANGELOG.md:3262|CHAOS_TEST_RESULTS.md:3417|CONTROLS-THAT-EXIST.md:1141|DECISIONS.md:9335|DEPLOYMENT_CHECKLIST.md:8155|EPOCH-PATCH-SPEC.md:9972|FLEET-NOTE.md:1088|LIQUIDITY_STRATEGY.md:5927|NETWORK-SUMMARY.md:19274|PHISHING_DEFENSE.md:5364|README.md:7088|RELAY-PATCH-2.md:1129|STATUS.md:25325|bun.lock:56803|cloud-beat.ts:50899|door-first-drop.ts:7578|door-full-cycle.ts:12185|door-money-market.ts:9945|grid-beat.ts:49082|next.config.ts:644|package.json:2487|postcss.config.mjs:94|save-first-cycle.ts:9548|sbd-rail-first-cycle.ts:6118|t15-selftest-results.json:920|tsconfig.json:777|ve-first-cycle.ts:10685"
+  },
+  {
+   "name": "Project-files",
+   "private": true,
+   "description": "",
+   "createdAt": "2026-09-07T10:33:44Z",
+   "pushedAt": "2026-10-14T04:21:36Z",
+   "workflows": [
+    "archive-keeper.yml",
+    "gitleaks.yml",
+    "workflow-yaml-guard.yml"
+   ],
+   "treeSig": ".gitleaksignore:497|2026-09-11-roast-78-addendum.md:1204|CRITICAL-R11-KEY-BROADCAST.md:1184|README.md:2018|SAOS-BRIEFING-2026-09-11-ROAST-80.md:1212|SAOS-BRIEFING-2026-09-11-ROAST-84.md:1212|SAOS-COIN-DOSSIER-2026-09-12-V77.md:1208|SAOS-DAILY-REPORT-2026-09-11-ADSMARKET.md:1232|SAOS-DAILY-REPORT-2026-09-11-FOUNDRY.md:1224|SAOS-DAILY-REPORT-2026-09-11.md:1192|SAOS-PULSE-2026-09-11-H16-COMPLETE.md:1228|SAOS-PULSE-2026-09-11-H16-SIX-OF-SIX.md:1236|SAOS-PULSE-2026-09-11-H17-REPEAT.md:1220|SAOS-PULSE-2026-09-11-H18-THIRD-CYCLE.md:1240|SAOS-PULSE-2026-09-11-H19-FOURTH-CYCLE.md:1244|SAOS-PULSE-2026-09-11-H20-FULL-MATRIX-CONSOLIDATION-2.md:1302|SAOS-PULSE-2026-09-11-H20-FULL-MATRIX-CONSOLIDATION.md:1296|SAOS-PULSE-2026-09-11-H21-SIXTH-CYCLE.md:1240|SAOS-PULSE-2026-09-11-H22-H23-AUTOMATION.md:1252|SAOS-STRATEGY-2026-09-11-ADSMARKET.md:1216|TITAI_v18_VERIFIED_INSTALLER_WITH_ARCHITECTURE (3).zip:4405873|V33_30_controlled_human_ux_pilot_instrumentation_patch (2).zip:194892|ecos_v568_canonical.zip:5983501|qodo-v24.30.49-pass76-quota-gauge (2).zip:1494597|srs_sovereign_runtime_substrate_v8.2.0 (2).zip:4578799|steem-main (1).zip:24380608|tfa-evolution-studio-validated (2).zip:2570954|unified-platform-v33.56-custody-authority-persistence (2).zip:22542807|workspace-v0.0.1 (2).zip:2170990|zip-to-pdf-polyglot-9.1.0 (3).zip:529432"
+  },
+  {
+   "name": "roshpina",
+   "private": true,
+   "description": "Roshpina — Sovereign Trust & Value Platform: profit (fee engine + cost arbitrage) + protection (fail-closed guard, hash-",
+   "createdAt": "2026-09-07T13:25:36Z",
+   "pushedAt": "2026-10-14T04:20:53Z",
+   "workflows": [
+    "controls-audit.yml",
+    "gitleaks.yml",
+    "sovereign-invariants-i38.yml",
+    "workflow-yaml-guard.yml"
+   ],
+   "treeSig": ".gitignore:172|.gitleaksignore:497|2026-09-11-roast-78-addendum.md:1199|AGENT-BRIEFING.md:1225|CONTROLS-THAT-EXIST.md:1245|CRITICAL-R11-KEY-BROADCAST.md:1179|FLEET-NOTE.md:1088|PATCH-SPEC-P10.md:10172|README.md:2299|SAOS-BRIEFING-2026-09-11-ROAST-80.md:1207|SAOS-BRIEFING-2026-09-11-ROAST-84.md:1207|SAOS-COIN-DOSSIER-2026-09-12-V77.md:1203|SAOS-DAILY-REPORT-2026-09-11-ADSMARKET.md:1227|SAOS-DAILY-REPORT-2026-09-11-FOUNDRY.md:1219|SAOS-DAILY-REPORT-2026-09-11.md:1187|SAOS-PULSE-2026-09-11-H16-COMPLETE.md:1223|SAOS-PULSE-2026-09-11-H16-SIX-OF-SIX.md:1231|SAOS-PULSE-2026-09-11-H17-REPEAT.md:1215|SAOS-PULSE-2026-09-11-H18-THIRD-CYCLE.md:1235|SAOS-PULSE-2026-09-11-H19-FOURTH-CYCLE.md:1239|SAOS-PULSE-2026-09-11-H20-FULL-MATRIX-CONSOLIDATION-2.md:1297|SAOS-PULSE-2026-09-11-H20-FULL-MATRIX-CONSOLIDATION.md:1291|SAOS-PULSE-2026-09-11-H21-SIXTH-CYCLE.md:1235|SAOS-PULSE-2026-09-11-H22-H23-AUTOMATION.md:1247|SAOS-STRATEGY-2026-09-11-ADSMARKET.md:1211|bun.lock:298891|components.json:430|eslint.config.mjs:1112|kernel-smoke.ts:45976|next.config.ts:233|package.json:3017|postcss.config.mjs:81|tailwind.config.ts:1696|tsconfig.json:821"
+  },
+  {
+   "name": "sovereign-beacon",
+   "private": false,
+   "description": "Rosh Pina — sovereign lighthouse (out-of-machine console)",
+   "createdAt": "2026-10-10T06:14:30Z",
+   "pushedAt": "2026-10-14T04:00:26Z",
+   "workflows": [
+    "beacon-pulse.yml"
+   ],
+   "treeSig": "README.md:865|REVIVAL-2026-10-11.md:1389|index.html:3742|state.json:10580"
+  },
+  {
+   "name": "ops-forge",
+   "private": false,
+   "description": "",
+   "createdAt": "2026-10-12T23:33:17Z",
+   "pushedAt": "2026-10-14T03:26:03Z",
+   "workflows": [
+    "forge.yml"
+   ],
+   "treeSig": "README.md:3513"
   },
   {
    "name": "ops-intake",
    "private": false,
    "description": "צינור-הקליטה התפעולי של הצי — מדידה, תור עבודות מדודר ומפת-מרחב מלאה, כל 30 דק",
    "createdAt": "2026-10-12T22:33:00Z",
-   "pushedAt": "2026-10-14T03:03:43Z",
+   "pushedAt": "2026-10-14T03:26:00Z",
    "workflows": [
     "intake.yml"
    ],
    "treeSig": "README.md:5908"
-  },
-  {
-   "name": "Pulse",
-   "private": false,
-   "description": "Pulse — איבר-הדופק של הרשת · fleet heartbeat: autonomous census every 30min on GitHub Actions (public = unlimited free m",
-   "createdAt": "2026-10-12T19:43:19Z",
-   "pushedAt": "2026-10-14T03:00:19Z",
-   "workflows": [
-    "heartbeat.yml",
-    "identity-guard.yml"
-   ],
-   "treeSig": "BENCHMARK.md:7982|BOOTSTRAP.md:6088|CHANGELOG.md:1115|DECISIONS.md:18883|PROMPTS.md:2025|README.md:2976|VERSION.md:448|index.html:13431"
-  },
-  {
-   "name": "sovereign-lighthouse",
-   "private": false,
-   "description": "מגדלור ריבוני — Sovereign Lighthouse: זיכרון חוץ-מכונה עצמאי (RTL עברית)",
-   "createdAt": "2026-10-10T06:53:25Z",
-   "pushedAt": "2026-10-14T02:40:36Z",
-   "workflows": [
-    "estate-redboard.yml",
-    "lighthouse-pulse.yml"
-   ],
-   "treeSig": "README.md:1637|REVIVAL-2026-10-11.md:1310|grid.json:25062|index.html:6140|state.json:69439"
   },
   {
    "name": "saos-agents",
@@ -1032,30 +1053,6 @@
    "treeSig": ".gitignore:649|Caddyfile:493|README.md:1808|bun.lock:328127|components.json:430|eslint.config.mjs:1632|next.config.ts:233|package.json:3213|postcss.config.mjs:81|tailwind.config.ts:1696|tsconfig.json:730|worklog.md:30143"
   },
   {
-   "name": "Project-files",
-   "private": true,
-   "description": "",
-   "createdAt": "2026-09-07T10:33:44Z",
-   "pushedAt": "2026-10-14T02:26:17Z",
-   "workflows": [
-    "archive-keeper.yml",
-    "gitleaks.yml",
-    "workflow-yaml-guard.yml"
-   ],
-   "treeSig": ".gitleaksignore:497|2026-09-11-roast-78-addendum.md:1204|CRITICAL-R11-KEY-BROADCAST.md:1184|README.md:2018|SAOS-BRIEFING-2026-09-11-ROAST-80.md:1212|SAOS-BRIEFING-2026-09-11-ROAST-84.md:1212|SAOS-COIN-DOSSIER-2026-09-12-V77.md:1208|SAOS-DAILY-REPORT-2026-09-11-ADSMARKET.md:1232|SAOS-DAILY-REPORT-2026-09-11-FOUNDRY.md:1224|SAOS-DAILY-REPORT-2026-09-11.md:1192|SAOS-PULSE-2026-09-11-H16-COMPLETE.md:1228|SAOS-PULSE-2026-09-11-H16-SIX-OF-SIX.md:1236|SAOS-PULSE-2026-09-11-H17-REPEAT.md:1220|SAOS-PULSE-2026-09-11-H18-THIRD-CYCLE.md:1240|SAOS-PULSE-2026-09-11-H19-FOURTH-CYCLE.md:1244|SAOS-PULSE-2026-09-11-H20-FULL-MATRIX-CONSOLIDATION-2.md:1302|SAOS-PULSE-2026-09-11-H20-FULL-MATRIX-CONSOLIDATION.md:1296|SAOS-PULSE-2026-09-11-H21-SIXTH-CYCLE.md:1240|SAOS-PULSE-2026-09-11-H22-H23-AUTOMATION.md:1252|SAOS-STRATEGY-2026-09-11-ADSMARKET.md:1216|TITAI_v18_VERIFIED_INSTALLER_WITH_ARCHITECTURE (3).zip:4405873|V33_30_controlled_human_ux_pilot_instrumentation_patch (2).zip:194892|ecos_v568_canonical.zip:5983501|qodo-v24.30.49-pass76-quota-gauge (2).zip:1494597|srs_sovereign_runtime_substrate_v8.2.0 (2).zip:4578799|steem-main (1).zip:24380608|tfa-evolution-studio-validated (2).zip:2570954|unified-platform-v33.56-custody-authority-persistence (2).zip:22542807|workspace-v0.0.1 (2).zip:2170990|zip-to-pdf-polyglot-9.1.0 (3).zip:529432"
-  },
-  {
-   "name": "sovereign-beacon",
-   "private": false,
-   "description": "Rosh Pina — sovereign lighthouse (out-of-machine console)",
-   "createdAt": "2026-10-10T06:14:30Z",
-   "pushedAt": "2026-10-14T02:26:16Z",
-   "workflows": [
-    "beacon-pulse.yml"
-   ],
-   "treeSig": "README.md:865|REVIVAL-2026-10-11.md:1389|index.html:3742|state.json:10353"
-  },
-  {
    "name": "Zip",
    "private": true,
    "description": "",
@@ -1079,19 +1076,6 @@
    "treeSig": ".env.example:374|.gitignore:3987|.gitleaks.toml:4291|.gitleaksignore:5179|AGENTS.md:15101|BENCHMARK-ADOPT.md:5634|BENCHMARK.md:31608|CONSOLE-POLICY.md:13008|COORDINATION.md:51888|ECOSYSTEM-ROADMAP.md:14850|EDGE-MAP-20261007.md:14066|FLEET-NOTE.md:1088|NETWORK-EVOLUTION.md:10968|README.md:4218|REVIVE-FROM-WIPE.md:7354|SAOS.md:16476|SECURITY-AUDIT-2026-09-28.md:5090|SOVEREIGN-INDEX.md:5129|SOVEREIGNTY-DECISIONS.md:12172|SOVEREIGNTY.md:72689|TRUTH-AUDIT.md:62920|VERIFY.md:6061|bun.lock:347191|components.json:430|ecosystem-dup-t23c-2026-10-13.json:12507|eslint.config.mjs:1900|feature_list.json:16981|fleet-supervisor.sh:2462|init.sh:6649|next.config.ts:717|package.json:3562|postcss.config.mjs:81|progress.md:68059|r110-keeper-fleet-up.png:156674|r110-mobile-390.png:51101|r110-verify-plant-9of9.png:146400|r112-array-status.png:76140|r112-desktop-full.png:741349|r112-flows-chains.png:69267|r112-keeper-fleet-up.png:57660|r112-mobile-390.png:69357|r131-mission-ladder-desktop.png:64754|r131-mission-ladder-mobile.png:47766|r136-activation-door.png:183907|r136-gate-desktop.png:143228|r136-gate-mobile-390.png:77007|r206-sovereign-gate.png:140017|r41-array-desktop.png:78320|r41-array-mobile.png:64278|r45-array-wheel.png:464960|r45-final-array.png:483999|session-handoff.md:5485|tailwind.config.ts:1696|taskR30-vault-live.png:83994|taskR33-deposits-desktop.png:102602|taskR33-deposits-mobile.png:55571|taskR33-final.png:72095|tsconfig.json:806|worklog.md:2068944"
   },
   {
-   "name": "GridWatch",
-   "private": false,
-   "description": "Fleet control plane: measures every repo & workflow health, auto-remediates failures, feeds the sovereign decider. The g",
-   "createdAt": "2026-10-12T20:06:08Z",
-   "pushedAt": "2026-10-14T02:10:37Z",
-   "workflows": [
-    "flow-map.yml",
-    "grid-watch.yml",
-    "identity-guard.yml"
-   ],
-   "treeSig": "README.md:1261|grid-watch.mjs:22625"
-  },
-  {
    "name": "vault-home",
    "private": true,
    "description": "Fleet HQ sealed key vault (AES-256, PBKDF2-200k). Keys never travel in plaintext.",
@@ -1099,17 +1083,6 @@
    "pushedAt": "2026-10-14T01:12:48Z",
    "workflows": [],
    "treeSig": ".gitignore:173|MANIFEST.json:8691|README.md:2738|SOVEREIGNTY.md:38729|auto-unseal.sh:4673|boot-services.sh:2444|boot-sovereign.sh:12456|keys.env.enc:2704|rails.env.enc:640|recover-estate.sh:5000|ssh-keys.tar.enc:3461152|vault.sh:7098|vaultlib.sh:10366|worklog.md:13141|wrap.sh:5412"
-  },
-  {
-   "name": "ops-forge",
-   "private": false,
-   "description": "",
-   "createdAt": "2026-10-12T23:33:17Z",
-   "pushedAt": "2026-10-14T00:14:02Z",
-   "workflows": [
-    "forge.yml"
-   ],
-   "treeSig": "README.md:3513"
   },
   {
    "name": "TruthRail",
