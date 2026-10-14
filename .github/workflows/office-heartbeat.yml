@@ -17,7 +17,7 @@ name: office-heartbeat
 
 on:
   schedule:
-    - cron: '41 */2 * * *'
+    - cron: '41 * * * *'
   workflow_dispatch: {}
 
 permissions:
@@ -61,6 +61,14 @@ jobs:
         env:
           GITHUB_MODELS_TOKEN: ${{ github.token }}
           AGENT_HQ_FLEET_DIR: ${{ github.workspace }}
+          # R53 vault-wiring (owner law: the system must USE its vault, never
+          # re-demand keys it already holds — census-verified slots, sealed):
+          NVIDIA_API_KEY: ${{ secrets.NVIDIA_API_KEY }}
+          NVIDIA_BASE_URL: ${{ secrets.NVIDIA_BASE_URL }}
+          NVIDIA_MODELS: ${{ secrets.NVIDIA_MODELS }}
+          TAVILY_API_KEY_1: ${{ secrets.TAVILY_API_KEY_1 }}
+          TAVILY_API_KEY_2: ${{ secrets.TAVILY_API_KEY_2 }}
+          JINA_API_KEY: ${{ secrets.JINA_API_KEY }}
         run: |
           cd mini-services/agent-hq
           [ -f .env ] || cp .env.example .env
@@ -108,7 +116,7 @@ jobs:
             git rebase --abort 2>/dev/null || true; git merge --abort 2>/dev/null || true
             # [R41 race-safe] המשרד-עצמו רץ-ברקע ומתעסק-באינדקס — commit עלול-למצוא
             # "nothing to commit" בין-diff-ל-commit. זה-מצב-כן-ושקט, לא-כשל (מקור-אימיילי-כשל-מיותרים).
-            if ! git commit -m "office-heartbeat: crew shift persisted — memory/journal/tasks [skip ci]" 2>/tmp/r41-commit.err; then
+            if ! git commit -m "office-heartbeat: crew shift persisted — memory/journal/tasks [skip ci]" >/tmp/r41-commit.err 2>&1; then
               if grep -q "nothing to commit" /tmp/r41-commit.err 2>/dev/null; then
                 echo "NO-CHANGE (race-safe): staged set vanished between diff and commit — honest nothing-to-persist"
                 exit 0

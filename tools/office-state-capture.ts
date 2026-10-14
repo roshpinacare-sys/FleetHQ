@@ -28,7 +28,7 @@
 //   captureMs default 90000
 
 import { io } from 'socket.io-client';
-import { writeFileSync } from 'fs';
+import { readFileSync, writeFileSync } from 'fs';
 
 const PORT = process.argv[2] || '3010';
 const OUT = process.argv[3] || 'office-state.json';
@@ -111,6 +111,24 @@ socket.on('report', (r: { id?: string; title?: string; agentId?: string }) => {
 });
 
 setTimeout(() => {
+  // R53 DECISIONS LAW: the window rarely sees a decision event, but the office
+  // journal (receipts/office-state-mirror.json — the office's own durable
+  // write) carries the full decision history. Without this merge the public
+  // state book ships decisions:[] forever, the podium ring never lights, and
+  // the owner rightly asks what the decisions podium is even FOR. Merge the
+  // newest journal decisions (answered + open, newest first, capped) — the
+  // foreman's own book, nothing invented.
+  try {
+    const j = JSON.parse(readFileSync('receipts/office-state-mirror.json', 'utf8'));
+    const jd: unknown[] = Array.isArray(j?.decisions) ? j.decisions : [];
+    const known = new Set(state.decisions.map((d: { id?: string }) => d?.id));
+    for (const d of jd.slice().reverse()) {
+      const o = d as { id?: string };
+      if (!o?.id || known.has(o.id)) continue;
+      state.decisions.push(d);
+      if (state.decisions.length > 10) state.decisions.splice(0, state.decisions.length - 10);
+    }
+  } catch { /* mirror absent (demo-mode honest) — window decisions only */ }
   state.feed.reverse(); // newest first
   // COUNTS LAW: publish the measured sizes of THIS file's arrays (self-consistent
   // totals a reader can verify against the arrays), never a quiet-window zero.

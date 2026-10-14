@@ -18,7 +18,7 @@ import {
 import {
   makeWoodTexture, makeBrushedMetalTexture, makeMarbleTexture, makeFabricTexture,
   makeMonitorScreen, makeNameplate, makeTaskWallTexture,
-  makeReceptionScreen, makeSignTexture,
+  makeDecisionPodiumPlate, makeReceptionScreen, makeSignTexture,
 } from '@/lib/hq/textures';
 import { useHq } from '@/lib/hq/store';
 import { bus } from '@/lib/hq/world';
@@ -412,9 +412,25 @@ function Podium({ mats }: { mats: OfficeMats }) {
   const focus = useFocus('podium', 'podium');
   const [x, z] = to3(PODIUM.x, PODIUM.y);
   const ringMat = useRef<THREE.MeshStandardMaterial>(null);
-  // אינדיקטור מצב יחיד ומרוסן: טבעת אחת נדלקת רק כשהכרעה באמת פתוחה (אמת מהפורמן)
+  // R53: הדוכן מסביר-את-עצמו — מסך-חי עם-מה-הוא-משרת + ההכרעה-האחרונה-הנמדדת
+  // (מסנכרון החנות בלבד; בלי-החלטות = כנות-ריק). הטבעת נשארת-האינדיקטור-החד.
+  const plate = useMemo(() => makeDecisionPodiumPlate(), []);
+  const decisions = useHq((s) => s.snap.decisions);
+  useEffect(() => {
+    const openCount = decisions.filter((d) => d.status === 'open').length;
+    const answered = decisions.length - openCount;
+    const newest = decisions.length
+      ? decisions.reduce((a, b) => (b.createdAt > a.createdAt ? b : a))
+      : null;
+    plate.set(
+      newest ? { question: newest.question, status: newest.status, createdAt: newest.createdAt } : null,
+      openCount,
+      answered,
+    );
+  }, [decisions, plate]);
   const open = useRef(0);
   useFrame((_, dt) => {
+    plate.update(performance.now());
     const isOpen = useHq.getState().snap.decisions.some((d) => d.status === 'open');
     open.current += ((isOpen ? 1 : 0) - open.current) * Math.min(1, dt * 4);
     if (ringMat.current) {
@@ -461,7 +477,8 @@ function Podium({ mats }: { mats: OfficeMats }) {
         <torusGeometry args={[0.8, 0.016, 10, 72]} />
         <meshStandardMaterial ref={ringMat} color="#e07b54" emissive="#e07b54" emissiveIntensity={0.7} transparent opacity={0.12} toneMapped={false} />
       </mesh>
-      <Billboard position={[0, 2.35, 0]} tex={useMemo(() => makeSignTexture('דוכן ההחלטות', '#e07b54'), [])} scale={[1.5, 0.34]} />
+      <Billboard position={[0, 2.62, 0]} tex={plate.tex} scale={[1.9, 0.89]} />
+      <Billboard position={[0, 1.98, 0]} tex={useMemo(() => makeSignTexture('דוכן ההחלטות', '#e07b54'), [])} scale={[1.5, 0.34]} />
     </group>
   );
 }
