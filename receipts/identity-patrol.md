@@ -1,6 +1,6 @@
-# identity-patrol — סיור-זהויות כלל-הצי (2026-10-14T18:57:35.918Z)
+# identity-patrol — סיור-זהויות כלל-הצי (2026-10-14T20:15:45.869Z)
 
-**פסק: VIOLATION** — 38 ריפואים נסרקו (30 קומיטים אחרונים כל-אחד) · הפרות: 25 · דולגו: 1
+**פסק: VIOLATION** — 39 ריפואים נסרקו (30 קומיטים אחרונים כל-אחד) · הפרות: 25 · דולגו: 1
 
 חוק: DECISIONS #10 — אין NAME@users.noreply.github.com פרט-ל-owner ו-github-actions[bot]; בוטים חותמים @agents.roshpinacare-sys.
 
