@@ -89,19 +89,32 @@ for (const repo of REPOS) {
       runs = [...p1, ...p2];
     } catch (e) { lines.push(`| ${repo} | \`${pushedAt}\` | ${pushAgeMin}m | runs-api-error: ${String(e.message).slice(0, 40)} | | | |`); continue; }
     const runsInWindow = new Map();
-    for (const r of runs) runsInWindow.set(r.name, (runsInWindow.get(r.name) || 0) + 1);
+    for (const r of runs) runsInWindow.set(disp(r.name), (runsInWindow.get(disp(r.name)) || 0) + 1);
 
-    // latest run per workflow name
-    const latest = new Map();
+    // Judged run per WORKFLOW (keyed by workflow_id — run names are unstable:
+    // push-event runs can carry the PATH as name while dispatch/schedule carry the
+    // display name; keyed by name, one workflow became two rows and a dead push
+    // ghost out-voted two newer successes — measured: Autonomy selfhood red 63m
+    // while its last two runs succeeded). Judgement prefers the newest run whose
+    // conclusion is not 'cancelled' — a cancel means a sibling superseded the run
+    // (concurrency), it is NOT evidence of failure (measured: saos-runtime
+    // grid-watchdog cancelled while a dispatch success landed 6m earlier).
+    const disp = (n) => String(n || '').replace(/^\.github\/workflows\//, '').replace(/\.ya?ml$/, '');
+    const byWf = new Map(); // workflow_id -> { best (newest non-cancelled), newest }
     for (const r of runs) {
-      if (r.event === 'workflow_dispatch' && (latest.get(r.name)?.event === 'schedule')) continue;
-      const cur = latest.get(r.name);
-      if (!cur || Date.parse(r.created_at) > Date.parse(cur.created_at)) latest.set(r.name, r);
+      const k = String(r.workflow_id || disp(r.name));
+      const e = byWf.get(k) || { best: null, newest: null };
+      if (!e.newest || Date.parse(r.created_at) > Date.parse(e.newest.created_at)) e.newest = r;
+      if ((r.conclusion || '') !== 'cancelled' && (!e.best || Date.parse(r.created_at) > Date.parse(e.best.created_at))) e.best = r;
+      byWf.set(k, e);
     }
+    const latest = new Map();
+    for (const [k, e] of byWf) latest.set(k, e.best || e.newest);
 
     let g = 0, red = 0, dis = 0, stale = 0, arch = 0;
     const wfRows = [];
-    for (const [name, r] of latest) {
+    for (const [, r] of latest) {
+      const name = disp(r.name); // stable display name regardless of the run's event
       const ageMin = Math.round((now - Date.parse(r.created_at)) / 60000);
       const wfMeta = await (async () => {
         try { return await gh(`/repos/${OWNER}/${repo}/actions/workflows/${r.workflow_id}`); } catch { return { state: 'unknown' }; }
