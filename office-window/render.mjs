@@ -27,6 +27,12 @@ const OUT = resolve(argOf('--out', join(HERE, 'dist', 'index.html')));
 
 const generatedAt = new Date().toISOString();
 
+// version-info law (T32): the published page must carry a readable version identifier
+// (version + build date) — the ops-intake site-check scans for `build: YYYY-MM-DD`;
+// a Pages page without it re-opens a P3 polish order every cycle.
+const pkgVersion = (() => { try { return JSON.parse(readFileSync(join(REPO, 'package.json'), 'utf8')).version || '0.0.0'; } catch { return '0.0.0'; } })();
+const buildDate = generatedAt.slice(0, 10);
+
 // ---------------------------------------------------------------- utilities
 const esc = (v) => String(v == null ? '' : v)
   .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
@@ -587,7 +593,7 @@ footer .stamp{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; 
   </section>
 
   <footer>
-    <div>נוצר אוטומטית על ידי המשרד · <span class="stamp">${esc(generatedAt)}</span></div>
+    <div>נוצר אוטומטית על ידי המשרד · <span class="stamp">גרסה: v${esc(pkgVersion)} · build: ${esc(buildDate)}</span> · <span class="stamp">${esc(generatedAt)}</span></div>
     <div style="margin-top:6px">מקורות: receipts/office-state-mirror.json + office-window/dist/digest.json + office-window/dist/3d/ (נמדד בזמן-הבנייה) · אין-JS, אין-עוקבים, אין-סודות</div>
   </footer>
 
