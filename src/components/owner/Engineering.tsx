@@ -11,7 +11,7 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { RefreshCw, ShieldCheck, GitBranch, History, Gauge } from 'lucide-react';
+import { RefreshCw, ShieldCheck, GitBranch, History, Gauge, Network, FlaskConical, Coins } from 'lucide-react';
 
 const OWNER_TOKEN_KEY = 'owner-session-token';
 
@@ -21,6 +21,9 @@ type EngData = {
   error?: string | null;
   adopted?: Record<string, string>;
   cage?: { at: string; pass: boolean; checks: CageCheck[]; node: string } | null;
+  sim?: SimResult;
+  cost?: CostData;
+  simEnv?: boolean;
   updatedAt?: string | null;
   fetchedAt: string;
 };
@@ -53,6 +56,21 @@ type SessionsData = {
   health?: { total: number; reattached: number; live12h: number };
   fetchedAt: string;
 };
+type SimCheck = { check: string; want: string; got: string; pass: boolean };
+type SimResult = { at: string; pass: boolean; checks: SimCheck[]; realGitUntouched: boolean } | null;
+type QueueNode = {
+  id: string; repo: string; severity: string; kind: string; title: string;
+  ageH: number; openH: number; ready: boolean; blockedBy: string[];
+  stale: boolean; chronic: boolean; orphan: boolean; openReceipt?: string;
+};
+type QueueData = {
+  ok: boolean;
+  error?: string;
+  nodes: QueueNode[];
+  health: { total: number; ready: number; blocked: number; stale: number; chronic: number; orphan: number; cycles: number; receipts: number; provenClosed: number; openWithReceipt: number };
+  fetchedAt: string;
+};
+type CostData = { settled: number; withCost: number; totalUsd: number };
 
 const fresh = (iso?: string | null) => {
   if (!iso) return null;
@@ -90,6 +108,7 @@ export function Engineering() {
   const [eng, setEng] = useState<EngData | null>(null);
   const [cycle, setCycle] = useState<CycleData | null>(null);
   const [sessions, setSessions] = useState<SessionsData | null>(null);
+  const [queue, setQueue] = useState<QueueData | null>(null);
   const [msg, setMsg] = useState<{ kind: 'idle' | 'busy' | 'ok' | 'fail'; text?: string }>({ kind: 'idle' });
   const [askOpen, setAskOpen] = useState(false);
   const [askTitle, setAskTitle] = useState('');
@@ -99,6 +118,7 @@ export function Engineering() {
   const [answerBy, setAnswerBy] = useState('');
   const [answerEffect, setAnswerEffect] = useState('');
   const [receipt, setReceipt] = useState('');
+  const [costUsd, setCostUsd] = useState('');
   const [reopenNote, setReopenNote] = useState('');
 
   const loadEng = useCallback(async () => {
@@ -119,6 +139,12 @@ export function Engineering() {
       if (r.ok) setSessions((await r.json()) as SessionsData);
     } catch { /* כשל-שקט */ }
   }, []);
+  const loadQueue = useCallback(async () => {
+    try {
+      const r = await fetch('/api/queue-graph', { cache: 'no-store' });
+      if (r.ok) setQueue((await r.json()) as QueueData);
+    } catch { /* כשל-שקט */ }
+  }, []);
 
   useEffect(() => {
     // מדגם-חי: מדידה-ראשונה (אסינכרונית מתוך-טיימר) + סקר-כל-90 שנ'
@@ -126,6 +152,7 @@ export function Engineering() {
       void loadEng();
       void loadCycle();
       void loadSessions();
+      void loadQueue();
     };
     const first = setTimeout(poll, 0);
     const iv = setInterval(poll, 90_000);
@@ -133,7 +160,7 @@ export function Engineering() {
       clearTimeout(first);
       clearInterval(iv);
     };
-  }, [loadEng, loadCycle, loadSessions]);
+  }, [loadEng, loadCycle, loadSessions, loadQueue]);
 
   // A12 חי: הפאנל עצמו נרשם/מתחבר-מחדש — המונה עולה בכל-פתיחה
   useEffect(() => {
@@ -167,6 +194,7 @@ export function Engineering() {
         setAskWhy('');
         setAnswerText('');
         setReceipt('');
+        setCostUsd('');
         setReopenNote('');
         void loadCycle();
       } else {
@@ -184,9 +212,30 @@ export function Engineering() {
       const res = await fetch('/api/engineering', {
         method: 'POST',
         headers: intentHeaders('engineering/selftest', true),
+        body: JSON.stringify({ action: 'selftest' }),
       });
       const j = (await res.json()) as { ok?: boolean; pass?: boolean; error?: string };
-      setMsg({ kind: j.ok && j.pass ? 'ok' : 'fail', text: j.ok ? (j.pass ? 'הכלוב אומת 6/6 ✓' : `הכלוב נכשל: ${j.error ?? 'מדוד'}`) : j.error ?? 'כשל' });
+      setMsg({ kind: j.ok && j.pass ? 'ok' : 'fail', text: j.ok ? (j.pass ? 'הכלוב אומת ✓' : `הכלוב נכשל: ${j.error ?? 'מדוד'}`) : j.error ?? 'כשל' });
+      void loadEng();
+    } catch (e) {
+      setMsg({ kind: 'fail', text: String(e).slice(0, 60) });
+    }
+  }
+
+  async function runSimSelftest() {
+    if (msg.kind === 'busy') return;
+    setMsg({ kind: 'busy', text: 'מריץ בדיקת-דמה-ושער…' });
+    try {
+      const res = await fetch('/api/engineering', {
+        method: 'POST',
+        headers: intentHeaders('engineering/selftest', true),
+        body: JSON.stringify({ action: 'simselftest' }),
+      });
+      const j = (await res.json()) as { ok?: boolean; pass?: boolean; realGitUntouched?: boolean; error?: string };
+      setMsg({
+        kind: j.ok && j.pass ? 'ok' : 'fail',
+        text: j.ok ? (j.pass ? `דמה+שער אומתו ✓ (אמת-גיט: ${j.realGitUntouched ? 'לא-נגענו' : 'נגיעה!'})` : `נכשל: ${j.error ?? 'מדוד'}`) : j.error ?? 'כשל',
+      });
       void loadEng();
     } catch (e) {
       setMsg({ kind: 'fail', text: String(e).slice(0, 60) });
@@ -247,17 +296,90 @@ export function Engineering() {
         ) : eng ? (
           <p className="mt-1 text-[10.5px] text-[color:var(--ink-3)]">עדיין-לא-נמדד — הריצו בדיקה-עצמית (בעלים).</p>
         ) : null}
-        <div className="mt-1.5 flex items-center gap-2">
+        <div className="mt-1.5 flex flex-wrap items-center gap-2">
           <button
             type="button"
             onClick={runSelftest}
             disabled={msg.kind === 'busy'}
             className="flex min-h-[30px] items-center gap-1 rounded border border-[color:var(--line)] px-2 py-1 text-[10.5px] font-semibold transition hover:brightness-110 disabled:opacity-50"
           >
-            <RefreshCw size={11} aria-hidden="true" /> הרץ-בדיקת-כלוב {ownerToken ? '' : '(דורש כניסת-בעלים)'}
+            <RefreshCw size={11} aria-hidden="true" /> הרץ-בדיקת-כלוב {ownerToken ? '' : '(בעלים)'}
           </button>
-          <span className="text-[9.5px] text-[color:var(--ink-3)]">node tools/git-cage.mjs --selftest</span>
+          <button
+            type="button"
+            onClick={runSimSelftest}
+            disabled={msg.kind === 'busy'}
+            className="flex min-h-[30px] items-center gap-1 rounded border border-[color:var(--line)] px-2 py-1 text-[10.5px] font-semibold transition hover:brightness-110 disabled:opacity-50"
+          >
+            <FlaskConical size={11} aria-hidden="true" /> בדיקת-דמה+שער {ownerToken ? '' : '(בעלים)'}
+          </button>
+          <span className="text-[9.5px] text-[color:var(--ink-3)]">A2 · A6 · A9</span>
         </div>
+        {eng?.sim && (
+          <div className="mt-1.5 rounded border border-[color:var(--line)] p-1.5">
+            <div className="flex items-center justify-between gap-2 text-[10px]">
+              <span className="font-semibold">דמה+שער (A6/A9) — {fresh(eng.sim.at) ?? ''}</span>
+              <span className="font-bold" style={{ color: eng.sim.pass ? 'var(--st-ok)' : 'var(--st-danger)' }}>
+                {eng.sim.pass ? 'PASS' : 'FAIL'} · אמת: {eng.sim.realGitUntouched ? 'לא-נגענו' : 'נגיעה!'}
+              </span>
+            </div>
+            <ul className="mt-1 space-y-0.5 text-[9.5px]">
+              {eng.sim.checks.map((c) => (
+                <li key={c.check} className="flex items-center justify-between gap-2 rounded bg-[color:var(--surface)] px-1.5 py-0.5">
+                  <span>{c.check}</span>
+                  <span style={{ color: c.pass ? 'var(--st-ok)' : 'var(--st-danger)' }}>{c.pass ? '✓' : '✗'} {c.got.slice(0, 30)}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </section>
+
+      {/* ── גרף-התור (A3) ── */}
+      <section className="mb-3">
+        <div className="mb-1 flex items-center justify-between gap-2">
+          <h3 className="flex items-center gap-1.5 text-[11.5px] font-bold text-[color:var(--ink-2)]"><Network size={13} aria-hidden="true" /> גרף-התור — תלויות וחסימות (A3)</h3>
+          {queue?.ok && (
+            <span className="text-[10px] text-[color:var(--ink-3)]">
+              מ{queue.health.total} · מוכנים {queue.health.ready} · חסומים {queue.health.blocked} · עריריים {queue.health.orphan}
+            </span>
+          )}
+        </div>
+        {!queue && <p className="text-[10.5px] text-[color:var(--ink-3)]">טוען גרף-תור…</p>}
+        {queue && !queue.ok && <p className="text-[10.5px] text-red-400">גרף-תור: {queue.error ?? 'לא זמין'}</p>}
+        {queue?.ok && (
+          <>
+            <div className="mb-1 flex flex-wrap gap-1 text-[9.5px]">
+              <span className="rounded border border-[color:var(--line)] px-1.5 py-0.5">stale ≥48ש׳: <b>{queue.health.stale}</b></span>
+              <span className="rounded border border-[color:var(--line)] px-1.5 py-0.5">כרוניים ≥7י׳: <b>{queue.health.chronic}</b></span>
+              <span className="rounded border border-[color:var(--line)] px-1.5 py-0.5">מעגלים: <b>{queue.health.cycles}</b></span>
+              <span className="rounded border border-[color:var(--line)] px-1.5 py-0.5">סגירות-מוכחות: <b>{queue.health.provenClosed}</b> מתוך {queue.health.receipts} קבלות</span>
+              {queue.health.openWithReceipt > 0 && (
+                <span className="rounded border px-1.5 py-0.5" style={{ borderColor: 'var(--st-attention)', color: 'var(--st-attention)' }}>קבלה-על-פתוח: <b>{queue.health.openWithReceipt}</b></span>
+              )}
+            </div>
+            <ul className="max-h-44 space-y-0.5 overflow-y-auto text-[10px]">
+              {queue.nodes.slice(0, 12).map((n) => (
+                <li key={n.id} className="flex items-start justify-between gap-2 rounded border border-[color:var(--line)] px-1.5 py-1">
+                  <span className="min-w-0">
+                    <b className="font-mono text-[9px]">{n.severity}</b> <span className="truncate">{n.title.slice(0, 44)}</span>
+                    <span className="block text-[9px] text-[color:var(--ink-3)]">
+                      {n.repo} · {n.kind}{n.orphan ? ' · ערירי' : ''}{n.stale ? ' · stale' : ''}{n.chronic ? ` · כרוני ${Math.round(n.openH / 24)}י׳` : ''}
+                      {n.blockedBy.length > 0 ? ` · חסום-על-ידי ${n.blockedBy.join(',')}` : ''}
+                      {n.openReceipt ? ' · קבלה-לא-סוגרת' : ''}
+                    </span>
+                  </span>
+                  <span className="shrink-0 rounded px-1 py-0.5 text-[9px] font-bold" style={{
+                    color: n.ready ? 'var(--st-ok)' : 'var(--st-neutral)',
+                    border: `1px solid ${n.ready ? 'var(--st-ok)' : 'var(--st-neutral)'}`,
+                  }}>
+                    {n.ready ? 'מוכן' : 'חסום'}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </>
+        )}
       </section>
 
       {/* ── מחזור-הכרעות (A1) ── */}
@@ -267,6 +389,7 @@ export function Engineering() {
           {cycle?.health && (
             <span className="text-[10px] text-[color:var(--ink-3)]">
               ש{cycle.health.question} · נ{cycle.health.answered} · י{cycle.health.settled} · פ{cycle.health.reopened}
+              {eng?.cost && eng.cost.withCost > 0 ? ` · עלות מדודה $${eng.cost.totalUsd} (${eng.cost.withCost}/${eng.cost.settled})` : ''}
             </span>
           )}
         </div>
@@ -297,7 +420,7 @@ export function Engineering() {
               type="button"
               disabled={askTitle.trim().length < 4 || msg.kind === 'busy'}
               onClick={() => void cyclePost({ action: 'ask', title: askTitle, why: askWhy, kind: 'ops' }, 'decisions-cycle/ask')}
-              className="min-h-[30px] w-full rounded bg-[color:var(--accent,#b88a3a)] px-2 text-[11px] font-bold text-black disabled:opacity-50"
+              className="min-h-[30px] w-full rounded bg-[color:var(--accent,#b88a3a)] px-2 text-[11px] font-bold text-white disabled:opacity-50"
             >
               שאל — על-הגיט
             </button>
@@ -349,7 +472,7 @@ export function Engineering() {
                   <input value={answerBy} onChange={(e) => setAnswerBy(e.target.value)} placeholder="מי (שם-סוכן/בעלים)" aria-label="מי-עונה" className="w-full rounded border border-[color:var(--line)] bg-[color:var(--surface-2)] px-2 py-1.5 text-[11px] outline-none" />
                   <textarea value={answerText} onChange={(e) => setAnswerText(e.target.value)} placeholder="התשובה (חובה)" aria-label="תשובה" rows={2} className="w-full resize-none rounded border border-[color:var(--line)] bg-[color:var(--surface-2)] px-2 py-1.5 text-[11px] outline-none" />
                   <input value={answerEffect} onChange={(e) => setAnswerEffect(e.target.value)} placeholder="אפקט-שבוצע (אופציונלי)" aria-label="אפקט" className="w-full rounded border border-[color:var(--line)] bg-[color:var(--surface-2)] px-2 py-1.5 text-[11px] outline-none" />
-                  <button type="button" disabled={answerText.trim().length < 2 || msg.kind === 'busy'} onClick={() => void cyclePost({ action: 'answer', id: d.id, by: answerBy || 'owner', text: answerText, sideEffect: answerEffect }, 'decisions-cycle/answer')} className="min-h-[28px] w-full rounded bg-[color:var(--accent,#b88a3a)] text-[10.5px] font-bold text-black disabled:opacity-50">
+                  <button type="button" disabled={answerText.trim().length < 2 || msg.kind === 'busy'} onClick={() => void cyclePost({ action: 'answer', id: d.id, by: answerBy || 'owner', text: answerText, sideEffect: answerEffect }, 'decisions-cycle/answer')} className="min-h-[28px] w-full rounded bg-[color:var(--accent,#b88a3a)] text-[10.5px] font-bold text-white disabled:opacity-50">
                     ענה — על-הגיט
                   </button>
                 </div>
@@ -357,7 +480,8 @@ export function Engineering() {
               {formFor === `${d.id}-s` && (
                 <div className="mt-1.5 space-y-1.5 rounded border border-[color:var(--line)] p-2">
                   <input value={receipt} onChange={(e) => setReceipt(e.target.value)} placeholder="קבלת-אפקט (commit/receipt — מינימום 8 תווים)" aria-label="קבלת-אפקט" className="w-full rounded border border-[color:var(--line)] bg-[color:var(--surface-2)] px-2 py-1.5 text-[11px] outline-none" />
-                  <button type="button" disabled={receipt.trim().length < 8 || msg.kind === 'busy'} onClick={() => void cyclePost({ action: 'settle', id: d.id, receiptRef: receipt }, 'decisions-cycle/settle')} className="min-h-[28px] w-full rounded bg-[color:var(--accent,#b88a3a)] text-[10.5px] font-bold text-black disabled:opacity-50">
+                  <input value={costUsd} onChange={(e) => setCostUsd(e.target.value)} placeholder="עלות-האפקט ב-$ (אופציונלי, A8)" aria-label="עלות" inputMode="decimal" className="w-full rounded border border-[color:var(--line)] bg-[color:var(--surface-2)] px-2 py-1.5 text-[11px] outline-none" />
+                  <button type="button" disabled={receipt.trim().length < 8 || msg.kind === 'busy'} onClick={() => void cyclePost({ action: 'settle', id: d.id, receiptRef: receipt, costUsd: costUsd.trim() && Number.isFinite(Number(costUsd)) ? Number(costUsd) : undefined }, 'decisions-cycle/settle')} className="min-h-[28px] w-full rounded bg-[color:var(--accent,#b88a3a)] text-[10.5px] font-bold text-white disabled:opacity-50">
                     יישב — אין-סגירה-בלי-ראיה
                   </button>
                 </div>
@@ -365,7 +489,7 @@ export function Engineering() {
               {formFor === `${d.id}-r` && (
                 <div className="mt-1.5 space-y-1.5 rounded border border-[color:var(--line)] p-2">
                   <input value={reopenNote} onChange={(e) => setReopenNote(e.target.value)} placeholder="למה נפתח-מחדש (אופציונלי)" aria-label="הערת-פתיחה" className="w-full rounded border border-[color:var(--line)] bg-[color:var(--surface-2)] px-2 py-1.5 text-[11px] outline-none" />
-                  <button type="button" disabled={msg.kind === 'busy'} onClick={() => void cyclePost({ action: 'reopen', id: d.id, reopenNote }, 'decisions-cycle/reopen', true)} className="min-h-[28px] w-full rounded bg-[color:var(--accent,#b88a3a)] text-[10.5px] font-bold text-black disabled:opacity-50">
+                  <button type="button" disabled={msg.kind === 'busy'} onClick={() => void cyclePost({ action: 'reopen', id: d.id, reopenNote }, 'decisions-cycle/reopen', true)} className="min-h-[28px] w-full rounded bg-[color:var(--accent,#b88a3a)] text-[10.5px] font-bold text-white disabled:opacity-50">
                     פתח-מחדש (בעלים-בלבד)
                   </button>
                 </div>

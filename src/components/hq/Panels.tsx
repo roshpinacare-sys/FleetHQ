@@ -327,7 +327,7 @@ const ClerkChat = memo(function ClerkChat() {
           />
           <button type="button" onClick={() => void send()} disabled={sending || !draft.trim()}
             aria-label="שליחת הודעה"
-            className="grid h-11 w-11 shrink-0 place-items-center rounded-lg text-black transition hover:brightness-110 disabled:opacity-50"
+            className="grid h-11 w-11 shrink-0 place-items-center rounded-lg text-white transition hover:brightness-110 disabled:opacity-50"
             style={{ backgroundColor: 'var(--accent)' }}>
             <Send size={15} aria-hidden />
           </button>

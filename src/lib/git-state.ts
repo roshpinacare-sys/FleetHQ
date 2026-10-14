@@ -44,6 +44,89 @@ export async function ghCall(method: string, path: string, payload?: unknown, ti
 
 export const md5hex = (b: Buffer | string): string => createHash('md5').update(b).digest('hex');
 
+// ─────────────── A9: שער-מיזוג — סמכויות-כתיבה [T26] ───────────────
+/**
+ * חוק (מהרוסט A9 — "ops-forge כותב ישירות ל-main בלי שער"): אין כתיבה אנונימית
+ * לנתיבי-ריבונות. השער מנגני — בתוך writeGitFile עצמו (נקודת-חנק אחת לכל-האפליקציה):
+ *   · נתיבי-ריבונות (state/keys/**, state/app/engineering.json) דורשים
+ *     authority='sovereign' + ownerVerified=true — כלומר המסלול שקרא לכתיבה
+ *     אימת טוקן-בעלים בפועל, לא רק הצהיר.
+ *   · כתיבת-יישוב (authority='receipt') מחייבת receiptRef≥8 — סגירה-בלי-ראיה נדחית.
+ *   · 'lane' — כתיבת-מסילה רגילה לנתיבים לא-מוגנים (ברירת-התנהגות ההיסטורית,
+ *     כעת מפורשת-בחוק במקום שקט).
+ */
+export type WriteAuthority = 'sovereign' | 'receipt' | 'lane';
+
+export interface WriteGate {
+  authority: WriteAuthority;
+  /** true רק אם המסלול אימת טוקן-בעלים (ownerSession) לפני הכתיבה */
+  ownerVerified?: boolean;
+  /** קבלת-אפקט — חובה עבור authority='receipt' */
+  receiptRef?: string;
+}
+
+const SOVEREIGN_PATHS: Array<{ repo: string; path: string; prefix?: boolean }> = [
+  { repo: 'Autonomy', path: 'state/keys/', prefix: true },
+  { repo: 'Autonomy', path: 'state/app/engineering.json' },
+];
+
+export function isSovereignPath(repo: string, path: string): boolean {
+  return SOVEREIGN_PATHS.some((p) => p.repo === repo && (p.prefix ? path.startsWith(p.path) : path === p.path));
+}
+
+export function gateVerdict(repo: string, path: string, gate: WriteGate | undefined): { ok: boolean; error?: string } {
+  if (!isSovereignPath(repo, path)) return { ok: true }; // נתיב-מסילה רגיל
+  if (gate?.authority === 'sovereign' && gate.ownerVerified === true) return { ok: true };
+  if (gate?.authority === 'receipt' && (gate.receiptRef ?? '').length >= 8 && gate.ownerVerified === true) {
+    return { ok: true }; // יישוב-ריבוני עם קבלה — מותר גם דרך מסלול-מאומת
+  }
+  return {
+    ok: false,
+    error: gate?.authority === 'receipt' && (gate.receiptRef ?? '').length < 8
+      ? 'merge-gate: יישוב חייב קבלת-אפקט (מינימום 8 תווים)'
+      : 'merge-gate: נתיב-ריבונות — דרוש אימות-בעלים (ownerVerified)',
+  };
+}
+
+// ─────────────── A6: תשתית-דמה — QA בלי-נגיעה באמת [T26] ───────────────
+/**
+ * חוק (מהרוסט A6 — "אפס רצפת בדיקות; QA דפדפן-בלבד"): מצב-דמה PRNG-זרוע-כמעט:
+ * מאגר-תודעה נדיף (globalThis) עם אותם-חוקים בדיוק — אופטימיות-מקבילות, readback-MD5,
+ * הסגר-פגום, שער-מיזוג. הפעלה-כפולה-נעולה: נדרש SIM=1 בסביבת-השרת **וגם** x-sim:1
+ * בבקשה. בלי-השניים — כל-נתיב מדמה נדחה (fail-closed), ואין-נגיעה בגיט-אמת.
+ */
+const simG = globalThis as unknown as { __simGitStore?: Map<string, string>; __simOps?: number };
+
+export function simEnvEnabled(): boolean {
+  return process.env.SIM === '1';
+}
+
+/** דמה פעיל רק כשהסביבה נעלה אותה והבקשה ביקשה במפורש */
+export function simRequested(headerSim: boolean): boolean {
+  return simEnvEnabled() && headerSim;
+}
+
+export function simReset(): void {
+  simG.__simGitStore = new Map();
+  simG.__simOps = 0;
+}
+
+export function simStats(): { files: number; ops: number; env: boolean } {
+  return { files: simG.__simGitStore?.size ?? 0, ops: simG.__simOps ?? 0, env: simEnvEnabled() };
+}
+
+function simGet(key: string): string | undefined {
+  return simG.__simGitStore?.get(key);
+}
+
+/** כתיבה-גולמית-לדמה — לשימוש בדיקות-מנגנון בלבד (לא למסלולים) */
+export function simPut(key: string, content: string): { sha: string; commit: string } {
+  const store = (simG.__simGitStore ??= new Map());
+  store.set(key, content);
+  simG.__simOps = (simG.__simOps ?? 0) + 1;
+  return { sha: md5hex(content), commit: `sim-${String(simG.__simOps).padStart(6, '0')}` };
+}
+
 // ─────────────── קריאה ───────────────
 
 export interface GitRead {
@@ -55,7 +138,12 @@ export interface GitRead {
   error?: string;
 }
 
-export async function readGitFile(repo: string, path: string, ref = 'main'): Promise<GitRead> {
+export async function readGitFile(repo: string, path: string, ref = 'main', sim = false): Promise<GitRead> {
+  if (sim) {
+    // A6: קריאה-מהמאגר-הנדיף — אותן-חוקים (404 חוקי כשאין; sha=md5)
+    const text = simGet(`${repo}/${ref}/${path}`);
+    return { ok: true, text: text ?? null, sha: text === undefined ? undefined : md5hex(text), via: 'api' };
+  }
   const got = await ghCall('GET', `/repos/${ORG}/${repo}/contents/${path}?ref=${ref}`);
   if (got.status === 404) return { ok: true, text: null, via: 'api' }; // עדיין-לא-קיים — מצב-חוקי
   if (got.status !== 200) return { ok: false, text: null, via: 'api', error: `http-${got.status}` };
@@ -73,8 +161,8 @@ export interface JsonStateRead<T> {
   corrupt?: boolean;
 }
 
-export async function readJsonState<T>(repo: string, path: string, ref = 'main'): Promise<JsonStateRead<T>> {
-  const r = await readGitFile(repo, path, ref);
+export async function readJsonState<T>(repo: string, path: string, ref = 'main', sim = false): Promise<JsonStateRead<T>> {
+  const r = await readGitFile(repo, path, ref, sim);
   if (!r.ok) return { ok: false, data: null, error: r.error };
   if (r.text === null) return { ok: true, data: null, sha: r.sha }; // ראשית-עולם
   try {
@@ -102,9 +190,24 @@ export async function writeGitFile(
   repo: string,
   path: string,
   content: string,
-  opts: { baseSha?: string; message: string; ref?: string },
+  opts: { baseSha?: string; message: string; ref?: string; sim?: boolean; gate?: WriteGate },
 ): Promise<GitWrite> {
   const ref = opts.ref ?? 'main';
+  // A9: שער-המיזוג — נקודת-החנק. כל-כתיבה עוברת-כאן; נתיב-ריבונות בלי-אימות-בעלים = חסום.
+  const gate = gateVerdict(repo, path, opts.gate);
+  if (!gate.ok) return { ok: false, error: gate.error };
+  if (opts.sim) {
+    // A6: כתיבה-מדומה — אופטימיות + readback באותם-חוקים, אפס-רשת
+    const key = `${repo}/${ref}/${path}`;
+    const cur = simGet(key);
+    if (opts.baseSha && cur !== undefined && md5hex(cur) !== opts.baseSha) {
+      return { ok: false, conflict: true, error: 'conflict-sim' };
+    }
+    const put2 = simPut(key, content);
+    const rb2 = simGet(key);
+    if (rb2 === undefined || md5hex(rb2) !== md5hex(content)) return { ok: false, readbackFailed: true, error: 'readback-mismatch-sim' };
+    return { ok: true, sha: put2.sha, commit: put2.commit };
+  }
   const put = await ghCall('PUT', `/repos/${ORG}/${repo}/contents/${path}`, {
     message: opts.message,
     content: Buffer.from(content, 'utf-8').toString('base64'),
@@ -133,8 +236,9 @@ export async function updateJsonState<T>(
   message: string,
   mutate: (current: T | null) => { next: T; abort?: { error: string; status?: number } },
   ref = 'main',
+  opts: { sim?: boolean; gate?: WriteGate } = {},
 ): Promise<GitWrite & { current?: T | null }> {
-  const read = await readJsonState<T>(repo, path, ref);
+  const read = await readJsonState<T>(repo, path, ref, opts.sim);
   if (!read.ok) {
     return { ok: false, error: read.corrupt ? `state-corrupt: ${read.error}` : `read-failed: ${read.error}` };
   }
@@ -145,7 +249,7 @@ export async function updateJsonState<T>(
   const applied = mutate(read.data);
   if (applied.abort) return { ok: false, error: applied.abort.error, current: read.data };
   const wr = await writeGitFile(repo, path, JSON.stringify(applied.next, null, 2) + '\n', {
-    baseSha: read.sha, message, ref,
+    baseSha: read.sha, message, ref, sim: opts.sim, gate: opts.gate,
   });
   return wr.conflict ? { ...wr, current: read.data } : wr;
 }
@@ -155,14 +259,14 @@ export async function appendJsonlBounded(
   repo: string,
   path: string,
   line: string,
-  opts: { bound: number; message: string; ref?: string },
+  opts: { bound: number; message: string; ref?: string; sim?: boolean; gate?: WriteGate },
 ): Promise<GitWrite> {
-  const read = await readGitFile(repo, path, opts.ref ?? 'main');
+  const read = await readGitFile(repo, path, opts.ref ?? 'main', opts.sim);
   if (!read.ok) return { ok: false, error: read.error };
   const existing = (read.text ?? '').split('\n').map((l) => l.trim()).filter(Boolean);
   const lines = [...existing, line].slice(-opts.bound);
   return writeGitFile(repo, path, lines.join('\n') + '\n', {
-    baseSha: read.sha, message: opts.message, ref: opts.ref ?? 'main',
+    baseSha: read.sha, message: opts.message, ref: opts.ref ?? 'main', sim: opts.sim, gate: opts.gate,
   });
 }
 

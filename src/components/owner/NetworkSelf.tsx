@@ -531,7 +531,7 @@ export function NetworkSelf() {
                 onClick={sendClaim}
                 disabled={claimState.kind === 'sending' || !claimText.trim()}
                 aria-label="שליחת-פנייה"
-                className="flex h-11 w-11 items-center justify-center rounded-md bg-[color:var(--accent,#b88a3a)] text-black transition hover:brightness-110 disabled:opacity-50"
+                className="flex h-11 w-11 items-center justify-center rounded-md bg-[color:var(--accent,#b88a3a)] text-white transition hover:brightness-110 disabled:opacity-50"
               >
                 <Send size={16} aria-hidden="true" />
               </button>
