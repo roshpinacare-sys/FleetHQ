@@ -49,7 +49,7 @@ export function validateIntent(intent, policy, ctx = {}) {
       reasons.push(`venue-whitelist: corridor "${corridor.slice(0, 60)}" matches no allowed venue`);
     }
   }
-  if (intent.origin && !pairs.allowedBase?.includes(intent.origin)) reasons.push(`pair-whitelist: origin asset "${intent.origin}" not allowed`);
+  if (intent.origin && !pairs.allowedBase?.includes(intent.origin) && !pairs.allowedQuote?.includes(intent.origin)) reasons.push(`pair-whitelist: origin asset "${intent.origin}" not allowed`);
   if (intent.destChain && !pairs.allowedBase?.includes(intent.destChain) && !pairs.allowedQuote?.includes(intent.destChain)) reasons.push(`pair-whitelist: dest "${intent.destChain}" not allowed`);
   if (typeof intent.guardBps === 'number' && intent.guardBps > (ceil.maxGuardBps ?? 100)) reasons.push(`guardBps ${intent.guardBps} > ceiling ${ceil.maxGuardBps}`);
   if ('quoteMu' in intent && 'minOutMu' in intent && intent.minOutMu != null) {
@@ -82,17 +82,33 @@ export function validateFill(fill, policy, ctx = {}) {
   const pairs = cap.pairs || {};
 
   if (stasis) reasons.push('stasis-brake: STASIS.json active=true');
-  if (fill.base && !pairs.allowedBase?.includes(fill.base)) reasons.push(`pair-whitelist: base "${fill.base}" not allowed`);
-  if (fill.quote && !pairs.allowedQuote?.includes(fill.quote)) reasons.push(`pair-whitelist: quote "${fill.quote}" not allowed`);
+  // orientation-neutral market law (amendment 2026-10-14T02:00Z, trace 1a137fbff7c7c4ad):
+  // a market is a market — {SAOS,USDS} and {USDS,SAOS} are the SAME market viewed from
+  // either side. Measured: the live sweep drafted an inverted leg (base=USDS quote=SAOS)
+  // and the strict orientation check rejected a market the policy explicitly allows.
+  // The whitelist governs MARKETS, not representation; both orientations of an allowed
+  // base×quote combination pass. Single-sided assets still check their own list.
+  const _ab = pairs.allowedBase || [], _aq = pairs.allowedQuote || [];
+  const _fwd = _ab.includes(fill.base) && _aq.includes(fill.quote);
+  const _rev = _aq.includes(fill.base) && _ab.includes(fill.quote);
+  if (fill.base && fill.quote && !_fwd && !_rev) {
+    reasons.push(`pair-whitelist: market ${fill.base}/${fill.quote} not allowed (either orientation)`);
+  } else {
+    if (fill.base && !fill.quote && !_ab.includes(fill.base)) reasons.push(`pair-whitelist: base "${fill.base}" not allowed`);
+    if (!fill.base && fill.quote && !_aq.includes(fill.quote)) reasons.push(`pair-whitelist: quote "${fill.quote}" not allowed`);
+  }
   const price = Number(fill.price);
   if (Number.isFinite(price) && !(price > 0 && price < 1e9)) reasons.push(`positive-price: price ${price} out of (0,1e9)`);
   reasons.push(...redactionViolations(fill));
 
   const stable = pairs.stablePriceUsd || {};
   const amount = Number(fill.amountMu);
+  // notional resolves against the STABLE side regardless of orientation (an inverted
+  // fill still prices against USDS — the stable is wherever it sits in the pair)
+  const stableSide = stable[fill.quote] != null ? fill.quote : (stable[fill.base] != null ? fill.base : null);
   let notionalUsd = null;
-  if (fill.quote && stable[fill.quote] != null && Number.isFinite(amount)) {
-    notionalUsd = (amount / 1e6) * stable[fill.quote];
+  if (stableSide != null && Number.isFinite(amount)) {
+    notionalUsd = (amount / 1e6) * stable[stableSide];
     if (notionalUsd > (ceil.maxNotionalUsdPerLeg ?? Infinity)) reasons.push(`ceiling: fill notional $${notionalUsd.toFixed(2)} > maxNotionalUsdPerLeg $${ceil.maxNotionalUsdPerLeg}`);
   }
 
@@ -128,6 +144,8 @@ export function selftest(policy) {
   t.push(['secret in record', validateIntent({ ...ok, note: 'key 0xdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef' }, policy).verdict, 'REJECT']);
   t.push(['priced over leg ceiling', validateIntent({ ...ok, origin: 'USDS', amountMu: 200000000 }, policy).verdict, 'REJECT']);
   t.push(['fill clean PASS', validateFill({ kind: 'fill', base: 'SAOS', quote: 'USDS', price: 1007, amountMu: 47000, at: Date.now() }, policy).verdict, 'PASS']);
+  t.push(['fill INVERTED orientation PASS (measured live reject → amendment)', validateFill({ kind: 'fill', base: 'USDS', quote: 'SAOS', price: 1007, amountMu: 47000, at: Date.now() }, policy).verdict, 'PASS']);
+  t.push(['fill genuinely foreign market REJECT', validateFill({ kind: 'fill', base: 'MOON', quote: 'MARS', price: 1007, amountMu: 47000, at: Date.now() }, policy).verdict, 'REJECT']);
   t.push(['fill bad price', validateFill({ kind: 'fill', base: 'SAOS', quote: 'USDS', price: -5, amountMu: 47000, at: Date.now() }, policy).verdict, 'REJECT']);
   const fails = t.filter(([, got, want]) => got !== want);
   for (const [name, got, want] of t) console.log(`  ${got === want ? '✓' : '✗'} ${name}: ${got}${got === want ? '' : ` (want ${want})`}`);
