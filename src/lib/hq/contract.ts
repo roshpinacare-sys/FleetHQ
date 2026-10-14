@@ -160,8 +160,12 @@ export const CAMERA_PRESETS: CameraPreset[] = [
     // R53: the podium now carries the live explained plate (what it serves +
     // latest measured decision). The preset frames plate + lectern + ring in
     // one shot: target mid-plate height, slightly wider, steeper pitch.
-    target: [podium3[0] + 0.42, 1.72, podium3[1] - 0.3],
-    yaw: Math.PI * 0.42, pitch: 0.3, dist: 3.7, minDist: 1.9, maxDist: 7,
+    // R54 (measured live): the structural column at world (−5.6,−1.9) stood
+    // mid-frame between the ENE camera and the lectern (screenshot 04).
+    // The camera moved to ESE (yaw 0.30π) with a lower target — clean sight
+    // line: lectern + plate + ground ring, no pillar.
+    target: [podium3[0] + 0.42, 1.45, podium3[1] - 0.2],
+    yaw: Math.PI * 0.22, pitch: 0.2, dist: 4.15, minDist: 1.9, maxDist: 7,
   },
   {
     id: 'library', label: { he: 'הספרייה', en: 'Library' },
