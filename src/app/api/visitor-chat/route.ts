@@ -10,6 +10,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import ZAI from 'z-ai-web-dev-sdk';
 import { db } from '@/lib/db';
 import { CREW_FALLBACK, EXPERTS } from '@/lib/hq/protocol';
+import { assertIntent } from '@/lib/intent-gate';
 
 export const revalidate = 0;
 
@@ -140,6 +141,9 @@ export async function GET(req: NextRequest) {
 // ─────────────── POST — שיחה עם הפקידה ───────────────
 export async function POST(req: NextRequest) {
   try {
+    // A5 [T25]: שער-הכוונות — דפדפן: לולאתיות + קצב (בלי-כוונה-מפורשת, זו-שיחת-אורח)
+    const gate = assertIntent(req, 'visitor-chat', '', 'browser');
+    if (gate) return gate;
     const body = (await req.json()) as { sessionId?: string; text?: string };
     const text = (body.text ?? '').trim().slice(0, 2000);
     if (!text) return NextResponse.json({ ok: false, error: 'empty' }, { status: 400 });
