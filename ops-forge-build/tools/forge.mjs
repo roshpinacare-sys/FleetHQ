@@ -5,6 +5,39 @@
 // אסור לחשוף חומר-מפתח, כל קביעה נמדדת מה-API עצמו.
 
 import https from 'node:https';
+import { spawnSync } from 'node:child_process';
+
+// ---------- כלוב-גיט [T28=A2-חיבור-ספון] ----------
+// חוק (מהרוסט A2 — "סוכנים כותבים על-גבי main בלי הסגר"): כל-תהליך-צאצא של
+// המבצע נולד-כלוא — protocol.allow=never (אפס-תעבורת-גיט), מלכודת-insteadOf
+// (כל-URL פרטי מוטה-לתעלה-אסורה), תקרת-ספרייה (בריחה-כלפי-מעלה חסומה),
+// איסור-פרומפטים. ה-preflight מדוד: צאצא-מנסה `git ls-remote` מול-מארח-חוץ
+// חייב-להיכשל-ברשת-חסומה; אם-הוא-מצליח — הכלוב-מנופץ, המבצע-מסרב-לרוץ
+// (fail-closed) ומסלק את-עצמו לפני-כל-כתיבה.
+export function cageEnv() {
+  return {
+    ...process.env,
+    GIT_TERMINAL_PROMPT: '0',
+    GIT_CONFIG_COUNT: '3',
+    GIT_CONFIG_KEY_0: 'protocol.allow',
+    GIT_CONFIG_VALUE_0: 'never',
+    GIT_CONFIG_KEY_1: 'url.https://caged.invalid/.insteadOf',
+    GIT_CONFIG_VALUE_1: 'git@github.com:',
+    GIT_CONFIG_KEY_2: 'url.https://caged.invalid/.insteadOf',
+    GIT_CONFIG_VALUE_2: 'https://github.com/',
+  };
+}
+function cagePreflight() {
+  const probe = spawnSync('git', ['ls-remote', 'https://github.com/roshpinacare-sys/Autonomy.git', 'HEAD'],
+    { env: cageEnv(), timeout: 15000, encoding: 'utf8' });
+  const blocked = probe.status !== 0; // חסום = תקין
+  console.log(`cage-preflight: child-git ${blocked ? 'BLOCKED (cage holds)' : 'REACHED NETWORK (cage broken!)'}`);
+  if (!blocked) {
+    console.error('forge: כלוב-הגיט מנופץ — מסרב-לרוץ (fail-closed) [T28]');
+    process.exit(1);
+  }
+  return true;
+}
 
 const ORG = 'roshpinacare-sys';
 const API = 'https://api.github.com';
@@ -395,6 +428,7 @@ function pickRecipe(order) {
 // ---------- הריצה ----------
 async function main() {
   const t0 = Date.now();
+  cagePreflight(); // [T28] אין-ריצה-בלי-כלוב-מדוד — fail-closed
   const state = await loadState();
   state.runs = (state.runs || 0) + 1;
   const qRaw = await getRaw('ops-intake', 'ops/QUEUE.json');

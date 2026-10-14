@@ -1123,3 +1123,27 @@ Stage Summary:
 - המשתמש-עכשיו-רואה: לוח-הנדסה חי-ומהיר (פאנל-הגיבור נטען בעשרות-מ"ש במקום-שנייה), תור-אמת ללא-זומבים, והבחנה-כנה בין "סגירה-נדרשת" ל"ממתין-עבודה".
 - המנגנונים מתחדדים: A3 מסווג-קבלות (טרמינלית-מול-ממתינת), מסילת-הכתיבה לא-נגעה (10/10).
 - חוק-להמשך: כל-קריאה-תצוגה יכולה-להיות-SWR; כל-קריאה-שמזינה-כתיבה — fresh בלבד. סדר-עם-קבלה-טרמינלית חייב-להיסגר באותו-ביט (הגרף-מסמן-וזה-נאכף-החל-מ-T27).
+
+---
+Task ID: T28
+Agent: zai-code (main session)
+Task: "תמשיך" — גל-הנדסה T28 מפסק-הדין: סגירת A4 (חוזה-מיוצר+CI), חיבור-הכלוב-לספון-המבצע, סגירת-אדומים-אמיתיים והתור (קבלות-טרמינליות). הכול מדיד, בגיט, עם readback.
+
+Work Log:
+- READ-FIRST: worklog (T8→T27) + פסק-הדין (t24/agentcraft-verdict.json): מתוך 12 האימוצים חסר A4; הכלוב (A2) לא היה מחובר-לספון-המבצע; התור: QUEUE-20261013-12 פתוח.
+- מדידת-פתיחה-חיה: ops-forge חי (ריצה 05:16Z success); GridWatch ירוק; האדום-המקורי של QUEUE-20261013-12 (artery-decision-truth) הבריא — ריצה 38520845667 success 06:12:18Z. סגירת-הסדר עם קבלה-מצוטטת (closedVia=receipt-healed-law/T28) → ops-intake ops/QUEUE.json commit 066f02889, readback md5 אומת. התור: פתוחים 1→0, 79/83 סגירות-מוכחות.
+- סגירת-רעש-במקור: fleet-health מדווח private-67fc6249/compute-canary נכשל-מיידי (4s, אפס-שלבים) — זוהה-אנונימיזציה: הריפו האמיתי = Sandbox. חוק-T23 (פרטי=זיכרון-בלבד) → השבתה, readback state=disabled_manually אומת; קבלה ל-ops-forge ops/RECEIPTS.jsonl (commit 81ce6cfe8).
+- FleetHQ/office-3d (3 כישלונות-רצופים) — אובחן-מהיומן: run 38518911933 deploy-room נפל `cp: cannot stat dist-office3d` (אין-שלב-בנייה בקובץ-הוורקפלו של אז); מסילה-אחות תיקנה-את-השורש (2f7c0036d: bun run office3d:build); אימתתי: run 38521659279 SUCCESS. קבלת-אימות ל-ops-forge (commit 55b48e24b). האדום נסגר.
+- A4 חוזה-מיוצר (האימוץ-האחרון): src/lib/contract-facts.ts (מקור-אמת-יחיד — החוקים כקבועים; מפרידים CONTRACT-FACTS-BEGIN/END) + tools/gen-contract.mjs (אפס-תלות: חולץ→מיון-יציב→sha256; --selftest = דטרמיניזם+מבנה, PASS, sha256 54d8ab3628cb) + out/contract.json + out/CONTRACT.md (עברית).
+- CI בענן: Autonomy .github/workflows/contract-check.yml — כל-30 דק: שלמות-sha256-פנימית, 14-חוקים-נוכחים, מפת-האימוצים ≥12 עם-כל-A1..A12, קבצי-המצב-החיים (engineering/decisions-cycle/sessions/REGISTRY/QUEUE) parse+חוק-הקבלות-על-סדרים-סגורים, status-context על-הקומיט. תקלת-דרך-נתפסת-ותוקנת: require+top-level-await → IIFE אסינכרוני (run 38522369505 נכשל-מדידה).
+- מחזור-החוזה-המלא-בפועל: פרסום (5e9126c80/4e993a2b1/ed01fc446) → run 38522484516 תפס סטייה-אמיתית `adopted=10 missing A4,A11` → השלמת-מפת-האימוצים (A4=החוזה-עצמו; A11=הסגר-הפגום שהיה-בקוד-מ-T25 בלי-רישום) commit 9c33c3236 → run 38522636052 SUCCESS. החוזה-תופס-סטיות — לא-הצהרה.
+- חיבור-הכלוב-לספון (A2-wiring): ops-forge-build/tools/forge.mjs — cageEnv() (protocol.allow=never + מלכודת-insteadOf + TERMINAL_PROMPT=0 לכל-צאצא) + cagePreflight() בראש-main: צאצא-מנסה ls-remote חייב-להיחסם; אם-מצליח → המבצע-מסרב-לרוץ (fail-closed). מדידה-חיה: כלוא=128 `fatal: transport 'https' not allowed` מול-חופשי=0 (הרשת-חיה!) → CAGE HOLDS. פורסם-לענן: ops-forge tools/forge.mjs commit f96c2b1da — הריצה-הבאה-כל-30-דק נולדת-כלואה.
+- תיקון-עצמי: contract-facts.ts כבלוק-JSON-חשוב-שבר-את-הלינט (Parsing error) → הוסב-להצהרת-TS תקנית (`export const CONTRACT_FACTS = {...} as const`) עם-פשיטה-במחולל; sha256-לא-השתנה (54d8ab3628cb — דטרמיניזם-הוכח-חוצה-רפקטורינג). lint 0/0.
+- UI: לשונית-הנדסה מציגה-כעת 12 מנגנונים כולל A4/A11 עם-התיאורים-מהגיט (נמדד-בדפדפן).
+- BROWSER-VERIFIED (agent-browser): 1440 — פאנל-מודעות-הרשת→הנדסה: A4 ו-A11 מוצגים-חיים; 390 — sw==cw==390 (אפס-overflow), footer sticky-ok; אפס-שגיאות-קונסול; dev.log נקי (200 בלבד); mech-selftest PASS; contrast PASS.
+
+Stage Summary:
+- מפת-האימוצים מפסק-הדין סגורה-במלואה: A1–A12 כולם מנגנונים-חיים-מדודים-ורשומים. A4 האחרון הוא-גם-המחזק: החוזה-המיוצר עם CI שתפס סטייה-אמיתית-במחזור-הראשון.
+- הספון-הראשי-כלוא: ops-forge (המבצע-הענני) נולד-עם-כלוב-מדוד ומסרב-לרוץ-אם-הוא-מנופץ — המסילה-החדה-ביותר של-הרשת נסגרה.
+- האדומים: 0-פתוחים-בתור (79/83 סגירות-מוכחות); compute-canary (רעש-אימייל, מפר-חוק-T23) מושבת-עם-קבלה; office-3d ירוק-אחרי-שורש-שנמדד.
+- COORDINATION: החוזה-מיוצר-מ-contract-facts.ts בלבד — אל-תערכו-את state/app/contract.json ידנית (ה-CI יתפוס); כל-שינוי-חוק = עריכה במקור → node tools/gen-contract.mjs → פרסום; הכלוב ב-forge.mjs הוא fail-closed — אל-תשחררו-אותו; engineering.json = נתיב-ריבונות (authority=sovereign בלבד).
