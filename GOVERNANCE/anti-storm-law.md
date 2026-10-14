@@ -31,3 +31,17 @@ failure emails every few minutes.
 6. **Sandboxes are accelerators, not the spine.** CI (Actions) is the network's
    only required runtime; any sandbox heartbeat is an optimization. Absence of a
    sandbox degrades a number, never the network.
+7. **No organ rides the platform clock.** GitHub's scheduler is measured
+   UNRELIABLE for cadence: 2026-10-14T00:44Z census on FleetHQ — 9 of ~55
+   expected schedule fires since 22:30Z, several OFF-SLOT (office-window's
+   daily-06:17 fired 00:23; value-scan */30 fired 00:12), 100% of NEW
+   workflows' schedule registration silenced (claims-triage `4,34` never
+   fired once since landing; selfscan's cron was even daily-not-hourly while
+   its own comment said hourly). Every cadence organ therefore carries at
+   least one scheduler-independent carrier: (a) a pacemaker lane (SENSE age →
+   IGNITE via delegated PAT, budget-capped), (b) a workflow_run event anchor
+   (event triggers are not schedule-registered), or (c) a self-carrying
+   chain (worldbeat law: ignite only if no live successor — exactly one
+   chain). The cron stays ONLY as cold-start/recovery net. Measured proof the
+   carriers work: pacemaker ignitions 23:47 (artery-grid), 23:51 (Console
+   pacemaker), 00:27 (grid-watch) — all real cross-repo dispatches.
