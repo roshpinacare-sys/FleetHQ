@@ -57,15 +57,22 @@ for (const f of existsSync(CLAIMS) ? readdirSync(CLAIMS) : []) {
   try { const c = JSON.parse(readFileSync(`${CLAIMS}/${f}`, 'utf8')); claimsSeen.set(c.sig, c); } catch { /* torn file — skip, rescan rewrites */ }
 }
 
-const state = { generatedAt: stamp, runUrl: RUN_URL, repos: {}, workflows: {}, newClaims: [], newCapabilities: [], counts: { green: 0, red: 0, disabled: 0, stale: 0 } };
+const state = { generatedAt: stamp, runUrl: RUN_URL, repos: {}, workflows: {}, newClaims: [], newCapabilities: [], counts: { green: 0, red: 0, disabled: 0, stale: 0, archived: 0 } };
+// ARCHIVED (2026-10-14, trace 1a137fbff7c7c4ad): a workflow whose file was deleted
+// (state `deleted` / `deleted_inactivity`) can NEVER run again — its last failed run
+// is archaeology, not a live problem. Counting it red forever made the book lie
+// (measured: saos-runtime repair-rot2-custody red 1634m with state=deleted) and
+// starved its claim of any resolution path. Honesty is re-homed, not deleted: the
+// row stays visible with 🗄️, the count gets its own bucket, and an open claim
+// resolves with evidence ("nothing left to heal").
 const lines = [];
 lines.push('# Network STATE — the sovereign self-scan');
 lines.push('');
 lines.push(`- generatedAt: \`${stamp}\``);
 lines.push(`- scan run: ${RUN_URL}`);
 lines.push('');
-lines.push('| repo | last push | push age | workflows | green | red | disabled |');
-lines.push('|---|---|---|---|---|---|---|');
+lines.push('| repo | last push | push age | workflows | green | red | disabled | archived |');
+lines.push('|---|---|---|---|---|---|---|---|');
 
 for (const repo of REPOS) {
   try {
@@ -92,7 +99,7 @@ for (const repo of REPOS) {
       if (!cur || Date.parse(r.created_at) > Date.parse(cur.created_at)) latest.set(r.name, r);
     }
 
-    let g = 0, red = 0, dis = 0, stale = 0;
+    let g = 0, red = 0, dis = 0, stale = 0, arch = 0;
     const wfRows = [];
     for (const [name, r] of latest) {
       const ageMin = Math.round((now - Date.parse(r.created_at)) / 60000);
@@ -101,13 +108,15 @@ for (const repo of REPOS) {
       })();
       const wstate = wfMeta.state || 'active';
       const key = `${repo}|${name}`;
-      const failing = r.conclusion && r.conclusion !== 'success' && r.conclusion !== 'skipped' && wstate !== 'disabled_manually' && wstate !== 'disabled_inactivity';
+      const archived = wstate === 'deleted' || wstate === 'deleted_inactivity';
+      const failing = r.conclusion && r.conclusion !== 'success' && r.conclusion !== 'skipped' && !archived && wstate !== 'disabled_manually' && wstate !== 'disabled_inactivity';
       // cadence-aware staleness: a scheduled beat silent 48h is effectively dead
       // (worldbeat would never be); low-frequency jobs (weekly retros) are never
       // "stale" — their runsInWindow count protects them from false quarantine.
       const isStale = ageMin > 2880;
 
       if (wstate === 'disabled_manually') { dis++; state.counts.disabled++; }
+      else if (archived) { arch++; state.counts.archived++; }
       else if (failing) { red++; state.counts.red++; }
       else if (isStale) { stale++; state.counts.stale++; }
       else { g++; state.counts.green++; }
@@ -134,16 +143,19 @@ for (const repo of REPOS) {
           writeFileSync(`${CLAIMS}/claim-${prior.sig}.json`, JSON.stringify(prior, null, 2));
         }
       } else if (!failing && !isStale) {
-        // honest resolution: if an open claim for this pair exists, mark resolved (the scan saw it green)
+        // honest resolution: if an open claim for this pair exists, mark resolved (the scan saw it green,
+        // or the workflow was archived/deleted — an archived workflow has nothing left to heal)
         for (const [s, c] of claimsSeen) {
           if (c.status === 'open' && c.repo === repo && c.workflow === name && c.kind === 'failing') {
-            c.status = 'resolved'; c.resolvedAt = stamp; c.resolveEvidence = { runUrl: r.html_url, conclusion: r.conclusion };
+            c.status = 'resolved'; c.resolvedAt = stamp;
+            c.resolveEvidence = { runUrl: r.html_url, conclusion: r.conclusion };
+            if (archived) c.resolveEvidence.note = `workflow state=${wstate} (archived) at HEAD — the failure is archaeological, the file no longer exists, nothing left to heal`;
             writeFileSync(`${CLAIMS}/claim-${s}.json`, JSON.stringify(c, null, 2));
           }
         }
       }
 
-      const mark = wstate === 'disabled_manually' ? '⏸' : failing ? '❌' : isStale ? '⏳' : '✅';
+      const mark = wstate === 'disabled_manually' ? '⏸' : archived ? '🗄️' : failing ? '❌' : isStale ? '⏳' : '✅';
       wfRows.push(`| ${mark} ${name} | ${r.conclusion || '—'} | ${ageMin}m | ${wstate} |`);
 
       // NEW-CAPABILITY awareness: a workflow the owner added since the last scan
@@ -161,19 +173,19 @@ for (const repo of REPOS) {
       }
     }
 
-    lines.push(`| [${repo}](https://github.com/${OWNER}/${repo}) | \`${pushedAt}\` | ${pushAgeMin}m${pushAgeMin > budget ? ' ⚠️STALE' : ''} | ${latest.size} | ${g} | ${red} | ${dis} |`);
+    lines.push(`| [${repo}](https://github.com/${OWNER}/${repo}) | \`${pushedAt}\` | ${pushAgeMin}m${pushAgeMin > budget ? ' ⚠️STALE' : ''} | ${latest.size} | ${g} | ${red} | ${dis} | ${arch} |`);
     lines.push('');
     if (wfRows.length) { lines.push(`<details><summary>${repo} workflow detail</summary>`, '', '| workflow | conclusion | age | state |', '|---|---|---|---|', ...wfRows, '', '</details>', ''); }
 
-    state.repos[repo] = { pushedAt, pushAgeMin, fresh: pushAgeMin <= budget, workflows: latest.size, green: g, red, disabled: dis, stale };
+    state.repos[repo] = { pushedAt, pushAgeMin, fresh: pushAgeMin <= budget, workflows: latest.size, green: g, red, disabled: dis, stale, archived: arch };
   } catch (e) {
-    lines.push(`| ${repo} | ERROR | — | ${String(e.message).slice(0, 60)} | | | |`);
+    lines.push(`| ${repo} | ERROR | — | ${String(e.message).slice(0, 60)} | | | | |`);
     state.repos[repo] = { error: String(e.message) };
   }
 }
 
 lines.push('');
-lines.push(`## Totals — green ${state.counts.green} · red ${state.counts.red} · disabled(quarantined) ${state.counts.disabled} · stale ${state.counts.stale}`);
+lines.push(`## Totals — green ${state.counts.green} · red ${state.counts.red} · disabled(quarantined) ${state.counts.disabled} · stale ${state.counts.stale} · archived(deleted-file, never-runs-again) ${state.counts.archived}`);
 lines.push('');
 lines.push('This page is the network looking at itself. RED here is honesty, not alarm: every red has a claim in `ops/claims/`, triage decides, the operator gets ONE issue per new signature — never a storm.');
 lines.push('');
