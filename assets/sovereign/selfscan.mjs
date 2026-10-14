@@ -88,6 +88,7 @@ for (const repo of REPOS) {
       try { p2 = (await gh(`/repos/${OWNER}/${repo}/actions/runs?per_page=100&page=2`)).workflow_runs || []; } catch { /* page 2 optional */ }
       runs = [...p1, ...p2];
     } catch (e) { lines.push(`| ${repo} | \`${pushedAt}\` | ${pushAgeMin}m | runs-api-error: ${String(e.message).slice(0, 40)} | | | |`); continue; }
+    const disp = (n) => String(n || '').replace(/^\.github\/workflows\//, '').replace(/\.ya?ml$/, '');
     const runsInWindow = new Map();
     for (const r of runs) runsInWindow.set(disp(r.name), (runsInWindow.get(disp(r.name)) || 0) + 1);
 
@@ -99,7 +100,6 @@ for (const repo of REPOS) {
     // conclusion is not 'cancelled' — a cancel means a sibling superseded the run
     // (concurrency), it is NOT evidence of failure (measured: saos-runtime
     // grid-watchdog cancelled while a dispatch success landed 6m earlier).
-    const disp = (n) => String(n || '').replace(/^\.github\/workflows\//, '').replace(/\.ya?ml$/, '');
     const byWf = new Map(); // workflow_id -> { best (newest non-cancelled), newest }
     for (const r of runs) {
       const k = String(r.workflow_id || disp(r.name));
