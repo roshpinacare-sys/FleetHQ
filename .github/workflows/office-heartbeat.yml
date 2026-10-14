@@ -103,9 +103,11 @@ jobs:
             echo "NO-CHANGE: office wrote nothing new into the books this shift (honest)"
           else
             if [ -z "$GIT_PAT" ]; then echo "SKIP-PUSH: no PAT secret — changes stay local (honest)"; exit 0; fi
-            # self-heal: a previous step's interrupted rebase/merge leaves unmerged
-            # index entries that would crash `git commit` (measured exit 128 @ 01:54Z)
-            git rebase --abort 2>/dev/null || true; git merge --abort 2>/dev/null || true; git reset -q --hard 2>/dev/null || true
+            # self-heal: rebase/merge aborts ONLY. NEVER `git reset --hard` here —
+            # the fresh clone holds the crew's unstaged shift-writes; reset --hard
+            # destroyed them (measured exit 1 "nothing to commit" @ 02:00Z, books lost).
+            # Commit runs BEFORE any pull, so no half-merge state can exist here.
+            git rebase --abort 2>/dev/null || true; git merge --abort 2>/dev/null || true
             git commit -m "office-heartbeat: crew shift persisted — memory/journal/tasks [skip ci]"
             git -c rebase.autoStash=true pull --rebase -q origin main || true
             ok=0
@@ -132,7 +134,8 @@ jobs:
           if git diff --cached --quiet; then
             echo "NO-CHANGE: nothing new to publish"
           else
-            git rebase --abort 2>/dev/null || true; git merge --abort 2>/dev/null || true; git reset -q --hard 2>/dev/null || true
+            # aborts ONLY — never reset --hard after git add (measured exit-1 book-loss @ 02:00Z)
+            git rebase --abort 2>/dev/null || true; git merge --abort 2>/dev/null || true
             git commit -m "office-heartbeat: public office state captured [skip ci]"
             git -c rebase.autoStash=true pull --rebase -q origin main || true
             ok=0
@@ -156,7 +159,8 @@ jobs:
           if git diff --cached --quiet; then
             echo "NO-CHANGE: office-knowledge.json already current (honest)"
           else
-            git rebase --abort 2>/dev/null || true; git merge --abort 2>/dev/null || true; git reset -q --hard 2>/dev/null || true
+            # aborts ONLY — never reset --hard after git add (measured exit-1 book-loss @ 02:00Z)
+            git rebase --abort 2>/dev/null || true; git merge --abort 2>/dev/null || true
             git commit -m "office-heartbeat: office-knowledge.json refreshed (measured) [skip ci]"
             git -c rebase.autoStash=true pull --rebase -q origin main || true
             ok=0
