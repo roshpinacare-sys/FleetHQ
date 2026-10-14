@@ -527,11 +527,11 @@ footer .stamp{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; 
 <div class="wrap">
 
   <section id="office3d-cta" aria-labelledby="h-office3d" style="margin-top:18px">
-    <a href="https://roshpinacare-sys.github.io/Domain/office3d/v2/" rel="noopener" style="display:block;text-decoration:none;color:inherit;background:linear-gradient(135deg,#2b2016 0%,#4a301f 45%,#1f2a24 100%);border:1px solid #6b4a2a;border-radius:18px;padding:20px 22px;transition:transform .2s ease, box-shadow .2s ease" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 14px 40px rgba(224,151,63,.25)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
+    <a href="office3d/" rel="noopener" style="display:block;text-decoration:none;color:inherit;background:linear-gradient(135deg,#2b2016 0%,#4a301f 45%,#1f2a24 100%);border:1px solid #6b4a2a;border-radius:18px;padding:20px 22px;transition:transform .2s ease, box-shadow .2s ease" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 14px 40px rgba(224,151,63,.25)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
       <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
         <div style="flex:1;min-width:220px">
           <h2 id="h-office3d" style="margin:0 0 4px;font-size:1.25rem;color:#f2c368">המשרד התלת-מימדי החי — כניסה ישירה</h2>
-          <p style="margin:0;color:#d8cdb8;font-size:.95rem;line-height:1.6">סיור תלת-ממדי חי בדפדפן: הצוות מוצג בעבודתו מול הנתונים האמיתיים — לוח-המשימות, קיר-הגיט והספרייה.</p>
+          <p style="margin:0;color:#d8cdb8;font-size:.95rem;line-height:1.6">החדר החי v4: הכל על-הקרקע, כיסאות פונים למסכים, ובמוי-קולנועי — הצוות בעבודתו מול הנתונים האמיתיים: לוח-המשימות, קיר-הגיט והספרייה.</p>
         </div>
         <div style="background:#e0973f;color:#22180e;font-weight:800;border-radius:12px;padding:10px 18px;font-size:.95rem;white-space:nowrap">כניסה למשרד החי ←</div>
       </div>

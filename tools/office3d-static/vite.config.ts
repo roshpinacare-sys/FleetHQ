@@ -23,7 +23,11 @@ export default defineConfig({
       '@': fileURLToPath(new URL('../../src', import.meta.url)),
     },
   },
-  publicDir: fileURLToPath(new URL('../../public', import.meta.url)),
+  // publicDir=false (החלפת-החדר, דירקטיבת-הבעלים "שלא יעלה שוב"):
+  // החדר v4 עצמאי לחלוטין (three+vendor נארזים ב-build); המודלים הישנים
+  // public/models/humans/*.glb היו של חדר-ה-r3f שהוחלף — ואינם מועתקים עוד
+  // ל-dist (ניקוי 7.9MB מה-Domain ואפס שאריות-חדר-ישן).
+  publicDir: false,
   // ה-CSS כאן טהור (hud.css) — לא להריץ את קונפיג-ה-PostCSS של השורש (Tailwind של Next)
   css: { postcss: { plugins: [] } },
   build: {

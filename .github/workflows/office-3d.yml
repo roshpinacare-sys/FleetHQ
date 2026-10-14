@@ -13,14 +13,12 @@ on:
   push:
     branches: [main]
     paths:
-      - "src/components/hq/**"
-      - "src/lib/hq/**"
-      - "src/components/agent-hq/**"
+      - "tools/office3d-static/**"
       - "tools/office-3d-bake.mjs"
-      - "tools/office-state-capture.ts"
       - "office-window/render.mjs"
       - "office-window/publish-3d.sh"
       - ".github/workflows/office-3d.yml"
+      - "public/office3d/**"
       - "receipts/office-state-mirror.json"
       - "package.json"
 
@@ -46,13 +44,10 @@ jobs:
         with:
           bun-version: latest
 
-      - name: Install (frozen lockfile — includes the puppeteer devDep)
+      - name: Install (frozen lockfile — puppeteer + vite for the room build)
         run: bun install --frozen-lockfile
 
-      - name: Prisma generate (the app build needs the client)
-        run: bunx prisma generate
-
-      - name: Bake the 3D room (build + serve :3210 + headless WebGL frames)
+      - name: Bake the 3D room (vite build + serve :3210 + headless WebGL frames)
         env:
           NEXT_TELEMETRY_DISABLED: "1"
         run: node tools/office-3d-bake.mjs
@@ -167,10 +162,8 @@ jobs:
         uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
-      - name: Install + prisma generate (the room imports the same src tree)
-        run: |
-          bun install --frozen-lockfile
-          bunx prisma generate
+      - name: Install (vite for the room build)
+        run: bun install --frozen-lockfile
       - name: Build the room bundle (vite → dist-office3d)
         # The deploy below copies dist-office3d — the vite outDir (tools/office3d-static
         # vite.config.ts, base './'). It is a BUILD ARTIFACT, never committed: this job
