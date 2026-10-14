@@ -1,9 +1,18 @@
-# ספר-המודעות-העצמית של הרשת — 2026-10-14T18:01:51.459Z
+# ספר-המודעות-העצמית של הרשת — 2026-10-14T19:12:46.739Z
 
-**36 ריפואים** (13 ציבוריים · 23 פרטיים) · **222 מכונות-יכולת** · **18 פעילים בשעה האחרונה** · תמונה-קודמת: 2026-10-14T17:21:47.385Z
+**39 ריפואים** (14 ציבוריים · 25 פרטיים) · **223 מכונות-יכולת** · **18 פעילים בשעה האחרונה** · תמונה-קודמת: 2026-10-14T18:01:51.459Z
+
+## 🌱 ריפואים-חדשים שנולדו מאז-התמונה (הבעלים בונה — והרשת רואה)
+- **giant**
+- **saos-owner-channel**
+- **saos-markets**
+
+## ⚙️ מכונות-חדשות/שהוסרו מאז-התמונה
+- Domain: +mm-supremacy.yml
+- Pulse: +sovereign-voice.yml
 
 ## 💓 פעיל-עכשיו (דחיפה בשעה האחרונה)
-Autonomy · Domain · Pulse · FleetHQ · sovereign-beacon · Sandbox · steem · saos-dex · Console · ops-intake · saos-runtime · ops-forge · sovereign-lighthouse · Project-files · GridWatch · Zip · roshpinacare-sys.github.io · saos-desk
+FleetHQ · saos-runtime · Autonomy · Domain · Pulse · giant · Sandbox · Console · steem · saos-dex · Project-files · sovereign-beacon · GridWatch · saos-owner-channel · ops-forge · sovereign-lighthouse · saos-desk · saos-markets
 
 ## 🧠 מפת-היכולות של הצי (המכונות והריפואים-בהן-הן-חיות)
 - **gitleaks** → Adsmarket, Console, Defi, Domain, Project-files, Saosmartwallet (+11)
@@ -13,6 +22,7 @@ Autonomy · Domain · Pulse · FleetHQ · sovereign-beacon · Sandbox · steem �
 - **sovereign-decider** → Autonomy, FleetHQ, Sandbox
 - **value-scan** → Autonomy, FleetHQ, Sandbox
 - **token-forge** → Domain, Sandbox, steem
+- **runtime-pacemaker** → Console, FleetHQ
 - **artery-catchup** → Autonomy, Sandbox
 - **artery-decision-truth** → Autonomy, Sandbox
 - **artery-fleet** → Autonomy, Sandbox
@@ -30,6 +40,5 @@ Autonomy · Domain · Pulse · FleetHQ · sovereign-beacon · Sandbox · steem �
 - **hive-probe** → Autonomy, Sandbox
 - **key-proof** → Autonomy, Sandbox
 - **office-growth** → Autonomy, Sandbox
-- **profit-oracle** → Autonomy, Sandbox
 
 *חוק: הספר-הזה הוא העין-העצמית של הרשת — נכתב-רק-ממדידה (API), ללא-המצאה, git-only, שורד-מחיקת-סנדבוקסים.*
