@@ -1,10 +1,11 @@
-# identity-patrol — סיור-זהויות כלל-הצי (2026-10-14T23:29:47.201Z)
+# identity-patrol — סיור-זהויות כלל-הצי (2026-10-14T23:53:55.793Z)
 
-**פסק: VIOLATION** — 39 ריפואים נסרקו (30 קומיטים אחרונים כל-אחד) · הפרות: 24 · דולגו: 1
+**פסק: VIOLATION** — 39 ריפואים נסרקו (30 קומיטים אחרונים כל-אחד) · הפרות: 25 · דולגו: 1
 
 חוק: DECISIONS #10 — אין NAME@users.noreply.github.com פרט-ל-owner ו-github-actions[bot]; בוטים חותמים @agents.roshpinacare-sys.
 
 ## הפרות
+- `giant` a2cee19b39 — author:41898282+github-actions[bot]@users.noreply.github.com + committer:41898282+github-actions[bot]@users.noreply.github.com — "trust-heartbeat: autonomous scan (no-sandbox) — 2026-10-14T23:37Z"
 - `Zip` b04f7a449a — author:weave-anchor-zero[bot]@users.noreply.github.com + committer:weave-anchor-zero[bot]@users.noreply.github.com — "weave-anchor-zero: 2026-10-14T21:48:54.928Z · cp#1637 · Z Chain 9369 gasPrice 0x0 · att 16"
 - `Zip` 851d07131b — author:weave-anchor[bot]@users.noreply.github.com + committer:weave-anchor[bot]@users.noreply.github.com — "weave-anchor: 2026-10-14T21:48:12.572Z · cp#1636 · 1/3 chains · att 1695 · market 0s/0r"
 - `Zip` 69b7d39bfa — author:weave-anchor-zero[bot]@users.noreply.github.com + committer:weave-anchor-zero[bot]@users.noreply.github.com — "weave-anchor-zero: 2026-10-14T21:35:36.028Z · cp#1635 · Z Chain 9369 gasPrice 0x0 · att 16"
@@ -24,7 +25,6 @@
 - `Zip` 8870cbc774 — author:weave-anchor-zero[bot]@users.noreply.github.com + committer:weave-anchor-zero[bot]@users.noreply.github.com — "weave-anchor-zero: 2026-10-13T21:35:18.785Z · cp#1619 · Z Chain 9369 gasPrice 0x0 · att 16"
 - `Zip` 14b0ced4e7 — author:weave-heart[bot]@users.noreply.github.com + committer:weave-heart[bot]@users.noreply.github.com — "weave-heart: beat 2026-10-13T21:22:28.202Z · seq 1677 · 1676 att · 1676/1676 sig · market "
 - `Zip` 9a419aeced — author:weave-anchor-zero[bot]@users.noreply.github.com + committer:weave-anchor-zero[bot]@users.noreply.github.com — "weave-anchor-zero: 2026-10-13T21:21:29.581Z · cp#1615 · Z Chain 9369 gasPrice 0x0 · att 16"
-- `Zip` 5555e0f72f — author:weave-anchor-zero[bot]@users.noreply.github.com + committer:weave-anchor-zero[bot]@users.noreply.github.com — "weave-anchor-zero: 2026-10-13T16:06:11.588Z · cp#1614 · Z Chain 9369 gasPrice 0x0 · att 16"
 
 ## דולגו בכנות
 - sanbox — commits API 409
