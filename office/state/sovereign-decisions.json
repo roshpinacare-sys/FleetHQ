@@ -1,6 +1,6 @@
 {
  "schema": "saos.sovereign-decisions/1",
- "generatedAt": "2026-10-14T23:06:31.339Z",
+ "generatedAt": "2026-10-14T23:22:16.274Z",
  "policyVersion": "SOV-POLICY/1",
  "principle": "הריבונות מחליטה ומבצעת — הבעלים קבע (trace 1a12…f45d) שהמערכת מקבלת החלטות חכמות בעצמה בצורה הכי מתקדמת שיש; הפניה לבעלים = שלילת הריבונות. כל-החלטה: ראיה-מדודה + אימות-כפול. בעלים = בעלים; ריבונות = הגוף שמחליט.",
  "authority": "advisory",
@@ -20,29 +20,29 @@
   ]
  },
  "sense": {
-  "gridHealth": {
-   "ok": true,
-   "ageMin": 36
-  },
   "openCloser": {
    "ok": true,
-   "ageMin": 6
-  },
-  "gridTruth": {
-   "ok": true,
-   "ageMin": 47
-  },
-  "decisionsPrev": {
-   "ok": true,
-   "ageMin": 15
+   "ageMin": 22
   },
   "valueScan": {
    "ok": true,
-   "ageMin": 246
+   "ageMin": 262
+  },
+  "decisionsPrev": {
+   "ok": true,
+   "ageMin": 16
+  },
+  "gridTruth": {
+   "ok": true,
+   "ageMin": 63
   },
   "officeState": {
    "ok": true,
-   "ageMin": 77
+   "ageMin": 92
+  },
+  "gridHealth": {
+   "ok": true,
+   "ageMin": 15
   }
  },
  "decisions": [
@@ -202,31 +202,33 @@
   {
    "id": "auto-fleet-health",
    "area": "operations",
-   "title": "4 workflows אדומים ב-2 ריפואים (מתוך 315) — GridWatch מרפא אוטונומית; סטריקים חוזרים = טריאז' הנדסי",
+   "title": "6 workflows אדומים ב-4 ריפואים (מתוך 315) — GridWatch מרפא אוטונומית; סטריקים חוזרים = טריאז' הנדסי",
    "status": "watch",
    "evidence": {
     "source": "GridWatch/state/fleet-health.json",
-    "measuredAt": "2026-10-14T22:30:19.402Z",
+    "measuredAt": "2026-10-14T23:07:31.770Z",
     "totals": {
      "repos": 39,
      "public": 14,
      "private": 25,
      "workflows": 315,
-     "green": 193,
+     "green": 191,
      "amber": 118,
-     "red": 4
+     "red": 6
     },
     "billingWorkflows": [],
     "redRepos": [
      "Autonomy",
+     "saos-runtime",
+     "Domain",
      "Console"
     ],
-    "alertCount": 4,
-    "remediations": 3
+    "alertCount": 5,
+    "remediations": 2
    },
    "law": "ריפוי-עצמי בתוך-מעטפת (הפיך+מדוד בלבד); סטריקים ≥3 לא מנוסים שוב — מנותבים לטריאז' הנדסי",
    "policy": "SOV-POLICY/1",
-   "decidedAt": "2026-10-14T23:06:31.339Z",
+   "decidedAt": "2026-10-14T23:22:16.274Z",
    "by": "sovereign-decider"
   },
   {
@@ -243,7 +245,7 @@
     "selfHeal": "same-repo GITHUB_TOKEN + cross-repo CROSS_REVIVE_PAT (D1)"
    },
    "policy": "SOV-POLICY/1",
-   "decidedAt": "2026-10-14T23:06:31.339Z",
+   "decidedAt": "2026-10-14T23:22:16.274Z",
    "by": "sovereign-decider"
   },
   {
@@ -258,7 +260,7 @@
    },
    "law": "אין דריסת-מסילות: למשרד יש לולאת-רטרו משלו; הריבונות מתעדת ומאמתת, לא לוקחת",
    "policy": "SOV-POLICY/1",
-   "decidedAt": "2026-10-14T23:06:31.339Z",
+   "decidedAt": "2026-10-14T23:22:16.274Z",
    "by": "sovereign-decider"
   }
  ],
