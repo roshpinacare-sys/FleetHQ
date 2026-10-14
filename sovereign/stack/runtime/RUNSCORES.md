@@ -1,17 +1,17 @@
 # RUNSCORES — the harness scoring book
 
-- generatedAt: `2026-10-14T00:29:53.950Z`
-- STATE book age: 83min · api fetches: 0
-- counts: {"unknown":9,"healthy":97,"critical":6}
+- generatedAt: `2026-10-14T00:34:25.393Z`
+- STATE book age: 87min · api fetches: 6
+- counts: {"unknown":9,"healthy":97,"flaky":3,"critical":3}
 
 | repo | workflow | class | lastConcl | lastRun |
 |---|---|---|---|---|
-| Domain | operator-console | critical | failure | 2026-10-13T22:58:08Z |
 | Domain | anchor-execute | critical | failure | 2026-10-13T22:58:05Z |
-| Console | estate-scrub | critical | failure | 2026-10-13T23:03:34Z |
-| Console | console-publish | critical | failure | 2026-10-13T22:58:07Z |
 | Console | line-agreement | critical | failure | 2026-10-13T22:58:04Z |
 | saos-runtime | .github/workflows/repair-rot2-custody.yml | critical | failure | 2026-10-12T21:40:16Z |
+| Domain | operator-console | flaky | failure | 2026-10-13T22:58:08Z |
+| Console | estate-scrub | flaky | failure | 2026-10-13T23:03:34Z |
+| Console | console-publish | flaky | failure | 2026-10-13T22:58:07Z |
 | FleetHQ | identity-patrol | healthy | success | 2026-10-13T23:06:12Z |
 | FleetHQ | runtime-pacemaker | healthy | success | 2026-10-13T23:05:14Z |
 | FleetHQ | identity-guard | healthy | success | 2026-10-13T23:03:55Z |
