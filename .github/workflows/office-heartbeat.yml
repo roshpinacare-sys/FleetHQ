@@ -107,10 +107,12 @@ jobs:
             git -c rebase.autoStash=true pull --rebase -q origin main || true
             ok=0
             for i in 1 2 3 4 5 6 7 8; do
-              git -c rebase.autoStash=true pull --rebase -X theirs -q origin main 2>/dev/null || true
-              if git push -q origin main; then ok=1; echo "PUBLISHED (attempt $i): office memory committed"; break; fi
+              git rebase --abort 2>/dev/null || true
+              git merge --abort 2>/dev/null || true
+              if git -c rebase.autoStash=true pull --rebase -X theirs -q origin main && git push -q origin main; then ok=1; echo "PUBLISHED (attempt $i): office memory committed"; break; fi
               sleep $((5 + RANDOM % 11))
             done
+            git rebase --abort 2>/dev/null || true
             [ "$ok" = "1" ] || echo "named terminal: publish-deferred — book kept on disk, next heartbeat re-lands it (anti-storm law §5)"
           fi
 
@@ -131,10 +133,12 @@ jobs:
             git -c rebase.autoStash=true pull --rebase -q origin main || true
             ok=0
             for i in 1 2 3 4 5 6 7 8; do
-              git -c rebase.autoStash=true pull --rebase -X theirs -q origin main 2>/dev/null || true
-              if git push -q origin main; then ok=1; echo "PUBLISHED (attempt $i): office state live"; break; fi
+              git rebase --abort 2>/dev/null || true
+              git merge --abort 2>/dev/null || true
+              if git -c rebase.autoStash=true pull --rebase -X theirs -q origin main && git push -q origin main; then ok=1; echo "PUBLISHED (attempt $i): office state live"; break; fi
               sleep $((5 + RANDOM % 11))
             done
+            git rebase --abort 2>/dev/null || true
             [ "$ok" = "1" ] || echo "named terminal: publish-deferred — book kept on disk, next heartbeat re-lands it (anti-storm law §5)"
           fi
 
@@ -152,10 +156,12 @@ jobs:
             git -c rebase.autoStash=true pull --rebase -q origin main || true
             ok=0
             for i in 1 2 3 4 5 6 7 8; do
-              git -c rebase.autoStash=true pull --rebase -X theirs -q origin main 2>/dev/null || true
-              if git push -q origin main; then ok=1; echo "PUBLISHED (attempt $i): office-knowledge.json live"; break; fi
+              git rebase --abort 2>/dev/null || true
+              git merge --abort 2>/dev/null || true
+              if git -c rebase.autoStash=true pull --rebase -X theirs -q origin main && git push -q origin main; then ok=1; echo "PUBLISHED (attempt $i): office-knowledge.json live"; break; fi
               sleep $((5 + RANDOM % 11))
             done
+            git rebase --abort 2>/dev/null || true
             [ "$ok" = "1" ] || echo "named terminal: publish-deferred — book kept on disk, next heartbeat re-lands it (anti-storm law §5)"
           fi
           # READBACK VERIFY — the published book must be reachable on origin;
