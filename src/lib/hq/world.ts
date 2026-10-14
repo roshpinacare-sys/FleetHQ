@@ -178,8 +178,10 @@ export class AgentBrain {
       const sy = TASK_WALL.cy + 140 + (this.id === 'aluf' ? 0 : s * 50);
       this.setTarget({ x: sx, y: sy, face: Math.PI, kind: 'stand' });
     } else if (station === 'podium') {
+      // R57 — אחרי-הזזת-הבימה (חוץ-מהעמוד): עמדת-העמידה מזרחית-לבימה
+      // מחוץ-לרדיוס (1.7מ'), לא עליה (היתה +50..80 יח' — בתוך-הבימה)
       const s = spreadOf(this.id);
-      this.setTarget({ x: PODIUM.x + 50 + s * 30, y: PODIUM.y - 30 + s * 24, face: -Math.PI / 2, kind: 'stand' });
+      this.setTarget({ x: PODIUM.x + 150 + s * 40, y: PODIUM.y - 40 + s * 60, face: -Math.PI / 2, kind: 'stand' });
     } else if (station === 'library') {
       const s = spreadOf(this.id);
       this.setTarget({ x: LIBRARY_TABLE[0] - 50 + s * 100, y: LIBRARY_TABLE[1] + 45 + s * 30, face: -0.35, kind: 'stand' });

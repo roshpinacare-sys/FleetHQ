@@ -150,6 +150,10 @@ export interface GitPulse {
   /** The truthful per-repo sync/health inventory (foreman gitfleet wire, read-only).
    *  Optional for backward compatibility — absent means "not known yet", never green. */
   fleet?: RepoFleetView[];
+  /** R57 — ספרי-הצי האמיתיים מ-Domain/agents/office-live.json (books.list).
+   *  זהו מקור-האמת של קיר-הגיט בחדר: טריות נמדדת פר-ספר (ageHours/fresh/empty).
+   *  חסר = לא נמדד — הקיר יראה ריקות-כנה, לעולם לא 0/ירוק מומצא. */
+  books?: { name: string; ageHours: number | null; fresh: boolean; empty: boolean }[];
 }
 
 export type RepoSyncState =

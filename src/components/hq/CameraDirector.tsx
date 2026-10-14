@@ -7,9 +7,9 @@
  * · גלגלת/צביטה = התרחקות בגבולות נקודת התצפית
  * · נקודות תצפית מוגדרות (סרגל החדר) + מיקוד ישות בקליק (bus 'focus')
  * · Esc מחזיר לתצפית הכללית; העדפת reduced-motion = מעברים מיידיים
- * · R54 (מילת-הבעלים: "שלא מעבירים את העכבר זה מסתובב"): אפס-תנועה-ללא-בקשה.
- *   הסיור-המודרך איננו מתחיל לבד — רק כפתור מפורש (או ?tour=on). נשימת-הסרק
- *   (סחרור אחרי 25ש') נמחקה לגמרי: המצלמה נשארת בדיוק היכן שהמשתמש השאיר אותה.
+ * · יבוא-המשרד-הקודם (מילת-הבעלים המילולית: "שלא מעבירים את העכבר זה מסתובב"):
+ *   הסיור-המודרך מתחיל לבד עם-הכנת-החדר; כל קלט מחזיר שליטה מיד; 10 שניות
+ *   מנוחה מחזירות את הסיור מעצמן. ?tour=off = כיבוי-מפורש לכל-אורך-הסשן.
  * · המצלמה לעולם לא יוצאת מהקירות ולא לוקחת שליטה בפתאומיות
  */
 'use client';
@@ -71,7 +71,12 @@ export function setTour(on: boolean) {
   window.dispatchEvent(new CustomEvent('hq-camera-tour', { detail: { on } }));
 }
 
-function disarmTour() { director.tour = false; }
+/** הפסקת-סיור — תמיד דרך setTour כדי שהצ'יפ בסרגל יישאר אמין */
+function disarmTour() { if (director.tour) setTour(false); }
+
+/** ?tour=off — כיבוי-מפורש: הסיור לא מתחיל ולא חוזר לעולם בסשן הזה */
+const TOUR_OFF = typeof window !== 'undefined'
+  && new URLSearchParams(window.location.search).get('tour') === 'off';
 
 /** קלט: גרירת-הקפה + גלגלת + צביטה. בלי מקלדת-משחק; Esc בלבד (בסרגל וכאן) */
 function useCameraInput() {
@@ -164,13 +169,13 @@ export function CameraDirector() {
     return () => mq.removeEventListener?.('change', set);
   }, []);
 
-  // R54 — הסיור איננו מתחיל לבד: רק ?tour=on מפעיל אותו. ברירת-המחדל:
-  // מצלמה יציבה לגמרי עד שהמשתמש מבקש (כפתור "סיור מודרך").
+  // יבוא-החוק-מהמשרד-הקודם: הסיור מתחיל לבד עם-הכנת-החדר (בלי קלט, בלי כפתור).
+  // ?tour=off מכבה לגמרי; reduced-motion (העדפת-מערכת) גובר — כמו-תמיד.
   useEffect(() => {
-    if (new URLSearchParams(window.location.search).get('tour') !== 'on') return;
+    if (TOUR_OFF) return;
     return useHq.subscribe((s) => {
       if (s.roomReady && !s.sceneFailed && !director.reducedMotion && !director.tour) {
-        director.tour = true;
+        setTour(true);
       }
     });
   }, []);
@@ -240,8 +245,16 @@ export function CameraDirector() {
     const kLook = instant ? 1 : 1 - Math.exp(-dt * (onTour ? 2.1 : 4.2));
     first.current = false;
 
-    // R54 — אפס-תנועה-ללא-בקשה: נשימת-הסרק נמחקה. מחוץ-לסיור ולמיקוד,
-    // המצלמה איננה זזה בשום-ציר עד קלט. החדר "חי" דרך הצוות — לא דרך העדשה.
+    // R54 — אפס-תנועה-מחוץ-לסיור ולמיקוד: העדשה לא זזה בשום-ציר בלי קלט.
+
+    // חוק-המנוחה (יבוא מהמשרד-הקודם): 10 שניות בלי-קלט — הסיור חוזר מעצמו.
+    // מיקוד פעיל (המשתמש בוחן ישות) לא נקטע לעולם; ?tour=off ו-reduced-motion
+    // מנועים מראש.
+    if (!TOUR_OFF && !director.reducedMotion && !director.tour && !director.focus
+        && useHq.getState().roomReady
+        && Date.now() - state.lastInputAt > 10_000) {
+      setTour(true);
+    }
 
     // Task 11-a — כיריאוגרפיית הסיור: כל תחנה במסלול היא נקודת-תצפית
     // אמיתית שכבר ירתה ומדדה (applyPreset — אותן הפוזות של הסרגל),

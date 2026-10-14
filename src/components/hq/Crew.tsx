@@ -25,7 +25,7 @@ import * as THREE from 'three';
 import * as SkeletonUtils from 'three/examples/jsm/utils/SkeletonUtils.js';
 import { to3 } from '@/lib/hq/contract';
 import { makeBlobShadowTexture, makeBubbleTexture, makeNameplate } from '@/lib/hq/textures';
-import { makeSitClip, makeTypeClipAdditive, makeBreatheClip, makeIdleStandClip, makeStandClip, solveSit, solveStand, makeLookClip, makeTalkClip, makeSipClip, makeThinkClip, makeWriteClip, makeLeanClip, makePointClip } from '@/lib/hq/pose';
+import { makeSitClip, makeTypeClipAdditive, makeBreatheClip, makeIdleStandClip, makeStandClip, solveSit, solveStand, makeLookClip, makeTalkClip, makeSipClip, makeThinkClip, makeWriteClip, makeLeanClip, makePointClip, makeWalkClip, makeWalkPhases } from '@/lib/hq/pose';
 import { applyLifeLayer } from '@/lib/hq/life';
 import { useHq } from '@/lib/hq/store';
 import { bus, agentVisualFresh, ROOM_STALE_MS } from '@/lib/hq/world';
@@ -96,6 +96,18 @@ function stripPrefix(clip: THREE.AnimationClip): THREE.AnimationClip {
  *    hipsWorldY≈0 עם idle של Xbot על מיש'ל). רק לרצועת-ההירכיים — לשאר
  *    העצמות מסגרת-מקומית זהה בין הריגים.
  */
+/**
+ * R58 — stripHipsTracks (להליכת-הנקבה-המרוטרגטת): משעה את רצועות-האגן
+ * (רוטציה + תרגום) — הרוטציה של Xbot במסגרת Y-up הופכת על שלד Z-up
+ * להתהפכות-גוף (נמדד: אצבעות ב-0.83מ'), והתרגום כבר-לא-נדרש: המוח מזיז
+ * את שורש-הדמות על-גבי-מסילות-הרצפה, והקפיצה-האנכית מגיעה משכבת-החיים.
+ * הרגליים/הידיים/עמוד-השדרה ממשיכים להניע — הליכה נקראת טבעית, גוף זקוף-תמיד.
+ */
+function stripHipsTracks(clip: THREE.AnimationClip): THREE.AnimationClip {
+  const tracks = clip.tracks.filter((t) => !/^mixamorig:?Hips\.(quaternion|position|scale)$/.test(t.name));
+  return new THREE.AnimationClip(clip.name, clip.duration, tracks, clip.blendMode);
+}
+
 function dropMissingBones(clip: THREE.AnimationClip): THREE.AnimationClip {
   const tracks = clip.tracks
     .filter((t) => !/LeftEye|RightEye|LeftToeBase|RightToeBase/.test(t.name))
@@ -221,6 +233,12 @@ function buildPoseClips(tpl: THREE.Object3D, prefix: string, targetH: number, se
     out.lean = makeLeanClip(prefix, tpl, pose);
     out.sip = makeSipClip(prefix, tpl, standPose);
     out.point = makePointClip(prefix, tpl, standPose);
+    // R58 — חוק-בסיס-המחווה (התיקון-המדוד של "הדמויות מרחפות באוויר"):
+    // מחווה שנפתרה על בסיס-ישיבה ומופעלת על עומד — מקפלת לו רגליים לכיסא-
+    // שאיננו (גוף תלוי בזווית); וסיפ-על-בסיס-עמידה בישיבה מקפיץ את הגוף
+    // מהכיסא. לכל מחווה-של-מבט שני פתרונות: look (בסיס-ישיבה, ליושבים)
+    // ו־lookStand (בסיס-עמידה, לעומדים) — והבחירה נאכפת ב-useFrame.
+    out.lookStand = makeLookClip(prefix, tpl, standPose, seed);
   } catch (e) {
     console.warn('[hq-crew] life-library build failed (graceful — room keeps base motion):', e);
   }
@@ -262,8 +280,6 @@ function buildCrewAssets(maleGltf: { scene: THREE.Object3D }, femaleGltf: { scen
   // רוטציית-אגן Y-up על bind Z-up. הקליפ הפתור 'stand' (מרחב-עולם) הוא ה-idle
   // שלה — עמידה טבעית עם ידיים לאורך-הגוף, מהמסלקת ולא מהריטרגט.
   female.idle = female.stand ?? female.idleProc;
-  if (walk) female.walk = dropMissingBones(walk.clone());
-  if (run) female.run = dropMissingBones(run.clone());
   if (agree) female.agree = dropMissingBones(filterClipTracks(agree, isHeadBone));
   if (shake) female.shake = dropMissingBones(filterClipTracks(shake, isHeadBone));
 
@@ -271,6 +287,15 @@ function buildCrewAssets(maleGltf: { scene: THREE.Object3D }, femaleGltf: { scen
   const male: ClipLib = buildPoseClips(maleTpl, '', MALE_H, SEAT_Y, 3);
   const srcMesh = findSkinnedMesh(srcGltf.scene);
   const maleMesh = findSkinnedMesh(maleTpl);
+  // R58 — הליכה/ריצה של הנקבה: העברה-גולמית אסורה (רצועות-מקומיות בין-מסגרות
+  // שונות = התהפכות-גוף; נמדד: אצבעות ב-0.83מ') ו-retargetClip על השלד הזה
+  // תולה את השרשור-הראשי (נמדד). הפתרון-המובטח: הליכה פרוצדורלית פתורה-
+  // מרחב-העולם (makeWalkClip — אותה משמעת של solveStand: כיוון-מנוחה מהתבנית,
+  // אגנוסטי-ריג בבנייה) — גוף זקוף-תמיד, צעדי-רגליים אמת, אפס-תלות-מסגרת.
+  const fWalk = makeWalkClip('mixamorig', femaleTpl, makeWalkPhases());
+  if (fWalk) female.walk = fWalk;
+  const fRun = makeWalkClip('mixamorig', femaleTpl, makeWalkPhases(1.6, 0.85));
+  if (fRun) female.run = fRun;
   if (srcMesh && maleMesh) {
     const tryRetarget = (clip: THREE.AnimationClip | undefined, name: string, keepHip = false) => {
       if (!clip) return;
@@ -326,14 +351,18 @@ function recolor(root: THREE.Object3D, color: string, female: boolean, seed: num
     mesh.material = (Array.isArray(mesh.material) ? mesh.material.map((m) => m.clone()) : (mats[0].clone() as THREE.Material)) as THREE.Material;
     const apply = (m: THREE.MeshStandardMaterial) => {
       if (female) {
-        // מיצ'ל — מאריג טקסטורי יחיד: הטקסטורה היא הזהות, tint עדין לכיוון צבע הסוכן
-        m.color.lerp(crew, 0.16);
+        // מיצ'ל — מאריג טקסטורי יחיד: הטקסטורה היא הזהות, tint מוגבר
+        // (0.30 — R58: ב-0.16 הזהות לא נקראה; תמר/שחר נראו כמו אותה דמות)
+        m.color.lerp(crew, 0.3);
         return;
       }
       const n = mesh.name;
       if (/Beard|Headwear/i.test(n)) { m.color.copy(hair); m.roughness = 0.72; } // קודם — "Headwear" מכיל "Head"
-      else if (/Outfit_Top/i.test(n)) { m.color.lerp(crew, 0.62); m.roughness = 0.78; }
-      else if (/Outfit_Bottom/i.test(n)) { m.color.lerp(dark, 0.62); m.roughness = 0.82; }
+      // R58 — זהות-צבע נראית: ה-lerp הישן (0.62) השאיר 38% חליפת-טאן בסיסית
+      // וכל-הצוות נראה באותו מדים (נמדד בצילומים). הצבע-הקנוני של הסוכן
+      // חייב להיקרא מהמרחק — כמו מדי-יחידה אמיתיים.
+      else if (/Outfit_Top/i.test(n)) { m.color.lerp(crew, 0.88); m.roughness = 0.78; }
+      else if (/Outfit_Bottom/i.test(n)) { m.color.lerp(dark, 0.8); m.roughness = 0.82; }
       else if (/Outfit_Footwear/i.test(n)) { m.color.lerp(shoeTone, 0.7); m.roughness = 0.85; }
       else if (/^Mesh$/i.test(n)) { m.color.copy(hair); } // שיער RPM (מש-גורף)
       else if (/Teeth|Eye/i.test(n)) { /* ללא שינוי */ }
@@ -622,12 +651,14 @@ function HumanAgent({ id, assets }: { id: string; assets: CrewAssets }) {
       const seated = sitT > 0.5;
       const working = workT > 0.35;
       let pick: string | null = null;
-      if (onCoffee && !working) pick = rng.current() < 0.75 ? 'sip' : 'look';
+      // R58 — הבחירה כבולה לבסיס-התנוחה האמיתי (ראה חוק-בסיס-המחווה):
+      // יושב — רק מחוות-בסיס-ישיבה; עומד — רק מחוות-בסיס-עמידה. אפס-ערבוב.
+      if (onCoffee && !working) pick = rng.current() < 0.75 ? 'sip' : 'lookStand';
       else if (seated && !working) {
         const r = rng.current();
-        pick = r < 0.4 ? 'look' : r < 0.6 ? 'lean' : r < 0.74 ? 'sip' : null;
+        pick = r < 0.5 ? 'look' : r < 0.82 ? 'lean' : null;
       } else if (!seated && !working) {
-        pick = brain.station === 'wall' && rng.current() < 0.55 ? 'point' : 'look';
+        pick = brain.station === 'wall' && rng.current() < 0.55 ? 'point' : 'lookStand';
       }
       if (pick && actions.current[pick]) {
         const act = actions.current[pick]!;

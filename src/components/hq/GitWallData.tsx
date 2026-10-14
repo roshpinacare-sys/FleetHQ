@@ -212,17 +212,35 @@ export function GitWallSync() {
   useEffect(() => {
     const apply = (force: boolean) => {
       const g = useHq.getState().snap.git ?? null;
-      const rows: WallRepoRow[] = (g?.fleet ?? []).map((r) => {
-        const dot = repoDot(r.lastRunConclusion, r.lastRunStatus);
-        // נמדד → מספר; תקרה-נמדדת → "100+"; לא-נמדד → '—' ממש (אף-פעם לא 0)
-        const commits =
-          typeof r.commits7d === 'number' && Number.isFinite(r.commits7d)
-            ? `${r.commits7d}${r.commits7dCapped ? '+' : ''}`
-            : '—';
-        return { name: r.label, dotColor: dot.color, statusLabel: dot.label, commitsLabel: commits };
-      });
+      // R57 — מקור-האמת של הקיר: ספרי-הצי (books.list מהיומן-החי). ה-`fleet`
+      // הישן מעולם לא מוזן בשרשרת-הזו (נמדד: הקיר היה ריק-נצחי) — הוא נשאר
+      // ערוץ-גיבוי תקני, אבל הספרים קודמים כשהם קיימים.
+      let rows: WallRepoRow[];
+      if (g?.books?.length) {
+        rows = g.books.map((b) => {
+          // חוק-הטריות פר-ספר — נמדד (ageHours), לעולם לא מנוחש:
+          // fresh → ok 'טרי' · empty → ink3 'ריק' · אחרת → attention 'מיושן · Xh'
+          const age = b.ageHours != null ? (b.ageHours < 1 ? `${Math.max(1, Math.round(b.ageHours * 60))} דק'` : `${Math.round(b.ageHours)} ש'`) : null;
+          const dot = b.empty
+            ? { color: SEMANTIC.ink3, label: 'ריק' }
+            : b.fresh
+              ? { color: SEMANTIC.ok, label: 'טרי' }
+              : { color: SEMANTIC.attention, label: age ? `מיושן · ${age}` : 'מיושן' };
+          return { name: b.name, dotColor: dot.color, statusLabel: dot.label, commitsLabel: '—' };
+        });
+      } else {
+        rows = (g?.fleet ?? []).map((r) => {
+          const dot = repoDot(r.lastRunConclusion, r.lastRunStatus);
+          // נמדד → מספר; תקרה-נמדדת → "100+"; לא-נמדד → '—' ממש (אף-פעם לא 0)
+          const commits =
+            typeof r.commits7d === 'number' && Number.isFinite(r.commits7d)
+              ? `${r.commits7d}${r.commits7dCapped ? '+' : ''}`
+              : '—';
+          return { name: r.label, dotColor: dot.color, statusLabel: dot.label, commitsLabel: commits };
+        });
+      }
       const updatedAtMs = g?.lastFetch && Number.isFinite(g.lastFetch) ? g.lastFetch : null;
-      gitBoard().set({ rows, updatedAtMs, sourceLabel: g?.repoLabel || '—' });
+      gitBoard().set({ rows, updatedAtMs, sourceLabel: g?.books?.length ? 'ספרי-הצי · office-live' : g?.repoLabel || '—' });
       if (force) gitBoard().bump(); // טיק-טריות: ציור מחדש עם התיישנות נמדדת
       hqWall.updatedAt = updatedAtMs;
       hqWall.reposRendered = rows.length;

@@ -16,6 +16,9 @@ interface WirePayload {
   pulse: { ok: boolean; error?: string; data?: OfficePulseRaw };
   beacon: { ok: boolean; error?: string; data?: BeaconRaw };
   git: { ok: boolean; error?: string; commits?: { hash: string; subject: string; author: string; ts: number; repo: string }[] };
+  /** R57 — ספרי-הצי מהיומן-החי (Domain/agents/office-live.json):
+   *  המקור-היחיד לקיר-הגיט בחדר. חסר/נכשל = הקיר ריק-בכנות. */
+  books?: { ok: boolean; error?: string; at?: string; list?: { name: string; ageHours: number | null; fresh: boolean; empty: boolean }[] };
 }
 
 /** מקורות-האמת הציבוריים — מוגשים גם דרך /api/office-state (סנדבוקס) וגם
@@ -32,15 +35,38 @@ async function fetchJsonDirect<T>(url: string, timeoutMs = 9000): Promise<T | nu
   }
 }
 
+/** R57 — מבנה-היומן-החי: ממנו נלקח books.list בלבד (מיפוי-מינימלי כנה) */
+interface OfficeLiveRaw {
+  generatedAt?: string;
+  books?: { list?: { name?: unknown; ageHours?: unknown; fresh?: unknown; empty?: unknown }[] };
+}
+
+function mapBooks(raw: OfficeLiveRaw | null): { ok: boolean; at?: string; list?: { name: string; ageHours: number | null; fresh: boolean; empty: boolean }[] } {
+  const list = raw?.books?.list;
+  if (!Array.isArray(list)) return { ok: false, error: 'unavailable' };
+  const out: { name: string; ageHours: number | null; fresh: boolean; empty: boolean }[] = [];
+  for (const b of list) {
+    if (!b || typeof b !== 'object' || typeof b.name !== 'string' || !b.name) continue;
+    out.push({
+      name: b.name,
+      ageHours: typeof b.ageHours === 'number' && Number.isFinite(b.ageHours) ? b.ageHours : null,
+      fresh: b.fresh === true,
+      empty: b.empty === true,
+    });
+  }
+  return { ok: out.length > 0, ...(raw?.generatedAt ? { at: raw.generatedAt } : {}), ...(out.length ? { list: out } : { error: 'unavailable' }) };
+}
+
 /** איסוף ישיר מהמקורות (סטטי, ללא שרת) — כנות זהה: מה שנכשל נשאר לא-זמין */
 async function gatherDirect(): Promise<WirePayload> {
-  const [foremanState, pulseData, beaconData, ghCommits] = await Promise.all([
+  const [foremanState, pulseData, beaconData, ghCommits, officeLive] = await Promise.all([
     fetchJsonDirect<ForemanRaw>(`${RAW_BASE}/FleetHQ/main/office/state/office-state.json`),
     fetchJsonDirect<OfficePulseRaw>(`${RAW_BASE}/Domain/main/office/data.json`),
     fetchJsonDirect<BeaconRaw>(`${RAW_BASE}/sovereign-beacon/main/state.json`),
     fetchJsonDirect<{ sha?: string; commit?: { message?: string; author?: { name?: string }; committer?: { name?: string } } }[]>(
       'https://api.github.com/repos/roshpinacare-sys/FleetHQ/commits?per_page=8',
     ),
+    fetchJsonDirect<OfficeLiveRaw>('https://roshpinacare-sys.github.io/Domain/agents/office-live.json'),
   ]);
   const commits = Array.isArray(ghCommits)
     ? ghCommits
@@ -59,6 +85,7 @@ async function gatherDirect(): Promise<WirePayload> {
     pulse: { ok: !!pulseData, ...(pulseData ? { data: pulseData } : { error: 'unavailable' }) },
     beacon: { ok: !!beaconData, ...(beaconData ? { data: beaconData } : { error: 'unavailable' }) },
     git: { ok: !!commits?.length, ...(commits?.length ? { commits } : { error: 'unavailable' }) },
+    books: mapBooks(officeLive),
   };
 }
 
@@ -89,14 +116,15 @@ export async function pullTruthOnce(): Promise<void> {
       if (f.agentId && f.text) useHq.getState().syncBubble(f.agentId, f.text);
     }
 
-    // קיר-הגיט: קומיטים אמיתיים או כנות-פנויה
+    // קיר-הגיט: קומיטים אמיתיים + ספרי-הצי מהיומן-החי — או כנות-פנויה
     useHq.getState().syncGit({
       available: !!p.git.ok,
       repoUrl: 'https://github.com/roshpinacare-sys/FleetHQ',
       repoLabel: 'FleetHQ',
       branch: 'main',
       commits: p.git.commits ?? [],
-      lastFetch: Date.parse(p.fetchedAt) || Date.now(),
+      books: p.books?.list,
+      lastFetch: Date.parse(p.books?.at ?? '') || Date.parse(p.fetchedAt) || Date.now(),
     });
 
     useHq.getState().setTruth(buildTruth(
