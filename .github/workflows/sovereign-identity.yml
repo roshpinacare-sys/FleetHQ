@@ -31,6 +31,9 @@ jobs:
         with: { node-version: 20 }
 
       - name: Compute identity root (exit 0 always)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SOVEREIGN_PAT: ${{ secrets.SOVEREIGN_PAT }}
         run: node sovereign/stack/identity/identity-root.mjs
 
       - name: Publish (defer-not-fail, rebase-before-push, agent-scoped paths)
