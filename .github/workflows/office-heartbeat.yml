@@ -17,7 +17,11 @@ name: office-heartbeat
 
 on:
   schedule:
+    # two independent cron lines — GitHub skips schedule fires probabilistically
+    # (measured 2026-10-14: only 3 schedule runs in ~15h despite hourly cron);
+    # two lines double the fire opportunities, the shift engine itself stays idempotent
     - cron: '41 * * * *'
+    - cron: '13 */2 * * *'
   workflow_dispatch: {}
 
 permissions:
