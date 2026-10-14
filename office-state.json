@@ -1,54 +1,55 @@
 {
-  "capturedAt": "2026-10-13T16:32:21.108Z",
+  "capturedAt": "2026-10-13T21:39:17.696Z",
   "connected": true,
   "backend": "live",
-  "statusHe": "צוות חי — זיכרון שוחזר מהגיט (22 משמרות, 14 לקחים)",
+  "statusHe": "צוות חי — זיכרון שוחזר מהגיט (24 משמרות, 15 לקחים)",
   "mode": null,
   "agents": [
     {
       "id": "aluf",
-      "state": "thinking",
-      "activity": "מתכנן את היעד…",
+      "state": "idle",
+      "activity": "משגיח מהלוח",
       "station": "wall",
-      "since": 1791909136275,
-      "taskId": "t1820"
+      "since": 1791927457508,
+      "taskId": "t1881"
     },
     {
       "id": "gal",
       "state": "idle",
       "activity": "",
       "station": "desk",
-      "since": 1791909125687,
-      "taskId": "t1820"
+      "since": 1791927430013,
+      "taskId": "t1881"
     },
     {
       "id": "erez",
       "state": "idle",
       "activity": "",
       "station": "desk",
-      "since": 1791908948974,
-      "taskId": "t1820"
+      "since": 1791927582903,
+      "taskId": "t1881"
     },
     {
       "id": "tamar",
       "state": "reading",
-      "activity": "קורא fleet-roster — סיור-רענון",
+      "activity": "קורא sovereign-policy — סיור-רענון",
       "station": "library",
-      "since": 1791909112792
+      "since": 1791927529393
     },
     {
       "id": "shachar",
-      "state": "idle",
-      "activity": "",
-      "station": "desk",
-      "since": 1791908973790
+      "state": "reading",
+      "activity": "סורק את מדף הספרים",
+      "station": "library",
+      "since": 1791927577649,
+      "taskId": "t1895"
     },
     {
       "id": "yarden",
       "state": "idle",
       "activity": "",
       "station": "desk",
-      "since": 1791909075047
+      "since": 1791927491664
     }
   ],
   "tasks": [
@@ -2441,25 +2442,133 @@
       "startedAt": 1791908844128,
       "summary": " [אושר בכנות לאחר 2 עידונים — הערת ראש-המטה: בצעי חיפוש רשת בפועל (web_search) על סוכנים אוטונומיים, אספי ידיעות עדכניות עם מקורות, וכתבי דוח מסודר הכולל כותרות, תאריכים, קישורים וסיכום תמציתי.]",
       "durationMs": 83123
+    },
+    {
+      "id": "t1852",
+      "title": "ייצור תוכן: גבשי דוח מצב-שוטף מהספרים הטריים לפרסום-עתידי והגישי לשער-הביקורת",
+      "description": "ייצור תוכן: גבשי דוח מצב-שוטף מהספרים הטריים לפרסום-עתידי והגישי לשער-הביקורת",
+      "status": "blocked",
+      "assignee": "gal",
+      "dependsOn": [],
+      "why": "ספרי הדקס, המסחר וההגיון הפנימי",
+      "matchBy": "fit",
+      "createdBy": "aluf",
+      "createdAt": 1791923525048,
+      "updatedAt": 1791923582200,
+      "startedAt": 1791923581098
+    },
+    {
+      "id": "t1866",
+      "title": "סיור שגרה: צלב בין שני ספרי צי ודווח על פערים שנמצאו",
+      "description": "סיור שגרה: צלב בין שני ספרי צי ודווח על פערים שנמצאו",
+      "status": "done",
+      "assignee": "erez",
+      "dependsOn": [],
+      "why": "ביקורות, טענות וחוזי יכולת",
+      "matchBy": "fit",
+      "createdBy": "aluf",
+      "createdAt": 1791923587604,
+      "updatedAt": 1791923662103,
+      "startedAt": 1791923607506,
+      "summary": "פערים בין fleet-roster ו-fleet-indicators: counts.DECLINE, counts.GROW, counts.HELD, הפרש זמן 156.9 שעות.",
+      "durationMs": 42549
+    },
+    {
+      "id": "t1881",
+      "title": "סיור גיט: נתח את זרם הקומיטים האחרון ודווח מה אפשר ללמוד ומה חסר",
+      "description": "סיור גיט: נתח את זרם הקומיטים האחרון ודווח מה אפשר ללמוד ומה חסר",
+      "status": "done",
+      "assignee": "gal",
+      "dependsOn": [],
+      "why": "ספרי הדקס, המסחר וההגיון הפנימי",
+      "matchBy": "fit",
+      "createdBy": "aluf",
+      "createdAt": 1791923855470,
+      "updatedAt": 1791927266735,
+      "startedAt": 1791927119869,
+      "summary": "",
+      "durationMs": 113602
+    },
+    {
+      "id": "t1895",
+      "title": "Collect recent news on autonomous agents",
+      "description": "Use web_search to gather articles, press releases, and reports published in the last 30 days about autonomous agents.",
+      "status": "doing",
+      "assignee": "shachar",
+      "dependsOn": [],
+      "why": "intelligence gathering",
+      "matchBy": "llm",
+      "createdBy": "aluf",
+      "createdAt": 1791927457508,
+      "updatedAt": 1791927458853,
+      "startedAt": 1791927458853
     }
   ],
   "books": 22,
   "memory": {
-    "shifts": 23,
-    "lessons": 14
+    "shifts": 25,
+    "lessons": 16
   },
   "counts": {
     "agent": 6,
-    "task": 163,
-    "log": 1,
-    "feed": 0,
-    "decision": 0,
+    "task": 167,
+    "log": 6,
+    "feed": 4,
+    "decision": 2,
     "report": 0,
     "goal": 0,
-    "bubble": 0
+    "bubble": 2
   },
-  "feed": [],
+  "feed": [
+    {
+      "kind": "bubble:shachar",
+      "text": "אין כלי web_search, בודקת ספרים זמינים למידע רלוונטי.",
+      "at": 1791927577649
+    },
+    {
+      "kind": "decision",
+      "text": "המפעיל האוטונומי הכריע: מדיניות המפעיל האוטונומי: הנתיב הבטוח — המשך",
+      "at": 1791927571276
+    },
+    {
+      "kind": "decision",
+      "text": "שאלה למפעיל האוטונומי: איך אפשר לגשת לכלי web_search עבור חיפוש חדשות על סוכנים אוטונומיים?",
+      "at": 1791927564276
+    },
+    {
+      "kind": "bubble:shachar",
+      "text": "אישור מהמפעיל, המשך המשימה.",
+      "at": 1791927564275
+    }
+  ],
   "reports": [],
-  "decisions": [],
+  "decisions": [
+    {
+      "id": "d1901",
+      "agentId": "shachar",
+      "kind": "question",
+      "question": "איך אפשר לגשת לכלי web_search עבור חיפוש חדשות על סוכנים אוטונומיים?",
+      "options": [],
+      "context": "בקשה לגישה לכלי חיפוש רשת",
+      "status": "open",
+      "taskId": "t1895",
+      "createdAt": 1791927564275
+    },
+    {
+      "id": "d1901",
+      "agentId": "shachar",
+      "kind": "question",
+      "question": "איך אפשר לגשת לכלי web_search עבור חיפוש חדשות על סוכנים אוטונומיים?",
+      "options": [],
+      "context": "בקשה לגישה לכלי חיפוש רשת",
+      "status": "answered",
+      "taskId": "t1895",
+      "createdAt": 1791927564275,
+      "answer": {
+        "text": "מדיניות המפעיל האוטונומי: הנתיב הבטוח — המשך",
+        "ts": 1791927571276
+      }
+    }
+  ],
   "lastError": null
 }
