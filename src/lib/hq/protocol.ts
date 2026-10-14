@@ -19,6 +19,20 @@ export const TASK_COL: Record<TaskStatus, string> = {
   cancelled: '#52525b',
 };
 
+/** R58 — תוויות-מצב בעברית לצגי-העבודה (מה הסוכן עושה עכשיו, במילים שלנו) */
+export const STATE_HE: Record<string, string> = {
+  idle: 'פנוי — ממתין למטלה',
+  thinking: 'חושב על גישה',
+  reading: 'קורא מקור',
+  checking: 'בודק ומאמת',
+  writing: 'כותב ומבצע',
+  walking: 'בתנועה בחדר',
+  waiting_user: 'ממתין להכרעת-בעלים',
+  blocked: 'חסום — דורש פתיחה',
+  done: 'השלים — מסכם',
+  error: 'כשל — לתיקון',
+};
+
 /** Fallback cast — identical ids/colors to the foreman's CREW (mini-services/agent-hq/src/cast.ts).
  *  משמש רק לריהוט החדר לפני שהסנאפשוט האמיתי הראשון מגיע. */
 export const CREW_FALLBACK: CrewMember[] = [

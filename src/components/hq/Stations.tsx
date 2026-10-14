@@ -22,9 +22,10 @@ import {
 } from '@/lib/hq/textures';
 import { useHq } from '@/lib/hq/store';
 import { bus } from '@/lib/hq/world';
-import { STATE_COLORS, TASK_COL, type AgentState } from '@/lib/hq/protocol';
+import { STATE_COLORS, STATE_HE, TASK_COL, type AgentState } from '@/lib/hq/protocol';
 import { GitWallSync, gitBoard } from './GitWallData';
 import { useOfficeMaterials, type OfficeMats } from './Architecture';
+import { DeskSet, CoffeeLife } from './Realism';
 
 // ─────────────── חנויות מסך (מופע יחיד לכל סוכן/לוח) ───────────────
 type Monitor = ReturnType<typeof makeMonitorScreen>;
@@ -65,6 +66,23 @@ export function StationSync() {
       nameplateOf(c.id, c.name.he, c.title.he, c.color).set(
         ag?.activity || '', STATE_COLORS[ag?.state || 'idle'],
       );
+      // R58 — פס-העבודה על הצג: מצב אמת + פעילות + המטלה הנוכחית מהפורמן.
+      // בלי סנאפשוט — "המתנה למדידה", לעולם לא עבודה-מדומה (חוק-הכנות).
+      const curTask = ag
+        ? (st.snap.tasks.find((t) => t.assignee === c.id && t.status !== 'done' && t.status !== 'cancelled')
+          ?? st.snap.tasks.filter((t) => t.assignee === c.id).slice(-1)[0])
+        : undefined;
+      monitorOf(c.id, c.name.en, c.color).setWork(ag
+        ? {
+            stateHe: STATE_HE[ag.state] ?? ag.state,
+            stateCol: STATE_COLORS[ag.state],
+            activity: ag.activity || '',
+            task: curTask?.title ?? '',
+            taskStatusHe: curTask
+              ? curTask.status === 'done' ? 'הושלם' : curTask.status === 'doing' ? 'בביצוע' : curTask.status === 'review' ? 'בביקורת' : curTask.status === 'blocked' ? 'חסום' : 'מתוכנן'
+              : '',
+          }
+        : null);
     }
     // לוח משימות
     if (!taskWallTex) taskWallTex = makeTaskWallTexture();
@@ -212,6 +230,8 @@ function WorkDesk({ id, mats }: { id: string; mats: OfficeMats }) {
         <sphereGeometry args={[0.035, 10, 8]} />
         <meshStandardMaterial color="#191b1f" roughness={0.6} />
       </mesh>
+      {/* ניירות-עבודה + עט + כוס-קפה מאדה (שכבת-הריאליזם) */}
+      <DeskSet />
       {/* מנורת שולחן */}
       <group position={[-0.58, 0.765, -0.16]}>
         <mesh>
@@ -418,15 +438,21 @@ function Podium({ mats }: { mats: OfficeMats }) {
   // מרחפות באוויר — הפירוט נשאר בפאנל-הצד, בשפה-המקצועית של המשרד.
   const plate = useMemo(() => makeDecisionPodiumPlate(), []);
   const decisions = useHq((s) => s.snap.decisions);
-  const [plateOn, setPlateOn] = useState(false);
+  // נגזר-ברינדור (במקום set-state-in-effect): הפלטה קיימת רק כשיש מה לומר.
+  const plateOn = useMemo(() => {
+    const openCount = decisions.filter((d) => d.status === 'open').length;
+    const newest = decisions.length
+      ? decisions.reduce((a, b) => (b.createdAt > a.createdAt ? b : a))
+      : null;
+    const fresh = !!newest && Date.now() - newest.createdAt < 45 * 60_000;
+    return openCount > 0 || fresh;
+  }, [decisions]);
   useEffect(() => {
     const openCount = decisions.filter((d) => d.status === 'open').length;
     const answered = decisions.length - openCount;
     const newest = decisions.length
       ? decisions.reduce((a, b) => (b.createdAt > a.createdAt ? b : a))
       : null;
-    const fresh = !!newest && Date.now() - newest.createdAt < 45 * 60_000;
-    setPlateOn(openCount > 0 || fresh);
     plate.set(
       newest ? { question: newest.question, status: newest.status, createdAt: newest.createdAt } : null,
       openCount,
@@ -494,6 +520,8 @@ function color_of_decision() { return '#e07b54'; }
 // ─────────────── הספרייה ───────────────
 function Library({ mats }: { mats: OfficeMats }) {
   const focus = useFocus('library', 'library');
+  // R57 — מקום-השלט מחושב פעם-אחת בראש-הרכיב (בלי הוקים בביטוי-JSX)
+  const [signX, signZ] = to3(1390, 150);
   // Task 47 — תיקון-שורש: המדפים צוירו מהגדרה-מקומית בצד המערבי (x=210)
   // בעוד החוזה, ההתנגשויות, השלט ונקודת-המצלמה מגדירים את הספרייה במזרח
   // (x=1390) — התוצאה הנמדדת: מדפים צמודי-קיר-הגיט במערב, קיר-מזרח ריק
@@ -596,35 +624,13 @@ function Library({ mats }: { mats: OfficeMats }) {
           </group>
         );
       })}
-      {/* שולחן קריאה + מנורה */}
-      <group position={[...to3(LIBRARY_TABLE[0], LIBRARY_TABLE[1]), 0]}>
-        <mesh position-y={0.76} castShadow receiveShadow>
-          <boxGeometry args={[1.5, 0.05, 0.9]} />
-          <primitive object={mats.wood} attach="material" />
-        </mesh>
-        {[[-0.65, -0.35], [0.65, -0.35], [-0.65, 0.35], [0.65, 0.35]].map(([lx, lz], i) => (
-          <mesh key={i} position={[lx, 0.38, lz]}>
-            <boxGeometry args={[0.05, 0.76, 0.05]} />
-            <primitive object={mats.metal} attach="material" />
-          </mesh>
-        ))}
-        <mesh position={[0.3, 0.95, -0.2]}>
-          <sphereGeometry args={[0.05, 12, 10]} />
-          <meshStandardMaterial color="#ffe9c4" emissive="#ffd9a0" emissiveIntensity={2.4} toneMapped={false} />
-        </mesh>
-        {/* מקור-האור של מנורת-הקריאה — Task 47: המדפים היו שחורים בתצפית
-         *  (נמדד) ; מנורה אמיתית מאירה את סביבתה */}
-        <LibraryLamp />
-        {/* דוחות מונחים על השולחן — מספרם = דוחות אמיתיים בספרייה */}
-        {Array.from({ length: Math.min(reportCount, 4) }).map((_, i) => (
-          <mesh key={i} position={[-0.4 + i * 0.22, 0.795, 0.1 - i * 0.06]} rotation-y={i * 0.4}>
-            <boxGeometry args={[0.21, 0.008, 0.3]} />
-            <meshStandardMaterial color="#f1ead9" roughness={0.8} />
-          </mesh>
-        ))}
-        <Chair seatColor="#4a3a26" mats={mats} />
-      </group>
-      <Billboard position={[...to3(1390, 150), 2.4]} tex={useMemo(() => makeSignTexture('הספרייה', '#a78bfa'), [])} scale={[1.15, 0.26]} />
+      {/* שולחן קריאה + מנורה — R57 תיקון-שורש: היה [...to3(), 0] —
+       *  z3 נפל בסלוט-הגובה והשולחן היה קבור 2.8מ' מתחת-לרצפה (אותה
+       *  משפחת-באג של שלט-הספרייה). עתה צירים מפורשים ברכיב-ייעודי. */}
+      <ReadingTable mats={mats} reportCount={reportCount} />
+      {/* R57 תיקון-שורש: השלט היה [...to3(), 2.4] — z3 נפל בסלוט-הגובה
+       *  והשלט נקבר 4.4מ' מתחת-לרצפה (נמדד ברשימת-הספרייטים החיה). */}
+      <Billboard position={[signX, 2.4, signZ]} tex={useMemo(() => makeSignTexture('הספרייה', '#a78bfa'), [])} scale={[1.15, 0.26]} />
     </group>
   );
 }
@@ -633,6 +639,42 @@ function Library({ mats }: { mats: OfficeMats }) {
 function LibraryLamp() {
   const [lx, lz] = to3(LIBRARY_TABLE[0], LIBRARY_TABLE[1]);
   return <pointLight position={[lx + 0.3, 1.05, lz - 0.2]} intensity={6} distance={6} decay={2} color="#ffd9a0" />;
+}
+
+/** שולחן-הקריאה של הספרייה — R57: רכיב-ייעודי בצירים מפורשים (היה קבור
+ *  מתחת-לרצפה בגלל פיזור [...to3(), 0] שדחף את z3 לסלוט-הגובה). */
+function ReadingTable({ mats, reportCount }: { mats: OfficeMats; reportCount: number }) {
+  const focus = useFocus('library', 'library');
+  const [tx, tz] = to3(LIBRARY_TABLE[0], LIBRARY_TABLE[1]);
+  return (
+    <group position={[tx, 0, tz]} onClick={focus}>
+      <mesh position-y={0.76} castShadow receiveShadow>
+        <boxGeometry args={[1.5, 0.05, 0.9]} />
+        <primitive object={mats.wood} attach="material" />
+      </mesh>
+      {[[-0.65, -0.35], [0.65, -0.35], [-0.65, 0.35], [0.65, 0.35]].map(([lx, lz], i) => (
+        <mesh key={i} position={[lx, 0.38, lz]}>
+          <boxGeometry args={[0.05, 0.76, 0.05]} />
+          <primitive object={mats.metal} attach="material" />
+        </mesh>
+      ))}
+      <mesh position={[0.3, 0.95, -0.2]}>
+        <sphereGeometry args={[0.05, 12, 10]} />
+        <meshStandardMaterial color="#ffe9c4" emissive="#ffd9a0" emissiveIntensity={2.4} toneMapped={false} />
+      </mesh>
+      {/* מקור-האור של מנורת-הקריאה — Task 47: המדפים היו שחורים בתצפית
+       *  (נמדד) ; מנורה אמיתית מאירה את סביבתה */}
+      <LibraryLamp />
+      {/* דוחות מונחים על השולחן — מספרם = דוחות אמיתיים בספרייה */}
+      {Array.from({ length: Math.min(reportCount, 4) }).map((_, i) => (
+        <mesh key={i} position={[-0.4 + i * 0.22, 0.795, 0.1 - i * 0.06]} rotation-y={i * 0.4}>
+          <boxGeometry args={[0.21, 0.008, 0.3]} />
+          <meshStandardMaterial color="#f1ead9" roughness={0.8} />
+        </mesh>
+      ))}
+      <Chair seatColor="#4a3a26" mats={mats} />
+    </group>
+  );
 }
 
 // ─────────────── קבלה ───────────────
@@ -731,6 +773,7 @@ function CoffeeBar({ mats }: { mats: OfficeMats }) {
           <meshStandardMaterial color="#dfe8ea" transparent opacity={0.55} roughness={0.1} />
         </mesh>
       ))}
+      <CoffeeLife mats={mats} />
       {/* כיסאות בר */}
       {[-1, 0, 1].map((sx) => (
         <group key={sx} position={[sx, 0, 0.85]}>
@@ -768,10 +811,11 @@ export function FlameOfSovereignty() {
     void dt;
     const t = clock.getElapsedTime();
     if (base.current) {
-      base.current.position.y = 1.02 + Math.sin(t * 1.8) * 0.03;
+      // R58 — הלהבה יושבת בתוך-הגביע (0.85), לא עמוד-אור מרחף בגובה-ראש
+      base.current.position.y = 0.85 + Math.sin(t * 1.8) * 0.03;
     }
     if (light.current) {
-      light.current.intensity = 2.4 + Math.sin(t * 7.3) * 0.5 + Math.sin(t * 11.7) * 0.3;
+      light.current.intensity = 2.0 + Math.sin(t * 7.3) * 0.4 + Math.sin(t * 11.7) * 0.25;
     }
   });
 
@@ -792,15 +836,16 @@ export function FlameOfSovereignty() {
         <meshStandardMaterial color="#ffb054" emissive="#ffb054" emissiveIntensity={0.55} transparent opacity={0.35} toneMapped={false} side={THREE.DoubleSide} />
       </mesh>
 
-      {/* להבה — שיידר פרוצדורלי (סמל-המשרד; נטול ניצוצות והילות) */}
-      <group ref={base} position-y={1.02}>
+      {/* להבה — שיידר פרוצדורלי (סמל-המשרד; R58: קונוס צנוע בתוך-הגביע —
+       *  הקונוס הישן 1.25מ' לבן-אדיטיבי נקרא "פאנל-לבן מרחף" מהמבט-הכללי) */}
+      <group ref={base} position-y={0.85}>
         <mesh>
-          <coneGeometry args={[0.3, 1.25, 24, 20, true]} />
+          <coneGeometry args={[0.2, 0.92, 24, 20, true]} />
           <ShaderMaterial flame />
         </mesh>
       </group>
 
-      <pointLight ref={light} position={[0, 1.5, 0]} color="#ffb054" intensity={2.6} distance={7.5} decay={2} />
+      <pointLight ref={light} position={[0, 1.4, 0]} color="#ffb054" intensity={2.0} distance={6.2} decay={2} />
     </group>
   );
 }
@@ -841,12 +886,13 @@ function getFlameMaterial(): THREE.ShaderMaterial {
           float n = noise(vec2(vUv.x * 6.0, vUv.y * 3.0 - uTime * 1.4)) * 0.55
                   + noise(vec2(vUv.x * 12.0 + 7.0, vUv.y * 6.0 - uTime * 2.2)) * 0.3;
           float body = smoothstep(0.0, 0.25, h) * (1.0 - smoothstep(0.55, 1.0, h + n * 0.42));
-          // ליבה לבנה-חמה, קצוות ענבר
-          vec3 core = vec3(1.0, 0.92, 0.72);
-          vec3 edge = vec3(1.0, 0.55, 0.18);
+          // R58 — ליבה ענברית-חמה (הליבה-הלבנה הישנה נצבעה ככרטיס-שקוף),
+          // קצוות עמוקים; עוצמת-אלפא נמוכה — להבה, לא זרקור
+          vec3 core = vec3(1.0, 0.78, 0.46);
+          vec3 edge = vec3(0.95, 0.42, 0.1);
           vec3 col = mix(edge, core, pow(1.0 - h, 1.6) * body);
-          float a = body * (0.34 + n * 0.55);
-          gl_FragColor = vec4(col * (1.2 + n), a);
+          float a = body * (0.26 + n * 0.46);
+          gl_FragColor = vec4(col * (0.95 + n * 0.8), a);
         }
       `,
     });
@@ -904,10 +950,19 @@ function Neons() {
   return (
     <group>
       {items.map((s, i) => (
-        <mesh key={i} position={s.pos} rotation-y={s.rotY}>
-          <planeGeometry args={[s.w, s.w * (s.sub ? 0.31 : 0.22)]} />
-          <meshBasicMaterial map={s.tex} transparent toneMapped={false} depthWrite={false} />
-        </mesh>
+        <group key={i} position={s.pos}>
+          {/* R57 — שלט-תלוי: שני כבלים מהתקרה אל גב-השלט (השלט לא מרחף) */}
+          {s.hang && [-s.w * 0.32, s.w * 0.32].map((cx, k) => (
+            <mesh key={k} position={[cx, (WALL_H - s.pos[1]) / 2 + 0.12, 0]}>
+              <cylinderGeometry args={[0.006, 0.006, WALL_H - s.pos[1] - 0.12, 6]} />
+              <meshStandardMaterial color="#151412" />
+            </mesh>
+          ))}
+          <mesh rotation-y={s.rotY}>
+            <planeGeometry args={[s.w, s.w * (s.sub ? 0.31 : 0.22)]} />
+            <meshBasicMaterial map={s.tex} transparent toneMapped={false} depthWrite={false} />
+          </mesh>
+        </group>
       ))}
     </group>
   );
