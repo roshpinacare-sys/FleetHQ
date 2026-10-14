@@ -284,6 +284,70 @@ export function makeSignTexture(text: string, color: string, sub?: string): THRE
   return t;
 }
 
+// ─────────────── דוכן ההחלטות — מסך-חי-מוסבר (R53) ───────────────
+// הבעלים: "לא ברור למה משמש דוכן ההחלטות". התשובה נמדדת על-גבי הדוכן עצמו:
+// מה-הוא-משרת, מה-ההכרעה-האחרונה (מסנכרון החנות — אמת-בלבד), כמה-פתוחות.
+// אפס-המצאה: בלי-החלטות-המסך אומר-זאת-בכנות ומציג-את-הספירות.
+export function makeDecisionPodiumPlate(): {
+  tex: THREE.CanvasTexture;
+  set: (d: { question: string; status: string; createdAt: number | null } | null, open: number, answered: number) => void;
+  update: (now: number) => void;
+} {
+  let latest: { question: string; status: string; createdAt: number | null } | null = null;
+  let openCount = 0;
+  let answeredCount = 0;
+  const dyn = new DynTex(768, 360, (ctx, w, h) => {
+    ctx.fillStyle = '#0e0b08'; ctx.fillRect(0, 0, w, h);
+    const accent = openCount > 0 ? '#e07b54' : '#5a4636';
+    const glow = ctx.createRadialGradient(w / 2, h / 2, 20, w / 2, h / 2, w * 0.6);
+    glow.addColorStop(0, accent + '2b'); glow.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = glow; ctx.fillRect(0, 0, w, h);
+    ctx.direction = 'rtl'; ctx.textBaseline = 'middle';
+    // כותרת
+    ctx.textAlign = 'right';
+    ctx.fillStyle = '#f2e5d8'; ctx.font = "700 54px 'Heebo','Assistant',system-ui,sans-serif";
+    ctx.fillText('דוכן ההחלטות', w - 28, 52);
+    // נקודת-מצב
+    ctx.beginPath(); ctx.arc(34, 52, 10, 0, 7); ctx.fillStyle = openCount > 0 ? '#e07b54' : '#4f6b57'; ctx.fill();
+    // מה-הוא-משרת
+    ctx.textAlign = 'right'; ctx.fillStyle = '#b9a68f'; ctx.font = "500 27px 'Heebo','Assistant',system-ui,sans-serif";
+    ctx.fillText('כאן מוכרעות שאלות-הסוכנים והכרעות-הריבונות', w - 28, 108);
+    ctx.fillStyle = '#8d7c68'; ctx.font = "500 24px 'Heebo','Assistant',system-ui,sans-serif";
+    ctx.fillText('הטבעת נדלקת בזמן הכרעה פתוחה', w - 28, 146);
+    // ההכרעה-האחרונה (נמדדת)
+    ctx.fillStyle = 'rgba(224,123,84,0.14)'; ctx.fillRect(0, 178, w, 118);
+    ctx.strokeStyle = 'rgba(224,123,84,0.3)'; ctx.beginPath(); ctx.moveTo(28, 178); ctx.lineTo(w - 28, 178); ctx.stroke();
+    if (latest && latest.question) {
+      const isOpen = latest.status !== 'answered';
+      ctx.fillStyle = isOpen ? '#e07b54' : '#7BA05B';
+      ctx.beginPath(); ctx.arc(w - 44, 208, 8, 0, 7); ctx.fill();
+      ctx.font = "600 29px 'Heebo','Assistant',system-ui,sans-serif";
+      ctx.fillStyle = '#efe3d4';
+      const q = latest.question.length > 38 ? latest.question.slice(0, 36) + '…' : latest.question;
+      ctx.fillText(q, w - 66, 208);
+      const mins = latest.createdAt ? Math.max(0, Math.round((Date.now() - latest.createdAt) / 60000)) : null;
+      const ago = mins == null ? '' : mins < 1 ? 'עכשיו' : mins < 60 ? `לפני ${mins} דק'` : `לפני ${Math.floor(mins / 60)} שע'`;
+      ctx.fillStyle = '#9b8a76'; ctx.font = "500 24px 'Heebo','Assistant',system-ui,sans-serif";
+      ctx.fillText(`${isOpen ? 'פתוחה — ממתינה להכרעה' : 'נפתרה'}${ago ? ' · ' + ago : ''}`, w - 28, 254);
+    } else {
+      ctx.fillStyle = '#9b8a76'; ctx.font = "500 26px 'Heebo','Assistant',system-ui,sans-serif";
+      ctx.fillText('אין הכרעות שנמדדו עדיין — הדוכן ריק וכנה', w - 28, 236);
+    }
+    // ספירות
+    ctx.textAlign = 'left'; ctx.fillStyle = '#c9b8a2'; ctx.font = "600 25px 'Heebo','Assistant',system-ui,sans-serif";
+    ctx.fillText(`פתוחות: ${openCount}  ·  נפתרו: ${answeredCount}`, 28, 322);
+    ctx.textAlign = 'right'; ctx.fillStyle = '#6f6153'; ctx.font = "500 21px 'Heebo','Assistant',system-ui,sans-serif";
+    ctx.fillText('מקור: יומן המשרד האמיתי', w - 28, 322);
+  });
+  return {
+    tex: dyn.tex,
+    set: (d, open, answered) => {
+      latest = d; openCount = open; answeredCount = answered; dyn.markDirty();
+    },
+    update: (now) => dyn.update(now),
+  };
+}
+
 // ─────────────── מנהל מסכים דינמיים ───────────────
 
 type Painter = (ctx: CanvasRenderingContext2D, w: number, h: number) => void;
