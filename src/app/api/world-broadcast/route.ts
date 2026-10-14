@@ -7,6 +7,7 @@
  * אין כאן המצאה — מה שהמראה לא מחזירה מדווח ככשל כנה.
  */
 import { NextResponse } from 'next/server';
+import { resolveGithubPat } from '@/lib/gh-pat';
 
 export const dynamic = 'force-dynamic';
 
@@ -19,32 +20,39 @@ const API_BASE = 'https://api.github.com/repos/roshpinacare-sys/Domain/contents/
  * תמיד התוכן הטרי, בלי מטמון-קצה. ה-PAT לעולם לא יוצא מהשרת.
  */
 function pat(): string {
-  const env = (process.env.GH_PAT || '').trim();
-  if (env) return env;
-  try {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const { readFileSync } = require('fs') as typeof import('fs');
-    return readFileSync('/home/z/my-project/upload/pat.env', 'utf-8').replace(/[\r\n\s]/g, '');
-  } catch {
-    return '';
-  }
+  // [T24] פותר-אסימון אחיד — צורה-תקינה או אין (אין ≠ אין-שידור; נפילה-לאנונימי)
+  return resolveGithubPat();
 }
 
 async function fetchAuthRaw<T>(file: string, timeoutMs = 8000, asText = false): Promise<T | null> {
   try {
     const token = pat();
-    if (!token) return null;
-    const res = await fetch(`${API_BASE}${file}?ref=main`, {
+    if (token) {
+      const res = await fetch(`${API_BASE}${file}?ref=main`, {
+        cache: 'no-store',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: 'application/vnd.github.raw',
+          'User-Agent': 'office-broadcast/1',
+        },
+        signal: AbortSignal.timeout(timeoutMs),
+      });
+      if (res.ok) return (asText ? ((await res.text()) as unknown as T) : ((await res.json()) as T));
+    }
+    // [T24] נפילה-אנונימית: Domain ריפו-ציבורי — השידור חי גם בלי אסימון
+    // (ידוע-ש-raw יכול להיות באיחור-קצה; עדיף-שידור-חי עם איחור קטן על שידור-מת)
+    const raw = await fetch(`https://raw.githubusercontent.com/roshpinacare-sys/Domain/main/office/${file}`, {
       cache: 'no-store',
-      headers: {
-        Authorization: `Bearer ${token}`,
-        Accept: 'application/vnd.github.raw',
-        'User-Agent': 'office-broadcast/1',
-      },
+      headers: { 'User-Agent': 'office-broadcast/1' },
       signal: AbortSignal.timeout(timeoutMs),
     });
-    if (!res.ok) return null;
-    return (asText ? ((await res.text()) as unknown as T) : ((await res.json()) as T));
+    if (!raw.ok) return null;
+    if (asText) return (await raw.text()) as unknown as T;
+    try {
+      return (await raw.json()) as T;
+    } catch {
+      return null;
+    }
   } catch {
     return null;
   }

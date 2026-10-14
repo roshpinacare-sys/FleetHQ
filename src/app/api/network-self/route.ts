@@ -9,24 +9,31 @@
  * אין המצאה: אין-איבר/אין-נתונים → empty-state כן. ה-PAT לעולם לא יוצא מהשרת.
  */
 import { NextResponse } from 'next/server';
+import { resolveGithubPat } from '@/lib/gh-pat';
 
 export const dynamic = 'force-dynamic';
 
 const API_BASE = 'https://api.github.com/repos/roshpinacare-sys/Autonomy/contents/';
+const RAW_BASE = 'https://raw.githubusercontent.com/roshpinacare-sys/Autonomy/main/';
 
 function pat(): string {
-  const env = (process.env.GH_PAT || '').trim();
-  if (env) return env;
-  try {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const { readFileSync } = require('fs') as typeof import('fs');
-    return readFileSync('/home/z/my-project/upload/pat.env', 'utf-8').replace(/[\r\n\s]/g, '');
-  } catch {
-    return '';
-  }
+  // [T24] פותר-אסימון אחיד: צורה-תקינה או אין (placeholder-ניקוי = אין, לא 401-רעש)
+  return resolveGithubPat();
 }
 
 async function fetchAuthRaw(file: string, timeoutMs = 8000): Promise<string | null> {
+  // [T24] חוק-מקור-כפול: Autonomy ריפו-ציבורי — אנונימי-raw קודם (לא-תלוי-אסימון),
+  // ואם-נכשל מאומת-API (טריות-קצה). אין-אסימון ≠ אין-איבר.
+  try {
+    const res = await fetch(`${RAW_BASE}${file}`, {
+      cache: 'no-store',
+      headers: { 'User-Agent': 'network-self/1' },
+      signal: AbortSignal.timeout(timeoutMs),
+    });
+    if (res.ok) return res.text();
+  } catch {
+    /* נופל-לאימות */
+  }
   try {
     const token = pat();
     if (!token) return null;

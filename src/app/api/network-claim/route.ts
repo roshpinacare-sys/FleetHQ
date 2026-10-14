@@ -7,6 +7,7 @@
  * הקבלה = sha של ה-commit בגיט הציבורי (אמת-בלתי-תלויה בסנדבוקס).
  */
 import { NextResponse } from 'next/server';
+import { resolveGithubPat } from '@/lib/gh-pat';
 
 export const dynamic = 'force-dynamic';
 
@@ -14,15 +15,8 @@ const API_BASE = 'https://api.github.com/repos/roshpinacare-sys/Autonomy/content
 const CLAIMS_PATH = 'state/selfhood/claims.jsonl';
 
 function pat(): string {
-  const env = (process.env.GH_PAT || '').trim();
-  if (env) return env;
-  try {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const { readFileSync } = require('fs') as typeof import('fs');
-    return readFileSync('/home/z/my-project/upload/pat.env', 'utf-8').replace(/[\r\n\s]/g, '');
-  } catch {
-    return '';
-  }
+  // [T24] פותר-אסימון אחיד: צורה-תקינה או אין — אין-אסימון = fail-closed כן, בלי 401-רעש
+  return resolveGithubPat();
 }
 
 function headers(): Record<string, string> | null {

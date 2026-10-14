@@ -9,23 +9,16 @@ import { db } from '@/lib/db';
  * ביטחון-מידע: הטוקן-בשרת hash-בלבד; אין-שמות-חשבונות-ואין-פרטי-התחברות בשום-פלט.
  */
 
+import { resolveGithubPat } from '@/lib/gh-pat';
+
 const GH_API = 'https://api.github.com';
 const ORG = 'roshpinacare-sys';
-const REPO = 'Sandbox';
 const PATH = 'ops/sovereign/OWNER-CHANNEL/inbox.jsonl';
 const BOUND = 60;
 
 function pat(): string {
-  const env = (process.env.GH_PAT || '').trim();
-  if (env) return env;
-  try {
-    // כמו gh-put.py: הטוקן חי-מקומית-בלבד; אף-פלט-ללקוח לא כולל אותו
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const { readFileSync } = require('fs') as typeof import('fs');
-    return readFileSync('/home/z/my-project/upload/pat.env', 'utf-8').replace(/[\r\n\s]/g, '');
-  } catch {
-    return '';
-  }
+  // [T24] פותר-אסימון אחיד: צורה-תקינה או אין — האסימון חי-מקומית-בלבד
+  return resolveGithubPat();
 }
 
 async function gh(method: string, path: string, payload?: unknown): Promise<{ status: number; body: Record<string, unknown> }> {
