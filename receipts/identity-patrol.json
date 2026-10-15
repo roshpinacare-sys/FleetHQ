@@ -1,13 +1,22 @@
 {
  "protocol": "FLEET-IDENTITY-PATROL/1",
- "at": "2026-10-15T09:24:24.470Z",
+ "at": "2026-10-15T10:55:38.054Z",
  "law": "DECISIONS #10 — no NAME@users.noreply.github.com except owner + github-actions[bot]; bots sign @agents.roshpinacare-sys",
  "scope": "39 repos (private included) · last 30 commits each",
  "verdict": "VIOLATION",
  "scannedCount": 39,
  "skippedCount": 1,
- "violationsCount": 30,
+ "violationsCount": 31,
  "violations": [
+  {
+   "repo": "Autonomy",
+   "sha": "495f19f056",
+   "message": "token-truth: measured fleet tokens (metadata only) [ci]",
+   "bad": [
+    "author:41898282+github-actions[bot]@users.noreply.github.com"
+   ],
+   "date": "2026-10-15T10:15:41Z"
+  },
   {
    "repo": "giant",
    "sha": "6bd7cbfadf",
@@ -197,16 +206,6 @@
     "committer:weave-anchor[bot]@users.noreply.github.com"
    ],
    "date": "2026-10-14T12:05:43Z"
-  },
-  {
-   "repo": "Zip",
-   "sha": "f1eb67b9c2",
-   "message": "weave-anchor-zero: 2026-10-14T11:13:10.333Z · cp#1624 · Z Chain 9369 gasPrice 0x0 · att 16",
-   "bad": [
-    "author:weave-anchor-zero[bot]@users.noreply.github.com",
-    "committer:weave-anchor-zero[bot]@users.noreply.github.com"
-   ],
-   "date": "2026-10-14T11:13:15Z"
   }
  ],
  "skipped": [

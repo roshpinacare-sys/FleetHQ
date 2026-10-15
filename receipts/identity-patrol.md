@@ -1,10 +1,11 @@
-# identity-patrol — סיור-זהויות כלל-הצי (2026-10-15T09:24:24.470Z)
+# identity-patrol — סיור-זהויות כלל-הצי (2026-10-15T10:55:38.054Z)
 
-**פסק: VIOLATION** — 39 ריפואים נסרקו (30 קומיטים אחרונים כל-אחד) · הפרות: 30 · דולגו: 1
+**פסק: VIOLATION** — 39 ריפואים נסרקו (30 קומיטים אחרונים כל-אחד) · הפרות: 31 · דולגו: 1
 
 חוק: DECISIONS #10 — אין NAME@users.noreply.github.com פרט-ל-owner ו-github-actions[bot]; בוטים חותמים @agents.roshpinacare-sys.
 
 ## הפרות
+- `Autonomy` 495f19f056 — author:41898282+github-actions[bot]@users.noreply.github.com — "token-truth: measured fleet tokens (metadata only) [ci]"
 - `giant` 6bd7cbfadf — author:41898282+github-actions[bot]@users.noreply.github.com + committer:41898282+github-actions[bot]@users.noreply.github.com — "trust-heartbeat: autonomous scan (no-sandbox) — 2026-10-15T08:38Z"
 - `giant` 9f534db418 — author:41898282+github-actions[bot]@users.noreply.github.com + committer:41898282+github-actions[bot]@users.noreply.github.com — "trust-heartbeat: autonomous scan (no-sandbox) — 2026-10-15T02:02Z"
 - `giant` 70e1276912 — author:41898282+github-actions[bot]@users.noreply.github.com + committer:41898282+github-actions[bot]@users.noreply.github.com — "trust-heartbeat: autonomous scan (no-sandbox) — 2026-10-15T01:33Z"
@@ -24,7 +25,6 @@
 - `Zip` c16efa2162 — author:weave-anchor[bot]@users.noreply.github.com + committer:weave-anchor[bot]@users.noreply.github.com — "weave-anchor: 2026-10-14T17:20:31.763Z · cp#1627 · 1/3 chains · att 1686 · market 0s/0r"
 - `Zip` 2fc8968e36 — author:weave-anchor-zero[bot]@users.noreply.github.com + committer:weave-anchor-zero[bot]@users.noreply.github.com — "weave-anchor-zero: 2026-10-14T12:05:48.211Z · cp#1626 · Z Chain 9369 gasPrice 0x0 · att 16"
 - `Zip` 94925454bf — author:weave-anchor[bot]@users.noreply.github.com + committer:weave-anchor[bot]@users.noreply.github.com — "weave-anchor: 2026-10-14T12:05:07.717Z · cp#1625 · 1/3 chains · att 1684 · market 0s/0r"
-- `Zip` f1eb67b9c2 — author:weave-anchor-zero[bot]@users.noreply.github.com + committer:weave-anchor-zero[bot]@users.noreply.github.com — "weave-anchor-zero: 2026-10-14T11:13:10.333Z · cp#1624 · Z Chain 9369 gasPrice 0x0 · att 16"
 
 ## דולגו בכנות
 - sanbox — commits API 409
