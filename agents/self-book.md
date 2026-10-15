@@ -1,9 +1,13 @@
-# ספר-המודעות-העצמית של הרשת — 2026-10-14T23:00:29.124Z
+# ספר-המודעות-העצמית של הרשת — 2026-10-15T00:08:24.344Z
 
-**39 ריפואים** (14 ציבוריים · 25 פרטיים) · **223 מכונות-יכולת** · **12 פעילים בשעה האחרונה** · תמונה-קודמת: 2026-10-14T21:44:08.788Z
+**39 ריפואים** (14 ציבוריים · 25 פרטיים) · **224 מכונות-יכולת** · **15 פעילים בשעה האחרונה** · תמונה-קודמת: 2026-10-14T23:00:29.124Z
+
+## ⚙️ מכונות-חדשות/שהוסרו מאז-התמונה
+- Domain: +key-verify.yml
+- giant: +trust-heartbeat.yml
 
 ## 💓 פעיל-עכשיו (דחיפה בשעה האחרונה)
-Domain · Autonomy · Project-files · FleetHQ · saos-dex · giant · Console · GridWatch · saos-runtime · Pulse · sovereign-beacon · Sandbox
+Domain · Autonomy · Sandbox · Console · ops-intake · FleetHQ · Pulse · ops-forge · saos-runtime · saos-dex · giant · steem · sovereign-lighthouse · roshpina · GridWatch
 
 ## 🧠 מפת-היכולות של הצי (המכונות והריפואים-בהן-הן-חיות)
 - **gitleaks** → Adsmarket, Console, Defi, Domain, Project-files, Saosmartwallet (+11)
@@ -19,6 +23,7 @@ Domain · Autonomy · Project-files · FleetHQ · saos-dex · giant · Console �
 - **dex-grid** → Domain, saos-dex
 - **estate-scrub** → Console, Domain
 - **exposure-gate** → Domain, TruthRail
+- **key-verify** → Console, Domain
 - **mm-supremacy** → Domain, saos-dex
 - **weave-anchor-lines** → Domain, Zip
 - **weave-ecosystem** → Domain, Zip
@@ -30,6 +35,5 @@ Domain · Autonomy · Project-files · FleetHQ · saos-dex · giant · Console �
 - **artery-flow** → Autonomy, Sandbox
 - **artery-grid** → Autonomy, Sandbox
 - **artery-integrity** → Autonomy, Sandbox
-- **artery-participation** → Autonomy, Sandbox
 
 *חוק: הספר-הזה הוא העין-העצמית של הרשת — נכתב-רק-ממדידה (API), ללא-המצאה, git-only, שורד-מחיקת-סנדבוקסים.*
