@@ -1,8 +1,8 @@
 # RUNSCORES — the harness scoring book
 
-- generatedAt: `2026-10-15T11:00:32.254Z`
-- STATE book age: 57min · api fetches: 9
-- counts: {"unknown":7,"healthy":105,"critical":4,"flaky":5,"watch":1}
+- generatedAt: `2026-10-15T12:10:12.324Z`
+- STATE book age: 126min · api fetches: 9
+- counts: {"unknown":7,"healthy":105,"critical":5,"flaky":4,"watch":1}
 
 | repo | workflow | class | lastConcl | lastRun |
 |---|---|---|---|---|
@@ -10,11 +10,11 @@
 | Domain | estate-scrub | critical | failure | 2026-10-15T08:52:15Z |
 | Console | estate-scrub | critical | failure | 2026-10-15T09:27:20Z |
 | Autonomy | fleet-yield | critical | failure | 2026-10-15T07:22:13Z |
+| Autonomy | selfhood | critical | cancelled | 2026-10-15T05:48:55Z |
 | Console | truth-gate | flaky | failure | 2026-10-15T04:33:10Z |
 | Autonomy | artery-decision-truth | flaky | failure | 2026-10-15T10:00:19Z |
 | Autonomy | value-scan | flaky | failure | 2026-10-15T09:53:19Z |
 | Autonomy | artery-participation | flaky | failure | 2026-10-15T09:51:40Z |
-| Autonomy | selfhood | flaky | cancelled | 2026-10-15T05:48:55Z |
 | FleetHQ | value-scan | healthy | success | 2026-10-15T10:00:15Z |
 | FleetHQ | runtime-pacemaker | healthy | success | 2026-10-15T10:00:06Z |
 | FleetHQ | sovereign-decider | healthy | success | 2026-10-15T09:54:50Z |
