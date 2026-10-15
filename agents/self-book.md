@@ -1,19 +1,18 @@
-# ספר-המודעות-העצמית של הרשת — 2026-10-15T12:10:35.690Z
+# ספר-המודעות-העצמית של הרשת — 2026-10-15T13:30:32.296Z
 
-**39 ריפואים** (14 ציבוריים · 25 פרטיים) · **226 מכונות-יכולת** · **15 פעילים בשעה האחרונה** · תמונה-קודמת: 2026-10-15T10:55:40.348Z
+**39 ריפואים** (14 ציבוריים · 25 פרטיים) · **226 מכונות-יכולת** · **16 פעילים בשעה האחרונה** · תמונה-קודמת: 2026-10-15T12:10:35.690Z
 
 ## 💓 פעיל-עכשיו (דחיפה בשעה האחרונה)
-FleetHQ · Domain · saos-runtime · Console · Autonomy · giant · saos-dex · Defi · Pulse · steem · sovereign-lighthouse · Project-files · sovereign-beacon · Zip · GridWatch
+Domain · Console · saos-dex · Autonomy · FleetHQ · roshpina · saos-runtime · steem · Pulse · giant · Sandbox · sovereign-lighthouse · ops-forge · Project-files · GridWatch · sovereign-beacon
 
 ## 🧠 מפת-היכולות של הצי (המכונות והריפואים-בהן-הן-חיות)
 - **gitleaks** → Adsmarket, Console, Defi, Domain, Project-files, Saosmartwallet (+11)
 - **workflow-yaml-guard** → Adsmarket, Console, Defi, Domain, Project-files, Saosmartwallet (+9)
 - **identity-guard** → Autonomy, Console, Domain, FleetHQ, GridWatch, Pulse (+3)
+- **token-forge** → Domain, Sandbox, steem
 - **fresh-oracle** → Autonomy, FleetHQ, Sandbox
 - **sovereign-decider** → Autonomy, FleetHQ, Sandbox
 - **value-scan** → Autonomy, FleetHQ, Sandbox
-- **token-forge** → Domain, Sandbox, steem
-- **runtime-pacemaker** → Console, FleetHQ
 - **agent-verify** → Console, Domain
 - **canary** → Defi, Domain
 - **dex-beat** → Domain, saos-dex
@@ -26,10 +25,11 @@ FleetHQ · Domain · saos-runtime · Console · Autonomy · giant · saos-dex ·
 - **weave-ecosystem** → Domain, Zip
 - **weave-heart** → Domain, Zip
 - **web-publish** → Domain, Zip
+- **runtime-pacemaker** → Console, FleetHQ
+- **ci** → saos-dex, saos-sovereign-foundry
 - **artery-catchup** → Autonomy, Sandbox
 - **artery-decision-truth** → Autonomy, Sandbox
 - **artery-fleet** → Autonomy, Sandbox
 - **artery-flow** → Autonomy, Sandbox
-- **artery-grid** → Autonomy, Sandbox
 
 *חוק: הספר-הזה הוא העין-העצמית של הרשת — נכתב-רק-ממדידה (API), ללא-המצאה, git-only, שורד-מחיקת-סנדבוקסים.*
