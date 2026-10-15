@@ -1,14 +1,14 @@
 # RUNSCORES — the harness scoring book
 
-- generatedAt: `2026-10-15T05:27:41.301Z`
-- STATE book age: 36min · api fetches: 8
-- counts: {"unknown":10,"healthy":91,"flaky":7,"disabled":1,"critical":1,"watch":1}
+- generatedAt: `2026-10-15T06:31:09.932Z`
+- STATE book age: 99min · api fetches: 8
+- counts: {"unknown":10,"healthy":91,"critical":2,"flaky":6,"disabled":1,"watch":1}
 
 | repo | workflow | class | lastConcl | lastRun |
 |---|---|---|---|---|
+| Domain | dex-mirror | critical | failure | 2026-10-15T04:31:53Z |
 | Autonomy | fleet-yield | critical | failure | 2026-10-15T02:25:40Z |
 | saos-runtime | grid-watchdog | disabled | failure | 2026-10-14T23:06:24Z |
-| Domain | dex-mirror | flaky | failure | 2026-10-15T04:31:53Z |
 | Domain | estate-scrub | flaky | failure | 2026-10-15T03:48:26Z |
 | Console | estate-scrub | flaky | failure | 2026-10-15T04:40:32Z |
 | Console | truth-gate | flaky | failure | 2026-10-15T04:33:10Z |
