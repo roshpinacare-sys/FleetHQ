@@ -1,16 +1,16 @@
 # תיק-העבודות של המשרד (BACKLOG)
 
-> מחזור-השיפור-העצמי · office/retro.mjs · SAOS-OFFICE-RETRO/1 · 2026-10-11 23:56 UTC · trace 1a12c9d6f5df1b95 — חקר/זיקוק/תכנון/ביצוע
+> מחזור-השיפור-העצמי · office/retro.mjs · SAOS-OFFICE-RETRO/1 · 2026-10-15 12:51 UTC · [owner-directive]
 
 ## סיכום נמדד
 
-- **אוטובוס**: 15 green · 0 amber · 0 red · 1 grey (רישום: fallback-embedded)
+- **אוטובוס**: 10 green · 0 amber · 5 red · 1 grey (רישום: fallback-embedded)
 - **שערי-בעלים**: לא-ידוע (מקור-השערים פרטי/לא-נגיש — כנה)
-- **מחקר**: הממצאים מ-2026-10-11 — 3 ניסויים
-- **E1 spread-regime (built-in)**: SPREAD-REGIME: value=100bps · delta=+6.50 vs 93.5 · מקור-בן-10.3h · HOLD (loosened) — הפיזור התרחב — לעקוב בלבד (verify/doc-only)
-- **צווי-עבודה (work-orders)**: 6 פתוחים · 6 נפתרו · P1 פתוחים: 1
-- **רווחיות (profit-oracle)**: verdict=FLAT · delta=0% מול-המדידה-הקודמת · שווי-נקי=455.32 SBD-equiv · grid=EDGE-NEGATIVE-GRID-HOLD · at=2026-10-11 23:52 UTC
-- **פריטים**: 4 (SAFE 1 · MACHINE-PREP 2 · OWNER-WORD 1)
+- **מחקר**: לא-נמדד (כנה)
+- **E1 spread-regime (built-in)**: SPREAD-REGIME: value=200bps · delta=+106.50 vs 93.5 · מקור-בן-4.4h · HOLD (loosened) — הפיזור התרחב — לעקוב בלבד (verify/doc-only)
+- **צווי-עבודה (work-orders)**: לא-ידוע (כנה)
+- **רווחיות (profit-oracle)**: לא-זמין — profit-oracle לא-נגיש (HTTP 404) — כנה, לא-מדומה (14b עשוי שלא להיות באוויר עדיין)
+- **פריטים**: 6 (SAFE 1 · MACHINE-PREP 5 · OWNER-WORD 0)
 
 ## בוצע במחזור זה (SAFE built-ins בלבד — חוק)
 
@@ -26,14 +26,16 @@
 
 | # | id | מקור | כותרת | מחלקת-סיכון | ערך | מאמץ | דבר-בעלים | executableBy |
 |---|----|------|-------|-------------|-----|------|-----------|--------------|
-| 1 | `research-e1-spread-regime` | research/2026-10-11 (E1 spread-re… | E1 spread-regime — spread tightened (93.48 < 93.5 bps) — grid-side liquidity improving | SAFE | 4 | 2 | — | `builtin-e1-spread-regime` |
-| 2 | `WO-unwired-adsmarket-marketing` | work-orders.json (Sandbox raw) | חבר את ערן-השיווק החי (private-1) למשטח-חי — fact-sheet/pitch/kits EN-HE נגישים מ-Domain | MACHINE-PREP | 7 | 2 | — | `owner-after-prep` |
-| 3 | `research-e2-feed-divergence` | research/2026-10-11 (E2 feed-dive… | E2 feed-divergence — healthy band: divergence 252.14 bps ≤ 300 (feed_above_market) | MACHINE-PREP | 4 | 2 | — | `owner-after-prep` |
-| 4 | `research-e3-rc-census` | research/2026-10-11 (E3 rc-census) | E3 rc-census — 4 RC-starved accounts (<40%): acct-09 25.94%, acct-11 8.05%, acct-12 2… | 🔒 OWNER-WORD | 4 | 2 | כן | `owner-only` |
+| 1 | `research-feed-unavailable` | sandbox-research-findings | רכבת-המחקר לא-נמדדה: לא-נמצא קובץ-ממצאים מ-9 הימים האחרונים (2026-10-15, 2026-10-14, 20… | SAFE | 3 | 1 | — | `next-retro` |
+| 2 | `bus-sandbox-flow-map` | bus-registry (A) | פיד אדום: sandbox-flow-map — HTTP 404 | MACHINE-PREP | 7 | 1 | — | `next-retro` |
+| 3 | `bus-sandbox-lessons-ledger` | bus-registry (A) | פיד אדום: sandbox-lessons-ledger — HTTP 404 | MACHINE-PREP | 7 | 1 | — | `next-retro` |
+| 4 | `bus-sandbox-probe-blurt` | bus-registry (A) | פיד אדום: sandbox-probe-blurt — לא-נמצא ב-2 תאריכים אחרונים (2026-10-15, 2026-10-14) | MACHINE-PREP | 7 | 1 | — | `next-retro` |
+| 5 | `bus-sandbox-probe-hive` | bus-registry (A) | פיד אדום: sandbox-probe-hive — לא-נמצא ב-2 תאריכים אחרונים (2026-10-15, 2026-10-14) | MACHINE-PREP | 7 | 1 | — | `next-retro` |
+| 6 | `bus-sandbox-research-findings` | bus-registry (A) | פיד אדום: sandbox-research-findings — לא-נמצא ב-9 תאריכים אחרונים (2026-10-15, 2026-10-… | MACHINE-PREP | 7 | 1 | — | `next-retro` |
 
 ## הצעה ראשית של המחזור
 
-- **קובץ**: [PROPOSALS/2026-10-11-wo-unwired-adsmarket-marketing.md](PROPOSALS/2026-10-11-wo-unwired-adsmarket-marketing.md) — עבור הפריט המדורג ראשון.
+- **קובץ**: [PROPOSALS/2026-10-15-research-feed-unavailable.md](PROPOSALS/2026-10-15-research-feed-unavailable.md) — עבור הפריט המדורג ראשון.
 
 ## גבולות (חוקי-המחזור)
 
@@ -45,4 +47,4 @@
 - כנות: לא-ידוע נשאר לא-ידוע; פיד אדום מודפס אדום
 
 ---
-*נוצר אוטומטית על-ידי המשרד · SAOS-OFFICE-RETRO/1 · אפס-סודות (סרוק fail-closed) · ISO 2026-10-11T23:56:36.105Z*
+*נוצר אוטומטית על-ידי המשרד · SAOS-OFFICE-RETRO/1 · אפס-סודות (סרוק fail-closed) · ISO 2026-10-15T12:51:56.812Z*
