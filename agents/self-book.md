@@ -1,18 +1,19 @@
-# ספר-המודעות-העצמית של הרשת — 2026-10-16T17:24:05.584Z
+# ספר-המודעות-העצמית של הרשת — 2026-10-16T18:37:04.300Z
 
-**40 ריפואים** (14 ציבוריים · 26 פרטיים) · **228 מכונות-יכולת** · **15 פעילים בשעה האחרונה** · תמונה-קודמת: 2026-10-16T16:11:40.036Z
+**40 ריפואים** (14 ציבוריים · 26 פרטיים) · **228 מכונות-יכולת** · **14 פעילים בשעה האחרונה** · תמונה-קודמת: 2026-10-16T17:24:05.584Z
 
 ## 💓 פעיל-עכשיו (דחיפה בשעה האחרונה)
-Domain · FleetHQ · Autonomy · giant · Console · Pulse · Sandbox · fleet-economy · GridWatch · sovereign-lighthouse · Defi · saos-dex · saos-runtime · roshpina · sovereign-beacon
+FleetHQ · Domain · giant · Sandbox · fleet-economy · Console · Autonomy · Pulse · sovereign-lighthouse · saos-desk · ops-forge · roshpina · saos-runtime · GridWatch
 
 ## 🧠 מפת-היכולות של הצי (המכונות והריפואים-בהן-הן-חיות)
 - **gitleaks** → Adsmarket, Console, Defi, Domain, Project-files, Saosmartwallet (+11)
 - **workflow-yaml-guard** → Adsmarket, Console, Defi, Domain, Project-files, Saosmartwallet (+9)
 - **identity-guard** → Autonomy, Console, Domain, FleetHQ, GridWatch, Pulse (+3)
-- **token-forge** → Domain, Sandbox, steem
 - **fresh-oracle** → Autonomy, FleetHQ, Sandbox
 - **sovereign-decider** → Autonomy, FleetHQ, Sandbox
 - **value-scan** → Autonomy, FleetHQ, Sandbox
+- **token-forge** → Domain, Sandbox, steem
+- **runtime-pacemaker** → Console, FleetHQ
 - **agent-verify** → Console, Domain
 - **canary** → Defi, Domain
 - **dex-beat** → Domain, saos-dex
@@ -25,7 +26,6 @@ Domain · FleetHQ · Autonomy · giant · Console · Pulse · Sandbox · fleet-e
 - **weave-ecosystem** → Domain, Zip
 - **weave-heart** → Domain, Zip
 - **web-publish** → Domain, Zip
-- **runtime-pacemaker** → Console, FleetHQ
 - **artery-catchup** → Autonomy, Sandbox
 - **artery-decision-truth** → Autonomy, Sandbox
 - **artery-fleet** → Autonomy, Sandbox
