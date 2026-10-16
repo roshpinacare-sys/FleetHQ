@@ -1,11 +1,13 @@
 {
- "at": "2026-10-16T19:22:11.214Z",
- "finishedAt": "2026-10-16T19:22:42.384Z",
+ "at": "2026-10-16T20:52:11.244Z",
+ "finishedAt": "2026-10-16T20:54:25.169Z",
  "checks": {
   "boot": {
    "app": {
-    "wasUp": true,
-    "spawned": false
+    "wasUp": false,
+    "spawned": true,
+    "pid": 30213,
+    "note": "spawned but health not confirmed within 90s — receipts will show the truth"
    },
    "foreman": {
     "wasUp": true,
@@ -13,14 +15,14 @@
    }
   },
   "security": {
-   "exit": 0,
-   "verdict": "GREEN",
-   "detail": "SECURITY-REGRESSION: ALL GREEN (81/81)"
+   "exit": 1,
+   "verdict": "RED",
+   "detail": "SECURITY-REGRESSION: 2 FAILURE(S) (75/77)"
   },
   "connectivity": {
    "exit": 0,
    "verdictHe": "נמדדו 12 קבצי-קוד יתומים ו-3 ארטיפקטים ללא צרכן",
-   "sha16": "15fcbf0735f55ffc"
+   "sha16": "0bf91796586977a5"
   },
   "freshOracle": {
    "exit": 0,
@@ -32,7 +34,7 @@
    "alarms": 1
   },
   "gitHealth": {
-   "exit": 0,
+   "exit": 1,
    "repos": [
     {
      "name": "Console",
@@ -44,16 +46,16 @@
     {
      "name": "Domain",
      "attached": true,
-     "ahead": 0,
-     "behind": 1,
+     "ahead": null,
+     "behind": null,
      "fsck": "ok"
     },
     {
      "name": "FleetHQ",
      "attached": true,
-     "ahead": 0,
-     "behind": 11,
-     "fsck": "ok"
+     "ahead": null,
+     "behind": null,
+     "fsck": "fail"
     }
    ]
   },
