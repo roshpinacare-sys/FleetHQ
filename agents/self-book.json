@@ -1,7 +1,7 @@
 {
  "protocol": "SAOS-SELF-BOOK/1",
- "at": "2026-10-16T18:37:04.300Z",
- "prevAt": "2026-10-16T17:24:05.584Z",
+ "at": "2026-10-16T18:48:34.555Z",
+ "prevAt": "2026-10-16T18:37:04.300Z",
  "law": "הרשת מודעת לעצמה: מלאי-מלא + חדשנות + יכולות, כל 30 דק', git-only",
  "totals": {
   "repos": 40,
@@ -13,29 +13,24 @@
  "newSincePrev": {
   "newRepos": [],
   "newWorkflows": [],
-  "rootChangedCount": 4,
-  "rootChanged": [
-   "FleetHQ",
-   "giant",
-   "Console",
-   "sovereign-lighthouse"
-  ]
+  "rootChangedCount": 0,
+  "rootChanged": []
  },
  "aliveLastHour": [
   "FleetHQ",
   "Domain",
-  "giant",
-  "Sandbox",
-  "fleet-economy",
-  "Console",
   "Autonomy",
+  "giant",
+  "fleet-economy",
+  "saos-runtime",
+  "ops-intake",
+  "Sandbox",
+  "Console",
   "Pulse",
   "sovereign-lighthouse",
   "saos-desk",
   "ops-forge",
-  "roshpina",
-  "saos-runtime",
-  "GridWatch"
+  "roshpina"
  ],
  "capabilities": [
   {
@@ -489,7 +484,7 @@
    "private": false,
    "description": "Fleet HQ — a live operations room where real AI agents plan, work and report on your data books in real time. מפקדת הצי",
    "createdAt": "2026-10-07T23:26:07Z",
-   "pushedAt": "2026-10-16T18:36:59Z",
+   "pushedAt": "2026-10-16T18:48:23Z",
    "workflows": [
     "claims-triage.yml",
     "fresh-oracle.yml",
@@ -518,7 +513,7 @@
    "private": false,
    "description": "Domain — חזית-הרשת הפומבית של SAOS: דף-המוצרים, חדר-המשרד החי, ועוגני-אמת ציבוריים (GitHub Pages)",
    "createdAt": "2026-09-19T23:39:18Z",
-   "pushedAt": "2026-10-16T18:36:48Z",
+   "pushedAt": "2026-10-16T18:47:11Z",
    "workflows": [
     "adsmarket-panel.yml",
     "agent-verify.yml",
@@ -620,16 +615,112 @@
    "treeSig": ".gitignore:65|.gitleaks.toml:603|.gitleaksignore:4004|.nojekyll:0|404.html:4945|AGENTS.md:9642|BLOC.md:8163|CUA-ADOPTION.md:4616|FATE-DEFENSE.md:12504|FLEET-NOTE.md:5938|GRID-STATUS.md:5292|README.md:23790|STATE-REPORT-20261012.md:1129|STATE-REPORT-20261013.md:1129|STATE-REPORT-20261014.md:1129|STATE-REPORT-20261015.md:1129|STATE-REPORT-20261016.md:1129|VOICE.md:3637|acid-engine.js:38285|acid.html:42701|badges.html:10901|bun.lock:339|console.html:77127|defi.html:42150|deposits.html:30799|dev.html:36754|favicon.svg:449|feature_list.json:123276|feed.xml:5303|gate-crypto.js:18042|gate.html:29316|giant-standard.html:2418|giants.html:53166|index.html:23419|init.sh:3624|landing.html:2597|manifest.webmanifest:510|mirror-report.json:1356|mirror.json:358|money.html:54849|net.html:28233|package.json:59|products.html:23909|readiness.html:32040|render.mjs:11979|reports.html:9537|roast.html:2484|robots.txt:179|runner-kit.html:24818|saos-live.js:36274|saos-live.json:1155|sitemap.html:15173|sitemap.xml:9347|sovereign.html:39015|standard.html:2394|status.json:684|truth.html:30987|versus.html:29800|wallet.html:173337"
   },
   {
+   "name": "Autonomy",
+   "private": false,
+   "description": "המוח הריבוני על דקות-ציבור: עורקי-ההחלטה, הלמידה, הצמיחה — רץ 24/7 ללא תלות בשום סנדבוקס. Public compute, private memory",
+   "createdAt": "2026-10-12T20:33:22Z",
+   "pushedAt": "2026-10-16T18:46:56Z",
+   "workflows": [
+    "artery-catchup.yml",
+    "artery-decision-truth.yml",
+    "artery-defi.yml",
+    "artery-desk.yml",
+    "artery-fleet.yml",
+    "artery-flow.yml",
+    "artery-grid.yml",
+    "artery-integrity.yml",
+    "artery-participation.yml",
+    "artery-scribe.yml",
+    "artery-wallet.yml",
+    "artery-watch.yml",
+    "claims-intake.yml",
+    "compute-rearm.yml",
+    "contract-check.yml",
+    "estate-relay.yml",
+    "estate-vault.yml",
+    "evo-windows-staleness.yml",
+    "federation.yml",
+    "fleet-heal.yml",
+    "fleet-yield.yml",
+    "floating-builds.yml",
+    "fresh-oracle.yml",
+    "hive-probe.yml",
+    "identity-guard.yml",
+    "key-proof.yml",
+    "network-awareness.yml",
+    "network-self-awareness.yml",
+    "office-growth.yml",
+    "operator-routing.yml",
+    "profit-oracle.yml",
+    "research-lane.yml",
+    "retro.yml",
+    "run-score.yml",
+    "selfhood.yml",
+    "sovereign-decider.yml",
+    "sovereign-state.yml",
+    "sovereign.yml",
+    "token-watchdog.yml",
+    "value-scan.yml",
+    "verifier.yml"
+   ],
+   "treeSig": "NETWORK-MANIFEST.md:9828|README.md:3346|SECURITY.md:3714"
+  },
+  {
    "name": "giant",
    "private": false,
    "description": "GIANT — מערכת-האמת של SAOS: הפלטפורמה המאוחדת (ערוץ-אחד · אפס-כפילויות · תקן-ענקים). קונברגנציה נדרשת לכל-הליינים (DECIS",
    "createdAt": "2026-10-14T19:03:34Z",
-   "pushedAt": "2026-10-16T18:36:35Z",
+   "pushedAt": "2026-10-16T18:46:39Z",
    "workflows": [
     "ext-audit.yml",
     "trust-heartbeat.yml"
    ],
    "treeSig": ".env:50|.gitignore:1567|01-overview.png:849654|02-wall.png:386090|03-git.png:310819|04-podium.png:484637|05-reception.png:708501|06-library.png:465126|Caddyfile:493|README.md:2271|SYSTEM.md:1837|bun.lock:293171|components.json:430|eslint.config.mjs:1739|next.config.ts:2441|package.json:3528|postcss.config.mjs:81|tailwind.config.ts:1696|tsconfig.json:730|worklog.md:472711"
+  },
+  {
+   "name": "fleet-economy",
+   "private": true,
+   "description": "הכלכלה-הפנימית-הריבונית — ספר-hash-chain חי · auto-sealed",
+   "createdAt": "2026-10-16T14:28:48Z",
+   "pushedAt": "2026-10-16T18:45:16Z",
+   "workflows": [],
+   "treeSig": "economy.log:4017|index.ts:53100|package.json:451|supervise-economy.sh:824"
+  },
+  {
+   "name": "saos-runtime",
+   "private": false,
+   "description": "SAOS sovereign runtime host — Actions runner heartbeat; clones the private engine tree at runtime (R244). No keys, no se",
+   "createdAt": "2026-10-07T16:44:12Z",
+   "pushedAt": "2026-10-16T18:41:20Z",
+   "workflows": [
+    "army-ladder.yml",
+    "blurt-revival.yml",
+    "custody-recover.yml",
+    "escrow-payroll.yml",
+    "fee-engine.yml",
+    "fleet-rotation-a.yml",
+    "gen2-rotation.yml",
+    "grid-watchdog.yml",
+    "operator-triage.yml",
+    "owner-key-adopt.yml",
+    "self-memory.yml",
+    "sovereign-evolution.yml",
+    "sovereign-runtime.yml",
+    "system-map.yml",
+    "treasury-ladder.yml"
+   ],
+   "treeSig": ".gitignore:43|README.md:490|STATUS.md:2681|blurt-nodes.json:561|index.html:1908|package-lock.json:1098|package.json:296"
+  },
+  {
+   "name": "ops-intake",
+   "private": false,
+   "description": "צינור-הקליטה התפעולי של הצי — מדידה, תור עבודות מדודר ומפת-מרחב מלאה, כל 30 דק",
+   "createdAt": "2026-10-12T22:33:00Z",
+   "pushedAt": "2026-10-16T18:40:17Z",
+   "workflows": [
+    "intake.yml"
+   ],
+   "treeSig": "README.md:6294"
   },
   {
    "name": "Sandbox",
@@ -676,15 +767,6 @@
    "treeSig": ".gitignore:257|AGENT-LEDGER.md:1089|README.md:11678|SECURITY.md:3714|worklog.md:45819"
   },
   {
-   "name": "fleet-economy",
-   "private": true,
-   "description": "הכלכלה-הפנימית-הריבונית — ספר-hash-chain חי · auto-sealed",
-   "createdAt": "2026-10-16T14:28:48Z",
-   "pushedAt": "2026-10-16T18:35:11Z",
-   "workflows": [],
-   "treeSig": "economy.log:4017|index.ts:53100|package.json:451|supervise-economy.sh:824"
-  },
-  {
    "name": "Console",
    "private": false,
    "description": "Console — קונסולת-ה-DEX הריבונית: dex-beat שעתי, גריד-מסחר מדוד, קבלות-ריצות חיות",
@@ -714,57 +796,6 @@
     "workflow-yaml-guard.yml"
    ],
    "treeSig": ".gitattributes:148|.gitignore:204|.gitleaks.toml:3551|.gitleaksignore:1813|.nojekyll:0|404.html:7032|AGENTS.md:2924|BLOC.md:7061|DESIGN.md:9376|ESTATE-INDEX.md:4617|FLEET-LOG.md:9087|README.md:5802|SYSTEM-ACTIVATION-REPORT.md:5660|acid-engine.js:38285|acid.html:49217|defi.html:51772|deposits.html:40008|dev.html:38931|feature_list.json:2175|gate-crypto.js:18455|gate.html:35887|giants.html:54538|index.html:221964|init.sh:988|ledger.json:3238499|manifest.webmanifest:633|mirror.json:73289|money.html:54715|net.html:28205|readiness.html:43246|render.mjs:11772|roast.html:2433|robots.txt:88|saos-live.js:36278|saos-live.json:1155|sitemap.xml:10067|sovereign-anchor.html:2106|sovereign.html:2246|status.json:4246|truth.html:39985|versus.html:41665|wallet.html:137075"
-  },
-  {
-   "name": "Autonomy",
-   "private": false,
-   "description": "המוח הריבוני על דקות-ציבור: עורקי-ההחלטה, הלמידה, הצמיחה — רץ 24/7 ללא תלות בשום סנדבוקס. Public compute, private memory",
-   "createdAt": "2026-10-12T20:33:22Z",
-   "pushedAt": "2026-10-16T18:30:49Z",
-   "workflows": [
-    "artery-catchup.yml",
-    "artery-decision-truth.yml",
-    "artery-defi.yml",
-    "artery-desk.yml",
-    "artery-fleet.yml",
-    "artery-flow.yml",
-    "artery-grid.yml",
-    "artery-integrity.yml",
-    "artery-participation.yml",
-    "artery-scribe.yml",
-    "artery-wallet.yml",
-    "artery-watch.yml",
-    "claims-intake.yml",
-    "compute-rearm.yml",
-    "contract-check.yml",
-    "estate-relay.yml",
-    "estate-vault.yml",
-    "evo-windows-staleness.yml",
-    "federation.yml",
-    "fleet-heal.yml",
-    "fleet-yield.yml",
-    "floating-builds.yml",
-    "fresh-oracle.yml",
-    "hive-probe.yml",
-    "identity-guard.yml",
-    "key-proof.yml",
-    "network-awareness.yml",
-    "network-self-awareness.yml",
-    "office-growth.yml",
-    "operator-routing.yml",
-    "profit-oracle.yml",
-    "research-lane.yml",
-    "retro.yml",
-    "run-score.yml",
-    "selfhood.yml",
-    "sovereign-decider.yml",
-    "sovereign-state.yml",
-    "sovereign.yml",
-    "token-watchdog.yml",
-    "value-scan.yml",
-    "verifier.yml"
-   ],
-   "treeSig": "NETWORK-MANIFEST.md:9828|README.md:3346|SECURITY.md:3714"
   },
   {
    "name": "Pulse",
@@ -824,31 +855,6 @@
     "workflow-yaml-guard.yml"
    ],
    "treeSig": ".gitignore:172|.gitleaksignore:497|2026-09-11-roast-78-addendum.md:1199|AGENT-BRIEFING.md:1225|CONTROLS-THAT-EXIST.md:1245|CRITICAL-R11-KEY-BROADCAST.md:1179|FLEET-NOTE.md:1088|PATCH-SPEC-P10.md:10172|README.md:2299|SAOS-BRIEFING-2026-09-11-ROAST-80.md:1207|SAOS-BRIEFING-2026-09-11-ROAST-84.md:1207|SAOS-COIN-DOSSIER-2026-09-12-V77.md:1203|SAOS-DAILY-REPORT-2026-09-11-ADSMARKET.md:1227|SAOS-DAILY-REPORT-2026-09-11-FOUNDRY.md:1219|SAOS-DAILY-REPORT-2026-09-11.md:1187|SAOS-PULSE-2026-09-11-H16-COMPLETE.md:1223|SAOS-PULSE-2026-09-11-H16-SIX-OF-SIX.md:1231|SAOS-PULSE-2026-09-11-H17-REPEAT.md:1215|SAOS-PULSE-2026-09-11-H18-THIRD-CYCLE.md:1235|SAOS-PULSE-2026-09-11-H19-FOURTH-CYCLE.md:1239|SAOS-PULSE-2026-09-11-H20-FULL-MATRIX-CONSOLIDATION-2.md:1297|SAOS-PULSE-2026-09-11-H20-FULL-MATRIX-CONSOLIDATION.md:1291|SAOS-PULSE-2026-09-11-H21-SIXTH-CYCLE.md:1235|SAOS-PULSE-2026-09-11-H22-H23-AUTOMATION.md:1247|SAOS-STRATEGY-2026-09-11-ADSMARKET.md:1211|bun.lock:298891|components.json:430|eslint.config.mjs:1112|index.html:1960|kernel-smoke.ts:52162|next.config.ts:233|package.json:3017|postcss.config.mjs:81|tailwind.config.ts:1696|tsconfig.json:821"
-  },
-  {
-   "name": "saos-runtime",
-   "private": false,
-   "description": "SAOS sovereign runtime host — Actions runner heartbeat; clones the private engine tree at runtime (R244). No keys, no se",
-   "createdAt": "2026-10-07T16:44:12Z",
-   "pushedAt": "2026-10-16T18:04:16Z",
-   "workflows": [
-    "army-ladder.yml",
-    "blurt-revival.yml",
-    "custody-recover.yml",
-    "escrow-payroll.yml",
-    "fee-engine.yml",
-    "fleet-rotation-a.yml",
-    "gen2-rotation.yml",
-    "grid-watchdog.yml",
-    "operator-triage.yml",
-    "owner-key-adopt.yml",
-    "self-memory.yml",
-    "sovereign-evolution.yml",
-    "sovereign-runtime.yml",
-    "system-map.yml",
-    "treasury-ladder.yml"
-   ],
-   "treeSig": ".gitignore:43|README.md:490|STATUS.md:2681|blurt-nodes.json:561|index.html:1908|package-lock.json:1098|package.json:296"
   },
   {
    "name": "GridWatch",
@@ -923,17 +929,6 @@
     "token-forge.yml"
    ],
    "treeSig": ".gitignore:4055|.gitleaks.toml:2300|.gitleaksignore:179433|AGENT-BRIEFING.md:13240|AGENTS.md:3350|CONTROLS-THAT-EXIST.md:10891|CRITICAL-KEY-EXPOSURE.md:11613|CRITICAL-R11-KEY-BROADCAST.md:1174|Caddyfile:961|ENGINEER_BRIEF.md:11029|FLEET-NOTE.md:1088|MANIFEST.txt:2378|PATCH-SPEC-P11.md:5198|README.md:57980|THE_WEAVE.md:12642|bun.lock:358946|components.json:430|eslint.config.mjs:2269|feature_list.json:2807|init.sh:1303|next.config.ts:866|package.json:3685|postcss.config.mjs:81|progress.md:1124|session-handoff.md:1031|tailwind.config.ts:1696|tsconfig.json:730|worklog.md:904391"
-  },
-  {
-   "name": "ops-intake",
-   "private": false,
-   "description": "צינור-הקליטה התפעולי של הצי — מדידה, תור עבודות מדודר ומפת-מרחב מלאה, כל 30 דק",
-   "createdAt": "2026-10-12T22:33:00Z",
-   "pushedAt": "2026-10-16T14:35:47Z",
-   "workflows": [
-    "intake.yml"
-   ],
-   "treeSig": "README.md:6294"
   },
   {
    "name": "vault-home",
