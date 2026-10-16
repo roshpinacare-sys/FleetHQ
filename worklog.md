@@ -2142,3 +2142,29 @@ Stage Summary:
 - Pages"活窗"时效14h+→≤1h（结构性修复，非表面刷新）；诚实法则全程保持（fail-honest回退+不伪造时间戳）
 - 全管线时效链闭环：local-beats每小时capture→main（≤1h）→office-3d每次bake发布携state→pages（bake每小时多次）→访客所见≤1h旧
 - 四仓库0/0维持；浏览器零错误；RAM零事故
+---
+Task ID: 6
+Agent: Z.ai Code (main orchestrator)
+Task: תמשיך — 15分钟心跳本地化 + 经济链大整合事故与完全治愈（七死迷案+冲突标记自伤+正典链重建）
+
+Work Log:
+- 心跳时效：GitHub 15-min Actions lane自06:02零计划运行（workflow active但全槽被drop，实测API）→本地officeHeartbeat从每小时:41提升到每15分钟:08/:23/:38/:53（per-slot去重键、避开flush槽位）——fleet自己的Actions分钟墙→本地后继法则（27-b先例）
+- local-beats迁移：estate副本编辑被twin的adopt周期冲刷（14:09:29 flush"adopted origin"实证）→改圣化路径：sandbox编辑→commit→push→estate scoped adopt；bun --hot为bun实例死亡根因（build注记早预言"NO --hot"）→no-hot+watchdog启动
+- 经济大事故编年（全部实测证据）：
+  ①我的git stash -u把engine活文件卷入stash→engine文件层碎裂（空ledger+孤儿归档）
+  ②engine自愈boot却落在错误根（origin的twin变体链69,411）→第三变异根开始铸造
+  ③正典链考古：archive#1(1-64114)+archive#2(64115-131194)+已drop的stash悬空commit(131195-150829)=1→150,829连续正典（git show 63d5e57f^3/^1抢救回全部碎片——drop后gc前窗口）
+  ④组装验证：150,829行、零dup、零gap、末行sha16=f49a70ab与state闭合、prev链接逐行验证
+  ⑤state重建缺src水印map（18键的引擎去重记忆）→boot回退默认值→seq重置重铸1,202变根行——根因抓到后从e9824787的d0f670b2侧取回引擎亲写state（151,087+18水印）
+  ⑥重大自伤：rebase冲突解决时git add了带<<<<<<<标记的worktree文件→标记进了origin的经济文件→engine boot解析崩溃——已重建净版（36行seq去重+state从tail sha16重建+prev链接验证）并推送
+  ⑦最终形态：archive 000001-151051(5.5MB gz全史)+活跃151,052→151,133+18水印state——全部0/0推上origin/Domain
+- 七死迷案（进程死亡调查）：本会话shell启动的engine/LB实例7次静默死亡（~2-5min，nohup/setsid/watchdog均不免）；唯一相关因子=启动会话（boot-session的08:47 LB与11:55 engine活了小时级）→判定平台级session-reaping；耐久解=econ-engine写入boot-services.sh（CWD-probe身份+watchdog循环+单写者sandbox法则）——下次boot从init会话生=幸存者阶级
+- estate教训法定案：estate工作树被twin adopt周期重写（bun --hot旧build UP行=换底瞬间实录）→凡常驻进程必住sandbox；estate引擎永久退役（24行诚实工作窗口151,056-79已吸收进正典）；twin=被动git载体（其auto-economy seal机器人2948fd7f实测运载正典内容）
+- 附带：next-server被kernel OOM杀一次（guard自愈验证✓）；office-heartbeat 15m构建已上origin待下次boot生效
+
+Stage Summary:
+- 经济链终局：单一正典链1→151,133（sha16逐行闭合+全水印state）+全史归档5.5MB gz，四层变体根全部诚实丢弃（其实际工作证据经去重门重结算）
+- 三大法则沉淀：①常驻进程必生于boot会话（platform reaping实测）②常驻进程必住sandbox（estate churn实测）③bun禁--hot（build注记+实测）；全部写进boot-services.sh与worklog
+- origin/Domain=正典（双载体：我的submodule推送+twin auto-seal运载）；四仓库0/0
+- 心跳时效架构就位：15分钟本地capture（下次boot生效）→pages≤20min（Task 5修复的publish链）
+- 事故根因链完整记录：stash→碎裂→错根→水印缺失→标记自伤——每一环都有实测证据与修复验证
