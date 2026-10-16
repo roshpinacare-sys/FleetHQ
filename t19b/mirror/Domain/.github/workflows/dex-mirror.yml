@@ -1,0 +1,83 @@
+#
+#
+# [zai-13a] 2026-10-11 — חקירת-שורש AMBER (grid 36.6ש׳ / world 31.9ש׳ כשנמדדו ב-20:30Z):
+# המקור ב-Console בריא (grid-pulse keyless 2×/יום, כל-הריצות האחרונות הצלחה; dex-beat-twin מפרסם כל 4-8.6ש׳) —
+# העותקים כאן הזדקנו כי המראה הזו לא ירתה כלל ב-10-11: מתוזמנת יומית 12:50 (R67-C) אך GitHub דילג/עיכב
+# (ריצה אוטומטית אחרונה 10-10T17:29Z, ריצה 38071927915 — סטייה +4.7ש׳ מהמוצהר; אפס ריצות ב-10-11 עד dispatch 38181551164).
+# פער-מוצהר↔מפת-הדקות: minute-map.json ו-watch.mjs מצהירים "שעתי :52" וה-scheduler-audit (10-04) מדד DEGRADED
+# (צפוי 23/נצפה 10) — אך R67-C ("3h -> daily") היא החלטה מוצהרת בקוד. לא שינינו את התזמון בלי מילת-owner;
+# ההמלצה המדודה: השבת '52 * * * *' (מפת-הדקות) כדי שחוק-הטריות 24ש׳ יעמוד גם בסטיות-התזמון של GitHub.
+#
+# [zai-13a] FILES += onramp/showcase/relay (WO-unwired-dex-mirror P1) — גם בשלוש שורות-ה-redact למטה, אחת-לאחת.
+#
+# [zai-15c] 2026-10-12 — הכרעת-R67-C (dex-mirror cadence) — החלטה-מכונה מתועדת-כנות:
+#   cron '50 12 * * *' (יומי, R67-C) -> '52 * * * *' (שעתי :52 — המשבצת של minute-map.json, Z-71 "הקבצים-הם-האמת-התפעולית").
+#   עדות-מדודה: (1) היומי 12:50 לא-ירה כלל ב-10-11 (ריצה-אוטומטית-אחרונה 10-10T17:29Z run 38071927915, סטייה +4.7ש׳) —
+#   חוק-הטריות 24ש׳ נשבר; שעתי סובל-דילוגי-GitHub בלי-לשבור-חוק. (2) תקדים R68-E: הדיאטה-היומית של R67-C על-workflows
+#   בריפו-ציבורי (weave-heart/weave-anchor-lines) שוחזרה-כבר-לשעתי — "zero minutes saved" — והמראה-הזו ציבורית-וחסרת-מפתחות
+#   (mirror-only, exit-מוקדם-כשאין-שינוי), כלומר-הדיאטה-כאן-חסכה-אפס-דקות-ושברה-טריות. (3) ההמלצה-המדודה של 13-a
+#   ("השבת '52 * * * *'") נשארה-פתוחה-כ"החלטת-owner-היחידה" — הבעלים האציל-מעמד (trace 1a1…4671
+#   "האוטונומיה-זורמת-לבד · פתח-הכל · חפש-בעיות-ותקן") ושורת-COORDINATION 15-c מממשת-את-ההכרעה בגבולות-האצלה:
+#   אין-חתימה, אין-הון, אין-סודות — שינוי-תדירות-פרסום-בלבד. משבצת-דקה 52 פנויה (רק dex-mirror תובע-אותה במפת-44-המכונות).
+#   החלטה: חוזרים ל-'52 * * * *'. R67-C עצמה (חסכון-מכסה במקורות-פרטיים) נותרת-בתוקף לשאר-המפיקים.
+
+name: dex-mirror
+
+on:
+  schedule:
+    - cron: '52 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: dex-mirror
+  cancel-in-progress: false
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    timeout-minutes: 9
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Mirror the live engine book (keyless public read)
+        run: node agents/dex-mirror.mjs
+
+      - name: Publish the mirrored book
+        if: always()
+        run: |
+          git config user.name "dex-mirror"
+          git config user.email "dex-mirror@users.noreply.github.com"
+          node agents/redact-telemetry.mjs dex/grid.json dex/world.json dex/state.json dex/credits.json dex/portfolio.json dex/onramp.json dex/showcase.json dex/relay.json
+          git add dex/
+          if git diff --cached --quiet; then
+            echo "mirror unchanged - the live book is already ours"
+            exit 0
+          fi
+          for attempt in 1 2 3; do
+            node agents/redact-telemetry.mjs dex/grid.json dex/world.json dex/state.json dex/credits.json dex/portfolio.json dex/onramp.json dex/showcase.json dex/relay.json
+          git add dex/
+            git commit -m "dex-mirror: $(date -u +%Y-%m-%dT%H:%M:%SZ) · live engine book mirrored from the live Console mirror (keyless) [skip ci]"
+            git pull --rebase origin main
+            if git push; then echo "mirror published (attempt ${attempt})"; exit 0; fi
+            echo "push failed (attempt ${attempt}); resetting to origin and re-mirroring"
+            git checkout -- .
+            git reset --hard origin/main
+            node agents/dex-mirror.mjs
+            node agents/redact-telemetry.mjs dex/grid.json dex/world.json dex/state.json dex/credits.json dex/portfolio.json dex/onramp.json dex/showcase.json dex/relay.json
+          git add dex/
+            if git diff --cached --quiet; then
+              echo "after re-mirror there is nothing to commit - the live book is already ours"
+              exit 0
+            fi
+          done
+          echo "ERROR: could not publish the mirror after 3 attempts"
+          exit 1

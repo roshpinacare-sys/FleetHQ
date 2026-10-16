@@ -1,0 +1,25 @@
+{
+  "id": "CR-0009",
+  "from": "Z-48/Z-49 wave (orchestrator; operator probe 'אני חושב שזה גם מאוד רלוונטי תבדוק https://github.com/Human-Agent-Society/reef' → Z-48 verdict 'highest-leverage candidate for autonomy', Rung 1 proposed; operator 'תמשיך' opened the wave)",
+  "tier": "B",
+  "opened_at": "2026-10-03T03:20:00Z",
+  "proposes": "Close the self-improvement loop UNDER LAW — reef/SkillClaw Rung 1 (convergence item 4, upgraded from 'daily digest' to a typed improvement cycle). This CR: (1) agents/pulse.cjs v1.0.0 — the daily pulse desk, fresh-process, fail-soft, zero-network, SIDE-EFFECT-FREE TO REQUIRE (main guard — lesson caught live): DAY ledger (git log since last pulse stamp), REVIEW of the canon queues (probe lane PROBE-LANE.md rows, security-audit needs_validation findings, change-requests verdicts, one-bloc boundary, hands-book), PROPOSE with a CLOSED disposition enum (PROPOSED-CR / GATED-BLOCKED / DEFERRED-TIER-C / ACCEPTED-TODAY / ROLLED-BACK / BOOKED) via the exported pure deriveDisposition(), GATE = real judge+evals runs booked verbatim (PULSE_SKIP_GATES recursion guard marks skips honestly — the loop pulse→evals→pulse recursion was caught live and is now pinned by E21), SETTLE into agents/pulse-book.json + .md. (2) Verify-only law in the book itself: verifyOnly=true, autoApply=false — the pulse proposes, the CR law disposes; nothing auto-applied, ever (permission-at-launch, policy beats probe). (3) harness-audit v1.13.0 check #32 watches the book: fresh <25h, enum closed, ≥2 proposals, verify-only laws present, REAL gate verdict lines required (a skipped gate is marked honestly, a faked one fails). (4) run-evals v1.11.0 +E21: white-box pins deriveDisposition for all seven input kinds + the 6-value enum; black-box fresh-process pulse exit 0 with the recursion guard booked honestly. (5) role-registry row 54 (daily-pulse). (6) recruit.yml daily-pulse lane (block-style env per Task 24 law) + pulse books persisted in the board commit. (7) sovereignty.md v1.0.6 §5 check-#32 line. (8) AGENTS.md daily-pulse bullet. Also in this wave: CR-0007→CR-0008 renumber (second-mover law, Z-40 precedent — the parallel runtime landed CR-0007-skill-library-gate at 01:58Z before my 02:44Z) and the one-bloc 2/16 DEGRADED root-caused to the wiped cross-repo credential (the len-93 token is gone from remotes; current token is repo-scoped: Console+Domain reach proven, Zip/sovereign-platform 'Invalid username or token') — booked by the first pulse run as DEFERRED-TIER-C: the loop's very first proposal is the operator's restore.sh/creds convergence leftover.",
+  "rationale": "Z-48 found the strongest autonomy pattern of the whole probe lane: reef formalizes exactly what the fleet was missing — not a report but a CYCLE (day → review → propose → evaluate → settle). Every component already existed here in isolation; this CR binds them into one book under the existing laws. SkillClaw's 'evaluate + rollback rejected changes' is our evals + CR-FAIL path; 'versioned delivery' is our judged-CR git history. The loop improves the harness nightly WITHOUT ever overriding the law — the missing piece was the binding, and the binding is verify-only.",
+  "risk": "Low: additive files + one judge check + one eval; fail-soft desk, no network, no auto-apply. Two live-caught bugs fixed BEFORE landing (recursion: pulse gated evals re-entering E21 — now guarded and honestly marked; process.exit inside require() killing the evals suite — now main-guarded, require side-effect-free proven by node -e). Judge stays 0 FAIL; the standing one-bloc WARN is honest (wiped creds, tier C). The 25h freshness window needs the recruit.yml lane to run the pulse on cadence — same mitigation as canon-liveness/hands-book (#30/#31).",
+  "rollback": "git revert the pulse desk/book + judge-check hunk + eval hunk + registry row + recruit.yml step + docs edits. No signing lanes, chain surfaces, or existing books touched.",
+  "verdict": "PASS",
+  "judged_by": "harness-audit v1.13.0 fresh-process: 39 checks — 39 PASS / 1 WARN / 0 FAIL (the WARN is the standing honest one-bloc DEGRADED 2/16, root-caused to the wiped cross-repo credential, tier C) · run-evals v1.11.0: 21 PASS / 0 FAIL (E21 green: white-box 7 dispositions exact, black-box fresh-process guarded run books honestly) · workflow tools state ok (twins 0) · command-guard scan 0 DENY · pulse live: 14 proposals on first full run, 6 on the windowed rerun, gates booked verbatim",
+  "judged_at": "2026-10-03T03:35:00Z",
+  "receipts": [
+    "agents/pulse.cjs",
+    "agents/pulse-book.json",
+    "agents/pulse-book.md",
+    "agents/harness-audit.cjs",
+    "agents/evals/run-evals.cjs",
+    "agents/role-registry.csv",
+    ".github/workflows/recruit.yml",
+    "agents/sovereignty.md",
+    "AGENTS.md",
+    "agents/change-requests/CR-0008-security-audit-doctrine.json (renumbered per second-mover law)"
+  ]
+}

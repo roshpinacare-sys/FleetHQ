@@ -1,0 +1,22 @@
+{
+  "id": "CR-0013",
+  "from": "sovereign desk (owner directive: \"מה לגבי זה https://github.com/vercel-labs/openreview\")",
+  "tier": "B",
+  "opened_at": "2026-10-03T05:05:00Z",
+  "proposes": "Adopt the vercel-labs/openreview AI-review-surface doctrine as the estate's CONSULT-ONLY reference: new house skill package ai-review-operator (11th), THIRD-PARTY-NOTICES.md §7 consult-only notice with the license-mismatch finding, feature_list feat-016. NO gate pin (license unbacked — pins = licensed adoptions only), gate stays v1.3.0, evals/judge unchanged.",
+  "rationale": "Owner directive 'מה לגבי זה' evaluated under the Authority Map. Upstream: a self-hosted AI code-review bot (1,697 stars, TypeScript, Vercel Labs) — but (1) README claims MIT while NO LICENSE file exists (API license: null) at pinned sha 672deb2 → ALL RIGHTS RESERVED, zero-copy consult-only; (2) dormant — last push 2026-03-06, seven months before evaluation, final commit a CSS tweak, README declares beta; (3) every runnable leg is wallet/possession (Vercel Sandbox/Workflow + Upstash + ANTHROPIC_API_KEY + GitHub App private key). Crown doctrine (restated originally, zero copied): authority pre-flight before any push with named refusal reasons (the Authority Map as working code — archived/permissions/branch-restrictions checks in check-push-access.ts); reviewer-only separation of powers (reaction-gated application, 👍/❤️ applies vs 👎/😕 skips — Jev parallel); the autonomy gradient (auto-push mechanical fixes only, judgment = suggestion); on-demand @mention triggers (pulled, not silent); has-uncommitted-changes before commit-and-push (selective-staging law validated); progressive skill loading (descriptions as router, body on demand — context economy); per-skill skills-lock.json hash pattern (booked as a zero-cost candidate: a hash lockbook for our 11 packages via a future judged CR).",
+  "risk": "Low. Zero-copy consult-only; no pin ceremony entered so nothing false is implied; dormancy + beta booked as honest limits; wallet legs named and left at the line. The only behavioral addition is the description-router discipline, which the library already follows via agentskills.io triggers.",
+  "rollback": "Delete skills/ai-review-operator/; revert THIRD-PARTY-NOTICES.md §7; drop feat-016. The mirror at /home/z/reference-mirrors/openreview is outside the estate and may remain or be deleted with no fleet effect.",
+  "verdict": "PASS — tier B (new consult-only reference package, no wallet, no credentials, no infra, no pin), judged under the Authority Map: doctrine adoption is sovereignty domain; the wallet/possession legs are named and left at the line.",
+  "judged_by": "harness-audit v1.15.0 + evals v1.13.0 + skill-library-gate v1.3.0",
+  "judged_at": "2026-10-03T05:05:00Z",
+  "receipts": [
+    "mirror: /home/z/reference-mirrors/openreview @ 672deb21e70e471e0536d5ad7a67c14b8359e97e (depth-50, keyless, HEAD 2026-03-06)",
+    "license honesty: README 'MIT' claim UNBACKED — no LICENSE file in repo, API license: null → consult-only, zero-copy",
+    "dormancy: last push 2026-03-06 (7 months), README beta disclaimer booked",
+    "gate: skill-library-gate.cjs v1.3.0 GREEN with 11 packages (no pin added — consult-only)",
+    "evals: run-evals v1.13.0 — 24/24 PASS (unchanged, nothing mechanically enforceable without licensed material)",
+    "judge: harness-audit v1.15.0 — 40 PASS/1 honest WARN/0 FAIL",
+    "notices: THIRD-PARTY-NOTICES.md §7 (consult-only posture + license-mismatch finding + re-verification trigger)"
+  ]
+}

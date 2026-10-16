@@ -1,0 +1,67 @@
+name: treasury-arm
+on:
+  schedule: [{cron: '11 4 * * *'}]
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: 'Type ARM to execute (safety friction)'
+        required: true
+        default: 'ARM'
+permissions:
+  contents: write
+concurrency:
+  group: treasury-arm
+  cancel-in-progress: false
+jobs:
+  arm:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 1}
+      - uses: actions/setup-node@v4
+        with: {node-version: 20}
+      - name: confirm friction
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "${{ github.event.inputs.confirm }}" != "ARM" ]; then
+            echo "CONFIRM-REFUSED — type ARM to execute"; exit 1
+          fi
+      - name: install signer lib (house pattern)
+        run: npm install --prefix /tmp/steemjs steem@0.7.11 --omit=dev --no-audit --no-fund --loglevel=error
+      - name: steem powerup lane (capped, idempotent, read-back verified)
+        env:
+          STEEM_ACTIVE_WIF: ${{ secrets.STEEM_ACTIVE_WIF }}
+          SA_HEAD_ACTIVE: ${{ secrets.SA_HEAD_ACTIVE }}
+          HEADCORNER_CRED: ${{ secrets.HEADCORNER_CRED }}
+          MAIN_KEY: ${{ secrets.MAIN_KEY }}
+          SA_FLEET_KEYS: ${{ secrets.SA_FLEET_KEYS }}
+        run: NODE_PATH=/tmp/steemjs/node_modules node agents/treasury-arm.cjs steem
+      - name: hive powerup + delegation lane
+        env:
+          HIVE_ACTIVE_WIF: ${{ secrets.HIVE_ACTIVE_WIF }}
+          SA_HEAD_ACTIVE: ${{ secrets.SA_HEAD_ACTIVE }}
+          HEADCORNER_CRED: ${{ secrets.HEADCORNER_CRED }}
+          MAIN_KEY: ${{ secrets.MAIN_KEY }}
+          SA_FLEET_KEYS: ${{ secrets.SA_FLEET_KEYS }}
+        run: NODE_PATH=/tmp/steemjs/node_modules node agents/treasury-arm.cjs hive
+      - name: blurt powerup lane
+        env:
+          BLURT_ACTIVE_WIF: ${{ secrets.BLURT_ACTIVE_WIF }}
+          SA_HEAD_ACTIVE: ${{ secrets.SA_HEAD_ACTIVE }}
+          HEADCORNER_CRED: ${{ secrets.HEADCORNER_CRED }}
+          MAIN_KEY: ${{ secrets.MAIN_KEY }}
+          SA_FLEET_KEYS: ${{ secrets.SA_FLEET_KEYS }}
+        run: NODE_PATH=/tmp/steemjs/node_modules node agents/treasury-arm.cjs blurt
+      - name: commit state + book
+        if: always()
+        run: |
+          git config user.name "treasury-arm[bot]"
+          git config user.email "treasury-arm[bot]@users.noreply.github.com"
+          git add agents/treasury-state.json agents/treasury-arm-book.md
+          if git diff --cached --quiet; then echo "no treasury changes"; else
+            for i in 1 2 3; do
+              git -c rebase.autoStash=true pull --rebase origin main >/dev/null 2>&1 || true
+              git commit -m "treasury-arm: capped arming run $(date -u +%Y-%m-%dT%H:%M:%SZ) [skip ci]" >/dev/null 2>&1 && break || sleep 5
+            done
+            git push origin main >/dev/null 2>&1 || true
+          fi

@@ -1,0 +1,3969 @@
+[
+  {
+    "ts": "2026-10-03T18:38:29.430Z",
+    "mode": "DRY",
+    "skip_fetch": false,
+    "fill_ledger": {
+      "script": "fill-ledger.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[fill-ledger] mode=READ-ONLY new=0 total=0 realized_sbd=0.000000 recycle=FUNDED-SELL-SIDE 1.581 STEEM errors=0 in 2649ms | [fill-ledger] canon: agents/fill-ledger.json (run #2)",
+      "stderr_tail": ""
+    },
+    "suggestion": {
+      "suggested": true,
+      "reasons": [
+        "FUNDED-SELL-SIDE 1.581 STEEM"
+      ]
+    },
+    "decision": {
+      "executorMode": "DRY",
+      "reason": "MODE-DRY: planning receipt only, zero signatures"
+    },
+    "executor": {
+      "script": "market-exec.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[market-exec] mode=DRY_RUN planned=1 skipped=5 errors=0 verify=0/0 in 2021ms | [market-exec] canon: agents/market-exec.json (run #9)",
+      "stderr_tail": ""
+    },
+    "errors": [],
+    "run_index": 1,
+    "fill_ledger_row": {
+      "run_index": 2,
+      "new_fills": 0,
+      "realized_sbd": 0,
+      "recycle": {
+        "suggested": true,
+        "reasons": [
+          "FUNDED-SELL-SIDE 1.581 STEEM"
+        ]
+      }
+    },
+    "duration_ms": 4751
+  },
+  {
+    "ts": "2026-10-03T18:41:25.683Z",
+    "mode": "LIVE",
+    "skip_fetch": false,
+    "fill_ledger": {
+      "script": "fill-ledger.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[fill-ledger] mode=READ-ONLY new=0 total=0 realized_sbd=0.000000 recycle=FUNDED-SELL-SIDE 1.581 STEEM errors=0 in 2722ms | [fill-ledger] canon: agents/fill-ledger.json (run #3)",
+      "stderr_tail": ""
+    },
+    "suggestion": {
+      "suggested": true,
+      "reasons": [
+        "FUNDED-SELL-SIDE 1.581 STEEM"
+      ]
+    },
+    "decision": {
+      "executorMode": "LIVE",
+      "reason": "RECYCLE-SUGGESTED: FUNDED-SELL-SIDE 1.581 STEEM"
+    },
+    "executor": {
+      "script": "market-exec.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[market-exec] mode=LIVE planned=1 skipped=5 errors=0 verify=1/1 in 5607ms | [market-exec] canon: agents/market-exec.json (run #10)",
+      "stderr_tail": ""
+    },
+    "errors": [],
+    "run_index": 2,
+    "fill_ledger_row": {
+      "run_index": 3,
+      "new_fills": 0,
+      "realized_sbd": 0,
+      "recycle": {
+        "suggested": true,
+        "reasons": [
+          "FUNDED-SELL-SIDE 1.581 STEEM"
+        ]
+      }
+    },
+    "duration_ms": 8406
+  },
+  {
+    "ts": "2026-10-03T19:47:07.549Z",
+    "mode": "LIVE",
+    "skip_fetch": false,
+    "fill_ledger": {
+      "script": "fill-ledger.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[fill-ledger] mode=READ-ONLY new=1 total=12 realized_sbd=0.000000 recycle=FUNDED-SELL-SIDE 1.309 STEEM|FILLS-1 errors=0 in 2928ms | [fill-ledger] canon: agents/fill-ledger.json (run #9)",
+      "stderr_tail": ""
+    },
+    "suggestion": {
+      "suggested": true,
+      "reasons": [
+        "FUNDED-SELL-SIDE 1.309 STEEM",
+        "FILLS-1"
+      ]
+    },
+    "decision": {
+      "executorMode": "LIVE",
+      "reason": "RECYCLE-SUGGESTED: FUNDED-SELL-SIDE 1.309 STEEM · FILLS-1"
+    },
+    "executor": {
+      "script": "market-exec.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[market-exec] mode=LIVE planned=1 skipped=5 errors=0 verify=1/1 in 5597ms | [market-exec] canon: agents/market-exec.json (run #14)",
+      "stderr_tail": ""
+    },
+    "errors": [],
+    "run_index": 3,
+    "fill_ledger_row": {
+      "run_index": 9,
+      "new_fills": 1,
+      "realized_sbd": 0,
+      "recycle": {
+        "suggested": true,
+        "reasons": [
+          "FUNDED-SELL-SIDE 1.309 STEEM",
+          "FILLS-1"
+        ]
+      }
+    },
+    "duration_ms": 8608
+  },
+  {
+    "ts": "2026-10-03T19:47:37.146Z",
+    "mode": "DRY",
+    "skip_fetch": false,
+    "fill_ledger": {
+      "script": "fill-ledger.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[fill-ledger] mode=READ-ONLY new=0 total=12 realized_sbd=0.000000 recycle=FUNDED-SELL-SIDE 0.921 STEEM errors=0 in 3065ms | [fill-ledger] canon: agents/fill-ledger.json (run #10)",
+      "stderr_tail": ""
+    },
+    "suggestion": {
+      "suggested": true,
+      "reasons": [
+        "FUNDED-SELL-SIDE 0.921 STEEM"
+      ]
+    },
+    "decision": {
+      "executorMode": "DRY",
+      "reason": "MODE-DRY: planning receipt only, zero signatures"
+    },
+    "executor": {
+      "script": "market-exec.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[market-exec] mode=DRY_RUN planned=0 skipped=6 errors=0 verify=0/0 in 1772ms | [market-exec] canon: agents/market-exec.json (run #15)",
+      "stderr_tail": ""
+    },
+    "errors": [],
+    "run_index": 4,
+    "fill_ledger_row": {
+      "run_index": 10,
+      "new_fills": 0,
+      "realized_sbd": 0,
+      "recycle": {
+        "suggested": true,
+        "reasons": [
+          "FUNDED-SELL-SIDE 0.921 STEEM"
+        ]
+      }
+    },
+    "duration_ms": 4916
+  },
+  {
+    "ts": "2026-10-03T19:50:06.295Z",
+    "mode": "DRY",
+    "skip_fetch": false,
+    "fill_ledger": {
+      "script": "fill-ledger.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[fill-ledger] mode=READ-ONLY new=0 total=12 realized_sbd=0.000000 recycle=FUNDED-SELL-SIDE 0.921 STEEM errors=0 in 2679ms | [fill-ledger] canon: agents/fill-ledger.json (run #11)",
+      "stderr_tail": ""
+    },
+    "suggestion": {
+      "suggested": true,
+      "reasons": [
+        "FUNDED-SELL-SIDE 0.921 STEEM"
+      ]
+    },
+    "decision": {
+      "executorMode": "DRY",
+      "reason": "MODE-DRY: planning receipt only, zero signatures"
+    },
+    "executor": {
+      "script": "market-exec.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[market-exec] mode=DRY_RUN planned=0 skipped=6 errors=0 verify=0/0 in 1578ms | [market-exec] canon: agents/market-exec.json (run #16)",
+      "stderr_tail": ""
+    },
+    "errors": [],
+    "run_index": 5,
+    "fill_ledger_row": {
+      "run_index": 11,
+      "new_fills": 0,
+      "realized_sbd": 0,
+      "recycle": {
+        "suggested": true,
+        "reasons": [
+          "FUNDED-SELL-SIDE 0.921 STEEM"
+        ]
+      }
+    },
+    "duration_ms": 4333
+  },
+  {
+    "ts": "2026-10-03T19:58:25.317Z",
+    "mode": "DRY",
+    "skip_fetch": false,
+    "fill_ledger": {
+      "script": "fill-ledger.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[fill-ledger] mode=READ-ONLY new=0 total=12 realized_sbd=0.000000 recycle=FUNDED-SELL-SIDE 0.921 STEEM errors=0 in 2873ms | [fill-ledger] canon: agents/fill-ledger.json (run #12)",
+      "stderr_tail": ""
+    },
+    "suggestion": {
+      "suggested": true,
+      "reasons": [
+        "FUNDED-SELL-SIDE 0.921 STEEM"
+      ]
+    },
+    "decision": {
+      "executorMode": "DRY",
+      "reason": "MODE-DRY: planning receipt only, zero signatures"
+    },
+    "executor": {
+      "script": "market-exec.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[market-exec] mode=DRY_RUN planned=0 skipped=6 errors=0 verify=0/0 in 1699ms | [market-exec] canon: agents/market-exec.json (run #17)",
+      "stderr_tail": ""
+    },
+    "errors": [],
+    "run_index": 6,
+    "fill_ledger_row": {
+      "run_index": 12,
+      "new_fills": 0,
+      "realized_sbd": 0,
+      "recycle": {
+        "suggested": true,
+        "reasons": [
+          "FUNDED-SELL-SIDE 0.921 STEEM"
+        ]
+      }
+    },
+    "duration_ms": 4643
+  },
+  {
+    "ts": "2026-10-03T20:13:23.526Z",
+    "mode": "LIVE",
+    "skip_fetch": false,
+    "fill_ledger": {
+      "script": "fill-ledger.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[fill-ledger] mode=READ-ONLY new=0 total=12 realized_sbd=0.000000 recycle=FUNDED-SELL-SIDE 0.921 STEEM errors=0 in 2987ms | [fill-ledger] canon: agents/fill-ledger.json (run #13)",
+      "stderr_tail": ""
+    },
+    "suggestion": {
+      "suggested": true,
+      "reasons": [
+        "FUNDED-SELL-SIDE 0.921 STEEM"
+      ]
+    },
+    "decision": {
+      "executorMode": "LIVE",
+      "reason": "RECYCLE-SUGGESTED: FUNDED-SELL-SIDE 0.921 STEEM"
+    },
+    "executor": {
+      "script": "market-exec.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[market-exec] mode=LIVE planned=0 skipped=6 errors=0 verify=0/0 in 1980ms | [market-exec] canon: agents/market-exec.json (run #18)",
+      "stderr_tail": ""
+    },
+    "errors": [],
+    "run_index": 7,
+    "fill_ledger_row": {
+      "run_index": 13,
+      "new_fills": 0,
+      "realized_sbd": 0,
+      "recycle": {
+        "suggested": true,
+        "reasons": [
+          "FUNDED-SELL-SIDE 0.921 STEEM"
+        ]
+      }
+    },
+    "duration_ms": 5053
+  },
+  {
+    "ts": "2026-10-03T20:25:46.222Z",
+    "mode": "DRY",
+    "skip_fetch": false,
+    "fill_ledger": {
+      "script": "fill-ledger.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[fill-ledger] mode=READ-ONLY new=0 total=12 realized_sbd=0.000000 recycle=FUNDED-SELL-SIDE 0.921 STEEM errors=0 in 142ms | [fill-ledger] canon: agents/fill-ledger.json (run #14)",
+      "stderr_tail": ""
+    },
+    "suggestion": {
+      "suggested": true,
+      "reasons": [
+        "FUNDED-SELL-SIDE 0.921 STEEM"
+      ]
+    },
+    "decision": {
+      "executorMode": "DRY",
+      "reason": "MODE-DRY: planning receipt only, zero signatures"
+    },
+    "executor": {
+      "script": "market-exec.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[market-exec] mode=DRY_RUN planned=0 skipped=6 errors=0 verify=0/0 in 435ms | [market-exec] canon: agents/market-exec.json (run #19)",
+      "stderr_tail": ""
+    },
+    "errors": [],
+    "run_index": 8,
+    "fill_ledger_row": {
+      "run_index": 14,
+      "new_fills": 0,
+      "realized_sbd": 0,
+      "recycle": {
+        "suggested": true,
+        "reasons": [
+          "FUNDED-SELL-SIDE 0.921 STEEM"
+        ]
+      }
+    },
+    "duration_ms": 644
+  },
+  {
+    "ts": "2026-10-03T21:13:22.877Z",
+    "mode": "DRY",
+    "skip_fetch": false,
+    "fill_ledger": {
+      "script": "fill-ledger.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[fill-ledger] mode=READ-ONLY new=0 total=57 realized_sbd=-0.178154 vwap=sell 0.100067 / buy 0.102197 (edge -2.1282%) recycle=FUNDED-SELL-SIDE 64.614 STEEM|FUNDED-BUY-SIDE 6.519 SBD errors=0 in 2854ms | [fill-ledger] canon: agents/fill-ledger.json (run #16)",
+      "stderr_tail": ""
+    },
+    "suggestion": {
+      "suggested": true,
+      "reasons": [
+        "FUNDED-SELL-SIDE 64.614 STEEM",
+        "FUNDED-BUY-SIDE 6.519 SBD"
+      ]
+    },
+    "decision": {
+      "executorMode": "DRY",
+      "reason": "MODE-DRY: planning receipt only, zero signatures"
+    },
+    "executor": {
+      "script": "market-exec.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[market-exec] mode=DRY_RUN planned=1 skipped=5 errors=0 verify=0/0 in 1833ms | [market-exec] canon: agents/market-exec.json (run #20)",
+      "stderr_tail": ""
+    },
+    "errors": [],
+    "run_index": 9,
+    "fill_ledger_row": {
+      "run_index": 16,
+      "new_fills": 0,
+      "realized_sbd": -0.178154,
+      "recycle": {
+        "suggested": true,
+        "reasons": [
+          "FUNDED-SELL-SIDE 64.614 STEEM",
+          "FUNDED-BUY-SIDE 6.519 SBD"
+        ]
+      }
+    },
+    "duration_ms": 4761
+  },
+  {
+    "ts": "2026-10-03T21:15:22.669Z",
+    "mode": "DRY",
+    "skip_fetch": false,
+    "fill_ledger": {
+      "script": "fill-ledger.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[fill-ledger] mode=READ-ONLY new=0 total=57 realized_sbd=-0.178154 vwap=sell 0.100067 / buy 0.102197 (edge -2.1282%) recycle=FUNDED-SELL-SIDE 64.429 STEEM|FUNDED-BUY-SIDE 5.578 SBD errors=0 in 746ms | [fill-ledger] canon: agents/fill-ledger.json (run #17)",
+      "stderr_tail": ""
+    },
+    "suggestion": {
+      "suggested": true,
+      "reasons": [
+        "FUNDED-SELL-SIDE 64.429 STEEM",
+        "FUNDED-BUY-SIDE 5.578 SBD"
+      ]
+    },
+    "decision": {
+      "executorMode": "DRY",
+      "reason": "MODE-DRY: planning receipt only, zero signatures"
+    },
+    "executor": {
+      "script": "market-exec.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[market-exec] mode=DRY_RUN planned=0 skipped=6 errors=0 verify=0/0 in 786ms | [market-exec] canon: agents/market-exec.json (run #21)",
+      "stderr_tail": ""
+    },
+    "errors": [],
+    "run_index": 10,
+    "fill_ledger_row": {
+      "run_index": 17,
+      "new_fills": 0,
+      "realized_sbd": -0.178154,
+      "recycle": {
+        "suggested": true,
+        "reasons": [
+          "FUNDED-SELL-SIDE 64.429 STEEM",
+          "FUNDED-BUY-SIDE 5.578 SBD"
+        ]
+      }
+    },
+    "duration_ms": 1603
+  },
+  {
+    "ts": "2026-10-03T21:35:25.154Z",
+    "mode": "DRY",
+    "skip_fetch": false,
+    "fill_ledger": {
+      "script": "fill-ledger.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[fill-ledger] mode=READ-ONLY new=21 total=78 realized_sbd=-0.181097 vwap=sell 0.100202 / buy 0.102046 (edge -1.84%) recycle=FUNDED-SELL-SIDE 21.958 STEEM|FUNDED-BUY-SIDE 7.955 SBD|FILLS-21 errors=0 in 2910ms | [fill-ledger] canon: agents/fill-ledger.json (run #18)",
+      "stderr_tail": ""
+    },
+    "suggestion": {
+      "suggested": true,
+      "reasons": [
+        "FUNDED-SELL-SIDE 21.958 STEEM",
+        "FUNDED-BUY-SIDE 7.955 SBD",
+        "FILLS-21"
+      ]
+    },
+    "decision": {
+      "executorMode": "DRY",
+      "reason": "MODE-DRY: planning receipt only, zero signatures"
+    },
+    "executor": {
+      "script": "market-exec.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[market-exec] mode=DRY_RUN planned=1 skipped=5 errors=0 verify=0/0 in 1798ms | [market-exec] canon: agents/market-exec.json (run #22)",
+      "stderr_tail": ""
+    },
+    "errors": [],
+    "run_index": 11,
+    "fill_ledger_row": {
+      "run_index": 18,
+      "new_fills": 21,
+      "realized_sbd": -0.181097,
+      "recycle": {
+        "suggested": true,
+        "reasons": [
+          "FUNDED-SELL-SIDE 21.958 STEEM",
+          "FUNDED-BUY-SIDE 7.955 SBD",
+          "FILLS-21"
+        ]
+      }
+    },
+    "duration_ms": 4788
+  },
+  {
+    "ts": "2026-10-03T22:43:14.944Z",
+    "mode": "DRY",
+    "skip_fetch": false,
+    "fill_ledger": {
+      "script": "fill-ledger.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[fill-ledger] mode=READ-ONLY new=5 total=92 realized_sbd=-0.229341 vwap=sell 0.100191 / buy 0.102195 (edge -1.9998%) recycle=FUNDED-SELL-SIDE 23.366 STEEM|FUNDED-BUY-SIDE 11.241 SBD|FILLS-5 errors=0 in 109ms | [fill-ledger] canon: agents/fill-ledger.json (run #20)",
+      "stderr_tail": ""
+    },
+    "suggestion": {
+      "suggested": true,
+      "reasons": [
+        "FUNDED-SELL-SIDE 23.366 STEEM",
+        "FUNDED-BUY-SIDE 11.241 SBD",
+        "FILLS-5"
+      ]
+    },
+    "decision": {
+      "executorMode": "DRY",
+      "reason": "MODE-DRY: planning receipt only, zero signatures"
+    },
+    "executor": {
+      "script": "market-exec.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[market-exec] mode=DRY_RUN planned=2 skipped=4 errors=0 verify=0/0 in 425ms | [market-exec] canon: agents/market-exec.json (run #23)",
+      "stderr_tail": ""
+    },
+    "errors": [],
+    "run_index": 12,
+    "fill_ledger_row": {
+      "run_index": 20,
+      "new_fills": 5,
+      "realized_sbd": -0.229341,
+      "recycle": {
+        "suggested": true,
+        "reasons": [
+          "FUNDED-SELL-SIDE 23.366 STEEM",
+          "FUNDED-BUY-SIDE 11.241 SBD",
+          "FILLS-5"
+        ]
+      }
+    },
+    "duration_ms": 591
+  },
+  {
+    "ts": "2026-10-04T03:57:48.651Z",
+    "mode": "LIVE",
+    "skip_fetch": false,
+    "fill_ledger": {
+      "script": "fill-ledger.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[fill-ledger] mode=READ-ONLY new=0 total=137 realized_sbd=-0.384998 vwap=sell 0.10017 / buy 0.102413 (edge -2.2396%) recycle=FUNDED-SELL-SIDE 2.959 STEEM errors=0 in 2547ms | [fill-ledger] canon: agents/fill-ledger.json (run #24)",
+      "stderr_tail": ""
+    },
+    "suggestion": {
+      "suggested": true,
+      "reasons": [
+        "FUNDED-SELL-SIDE 2.959 STEEM"
+      ]
+    },
+    "decision": {
+      "executorMode": "LIVE",
+      "reason": "RECYCLE-SUGGESTED: FUNDED-SELL-SIDE 2.959 STEEM"
+    },
+    "executor": {
+      "script": "market-exec.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[market-exec] mode=LIVE planned=0 skipped=6 errors=0 verify=0/0 in 6361ms | [market-exec] canon: agents/market-exec.json (run #24)",
+      "stderr_tail": ""
+    },
+    "errors": [],
+    "run_index": 13,
+    "fill_ledger_row": {
+      "run_index": 24,
+      "new_fills": 0,
+      "realized_sbd": -0.384998,
+      "recycle": {
+        "suggested": true,
+        "reasons": [
+          "FUNDED-SELL-SIDE 2.959 STEEM"
+        ]
+      }
+    },
+    "duration_ms": 8985
+  },
+  {
+    "ts": "2026-10-04T03:58:42.841Z",
+    "mode": "DRY",
+    "skip_fetch": false,
+    "fill_ledger": {
+      "script": "fill-ledger.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[fill-ledger] mode=READ-ONLY new=0 total=137 realized_sbd=-0.384998 vwap=sell 0.10017 / buy 0.102413 (edge -2.2396%) recycle=FUNDED-SELL-SIDE 2.959 STEEM errors=0 in 2697ms | [fill-ledger] canon: agents/fill-ledger.json (run #25)",
+      "stderr_tail": ""
+    },
+    "suggestion": {
+      "suggested": true,
+      "reasons": [
+        "FUNDED-SELL-SIDE 2.959 STEEM"
+      ]
+    },
+    "decision": {
+      "executorMode": "DRY",
+      "reason": "MODE-DRY: planning receipt only, zero signatures"
+    },
+    "executor": {
+      "script": "market-exec.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[market-exec] mode=DRY_RUN planned=0 skipped=6 errors=0 verify=0/0 in 1770ms | [market-exec] canon: agents/market-exec.json (run #25)",
+      "stderr_tail": ""
+    },
+    "errors": [],
+    "run_index": 14,
+    "fill_ledger_row": {
+      "run_index": 25,
+      "new_fills": 0,
+      "realized_sbd": -0.384998,
+      "recycle": {
+        "suggested": true,
+        "reasons": [
+          "FUNDED-SELL-SIDE 2.959 STEEM"
+        ]
+      }
+    },
+    "duration_ms": 4544
+  },
+  {
+    "ts": "2026-10-04T04:13:48.376Z",
+    "mode": "LIVE",
+    "skip_fetch": false,
+    "fill_ledger": {
+      "script": "fill-ledger.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[fill-ledger] mode=READ-ONLY new=0 total=137 realized_sbd=-0.384998 vwap=sell 0.10017 / buy 0.102413 (edge -2.2396%) recycle=FUNDED-SELL-SIDE 16.025 STEEM|FUNDED-BUY-SIDE 13.44 SBD errors=0 in 2876ms | [fill-ledger] canon: agents/fill-ledger.json (run #26)",
+      "stderr_tail": ""
+    },
+    "suggestion": {
+      "suggested": true,
+      "reasons": [
+        "FUNDED-SELL-SIDE 16.025 STEEM",
+        "FUNDED-BUY-SIDE 13.44 SBD"
+      ]
+    },
+    "decision": {
+      "executorMode": "LIVE",
+      "reason": "RECYCLE-SUGGESTED: FUNDED-SELL-SIDE 16.025 STEEM · FUNDED-BUY-SIDE 13.44 SBD"
+    },
+    "executor": {
+      "script": "market-exec.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[market-exec] mode=LIVE planned=0 skipped=6 errors=0 verify=0/0 in 6910ms | [market-exec] canon: agents/market-exec.json (run #26)",
+      "stderr_tail": ""
+    },
+    "errors": [],
+    "run_index": 15,
+    "fill_ledger_row": {
+      "run_index": 26,
+      "new_fills": 0,
+      "realized_sbd": -0.384998,
+      "recycle": {
+        "suggested": true,
+        "reasons": [
+          "FUNDED-SELL-SIDE 16.025 STEEM",
+          "FUNDED-BUY-SIDE 13.44 SBD"
+        ]
+      }
+    },
+    "duration_ms": 9864
+  },
+  {
+    "ts": "2026-10-04T04:18:11.837Z",
+    "mode": "DRY",
+    "skip_fetch": false,
+    "fill_ledger": {
+      "script": "fill-ledger.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[fill-ledger] mode=READ-ONLY new=0 total=137 realized_sbd=-0.384998 vwap=sell 0.10017 / buy 0.102413 (edge -2.2396%) recycle=FUNDED-SELL-SIDE 16.025 STEEM|FUNDED-BUY-SIDE 13.741 SBD errors=0 in 2854ms | [fill-ledger] canon: agents/fill-ledger.json (run #27)",
+      "stderr_tail": ""
+    },
+    "suggestion": {
+      "suggested": true,
+      "reasons": [
+        "FUNDED-SELL-SIDE 16.025 STEEM",
+        "FUNDED-BUY-SIDE 13.741 SBD"
+      ]
+    },
+    "decision": {
+      "executorMode": "DRY",
+      "reason": "MODE-DRY: planning receipt only, zero signatures"
+    },
+    "executor": {
+      "script": "market-exec.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[market-exec] mode=DRY_RUN planned=2 skipped=4 errors=0 verify=0/0 in 1689ms | [market-exec] canon: agents/market-exec.json (run #27)",
+      "stderr_tail": ""
+    },
+    "errors": [],
+    "run_index": 16,
+    "fill_ledger_row": {
+      "run_index": 27,
+      "new_fills": 0,
+      "realized_sbd": -0.384998,
+      "recycle": {
+        "suggested": true,
+        "reasons": [
+          "FUNDED-SELL-SIDE 16.025 STEEM",
+          "FUNDED-BUY-SIDE 13.741 SBD"
+        ]
+      }
+    },
+    "duration_ms": 4629
+  },
+  {
+    "ts": "2026-10-04T04:28:17.443Z",
+    "mode": "LIVE",
+    "skip_fetch": false,
+    "fill_ledger": {
+      "script": "fill-ledger.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[fill-ledger] mode=READ-ONLY new=4 total=141 realized_sbd=-0.391128 vwap=sell 0.100194 / buy 0.102413 (edge -2.2145%) recycle=FUNDED-SELL-SIDE 7.54 STEEM|FUNDED-BUY-SIDE 13.143 SBD|FILLS-4 errors=0 in 2662ms | [fill-ledger] canon: agents/fill-ledger.json (run #28)",
+      "stderr_tail": ""
+    },
+    "suggestion": {
+      "suggested": true,
+      "reasons": [
+        "FUNDED-SELL-SIDE 7.54 STEEM",
+        "FUNDED-BUY-SIDE 13.143 SBD",
+        "FILLS-4"
+      ]
+    },
+    "decision": {
+      "executorMode": "LIVE",
+      "reason": "RECYCLE-SUGGESTED: FUNDED-SELL-SIDE 7.54 STEEM · FUNDED-BUY-SIDE 13.143 SBD · FILLS-4"
+    },
+    "executor": {
+      "script": "market-exec.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[market-exec] mode=LIVE planned=0 skipped=6 errors=0 verify=0/0 in 9022ms | [market-exec] canon: agents/market-exec.json (run #28)",
+      "stderr_tail": ""
+    },
+    "errors": [],
+    "run_index": 17,
+    "fill_ledger_row": {
+      "run_index": 28,
+      "new_fills": 4,
+      "realized_sbd": -0.391128,
+      "recycle": {
+        "suggested": true,
+        "reasons": [
+          "FUNDED-SELL-SIDE 7.54 STEEM",
+          "FUNDED-BUY-SIDE 13.143 SBD",
+          "FILLS-4"
+        ]
+      }
+    },
+    "duration_ms": 11761
+  },
+  {
+    "ts": "2026-10-04T04:38:30.186Z",
+    "mode": "LIVE",
+    "skip_fetch": false,
+    "fill_ledger": {
+      "script": "fill-ledger.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[fill-ledger] mode=READ-ONLY new=2 total=143 realized_sbd=-0.389730 vwap=sell 0.100201 / buy 0.102413 (edge -2.2078%) recycle=FILLS-2 errors=0 in 2815ms | [fill-ledger] canon: agents/fill-ledger.json (run #29)",
+      "stderr_tail": ""
+    },
+    "suggestion": {
+      "suggested": true,
+      "reasons": [
+        "FILLS-2"
+      ]
+    },
+    "decision": {
+      "executorMode": "LIVE",
+      "reason": "RECYCLE-SUGGESTED: FILLS-2"
+    },
+    "executor": {
+      "script": "market-exec.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[market-exec] mode=LIVE planned=0 skipped=6 errors=0 verify=0/0 in 10098ms | [market-exec] canon: agents/market-exec.json (run #29)",
+      "stderr_tail": ""
+    },
+    "errors": [],
+    "run_index": 18,
+    "fill_ledger_row": {
+      "run_index": 29,
+      "new_fills": 2,
+      "realized_sbd": -0.38973,
+      "recycle": {
+        "suggested": true,
+        "reasons": [
+          "FILLS-2"
+        ]
+      }
+    },
+    "duration_ms": 12993
+  },
+  {
+    "ts": "2026-10-04T04:48:44.181Z",
+    "mode": "LIVE",
+    "skip_fetch": false,
+    "fill_ledger": {
+      "script": "fill-ledger.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[fill-ledger] mode=READ-ONLY new=0 total=143 realized_sbd=-0.389730 vwap=sell 0.100201 / buy 0.102413 (edge -2.2078%) recycle=FUNDED-BUY-SIDE 0.86 SBD errors=0 in 2824ms | [fill-ledger] canon: agents/fill-ledger.json (run #30)",
+      "stderr_tail": ""
+    },
+    "suggestion": {
+      "suggested": true,
+      "reasons": [
+        "FUNDED-BUY-SIDE 0.86 SBD"
+      ]
+    },
+    "decision": {
+      "executorMode": "LIVE",
+      "reason": "RECYCLE-SUGGESTED: FUNDED-BUY-SIDE 0.86 SBD"
+    },
+    "executor": {
+      "script": "market-exec.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[market-exec] mode=LIVE planned=0 skipped=6 errors=0 verify=0/0 in 8447ms | [market-exec] canon: agents/market-exec.json (run #30)",
+      "stderr_tail": ""
+    },
+    "errors": [],
+    "run_index": 19,
+    "fill_ledger_row": {
+      "run_index": 30,
+      "new_fills": 0,
+      "realized_sbd": -0.38973,
+      "recycle": {
+        "suggested": true,
+        "reasons": [
+          "FUNDED-BUY-SIDE 0.86 SBD"
+        ]
+      }
+    },
+    "duration_ms": 11351
+  },
+  {
+    "ts": "2026-10-04T04:58:56.543Z",
+    "mode": "LIVE",
+    "skip_fetch": false,
+    "fill_ledger": {
+      "script": "fill-ledger.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[fill-ledger] mode=READ-ONLY new=0 total=143 realized_sbd=-0.389730 vwap=sell 0.100201 / buy 0.102413 (edge -2.2078%) recycle=FUNDED-BUY-SIDE 0.45 SBD errors=0 in 2553ms | [fill-ledger] canon: agents/fill-ledger.json (run #31)",
+      "stderr_tail": ""
+    },
+    "suggestion": {
+      "suggested": true,
+      "reasons": [
+        "FUNDED-BUY-SIDE 0.45 SBD"
+      ]
+    },
+    "decision": {
+      "executorMode": "LIVE",
+      "reason": "RECYCLE-SUGGESTED: FUNDED-BUY-SIDE 0.45 SBD"
+    },
+    "executor": {
+      "script": "market-exec.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[market-exec] mode=LIVE planned=0 skipped=6 errors=0 verify=0/0 in 11038ms | [market-exec] canon: agents/market-exec.json (run #31)",
+      "stderr_tail": ""
+    },
+    "errors": [],
+    "run_index": 20,
+    "fill_ledger_row": {
+      "run_index": 31,
+      "new_fills": 0,
+      "realized_sbd": -0.38973,
+      "recycle": {
+        "suggested": true,
+        "reasons": [
+          "FUNDED-BUY-SIDE 0.45 SBD"
+        ]
+      }
+    },
+    "duration_ms": 13671
+  },
+  {
+    "ts": "2026-10-04T05:09:11.174Z",
+    "mode": "LIVE",
+    "skip_fetch": false,
+    "fill_ledger": {
+      "script": "fill-ledger.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[fill-ledger] mode=READ-ONLY new=0 total=143 realized_sbd=-0.389730 vwap=sell 0.100201 / buy 0.102413 (edge -2.2078%) recycle=FUNDED-BUY-SIDE 0.5 SBD errors=0 in 2628ms | [fill-ledger] canon: agents/fill-ledger.json (run #32)",
+      "stderr_tail": ""
+    },
+    "suggestion": {
+      "suggested": true,
+      "reasons": [
+        "FUNDED-BUY-SIDE 0.5 SBD"
+      ]
+    },
+    "decision": {
+      "executorMode": "LIVE",
+      "reason": "RECYCLE-SUGGESTED: FUNDED-BUY-SIDE 0.5 SBD"
+    },
+    "executor": {
+      "script": "market-exec.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[market-exec] mode=LIVE planned=0 skipped=6 errors=0 verify=0/0 in 8724ms | [market-exec] canon: agents/market-exec.json (run #32)",
+      "stderr_tail": ""
+    },
+    "errors": [],
+    "run_index": 21,
+    "fill_ledger_row": {
+      "run_index": 32,
+      "new_fills": 0,
+      "realized_sbd": -0.38973,
+      "recycle": {
+        "suggested": true,
+        "reasons": [
+          "FUNDED-BUY-SIDE 0.5 SBD"
+        ]
+      }
+    },
+    "duration_ms": 11434
+  },
+  {
+    "ts": "2026-10-04T05:19:23.580Z",
+    "mode": "LIVE",
+    "skip_fetch": false,
+    "fill_ledger": {
+      "script": "fill-ledger.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[fill-ledger] mode=READ-ONLY new=0 total=143 realized_sbd=-0.389730 vwap=sell 0.100201 / buy 0.102413 (edge -2.2078%) recycle=FUNDED-BUY-SIDE 0.657 SBD errors=0 in 2870ms | [fill-ledger] canon: agents/fill-ledger.json (run #33)",
+      "stderr_tail": ""
+    },
+    "suggestion": {
+      "suggested": true,
+      "reasons": [
+        "FUNDED-BUY-SIDE 0.657 SBD"
+      ]
+    },
+    "decision": {
+      "executorMode": "LIVE",
+      "reason": "RECYCLE-SUGGESTED: FUNDED-BUY-SIDE 0.657 SBD"
+    },
+    "executor": {
+      "script": "market-exec.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[market-exec] mode=LIVE planned=0 skipped=6 errors=0 verify=0/0 in 7837ms | [market-exec] canon: agents/market-exec.json (run #33)",
+      "stderr_tail": ""
+    },
+    "errors": [],
+    "run_index": 22,
+    "fill_ledger_row": {
+      "run_index": 33,
+      "new_fills": 0,
+      "realized_sbd": -0.38973,
+      "recycle": {
+        "suggested": true,
+        "reasons": [
+          "FUNDED-BUY-SIDE 0.657 SBD"
+        ]
+      }
+    },
+    "duration_ms": 10791
+  },
+  {
+    "ts": "2026-10-04T05:29:35.319Z",
+    "mode": "LIVE",
+    "skip_fetch": false,
+    "fill_ledger": {
+      "script": "fill-ledger.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[fill-ledger] mode=READ-ONLY new=0 total=143 realized_sbd=-0.389730 vwap=sell 0.100201 / buy 0.102413 (edge -2.2078%) recycle=NO errors=0 in 2816ms | [fill-ledger] canon: agents/fill-ledger.json (run #34)",
+      "stderr_tail": ""
+    },
+    "suggestion": {
+      "suggested": false,
+      "reasons": [
+        "NO-FUNDS"
+      ]
+    },
+    "decision": {
+      "executorMode": "SKIP",
+      "reason": "NO-RECYCLE-SUGGESTED (executor run would be a no-op; its STACK-EXISTS law makes it harmless but pointless — booked honestly)"
+    },
+    "executor": {
+      "script": "market-exec.cjs",
+      "status": null,
+      "stdout_tail": "",
+      "stderr_tail": "",
+      "skipped": "NO-RECYCLE-SUGGESTED (executor run would be a no-op; its STACK-EXISTS law makes it harmless but pointless — booked honestly)"
+    },
+    "errors": [],
+    "run_index": 23,
+    "fill_ledger_row": {
+      "run_index": 34,
+      "new_fills": 0,
+      "realized_sbd": -0.38973,
+      "recycle": {
+        "suggested": false,
+        "reasons": [
+          "NO-FUNDS"
+        ]
+      }
+    },
+    "duration_ms": 2854
+  },
+  {
+    "ts": "2026-10-04T05:39:39.116Z",
+    "mode": "LIVE",
+    "skip_fetch": false,
+    "fill_ledger": {
+      "script": "fill-ledger.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[fill-ledger] mode=READ-ONLY new=0 total=143 realized_sbd=-0.389730 vwap=sell 0.100201 / buy 0.102413 (edge -2.2078%) recycle=FUNDED-SELL-SIDE 2.686 STEEM errors=0 in 2821ms | [fill-ledger] canon: agents/fill-ledger.json (run #35)",
+      "stderr_tail": ""
+    },
+    "suggestion": {
+      "suggested": true,
+      "reasons": [
+        "FUNDED-SELL-SIDE 2.686 STEEM"
+      ]
+    },
+    "decision": {
+      "executorMode": "LIVE",
+      "reason": "RECYCLE-SUGGESTED: FUNDED-SELL-SIDE 2.686 STEEM"
+    },
+    "executor": {
+      "script": "market-exec.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[market-exec] mode=LIVE planned=0 skipped=6 errors=0 verify=0/0 in 7660ms | [market-exec] canon: agents/market-exec.json (run #34)",
+      "stderr_tail": ""
+    },
+    "errors": [],
+    "run_index": 24,
+    "fill_ledger_row": {
+      "run_index": 35,
+      "new_fills": 0,
+      "realized_sbd": -0.38973,
+      "recycle": {
+        "suggested": true,
+        "reasons": [
+          "FUNDED-SELL-SIDE 2.686 STEEM"
+        ]
+      }
+    },
+    "duration_ms": 10559
+  },
+  {
+    "ts": "2026-10-04T05:49:50.697Z",
+    "mode": "LIVE",
+    "skip_fetch": false,
+    "fill_ledger": {
+      "script": "fill-ledger.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[fill-ledger] mode=READ-ONLY new=0 total=143 realized_sbd=-0.389730 vwap=sell 0.100201 / buy 0.102413 (edge -2.2078%) recycle=FUNDED-SELL-SIDE 2.086 STEEM errors=0 in 2579ms | [fill-ledger] canon: agents/fill-ledger.json (run #36)",
+      "stderr_tail": ""
+    },
+    "suggestion": {
+      "suggested": true,
+      "reasons": [
+        "FUNDED-SELL-SIDE 2.086 STEEM"
+      ]
+    },
+    "decision": {
+      "executorMode": "LIVE",
+      "reason": "RECYCLE-SUGGESTED: FUNDED-SELL-SIDE 2.086 STEEM"
+    },
+    "executor": {
+      "script": "market-exec.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[market-exec] mode=LIVE planned=1 skipped=5 errors=0 verify=1/1 in 5683ms | [market-exec] canon: agents/market-exec.json (run #35)",
+      "stderr_tail": ""
+    },
+    "errors": [],
+    "run_index": 25,
+    "fill_ledger_row": {
+      "run_index": 36,
+      "new_fills": 0,
+      "realized_sbd": -0.38973,
+      "recycle": {
+        "suggested": true,
+        "reasons": [
+          "FUNDED-SELL-SIDE 2.086 STEEM"
+        ]
+      }
+    },
+    "duration_ms": 8343
+  },
+  {
+    "ts": "2026-10-04T06:00:00.001Z",
+    "mode": "LIVE",
+    "skip_fetch": false,
+    "fill_ledger": {
+      "script": "fill-ledger.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[fill-ledger] mode=READ-ONLY new=0 total=143 realized_sbd=-0.389730 vwap=sell 0.100201 / buy 0.102413 (edge -2.2078%) recycle=FUNDED-SELL-SIDE 10.145 STEEM errors=0 in 2699ms | [fill-ledger] canon: agents/fill-ledger.json (run #37)",
+      "stderr_tail": ""
+    },
+    "suggestion": {
+      "suggested": true,
+      "reasons": [
+        "FUNDED-SELL-SIDE 10.145 STEEM"
+      ]
+    },
+    "decision": {
+      "executorMode": "LIVE",
+      "reason": "RECYCLE-SUGGESTED: FUNDED-SELL-SIDE 10.145 STEEM"
+    },
+    "executor": {
+      "script": "market-exec.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[market-exec] mode=LIVE planned=0 skipped=6 errors=0 verify=0/0 in 8611ms | [market-exec] canon: agents/market-exec.json (run #36)",
+      "stderr_tail": ""
+    },
+    "errors": [],
+    "run_index": 26,
+    "fill_ledger_row": {
+      "run_index": 37,
+      "new_fills": 0,
+      "realized_sbd": -0.38973,
+      "recycle": {
+        "suggested": true,
+        "reasons": [
+          "FUNDED-SELL-SIDE 10.145 STEEM"
+        ]
+      }
+    },
+    "duration_ms": 11398
+  },
+  {
+    "ts": "2026-10-04T06:10:12.378Z",
+    "mode": "LIVE",
+    "skip_fetch": false,
+    "fill_ledger": {
+      "script": "fill-ledger.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[fill-ledger] mode=READ-ONLY new=0 total=143 realized_sbd=-0.389730 vwap=sell 0.100201 / buy 0.102413 (edge -2.2078%) recycle=FUNDED-SELL-SIDE 11.895 STEEM|FUNDED-BUY-SIDE 1.012 SBD errors=0 in 2788ms | [fill-ledger] canon: agents/fill-ledger.json (run #38)",
+      "stderr_tail": ""
+    },
+    "suggestion": {
+      "suggested": true,
+      "reasons": [
+        "FUNDED-SELL-SIDE 11.895 STEEM",
+        "FUNDED-BUY-SIDE 1.012 SBD"
+      ]
+    },
+    "decision": {
+      "executorMode": "LIVE",
+      "reason": "RECYCLE-SUGGESTED: FUNDED-SELL-SIDE 11.895 STEEM · FUNDED-BUY-SIDE 1.012 SBD"
+    },
+    "executor": {
+      "script": "market-exec.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[market-exec] mode=LIVE planned=0 skipped=6 errors=0 verify=0/0 in 2017ms | [market-exec] canon: agents/market-exec.json (run #37)",
+      "stderr_tail": ""
+    },
+    "errors": [],
+    "run_index": 27,
+    "fill_ledger_row": {
+      "run_index": 38,
+      "new_fills": 0,
+      "realized_sbd": -0.38973,
+      "recycle": {
+        "suggested": true,
+        "reasons": [
+          "FUNDED-SELL-SIDE 11.895 STEEM",
+          "FUNDED-BUY-SIDE 1.012 SBD"
+        ]
+      }
+    },
+    "duration_ms": 4886
+  },
+  {
+    "ts": "2026-10-04T06:20:18.262Z",
+    "mode": "LIVE",
+    "skip_fetch": false,
+    "fill_ledger": {
+      "script": "fill-ledger.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[fill-ledger] mode=READ-ONLY new=0 total=143 realized_sbd=-0.389730 vwap=sell 0.100201 / buy 0.102413 (edge -2.2078%) recycle=FUNDED-SELL-SIDE 8.895 STEEM|FUNDED-BUY-SIDE 1.012 SBD errors=0 in 2673ms | [fill-ledger] canon: agents/fill-ledger.json (run #39)",
+      "stderr_tail": ""
+    },
+    "suggestion": {
+      "suggested": true,
+      "reasons": [
+        "FUNDED-SELL-SIDE 8.895 STEEM",
+        "FUNDED-BUY-SIDE 1.012 SBD"
+      ]
+    },
+    "decision": {
+      "executorMode": "LIVE",
+      "reason": "RECYCLE-SUGGESTED: FUNDED-SELL-SIDE 8.895 STEEM · FUNDED-BUY-SIDE 1.012 SBD"
+    },
+    "executor": {
+      "script": "market-exec.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[market-exec] mode=LIVE planned=0 skipped=6 errors=0 verify=0/0 in 1955ms | [market-exec] canon: agents/market-exec.json (run #38)",
+      "stderr_tail": ""
+    },
+    "errors": [],
+    "run_index": 28,
+    "fill_ledger_row": {
+      "run_index": 39,
+      "new_fills": 0,
+      "realized_sbd": -0.38973,
+      "recycle": {
+        "suggested": true,
+        "reasons": [
+          "FUNDED-SELL-SIDE 8.895 STEEM",
+          "FUNDED-BUY-SIDE 1.012 SBD"
+        ]
+      }
+    },
+    "duration_ms": 4708
+  },
+  {
+    "ts": "2026-10-04T06:30:23.902Z",
+    "mode": "LIVE",
+    "skip_fetch": false,
+    "fill_ledger": {
+      "script": "fill-ledger.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[fill-ledger] mode=READ-ONLY new=0 total=143 realized_sbd=-0.389730 vwap=sell 0.100201 / buy 0.102413 (edge -2.2078%) recycle=FUNDED-SELL-SIDE 8.895 STEEM errors=0 in 2438ms | [fill-ledger] canon: agents/fill-ledger.json (run #40)",
+      "stderr_tail": ""
+    },
+    "suggestion": {
+      "suggested": true,
+      "reasons": [
+        "FUNDED-SELL-SIDE 8.895 STEEM"
+      ]
+    },
+    "decision": {
+      "executorMode": "LIVE",
+      "reason": "RECYCLE-SUGGESTED: FUNDED-SELL-SIDE 8.895 STEEM"
+    },
+    "executor": {
+      "script": "market-exec.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[market-exec] mode=LIVE planned=0 skipped=6 errors=0 verify=0/0 in 8183ms | [market-exec] canon: agents/market-exec.json (run #39)",
+      "stderr_tail": ""
+    },
+    "errors": [],
+    "run_index": 29,
+    "fill_ledger_row": {
+      "run_index": 40,
+      "new_fills": 0,
+      "realized_sbd": -0.38973,
+      "recycle": {
+        "suggested": true,
+        "reasons": [
+          "FUNDED-SELL-SIDE 8.895 STEEM"
+        ]
+      }
+    },
+    "duration_ms": 10699
+  },
+  {
+    "ts": "2026-10-04T06:40:35.589Z",
+    "mode": "LIVE",
+    "skip_fetch": false,
+    "fill_ledger": {
+      "script": "fill-ledger.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[fill-ledger] mode=READ-ONLY new=0 total=143 realized_sbd=-0.389730 vwap=sell 0.100201 / buy 0.102413 (edge -2.2078%) recycle=FUNDED-SELL-SIDE 8.895 STEEM|FUNDED-BUY-SIDE 1.012 SBD errors=0 in 2801ms | [fill-ledger] canon: agents/fill-ledger.json (run #41)",
+      "stderr_tail": ""
+    },
+    "suggestion": {
+      "suggested": true,
+      "reasons": [
+        "FUNDED-SELL-SIDE 8.895 STEEM",
+        "FUNDED-BUY-SIDE 1.012 SBD"
+      ]
+    },
+    "decision": {
+      "executorMode": "LIVE",
+      "reason": "RECYCLE-SUGGESTED: FUNDED-SELL-SIDE 8.895 STEEM · FUNDED-BUY-SIDE 1.012 SBD"
+    },
+    "executor": {
+      "script": "market-exec.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[market-exec] mode=LIVE planned=0 skipped=6 errors=0 verify=0/0 in 1919ms | [market-exec] canon: agents/market-exec.json (run #40)",
+      "stderr_tail": ""
+    },
+    "errors": [],
+    "run_index": 30,
+    "fill_ledger_row": {
+      "run_index": 41,
+      "new_fills": 0,
+      "realized_sbd": -0.38973,
+      "recycle": {
+        "suggested": true,
+        "reasons": [
+          "FUNDED-SELL-SIDE 8.895 STEEM",
+          "FUNDED-BUY-SIDE 1.012 SBD"
+        ]
+      }
+    },
+    "duration_ms": 4802
+  },
+  {
+    "ts": "2026-10-04T06:50:41.317Z",
+    "mode": "LIVE",
+    "skip_fetch": false,
+    "fill_ledger": {
+      "script": "fill-ledger.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[fill-ledger] mode=READ-ONLY new=0 total=143 realized_sbd=-0.389730 vwap=sell 0.100201 / buy 0.102413 (edge -2.2078%) recycle=FUNDED-SELL-SIDE 8.895 STEEM|FUNDED-BUY-SIDE 1.012 SBD errors=0 in 2968ms | [fill-ledger] canon: agents/fill-ledger.json (run #42)",
+      "stderr_tail": ""
+    },
+    "suggestion": {
+      "suggested": true,
+      "reasons": [
+        "FUNDED-SELL-SIDE 8.895 STEEM",
+        "FUNDED-BUY-SIDE 1.012 SBD"
+      ]
+    },
+    "decision": {
+      "executorMode": "LIVE",
+      "reason": "RECYCLE-SUGGESTED: FUNDED-SELL-SIDE 8.895 STEEM · FUNDED-BUY-SIDE 1.012 SBD"
+    },
+    "executor": {
+      "script": "market-exec.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[market-exec] mode=LIVE planned=0 skipped=6 errors=0 verify=0/0 in 2035ms | [market-exec] canon: agents/market-exec.json (run #41)",
+      "stderr_tail": ""
+    },
+    "errors": [],
+    "run_index": 31,
+    "fill_ledger_row": {
+      "run_index": 42,
+      "new_fills": 0,
+      "realized_sbd": -0.38973,
+      "recycle": {
+        "suggested": true,
+        "reasons": [
+          "FUNDED-SELL-SIDE 8.895 STEEM",
+          "FUNDED-BUY-SIDE 1.012 SBD"
+        ]
+      }
+    },
+    "duration_ms": 5081
+  },
+  {
+    "ts": "2026-10-04T07:00:47.363Z",
+    "mode": "LIVE",
+    "skip_fetch": false,
+    "fill_ledger": {
+      "script": "fill-ledger.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[fill-ledger] mode=READ-ONLY new=0 total=143 realized_sbd=-0.389730 vwap=sell 0.100201 / buy 0.102413 (edge -2.2078%) recycle=FUNDED-SELL-SIDE 8.895 STEEM errors=0 in 2526ms | [fill-ledger] canon: agents/fill-ledger.json (run #43)",
+      "stderr_tail": ""
+    },
+    "suggestion": {
+      "suggested": true,
+      "reasons": [
+        "FUNDED-SELL-SIDE 8.895 STEEM"
+      ]
+    },
+    "decision": {
+      "executorMode": "LIVE",
+      "reason": "RECYCLE-SUGGESTED: FUNDED-SELL-SIDE 8.895 STEEM"
+    },
+    "executor": {
+      "script": "market-exec.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[market-exec] mode=LIVE planned=0 skipped=6 errors=0 verify=0/0 in 7788ms | [market-exec] canon: agents/market-exec.json (run #42)",
+      "stderr_tail": ""
+    },
+    "errors": [],
+    "run_index": 32,
+    "fill_ledger_row": {
+      "run_index": 43,
+      "new_fills": 0,
+      "realized_sbd": -0.38973,
+      "recycle": {
+        "suggested": true,
+        "reasons": [
+          "FUNDED-SELL-SIDE 8.895 STEEM"
+        ]
+      }
+    },
+    "duration_ms": 10400
+  },
+  {
+    "ts": "2026-10-04T07:10:58.738Z",
+    "mode": "LIVE",
+    "skip_fetch": false,
+    "fill_ledger": {
+      "script": "fill-ledger.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[fill-ledger] mode=READ-ONLY new=0 total=143 realized_sbd=-0.389730 vwap=sell 0.100201 / buy 0.102413 (edge -2.2078%) recycle=FUNDED-SELL-SIDE 8.895 STEEM|FUNDED-BUY-SIDE 1.012 SBD errors=0 in 2575ms | [fill-ledger] canon: agents/fill-ledger.json (run #44)",
+      "stderr_tail": ""
+    },
+    "suggestion": {
+      "suggested": true,
+      "reasons": [
+        "FUNDED-SELL-SIDE 8.895 STEEM",
+        "FUNDED-BUY-SIDE 1.012 SBD"
+      ]
+    },
+    "decision": {
+      "executorMode": "LIVE",
+      "reason": "RECYCLE-SUGGESTED: FUNDED-SELL-SIDE 8.895 STEEM · FUNDED-BUY-SIDE 1.012 SBD"
+    },
+    "executor": {
+      "script": "market-exec.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[market-exec] mode=LIVE planned=0 skipped=6 errors=0 verify=0/0 in 1837ms | [market-exec] canon: agents/market-exec.json (run #43)",
+      "stderr_tail": ""
+    },
+    "errors": [],
+    "run_index": 33,
+    "fill_ledger_row": {
+      "run_index": 44,
+      "new_fills": 0,
+      "realized_sbd": -0.38973,
+      "recycle": {
+        "suggested": true,
+        "reasons": [
+          "FUNDED-SELL-SIDE 8.895 STEEM",
+          "FUNDED-BUY-SIDE 1.012 SBD"
+        ]
+      }
+    },
+    "duration_ms": 4493
+  },
+  {
+    "ts": "2026-10-04T07:21:04.193Z",
+    "mode": "LIVE",
+    "skip_fetch": false,
+    "fill_ledger": {
+      "script": "fill-ledger.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[fill-ledger] mode=READ-ONLY new=1 total=144 realized_sbd=-0.389816 vwap=sell 0.100223 / buy 0.102413 (edge -2.1856%) recycle=FUNDED-SELL-SIDE 2.895 STEEM|FUNDED-BUY-SIDE 1.017 SBD|FILLS-1 errors=0 in 2881ms | [fill-ledger] canon: agents/fill-ledger.json (run #45)",
+      "stderr_tail": ""
+    },
+    "suggestion": {
+      "suggested": true,
+      "reasons": [
+        "FUNDED-SELL-SIDE 2.895 STEEM",
+        "FUNDED-BUY-SIDE 1.017 SBD",
+        "FILLS-1"
+      ]
+    },
+    "decision": {
+      "executorMode": "LIVE",
+      "reason": "RECYCLE-SUGGESTED: FUNDED-SELL-SIDE 2.895 STEEM · FUNDED-BUY-SIDE 1.017 SBD · FILLS-1"
+    },
+    "executor": {
+      "script": "market-exec.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[market-exec] mode=LIVE planned=0 skipped=6 errors=0 verify=0/0 in 5904ms | [market-exec] canon: agents/market-exec.json (run #44)",
+      "stderr_tail": ""
+    },
+    "errors": [],
+    "run_index": 34,
+    "fill_ledger_row": {
+      "run_index": 45,
+      "new_fills": 1,
+      "realized_sbd": -0.389816,
+      "recycle": {
+        "suggested": true,
+        "reasons": [
+          "FUNDED-SELL-SIDE 2.895 STEEM",
+          "FUNDED-BUY-SIDE 1.017 SBD",
+          "FILLS-1"
+        ]
+      }
+    },
+    "duration_ms": 8865
+  },
+  {
+    "ts": "2026-10-04T07:31:14.036Z",
+    "mode": "LIVE",
+    "skip_fetch": false,
+    "fill_ledger": {
+      "script": "fill-ledger.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[fill-ledger] mode=READ-ONLY new=4 total=148 realized_sbd=-0.389098 vwap=sell 0.100225 / buy 0.102477 (edge -2.2467%) recycle=FUNDED-SELL-SIDE 11.316 STEEM|FILLS-4 errors=0 in 2787ms | [fill-ledger] canon: agents/fill-ledger.json (run #46)",
+      "stderr_tail": ""
+    },
+    "suggestion": {
+      "suggested": true,
+      "reasons": [
+        "FUNDED-SELL-SIDE 11.316 STEEM",
+        "FILLS-4"
+      ]
+    },
+    "decision": {
+      "executorMode": "LIVE",
+      "reason": "RECYCLE-SUGGESTED: FUNDED-SELL-SIDE 11.316 STEEM · FILLS-4"
+    },
+    "executor": {
+      "script": "market-exec.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[market-exec] mode=LIVE planned=0 skipped=6 errors=0 verify=0/0 in 6283ms | [market-exec] canon: agents/market-exec.json (run #45)",
+      "stderr_tail": ""
+    },
+    "errors": [],
+    "run_index": 35,
+    "fill_ledger_row": {
+      "run_index": 46,
+      "new_fills": 4,
+      "realized_sbd": -0.389098,
+      "recycle": {
+        "suggested": true,
+        "reasons": [
+          "FUNDED-SELL-SIDE 11.316 STEEM",
+          "FILLS-4"
+        ]
+      }
+    },
+    "duration_ms": 9157
+  },
+  {
+    "ts": "2026-10-04T07:41:24.207Z",
+    "mode": "LIVE",
+    "skip_fetch": false,
+    "fill_ledger": {
+      "script": "fill-ledger.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[fill-ledger] mode=READ-ONLY new=3 total=151 realized_sbd=-0.389098 vwap=sell 0.100225 / buy 0.102508 (edge -2.2778%) recycle=FUNDED-SELL-SIDE 14.926 STEEM|FILLS-3 errors=0 in 2935ms | [fill-ledger] canon: agents/fill-ledger.json (run #47)",
+      "stderr_tail": ""
+    },
+    "suggestion": {
+      "suggested": true,
+      "reasons": [
+        "FUNDED-SELL-SIDE 14.926 STEEM",
+        "FILLS-3"
+      ]
+    },
+    "decision": {
+      "executorMode": "LIVE",
+      "reason": "RECYCLE-SUGGESTED: FUNDED-SELL-SIDE 14.926 STEEM · FILLS-3"
+    },
+    "executor": {
+      "script": "market-exec.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[market-exec] mode=LIVE planned=0 skipped=6 errors=0 verify=0/0 in 6384ms | [market-exec] canon: agents/market-exec.json (run #46)",
+      "stderr_tail": ""
+    },
+    "errors": [],
+    "run_index": 36,
+    "fill_ledger_row": {
+      "run_index": 47,
+      "new_fills": 3,
+      "realized_sbd": -0.389098,
+      "recycle": {
+        "suggested": true,
+        "reasons": [
+          "FUNDED-SELL-SIDE 14.926 STEEM",
+          "FILLS-3"
+        ]
+      }
+    },
+    "duration_ms": 9403
+  },
+  {
+    "ts": "2026-10-04T07:51:34.601Z",
+    "mode": "LIVE",
+    "skip_fetch": false,
+    "fill_ledger": {
+      "script": "fill-ledger.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[fill-ledger] mode=READ-ONLY new=0 total=151 realized_sbd=-0.389098 vwap=sell 0.100225 / buy 0.102508 (edge -2.2778%) recycle=FUNDED-SELL-SIDE 14.926 STEEM|FUNDED-BUY-SIDE 0.366 SBD errors=0 in 2831ms | [fill-ledger] canon: agents/fill-ledger.json (run #48)",
+      "stderr_tail": ""
+    },
+    "suggestion": {
+      "suggested": true,
+      "reasons": [
+        "FUNDED-SELL-SIDE 14.926 STEEM",
+        "FUNDED-BUY-SIDE 0.366 SBD"
+      ]
+    },
+    "decision": {
+      "executorMode": "LIVE",
+      "reason": "RECYCLE-SUGGESTED: FUNDED-SELL-SIDE 14.926 STEEM · FUNDED-BUY-SIDE 0.366 SBD"
+    },
+    "executor": {
+      "script": "market-exec.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[market-exec] mode=LIVE planned=0 skipped=6 errors=0 verify=0/0 in 1878ms | [market-exec] canon: agents/market-exec.json (run #47)",
+      "stderr_tail": ""
+    },
+    "errors": [],
+    "run_index": 37,
+    "fill_ledger_row": {
+      "run_index": 48,
+      "new_fills": 0,
+      "realized_sbd": -0.389098,
+      "recycle": {
+        "suggested": true,
+        "reasons": [
+          "FUNDED-SELL-SIDE 14.926 STEEM",
+          "FUNDED-BUY-SIDE 0.366 SBD"
+        ]
+      }
+    },
+    "duration_ms": 4788
+  },
+  {
+    "ts": "2026-10-04T08:01:40.397Z",
+    "mode": "LIVE",
+    "skip_fetch": false,
+    "fill_ledger": {
+      "script": "fill-ledger.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[fill-ledger] mode=READ-ONLY new=0 total=151 realized_sbd=-0.389098 vwap=sell 0.100225 / buy 0.102508 (edge -2.2778%) recycle=FUNDED-SELL-SIDE 14.926 STEEM|FUNDED-BUY-SIDE 0.366 SBD errors=0 in 2671ms | [fill-ledger] canon: agents/fill-ledger.json (run #49)",
+      "stderr_tail": ""
+    },
+    "suggestion": {
+      "suggested": true,
+      "reasons": [
+        "FUNDED-SELL-SIDE 14.926 STEEM",
+        "FUNDED-BUY-SIDE 0.366 SBD"
+      ]
+    },
+    "decision": {
+      "executorMode": "LIVE",
+      "reason": "RECYCLE-SUGGESTED: FUNDED-SELL-SIDE 14.926 STEEM · FUNDED-BUY-SIDE 0.366 SBD"
+    },
+    "executor": {
+      "script": "market-exec.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[market-exec] mode=LIVE planned=0 skipped=6 errors=0 verify=0/0 in 2110ms | [market-exec] canon: agents/market-exec.json (run #48)",
+      "stderr_tail": ""
+    },
+    "errors": [],
+    "run_index": 38,
+    "fill_ledger_row": {
+      "run_index": 49,
+      "new_fills": 0,
+      "realized_sbd": -0.389098,
+      "recycle": {
+        "suggested": true,
+        "reasons": [
+          "FUNDED-SELL-SIDE 14.926 STEEM",
+          "FUNDED-BUY-SIDE 0.366 SBD"
+        ]
+      }
+    },
+    "duration_ms": 4861
+  },
+  {
+    "ts": "2026-10-04T08:11:46.212Z",
+    "mode": "LIVE",
+    "skip_fetch": false,
+    "fill_ledger": {
+      "script": "fill-ledger.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[fill-ledger] mode=READ-ONLY new=0 total=151 realized_sbd=-0.389098 vwap=sell 0.100225 / buy 0.102508 (edge -2.2778%) recycle=FUNDED-SELL-SIDE 14.926 STEEM|FUNDED-BUY-SIDE 0.366 SBD errors=0 in 2540ms | [fill-ledger] canon: agents/fill-ledger.json (run #50)",
+      "stderr_tail": ""
+    },
+    "suggestion": {
+      "suggested": true,
+      "reasons": [
+        "FUNDED-SELL-SIDE 14.926 STEEM",
+        "FUNDED-BUY-SIDE 0.366 SBD"
+      ]
+    },
+    "decision": {
+      "executorMode": "LIVE",
+      "reason": "RECYCLE-SUGGESTED: FUNDED-SELL-SIDE 14.926 STEEM · FUNDED-BUY-SIDE 0.366 SBD"
+    },
+    "executor": {
+      "script": "market-exec.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[market-exec] mode=LIVE planned=0 skipped=6 errors=0 verify=0/0 in 1939ms | [market-exec] canon: agents/market-exec.json (run #49)",
+      "stderr_tail": ""
+    },
+    "errors": [],
+    "run_index": 39,
+    "fill_ledger_row": {
+      "run_index": 50,
+      "new_fills": 0,
+      "realized_sbd": -0.389098,
+      "recycle": {
+        "suggested": true,
+        "reasons": [
+          "FUNDED-SELL-SIDE 14.926 STEEM",
+          "FUNDED-BUY-SIDE 0.366 SBD"
+        ]
+      }
+    },
+    "duration_ms": 4562
+  },
+  {
+    "ts": "2026-10-04T08:21:51.783Z",
+    "mode": "LIVE",
+    "skip_fetch": false,
+    "fill_ledger": {
+      "script": "fill-ledger.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[fill-ledger] mode=READ-ONLY new=0 total=151 realized_sbd=-0.389098 vwap=sell 0.100225 / buy 0.102508 (edge -2.2778%) recycle=FUNDED-SELL-SIDE 14.926 STEEM|FUNDED-BUY-SIDE 0.366 SBD errors=0 in 2846ms | [fill-ledger] canon: agents/fill-ledger.json (run #51)",
+      "stderr_tail": ""
+    },
+    "suggestion": {
+      "suggested": true,
+      "reasons": [
+        "FUNDED-SELL-SIDE 14.926 STEEM",
+        "FUNDED-BUY-SIDE 0.366 SBD"
+      ]
+    },
+    "decision": {
+      "executorMode": "LIVE",
+      "reason": "RECYCLE-SUGGESTED: FUNDED-SELL-SIDE 14.926 STEEM · FUNDED-BUY-SIDE 0.366 SBD"
+    },
+    "executor": {
+      "script": "market-exec.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[market-exec] mode=LIVE planned=0 skipped=6 errors=0 verify=0/0 in 2037ms | [market-exec] canon: agents/market-exec.json (run #50)",
+      "stderr_tail": ""
+    },
+    "errors": [],
+    "run_index": 40,
+    "fill_ledger_row": {
+      "run_index": 51,
+      "new_fills": 0,
+      "realized_sbd": -0.389098,
+      "recycle": {
+        "suggested": true,
+        "reasons": [
+          "FUNDED-SELL-SIDE 14.926 STEEM",
+          "FUNDED-BUY-SIDE 0.366 SBD"
+        ]
+      }
+    },
+    "duration_ms": 4968
+  },
+  {
+    "ts": "2026-10-04T08:31:57.755Z",
+    "mode": "LIVE",
+    "skip_fetch": false,
+    "fill_ledger": {
+      "script": "fill-ledger.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[fill-ledger] mode=READ-ONLY new=0 total=151 realized_sbd=-0.389098 vwap=sell 0.100225 / buy 0.102508 (edge -2.2778%) recycle=FUNDED-SELL-SIDE 14.926 STEEM|FUNDED-BUY-SIDE 0.366 SBD errors=0 in 2823ms | [fill-ledger] canon: agents/fill-ledger.json (run #52)",
+      "stderr_tail": ""
+    },
+    "suggestion": {
+      "suggested": true,
+      "reasons": [
+        "FUNDED-SELL-SIDE 14.926 STEEM",
+        "FUNDED-BUY-SIDE 0.366 SBD"
+      ]
+    },
+    "decision": {
+      "executorMode": "LIVE",
+      "reason": "RECYCLE-SUGGESTED: FUNDED-SELL-SIDE 14.926 STEEM · FUNDED-BUY-SIDE 0.366 SBD"
+    },
+    "executor": {
+      "script": "market-exec.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[market-exec] mode=LIVE planned=0 skipped=6 errors=0 verify=0/0 in 1954ms | [market-exec] canon: agents/market-exec.json (run #51)",
+      "stderr_tail": ""
+    },
+    "errors": [],
+    "run_index": 41,
+    "fill_ledger_row": {
+      "run_index": 52,
+      "new_fills": 0,
+      "realized_sbd": -0.389098,
+      "recycle": {
+        "suggested": true,
+        "reasons": [
+          "FUNDED-SELL-SIDE 14.926 STEEM",
+          "FUNDED-BUY-SIDE 0.366 SBD"
+        ]
+      }
+    },
+    "duration_ms": 4861
+  },
+  {
+    "ts": "2026-10-04T08:42:03.629Z",
+    "mode": "LIVE",
+    "skip_fetch": false,
+    "fill_ledger": {
+      "script": "fill-ledger.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[fill-ledger] mode=READ-ONLY new=0 total=151 realized_sbd=-0.389098 vwap=sell 0.100225 / buy 0.102508 (edge -2.2778%) recycle=FUNDED-SELL-SIDE 14.633 STEEM|FUNDED-BUY-SIDE 0.366 SBD errors=0 in 2476ms | [fill-ledger] canon: agents/fill-ledger.json (run #53)",
+      "stderr_tail": ""
+    },
+    "suggestion": {
+      "suggested": true,
+      "reasons": [
+        "FUNDED-SELL-SIDE 14.633 STEEM",
+        "FUNDED-BUY-SIDE 0.366 SBD"
+      ]
+    },
+    "decision": {
+      "executorMode": "LIVE",
+      "reason": "RECYCLE-SUGGESTED: FUNDED-SELL-SIDE 14.633 STEEM · FUNDED-BUY-SIDE 0.366 SBD"
+    },
+    "executor": {
+      "script": "market-exec.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[market-exec] mode=LIVE planned=0 skipped=6 errors=0 verify=0/0 in 2097ms | [market-exec] canon: agents/market-exec.json (run #52)",
+      "stderr_tail": ""
+    },
+    "errors": [],
+    "run_index": 42,
+    "fill_ledger_row": {
+      "run_index": 53,
+      "new_fills": 0,
+      "realized_sbd": -0.389098,
+      "recycle": {
+        "suggested": true,
+        "reasons": [
+          "FUNDED-SELL-SIDE 14.633 STEEM",
+          "FUNDED-BUY-SIDE 0.366 SBD"
+        ]
+      }
+    },
+    "duration_ms": 4660
+  },
+  {
+    "ts": "2026-10-04T08:52:09.288Z",
+    "mode": "LIVE",
+    "skip_fetch": false,
+    "fill_ledger": {
+      "script": "fill-ledger.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[fill-ledger] mode=READ-ONLY new=0 total=151 realized_sbd=-0.389098 vwap=sell 0.100225 / buy 0.102508 (edge -2.2778%) recycle=FUNDED-SELL-SIDE 15.34 STEEM|FUNDED-BUY-SIDE 0.366 SBD errors=0 in 2851ms | [fill-ledger] canon: agents/fill-ledger.json (run #54)",
+      "stderr_tail": ""
+    },
+    "suggestion": {
+      "suggested": true,
+      "reasons": [
+        "FUNDED-SELL-SIDE 15.34 STEEM",
+        "FUNDED-BUY-SIDE 0.366 SBD"
+      ]
+    },
+    "decision": {
+      "executorMode": "LIVE",
+      "reason": "RECYCLE-SUGGESTED: FUNDED-SELL-SIDE 15.34 STEEM · FUNDED-BUY-SIDE 0.366 SBD"
+    },
+    "executor": {
+      "script": "market-exec.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[market-exec] mode=LIVE planned=0 skipped=6 errors=0 verify=0/0 in 1997ms | [market-exec] canon: agents/market-exec.json (run #53)",
+      "stderr_tail": ""
+    },
+    "errors": [],
+    "run_index": 43,
+    "fill_ledger_row": {
+      "run_index": 54,
+      "new_fills": 0,
+      "realized_sbd": -0.389098,
+      "recycle": {
+        "suggested": true,
+        "reasons": [
+          "FUNDED-SELL-SIDE 15.34 STEEM",
+          "FUNDED-BUY-SIDE 0.366 SBD"
+        ]
+      }
+    },
+    "duration_ms": 4927
+  },
+  {
+    "ts": "2026-10-04T09:02:15.227Z",
+    "mode": "LIVE",
+    "skip_fetch": false,
+    "fill_ledger": {
+      "script": "fill-ledger.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[fill-ledger] mode=READ-ONLY new=0 total=151 realized_sbd=-0.389098 vwap=sell 0.100225 / buy 0.102508 (edge -2.2778%) recycle=FUNDED-SELL-SIDE 15.051 STEEM|FUNDED-BUY-SIDE 0.366 SBD errors=0 in 2850ms | [fill-ledger] canon: agents/fill-ledger.json (run #55)",
+      "stderr_tail": ""
+    },
+    "suggestion": {
+      "suggested": true,
+      "reasons": [
+        "FUNDED-SELL-SIDE 15.051 STEEM",
+        "FUNDED-BUY-SIDE 0.366 SBD"
+      ]
+    },
+    "decision": {
+      "executorMode": "LIVE",
+      "reason": "RECYCLE-SUGGESTED: FUNDED-SELL-SIDE 15.051 STEEM · FUNDED-BUY-SIDE 0.366 SBD"
+    },
+    "executor": {
+      "script": "market-exec.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[market-exec] mode=LIVE planned=0 skipped=6 errors=0 verify=0/0 in 1864ms | [market-exec] canon: agents/market-exec.json (run #54)",
+      "stderr_tail": ""
+    },
+    "errors": [],
+    "run_index": 44,
+    "fill_ledger_row": {
+      "run_index": 55,
+      "new_fills": 0,
+      "realized_sbd": -0.389098,
+      "recycle": {
+        "suggested": true,
+        "reasons": [
+          "FUNDED-SELL-SIDE 15.051 STEEM",
+          "FUNDED-BUY-SIDE 0.366 SBD"
+        ]
+      }
+    },
+    "duration_ms": 4795
+  },
+  {
+    "ts": "2026-10-04T09:12:21.012Z",
+    "mode": "LIVE",
+    "skip_fetch": false,
+    "fill_ledger": {
+      "script": "fill-ledger.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[fill-ledger] mode=READ-ONLY new=0 total=151 realized_sbd=-0.389098 vwap=sell 0.100225 / buy 0.102508 (edge -2.2778%) recycle=FUNDED-SELL-SIDE 15.051 STEEM|FUNDED-BUY-SIDE 0.366 SBD errors=0 in 2823ms | [fill-ledger] canon: agents/fill-ledger.json (run #56)",
+      "stderr_tail": ""
+    },
+    "suggestion": {
+      "suggested": true,
+      "reasons": [
+        "FUNDED-SELL-SIDE 15.051 STEEM",
+        "FUNDED-BUY-SIDE 0.366 SBD"
+      ]
+    },
+    "decision": {
+      "executorMode": "LIVE",
+      "reason": "RECYCLE-SUGGESTED: FUNDED-SELL-SIDE 15.051 STEEM · FUNDED-BUY-SIDE 0.366 SBD"
+    },
+    "executor": {
+      "script": "market-exec.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[market-exec] mode=LIVE planned=0 skipped=6 errors=0 verify=0/0 in 1806ms | [market-exec] canon: agents/market-exec.json (run #55)",
+      "stderr_tail": ""
+    },
+    "errors": [],
+    "run_index": 45,
+    "fill_ledger_row": {
+      "run_index": 56,
+      "new_fills": 0,
+      "realized_sbd": -0.389098,
+      "recycle": {
+        "suggested": true,
+        "reasons": [
+          "FUNDED-SELL-SIDE 15.051 STEEM",
+          "FUNDED-BUY-SIDE 0.366 SBD"
+        ]
+      }
+    },
+    "duration_ms": 4725
+  },
+  {
+    "ts": "2026-10-04T09:22:26.730Z",
+    "mode": "LIVE",
+    "skip_fetch": false,
+    "fill_ledger": {
+      "script": "fill-ledger.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[fill-ledger] mode=READ-ONLY new=0 total=151 realized_sbd=-0.389098 vwap=sell 0.100225 / buy 0.102508 (edge -2.2778%) recycle=FUNDED-SELL-SIDE 15.051 STEEM|FUNDED-BUY-SIDE 0.366 SBD errors=0 in 2939ms | [fill-ledger] canon: agents/fill-ledger.json (run #57)",
+      "stderr_tail": ""
+    },
+    "suggestion": {
+      "suggested": true,
+      "reasons": [
+        "FUNDED-SELL-SIDE 15.051 STEEM",
+        "FUNDED-BUY-SIDE 0.366 SBD"
+      ]
+    },
+    "decision": {
+      "executorMode": "LIVE",
+      "reason": "RECYCLE-SUGGESTED: FUNDED-SELL-SIDE 15.051 STEEM · FUNDED-BUY-SIDE 0.366 SBD"
+    },
+    "executor": {
+      "script": "market-exec.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[market-exec] mode=LIVE planned=0 skipped=6 errors=0 verify=0/0 in 1799ms | [market-exec] canon: agents/market-exec.json (run #56)",
+      "stderr_tail": ""
+    },
+    "errors": [],
+    "run_index": 46,
+    "fill_ledger_row": {
+      "run_index": 57,
+      "new_fills": 0,
+      "realized_sbd": -0.389098,
+      "recycle": {
+        "suggested": true,
+        "reasons": [
+          "FUNDED-SELL-SIDE 15.051 STEEM",
+          "FUNDED-BUY-SIDE 0.366 SBD"
+        ]
+      }
+    },
+    "duration_ms": 4819
+  },
+  {
+    "ts": "2026-10-04T09:32:32.525Z",
+    "mode": "LIVE",
+    "skip_fetch": false,
+    "fill_ledger": {
+      "script": "fill-ledger.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[fill-ledger] mode=READ-ONLY new=0 total=151 realized_sbd=-0.389098 vwap=sell 0.100225 / buy 0.102508 (edge -2.2778%) recycle=FUNDED-SELL-SIDE 15.551 STEEM|FUNDED-BUY-SIDE 0.366 SBD errors=0 in 2557ms | [fill-ledger] canon: agents/fill-ledger.json (run #58)",
+      "stderr_tail": ""
+    },
+    "suggestion": {
+      "suggested": true,
+      "reasons": [
+        "FUNDED-SELL-SIDE 15.551 STEEM",
+        "FUNDED-BUY-SIDE 0.366 SBD"
+      ]
+    },
+    "decision": {
+      "executorMode": "LIVE",
+      "reason": "RECYCLE-SUGGESTED: FUNDED-SELL-SIDE 15.551 STEEM · FUNDED-BUY-SIDE 0.366 SBD"
+    },
+    "executor": {
+      "script": "market-exec.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[market-exec] mode=LIVE planned=0 skipped=6 errors=0 verify=0/0 in 2032ms | [market-exec] canon: agents/market-exec.json (run #57)",
+      "stderr_tail": ""
+    },
+    "errors": [],
+    "run_index": 47,
+    "fill_ledger_row": {
+      "run_index": 58,
+      "new_fills": 0,
+      "realized_sbd": -0.389098,
+      "recycle": {
+        "suggested": true,
+        "reasons": [
+          "FUNDED-SELL-SIDE 15.551 STEEM",
+          "FUNDED-BUY-SIDE 0.366 SBD"
+        ]
+      }
+    },
+    "duration_ms": 4672
+  },
+  {
+    "ts": "2026-10-04T09:42:38.214Z",
+    "mode": "LIVE",
+    "skip_fetch": false,
+    "fill_ledger": {
+      "script": "fill-ledger.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[fill-ledger] mode=READ-ONLY new=0 total=151 realized_sbd=-0.389098 vwap=sell 0.100225 / buy 0.102508 (edge -2.2778%) recycle=FUNDED-SELL-SIDE 15.551 STEEM|FUNDED-BUY-SIDE 0.366 SBD errors=0 in 2788ms | [fill-ledger] canon: agents/fill-ledger.json (run #59)",
+      "stderr_tail": ""
+    },
+    "suggestion": {
+      "suggested": true,
+      "reasons": [
+        "FUNDED-SELL-SIDE 15.551 STEEM",
+        "FUNDED-BUY-SIDE 0.366 SBD"
+      ]
+    },
+    "decision": {
+      "executorMode": "LIVE",
+      "reason": "RECYCLE-SUGGESTED: FUNDED-SELL-SIDE 15.551 STEEM · FUNDED-BUY-SIDE 0.366 SBD"
+    },
+    "executor": {
+      "script": "market-exec.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[market-exec] mode=LIVE planned=0 skipped=6 errors=0 verify=0/0 in 2015ms | [market-exec] canon: agents/market-exec.json (run #58)",
+      "stderr_tail": ""
+    },
+    "errors": [],
+    "run_index": 48,
+    "fill_ledger_row": {
+      "run_index": 59,
+      "new_fills": 0,
+      "realized_sbd": -0.389098,
+      "recycle": {
+        "suggested": true,
+        "reasons": [
+          "FUNDED-SELL-SIDE 15.551 STEEM",
+          "FUNDED-BUY-SIDE 0.366 SBD"
+        ]
+      }
+    },
+    "duration_ms": 4886
+  },
+  {
+    "ts": "2026-10-04T09:52:44.109Z",
+    "mode": "LIVE",
+    "skip_fetch": false,
+    "fill_ledger": {
+      "script": "fill-ledger.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[fill-ledger] mode=READ-ONLY new=0 total=151 realized_sbd=-0.389098 vwap=sell 0.100225 / buy 0.102508 (edge -2.2778%) recycle=FUNDED-SELL-SIDE 15.551 STEEM|FUNDED-BUY-SIDE 0.366 SBD errors=0 in 2950ms | [fill-ledger] canon: agents/fill-ledger.json (run #60)",
+      "stderr_tail": ""
+    },
+    "suggestion": {
+      "suggested": true,
+      "reasons": [
+        "FUNDED-SELL-SIDE 15.551 STEEM",
+        "FUNDED-BUY-SIDE 0.366 SBD"
+      ]
+    },
+    "decision": {
+      "executorMode": "LIVE",
+      "reason": "RECYCLE-SUGGESTED: FUNDED-SELL-SIDE 15.551 STEEM · FUNDED-BUY-SIDE 0.366 SBD"
+    },
+    "executor": {
+      "script": "market-exec.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[market-exec] mode=LIVE planned=0 skipped=6 errors=0 verify=0/0 in 2041ms | [market-exec] canon: agents/market-exec.json (run #59)",
+      "stderr_tail": ""
+    },
+    "errors": [],
+    "run_index": 49,
+    "fill_ledger_row": {
+      "run_index": 60,
+      "new_fills": 0,
+      "realized_sbd": -0.389098,
+      "recycle": {
+        "suggested": true,
+        "reasons": [
+          "FUNDED-SELL-SIDE 15.551 STEEM",
+          "FUNDED-BUY-SIDE 0.366 SBD"
+        ]
+      }
+    },
+    "duration_ms": 5070
+  },
+  {
+    "ts": "2026-10-04T10:02:50.173Z",
+    "mode": "LIVE",
+    "skip_fetch": false,
+    "fill_ledger": {
+      "script": "fill-ledger.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[fill-ledger] mode=READ-ONLY new=0 total=151 realized_sbd=-0.389098 vwap=sell 0.100225 / buy 0.102508 (edge -2.2778%) recycle=FUNDED-SELL-SIDE 15.261 STEEM|FUNDED-BUY-SIDE 0.366 SBD errors=0 in 2886ms | [fill-ledger] canon: agents/fill-ledger.json (run #61)",
+      "stderr_tail": ""
+    },
+    "suggestion": {
+      "suggested": true,
+      "reasons": [
+        "FUNDED-SELL-SIDE 15.261 STEEM",
+        "FUNDED-BUY-SIDE 0.366 SBD"
+      ]
+    },
+    "decision": {
+      "executorMode": "LIVE",
+      "reason": "RECYCLE-SUGGESTED: FUNDED-SELL-SIDE 15.261 STEEM · FUNDED-BUY-SIDE 0.366 SBD"
+    },
+    "executor": {
+      "script": "market-exec.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[market-exec] mode=LIVE planned=0 skipped=6 errors=0 verify=0/0 in 1967ms | [market-exec] canon: agents/market-exec.json (run #60)",
+      "stderr_tail": ""
+    },
+    "errors": [],
+    "run_index": 50,
+    "fill_ledger_row": {
+      "run_index": 61,
+      "new_fills": 0,
+      "realized_sbd": -0.389098,
+      "recycle": {
+        "suggested": true,
+        "reasons": [
+          "FUNDED-SELL-SIDE 15.261 STEEM",
+          "FUNDED-BUY-SIDE 0.366 SBD"
+        ]
+      }
+    },
+    "duration_ms": 4934
+  },
+  {
+    "ts": "2026-10-04T10:12:56.057Z",
+    "mode": "LIVE",
+    "skip_fetch": false,
+    "fill_ledger": {
+      "script": "fill-ledger.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[fill-ledger] mode=READ-ONLY new=0 total=151 realized_sbd=-0.389098 vwap=sell 0.100225 / buy 0.102508 (edge -2.2778%) recycle=FUNDED-SELL-SIDE 13.971 STEEM|FUNDED-BUY-SIDE 0.366 SBD errors=0 in 2516ms | [fill-ledger] canon: agents/fill-ledger.json (run #62)",
+      "stderr_tail": ""
+    },
+    "suggestion": {
+      "suggested": true,
+      "reasons": [
+        "FUNDED-SELL-SIDE 13.971 STEEM",
+        "FUNDED-BUY-SIDE 0.366 SBD"
+      ]
+    },
+    "decision": {
+      "executorMode": "LIVE",
+      "reason": "RECYCLE-SUGGESTED: FUNDED-SELL-SIDE 13.971 STEEM · FUNDED-BUY-SIDE 0.366 SBD"
+    },
+    "executor": {
+      "script": "market-exec.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[market-exec] mode=LIVE planned=0 skipped=6 errors=0 verify=0/0 in 2019ms | [market-exec] canon: agents/market-exec.json (run #61)",
+      "stderr_tail": ""
+    },
+    "errors": [],
+    "run_index": 51,
+    "fill_ledger_row": {
+      "run_index": 62,
+      "new_fills": 0,
+      "realized_sbd": -0.389098,
+      "recycle": {
+        "suggested": true,
+        "reasons": [
+          "FUNDED-SELL-SIDE 13.971 STEEM",
+          "FUNDED-BUY-SIDE 0.366 SBD"
+        ]
+      }
+    },
+    "duration_ms": 4618
+  },
+  {
+    "ts": "2026-10-04T10:23:01.688Z",
+    "mode": "LIVE",
+    "skip_fetch": false,
+    "fill_ledger": {
+      "script": "fill-ledger.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[fill-ledger] mode=READ-ONLY new=0 total=151 realized_sbd=-0.389098 vwap=sell 0.100225 / buy 0.102508 (edge -2.2778%) recycle=FUNDED-SELL-SIDE 13.971 STEEM|FUNDED-BUY-SIDE 0.366 SBD errors=0 in 2630ms | [fill-ledger] canon: agents/fill-ledger.json (run #63)",
+      "stderr_tail": ""
+    },
+    "suggestion": {
+      "suggested": true,
+      "reasons": [
+        "FUNDED-SELL-SIDE 13.971 STEEM",
+        "FUNDED-BUY-SIDE 0.366 SBD"
+      ]
+    },
+    "decision": {
+      "executorMode": "LIVE",
+      "reason": "RECYCLE-SUGGESTED: FUNDED-SELL-SIDE 13.971 STEEM · FUNDED-BUY-SIDE 0.366 SBD"
+    },
+    "executor": {
+      "script": "market-exec.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[market-exec] mode=LIVE planned=0 skipped=6 errors=0 verify=0/0 in 1890ms | [market-exec] canon: agents/market-exec.json (run #62)",
+      "stderr_tail": ""
+    },
+    "errors": [],
+    "run_index": 52,
+    "fill_ledger_row": {
+      "run_index": 63,
+      "new_fills": 0,
+      "realized_sbd": -0.389098,
+      "recycle": {
+        "suggested": true,
+        "reasons": [
+          "FUNDED-SELL-SIDE 13.971 STEEM",
+          "FUNDED-BUY-SIDE 0.366 SBD"
+        ]
+      }
+    },
+    "duration_ms": 4606
+  },
+  {
+    "ts": "2026-10-04T10:33:07.303Z",
+    "mode": "LIVE",
+    "skip_fetch": false,
+    "fill_ledger": {
+      "script": "fill-ledger.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[fill-ledger] mode=READ-ONLY new=0 total=151 realized_sbd=-0.389098 vwap=sell 0.100225 / buy 0.102508 (edge -2.2778%) recycle=FUNDED-SELL-SIDE 13.681 STEEM|FUNDED-BUY-SIDE 0.366 SBD errors=0 in 2730ms | [fill-ledger] canon: agents/fill-ledger.json (run #64)",
+      "stderr_tail": ""
+    },
+    "suggestion": {
+      "suggested": true,
+      "reasons": [
+        "FUNDED-SELL-SIDE 13.681 STEEM",
+        "FUNDED-BUY-SIDE 0.366 SBD"
+      ]
+    },
+    "decision": {
+      "executorMode": "LIVE",
+      "reason": "RECYCLE-SUGGESTED: FUNDED-SELL-SIDE 13.681 STEEM · FUNDED-BUY-SIDE 0.366 SBD"
+    },
+    "executor": {
+      "script": "market-exec.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[market-exec] mode=LIVE planned=0 skipped=6 errors=0 verify=0/0 in 2116ms | [market-exec] canon: agents/market-exec.json (run #63)",
+      "stderr_tail": ""
+    },
+    "errors": [],
+    "run_index": 53,
+    "fill_ledger_row": {
+      "run_index": 64,
+      "new_fills": 0,
+      "realized_sbd": -0.389098,
+      "recycle": {
+        "suggested": true,
+        "reasons": [
+          "FUNDED-SELL-SIDE 13.681 STEEM",
+          "FUNDED-BUY-SIDE 0.366 SBD"
+        ]
+      }
+    },
+    "duration_ms": 4951
+  },
+  {
+    "ts": "2026-10-04T10:43:13.264Z",
+    "mode": "LIVE",
+    "skip_fetch": false,
+    "fill_ledger": {
+      "script": "fill-ledger.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[fill-ledger] mode=READ-ONLY new=0 total=151 realized_sbd=-0.389098 vwap=sell 0.100225 / buy 0.102508 (edge -2.2778%) recycle=FUNDED-SELL-SIDE 13.681 STEEM|FUNDED-BUY-SIDE 0.366 SBD errors=0 in 2504ms | [fill-ledger] canon: agents/fill-ledger.json (run #65)",
+      "stderr_tail": ""
+    },
+    "suggestion": {
+      "suggested": true,
+      "reasons": [
+        "FUNDED-SELL-SIDE 13.681 STEEM",
+        "FUNDED-BUY-SIDE 0.366 SBD"
+      ]
+    },
+    "decision": {
+      "executorMode": "LIVE",
+      "reason": "RECYCLE-SUGGESTED: FUNDED-SELL-SIDE 13.681 STEEM · FUNDED-BUY-SIDE 0.366 SBD"
+    },
+    "executor": {
+      "script": "market-exec.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[market-exec] mode=LIVE planned=0 skipped=6 errors=0 verify=0/0 in 2066ms | [market-exec] canon: agents/market-exec.json (run #64)",
+      "stderr_tail": ""
+    },
+    "errors": [],
+    "run_index": 54,
+    "fill_ledger_row": {
+      "run_index": 65,
+      "new_fills": 0,
+      "realized_sbd": -0.389098,
+      "recycle": {
+        "suggested": true,
+        "reasons": [
+          "FUNDED-SELL-SIDE 13.681 STEEM",
+          "FUNDED-BUY-SIDE 0.366 SBD"
+        ]
+      }
+    },
+    "duration_ms": 4652
+  },
+  {
+    "ts": "2026-10-04T10:53:18.903Z",
+    "mode": "LIVE",
+    "skip_fetch": false,
+    "fill_ledger": {
+      "script": "fill-ledger.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[fill-ledger] mode=READ-ONLY new=0 total=151 realized_sbd=-0.389098 vwap=sell 0.100225 / buy 0.102508 (edge -2.2778%) recycle=FUNDED-SELL-SIDE 13.681 STEEM|FUNDED-BUY-SIDE 0.366 SBD errors=0 in 2580ms | [fill-ledger] canon: agents/fill-ledger.json (run #66)",
+      "stderr_tail": ""
+    },
+    "suggestion": {
+      "suggested": true,
+      "reasons": [
+        "FUNDED-SELL-SIDE 13.681 STEEM",
+        "FUNDED-BUY-SIDE 0.366 SBD"
+      ]
+    },
+    "decision": {
+      "executorMode": "LIVE",
+      "reason": "RECYCLE-SUGGESTED: FUNDED-SELL-SIDE 13.681 STEEM · FUNDED-BUY-SIDE 0.366 SBD"
+    },
+    "executor": {
+      "script": "market-exec.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[market-exec] mode=LIVE planned=0 skipped=6 errors=0 verify=0/0 in 2109ms | [market-exec] canon: agents/market-exec.json (run #65)",
+      "stderr_tail": ""
+    },
+    "errors": [],
+    "run_index": 55,
+    "fill_ledger_row": {
+      "run_index": 66,
+      "new_fills": 0,
+      "realized_sbd": -0.389098,
+      "recycle": {
+        "suggested": true,
+        "reasons": [
+          "FUNDED-SELL-SIDE 13.681 STEEM",
+          "FUNDED-BUY-SIDE 0.366 SBD"
+        ]
+      }
+    },
+    "duration_ms": 4772
+  },
+  {
+    "ts": "2026-10-04T11:03:24.677Z",
+    "mode": "LIVE",
+    "skip_fetch": false,
+    "fill_ledger": {
+      "script": "fill-ledger.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[fill-ledger] mode=READ-ONLY new=0 total=151 realized_sbd=-0.389098 vwap=sell 0.100225 / buy 0.102508 (edge -2.2778%) recycle=FUNDED-SELL-SIDE 13.681 STEEM|FUNDED-BUY-SIDE 0.366 SBD errors=0 in 2612ms | [fill-ledger] canon: agents/fill-ledger.json (run #67)",
+      "stderr_tail": ""
+    },
+    "suggestion": {
+      "suggested": true,
+      "reasons": [
+        "FUNDED-SELL-SIDE 13.681 STEEM",
+        "FUNDED-BUY-SIDE 0.366 SBD"
+      ]
+    },
+    "decision": {
+      "executorMode": "LIVE",
+      "reason": "RECYCLE-SUGGESTED: FUNDED-SELL-SIDE 13.681 STEEM · FUNDED-BUY-SIDE 0.366 SBD"
+    },
+    "executor": {
+      "script": "market-exec.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[market-exec] mode=LIVE planned=0 skipped=6 errors=0 verify=0/0 in 1786ms | [market-exec] canon: agents/market-exec.json (run #66)",
+      "stderr_tail": ""
+    },
+    "errors": [],
+    "run_index": 56,
+    "fill_ledger_row": {
+      "run_index": 67,
+      "new_fills": 0,
+      "realized_sbd": -0.389098,
+      "recycle": {
+        "suggested": true,
+        "reasons": [
+          "FUNDED-SELL-SIDE 13.681 STEEM",
+          "FUNDED-BUY-SIDE 0.366 SBD"
+        ]
+      }
+    },
+    "duration_ms": 4482
+  },
+  {
+    "ts": "2026-10-04T11:13:30.173Z",
+    "mode": "LIVE",
+    "skip_fetch": false,
+    "fill_ledger": {
+      "script": "fill-ledger.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[fill-ledger] mode=READ-ONLY new=0 total=151 realized_sbd=-0.389098 vwap=sell 0.100225 / buy 0.102508 (edge -2.2778%) recycle=FUNDED-SELL-SIDE 14.681 STEEM|FUNDED-BUY-SIDE 0.366 SBD errors=0 in 2878ms | [fill-ledger] canon: agents/fill-ledger.json (run #68)",
+      "stderr_tail": ""
+    },
+    "suggestion": {
+      "suggested": true,
+      "reasons": [
+        "FUNDED-SELL-SIDE 14.681 STEEM",
+        "FUNDED-BUY-SIDE 0.366 SBD"
+      ]
+    },
+    "decision": {
+      "executorMode": "LIVE",
+      "reason": "RECYCLE-SUGGESTED: FUNDED-SELL-SIDE 14.681 STEEM · FUNDED-BUY-SIDE 0.366 SBD"
+    },
+    "executor": {
+      "script": "market-exec.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[market-exec] mode=LIVE planned=0 skipped=6 errors=0 verify=0/0 in 2053ms | [market-exec] canon: agents/market-exec.json (run #67)",
+      "stderr_tail": ""
+    },
+    "errors": [],
+    "run_index": 57,
+    "fill_ledger_row": {
+      "run_index": 68,
+      "new_fills": 0,
+      "realized_sbd": -0.389098,
+      "recycle": {
+        "suggested": true,
+        "reasons": [
+          "FUNDED-SELL-SIDE 14.681 STEEM",
+          "FUNDED-BUY-SIDE 0.366 SBD"
+        ]
+      }
+    },
+    "duration_ms": 5059
+  },
+  {
+    "ts": "2026-10-04T11:33:42.150Z",
+    "mode": "LIVE",
+    "skip_fetch": false,
+    "fill_ledger": {
+      "script": "fill-ledger.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[fill-ledger] mode=READ-ONLY new=0 total=151 realized_sbd=-0.389098 vwap=sell 0.100225 / buy 0.102508 (edge -2.2778%) recycle=FUNDED-SELL-SIDE 13.181 STEEM|FUNDED-BUY-SIDE 0.366 SBD errors=0 in 2931ms | [fill-ledger] canon: agents/fill-ledger.json (run #69)",
+      "stderr_tail": ""
+    },
+    "suggestion": {
+      "suggested": true,
+      "reasons": [
+        "FUNDED-SELL-SIDE 13.181 STEEM",
+        "FUNDED-BUY-SIDE 0.366 SBD"
+      ]
+    },
+    "decision": {
+      "executorMode": "LIVE",
+      "reason": "RECYCLE-SUGGESTED: FUNDED-SELL-SIDE 13.181 STEEM · FUNDED-BUY-SIDE 0.366 SBD"
+    },
+    "executor": {
+      "script": "market-exec.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[market-exec] mode=LIVE planned=0 skipped=6 errors=0 verify=0/0 in 1848ms | [market-exec] canon: agents/market-exec.json (run #68)",
+      "stderr_tail": ""
+    },
+    "errors": [],
+    "run_index": 58,
+    "fill_ledger_row": {
+      "run_index": 69,
+      "new_fills": 0,
+      "realized_sbd": -0.389098,
+      "recycle": {
+        "suggested": true,
+        "reasons": [
+          "FUNDED-SELL-SIDE 13.181 STEEM",
+          "FUNDED-BUY-SIDE 0.366 SBD"
+        ]
+      }
+    },
+    "duration_ms": 4859
+  },
+  {
+    "ts": "2026-10-04T11:43:47.994Z",
+    "mode": "LIVE",
+    "skip_fetch": false,
+    "fill_ledger": {
+      "script": "fill-ledger.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[fill-ledger] mode=READ-ONLY new=0 total=151 realized_sbd=-0.389098 vwap=sell 0.100225 / buy 0.102508 (edge -2.2778%) recycle=FUNDED-SELL-SIDE 13.181 STEEM|FUNDED-BUY-SIDE 0.366 SBD errors=0 in 2812ms | [fill-ledger] canon: agents/fill-ledger.json (run #70)",
+      "stderr_tail": ""
+    },
+    "suggestion": {
+      "suggested": true,
+      "reasons": [
+        "FUNDED-SELL-SIDE 13.181 STEEM",
+        "FUNDED-BUY-SIDE 0.366 SBD"
+      ]
+    },
+    "decision": {
+      "executorMode": "LIVE",
+      "reason": "RECYCLE-SUGGESTED: FUNDED-SELL-SIDE 13.181 STEEM · FUNDED-BUY-SIDE 0.366 SBD"
+    },
+    "executor": {
+      "script": "market-exec.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[market-exec] mode=LIVE planned=0 skipped=6 errors=0 verify=0/0 in 1995ms | [market-exec] canon: agents/market-exec.json (run #69)",
+      "stderr_tail": ""
+    },
+    "errors": [],
+    "run_index": 59,
+    "fill_ledger_row": {
+      "run_index": 70,
+      "new_fills": 0,
+      "realized_sbd": -0.389098,
+      "recycle": {
+        "suggested": true,
+        "reasons": [
+          "FUNDED-SELL-SIDE 13.181 STEEM",
+          "FUNDED-BUY-SIDE 0.366 SBD"
+        ]
+      }
+    },
+    "duration_ms": 4889
+  },
+  {
+    "ts": "2026-10-04T11:53:53.839Z",
+    "mode": "LIVE",
+    "skip_fetch": false,
+    "fill_ledger": {
+      "script": "fill-ledger.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[fill-ledger] mode=READ-ONLY new=0 total=151 realized_sbd=-0.389098 vwap=sell 0.100225 / buy 0.102508 (edge -2.2778%) recycle=FUNDED-SELL-SIDE 13.181 STEEM|FUNDED-BUY-SIDE 0.366 SBD errors=0 in 2650ms | [fill-ledger] canon: agents/fill-ledger.json (run #71)",
+      "stderr_tail": ""
+    },
+    "suggestion": {
+      "suggested": true,
+      "reasons": [
+        "FUNDED-SELL-SIDE 13.181 STEEM",
+        "FUNDED-BUY-SIDE 0.366 SBD"
+      ]
+    },
+    "decision": {
+      "executorMode": "LIVE",
+      "reason": "RECYCLE-SUGGESTED: FUNDED-SELL-SIDE 13.181 STEEM · FUNDED-BUY-SIDE 0.366 SBD"
+    },
+    "executor": {
+      "script": "market-exec.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[market-exec] mode=LIVE planned=0 skipped=6 errors=0 verify=0/0 in 2050ms | [market-exec] canon: agents/market-exec.json (run #70)",
+      "stderr_tail": ""
+    },
+    "errors": [],
+    "run_index": 60,
+    "fill_ledger_row": {
+      "run_index": 71,
+      "new_fills": 0,
+      "realized_sbd": -0.389098,
+      "recycle": {
+        "suggested": true,
+        "reasons": [
+          "FUNDED-SELL-SIDE 13.181 STEEM",
+          "FUNDED-BUY-SIDE 0.366 SBD"
+        ]
+      }
+    },
+    "duration_ms": 4778
+  },
+  {
+    "ts": "2026-10-04T12:03:59.598Z",
+    "mode": "LIVE",
+    "skip_fetch": false,
+    "fill_ledger": {
+      "script": "fill-ledger.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[fill-ledger] mode=READ-ONLY new=0 total=151 realized_sbd=-0.389098 vwap=sell 0.100225 / buy 0.102508 (edge -2.2778%) recycle=FUNDED-SELL-SIDE 13.181 STEEM|FUNDED-BUY-SIDE 0.366 SBD errors=0 in 2495ms | [fill-ledger] canon: agents/fill-ledger.json (run #72)",
+      "stderr_tail": ""
+    },
+    "suggestion": {
+      "suggested": true,
+      "reasons": [
+        "FUNDED-SELL-SIDE 13.181 STEEM",
+        "FUNDED-BUY-SIDE 0.366 SBD"
+      ]
+    },
+    "decision": {
+      "executorMode": "LIVE",
+      "reason": "RECYCLE-SUGGESTED: FUNDED-SELL-SIDE 13.181 STEEM · FUNDED-BUY-SIDE 0.366 SBD"
+    },
+    "executor": {
+      "script": "market-exec.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[market-exec] mode=LIVE planned=0 skipped=6 errors=0 verify=0/0 in 1794ms | [market-exec] canon: agents/market-exec.json (run #71)",
+      "stderr_tail": ""
+    },
+    "errors": [],
+    "run_index": 61,
+    "fill_ledger_row": {
+      "run_index": 72,
+      "new_fills": 0,
+      "realized_sbd": -0.389098,
+      "recycle": {
+        "suggested": true,
+        "reasons": [
+          "FUNDED-SELL-SIDE 13.181 STEEM",
+          "FUNDED-BUY-SIDE 0.366 SBD"
+        ]
+      }
+    },
+    "duration_ms": 4373
+  },
+  {
+    "ts": "2026-10-04T12:14:04.938Z",
+    "mode": "LIVE",
+    "skip_fetch": false,
+    "fill_ledger": {
+      "script": "fill-ledger.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[fill-ledger] mode=READ-ONLY new=0 total=151 realized_sbd=-0.389098 vwap=sell 0.100225 / buy 0.102508 (edge -2.2778%) recycle=FUNDED-SELL-SIDE 13.181 STEEM|FUNDED-BUY-SIDE 0.366 SBD errors=0 in 2510ms | [fill-ledger] canon: agents/fill-ledger.json (run #73)",
+      "stderr_tail": ""
+    },
+    "suggestion": {
+      "suggested": true,
+      "reasons": [
+        "FUNDED-SELL-SIDE 13.181 STEEM",
+        "FUNDED-BUY-SIDE 0.366 SBD"
+      ]
+    },
+    "decision": {
+      "executorMode": "LIVE",
+      "reason": "RECYCLE-SUGGESTED: FUNDED-SELL-SIDE 13.181 STEEM · FUNDED-BUY-SIDE 0.366 SBD"
+    },
+    "executor": {
+      "script": "market-exec.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[market-exec] mode=LIVE planned=0 skipped=6 errors=0 verify=0/0 in 1839ms | [market-exec] canon: agents/market-exec.json (run #72)",
+      "stderr_tail": ""
+    },
+    "errors": [],
+    "run_index": 62,
+    "fill_ledger_row": {
+      "run_index": 73,
+      "new_fills": 0,
+      "realized_sbd": -0.389098,
+      "recycle": {
+        "suggested": true,
+        "reasons": [
+          "FUNDED-SELL-SIDE 13.181 STEEM",
+          "FUNDED-BUY-SIDE 0.366 SBD"
+        ]
+      }
+    },
+    "duration_ms": 4429
+  },
+  {
+    "ts": "2026-10-04T12:24:10.358Z",
+    "mode": "LIVE",
+    "skip_fetch": false,
+    "fill_ledger": {
+      "script": "fill-ledger.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[fill-ledger] mode=READ-ONLY new=0 total=151 realized_sbd=-0.389098 vwap=sell 0.100225 / buy 0.102508 (edge -2.2778%) recycle=FUNDED-SELL-SIDE 13.181 STEEM|FUNDED-BUY-SIDE 0.366 SBD errors=0 in 2688ms | [fill-ledger] canon: agents/fill-ledger.json (run #74)",
+      "stderr_tail": ""
+    },
+    "suggestion": {
+      "suggested": true,
+      "reasons": [
+        "FUNDED-SELL-SIDE 13.181 STEEM",
+        "FUNDED-BUY-SIDE 0.366 SBD"
+      ]
+    },
+    "decision": {
+      "executorMode": "LIVE",
+      "reason": "RECYCLE-SUGGESTED: FUNDED-SELL-SIDE 13.181 STEEM · FUNDED-BUY-SIDE 0.366 SBD"
+    },
+    "executor": {
+      "script": "market-exec.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[market-exec] mode=LIVE planned=0 skipped=6 errors=0 verify=0/0 in 1772ms | [market-exec] canon: agents/market-exec.json (run #73)",
+      "stderr_tail": ""
+    },
+    "errors": [],
+    "run_index": 63,
+    "fill_ledger_row": {
+      "run_index": 74,
+      "new_fills": 0,
+      "realized_sbd": -0.389098,
+      "recycle": {
+        "suggested": true,
+        "reasons": [
+          "FUNDED-SELL-SIDE 13.181 STEEM",
+          "FUNDED-BUY-SIDE 0.366 SBD"
+        ]
+      }
+    },
+    "duration_ms": 4538
+  },
+  {
+    "ts": "2026-10-04T12:34:15.852Z",
+    "mode": "LIVE",
+    "skip_fetch": false,
+    "fill_ledger": {
+      "script": "fill-ledger.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[fill-ledger] mode=READ-ONLY new=0 total=151 realized_sbd=-0.389098 vwap=sell 0.100225 / buy 0.102508 (edge -2.2778%) recycle=FUNDED-SELL-SIDE 14.681 STEEM|FUNDED-BUY-SIDE 0.366 SBD errors=0 in 2609ms | [fill-ledger] canon: agents/fill-ledger.json (run #75)",
+      "stderr_tail": ""
+    },
+    "suggestion": {
+      "suggested": true,
+      "reasons": [
+        "FUNDED-SELL-SIDE 14.681 STEEM",
+        "FUNDED-BUY-SIDE 0.366 SBD"
+      ]
+    },
+    "decision": {
+      "executorMode": "LIVE",
+      "reason": "RECYCLE-SUGGESTED: FUNDED-SELL-SIDE 14.681 STEEM · FUNDED-BUY-SIDE 0.366 SBD"
+    },
+    "executor": {
+      "script": "market-exec.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[market-exec] mode=LIVE planned=0 skipped=6 errors=0 verify=0/0 in 1873ms | [market-exec] canon: agents/market-exec.json (run #74)",
+      "stderr_tail": ""
+    },
+    "errors": [],
+    "run_index": 64,
+    "fill_ledger_row": {
+      "run_index": 75,
+      "new_fills": 0,
+      "realized_sbd": -0.389098,
+      "recycle": {
+        "suggested": true,
+        "reasons": [
+          "FUNDED-SELL-SIDE 14.681 STEEM",
+          "FUNDED-BUY-SIDE 0.366 SBD"
+        ]
+      }
+    },
+    "duration_ms": 4561
+  },
+  {
+    "ts": "2026-10-04T12:44:21.389Z",
+    "mode": "LIVE",
+    "skip_fetch": false,
+    "fill_ledger": {
+      "script": "fill-ledger.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[fill-ledger] mode=READ-ONLY new=0 total=151 realized_sbd=-0.389098 vwap=sell 0.100225 / buy 0.102508 (edge -2.2778%) recycle=FUNDED-SELL-SIDE 14.681 STEEM|FUNDED-BUY-SIDE 0.366 SBD errors=0 in 2746ms | [fill-ledger] canon: agents/fill-ledger.json (run #76)",
+      "stderr_tail": ""
+    },
+    "suggestion": {
+      "suggested": true,
+      "reasons": [
+        "FUNDED-SELL-SIDE 14.681 STEEM",
+        "FUNDED-BUY-SIDE 0.366 SBD"
+      ]
+    },
+    "decision": {
+      "executorMode": "LIVE",
+      "reason": "RECYCLE-SUGGESTED: FUNDED-SELL-SIDE 14.681 STEEM · FUNDED-BUY-SIDE 0.366 SBD"
+    },
+    "executor": {
+      "script": "market-exec.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[market-exec] mode=LIVE planned=0 skipped=6 errors=0 verify=0/0 in 2097ms | [market-exec] canon: agents/market-exec.json (run #75)",
+      "stderr_tail": ""
+    },
+    "errors": [],
+    "run_index": 65,
+    "fill_ledger_row": {
+      "run_index": 76,
+      "new_fills": 0,
+      "realized_sbd": -0.389098,
+      "recycle": {
+        "suggested": true,
+        "reasons": [
+          "FUNDED-SELL-SIDE 14.681 STEEM",
+          "FUNDED-BUY-SIDE 0.366 SBD"
+        ]
+      }
+    },
+    "duration_ms": 4926
+  },
+  {
+    "ts": "2026-10-04T12:54:27.312Z",
+    "mode": "LIVE",
+    "skip_fetch": false,
+    "fill_ledger": {
+      "script": "fill-ledger.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[fill-ledger] mode=READ-ONLY new=0 total=151 realized_sbd=-0.389098 vwap=sell 0.100225 / buy 0.102508 (edge -2.2778%) recycle=FUNDED-SELL-SIDE 14.681 STEEM|FUNDED-BUY-SIDE 0.366 SBD errors=0 in 2852ms | [fill-ledger] canon: agents/fill-ledger.json (run #77)",
+      "stderr_tail": ""
+    },
+    "suggestion": {
+      "suggested": true,
+      "reasons": [
+        "FUNDED-SELL-SIDE 14.681 STEEM",
+        "FUNDED-BUY-SIDE 0.366 SBD"
+      ]
+    },
+    "decision": {
+      "executorMode": "LIVE",
+      "reason": "RECYCLE-SUGGESTED: FUNDED-SELL-SIDE 14.681 STEEM · FUNDED-BUY-SIDE 0.366 SBD"
+    },
+    "executor": {
+      "script": "market-exec.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[market-exec] mode=LIVE planned=0 skipped=6 errors=0 verify=0/0 in 7430ms | [market-exec] canon: agents/market-exec.json (run #76)",
+      "stderr_tail": ""
+    },
+    "errors": [],
+    "run_index": 66,
+    "fill_ledger_row": {
+      "run_index": 77,
+      "new_fills": 0,
+      "realized_sbd": -0.389098,
+      "recycle": {
+        "suggested": true,
+        "reasons": [
+          "FUNDED-SELL-SIDE 14.681 STEEM",
+          "FUNDED-BUY-SIDE 0.366 SBD"
+        ]
+      }
+    },
+    "duration_ms": 10362
+  },
+  {
+    "ts": "2026-10-04T13:04:38.647Z",
+    "mode": "LIVE",
+    "skip_fetch": false,
+    "fill_ledger": {
+      "script": "fill-ledger.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[fill-ledger] mode=READ-ONLY new=0 total=151 realized_sbd=-0.389098 vwap=sell 0.100225 / buy 0.102508 (edge -2.2778%) recycle=FUNDED-SELL-SIDE 14.681 STEEM|FUNDED-BUY-SIDE 0.366 SBD errors=0 in 2601ms | [fill-ledger] canon: agents/fill-ledger.json (run #78)",
+      "stderr_tail": ""
+    },
+    "suggestion": {
+      "suggested": true,
+      "reasons": [
+        "FUNDED-SELL-SIDE 14.681 STEEM",
+        "FUNDED-BUY-SIDE 0.366 SBD"
+      ]
+    },
+    "decision": {
+      "executorMode": "LIVE",
+      "reason": "RECYCLE-SUGGESTED: FUNDED-SELL-SIDE 14.681 STEEM · FUNDED-BUY-SIDE 0.366 SBD"
+    },
+    "executor": {
+      "script": "market-exec.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[market-exec] mode=LIVE planned=0 skipped=6 errors=0 verify=0/0 in 2029ms | [market-exec] canon: agents/market-exec.json (run #77)",
+      "stderr_tail": ""
+    },
+    "errors": [],
+    "run_index": 67,
+    "fill_ledger_row": {
+      "run_index": 78,
+      "new_fills": 0,
+      "realized_sbd": -0.389098,
+      "recycle": {
+        "suggested": true,
+        "reasons": [
+          "FUNDED-SELL-SIDE 14.681 STEEM",
+          "FUNDED-BUY-SIDE 0.366 SBD"
+        ]
+      }
+    },
+    "duration_ms": 4712
+  },
+  {
+    "ts": "2026-10-04T13:14:44.365Z",
+    "mode": "LIVE",
+    "skip_fetch": false,
+    "fill_ledger": {
+      "script": "fill-ledger.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[fill-ledger] mode=READ-ONLY new=0 total=151 realized_sbd=-0.389098 vwap=sell 0.100225 / buy 0.102508 (edge -2.2778%) recycle=FUNDED-SELL-SIDE 14.681 STEEM|FUNDED-BUY-SIDE 0.366 SBD errors=0 in 2601ms | [fill-ledger] canon: agents/fill-ledger.json (run #79)",
+      "stderr_tail": ""
+    },
+    "suggestion": {
+      "suggested": true,
+      "reasons": [
+        "FUNDED-SELL-SIDE 14.681 STEEM",
+        "FUNDED-BUY-SIDE 0.366 SBD"
+      ]
+    },
+    "decision": {
+      "executorMode": "LIVE",
+      "reason": "RECYCLE-SUGGESTED: FUNDED-SELL-SIDE 14.681 STEEM · FUNDED-BUY-SIDE 0.366 SBD"
+    },
+    "executor": {
+      "script": "market-exec.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[market-exec] mode=LIVE planned=0 skipped=6 errors=0 verify=0/0 in 2317ms | [market-exec] canon: agents/market-exec.json (run #78)",
+      "stderr_tail": ""
+    },
+    "errors": [],
+    "run_index": 68,
+    "fill_ledger_row": {
+      "run_index": 79,
+      "new_fills": 0,
+      "realized_sbd": -0.389098,
+      "recycle": {
+        "suggested": true,
+        "reasons": [
+          "FUNDED-SELL-SIDE 14.681 STEEM",
+          "FUNDED-BUY-SIDE 0.366 SBD"
+        ]
+      }
+    },
+    "duration_ms": 4997
+  },
+  {
+    "ts": "2026-10-04T13:24:50.371Z",
+    "mode": "LIVE",
+    "skip_fetch": false,
+    "fill_ledger": {
+      "script": "fill-ledger.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[fill-ledger] mode=READ-ONLY new=0 total=151 realized_sbd=-0.389098 vwap=sell 0.100225 / buy 0.102508 (edge -2.2778%) recycle=FUNDED-SELL-SIDE 14.681 STEEM|FUNDED-BUY-SIDE 0.366 SBD errors=0 in 2666ms | [fill-ledger] canon: agents/fill-ledger.json (run #80)",
+      "stderr_tail": ""
+    },
+    "suggestion": {
+      "suggested": true,
+      "reasons": [
+        "FUNDED-SELL-SIDE 14.681 STEEM",
+        "FUNDED-BUY-SIDE 0.366 SBD"
+      ]
+    },
+    "decision": {
+      "executorMode": "LIVE",
+      "reason": "RECYCLE-SUGGESTED: FUNDED-SELL-SIDE 14.681 STEEM · FUNDED-BUY-SIDE 0.366 SBD"
+    },
+    "executor": {
+      "script": "market-exec.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[market-exec] mode=LIVE planned=0 skipped=6 errors=0 verify=0/0 in 1834ms | [market-exec] canon: agents/market-exec.json (run #79)",
+      "stderr_tail": ""
+    },
+    "errors": [],
+    "run_index": 69,
+    "fill_ledger_row": {
+      "run_index": 80,
+      "new_fills": 0,
+      "realized_sbd": -0.389098,
+      "recycle": {
+        "suggested": true,
+        "reasons": [
+          "FUNDED-SELL-SIDE 14.681 STEEM",
+          "FUNDED-BUY-SIDE 0.366 SBD"
+        ]
+      }
+    },
+    "duration_ms": 4580
+  },
+  {
+    "ts": "2026-10-04T13:34:55.924Z",
+    "mode": "LIVE",
+    "skip_fetch": false,
+    "fill_ledger": {
+      "script": "fill-ledger.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[fill-ledger] mode=READ-ONLY new=0 total=151 realized_sbd=-0.389098 vwap=sell 0.100225 / buy 0.102508 (edge -2.2778%) recycle=FUNDED-SELL-SIDE 14.681 STEEM|FUNDED-BUY-SIDE 0.366 SBD errors=0 in 2604ms | [fill-ledger] canon: agents/fill-ledger.json (run #81)",
+      "stderr_tail": ""
+    },
+    "suggestion": {
+      "suggested": true,
+      "reasons": [
+        "FUNDED-SELL-SIDE 14.681 STEEM",
+        "FUNDED-BUY-SIDE 0.366 SBD"
+      ]
+    },
+    "decision": {
+      "executorMode": "LIVE",
+      "reason": "RECYCLE-SUGGESTED: FUNDED-SELL-SIDE 14.681 STEEM · FUNDED-BUY-SIDE 0.366 SBD"
+    },
+    "executor": {
+      "script": "market-exec.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[market-exec] mode=LIVE planned=0 skipped=6 errors=0 verify=0/0 in 1904ms | [market-exec] canon: agents/market-exec.json (run #80)",
+      "stderr_tail": ""
+    },
+    "errors": [],
+    "run_index": 70,
+    "fill_ledger_row": {
+      "run_index": 81,
+      "new_fills": 0,
+      "realized_sbd": -0.389098,
+      "recycle": {
+        "suggested": true,
+        "reasons": [
+          "FUNDED-SELL-SIDE 14.681 STEEM",
+          "FUNDED-BUY-SIDE 0.366 SBD"
+        ]
+      }
+    },
+    "duration_ms": 4585
+  },
+  {
+    "ts": "2026-10-04T13:45:01.520Z",
+    "mode": "LIVE",
+    "skip_fetch": false,
+    "fill_ledger": {
+      "script": "fill-ledger.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[fill-ledger] mode=READ-ONLY new=0 total=151 realized_sbd=-0.389098 vwap=sell 0.100225 / buy 0.102508 (edge -2.2778%) recycle=FUNDED-SELL-SIDE 14.681 STEEM|FUNDED-BUY-SIDE 0.366 SBD errors=0 in 2848ms | [fill-ledger] canon: agents/fill-ledger.json (run #82)",
+      "stderr_tail": ""
+    },
+    "suggestion": {
+      "suggested": true,
+      "reasons": [
+        "FUNDED-SELL-SIDE 14.681 STEEM",
+        "FUNDED-BUY-SIDE 0.366 SBD"
+      ]
+    },
+    "decision": {
+      "executorMode": "LIVE",
+      "reason": "RECYCLE-SUGGESTED: FUNDED-SELL-SIDE 14.681 STEEM · FUNDED-BUY-SIDE 0.366 SBD"
+    },
+    "executor": {
+      "script": "market-exec.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[market-exec] mode=LIVE planned=0 skipped=6 errors=0 verify=0/0 in 1839ms | [market-exec] canon: agents/market-exec.json (run #81)",
+      "stderr_tail": ""
+    },
+    "errors": [],
+    "run_index": 71,
+    "fill_ledger_row": {
+      "run_index": 82,
+      "new_fills": 0,
+      "realized_sbd": -0.389098,
+      "recycle": {
+        "suggested": true,
+        "reasons": [
+          "FUNDED-SELL-SIDE 14.681 STEEM",
+          "FUNDED-BUY-SIDE 0.366 SBD"
+        ]
+      }
+    },
+    "duration_ms": 4769
+  },
+  {
+    "ts": "2026-10-04T13:55:07.283Z",
+    "mode": "LIVE",
+    "skip_fetch": false,
+    "fill_ledger": {
+      "script": "fill-ledger.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[fill-ledger] mode=READ-ONLY new=0 total=151 realized_sbd=-0.389098 vwap=sell 0.100225 / buy 0.102508 (edge -2.2778%) recycle=FUNDED-SELL-SIDE 14.681 STEEM|FUNDED-BUY-SIDE 0.366 SBD errors=0 in 2477ms | [fill-ledger] canon: agents/fill-ledger.json (run #83)",
+      "stderr_tail": ""
+    },
+    "suggestion": {
+      "suggested": true,
+      "reasons": [
+        "FUNDED-SELL-SIDE 14.681 STEEM",
+        "FUNDED-BUY-SIDE 0.366 SBD"
+      ]
+    },
+    "decision": {
+      "executorMode": "LIVE",
+      "reason": "RECYCLE-SUGGESTED: FUNDED-SELL-SIDE 14.681 STEEM · FUNDED-BUY-SIDE 0.366 SBD"
+    },
+    "executor": {
+      "script": "market-exec.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[market-exec] mode=LIVE planned=0 skipped=6 errors=0 verify=0/0 in 1920ms | [market-exec] canon: agents/market-exec.json (run #82)",
+      "stderr_tail": ""
+    },
+    "errors": [],
+    "run_index": 72,
+    "fill_ledger_row": {
+      "run_index": 83,
+      "new_fills": 0,
+      "realized_sbd": -0.389098,
+      "recycle": {
+        "suggested": true,
+        "reasons": [
+          "FUNDED-SELL-SIDE 14.681 STEEM",
+          "FUNDED-BUY-SIDE 0.366 SBD"
+        ]
+      }
+    },
+    "duration_ms": 4473
+  },
+  {
+    "ts": "2026-10-04T14:05:12.732Z",
+    "mode": "LIVE",
+    "skip_fetch": false,
+    "fill_ledger": {
+      "script": "fill-ledger.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[fill-ledger] mode=READ-ONLY new=0 total=151 realized_sbd=-0.389098 vwap=sell 0.100225 / buy 0.102508 (edge -2.2778%) recycle=FUNDED-SELL-SIDE 14.681 STEEM|FUNDED-BUY-SIDE 0.366 SBD errors=0 in 2733ms | [fill-ledger] canon: agents/fill-ledger.json (run #84)",
+      "stderr_tail": ""
+    },
+    "suggestion": {
+      "suggested": true,
+      "reasons": [
+        "FUNDED-SELL-SIDE 14.681 STEEM",
+        "FUNDED-BUY-SIDE 0.366 SBD"
+      ]
+    },
+    "decision": {
+      "executorMode": "LIVE",
+      "reason": "RECYCLE-SUGGESTED: FUNDED-SELL-SIDE 14.681 STEEM · FUNDED-BUY-SIDE 0.366 SBD"
+    },
+    "executor": {
+      "script": "market-exec.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[market-exec] mode=LIVE planned=0 skipped=6 errors=0 verify=0/0 in 1730ms | [market-exec] canon: agents/market-exec.json (run #83)",
+      "stderr_tail": ""
+    },
+    "errors": [],
+    "run_index": 73,
+    "fill_ledger_row": {
+      "run_index": 84,
+      "new_fills": 0,
+      "realized_sbd": -0.389098,
+      "recycle": {
+        "suggested": true,
+        "reasons": [
+          "FUNDED-SELL-SIDE 14.681 STEEM",
+          "FUNDED-BUY-SIDE 0.366 SBD"
+        ]
+      }
+    },
+    "duration_ms": 4542
+  },
+  {
+    "ts": "2026-10-04T14:15:18.279Z",
+    "mode": "LIVE",
+    "skip_fetch": false,
+    "fill_ledger": {
+      "script": "fill-ledger.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[fill-ledger] mode=READ-ONLY new=0 total=151 realized_sbd=-0.389098 vwap=sell 0.100225 / buy 0.102508 (edge -2.2778%) recycle=FUNDED-SELL-SIDE 14.681 STEEM|FUNDED-BUY-SIDE 0.366 SBD errors=0 in 2935ms | [fill-ledger] canon: agents/fill-ledger.json (run #85)",
+      "stderr_tail": ""
+    },
+    "suggestion": {
+      "suggested": true,
+      "reasons": [
+        "FUNDED-SELL-SIDE 14.681 STEEM",
+        "FUNDED-BUY-SIDE 0.366 SBD"
+      ]
+    },
+    "decision": {
+      "executorMode": "LIVE",
+      "reason": "RECYCLE-SUGGESTED: FUNDED-SELL-SIDE 14.681 STEEM · FUNDED-BUY-SIDE 0.366 SBD"
+    },
+    "executor": {
+      "script": "market-exec.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[market-exec] mode=LIVE planned=0 skipped=6 errors=0 verify=0/0 in 1850ms | [market-exec] canon: agents/market-exec.json (run #84)",
+      "stderr_tail": ""
+    },
+    "errors": [],
+    "run_index": 74,
+    "fill_ledger_row": {
+      "run_index": 85,
+      "new_fills": 0,
+      "realized_sbd": -0.389098,
+      "recycle": {
+        "suggested": true,
+        "reasons": [
+          "FUNDED-SELL-SIDE 14.681 STEEM",
+          "FUNDED-BUY-SIDE 0.366 SBD"
+        ]
+      }
+    },
+    "duration_ms": 4866
+  },
+  {
+    "ts": "2026-10-04T14:25:24.094Z",
+    "mode": "LIVE",
+    "skip_fetch": false,
+    "fill_ledger": {
+      "script": "fill-ledger.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[fill-ledger] mode=READ-ONLY new=0 total=151 realized_sbd=-0.389098 vwap=sell 0.100225 / buy 0.102508 (edge -2.2778%) recycle=FUNDED-SELL-SIDE 13.181 STEEM|FUNDED-BUY-SIDE 0.366 SBD errors=0 in 2782ms | [fill-ledger] canon: agents/fill-ledger.json (run #86)",
+      "stderr_tail": ""
+    },
+    "suggestion": {
+      "suggested": true,
+      "reasons": [
+        "FUNDED-SELL-SIDE 13.181 STEEM",
+        "FUNDED-BUY-SIDE 0.366 SBD"
+      ]
+    },
+    "decision": {
+      "executorMode": "LIVE",
+      "reason": "RECYCLE-SUGGESTED: FUNDED-SELL-SIDE 13.181 STEEM · FUNDED-BUY-SIDE 0.366 SBD"
+    },
+    "executor": {
+      "script": "market-exec.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[market-exec] mode=LIVE planned=1 skipped=5 errors=0 verify=1/1 in 5931ms | [market-exec] canon: agents/market-exec.json (run #85)",
+      "stderr_tail": ""
+    },
+    "errors": [],
+    "run_index": 75,
+    "fill_ledger_row": {
+      "run_index": 86,
+      "new_fills": 0,
+      "realized_sbd": -0.389098,
+      "recycle": {
+        "suggested": true,
+        "reasons": [
+          "FUNDED-SELL-SIDE 13.181 STEEM",
+          "FUNDED-BUY-SIDE 0.366 SBD"
+        ]
+      }
+    },
+    "duration_ms": 8793
+  },
+  {
+    "ts": "2026-10-04T14:35:33.844Z",
+    "mode": "LIVE",
+    "skip_fetch": false,
+    "fill_ledger": {
+      "script": "fill-ledger.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[fill-ledger] mode=READ-ONLY new=0 total=151 realized_sbd=-0.389098 vwap=sell 0.100225 / buy 0.102508 (edge -2.2778%) recycle=FUNDED-SELL-SIDE 13.061 STEEM|FUNDED-BUY-SIDE 0.366 SBD errors=0 in 2734ms | [fill-ledger] canon: agents/fill-ledger.json (run #87)",
+      "stderr_tail": ""
+    },
+    "suggestion": {
+      "suggested": true,
+      "reasons": [
+        "FUNDED-SELL-SIDE 13.061 STEEM",
+        "FUNDED-BUY-SIDE 0.366 SBD"
+      ]
+    },
+    "decision": {
+      "executorMode": "LIVE",
+      "reason": "RECYCLE-SUGGESTED: FUNDED-SELL-SIDE 13.061 STEEM · FUNDED-BUY-SIDE 0.366 SBD"
+    },
+    "executor": {
+      "script": "market-exec.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[market-exec] mode=LIVE planned=0 skipped=6 errors=0 verify=0/0 in 2091ms | [market-exec] canon: agents/market-exec.json (run #86)",
+      "stderr_tail": ""
+    },
+    "errors": [],
+    "run_index": 76,
+    "fill_ledger_row": {
+      "run_index": 87,
+      "new_fills": 0,
+      "realized_sbd": -0.389098,
+      "recycle": {
+        "suggested": true,
+        "reasons": [
+          "FUNDED-SELL-SIDE 13.061 STEEM",
+          "FUNDED-BUY-SIDE 0.366 SBD"
+        ]
+      }
+    },
+    "duration_ms": 4913
+  },
+  {
+    "ts": "2026-10-04T14:45:39.759Z",
+    "mode": "LIVE",
+    "skip_fetch": false,
+    "fill_ledger": {
+      "script": "fill-ledger.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[fill-ledger] mode=READ-ONLY new=0 total=151 realized_sbd=-0.389098 vwap=sell 0.100225 / buy 0.102508 (edge -2.2778%) recycle=FUNDED-SELL-SIDE 13.354 STEEM|FUNDED-BUY-SIDE 0.366 SBD errors=0 in 2829ms | [fill-ledger] canon: agents/fill-ledger.json (run #88)",
+      "stderr_tail": ""
+    },
+    "suggestion": {
+      "suggested": true,
+      "reasons": [
+        "FUNDED-SELL-SIDE 13.354 STEEM",
+        "FUNDED-BUY-SIDE 0.366 SBD"
+      ]
+    },
+    "decision": {
+      "executorMode": "LIVE",
+      "reason": "RECYCLE-SUGGESTED: FUNDED-SELL-SIDE 13.354 STEEM · FUNDED-BUY-SIDE 0.366 SBD"
+    },
+    "executor": {
+      "script": "market-exec.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[market-exec] mode=LIVE planned=0 skipped=6 errors=0 verify=0/0 in 2015ms | [market-exec] canon: agents/market-exec.json (run #87)",
+      "stderr_tail": ""
+    },
+    "errors": [],
+    "run_index": 77,
+    "fill_ledger_row": {
+      "run_index": 88,
+      "new_fills": 0,
+      "realized_sbd": -0.389098,
+      "recycle": {
+        "suggested": true,
+        "reasons": [
+          "FUNDED-SELL-SIDE 13.354 STEEM",
+          "FUNDED-BUY-SIDE 0.366 SBD"
+        ]
+      }
+    },
+    "duration_ms": 4925
+  },
+  {
+    "ts": "2026-10-04T14:55:45.665Z",
+    "mode": "LIVE",
+    "skip_fetch": false,
+    "fill_ledger": {
+      "script": "fill-ledger.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[fill-ledger] mode=READ-ONLY new=0 total=151 realized_sbd=-0.389098 vwap=sell 0.100225 / buy 0.102508 (edge -2.2778%) recycle=FUNDED-SELL-SIDE 13.354 STEEM|FUNDED-BUY-SIDE 0.366 SBD errors=0 in 2697ms | [fill-ledger] canon: agents/fill-ledger.json (run #89)",
+      "stderr_tail": ""
+    },
+    "suggestion": {
+      "suggested": true,
+      "reasons": [
+        "FUNDED-SELL-SIDE 13.354 STEEM",
+        "FUNDED-BUY-SIDE 0.366 SBD"
+      ]
+    },
+    "decision": {
+      "executorMode": "LIVE",
+      "reason": "RECYCLE-SUGGESTED: FUNDED-SELL-SIDE 13.354 STEEM · FUNDED-BUY-SIDE 0.366 SBD"
+    },
+    "executor": {
+      "script": "market-exec.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[market-exec] mode=LIVE planned=0 skipped=6 errors=0 verify=0/0 in 2162ms | [market-exec] canon: agents/market-exec.json (run #88)",
+      "stderr_tail": ""
+    },
+    "errors": [],
+    "run_index": 78,
+    "fill_ledger_row": {
+      "run_index": 89,
+      "new_fills": 0,
+      "realized_sbd": -0.389098,
+      "recycle": {
+        "suggested": true,
+        "reasons": [
+          "FUNDED-SELL-SIDE 13.354 STEEM",
+          "FUNDED-BUY-SIDE 0.366 SBD"
+        ]
+      }
+    },
+    "duration_ms": 4939
+  },
+  {
+    "ts": "2026-10-04T15:05:51.609Z",
+    "mode": "LIVE",
+    "skip_fetch": false,
+    "fill_ledger": {
+      "script": "fill-ledger.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[fill-ledger] mode=READ-ONLY new=0 total=151 realized_sbd=-0.389098 vwap=sell 0.100225 / buy 0.102508 (edge -2.2778%) recycle=FUNDED-SELL-SIDE 13.643 STEEM|FUNDED-BUY-SIDE 0.366 SBD errors=0 in 2556ms | [fill-ledger] canon: agents/fill-ledger.json (run #90)",
+      "stderr_tail": ""
+    },
+    "suggestion": {
+      "suggested": true,
+      "reasons": [
+        "FUNDED-SELL-SIDE 13.643 STEEM",
+        "FUNDED-BUY-SIDE 0.366 SBD"
+      ]
+    },
+    "decision": {
+      "executorMode": "LIVE",
+      "reason": "RECYCLE-SUGGESTED: FUNDED-SELL-SIDE 13.643 STEEM · FUNDED-BUY-SIDE 0.366 SBD"
+    },
+    "executor": {
+      "script": "market-exec.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[market-exec] mode=LIVE planned=0 skipped=6 errors=0 verify=0/0 in 2015ms | [market-exec] canon: agents/market-exec.json (run #89)",
+      "stderr_tail": ""
+    },
+    "errors": [],
+    "run_index": 79,
+    "fill_ledger_row": {
+      "run_index": 90,
+      "new_fills": 0,
+      "realized_sbd": -0.389098,
+      "recycle": {
+        "suggested": true,
+        "reasons": [
+          "FUNDED-SELL-SIDE 13.643 STEEM",
+          "FUNDED-BUY-SIDE 0.366 SBD"
+        ]
+      }
+    },
+    "duration_ms": 4648
+  },
+  {
+    "ts": "2026-10-04T15:15:57.257Z",
+    "mode": "LIVE",
+    "skip_fetch": false,
+    "fill_ledger": {
+      "script": "fill-ledger.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[fill-ledger] mode=READ-ONLY new=0 total=151 realized_sbd=-0.389098 vwap=sell 0.100225 / buy 0.102508 (edge -2.2778%) recycle=FUNDED-SELL-SIDE 13.643 STEEM|FUNDED-BUY-SIDE 0.366 SBD errors=0 in 2965ms | [fill-ledger] canon: agents/fill-ledger.json (run #91)",
+      "stderr_tail": ""
+    },
+    "suggestion": {
+      "suggested": true,
+      "reasons": [
+        "FUNDED-SELL-SIDE 13.643 STEEM",
+        "FUNDED-BUY-SIDE 0.366 SBD"
+      ]
+    },
+    "decision": {
+      "executorMode": "LIVE",
+      "reason": "RECYCLE-SUGGESTED: FUNDED-SELL-SIDE 13.643 STEEM · FUNDED-BUY-SIDE 0.366 SBD"
+    },
+    "executor": {
+      "script": "market-exec.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[market-exec] mode=LIVE planned=0 skipped=6 errors=0 verify=0/0 in 2873ms | [market-exec] canon: agents/market-exec.json (run #90)",
+      "stderr_tail": ""
+    },
+    "errors": [],
+    "run_index": 80,
+    "fill_ledger_row": {
+      "run_index": 91,
+      "new_fills": 0,
+      "realized_sbd": -0.389098,
+      "recycle": {
+        "suggested": true,
+        "reasons": [
+          "FUNDED-SELL-SIDE 13.643 STEEM",
+          "FUNDED-BUY-SIDE 0.366 SBD"
+        ]
+      }
+    },
+    "duration_ms": 5923
+  },
+  {
+    "ts": "2026-10-04T15:26:04.194Z",
+    "mode": "LIVE",
+    "skip_fetch": false,
+    "fill_ledger": {
+      "script": "fill-ledger.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[fill-ledger] mode=READ-ONLY new=0 total=151 realized_sbd=-0.389098 vwap=sell 0.100225 / buy 0.102508 (edge -2.2778%) recycle=FUNDED-SELL-SIDE 10.643 STEEM|FUNDED-BUY-SIDE 0.366 SBD errors=0 in 2704ms | [fill-ledger] canon: agents/fill-ledger.json (run #92)",
+      "stderr_tail": ""
+    },
+    "suggestion": {
+      "suggested": true,
+      "reasons": [
+        "FUNDED-SELL-SIDE 10.643 STEEM",
+        "FUNDED-BUY-SIDE 0.366 SBD"
+      ]
+    },
+    "decision": {
+      "executorMode": "LIVE",
+      "reason": "RECYCLE-SUGGESTED: FUNDED-SELL-SIDE 10.643 STEEM · FUNDED-BUY-SIDE 0.366 SBD"
+    },
+    "executor": {
+      "script": "market-exec.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[market-exec] mode=LIVE planned=0 skipped=6 errors=0 verify=0/0 in 1988ms | [market-exec] canon: agents/market-exec.json (run #91)",
+      "stderr_tail": ""
+    },
+    "errors": [],
+    "run_index": 81,
+    "fill_ledger_row": {
+      "run_index": 92,
+      "new_fills": 0,
+      "realized_sbd": -0.389098,
+      "recycle": {
+        "suggested": true,
+        "reasons": [
+          "FUNDED-SELL-SIDE 10.643 STEEM",
+          "FUNDED-BUY-SIDE 0.366 SBD"
+        ]
+      }
+    },
+    "duration_ms": 4776
+  },
+  {
+    "ts": "2026-10-04T15:36:10.046Z",
+    "mode": "LIVE",
+    "skip_fetch": false,
+    "fill_ledger": {
+      "script": "fill-ledger.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[fill-ledger] mode=READ-ONLY new=0 total=151 realized_sbd=-0.389098 vwap=sell 0.100225 / buy 0.102508 (edge -2.2778%) recycle=FUNDED-SELL-SIDE 5.643 STEEM|FUNDED-BUY-SIDE 0.366 SBD errors=0 in 2635ms | [fill-ledger] canon: agents/fill-ledger.json (run #93)",
+      "stderr_tail": ""
+    },
+    "suggestion": {
+      "suggested": true,
+      "reasons": [
+        "FUNDED-SELL-SIDE 5.643 STEEM",
+        "FUNDED-BUY-SIDE 0.366 SBD"
+      ]
+    },
+    "decision": {
+      "executorMode": "LIVE",
+      "reason": "RECYCLE-SUGGESTED: FUNDED-SELL-SIDE 5.643 STEEM · FUNDED-BUY-SIDE 0.366 SBD"
+    },
+    "executor": {
+      "script": "market-exec.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[market-exec] mode=LIVE planned=0 skipped=6 errors=0 verify=0/0 in 2085ms | [market-exec] canon: agents/market-exec.json (run #92)",
+      "stderr_tail": ""
+    },
+    "errors": [],
+    "run_index": 82,
+    "fill_ledger_row": {
+      "run_index": 93,
+      "new_fills": 0,
+      "realized_sbd": -0.389098,
+      "recycle": {
+        "suggested": true,
+        "reasons": [
+          "FUNDED-SELL-SIDE 5.643 STEEM",
+          "FUNDED-BUY-SIDE 0.366 SBD"
+        ]
+      }
+    },
+    "duration_ms": 4800
+  },
+  {
+    "ts": "2026-10-04T15:46:15.837Z",
+    "mode": "LIVE",
+    "skip_fetch": false,
+    "fill_ledger": {
+      "script": "fill-ledger.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[fill-ledger] mode=READ-ONLY new=0 total=151 realized_sbd=-0.389098 vwap=sell 0.100225 / buy 0.102508 (edge -2.2778%) recycle=FUNDED-SELL-SIDE 5.643 STEEM|FUNDED-BUY-SIDE 0.366 SBD errors=0 in 2814ms | [fill-ledger] canon: agents/fill-ledger.json (run #94)",
+      "stderr_tail": ""
+    },
+    "suggestion": {
+      "suggested": true,
+      "reasons": [
+        "FUNDED-SELL-SIDE 5.643 STEEM",
+        "FUNDED-BUY-SIDE 0.366 SBD"
+      ]
+    },
+    "decision": {
+      "executorMode": "LIVE",
+      "reason": "RECYCLE-SUGGESTED: FUNDED-SELL-SIDE 5.643 STEEM · FUNDED-BUY-SIDE 0.366 SBD"
+    },
+    "executor": {
+      "script": "market-exec.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[market-exec] mode=LIVE planned=0 skipped=6 errors=0 verify=0/0 in 1833ms | [market-exec] canon: agents/market-exec.json (run #93)",
+      "stderr_tail": ""
+    },
+    "errors": [],
+    "run_index": 83,
+    "fill_ledger_row": {
+      "run_index": 94,
+      "new_fills": 0,
+      "realized_sbd": -0.389098,
+      "recycle": {
+        "suggested": true,
+        "reasons": [
+          "FUNDED-SELL-SIDE 5.643 STEEM",
+          "FUNDED-BUY-SIDE 0.366 SBD"
+        ]
+      }
+    },
+    "duration_ms": 4734
+  },
+  {
+    "ts": "2026-10-04T15:56:21.580Z",
+    "mode": "LIVE",
+    "skip_fetch": false,
+    "fill_ledger": {
+      "script": "fill-ledger.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[fill-ledger] mode=READ-ONLY new=0 total=151 realized_sbd=-0.389098 vwap=sell 0.100225 / buy 0.102508 (edge -2.2778%) recycle=FUNDED-SELL-SIDE 5.643 STEEM|FUNDED-BUY-SIDE 0.366 SBD errors=0 in 2736ms | [fill-ledger] canon: agents/fill-ledger.json (run #95)",
+      "stderr_tail": ""
+    },
+    "suggestion": {
+      "suggested": true,
+      "reasons": [
+        "FUNDED-SELL-SIDE 5.643 STEEM",
+        "FUNDED-BUY-SIDE 0.366 SBD"
+      ]
+    },
+    "decision": {
+      "executorMode": "LIVE",
+      "reason": "RECYCLE-SUGGESTED: FUNDED-SELL-SIDE 5.643 STEEM · FUNDED-BUY-SIDE 0.366 SBD"
+    },
+    "executor": {
+      "script": "market-exec.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[market-exec] mode=LIVE planned=0 skipped=6 errors=0 verify=0/0 in 2030ms | [market-exec] canon: agents/market-exec.json (run #94)",
+      "stderr_tail": ""
+    },
+    "errors": [],
+    "run_index": 84,
+    "fill_ledger_row": {
+      "run_index": 95,
+      "new_fills": 0,
+      "realized_sbd": -0.389098,
+      "recycle": {
+        "suggested": true,
+        "reasons": [
+          "FUNDED-SELL-SIDE 5.643 STEEM",
+          "FUNDED-BUY-SIDE 0.366 SBD"
+        ]
+      }
+    },
+    "duration_ms": 4850
+  },
+  {
+    "ts": "2026-10-04T16:06:27.398Z",
+    "mode": "LIVE",
+    "skip_fetch": false,
+    "fill_ledger": {
+      "script": "fill-ledger.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[fill-ledger] mode=READ-ONLY new=5 total=156 realized_sbd=-0.388666 vwap=sell 0.100228 / buy 0.102523 (edge -2.2904%) recycle=FUNDED-SELL-SIDE 2.136 STEEM|FILLS-5 errors=0 in 2743ms | [fill-ledger] canon: agents/fill-ledger.json (run #96)",
+      "stderr_tail": ""
+    },
+    "suggestion": {
+      "suggested": true,
+      "reasons": [
+        "FUNDED-SELL-SIDE 2.136 STEEM",
+        "FILLS-5"
+      ]
+    },
+    "decision": {
+      "executorMode": "LIVE",
+      "reason": "RECYCLE-SUGGESTED: FUNDED-SELL-SIDE 2.136 STEEM · FILLS-5"
+    },
+    "executor": {
+      "script": "market-exec.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[market-exec] mode=LIVE planned=0 skipped=6 errors=0 verify=0/0 in 5647ms | [market-exec] canon: agents/market-exec.json (run #95)",
+      "stderr_tail": ""
+    },
+    "errors": [],
+    "run_index": 85,
+    "fill_ledger_row": {
+      "run_index": 96,
+      "new_fills": 5,
+      "realized_sbd": -0.388666,
+      "recycle": {
+        "suggested": true,
+        "reasons": [
+          "FUNDED-SELL-SIDE 2.136 STEEM",
+          "FILLS-5"
+        ]
+      }
+    },
+    "duration_ms": 8473
+  },
+  {
+    "ts": "2026-10-04T16:16:36.861Z",
+    "mode": "LIVE",
+    "skip_fetch": false,
+    "fill_ledger": {
+      "script": "fill-ledger.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[fill-ledger] mode=READ-ONLY new=2 total=158 realized_sbd=-0.388666 vwap=sell 0.100228 / buy 0.102532 (edge -2.2989%) recycle=FUNDED-SELL-SIDE 6.367 STEEM|FILLS-2 errors=0 in 3048ms | [fill-ledger] canon: agents/fill-ledger.json (run #97)",
+      "stderr_tail": ""
+    },
+    "suggestion": {
+      "suggested": true,
+      "reasons": [
+        "FUNDED-SELL-SIDE 6.367 STEEM",
+        "FILLS-2"
+      ]
+    },
+    "decision": {
+      "executorMode": "LIVE",
+      "reason": "RECYCLE-SUGGESTED: FUNDED-SELL-SIDE 6.367 STEEM · FILLS-2"
+    },
+    "executor": {
+      "script": "market-exec.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[market-exec] mode=LIVE planned=1 skipped=5 errors=0 verify=1/1 in 6695ms | [market-exec] canon: agents/market-exec.json (run #96)",
+      "stderr_tail": ""
+    },
+    "errors": [],
+    "run_index": 86,
+    "fill_ledger_row": {
+      "run_index": 97,
+      "new_fills": 2,
+      "realized_sbd": -0.388666,
+      "recycle": {
+        "suggested": true,
+        "reasons": [
+          "FUNDED-SELL-SIDE 6.367 STEEM",
+          "FILLS-2"
+        ]
+      }
+    },
+    "duration_ms": 9842
+  },
+  {
+    "ts": "2026-10-04T18:01:28.615Z",
+    "mode": "DRY",
+    "skip_fetch": false,
+    "fill_ledger": {
+      "script": "fill-ledger.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[fill-ledger] mode=READ-ONLY new=0 total=158 realized_sbd=-0.388666 vwap=sell 0.100228 / buy 0.102532 (edge -2.2989%) recycle=FUNDED-SELL-SIDE 4.055 STEEM errors=0 in 455ms | [fill-ledger] canon: agents/fill-ledger.json (run #98)",
+      "stderr_tail": ""
+    },
+    "suggestion": {
+      "suggested": true,
+      "reasons": [
+        "FUNDED-SELL-SIDE 4.055 STEEM"
+      ]
+    },
+    "decision": {
+      "executorMode": "DRY",
+      "reason": "MODE-DRY: planning receipt only, zero signatures"
+    },
+    "executor": {
+      "script": "market-exec.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[market-exec] mode=DRY_RUN planned=0 skipped=6 errors=0 verify=0/0 in 562ms | [market-exec] canon: agents/market-exec.json (run #97)",
+      "stderr_tail": ""
+    },
+    "errors": [],
+    "run_index": 87,
+    "fill_ledger_row": {
+      "run_index": 98,
+      "new_fills": 0,
+      "realized_sbd": -0.388666,
+      "recycle": {
+        "suggested": true,
+        "reasons": [
+          "FUNDED-SELL-SIDE 4.055 STEEM"
+        ]
+      }
+    },
+    "duration_ms": 1071
+  },
+  {
+    "ts": "2026-10-04T21:14:07.349Z",
+    "mode": "DRY",
+    "skip_fetch": false,
+    "fill_ledger": {
+      "script": "fill-ledger.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[fill-ledger] mode=READ-ONLY new=0 total=158 realized_sbd=-0.388666 vwap=sell 0.100228 / buy 0.102532 (edge -2.2989%) recycle=FUNDED-SELL-SIDE 3.286 STEEM errors=0 in 994ms | [fill-ledger] canon: agents/fill-ledger.json (run #100)",
+      "stderr_tail": ""
+    },
+    "suggestion": {
+      "suggested": true,
+      "reasons": [
+        "FUNDED-SELL-SIDE 3.286 STEEM"
+      ]
+    },
+    "decision": {
+      "executorMode": "DRY",
+      "reason": "MODE-DRY: planning receipt only, zero signatures"
+    },
+    "executor": {
+      "script": "market-exec.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[market-exec] mode=DRY_RUN planned=1 skipped=5 errors=0 verify=0/0 in 750ms | [market-exec] canon: agents/market-exec.json (run #98)",
+      "stderr_tail": ""
+    },
+    "errors": [],
+    "run_index": 88,
+    "fill_ledger_row": {
+      "run_index": 100,
+      "new_fills": 0,
+      "realized_sbd": -0.388666,
+      "recycle": {
+        "suggested": true,
+        "reasons": [
+          "FUNDED-SELL-SIDE 3.286 STEEM"
+        ]
+      }
+    },
+    "duration_ms": 1793
+  },
+  {
+    "ts": "2026-10-04T21:55:37.517Z",
+    "mode": "DRY",
+    "skip_fetch": false,
+    "fill_ledger": {
+      "script": "fill-ledger.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[fill-ledger] mode=READ-ONLY new=0 total=158 realized_sbd=-0.388666 vwap=sell 0.100228 / buy 0.102532 (edge -2.2989%) recycle=FUNDED-SELL-SIDE 3.286 STEEM errors=0 in 483ms | [fill-ledger] canon: agents/fill-ledger.json (run #103)",
+      "stderr_tail": ""
+    },
+    "suggestion": {
+      "suggested": true,
+      "reasons": [
+        "FUNDED-SELL-SIDE 3.286 STEEM"
+      ]
+    },
+    "decision": {
+      "executorMode": "DRY",
+      "reason": "MODE-DRY: planning receipt only, zero signatures"
+    },
+    "executor": {
+      "script": "market-exec.cjs",
+      "status": 0,
+      "error": null,
+      "stdout_tail": "[market-exec] mode=DRY_RUN planned=1 skipped=5 errors=0 verify=0/0 in 577ms | [market-exec] canon: agents/market-exec.json (run #99)",
+      "stderr_tail": ""
+    },
+    "errors": [],
+    "run_index": 89,
+    "fill_ledger_row": {
+      "run_index": 103,
+      "new_fills": 0,
+      "realized_sbd": -0.388666,
+      "recycle": {
+        "suggested": true,
+        "reasons": [
+          "FUNDED-SELL-SIDE 3.286 STEEM"
+        ]
+      }
+    },
+    "duration_ms": 1105
+  }
+]

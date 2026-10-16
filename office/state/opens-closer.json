@@ -1,0 +1,167 @@
+{
+ "schema": "saos.opens-closer.v1",
+ "generatedAt": "2026-10-16T10:00:13.517Z",
+ "verdictHe": "3 נפלו מעל SLA (recruit 2718דק>SLA1660, ventures 2717דק>SLA1660, products 6460דק>SLA2910) — הוערו: אין",
+ "metrics": {
+  "staleCount": 3,
+  "dispatchedCount": 0
+ },
+ "checks": [
+  {
+   "key": "office-state",
+   "url": "https://raw.githubusercontent.com/roshpinacare-sys/FleetHQ/main/office/state/office-state.json",
+   "slaMin": 180,
+   "stateTs": "2026-10-16T09:41:15.149Z",
+   "ageMin": 19,
+   "stale": false,
+   "dispatched": false,
+   "dispatchStatus": null,
+   "healNote": "same-repo dispatch, GITHUB_TOKEN"
+  },
+  {
+   "key": "beacon",
+   "url": "https://raw.githubusercontent.com/roshpinacare-sys/sovereign-beacon/main/state.json",
+   "slaMin": 100,
+   "stateTs": "2026-10-16T09:30:21Z",
+   "ageMin": 30,
+   "stale": false,
+   "dispatched": false,
+   "dispatchStatus": null,
+   "healNote": "cross-repo dispatch via CROSS_REVIVE_PAT secret (owner authority delegated to the sovereignty — T-63 D1, claim 440e40f3)"
+  },
+  {
+   "key": "lighthouse",
+   "url": "https://raw.githubusercontent.com/roshpinacare-sys/sovereign-lighthouse/main/state.json",
+   "slaMin": 80,
+   "stateTs": "2026-10-16T09:17:04Z",
+   "ageMin": 43,
+   "stale": false,
+   "dispatched": false,
+   "dispatchStatus": null,
+   "healNote": "cross-repo dispatch via CROSS_REVIVE_PAT secret (owner authority delegated to the sovereignty — T-63 D1, claim 440e40f3)"
+  },
+  {
+   "key": "value-scan",
+   "url": "https://raw.githubusercontent.com/roshpinacare-sys/FleetHQ/main/office/state/value-scan.json",
+   "slaMin": 90,
+   "stateTs": "2026-10-16T08:51:33.120Z",
+   "ageMin": 69,
+   "stale": false,
+   "dispatched": false,
+   "dispatchStatus": null,
+   "healNote": "same-repo dispatch, GITHUB_TOKEN (added T-63 — GitHub scheduler drops these runs too, measured 176min vs SLA 90)"
+  },
+  {
+   "key": "domain-pulse",
+   "url": "https://raw.githubusercontent.com/roshpinacare-sys/Domain/main/office/data.json",
+   "slaMin": 180,
+   "stateTs": "2026-10-16T09:23:21.114Z",
+   "ageMin": 37,
+   "stale": false,
+   "dispatched": false,
+   "dispatchStatus": null,
+   "healNote": "cross-repo dispatch via CROSS_REVIVE_PAT — T-72 correction: the healNote claimed the writer is NOT a workflow (T-62), but Domain/.github/workflows/office-pulse.yml measures + commits office/data.json (office-pulse-bot, measured commits 21:37Z/22:20Z 2026-10-12); the blind spot is closed"
+  },
+  {
+   "key": "sovereign-decider",
+   "url": "https://raw.githubusercontent.com/roshpinacare-sys/FleetHQ/main/office/state/sovereign-decisions.json",
+   "slaMin": 90,
+   "stateTs": "2026-10-16T09:45:50.435Z",
+   "ageMin": 14,
+   "stale": false,
+   "dispatched": false,
+   "dispatchStatus": null,
+   "healNote": "same-repo dispatch, GITHUB_TOKEN — T-72 blind-spot closure: the decision organ itself was never watched (cadence 30min + 30min grace + 30min measured scheduler lag); the immune system now watches its own driver"
+  },
+  {
+   "key": "live",
+   "url": "https://raw.githubusercontent.com/roshpinacare-sys/Domain/main/agents/office-live.json",
+   "slaMin": 180,
+   "stateTs": "2026-10-16T07:28:33.508Z",
+   "ageMin": 152,
+   "stale": false,
+   "dispatched": false,
+   "dispatchStatus": null,
+   "healNote": "cross-repo dispatch via CROSS_REVIVE_PAT (Domain/office-artery.yml, measured dispatchable) — T-63 D1 authority"
+  },
+  {
+   "key": "grid",
+   "url": "https://raw.githubusercontent.com/roshpinacare-sys/Domain/main/agents/grid-truth.json",
+   "slaMin": 125,
+   "stateTs": "2026-10-16T09:30:30.860Z",
+   "ageMin": 30,
+   "stale": false,
+   "dispatched": false,
+   "dispatchStatus": null,
+   "healNote": "cross-repo dispatch via CROSS_REVIVE_PAT (Domain/grid-doctor.yml, measured dispatchable) — T-63 D1 authority"
+  },
+  {
+   "key": "dex-book",
+   "url": "https://raw.githubusercontent.com/roshpinacare-sys/Domain/main/dex/grid.json",
+   "slaMin": 1800,
+   "stateTs": "2026-10-16T00:47:59.221Z",
+   "ageMin": 552,
+   "stale": false,
+   "dispatched": false,
+   "dispatchStatus": null,
+   "healNote": "cross-repo dispatch via CROSS_REVIVE_PAT (Domain/dex-mirror.yml has workflow_dispatch; same family as office-artery, measured dispatchable) — measured freeze 2026-10-10→12: source beat alive 10.8h while the mirror copy aged 38h; sla 30h = daily-mirror cadence + source beat lag, no false alarms"
+  },
+  {
+   "key": "recruit",
+   "url": "https://raw.githubusercontent.com/roshpinacare-sys/Domain/main/agents/recruitment.json",
+   "slaMin": 1660,
+   "stateTs": "2026-10-14T12:42:17.221Z",
+   "ageMin": 2718,
+   "stale": true,
+   "dispatched": false,
+   "dispatchStatus": null,
+   "healNote": "cross-repo room feed; producer workflow name not yet measured — recorded honestly, no guessed dispatch"
+  },
+  {
+   "key": "ventures",
+   "url": "https://raw.githubusercontent.com/roshpinacare-sys/Domain/main/agents/ventures.json",
+   "slaMin": 1660,
+   "stateTs": "2026-10-14T12:42:54.397Z",
+   "ageMin": 2717,
+   "stale": true,
+   "dispatched": false,
+   "dispatchStatus": null,
+   "healNote": "cross-repo room feed; producer workflow name not yet measured — recorded honestly, no guessed dispatch"
+  },
+  {
+   "key": "products",
+   "url": "https://raw.githubusercontent.com/roshpinacare-sys/Domain/main/marketing/products.json",
+   "slaMin": 2910,
+   "stateTs": "2026-10-11T22:20:00Z",
+   "ageMin": 6460,
+   "stale": true,
+   "dispatched": false,
+   "dispatchStatus": null,
+   "healNote": "cross-repo room feed; producer workflow name not yet measured — recorded honestly, no guessed dispatch"
+  },
+  {
+   "key": "orders",
+   "url": "https://raw.githubusercontent.com/roshpinacare-sys/Sandbox/main/ops/office/work-orders.json",
+   "slaMin": 240,
+   "stateTs": null,
+   "ageMin": null,
+   "stale": null,
+   "dispatched": false,
+   "dispatchStatus": "state fetch HTTP 404",
+   "healNote": "cross-repo room feed (bare array, honesty law: ts = max(resolvedAt) = last measured resolution); writer is the Sandbox engine, not a workflow"
+  },
+  {
+   "key": "integrity",
+   "url": "https://raw.githubusercontent.com/roshpinacare-sys/Sandbox/main/ops/integrity/verdict.json",
+   "slaMin": 125,
+   "stateTs": null,
+   "ageMin": null,
+   "stale": null,
+   "dispatched": false,
+   "dispatchStatus": "state fetch HTTP 404",
+   "healNote": "cross-repo room feed (Sandbox selfcheck verdict); producer workflow name not yet measured — recorded honestly, no guessed dispatch"
+  }
+ ],
+ "ownerActions": [],
+ "commitDecision": "commit"
+}

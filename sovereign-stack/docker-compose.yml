@@ -1,0 +1,61 @@
+# Sovereign Stack — one-shot self-hosted inference + telemetry
+# Verified upstreams: ghcr.io/ggml-org/llama.cpp (docs/docker.md),
+# ghcr.io/berriai/litellm, langfuse/langfuse:2 (langfuse.com/self-hosting/v2/docker-compose)
+# Port law (control-plane sandbox): 3000=Next.js console → here: 8080/4000/3100.
+version: "3.8"
+
+services:
+  # ── Foundation: your own models. Nobody can block, throttle, or censor this. ──
+  llamacpp:
+    image: ghcr.io/ggml-org/llama.cpp:server
+    container_name: sovereign-llamacpp
+    ports: ["8080:8080"]
+    volumes:
+      - ./models:/models
+    command: >
+      -m /models/${LOCAL_MODEL_FILE:-qwen2.5-coder-7b-q4_k_m.gguf}
+      --host 0.0.0.0 --port 8080 --ctx-size ${LOCAL_CTX:-8192}
+      --n-gpu-layers ${LOCAL_GPU_LAYERS:-0}
+    restart: unless-stopped
+
+  # ── Router: OpenAI-compatible gateway with fallbacks across lanes ──
+  litellm:
+    image: ghcr.io/berriai/litellm:main-stable
+    container_name: sovereign-litellm
+    ports: ["4000:4000"]
+    volumes:
+      - ./litellm_config.yml:/app/config.yml:ro
+    environment:
+      - LLM7_API_KEY=${LLM7_API_KEY:-unused}
+    command: ["--config", "/app/config.yml", "--port", "4000"]
+    depends_on: [llamacpp]
+    restart: unless-stopped
+
+  # ── Telemetry: self-hosted tracing (Langfuse v2 + Postgres) ──
+  langfuse-db:
+    image: postgres:16
+    container_name: sovereign-langfuse-db
+    environment:
+      POSTGRES_USER: langfuse
+      POSTGRES_PASSWORD: ${LF_PG_PASSWORD:?set LF_PG_PASSWORD in .env}
+      POSTGRES_DB: langfuse
+    volumes:
+      - lf_pgdata:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  langfuse:
+    image: langfuse/langfuse:2
+    container_name: sovereign-langfuse
+    ports: ["3100:3000"]
+    environment:
+      DATABASE_URL: postgresql://langfuse:${LF_PG_PASSWORD}@langfuse-db:5432/langfuse
+      NEXTAUTH_URL: http://localhost:3100
+      NEXTAUTH_SECRET: ${LF_NEXTAUTH_SECRET:?set LF_NEXTAUTH_SECRET in .env}
+      SALT: ${LF_SALT:?set LF_SALT in .env}
+      ENCRYPTION_KEY: ${LF_ENCRYPTION_KEY:?set LF_ENCRYPTION_KEY in .env}
+      TELEMETRY_ENABLED: "false"
+    depends_on: [langfuse-db]
+    restart: unless-stopped
+
+volumes:
+  lf_pgdata:

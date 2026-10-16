@@ -1,0 +1,61 @@
+{
+  "sig": "0348ff71",
+  "kind": "failing",
+  "repo": "FleetHQ",
+  "workflow": "identity-patrol",
+  "workflowId": 383724643,
+  "firstSeenAt": "2026-10-13T22:36:31.108Z",
+  "lastSeenAt": "2026-10-13T22:55:50.628Z",
+  "lastConcl": "failure",
+  "status": "resolved",
+  "attempts": 3,
+  "evidence": {
+    "runUrl": "https://github.com/roshpinacare-sys/FleetHQ/actions/runs/38479664730",
+    "conclusion": "failure",
+    "ageMin": 32,
+    "event": "workflow_dispatch",
+    "workflowState": "active",
+    "runsInWindow": 1,
+    "lastRunId": 38479664730,
+    "jobId": 115578878740,
+    "runStartedAt": "2026-10-13T22:43:22Z",
+    "rootCause": "exit 1 is BY DESIGN on real findings (tools/identity-patrol.mjs fail-loud): 'patrol verdict=VIOLATION repos=34 violations=70' — Sandbox commits authored/committed by local-beats@users.noreply.github.com (DECISIONS #10 noreply-identity law). Three redispatches (attempts 1-3, runs 38478894926/38480195896/38481195766) cannot heal it — deterministic TRUE-POSITIVE, not transient; the regressed identity lives in the operator machine's git config, outside git reach (worklog 27-dex measured the same regression).",
+    "violationsMeasured": {
+      "repos": 34,
+      "violations": 70,
+      "sample": {
+        "repo": "Sandbox",
+        "sha": "a137583d9f",
+        "identities": [
+          "author:local-beats@users.noreply.github.com",
+          "committer:local-beats@users.noreply.github.com"
+        ],
+        "message": "sbx-grid: local artery · 2026-10-13T16:05:05Z"
+      }
+    }
+  },
+  "claimedBy": {
+    "runUrl": "https://github.com/roshpinacare-sys/FleetHQ/actions/runs/38478894926",
+    "at": "2026-10-13T22:36:31.108Z"
+  },
+  "lastAction": {
+    "action": "redispatch",
+    "reason": "young failure — one self-heal attempt before quarantine",
+    "at": "2026-10-13T22:57:43.570Z",
+    "runUrl": "https://github.com/roshpinacare-sys/FleetHQ/actions/runs/38481195766"
+  },
+  "resolvedAt": "2026-10-13T23:07:11.136Z",
+  "resolveEvidence": {
+    "runUrl": "https://github.com/roshpinacare-sys/FleetHQ/actions/runs/38482139807",
+    "conclusion": "success"
+  },
+  "issueClosed": "2026-10-13T23:09:02.063Z",
+  "diagnosis": {
+    "by": "exec28 lane 28-1",
+    "at": "2026-10-13T23:15:26.444Z",
+    "method": "Actions job logs downloaded via API (job 115578878740 of run 38479664730), tail analyzed",
+    "verdict": "true-positive fail-loud — NO trivial in-repo fix",
+    "notQuarantinedBy": "exec28 lane 28-1 — quarantine/disable is claims-triage's decision per Anti-Storm Law §3",
+    "antiStormNote": "the per-run exit-1 failure emails from this deterministic true-positive are part of the owner's alert storm; lawful paths: operator fixes local-beats git identity, or triage quarantines per §3, or the owner exempts the identity by amending DECISIONS #10"
+  }
+}

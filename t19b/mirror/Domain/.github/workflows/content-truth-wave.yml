@@ -1,0 +1,87 @@
+#
+# Order matters:
+#   2. truth-sweep — keyless claim audit of published content (chain reads; home truth APIs
+#      fail-soft when unreachable from CI).
+#      verify-then-sign, truth values from live TRUTH_URL or the committed baseline snapshot.
+
+name: content-truth-wave
+
+on:
+  workflow_dispatch:
+    inputs:
+      skip_wave:
+        description: 'skip public-wave (fixes only)'
+        required: false
+        default: 'false'
+        type: choice
+        options: ['false', 'true']
+
+permissions:
+  contents: write
+
+concurrency:
+  group: content-truth-wave
+  cancel-in-progress: false
+
+jobs:
+  wave:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      NODE_PATH: /tmp/steemjs/node_modules
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: steem client (steem@0.7.11 — home template)
+        run: |
+          npm install --prefix /tmp/steemjs steem@0.7.11 --omit=dev --no-audit --no-fund --loglevel=error
+          NODE_PATH=/tmp/steemjs/node_modules node -e "require('steem'); console.log('steem-js OK via NODE_PATH')"
+
+      - name: dedupe gate selftest (9 checks — gate must pass before anything broadcasts)
+        run: node agents/social-dedupe.cjs --selftest
+
+      - name: truth sweep (keyless claim audit)
+        run: node agents/truth-sweep.mjs
+
+      - name: truth fixes (same-permlink edits, verify-then-sign, readback)
+        env:
+          SA_FLEET_KEYS: ${{ secrets.SA_FLEET_KEYS }}
+          STEEM_POSTING_WIF: ${{ secrets.STEEM_POSTING_WIF }}
+          WEAVE_STEEM_WIF: ${{ secrets.WEAVE_STEEM_WIF }}
+          RECEIPT_OUT: agents/receipts/truth-fix-receipt.json
+        run: node agents/truth-fix.cjs
+
+      - name: public wave (five public knowledge posts, gate-checked)
+        if: ${{ github.event.inputs.skip_wave != 'true' }}
+        env:
+          SA_FLEET_KEYS: ${{ secrets.SA_FLEET_KEYS }}
+          RECEIPT_OUT: agents/receipts/public-wave-receipt.json
+        run: node agents/public-wave.cjs
+
+      - name: dedup corrections (past near-dup pairs rewritten in each account own voice)
+        env:
+          SA_FLEET_KEYS: ${{ secrets.SA_FLEET_KEYS }}
+          RECEIPT_OUT: agents/receipts/dedup-corrections-receipt.json
+        run: node agents/dedup-corrections.cjs
+
+      - name: commit receipts (secretless)
+        run: |
+          git config user.name "saos-content-truth"
+          git config user.email "content-truth@saos.local"
+          mkdir -p agents/receipts
+          for p in agents/receipts/truth-sweep-receipt.json agents/receipts/truth-fix-receipt.json agents/receipts/public-wave-receipt.json agents/receipts/dedup-corrections-receipt.json agents/social-memory-cache.json; do [ -e "$p" ] && git add "$p" || true; done
+          if git diff --cached --quiet; then
+            echo "no receipt changes"
+          else
+            git commit -m "content-truth-wave: r145-c receipts · $(date -u +%Y-%m-%dT%H:%M:%SZ) [skip ci]"
+            git -c rebase.autoStash=true pull --rebase origin main || true
+            git push origin HEAD:main
+          fi

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>SAOS · דוחות מצב הצי · State Reports Index</title>
+<meta name="description" content="אינדקס דוחות המצב היומיים של הרשת: רופא-הצי מודד את עצמו מדי יום — הון הרשת, תוכן-חי, כלכלה, פערים ורכבת ה-CI. כל דוח נוצר מהקריאה הישירה של השרשרת, אפס סודות.">
+<meta name="theme-color" content="#09090b">
+<link rel="canonical" href="https://roshpinacare-sys.github.io/Domain/reports.html">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2.5 20.5 7v10L12 21.5 3.5 17V7z' fill='none' stroke='%23d4af37' stroke-width='1.6'/%3E%3Ccircle cx='12' cy='9' r='2' fill='%23d4af37'/%3E%3Ccircle cx='8.5' cy='15' r='2' fill='%23a78bfa'/%3E%3Ccircle cx='15.5' cy='15' r='2' fill='%23a78bfa'/%3E%3C/svg%3E">
+<meta property="og:site_name" content="SAOS · THE WEAVE">
+<meta property="og:type" content="website">
+<meta property="og:title" content="SAOS · דוחות מצב הצי · State Reports Index">
+<meta property="og:description" content="אינדקס דוחות המצב היומיים — רופא-הצי מודד את עצמו בכנות, קריאה-בלבד מהשרשרת, אפס סודות.">
+<meta property="og:url" content="https://roshpinacare-sys.github.io/Domain/reports.html">
+<meta property="og:image" content="https://roshpinacare-sys.github.io/Domain/assets/og-cover.png">
+<meta property="og:locale" content="he_IL">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="stylesheet" href="assets/site.css">
+<script src="assets/site.js" defer></script>
+<style>
+:root{
+  --bg:#09090b;--panel:#18181b;--panel2:#131316;--border:#27272a;--border2:#3f3f46;
+  --tx:#fafafa;--mut:#a1a1aa;--dim:#71717a;
+  --gold:#d4af37;--gold-dim:#8a7423;--purple:#a78bfa;--green:#22c55e;--red:#ef4444;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue","Noto Sans Hebrew",Arial,sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--tx);font-family:var(--sans);line-height:1.6;min-height:100vh;display:flex;flex-direction:column}
+.wrap{max-width:1020px;margin:0 auto;padding:0 20px;width:100%}
+a{color:var(--gold);text-decoration:none}
+a:hover{text-decoration:underline}
+.mono{font-family:var(--mono);direction:ltr;unicode-bidi:embed}
+header.nhead{border-bottom:1px solid var(--border);padding:18px 0;position:sticky;top:0;background:rgba(9,9,11,.92);backdrop-filter:blur(8px);z-index:50}
+.nhead .wrap{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.nhead h1{font-size:18px;font-weight:700}
+.nhead .sub{font-size:12px;color:var(--mut)}
+.badge{font-size:11px;color:var(--gold);border:1px solid var(--gold-dim);border-radius:999px;padding:2px 10px;white-space:nowrap}
+main{flex:1;padding:30px 0 56px}
+.lede{font-size:14.5px;color:var(--mut);line-height:1.75;margin-bottom:26px;max-width:860px}
+.lede b{color:var(--tx)}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:22px;margin-bottom:20px}
+.card h2{font-size:15px;margin-bottom:14px;color:var(--gold)}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{color:var(--dim);font-weight:400;font-size:11.5px;text-align:right;padding:6px 8px;border-bottom:1px solid var(--border2)}
+td{padding:10px 8px;border-bottom:1px dashed var(--border);vertical-align:top}
+tr:last-child td{border-bottom:none}
+.rdate{font-family:var(--mono);direction:ltr;unicode-bidi:embed;white-space:nowrap}
+.rsum{color:var(--mut);font-size:12.5px;line-height:1.7;min-width:200px}
+.rlink{white-space:normal}
+.rlink a{word-break:break-all}
+.note{font-size:12px;color:var(--dim);border-right:3px solid var(--gold-dim);padding-right:12px;margin-top:16px;line-height:1.7}
+.empty{color:var(--dim);font-size:13px}
+footer{border-top:1px solid var(--border);padding:18px 0;margin-top:auto}
+footer .wrap{font-size:12px;color:var(--dim);display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+@media(max-width:600px){ th,td{padding:8px 6px} .rsum{min-width:0} .rlink a{color:var(--purple)} }
+</style>
+</head>
+<body>
+<header class="nhead">
+  <div class="wrap">
+    <svg width="30" height="30" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5 20.5 7v10L12 21.5 3.5 17V7z" fill="none" stroke="#d4af37" stroke-width="1.6"/><path d="M12 7v3M12 11v3M12 15v3" stroke="#a78bfa" stroke-width="1.6" stroke-linecap="round"/></svg>
+    <div>
+      <h1>דוחות מצב הצי <span style="color:var(--dim);font-weight:400;font-size:13px">State Reports Index</span></h1>
+      <div class="sub">SAOS · רופא-הצי מודד את עצמו בכנות, כל יום, בלי לבקש רשות</div>
+    </div>
+    <span class="badge" style="margin-inline-start:auto">קריאה-בלבד מהשרשרת · אפס סודות</span>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+    <p class="lede">
+      כל דוח מצב נוצר על-ידי <b>רופא-הצי</b> (self-audience · 14:30 UTC יומית):
+      אבחון-עצמי <b>נטול-מפתחות</b> שקורא את השרשרת הציבורית ישירות — הון הרשת
+      (SP נטו, VP, RC), כיסוי-קהל של התוכן החי, כלכלה, פערים כנים ורכבת ה-CI.
+      הטבלה הופקה <b>מהקבצים עצמם</b> — אפס מספרים מומצאים.
+    </p>
+
+    <div class="card">
+      <h2>דוחות שפורסמו · Published reports</h2>
+      <div style="overflow-x:auto">
+        <table>
+          <thead>
+            <tr><th>תאריך</th><th>נמדד (UTC)</th><th>תקציר כן · honest one-liner</th><th>מקור</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="rdate">2026-10-02</td>
+              <td class="rdate">00:03:57</td>
+              <td class="rsum">הון הרשת יציב (הראש 4,279.3 SP נטו); כיסוי-קהל 34%; RC בריא (93.7–99) · VP של הפעילים 63.5–74 · פערים כנים + רכבת CI מתועדים בגוף הדוח.</td>
+              <td class="rlink"><a href="STATE-REPORT-20261002.md">20261002.md</a></td>
+            </tr>
+            <tr>
+              <td class="rdate">2026-10-01</td>
+              <td class="rdate">14:58:03</td>
+              <td class="rsum">הון הרשת יציב (הראש 4,279.2 SP נטו); כיסוי-קהל 35%; VP 65.5 אצל הפעילים · פערים כנים: 7 חיילים מתחת ל-20% VP (התאוששות טבעית ~20%/יום), 53 פוסטים ממתינים להצבעת-צי.</td>
+              <td class="rlink"><a href="STATE-REPORT-20261001.md">20261001.md</a></td>
+            </tr>
+            <tr>
+              <td class="rdate">2026-09-30</td>
+              <td class="rdate">14:52:51</td>
+              <td class="rsum">הון הרשת יציב (הראש 4,278.9 SP נטו); כיסוי-קהל 31%; VP 90.4–98.8 אצל הפעילים · RC 96.8–100 · 16 פוסטים ממתינים להצבעת-צי.</td>
+              <td class="rlink"><a href="STATE-REPORT-20260930.md">20260930.md</a></td>
+            </tr>
+            <tr>
+              <td class="rdate">2026-09-29</td>
+              <td class="rdate">20:17:46</td>
+              <td class="rsum">הדוח המייסד של רופא-הצי: הון הרשת נמדד חשבון-חשבון (הראש 4,278.7 SP נטו); כיסוי-קהל 29% · VP 90.8–98 אצל הפעילים · RC 98–100.</td>
+              <td class="rlink"><a href="STATE-REPORT-20260929.md">20260929.md</a></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="note">
+        דוח חדש מתפרסם מדי יום כ-<span class="mono">STATE-REPORT-YYYYMMDD.md</span> בשורש הריפו
+        (הבוט <span class="mono">self-audience.yml</span>, 14:30 UTC). האינדקס הזה נערך ידנית-כנה —
+        הרשימה המלאה והעדכנית תמיד: <a href="https://github.com/roshpinacare-sys/Domain/blob/main/README.md" rel="noopener">הריפו עצמו</a>.
+        התקצירים נגזרו משורות-הכותרת של הדוחות; המספרים המלאים — בקובץ המקור.
+      </p>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>SAOS · THE WEAVE — הרשת המאמתת. אמת אחת, דור אחד.</span>
+    <span class="mono">reports.html · Task 14-b</span>
+  </div>
+</footer>
+</body>
+</html>

@@ -1,0 +1,58 @@
+# sovereign-identity — Layer 1 of the Ultimate Sovereign Stack (ERC-8004 identity).
+# Validates every agent registration against the registration-v1 schema, derives
+# pre-mint agentIds, computes the estate identityRoot (EIP-712-ready, staged for
+# the proven Optimism anchor rail). Measurement duty -> exit 0; deduped issues.
+# Owner directive trace 1a137bf80ea09539. Ref: GOVERNANCE/sovereign-stack.md
+
+name: sovereign-identity
+
+on:
+  schedule:
+    - cron: "53 * * * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency:
+  group: sovereign-identity
+  cancel-in-progress: false
+
+jobs:
+  identity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v5
+        with: { fetch-depth: 1 }
+
+      - uses: actions/setup-node@v5
+        with: { node-version: 22 }
+
+      - name: Compute identity root (exit 0 always)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SOVEREIGN_PAT: ${{ secrets.SOVEREIGN_PAT }}
+        run: node sovereign/stack/identity/identity-root.mjs
+
+      - name: Publish (defer-not-fail, rebase-before-push, agent-scoped paths)
+        env:
+          PAT: ${{ secrets.SOVEREIGN_PAT }}
+        run: |
+          set -uo pipefail
+          git config user.name "roshpinacare-sys"
+          git config user.email "roshpinacare-sys@users.noreply.github.com"
+          if [ -n "${PAT:-}" ]; then git remote set-url origin "https://roshpinacare-sys:${PAT}@github.com/roshpinacare-sys/FleetHQ.git"; fi
+          git add sovereign/stack/identity ops/claims 2>/dev/null || true
+          if git diff --cached --quiet; then echo "no identity changes"; exit 0; fi
+          AGENTS=$(node -e "try{const r=require('./sovereign/stack/identity/identity-root.json');process.stdout.write(String(r.agentCount))}catch{process.stdout.write('?')}")
+          git commit -m "identity-root: agents=${AGENTS}" || exit 0
+          PUBLISHED=0
+          for i in 1 2 3 4 5 6 7 8; do
+            git pull --rebase --autostash origin main >/dev/null 2>&1 || true
+            if git push origin HEAD:main >/dev/null 2>&1; then PUBLISHED=1; echo "published on attempt $i"; break; fi
+            sleep $((8 + RANDOM % 11))
+          done
+          if [ "$PUBLISHED" = "1" ]; then echo "identity root published"; else echo "PUBLISH-DEFERRED: named terminal publish-deferred (book committed locally, next flight retries) — exit 0 per anti-storm law"; fi
+          exit 0

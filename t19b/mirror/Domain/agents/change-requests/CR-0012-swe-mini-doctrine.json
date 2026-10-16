@@ -1,0 +1,21 @@
+{
+  "id": "CR-0012",
+  "from": "sovereign desk (owner directive: \"תראה מה עם זה https://github.com/swe-agent/mini-swe-agent\")",
+  "tier": "B",
+  "opened_at": "2026-10-03T04:30:00Z",
+  "proposes": "Adopt the SWE-agent/mini-swe-agent minimal-agent doctrine (MIT, mirror sha 04d809c) as the estate's fourth pinned lineage: new house skill package swe-mini-operator (10th), THIRD-PARTY-NOTICES.md §6 MIT attribution, skill-library-gate v1.3.0 fourth lineage pin, evals v1.13.0 E24 strip-restore, judge v1.15.0 quad-lineage doctrine anchor, feature_list feat-015.",
+  "rationale": "Owner directive 'תראה מה עם זה' evaluated under the Authority Map. Upstream is the 100-line agent by the SWE-bench team (8,165 stars / 1,121 forks, MIT verified IN-FILE 'Copyright (c) 2025 Kilian A. Lieret and Carlos E. Jimenez', active). Its doctrine independently re-derives laws the estate already holds and adds new ones: bash-as-the-only-tool; stateless per-action execution with process-group kill on timeout; linear append-only history (trajectory == messages — the book IS the state); exceptions-as-control-flow where every exception carries its messages into the trajectory (never swallowed); hard step/cost/wall-time limits as first-class config (cost_limit=3.0 shipped as a DEFAULT); consecutive-format-error circuit breaker with billed-cost honesty; StrictUndefined templates (a missing variable is a loud error, never a silent blank); explicit machine-checkable submit signal; save-every-step checkpointing; and the AGENTS.md test law (no unasked mocking; every test targets a real point of failure) — third-party validation of the estate's ANTI-GOODHART law. Feasibility: doctrine adoption = zero cost, sovereignty-decided; the runtime's litellm model legs need paid provider keys = wallet domain; containerized environment legs (docker/podman/singularity/apptainer/bubblewrap/modal/contree) = wallet/possession, never auto-provisioned. License honesty: unlike Task 32's consult-only finding, this MIT claim is backed by the LICENSE.md file in the mirror — full pin ceremony applies.",
+  "risk": "Low. Zero upstream code copied; runtime not installed; no paid legs touched. v2 is freshly migrated upstream (README WARNING) — mitigated by sha pinning + re-verification trigger. Headline metrics (>74% SWE-bench verified, DeepSWE comparison) booked as upstream claims, not desk-verified facts.",
+  "rollback": "Delete skills/swe-mini-operator/; revert THIRD-PARTY-NOTICES.md §6; revert skill-library-gate.cjs to v1.2.0 (remove MINI_SWE_MIRROR_SHA constant, check, export, book-stamp); revert evals E24 block + version stamp to v1.12.0; revert harness-audit hasMini/docOk/docEvidence/description/stamp to v1.14.0; drop feat-015. The mirror at /home/z/reference-mirrors/mini-swe-agent is outside the estate and may remain or be deleted with no fleet effect.",
+  "verdict": "PASS — tier B (harness-wide standard change, no wallet, no credentials, no infra), judged under the Authority Map: doctrine adoption is sovereignty domain; wallet legs named and left at the line.",
+  "judged_by": "harness-audit v1.15.0 + evals v1.13.0 + skill-library-gate v1.3.0",
+  "judged_at": "2026-10-03T04:30:00Z",
+  "receipts": [
+    "mirror: /home/z/reference-mirrors/mini-swe-agent @ 04d809ceab9df28f9adaed044884180159172930 (depth-50, keyless, main HEAD 2026-09-03)",
+    "license: LICENSE.md verified in-mirror (MIT, Kilian A. Lieret and Carlos E. Jimenez) + repo API spdx_id MIT",
+    "gate: skill-library-gate.cjs v1.3.0 GREEN (10 packages, 0 offenders, four lineage pins)",
+    "evals: run-evals v1.13.0 — E24 strip-restore strip-caught=true restore-clean=true",
+    "judge: harness-audit v1.15.0 — doctrine anchor quad-lineage",
+    "notices: THIRD-PARTY-NOTICES.md §6 (MIT attribution + change-state)"
+  ]
+}

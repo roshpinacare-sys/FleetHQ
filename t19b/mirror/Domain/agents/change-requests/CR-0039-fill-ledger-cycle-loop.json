@@ -1,0 +1,37 @@
+{
+ "id": "CR-0039",
+ "from": "sovereign lane (operator directive 2026-10-03 — 'בוא ניישם תחשוב בגדול' — implement, verified achievements; Z-64 continuation of the CR-0036 grid)",
+ "tier": "B",
+ "opened_at": "2026-10-03T18:45:00Z",
+ "proposes": "LAND fleet Rung 13 — the FILL MEASUREMENT LEG + THE CLOSED CYCLE LOOP: (1) agents/fill-ledger.cjs (CR-0037): the fill_order virtual-op ledger CR-0036's rung summary ordered — DIRECTION LAW in code (in a match the OPEN order receives CURRENT_PAYS and the CURRENT order receives OPEN_PAYS, steem_evaluator.cpp semantics: ours-as-OPEN sells open_pays, ours-as-CURRENT sells current_pays; foreign fills → null; UNCLASSIFIED pairs booked honestly, never guessed into P&L), ASSET-FORM TOLERANCE (NAI @@000000013/@@000000021 and string '0.121 SBD' both resolve by nai/symbol, never by position — the run-#7 readback law generalized), µ-UNIT LAW (saos-dex kernel.ts no-float discipline: every amount an integer count of 1e-6 units; STEEM/SBD are precision-3 so 1e6 is lossless; average-cost basis on sell = round(cost*qSold/qty), the single rounding point ≤0.5µSBD), REPLAY LAW (fill-ledger-fills.jsonl is the append-only source of truth, one line per deduped fill; every run row's inventory/realized P&L DERIVED by replay — never mutated in place, saos-dex stateRoot discipline), BOUNDED WINDOW (account_history_api hard cap 100 measured -32801; backwards pagination ≤5 pages, walk stops at SINCE 2026-10-03T00:00Z), RECYCLE SUGGESTION (pure: FUNDED-SELL-SIDE ≥0.5 STEEM = CR-0036 MIN_REMAINING / FUNDED-BUY-SIDE ≥0.25 SBD = CR-0036 BUY_SBD / FILLS-N / NO-FUNDS — suggests running the executor, never places), READ-ONLY (never signs — CR-0036 market-exec remains the fleet's only market-signing surface), (2) agents/market-cycle.cjs: the THIN reflex arc — fill-ledger (eyes) → decideCycle (pure decision law) → market-exec child (hands): DRY mode runs the executor as planning receipt (zero signatures), LIVE arms ONLY when MARKET_CYCLE_LIVE=1 AND the ledger suggests; PULLED-SCHEDULE no-daemon (CR-0033 law); fresh-child separation (composer reads the ledger's last row, never writes a child's canon); eval-context off-switch (MARKET_CYCLE_SKIP_FETCH=1 books SKIPPED-EVAL-CONTEXT, zero network); (3) E30 eval — white-box: asset-form tolerance, direction law (both orientations + foreign-null + unclassified), µ-unit average-cost exact by hand-check (2 buys @0.100/0.105 then 2 sells @0.105/0.100 realize +0.0025 SBD ±2µSBD), over-inventory sell blocked, dedupeKey stable/distinct, recycle thresholds, decideCycle (SKIP/DRY/LIVE-armed/LIVE-declined) — black-box: fresh-process fill-ledger + market-cycle in eval-context book honest rows with zero network.",
+ "rationale": "CR-0036 taught the fleet to SIGN; nothing yet MEASURED. The grid's fills were invisible — realized P&L unledgered, freed capital stranded, the loop open. This CR closes it: eyes (fill_order capture, average-cost P&L) → decision (recycle suggestion + mode law) → hands (executor child, armed only per decision). The operator asked for automation that TAKES markets automatically; a reflex arc with receipts on every leg is that automation, bounded by code, no daemon, operator gate intact for LIVE.",
+ "risk": "low — fill-ledger is read-only; market-cycle is a thin composer over two receipted desks; LIVE path inherits CR-0036's full law stack (authority verify-then-sign, caps, band, ADD-ONLY, stack idempotency, fail-soft exit). Name-proximity with agents/fills-ledger.json (venture-desk's HE-side ledger, different writer + venue) booked as a findings note — distinct canons, no renumber (second-mover law).",
+ "verdict": "PASS",
+ "judged_by": "self (tier B desk landing; evals 29/29 fresh-process; live receipts on-chain)",
+ "judged_at": "2026-10-03T18:50:00Z",
+ "receipts": [
+  "evals 29/29 GREEN (agents/evals/eval-results.json, run-evals v1.17.0) — E30 white+black-box",
+  "fill-ledger run #1 (LIVE wire, read-only): 0 new fills (honest — none occurred), realized 0.000000 SBD, recycle FUNDED-SELL-SIDE 1.581 STEEM, errors 0, 2875ms",
+  "market-cycle run #1 (DRY): decision DRY → executor child run #9 DRY_RUN planned 1 / skipped 5 (book drift moved L1 out of the 0.35% stack band — idempotency law adapting to live drift), zero signatures",
+  "market-cycle run #2 (LIVE, MARKET_CYCLE_LIVE=1): suggestion FUNDED-SELL-SIDE → decision LIVE → executor run #10 broadcast 1/1 (0.377 STEEM → 0.038 SBD @ realized 0.100796) — READBACK orderid 1791052891 found + price_match TRUE; grid now 7 standing orders (6 × CR-0036 run #7 + 1 recycled)"
+ ],
+ "findings": [
+  "TENTH COLLISION (later-mover law): sibling landed its cross-layer desk as CR-0037 + feat-031 (63bb44c) and the cadence as CR-0038 + feat-032 + suite E29 (7cd10db) while this lane was in flight; this lane renumbers CR-0037->CR-0039, feat-031->feat-033, E29->E30 (their slots verified taken on origin cf038f5); the two Rung-13 landings COMPOSE — their cross-layer desk books the fee/migration/dust laws, their cadence ticks the observer 24/7, this lane closes the signed trading loop.",
+  "THE LOOP IS CLOSED AND LIVE-FIRED: first end-to-end autonomous reflex (eyes → decision → hands → on-chain receipt) with every leg booked in its own canon",
+  "defect caught in-session by hand-check discipline: applyFill BUY branch initially incremented inventory by sold (SBD) instead of received (STEEM) — caught by the µ-unit hand-computed eval fixture BEFORE any live dependency, fixed, E29 guards it forever (the eval is a runnable expectation, not a hope)",
+  "name-proximity note: agents/fill-ledger.json (this CR, Steem internal-market fills) vs agents/fills-ledger.json (venture-desk, HE fills, totalRealizedSwaphive 3.466847 / count 3) — distinct writers, distinct venues; evals' fresh-process desk spawns refresh sibling canons (expected, receipted behavior)",
+  "DRY cycle run #9 proved the executor's stack-idempotency ADAPTS to book drift: the 0.35% band released L1 after the touch moved, and the LIVE cycle re-placed it one tick tighter (0.101171 → 0.100796) — grid maintenance is now emergent, not manual",
+  "0 fills measured so far — honest: buys sit below the touch (0.0996/0.0992 vs flow 0.1000-0.10165) and sells above it; the grid EARNS when the touch traverses the ladder; the ledger now catches every traversal the moment it happens"
+ ],
+ "refs": [
+  "CR-0034",
+  "CR-0035",
+  "CR-0036",
+  "feat-030",
+  "feat-033",
+  "agents/market-exec.cjs",
+  "agents/fill-ledger.cjs",
+  "agents/market-cycle.cjs",
+  "agents/evals/run-evals.cjs (E29)"
+ ]
+}

@@ -1,12 +1,11 @@
 {
- "at": "2026-10-16T10:23:08.056Z",
- "finishedAt": "2026-10-16T10:23:19.123Z",
+ "at": "2026-10-16T09:23:08.045Z",
+ "finishedAt": "2026-10-16T09:23:22.589Z",
  "checks": {
   "boot": {
    "app": {
-    "wasUp": false,
-    "spawned": false,
-    "note": "bun install failed: error: Bun could not find a package.json file to install from\nnote: Run \"bun init\" to initialize a project\nCommand failed: bun install --frozen-lockfile\nerror: Bun could not find a package.json file t"
+    "wasUp": true,
+    "spawned": false
    },
    "foreman": {
     "wasUp": true,
@@ -14,27 +13,49 @@
    }
   },
   "security": {
-   "exit": 1,
-   "verdict": "NO-VERDICT-LINE",
-   "detail": "suite produced no verdict line — treat as RED"
+   "exit": 0,
+   "verdict": "GREEN",
+   "detail": "SECURITY-REGRESSION: ALL GREEN (80/80)"
   },
   "connectivity": {
-   "exit": 1,
-   "verdictHe": null,
-   "sha16": null
+   "exit": 0,
+   "verdictHe": "נמדדו 12 קבצי-קוד יתומים ו-3 ארטיפקטים ללא צרכן",
+   "sha16": "5edf76ab3ee30345"
   },
   "freshOracle": {
-   "exit": 1,
-   "verdict": null
+   "exit": 0,
+   "verdict": "FRESH"
   },
   "silence": {
-   "exit": 1,
-   "summary": null,
-   "alarms": null
+   "exit": 2,
+   "summary": "3 ALARM(S): port/recruit: DOWN (:3041) · beat/grid-pulse: no data (cannot prove alive) · roster: unresolved — no FLEET_ROSTER_MAP in env/estate/.env.local and no local map file; post voices unmeasurable",
+   "alarms": 3
   },
   "gitHealth": {
-   "exit": 1,
-   "repos": null
+   "exit": 0,
+   "repos": [
+    {
+     "name": "Console",
+     "attached": true,
+     "ahead": 0,
+     "behind": 0,
+     "fsck": "ok"
+    },
+    {
+     "name": "Domain",
+     "attached": true,
+     "ahead": 0,
+     "behind": 2,
+     "fsck": "ok"
+    },
+    {
+     "name": "FleetHQ",
+     "attached": true,
+     "ahead": 0,
+     "behind": 2,
+     "fsck": "ok"
+    }
+   ]
   },
   "push": {
    "ok": true,

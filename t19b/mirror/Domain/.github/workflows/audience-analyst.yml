@@ -1,0 +1,103 @@
+#
+# What it does (read-only on the chain, one committed digest per run):
+#      accounts (same roster as content-reviewer) from the last 48h via the
+#   2. Measures per post: votes, external votes (bot-filtered), external
+#      rshares, replies + external repliers, pending payout; aggregates topic
+#      resonance by primary tag; ranks top posts and topics.
+#      path consumed by the home curation layer) + a markdown digest, commits.
+#      after 3 consecutive all-zero digest days does it open an issue
+#      "audience: zero external engagement 3 days running" — a real curation
+#      signal, not a cosmetic alert.
+#
+# push, the zero-signal issue) under the declared permissions, so the tokens are
+# tokens by design).
+#
+# content-reviewer slot.
+
+name: audience-analyst
+
+on:
+  schedule:
+    - cron: '0 5 * * 5'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency:
+  group: audience-analyst
+  cancel-in-progress: false
+
+jobs:
+  digest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Checkout (keyless — same-repo only, R26 CR-0054)
+        uses: actions/checkout@v4
+        with:
+          token: ${{ github.token }}
+          fetch-depth: 1
+
+      - name: Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Measure audience engagement (48h window, keyless)
+        run: node agents/audience-analyst.mjs
+
+      - name: Publish the digest
+        if: always()
+        run: |
+          git config user.name "audience-analyst"
+          git config user.email "audience-analyst@users.noreply.github.com"
+          git add audience/latest.json audience/digest-*.json audience/digest-*.md
+          if git diff --cached --quiet; then
+            echo "digest unchanged"
+            exit 0
+          fi
+          git commit -m "audience: digest $(date -u +%Y-%m-%d) - $(node -e "const fs=require('fs');const f=fs.readdirSync('audience').filter(f=>f.startsWith('digest-2')).sort().pop();const d=JSON.parse(fs.readFileSync('audience/'+f,'utf8'));console.log(d.totals.postsMeasured+' posts · '+d.totals.externalVotes+' ext votes · '+d.totals.replies+' replies')") [skip ci]"
+          for attempt in 1 2 3; do
+            git pull --rebase origin main && git push origin HEAD:main && { echo "digest published (attempt ${attempt})"; exit 0; }
+            echo "push failed (attempt ${attempt})"
+            sleep 5
+          done
+          echo "could not publish the digest after 3 attempts"
+          exit 1
+
+      - name: Zero-signal gate (3 consecutive all-zero digest days)
+        if: always()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          LAST=$(ls audience/digest-2*.json 2>/dev/null | sort | tail -1)
+          if [ -z "$LAST" ]; then echo "no digest found"; exit 0; fi
+          node -e "
+            const fs=require('fs');
+            const d=JSON.parse(fs.readFileSync('$LAST','utf8'));
+            if (!d.zeroSignal || !d.zeroSignal.gateTripped) { console.log('gate not tripped - no issue'); process.exit(0); }
+            const days=[...(d.zeroSignal.priorZeroDays||[]), d.day].join(', ');
+            const body=[
+              'audience-analyst measured **zero external engagement** (external votes AND replies, bot-filtered) on community-account public content for '+d.zeroSignal.gateDays+' consecutive digest days: '+days+'.','',
+              '- posts measured on the last digest: '+d.totals.postsMeasured+' (48h window)',
+              '- this is a measured curation signal: topics and formats are not reaching an outside audience','',
+              'Full numbers: '+ '$LAST' +' in this repo (topics + top posts tables).'
+            ].join('\n');
+            fs.writeFileSync('/tmp/issue.json', JSON.stringify({title:'audience: zero external engagement 3 days running',body,labels:['curation-signal']}));
+            console.log('gate tripped: zero external engagement '+d.zeroSignal.gateDays+' days running');
+            process.exit(0);
+          "
+          if [ ! -s /tmp/issue.json ]; then echo "no issue needed"; exit 0; fi
+          for TOKEN in "$GH_TOKEN" "$ZIP_PAT"; do
+            [ -n "$TOKEN" ] || continue
+            CODE=$(curl -s -o /tmp/issue-res.json -w '%{http_code}' -X POST \
+              -H "Authorization: Bearer $TOKEN" -H "Accept: application/vnd.github+json" \
+              "https://api.github.com/repos/${GITHUB_REPOSITORY}/issues" \
+              --data-binary @/tmp/issue.json)
+            if [ "$CODE" = "201" ]; then echo "issue opened"; exit 0; fi
+            echo "issue attempt failed (HTTP ${CODE})"
+          done
+          echo "could not open the issue with either token - recorded honestly here"
+          exit 0

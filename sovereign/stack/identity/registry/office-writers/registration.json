@@ -1,0 +1,21 @@
+{
+  "type": "https://eips.ethereum.org/EIPS/eip-8004#registration-v1",
+  "name": "office-writers",
+  "description": "The estate's operator-facing window: worldbeat + office-pulse + fleet-heartbeat + weave-mirror writers keeping office/data.json alive (~4min beat, ALIVE verdict measured) after the structural un-starving of 2026-10-13.",
+  "services": [
+    { "name": "web", "endpoint": "https://roshpinacare-sys.github.io/Domain/office/data.json" },
+    { "name": "A2A", "endpoint": "https://github.com/roshpinacare-sys/Domain/blob/main/office/data.json", "version": "OFFICE/1" }
+  ],
+  "x402Support": false,
+  "active": true,
+  "agentRegistry": "eip155:10:staged-deployment",
+  "deploymentStatus": "staged",
+  "capabilities": ["office-window", "publish-pages", "measurement"],
+  "policyRef": "sovereign/stack/policy/policy.json#autonomy",
+  "runtimeRef": "github://roshpinacare-sys/Domain/.github/workflows/office-pulse.yml",
+  "ownerOfRecord": "roshpinacare-sys",
+  "trustAnchors": [
+    "office/data.json generatedAt 23:05:39Z verdict AGING->ALIVE (2026-10-13)",
+    "free-flow verified: multi-writer commits every 20-40s, zero conflicts (23:27Z)"
+  ]
+}

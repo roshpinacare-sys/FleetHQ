@@ -1,0 +1,99 @@
+#
+#
+#
+
+name: weave-heart
+
+on:
+  schedule:
+    - cron: '29 16 * * *'
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'heartbeat mode — auto: judge from the ledger/git freshness; force-beat: always take over and beat'
+        required: false
+        default: 'auto'
+        type: choice
+        options:
+          - auto
+          - force-beat
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: weave-heart-domain-twin
+  cancel-in-progress: false
+
+jobs:
+  heartbeat:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout the sovereign home
+        uses: actions/checkout@v4
+        with:
+          repository: roshpinacare-sys/Zip
+          token: ${{ secrets.ZIP_PAT }}
+          fetch-depth: 1
+
+      - name: Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install deps
+        run: bun install --frozen-lockfile --no-save 2>/dev/null || bun install --no-save
+
+      - name: Prisma client + DB skeleton
+        run: bunx prisma generate && bunx prisma db push
+        env:
+          DATABASE_URL: 'file:${{ github.workspace }}/db/custom.db'
+
+      - name: Refuse honestly while the seal passphrase awaits the operator
+        env:
+          SEAL_PP: ${{ secrets.WEAVE_SEAL_PASSPHRASE || secrets.MAIN_KEY }}
+        run: |
+          if [ -z "$SEAL_PP" ]; then
+            echo "Neither WEAVE_SEAL_PASSPHRASE nor MAIN_KEY is set in this repository's vault"
+            echo "(Settings > Secrets and variables > Actions). The canonical name is preferred;"
+            echo "MAIN_KEY is the operator's delivered alias (2026-09-21, both accepted)."
+            echo "The heartbeat cannot even verify the ledger without opening the seal (the network key signs"
+            echo "every checkpoint) — nothing it could do would be real. The machine refuses honestly,"
+            echo "without touching anything, until the operator delivers the passphrase."
+            echo "Cloud copy of the secret: the private Zip vault (unreadable by API). Local copy: the"
+            echo "operator's personal vault or 'cat .env.local' on a live sandbox. See README - the machine twin."
+            exit 1
+          fi
+
+      - name: Sovereign beat (verify, or take over if the ledger is stale)
+        run: bun scripts/weave-beat.ts
+        env:
+          DATABASE_URL: 'file:${{ github.workspace }}/db/custom.db'
+          WEAVE_SEAL_PASSPHRASE: ${{ secrets.WEAVE_SEAL_PASSPHRASE || secrets.MAIN_KEY }}
+          WEAVE_FORCE_BEAT: ${{ inputs.mode == 'force-beat' && '1' || '0' }}
+          WEAVE_STALE_MIN: '1560'
+          GITHUB_TOKEN: ${{ github.token }}
+          WEAVE_OPS_PAT: ${{ secrets.WEAVE_OPS_PAT }}
+          WEAVE_STEEM_WIF: ${{ secrets.WEAVE_STEEM_WIF }}
+          WEAVE_STEEM_ACCOUNT: cashmachine
+
+      - name: Upload beat report (evidence)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: weave-beat-report-domain-twin
+          path: sovereign/beat-report.json
+          retention-days: 30
+          if-no-files-found: ignore
+
+      - name: Dispatch anchor lines (schedule backstop)
+        if: always()
+        run: |
+          set -e
+          echo "[twin-heart] משגר את קווי העיגון בעקבות הפעימה (backstop)…"
+          gh workflow run weave-anchor-lines.yml --repo roshpinacare-sys/Domain --ref main
+          echo "[twin-heart] הקווים שוגרו כרצף אחד — הקדנס: פעימה ⇒ Steem/Hive ⇒ ZERO ⇒ דחיפה"
+        env:
+          GH_TOKEN: ${{ github.token }}

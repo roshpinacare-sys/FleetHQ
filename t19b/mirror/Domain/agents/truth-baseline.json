@@ -1,0 +1,17 @@
+{
+  "what": "r145-c truth baseline — snapshot of the canonical truth endpoints, taken locally where they live (the home sandbox serves them). Used by truth-fix.cjs ONLY when the live TRUTH_URL is unreachable (e.g. CI): a fix then labels its values with this file and timestamp instead of faking freshness. No secrets here.",
+  "takenAt": "2026-10-02T00:05:00Z",
+  "sources": {
+    "mission": "GET /api/mission → measured.usdPerDay7dAvg (mission book: sovereign/income/daily-*.json)",
+    "pnl": "GET /api/economy/pnl?snapshot=0 → realized (FIFO over real fill_order ops, chain-indexed)"
+  },
+  "measured": {
+    "usdPerDay7dAvg": 0.00412,
+    "realizedSbd": -1.118787,
+    "realizedUsd": -0.7203,
+    "trips": 65,
+    "fillsTotal": 73,
+    "fleetTotalSp": 4616,
+    "vpReadyOf11": 4
+  }
+}
