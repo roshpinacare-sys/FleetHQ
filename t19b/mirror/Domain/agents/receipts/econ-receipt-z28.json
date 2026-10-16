@@ -1,0 +1,42 @@
+{
+ "at": "2026-10-01T21:17:11.190Z",
+ "agent": "econ-ops3",
+ "chain": "hive",
+ "executor": "headcorner",
+ "signer": "@hiveio/hive-js (R-ECON-3)",
+ "moves": [
+  {
+   "move": "powerup",
+   "signed": false,
+   "error": "Assert Exception:a.get_hive_balance() >= -delta: Account headcorner does not have sufficient funds for balance"
+  },
+  {
+   "move": "hive-deposit",
+   "to": "hiveswap",
+   "amount": "0.310 HIVE",
+   "signed": true,
+   "verified": true,
+   "block": 110403804,
+   "trx": "875404ff2d16f418bd8a86b5cffa6d4e6503e3c1"
+  },
+  {
+   "move": "he-buy",
+   "signed": false,
+   "error": "SWAP.HIVE credit not confirmed (got 0.00000002)"
+  }
+ ],
+ "authority": {
+  "verified": true,
+  "livePub": "STM8c9v\u2026"
+ },
+ "balanceBeforeHive": 0.344,
+ "swapHiveAfterDeposit": "0.00000002",
+ "balanceAfterHive": 0.034,
+ "hpAfter": "34718.849155 VESTS",
+ "summary": {
+  "signedMoves": 1,
+  "verifiedMoves": 1,
+  "ms": 50237
+ },
+ "note": "Z-28 first real active-authority executions on hive. R-ECON-1: compressed hive WIF cannot sign via steem-family libs (33-byte quirk) \u2014 root-caused; hive-js + wif51 (mod-N reduced, memory-only) is the proven signer. R-ECON-2: read-back must match op CONTENT, not type. powerup verified via HP delta 33110->34718 VESTS + balance delta; deposit content-verified; SWAP.HIVE wrapper credit pending at record time \u2014 econ-desk.cjs polls and executes the buy when credited."
+}

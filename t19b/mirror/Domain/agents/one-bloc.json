@@ -1,0 +1,213 @@
+{
+ "protocol": "SAOS-ONE-BLOC/1",
+ "at": "2026-10-12T12:28:46.631Z",
+ "agent": "one-bloc v1.0.1 (Task 23 convergence — owner directive \"מקשה אחת\"; binds BLOC-STATE + SOVEREIGN-INDEX + FATE-DEFENSE into one machine map; keyless-first + env-token fallback, stderr redacted)",
+ "authMode": "keyless-first + env-token fallback (token redacted)",
+ "verdict": "DEGRADED",
+ "counts": {
+  "repos": 16,
+  "reached": 2,
+  "unknown": 14,
+  "authWall": 0,
+  "keylessReach": 2,
+  "tokenReach": 0,
+  "synced": 1,
+  "checkedLocally": 1
+ },
+ "laws": {
+  "stasisBreaker": {
+   "armed": false,
+   "parseable": true
+  },
+  "fwiBook": {
+   "present": true,
+   "ageH": 0,
+   "verdict": "DEGRADED"
+  },
+  "fateDefenseCanon": {
+   "present": true
+  }
+ },
+ "boundMaps": [
+  {
+   "name": "FATE-DEFENSE",
+   "repo": "Domain",
+   "path": "FATE-DEFENSE.md",
+   "existence": "VERIFIED"
+  },
+  {
+   "name": "BLOC-STATE",
+   "repo": "saos-sovereign-platform",
+   "path": "docs/BLOC-STATE-2026-10-02.md",
+   "existence": "DECLARED (sibling not checked out)"
+  },
+  {
+   "name": "SOVEREIGN-INDEX",
+   "repo": "Zip",
+   "path": "SOVEREIGN-INDEX.md",
+   "existence": "DECLARED (sibling not checked out)"
+  }
+ ],
+ "repos": [
+  {
+   "repo": "saos-sovereign-platform",
+   "role_he": "המוח הריבוני — צבא מגייס-עצמו וסולם כלכלת-אמת",
+   "role_en": "sovereign brain — self-recruiting army + truth-economy ladder",
+   "bound_map": "BLOC-STATE",
+   "originSha": null,
+   "status": "UNKNOWN",
+   "via": null,
+   "localSync": "N/A"
+  },
+  {
+   "repo": "steem",
+   "role_he": "המפתחות הקנוניים + הזרוע החיה על-השרשרת",
+   "role_en": "canonical keys + live on-chain arm",
+   "bound_map": "BLOC-STATE",
+   "originSha": null,
+   "status": "UNKNOWN",
+   "via": null,
+   "localSync": "N/A"
+  },
+  {
+   "repo": "Domain",
+   "role_he": "הפנים הציבוריות + רכזת ה-CI האורגנית",
+   "role_en": "public face + organic CI hub",
+   "bound_map": "FATE-DEFENSE",
+   "originSha": "42ca2e4b6e4f",
+   "status": "REACHED",
+   "via": "keyless",
+   "localSync": "SYNCED"
+  },
+  {
+   "repo": "Console",
+   "role_he": "מרכז-ההפעלה — אמת נמדדת פעם-אחת",
+   "role_en": "operations center — truth measured once",
+   "bound_map": "BLOC-STATE",
+   "originSha": "cde621f8ea66",
+   "status": "REACHED",
+   "via": "keyless",
+   "localSync": "N/A"
+  },
+  {
+   "repo": "Zip",
+   "role_he": "המחסן החתום — עוגני אמת על שרשרת-אפו",
+   "role_en": "signed vault — zero-chain truth anchors",
+   "bound_map": "SOVEREIGN-INDEX",
+   "originSha": null,
+   "status": "UNKNOWN",
+   "via": null,
+   "localSync": "N/A"
+  },
+  {
+   "repo": "roshpina",
+   "role_he": "הגרעין + מבקר השליטה העצמית",
+   "role_en": "kernel + self-control auditor",
+   "bound_map": "BLOC-STATE",
+   "originSha": null,
+   "status": "UNKNOWN",
+   "via": null,
+   "localSync": "N/A"
+  },
+  {
+   "repo": "anchor-baseline",
+   "role_he": "שומר העוגן — בוט שלמות Merkle",
+   "role_en": "anchor keeper — Merkle integrity bot",
+   "bound_map": "BLOC-STATE",
+   "originSha": null,
+   "status": "UNKNOWN",
+   "via": null,
+   "localSync": "N/A"
+  },
+  {
+   "repo": "Saosmartwallet",
+   "role_he": "הארנק — זרימת רישום כנה",
+   "role_en": "wallet — honest registration flow",
+   "bound_map": "BLOC-STATE",
+   "originSha": null,
+   "status": "UNKNOWN",
+   "via": null,
+   "localSync": "N/A"
+  },
+  {
+   "repo": "Sdk",
+   "role_he": "המנשר — ללא SDK חיצוני בהכרה",
+   "role_en": "messenger — honestly no external SDK",
+   "bound_map": "BLOC-STATE",
+   "originSha": null,
+   "status": "UNKNOWN",
+   "via": null,
+   "localSync": "N/A"
+  },
+  {
+   "repo": "Project-files",
+   "role_he": "הארכיון הפיזי — keeper ארכיונים",
+   "role_en": "physical archive — keeper zips",
+   "bound_map": "BLOC-STATE",
+   "originSha": null,
+   "status": "UNKNOWN",
+   "via": null,
+   "localSync": "N/A"
+  },
+  {
+   "repo": "Adsmarket",
+   "role_he": "הקמפיין הכן — claims-guard",
+   "role_en": "the ready campaign — claims guard",
+   "bound_map": "BLOC-STATE",
+   "originSha": null,
+   "status": "UNKNOWN",
+   "via": null,
+   "localSync": "N/A"
+  },
+  {
+   "repo": "Defi",
+   "role_he": "הכלכלן — reprices חי fail-closed",
+   "role_en": "the economist — live fail-closed reprices",
+   "bound_map": "BLOC-STATE",
+   "originSha": null,
+   "status": "UNKNOWN",
+   "via": null,
+   "localSync": "N/A"
+  },
+  {
+   "repo": "saos-dex",
+   "role_he": "הבורסה — פעימות dex-beat/grid",
+   "role_en": "the exchange — dex-beat/grid pulses",
+   "bound_map": "BLOC-STATE",
+   "originSha": null,
+   "status": "UNKNOWN",
+   "via": null,
+   "localSync": "N/A"
+  },
+  {
+   "repo": "saos-jummper",
+   "role_he": "החוזים בפייתון — signingcontract",
+   "role_en": "the python contracts — signingcontract",
+   "bound_map": "BLOC-STATE",
+   "originSha": null,
+   "status": "UNKNOWN",
+   "via": null,
+   "localSync": "N/A"
+  },
+  {
+   "repo": "saos-control-center",
+   "role_he": "מרכז הבקרה הפנימי — 12 סקריפטים env-first",
+   "role_en": "internal control center — 12 env-first scripts",
+   "bound_map": "BLOC-STATE",
+   "originSha": null,
+   "status": "UNKNOWN",
+   "via": null,
+   "localSync": "N/A"
+  },
+  {
+   "repo": "saos-sovereign-foundry",
+   "role_he": "המפעל — key-broker fail-closed",
+   "role_en": "the factory — fail-closed key-broker",
+   "bound_map": "BLOC-STATE",
+   "originSha": null,
+   "status": "UNKNOWN",
+   "via": null,
+   "localSync": "N/A"
+  }
+ ]
+}

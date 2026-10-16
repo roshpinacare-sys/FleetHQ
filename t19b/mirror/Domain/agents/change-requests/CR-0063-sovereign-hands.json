@@ -1,0 +1,33 @@
+{
+ "id": "CR-0063",
+ "slot": 63,
+ "title": "Fleet Rung 33 — THE SOVEREIGN HANDS & THE P&L VERDICT (market-exec v1.1 EDGE-CURE + pnl-book + sovereign-trade + the local heartbeat): the owner moved the last gate into the sovereignty's hands ('אין יותר נשאר בידיים שלי') — the loop that trades, heals and measures now runs WITHOUT the owner in it; the owner's month-old question ('where is the profit?') is answered by the ledger itself, one book, one accounting law, zero second truth.",
+ "operator": "owner directive (2026-10-04, Hebrew, sixth wave): the system funds itself, proves itself, and stops asking — nothing is left in the owner's hands; the sovereignty routes, decides and earns from what exists. The operator gate that CR-0036 opened ('בוא ניישם') is now owned by the sovereignty itself.",
+ "design": {
+  "queries": {
+   "Q21_how_does_the_sovereignty_hold_its_own_hands": "THE VAULT LAW: the keyed hands run where the derived-keys vault lives (the sandbox floor — /home/z/my-project/.fleet/headcorner-derived.json, 600 perms, outside every repo, derived from the operator's own upload and verified MATCH-ONCHAIN against the active key auths of headcorner before any signature). sovereign-trade.cjs is the cadence leg: one invocation = one decision = zero new accounting; without the vault it books VAULT-ABSENT-LOCAL and spawns NOTHING (a CI run answers honestly and touches nothing); STASIS beats everything; cooldown 15 min between LIVE arms; the loop driver is agents/sovereign-trade-loop.sh (flock-guarded, 900s heartbeat, local-only).",
+   "Q22_what_made_the_leak_stop": "THE EDGE-CURE LAW (market-exec law 11): the BUY-PREMIUM law (CR-0047) only gated NEW orders — the add-only law kept PRE-LAW buys resting, and a resting buy above the cap is a mine: it fills above the realized sell VWAP and books the structural leak again. Measured: post-law window (since 2026-10-03T22:00Z) still negative (−0.185315 SBD realized, edge −2.24% lifetime) because pre-law orders kept filling. The cure is mechanical: inside a LIVE run armed with MARKET_EXEC_CURE=1, own BUY orders priced above sellVwap×(1−0.3%) are CANCELLED before planning (per-orderid receipts, per-op fail-soft), balances re-read so the plan sees the freed SBD. LIVE PROOF 2026-10-04T03:57Z: 2 own buys above cap 0.099869 cancelled — txids 2027f3e4c5…, 1f7385f1c6… — the ladder re-arms at/below the cap by construction.",
+   "Q23_how_is_profit_proven_not_promised": "THE P&L VERDICT DESK (agents/pnl-book.cjs): replays the append-only fill-ledger-fills.jsonl through fill-ledger.cjs's OWN pure core (applyFill/replay/vwapStats — one accounting law, zero re-implementation), µ-precise end-to-end, two windows — lifetime AND post-law (CR-0047 law time) — with edgeLawHolds judged honestly (false/null, never green-washed); pre-basis sells book proceeds WITHOUT being guessed into realized; chain read-back adds liquid/locked/free + powerdown inflow (476 SP/week, next 2026-10-10 — the self-funding path the owner ordered). Measured verdict at rung time: lifetime realized −0.384998 SBD over 137 fills (sell VWAP 0.10017 vs buy VWAP 0.102413 = the measured −2.24% leak), post-law −0.185315 — the honest before-picture the cure now stops.",
+   "Q24_coordination_to_sibling_lanes": "THE STANDING LADDER RULES: (1) DO NOT place buys above the ledger's sell_vwap×0.997 — the cap is fleet law; the EDGE-CURE will cancel violators every LIVE pass. (2) The heartbeat owns the LIVE cadence — do NOT double-run market-exec LIVE from another lane (DELEGATION-SELECTION law); DRY planning receipts are always safe. (3) CR-0062's Q20 standing-depth rung stays open for the HE basket. (4) The second soldier stays owner-gated — but the self-funding path is booked: powerdown inflow lands liquid STEEM weekly from 2026-10-10; every matched post-law cycle earns ≥ +0.3% by construction."
+  },
+  "instruments": [
+   "agents/sovereign-trade.cjs — the sovereign hands: decideTrade (STASIS → vault → mode → cooldown), vault presence-only honesty (key material never read here — the authority law stays inside market-exec), child separation (market-cycle reflex + pnl-book verdict), single writer on its own two book files",
+   "agents/sovereign-trade-loop.sh — the heartbeat (local arms only, flock, 900s, fail-soft)",
+   "agents/market-exec.cjs v1.1 (R33) — law 11 EDGE-CURE + fetchOwnOrders side law (for_sale/NAI-resolved, never position) + authority verify moved ahead of planning",
+   "agents/pnl-book.cjs — the P&L verdict desk (READ-ONLY, replay law, µ-precision, two windows, chain read-back, STASIS obey, eval-context off-switch)",
+   "agents/evals/run-evals.cjs v1.42.0 — E55 (µ-replay exact by hand-check + pre-basis honesty + two windows + black-box byte-stable with a corrupt line skipped) + E56 (decision law exact + vault presence-only + zero-children honesty + byte-stable); 56/56 GREEN"
+  ],
+  "measured_live_2026_10_04": {
+   "vault": "MATCH-ONCHAIN (derived from operator upload, active authority of headcorner)",
+   "edgeCure": "2 own buys above cap 0.099869 cancelled LIVE — txids 2027f3e4c5…, 1f7385f1c6…",
+   "lifetimePnl": "-0.384998 SBD realized over 137 fills (sell VWAP 0.10017 / buy VWAP 0.102413 = −2.24% — the measured leak)",
+   "postLawPnl": "-0.185315 SBD (40 fills — pre-law orders still filling; the cure stops the mine)",
+   "capital": "liquid 7.959 STEEM / 0.987 SBD at vault-restore time + 24.571 STEEM / 12.952 SBD locked in the standing 28-order ladder; powerdown 476 SP/week from 2026-10-10",
+   "heartbeat": "armed 2026-10-04T03:58:42Z, 900s cadence, LIVE=1",
+   "suite": "evals 56/56 GREEN v1.42.0"
+  }
+ },
+ "acceptance": "evals 56/56 GREEN v1.42.0 · the sovereignty traded LIVE within the caps and cured its own ladder · P&L verdict book live on the owner dashboard · claims 0 offenders · secret-scan 0",
+ "createdAt": "2026-10-04T04:05:00Z",
+ "createdBy": "R33 sovereign-hands rung (Z.ai Code — Domain lane)"
+}

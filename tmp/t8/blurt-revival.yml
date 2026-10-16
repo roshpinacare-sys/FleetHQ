@@ -1,0 +1,71 @@
+# blurt-revival — P0-5 (master plan T7)
+# Ends the "ONE live endpoint" concentration and re-opens the BLURT rail.
+# hourly: health probe of all nodes + receipt commit (keyless)
+# dry:    key-fit + byte-law proof with CI_ADOPT_WIF_POSTING / CI_BLURT_POSTING_WIF (no broadcast)
+# post:   ONLY when CI_BLURT_ENABLED === "true" (owner DecisionQueue: GEN-2 rotation first)
+name: blurt-revival
+on:
+  schedule:
+    - cron: '19 */2 * * *'
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'health | dry | post'
+        default: 'health'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: blurt-revival
+  cancel-in-progress: false
+
+jobs:
+  revive:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 1 }
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - name: Install deps (pure-JS crypto only)
+        run: npm install --no-audit --no-fund
+      - name: BLURT health probe (keyless)
+        if: ${{ github.event.inputs.mode != 'dry' && github.event.inputs.mode != 'post' }}
+        run: node scripts/blurt-connector.mjs health | tee blurt-receipt.json
+      - name: Vault-drip (posting WIF from git vault - runner-only, masked, wiped)
+        env:
+          GH_PAT: ${{ secrets.GH_PAT }}
+        run: |
+          set -euo pipefail
+          rm -rf /tmp/engine
+          git clone --depth 1 --branch saos-cockpit "https://x-access-token:${GH_PAT}@github.com/roshpinacare-sys/steem.git" /tmp/engine
+          WIF=$(node scripts/vault-drip.mjs "${BLURT_ACCOUNT:-headcorner}" /tmp/engine)
+          if [ -z "$WIF" ]; then echo "VAULT-DRIP-EMPTY"; exit 1; fi
+          echo "::add-mask::$WIF"
+          echo "CI_BLURT_POSTING_WIF=$WIF" >> "$GITHUB_ENV"
+          rm -rf /tmp/engine
+
+      - name: BLURT dry — key-fit + byte-law (no broadcast)
+        if: ${{ github.event.inputs.mode == 'dry' }}
+        env:
+          CI_ADOPT_WIF_POSTING: ${{ secrets.CI_ADOPT_WIF_POSTING }}  # fallback only - vault-drip is primary
+          BLURT_ACCOUNT: headcorner
+        run: node scripts/blurt-connector.mjs dry | tee blurt-receipt.json
+      - name: BLURT post — double-gated
+        if: ${{ github.event.inputs.mode == 'post' }}
+        env:
+          CI_ADOPT_WIF_POSTING: ${{ secrets.CI_ADOPT_WIF_POSTING }}  # fallback only - vault-drip is primary
+          CI_BLURT_ENABLED: ${{ secrets.CI_BLURT_ENABLED }}
+          BLURT_ACCOUNT: headcorner
+        run: node scripts/blurt-connector.mjs post | tee blurt-receipt.json
+      - name: Commit receipt
+        if: always()
+        run: |
+          git config user.name "blurt-revival[bot]"
+          git config user.email "bot@roshpinacare-sys.local"
+          mkdir -p learning/blurt
+          cp blurt-receipt.json "learning/blurt/revival-$(date -u +%Y%m%dT%H%M%SZ).json" 2>/dev/null || true
+          git add learning/blurt 2>/dev/null || true
+          git commit -m "blurt-revival: receipt $(date -u +%FT%TZ) [skip ci]" || echo "nothing to commit"
+          git push || echo "push skipped"

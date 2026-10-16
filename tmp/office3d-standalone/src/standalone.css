@@ -1,0 +1,55 @@
+@import "tailwindcss" source(none);
+@source "./main.tsx";
+@source "../../../src/components/hq";
+@source "../../../src/lib/hq";
+
+/* ── משטר-הצבע של המשרד החי (חוק אור-היום) — זהה לסנדבוקס ── */
+:root {
+  --surface: #f2ecdf;
+  --surface-2: #fffaf0;
+  --ink: #2a2520;
+  --ink-2: #5d5548;
+  --ink-3: #8a8172;
+  --line: #e3dac7;
+  --line-strong: #cfc4ac;
+  --accent: #b4691e;
+  --accent-dim: rgba(180, 105, 30, 0.14);
+  --st-working: #d946ef;
+  --st-ok: #10b981;
+  --st-attention: #f59e0b;
+  --st-danger: #fb7185;
+  --st-neutral: #8a8f98;
+  --st-info: #14b8a6;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--surface);
+  font-family: system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+}
+
+.sl-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 9999px;
+  flex: none;
+}
+
+.sl-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  border-radius: 9999px;
+  padding: 0.3rem 0.7rem;
+  cursor: pointer;
+  user-select: none;
+  text-decoration: none;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+* { scrollbar-width: thin; scrollbar-color: var(--line-strong) transparent; }
+*::-webkit-scrollbar { width: 8px; height: 8px; }
+*::-webkit-scrollbar-thumb { background: var(--line-strong); border-radius: 8px; }
+*::-webkit-scrollbar-track { background: transparent; }

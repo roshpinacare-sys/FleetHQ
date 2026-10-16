@@ -1,0 +1,26 @@
+{
+  "sig": "cf8a9599",
+  "kind": "fill-reject",
+  "ref": "order@?",
+  "reasons": [
+    "pair-whitelist: base \"USDS\" not allowed",
+    "pair-whitelist: quote \"SAOS\" not allowed"
+  ],
+  "firstSeenAt": "2026-10-14T01:45:11.319Z",
+  "lastSeenAt": "2026-10-14T01:45:11.319Z",
+  "status": "resolved",
+  "runUrl": "https://github.com/roshpinacare-sys/FleetHQ/actions/runs/38497378052",
+  "escalatedAt": "2026-10-14T01:50:18.881Z",
+  "lastAction": {
+    "action": "escalate",
+    "reason": "unknown claim shape",
+    "at": "2026-10-14T01:50:18.881Z",
+    "runUrl": "https://github.com/roshpinacare-sys/FleetHQ/actions/runs/38497835063"
+  },
+  "resolvedAt": "2026-10-14T02:05:00Z",
+  "resolveEvidence": {
+    "note": "the rejected shape (base=USDS quote=SAOS) was an ORIENTATION artifact — the market SAOS/USDS is whitelisted; policy amended to orientation-neutral (engine selftest: inverted PASS, foreign REJECT); the gate did its job — refuse-then-escalate, no silent pass",
+    "runUrl": "https://github.com/roshpinacare-sys/FleetHQ/actions/runs/38497378052"
+  },
+  "issueClosed": "2026-10-14T01:56:56.703Z"
+}

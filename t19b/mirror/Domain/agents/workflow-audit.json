@@ -1,0 +1,43 @@
+{
+ "at": "2026-10-12T12:27:44.729Z",
+ "agent": "workflow-audit",
+ "count": {
+  "domain": 74,
+  "console": 0
+ },
+ "twins": [
+  {
+   "repo": "Domain",
+   "signature": "agents/STASIS.js",
+   "files": [
+    "economy-engine.yml",
+    "ladder-refresh.yml"
+   ]
+  },
+  {
+   "repo": "Domain",
+   "signature": "agents/office-pulse.cjs",
+   "files": [
+    "office-pulse-twin.yml",
+    "office-pulse.yml"
+   ]
+  }
+ ],
+ "crossRepoDupes": [],
+ "plan": [
+  {
+   "keep": "economy-engine.yml",
+   "tombstone": [
+    "ladder-refresh.yml"
+   ],
+   "action": "set on: workflow_dispatch only (or delete if no history), after one green manual run"
+  },
+  {
+   "keep": "office-pulse-twin.yml",
+   "tombstone": [
+    "office-pulse.yml"
+   ],
+   "action": "set on: workflow_dispatch only (or delete if no history), after one green manual run"
+  }
+ ]
+}

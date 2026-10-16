@@ -1,0 +1,60 @@
+# OFFICE-ARTERY (R-ARTERY/1) — the sovereign office, git-backed heartbeat.
+#
+# Owner directive 2026-10-11 (trace 1a1…67d9): the office must serve the
+# network, improve itself, ALWAYS work, and surface on the marketing page (office first).
+#
+# Why: the office died with the sandbox/gateway (last journal event 2026-10-09 04:02Z,
+# "unparseable reply" loop). The fleet's cure-law: THE AUTONOMY LIVES IN GIT.
+# This artery runs the office's deterministic keyless scout shift every 2h on FREE
+# public minutes, keeps its books/journal/economy alive, and publishes agents/office-live.json —
+# the office truth feed for the Domain page (office-first section).
+#
+# Laws: STASIS-safe (zero capital lanes — measurement only) · honest-fail (missing =
+# UNKNOWN, never invented) · exit 0 fail-soft · append-only journal.
+
+name: office-artery
+
+on:
+  schedule:
+    - cron: '37 */2 * * *'
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: office-artery
+  cancel-in-progress: false
+
+jobs:
+  shift:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Checkout (the office lives in git)
+        uses: actions/checkout@v4
+
+      - name: Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Office shift (deterministic · keyless · STASIS-safe)
+        run: node agents/office-artery.mjs
+
+      - name: Commit books back (flip the flag, never delete history)
+        run: |
+          git config user.name  "office-artery"
+          git config user.email "office-artery@users.noreply.github.com"
+          git add agents/office-memory.json agents/office-events.jsonl agents/office-live.json
+          if git diff --cached --quiet; then
+            echo "no book changes — nothing to commit"
+          else
+            git commit -m "office-artery: shift $(date -u +%Y-%m-%dT%H:%M:%SZ) [skip ci]"
+            for i in 1 2 3; do
+              if git pull --rebase --autostash origin main && git push; then
+                echo "pushed (attempt $i)"; break
+              fi
+              echo "push race (attempt $i) — rebasing again"; sleep $((i * 5))
+            done
+          fi

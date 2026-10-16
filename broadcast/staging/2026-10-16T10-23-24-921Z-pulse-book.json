@@ -1,0 +1,26 @@
+{
+  "at": "2026-10-16T10:23:24.921Z",
+  "actor": "post-batcher",
+  "kind": "ledger.post.draft",
+  "schema": "broadcast-pkg/v1",
+  "book": {
+    "id": "pulse-book",
+    "file": "agents/pulse-book.json",
+    "title": "Pulse Book — the office heartbeat"
+  },
+  "refs": {
+    "task": "t6",
+    "book": "agents/pulse-book.json",
+    "lineage_root": null
+  },
+  "amounts": {
+    "USDS": 0
+  },
+  "body_compact": null,
+  "chars": null,
+  "signed": false,
+  "broadcast": false,
+  "status": "HELD",
+  "hold_reason": "compaction.py failed on this book",
+  "note": "staged only — dispatch requires the dryrun-sign gate and explicit owner release; no keys were touched by the batcher"
+}

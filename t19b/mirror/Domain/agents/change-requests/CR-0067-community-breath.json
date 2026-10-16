@@ -1,0 +1,41 @@
+{
+ "id": "CR-0067",
+ "slot": 67,
+ "title": "Fleet Rung 37 — THE COMMUNITY BREATH: the fleet's life moves inside its own house. Soldier posts land INSIDE The Clubhouse (hive-177702 as first tag), joining is its own staggered human lane (subscribe in persona windows, budget 1 per soldier, read-back truth), and the house's RC grows toward the 50 SP law target through a floor-protected chain-truth top-up desk that waits honestly for the powerdown reclaim.",
+ "operator": "owner directive (2026-10-04, Hebrew): 'בנתיים אנחנו עובדים רק עם עצמנו' + the R36 booked rung 'חיבור הקהילה לקצב-האנושי (subscribe של 11 החיילים + פוסטים-אל-תוך-הקהילה מהספרייה ב-CI), הצבעות-פנים על פוסטי-הקהילה בחלונות-אישיים, הרחבת ה-RC של הקהילה מה-reclaim של ה-powerdown'.",
+ "design": {
+  "measured_ground_truth": {
+   "subscribe_op": "hive-153176 subscriber furqanashraf read live (2026-10-04): custom_json id='community', required_auths [], required_posting_auths [account], json [\"subscribe\",{\"community\":\"hive-153176\"}] — posting-key signature only. Byte-matched in code.",
+   "readback_surface": "bridge.list_subscribers returns ARRAY rows [account, role, title, joined] — not objects. hive-177702 measured 0 subscribers (setRole ≠ subscribe) — the join wave is real work, not bookkeeping.",
+   "units_law": "account.to_withdraw / withdrawn are GESTS-scale (micro-vests): headcorner to_withdraw 3.070814e12 µv = 1903.5 SP scheduled, withdrawn 2.303111e12 µv = 1427.6 SP paid — /1e6 to vests. Reservation = (to_withdraw − withdrawn)/1e6 = 767,704 vests.",
+   "assert_truth": "the LOCAL estimate (own − delegated − reservation = 1,268,037 vests ≈ 786 SP) is WRONG — the chain refused the 50 SP top-up and reported its own available: 14,162 vests (8.78 SP). The assert is the truth (R36 law confirmed a second time); the local formula is only the plan.",
+   "assert_shape": "available: {\"amount\":\"14162000000\",\"precision\":6,\"nai\":\"@@000000037\"} — the amount is followed by precision/nai, never a bare closing brace; the parser that demanded '}' was broken and is now fixed by the measured shape."
+  },
+  "queries": {
+   "Q42_how_does_the_fleet_move_inside_the_house": "The blog mode retargets: parent_permlink = the community, first tag = the community (posts land in https://steemit.com/created/hive-177702), desk tags keep topical discoverability, the saos hub tag stays trailing as the internal marker. The content gate, PROBE-B law, permlink pattern, and comment_options are unchanged — the house changes where the posts LAND, not what they ARE.",
+   "Q43_how_does_joining_stay_human": "Subscribe is its own cadence lane: one per soldier ever (memory budget), max 2 per run, each inside the soldier's own comment window with the seeded jitter and quiet-hours laws, read-back via bridge.list_subscribers before (truth) and after (confirmation). headcorner joins first (founder order), then soldiers by window start. Eleven joins never share a moment — the exact anti-burst law the owner demanded for posts applies to joins.",
+   "Q44_how_does_the_house_RC_grow_without_stealing": "The top-up OP IS ABSOLUTE (the total delegation), so the desk attempts the 50 SP law target and on chain-refusal resizes ONCE to the assert's available — NEVER below the current received floor (a top-up must not become a stealth clawback of the house's RC). Today: available 14,162 vests < floor 16,131.75 vests → TOPUP-HOLD, the 10 SP stand, the reclaim decides.",
+   "Q45_when_does_the_rc_actually_grow": "The powerdown (476 SP/week, next withdrawal 2026-10-10) frees the stake weekly; each freed tranche makes the next rc run top the floor up. The desk is idempotent and honest in both worlds: RECLAIM-PENDING (plan says short), TOPUP-HOLD (chain says less than floor), TOPUP-LIVE (delegated + read-back confirmed). No new code will be needed on the day the reclaim arrives.",
+   "Q46_what_about_internal_votes_on_community_posts": "Already the law: curate/social scan account history of all 11 fleet accounts — a community post is still a comment op with parent_author='' and flows through candidateEligible (fleet-only, PROBE-B floor, age window, no-self, no-repeat) and curateScore. The house changes the address, not the engagement law."
+  }
+ },
+ "acceptance": {
+  "must": [
+   "subscribe op byte-matches the measured ground truth (posting-only, id community, json shape)",
+   "joins staggered in persona windows with budget 1/soldier, cap 2/run, read-back truth before and after",
+   "posts land inside hive-177702 (first tag) with the hub tag trailing and the gate untouched",
+   "RC top-up desk: GESTS units law, assert-truth parsing of the REAL shape, floor-protected resize-once, honest verdicts (RECLAIM-PENDING / TOPUP-HOLD / MODE-DRY / TOPUP-LIVE)",
+   "live RC run booked with the chain-truth available (14,162 vests) and no state change when refused",
+   "secret-scan 0; zero secrets in code; evals green"
+  ],
+  "measured": [
+   "hive-177702 subscribers = 0 (2026-10-04) — the join wave starts in the next CI ticks",
+   "headcorner chain-truth available = 14,162 vests (8.78 SP) — TOPUP-HOLD, floor protected",
+   "powerdown reclaim funds the RC growth from 2026-10-10"
+  ]
+ },
+ "status": "ACCEPTED-2026-10-04",
+ "rung": "R37",
+ "suite": "v1.46.0",
+ "evidence": ["agents/human-cadence.cjs", "agents/persona-slots.json", "agents/community-founder.cjs", ".github/workflows/human-cadence.yml", "agents/community-founder.json", "agents/human-cadence.json", "agents/evals/run-evals.cjs"]
+}

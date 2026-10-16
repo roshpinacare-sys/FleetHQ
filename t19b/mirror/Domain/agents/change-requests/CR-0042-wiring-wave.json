@@ -1,0 +1,42 @@
+{
+ "id": "CR-0042",
+ "from": "sovereign lane (operator directive 2026-10-03 — 'בוא נקדם עכשיו ממש חזק קדימה כל הסוכנים ביחד ... ובסוף צריך לחבר ולחווט הכל בצורה הכי הכי טובה ... בצע' — Z-65: whole-git connect-the-dots + blockers + hard push + wiring)",
+ "tier": "B",
+ "opened_at": "2026-10-03T19:25:00Z",
+ "proposes": "LAND fleet Rung 16 lane B — THE WIRING WAVE: (1) flow-catch mode in agents/market-exec.cjs (E33): the one-sided-tape breaker — the measured tape is one-sided (sellers hit the 0.100 bid wall ~6s/fill) so a resting ask never fills and 0 SBD leaves the buy side unfunded; ONE marketable sell (min price = bid×(1−0.1%), ≤50% liquid, ONE per run) joins the resting bid and fills AT the bid (price improvement over the floor), proceeds fund a tight buy ladder (budget = 90% of proceeds, L1 bid−0.1%, stack-aware anti-self-cross, dust discipline FLOW_MIN_PROCEEDS=0.01, determinism byte-checked); LIVE-FIRED run #13: taker 0.713 STEEM filled at the 0.101083 bid, buy 0.052 SBD→0.517 STEEM standing, balances reconciled to the satoshi (0.792 STEEM/0.078 SBD; the 0.5 STEEM delta = sibling's 0.5@0.106 ask expiring 18:57:26 — every sat accounted); two defects caught+fixed in-session (side-preservation through placements construction — taker phase-A/B never ran, single-batch broadcast instead — and taker-verify interpretation: a marketable leg ABSENT from the book = FILL-CONFIRMED, orders leave the book when they fill); (2) fill-ledger WIRE FIX (measured live): account_history_api serves EMPTY op bodies on BOTH official nodes (op[1]={} — fills unparseable); the desk now walks condenser_api.get_account_history (full bodies, string assets) with the dual-form asset parser — RESULT: 10 REAL FILLS CAPTURED (0.508 SBD proceeds; the CR-0039 recycled ask 0.576 STEEM→0.058 SBD @ 0.100694 filled by coin-raffle 19:01:57 + 9 earlier sibling fills @ 0.100 by droida/btsx); proceeds_unbased field added (pre-ledger-basis sells book proceeds honestly, basis unknown, never guessed into P&L); (3) .github/workflows/fill-ledger-cron.yml — the EYES cadence wired as the CR-0038 twin (cadence :17/:47 off every sibling minute, STASIS-braked, keyless read-only, append-only publish + [skip ci], dedupe law makes 30-min ticks compose safely with lane-side runs into ONE ledger); (4) agents/agent-registry.cjs (E34) — the fleet's ERC-8004-SHAPED trustless-agent registry (ethereum/ERCs erc-8004.md receipt via Z-65-b): Identity (agentURI+metadata for the 6 fleet desks), Reputation (evidence-ONLY: every value derived from canon rows, feedbackHash = sha256(counted rows) recomputable), Validation (the desk evals E28/E30/E33 as validationRequest/response); live on real canons: 6 identities, 3 evidence-backed reputations (market-exec 62% clean-run — the wire-defect history visible honestly), 4 validation rows; portable to SAOSRelay/on-chain register when funded (owner-gated future); (5) agents/sovereign-convergence.md — the whole-git answer: differentiated stack (5), top-10 wires (ranked, 2 landed this CR), measured blocker table (capital $1.20-1.60 liquid vs $4.30/day drip burn = the binding chain: capital←edge-proof←fills←positioning←armed-loop; 3 of 5 links closed this session), custody proposals (threshold multisig via account_auths — soldier ACCOUNTS as authorities, STEEM_MAX_AUTHORITY_MEMBERSHIP=40, no WIF sharing; custom_json zero-fee coordination bus; native escrow ops; claimed-account spawning), all research whitelisted (delegate_rc UNVERIFIED — absent from steem_operations.hpp, no mirror-hunting).",
+ "rationale": "The operator asked: what do we HAVE, what LIMITS us, what do we wire NOW, all agents together. Three parallel evidence lanes (Z-65-a/b/c in the worklog) + the main lane's implementations. The two Operator-gated decisions are isolated and named (custody model, drip pacing) — everything else that could move without them MOVED and is receipted.",
+ "risk": "low-medium — flow-catch is a TAKER leg (crosses the spread): bounded by ≤50% liquid (stricter than maker 85%), floor = bid×0.999 (worst case ~0.1% under bid, expected fill AT bid), ONE taker per run, dust discipline on proceeds; E33 guards the caps; E31 census law (sibling) already consumes our ledger series. Cron is keyless read-only. Registry is offline.",
+ "verdict": "PASS",
+ "judged_by": "self (tier B desk landing; evals 32/32 local pre-rebase, 34/34 expected merged; live receipts on-chain + ledger rows)",
+ "judged_at": "2026-10-03T19:35:00Z",
+ "receipts": [
+  "evals 32/32 local (run-evals v1.21.0, E33+E34 added; eleventh-collision renumber: sibling took CR-0040/feat-034 census + CR-0041/feat-035 census-cron + E31/E32 slots — ours renumbered E33/E34/feat-036/feat-037)",
+  "flow-catch LIVE run #13 (market-exec.json): broadcast 2/2 in one batch (phase law landed after — taker+buy), taker FILLED at bid (absent from book = FILL-CONFIRMED), buy orderid 1791054505 standing, readback price_match TRUE, 0 errors",
+  "fill-ledger run #6: 10 fills captured, proceeds_unbased 0.508 SBD, dedupe+replay live on real data, recycle FUNDED-SELL-SIDE 0.792 STEEM | FILLS-10",
+  "on-chain reconciliation: liquid 1.505 → taker −0.713 → 0.792 STEEM EXACT; SBD 0.000 → +0.058 ask fill → +0.0721 taker → −0.052 buy escrow → 0.078 EXACT",
+  "agent-registry.json: 6 identities / 3 reputations with recomputable sha256 / 4 validation rows; E34 black-box on temp fixtures (fixture score 100, broadcast-ops-2, honest absence)",
+  "fill-ledger-cron.yml: twin of CR-0038 idiom, :17/:47, STASIS twice, keyless, parse-gate covered by the suite"
+ ],
+ "findings": [
+  "FIRST REAL FILL PROOF: the fleet's ask 0.100694 was LIFTED by coin-raffle (0.576 STEEM→0.058 SBD @ 19:01:57) — the grid earns when the tape traverses it; now every traversal is ledgered within 30 minutes keyless",
+  "wire defect caught by live-fire: account_history_api empty op bodies on official nodes — the recon lineage (Z-63-c) parsed fills from condenser context; the ledger now walks condenser with dual-form parsing (law booked in-file)",
+  "phase law vs reality: run #13 broadcast taker+buy in ONE batch because placements construction overwrote the flow-taker side — the batch outcome EQUALED the intended phased outcome (taker filled, buy placed from pre-existing proceeds); phased path fixed + guarded for future runs",
+  "the sibling's census desk (CR-0040) already counts our fill-loop as WIRED 10/10 — this CR makes the last missing arc literal (the ledger's own cron); the two lanes' convergence artifacts compose (their estate map + our sovereign-convergence doctrine)",
+  "binding chain named: capital ← edge-proof ← fills ← positioning ← armed-loop — the operator holds exactly TWO keys (custody model, drip pacing); everything else is already moving"
+ ],
+ "refs": [
+  "CR-0036",
+  "CR-0038",
+  "CR-0039",
+  "CR-0040",
+  "CR-0041",
+  "feat-036",
+  "feat-037",
+  "agents/market-exec.cjs",
+  "agents/fill-ledger.cjs",
+  "agents/agent-registry.cjs",
+  ".github/workflows/fill-ledger-cron.yml",
+  "agents/sovereign-convergence.md",
+  "agents/evals/run-evals.cjs (E33/E34)"
+ ]
+}

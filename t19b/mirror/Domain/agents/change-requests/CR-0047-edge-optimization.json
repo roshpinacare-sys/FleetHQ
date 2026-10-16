@@ -1,0 +1,31 @@
+{
+  "id": "CR-0047",
+  "from": "Z (sovereign lane, this sandbox) — operator directive: 'תמשיך נסה לשפר את זה לייעל משמעותית מאוד' (continue, improve it, optimize it very significantly)",
+  "tier": "B",
+  "opened_at": "2026-10-03T21:20:00Z",
+  "proposes": [
+    "LEDGER VWAP AUTHORITY: fill-ledger vwapStats (pure, µ-leg sums) — the realized sell VWAP / buy VWAP / edge of the window, from the replayed legs only. Full-day walk via FILL_LEDGER_MAX_PAGES (default 5, cron 15) — measured: 57 fills total (45 new on the deep walk; the Z-68 reconcile residual was page-window truncation, not missing money), sell 0.100067 / buy 0.102197 = edge −2.1282%, realized −0.178154 SBD (costed, honest), proceeds_unbased 46.511 SBD, 28 unclassified legs, liquid now 3.812 STEEM / 14.706 SBD.",
+    "EXECUTOR BUY-PREMIUM LAW: market-exec DEFAULTS.BUY_EDGE_FLOOR_PCT = 0.3 — buildPlan AND buildFlowCatchPlan cap EVERY buy at sellVwap × (1 − 0.3%), with vwap_capped/vwap_cap receipts on every planned buy; a cap that lands below the band skips OUT-OF-BAND (never priced wrong); the ledger is read read-only (the ledger stays the single writer of its canon).",
+    "SOVEREIGN BUY-PREMIUM BREAKER: decideSovereign (gate order: after BREAKER-CONSEC-LOSS, before FUEL-FLOOR) — if the window has ≥3 buys and buy_vwap > sell_vwap × (1 + max_buy_premium_vs_sell_vwap_pct/100) the gate routes PLAN-DRY (VWAP-capped plans compose as receipts, zero signatures) until the ledger heals; sovereign-policy.json gains the limit with the law note.",
+    "E38 white-box (suite v1.26.0, 38/38 GREEN): vwapStats exact micro-sum fixtures (0.100067/0.102198, edge −2.1299 summed; honest nulls), cap-binds / cap-noop / below-band-skip, flow-catch capped, breaker PLAN-DRY / clean-edge EXECUTE-LIVE / 3-buys minimum."
+  ],
+  "rationale": "The operator asked for SIGNIFICANT optimization. The audit (CR-0046) measured the leak; this CR closes it structurally at THREE layers: the ledger now COMPUTES the realized edge (authority), the executor now CANNOT price a buy above the realized sells minus a floor (prevention), and the sovereign now PAUSES live recycling while the window shows a premium (gate). Defense in depth, each layer independently tested, all fed by one authority — the ledger's replayed legs. This converts the fleet's market flow from 'activity' to 'measured edge discipline' — the precondition for compounding the Oct 7 convert maturity (~435 STEEM) without repeating the −2.13% day.",
+  "risk": "The executor's planner is the signing surface — the change only CONSTRAINS buy pricing (min of ladder target and VWAP cap); caps, band, ADD-ONLY, verify-then-sign untouched; DRY-first default untouched. The breaker can pause live recycling on a legitimately premium window — by design: it composes receipts meanwhile, and heals when the ledger edge is clean. Tool incident this rung: the MultiEdit tool partially applied a patch and corrupted fill-ledger.cjs mid-edit — caught by node parse check, restored from HEAD, re-applied via an asserted python patch with parse verification after each step (the fail-loud discipline applies to my own tooling).",
+  "verdict": "PASS",
+  "judged_by": "run-evals v1.26.0 fresh-process judge (38/38 GREEN) + live full-day ledger walk (run #15) + live tick #7 (DAY-CAPS pacing engaged)",
+  "judged_at": "2026-10-03T21:35:00Z",
+  "receipts": [
+    "ledger run #15: total_fills 57 (45 new), realized −0.178154 SBD, proceeds_unbased 46.511 SBD, unclassified 28, vwap sell 0.100067 / buy 0.102197 (edge −2.1282%, 49 sells / 8 buys)",
+    "liquid measured at walk end: 3.812 STEEM / 14.706 SBD (the day's sells returned as SBD)",
+    "tick #7 live: PLAN-DRY 'DAY-CAPS: fills today 57 >= 24 — the day is booked' (drip RECEIPT, 0 errors)",
+    "E38: 9 expectations — suite 38/38 v1.26.0",
+    "fill-ledger-cron.yml now walks the full day (FILL_LEDGER_MAX_PAGES=15)"
+  ],
+  "findings": [
+    "the Z-68 reconcile residual is RESOLVED: it was the ledger's own 500-op page window truncating the day's churn — the chain and the books agree once the walk is deep enough (57 fills, not 12)",
+    "the measured −2.13% buy premium is now structurally impossible to repeat: prevention (executor cap), gate (breaker), and authority (ledger replay) are three independent layers",
+    "28 unclassified legs remain honest (bodies/counterparty variants) — the UNCLASSIFIED law held; a parse-hardening rung could classify them without guessing",
+    "the day's real P&L is now computable: realized −0.178 SBD costed + 46.511 SBD proceeds pre-basis, with 3.812 STEEM + 14.706 SBD + 6.679 SBD locked bids + converts maturing Oct 7 — the rotation continues with an edge law in force"
+  ],
+  "refs": ["feat-042", "CR-0046", "agents/fill-ledger.cjs (vwapStats, FILL_LEDGER_MAX_PAGES)", "agents/market-exec.cjs (BUY_EDGE_FLOOR_PCT, readLedgerSellVwap)", "agents/sovereign.cjs (BUY-PREMIUM-BREAKER)", "agents/sovereign-policy.json (max_buy_premium_vs_sell_vwap_pct)", "agents/evals/run-evals.cjs (v1.26.0, E38)", ".github/workflows/fill-ledger-cron.yml"]
+}

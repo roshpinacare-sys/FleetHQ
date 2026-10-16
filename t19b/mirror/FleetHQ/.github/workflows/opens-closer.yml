@@ -1,0 +1,68 @@
+# opens-closer.yml — T-61: המרפא העצמי של הצי. GitHub מפיל ריצות מתוכננות (נמדד: office-heartbeat ו-beacon נשתקו אחרי 19:26-19:34Z
+# בעוד value-scan ירה תקין) — אז לא סומכים על תזמון בלבד: כל 30 דק' נמדדת טריות המצבות keyless, מה שנפל מעל SLA מוער
+# (workflow_dispatch באותו ריפו — GITHUB_TOKEN הוא repo-scoped על-פי-עיצוב ונשאר כזה), ומה שחוצה-ריפו מוער דרך CROSS_REVIVE_PAT
+# (T-63 D1: כתב-הרשאה שהועבר מהבעלים לריבונות — סוד ב-FleetHQ, אף-פעם לא נרשם). כנות: נפילה מוצגת כנפילה, לעולם לא ממולאת.
+name: opens-closer
+
+on:
+  schedule:
+    - cron: "7,37 * * * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: opens-closer
+  cancel-in-progress: false
+
+jobs:
+  closer:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Checkout (full history — needed for delta check)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Measure freshness, revive what fell (keyless, honest)
+        env:
+          CROSS_REVIVE_PAT: ${{ secrets.CROSS_REVIVE_PAT }}
+          GITHUB_TOKEN: ${{ github.token }}
+        run: node tools/opens-closer.mjs
+
+      - name: Commit ledger only when meaningful (no-noise law)
+        run: |
+          DECISION=$(node -e "console.log(require('./office/state/opens-closer.json').commitDecision)")
+          if [ "$DECISION" != "commit" ]; then
+            echo "no-delta: ledger unchanged in meaning — discarding local write"
+            git checkout -- office/state/opens-closer.json
+            exit 0
+          fi
+          git config user.name "opens-closer-bot"
+          git config user.email "opens-closer-bot@users.noreply.github.com"
+          git add office/state/opens-closer.json
+          if git diff --cached --quiet; then echo "no-delta: nothing to commit"; exit 0; fi
+          git commit -m "opens-closer: measured freshness ledger + revival dispatches [skip ci]"
+          ok=0
+          for i in 1 2 3; do
+            if git push -q origin main; then ok=1; echo "PUSH-OK attempt $i"; break; fi
+            echo "push attempt $i failed — rebase and retry"
+            git pull --rebase -q origin main || true
+            sleep 3
+          done
+          if [ "$ok" != "1" ]; then echo "PUSH-FAILED after retries"; exit 1; fi
+
+      - name: Honest job summary
+        if: always()
+        run: |
+          {
+            echo "## opens-closer — measured freshness + self-healing"
+            if [ -f office/state/opens-closer.json ]; then
+              node -e "const j=require('./office/state/opens-closer.json');console.log('- generatedAt:',j.generatedAt);console.log('- verdict:',j.verdictHe);console.log('- metrics:',JSON.stringify(j.metrics));for(const c of (j.checks||[]))console.log('- '+c.key+': age='+c.ageMin+'min (SLA '+c.slaMin+') stale='+c.stale+' dispatched='+c.dispatched+' '+String(c.dispatchStatus||''));for(const a of (j.ownerActions||[]))console.log('- OWNER-ACTION:',a)"
+            else
+              echo "- ledger MISSING — the check failed; nothing published (honest fallback, never fake)"
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
