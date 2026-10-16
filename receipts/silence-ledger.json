@@ -1,47 +1,47 @@
 {
  "schema": "silence.ledger/1",
- "at": "2026-10-16T06:21:03.326Z",
+ "at": "2026-10-16T06:47:14.121Z",
  "voices": [
   {
    "name": "repo/FleetHQ",
    "kind": "repo",
-   "lastActivity": "2026-10-16T06:20:12.000Z",
-   "ageMin": 1,
+   "lastActivity": "2026-10-16T06:43:49.000Z",
+   "ageMin": 3,
    "maxSilenceMin": 180,
    "verdict": "alive",
    "detail": {
-    "subject": "pacemaker receipt: 2026-10-16T06:20:12Z",
+    "subject": "pacemaker receipt: 2026-10-16T06:43:49Z",
     "divergence": "in-sync"
    }
   },
   {
    "name": "repo/Domain",
    "kind": "repo",
-   "lastActivity": "2026-10-16T06:17:37.000Z",
-   "ageMin": 3,
+   "lastActivity": "2026-10-16T06:41:23.000Z",
+   "ageMin": 6,
    "maxSilenceMin": 180,
    "verdict": "alive",
    "detail": {
-    "subject": "office-memory: foreman books sync 2026-10-16T06:17:37Z [skip ci]",
+    "subject": "dex-family: local beat · 2026-10-16T06:41:23Z",
     "divergence": "ahead:0 behind:4"
    }
   },
   {
    "name": "repo/Console",
    "kind": "repo",
-   "lastActivity": "2026-10-16T06:05:56.000Z",
-   "ageMin": 15,
+   "lastActivity": "2026-10-16T06:33:15.000Z",
+   "ageMin": 14,
    "maxSilenceMin": 180,
    "verdict": "alive",
    "detail": {
-    "subject": "render fix: clamp get_account_history limit<=start (steem assert on short histor",
-    "divergence": "ahead:0 behind:4"
+    "subject": "money-watch: local beat · 2026-10-16T06:33:15Z",
+    "divergence": "ahead:0 behind:2"
    }
   },
   {
    "name": "port/console:3000",
    "kind": "service",
-   "lastActivity": "2026-10-16T06:21:03.326Z",
+   "lastActivity": "2026-10-16T06:47:14.121Z",
    "ageMin": 0,
    "maxSilenceMin": 0,
    "verdict": "alive"
@@ -49,15 +49,15 @@
   {
    "name": "port/fleethq:3002",
    "kind": "service",
-   "lastActivity": null,
-   "ageMin": null,
+   "lastActivity": "2026-10-16T06:47:14.121Z",
+   "ageMin": 0,
    "maxSilenceMin": 0,
-   "verdict": "SILENT-ALARM"
+   "verdict": "alive"
   },
   {
    "name": "port/foreman",
    "kind": "service",
-   "lastActivity": "2026-10-16T06:21:03.326Z",
+   "lastActivity": "2026-10-16T06:47:14.121Z",
    "ageMin": 0,
    "maxSilenceMin": 0,
    "verdict": "alive"
@@ -65,7 +65,7 @@
   {
    "name": "port/gateway",
    "kind": "service",
-   "lastActivity": "2026-10-16T06:21:03.326Z",
+   "lastActivity": "2026-10-16T06:47:14.121Z",
    "ageMin": 0,
    "maxSilenceMin": 0,
    "verdict": "alive"
@@ -73,7 +73,7 @@
   {
    "name": "port/selfcheck",
    "kind": "service",
-   "lastActivity": "2026-10-16T06:21:03.326Z",
+   "lastActivity": "2026-10-16T06:47:14.121Z",
    "ageMin": 0,
    "maxSilenceMin": 0,
    "verdict": "alive"
@@ -81,7 +81,7 @@
   {
    "name": "port/recruit",
    "kind": "service",
-   "lastActivity": "2026-10-16T06:21:03.326Z",
+   "lastActivity": "2026-10-16T06:47:14.121Z",
    "ageMin": 0,
    "maxSilenceMin": 0,
    "verdict": "alive"
@@ -89,7 +89,7 @@
   {
    "name": "port/boot-verifier",
    "kind": "service",
-   "lastActivity": "2026-10-16T06:21:03.326Z",
+   "lastActivity": "2026-10-16T06:47:14.121Z",
    "ageMin": 0,
    "maxSilenceMin": 0,
    "verdict": "alive"
@@ -97,10 +97,10 @@
   {
    "name": "beat/money-watch",
    "kind": "beat",
-   "lastActivity": null,
-   "ageMin": null,
+   "lastActivity": "2026-10-16T06:33:17.749Z",
+   "ageMin": 14,
    "maxSilenceMin": 130,
-   "verdict": "no-data"
+   "verdict": "alive"
   },
   {
    "name": "beat/dex-mirror",
@@ -122,39 +122,17 @@
    "name": "beat/office-ci-lite",
    "kind": "beat",
    "lastActivity": "2026-10-16T06:17:32.200Z",
-   "ageMin": 4,
+   "ageMin": 30,
    "maxSilenceMin": 130,
    "verdict": "alive"
   },
   {
    "name": "beat/office-heartbeat",
    "kind": "beat",
-   "lastActivity": null,
-   "ageMin": null,
+   "lastActivity": "2026-10-16T06:41:58.700Z",
+   "ageMin": 5,
    "maxSilenceMin": 130,
-   "verdict": "no-data"
-  },
-  {
-   "name": "post/steem/acct-00",
-   "kind": "post",
-   "lastActivity": null,
-   "ageMin": null,
-   "maxSilenceMin": 2880,
-   "verdict": "no-data",
-   "detail": {
-    "error": "roster-unresolved"
-   }
-  },
-  {
-   "name": "post/hive/acct-00",
-   "kind": "post",
-   "lastActivity": null,
-   "ageMin": null,
-   "maxSilenceMin": 2880,
-   "verdict": "no-data",
-   "detail": {
-    "error": "roster-unresolved"
-   }
+   "verdict": "alive"
   },
   {
    "name": "post/steem/acct-11",
@@ -164,7 +142,7 @@
    "maxSilenceMin": 2880,
    "verdict": "no-data",
    "detail": {
-    "error": "roster-unresolved"
+    "error": "ref-missing-in-roster"
    }
   },
   {
@@ -175,7 +153,7 @@
    "maxSilenceMin": 2880,
    "verdict": "no-data",
    "detail": {
-    "error": "roster-unresolved"
+    "error": "ref-missing-in-roster"
    }
   },
   {
@@ -186,7 +164,7 @@
    "maxSilenceMin": 2880,
    "verdict": "no-data",
    "detail": {
-    "error": "roster-unresolved"
+    "error": "ref-missing-in-roster"
    }
   },
   {
@@ -197,7 +175,7 @@
    "maxSilenceMin": 2880,
    "verdict": "no-data",
    "detail": {
-    "error": "roster-unresolved"
+    "error": "ref-missing-in-roster"
    }
   },
   {
@@ -208,7 +186,7 @@
    "maxSilenceMin": 2880,
    "verdict": "no-data",
    "detail": {
-    "error": "roster-unresolved"
+    "error": "ref-missing-in-roster"
    }
   },
   {
@@ -219,7 +197,7 @@
    "maxSilenceMin": 2880,
    "verdict": "no-data",
    "detail": {
-    "error": "roster-unresolved"
+    "error": "ref-missing-in-roster"
    }
   },
   {
@@ -230,7 +208,7 @@
    "maxSilenceMin": 2880,
    "verdict": "no-data",
    "detail": {
-    "error": "roster-unresolved"
+    "error": "ref-missing-in-roster"
    }
   },
   {
@@ -241,17 +219,44 @@
    "maxSilenceMin": 2880,
    "verdict": "no-data",
    "detail": {
-    "error": "roster-unresolved"
+    "error": "ref-missing-in-roster"
+   }
+  },
+  {
+   "name": "post/steem/acct-00",
+   "kind": "post",
+   "lastActivity": "2026-10-16T05:31:51.000Z",
+   "ageMin": 75,
+   "maxSilenceMin": 2880,
+   "verdict": "alive",
+   "detail": {
+    "lastCreated": "2026-10-16T05:31:51"
+   }
+  },
+  {
+   "name": "post/hive/acct-00",
+   "kind": "post",
+   "lastActivity": "2026-10-10T16:46:51.000Z",
+   "ageMin": 8040,
+   "maxSilenceMin": 2880,
+   "verdict": "SILENT-ALARM",
+   "detail": {
+    "lastCreated": "2026-10-10T16:46:51"
    }
   }
  ],
  "alarms": [
-  "port/fleethq:3002: DOWN (:3002)",
-  "beat/money-watch: no data (cannot prove alive)",
   "beat/dex-mirror: no data (cannot prove alive)",
   "beat/grid-pulse: no data (cannot prove alive)",
-  "beat/office-heartbeat: no data (cannot prove alive)",
-  "roster: unresolved — no FLEET_ROSTER_MAP in env/estate/.env.local and no local map file; post voices unmeasurable"
+  "post/steem/acct-11: no data (ref missing in roster map from /home/z/estate/.env.local)",
+  "post/hive/acct-11: no data (ref missing in roster map from /home/z/estate/.env.local)",
+  "post/steem/acct-12: no data (ref missing in roster map from /home/z/estate/.env.local)",
+  "post/hive/acct-12: no data (ref missing in roster map from /home/z/estate/.env.local)",
+  "post/steem/acct-13: no data (ref missing in roster map from /home/z/estate/.env.local)",
+  "post/hive/acct-13: no data (ref missing in roster map from /home/z/estate/.env.local)",
+  "post/steem/acct-01: no data (ref missing in roster map from /home/z/estate/.env.local)",
+  "post/hive/acct-01: no data (ref missing in roster map from /home/z/estate/.env.local)",
+  "post/hive/acct-00: silent 8040min (limit 2880)"
  ],
- "summary": "6 ALARM(S): port/fleethq:3002: DOWN (:3002) · beat/money-watch: no data (cannot prove alive) · beat/dex-mirror: no data (cannot prove alive) · beat/grid-pulse: no data (cannot prove alive) · beat/office-heartbeat: no data (cannot prove alive) · roster: unresolved — no FLEET_ROSTER_MAP in env/estate/.env.local and no local map file; post voices unmeasurable"
+ "summary": "11 ALARM(S): beat/dex-mirror: no data (cannot prove alive) · beat/grid-pulse: no data (cannot prove alive) · post/steem/acct-11: no data (ref missing in roster map from /home/z/estate/.env.local) · post/hive/acct-11: no data (ref missing in roster map from /home/z/estate/.env.local) · post/steem/acct-12: no data (ref missing in roster map from /home/z/estate/.env.local) · post/hive/acct-12: no data (ref missing in roster map from /home/z/estate/.env.local) · post/steem/acct-13: no data (ref missing in roster map from /home/z/estate/.env.local) · post/hive/acct-13: no data (ref missing in roster map from /home/z/estate/.env.local) · post/steem/acct-01: no data (ref missing in roster map from /home/z/estate/.env.local) · post/hive/acct-01: no data (ref missing in roster map from /home/z/estate/.env.local) · post/hive/acct-00: silent 8040min (limit 2880)"
 }
