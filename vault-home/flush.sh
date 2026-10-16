@@ -170,7 +170,7 @@ for r in "${REPOS[@]}"; do
     # with a union merge; the pure receipt twins keep the fast rebase law.
     pull_mode="pull --rebase"
     [ "$r" = "FleetHQ" ] && pull_mode="pull --no-rebase"
-    if git -C "$d" -c rebase.autoStash=true merge.autoStash=true $pull_mode -X theirs -q origin main 2>/dev/null &&
+    if git -C "$d" -c rebase.autoStash=true -c merge.autoStash=true $pull_mode -X theirs -q origin main 2>/dev/null &&
        git -C "$d" push -q origin main 2>/dev/null; then
       verdict="pushed"; any_push=1
     else
