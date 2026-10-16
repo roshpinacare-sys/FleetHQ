@@ -2,7 +2,7 @@
   "protocol": "SAOS-OFFICE-RETRO/1",
   "lane": "office-retro (zai-11d · E1-deed zai-13c)",
   "ownerMandate": "[owner-directive]",
-  "generatedAt": "2026-10-15T12:51:56.812Z",
+  "generatedAt": "2026-10-16T15:00:06.564Z",
   "laws": [
     "retro לא משדר, לא חותם, לא נוגע בכסף/מפתחות/STASIS",
     "תופעות-לוואי: קבצי-המסילה שלו בלבד (office/*)",
@@ -13,74 +13,74 @@
   ],
   "registry": {
     "source": "fallback-embedded",
-    "note": "registry לא-נגיש: HTTP 404 (private-7 פרטי — גם עם-token נדחה) — משתמש ב-snapshot מוטמע (11-c @ 2026-10-11T20:35:00Z)",
+    "note": "registry לא-נגיש: HTTP 404 (private-7 פרטי — אין-token בסביבה) — משתמש ב-snapshot מוטמע (11-c @ 2026-10-11T20:35:00Z)",
     "feedCount": 16,
     "fallbackSnapshotOf": "sovereign/bus-registry.json @ 686e0d00 (zai-11c, מקור-פרטי — השם אינו נמנה, 7-b)"
   },
   "digest": {
     "source": "pages",
     "note": "digest.json חי (200)",
-    "generatedAt": "2026-10-15T12:09:41.171Z",
-    "ageHours": 0.7,
+    "generatedAt": "2026-10-16T13:44:46.710Z",
+    "ageHours": 1.3,
     "reposSeen": 14,
     "degradedEarly": false,
-    "gridVerdict": "ARMED-WAITING",
-    "hiveVerdict": "ARMED-WAITING",
+    "gridVerdict": "ARMED-LIVE",
+    "hiveVerdict": null,
     "errors": 3
   },
   "findings": {
     "found": false,
-    "note": "לא-נמצא קובץ-ממצאים מ-9 הימים האחרונים (2026-10-15, 2026-10-14, 2026-10-13, 2026-10-12, 2026-10-11, 2026-10-10, 2026-10-09, 2026-10-08, 2026-10-07)"
+    "note": "לא-נמצא קובץ-ממצאים מ-9 הימים האחרונים (2026-10-16, 2026-10-15, 2026-10-14, 2026-10-13, 2026-10-12, 2026-10-11, 2026-10-10, 2026-10-09, 2026-10-08)"
   },
   "bus": {
-    "at": "2026-10-15T12:51:56.812Z",
+    "at": "2026-10-16T15:00:06.564Z",
     "counts": {
-      "green": 10,
-      "amber": 0,
+      "green": 8,
+      "amber": 1,
       "red": 5,
-      "grey": 1
+      "grey": 2
     },
     "feeds": [
       {
         "id": "fleethq-digest",
         "status": "green",
-        "ageHours": 0.7,
+        "ageHours": 1.3,
         "httpStatus": 200
       },
       {
         "id": "domain-dex-grid",
         "status": "green",
-        "ageHours": 4.4,
+        "ageHours": 14.2,
         "httpStatus": 200
       },
       {
         "id": "domain-dex-world",
         "status": "green",
-        "ageHours": 0.8,
+        "ageHours": 0.5,
         "httpStatus": 200
       },
       {
         "id": "domain-dex-deposits",
         "status": "green",
-        "ageHours": 7.9,
+        "ageHours": 14.5,
         "httpStatus": 200
       },
       {
         "id": "domain-office-feed",
-        "status": "green",
-        "ageHours": 4.3,
+        "status": "amber",
+        "ageHours": 30.4,
         "httpStatus": 200
       },
       {
         "id": "domain-office-data",
         "status": "green",
-        "ageHours": 0.6,
+        "ageHours": 0.1,
         "httpStatus": 200
       },
       {
         "id": "domain-grid-truth",
         "status": "green",
-        "ageHours": 1.4,
+        "ageHours": 0.9,
         "httpStatus": 200
       },
       {
@@ -115,20 +115,20 @@
       },
       {
         "id": "domain-status",
-        "status": "green",
-        "ageHours": 0.1,
+        "status": "grey",
+        "ageHours": null,
         "httpStatus": 200
       },
       {
         "id": "console-dex-grid",
         "status": "green",
-        "ageHours": 4.4,
+        "ageHours": 14.2,
         "httpStatus": 200
       },
       {
         "id": "console-dex-world",
         "status": "green",
-        "ageHours": 0.8,
+        "ageHours": 0.5,
         "httpStatus": 200
       },
       {
@@ -141,14 +141,14 @@
   },
   "e1": {
     "builtin": "builtin-e1-spread-regime",
-    "value": 200,
-    "deltaBps": 106.5,
-    "ageHours": 4.4,
-    "publishedAt": "2026-10-15T08:29:53.445Z",
+    "value": 400,
+    "deltaBps": 306.5,
+    "ageHours": 14.2,
+    "publishedAt": "2026-10-16T00:47:59.221Z",
     "verdict": "HOLD",
     "direction": "loosened",
     "source": "live-pages",
-    "block": "SPREAD-REGIME: value=200bps · delta=+106.50 vs 93.5 · מקור-בן-4.4h · HOLD (loosened) — הפיזור התרחב — לעקוב בלבד (verify/doc-only)"
+    "block": "SPREAD-REGIME: value=400bps · delta=+306.50 vs 93.5 · מקור-בן-14.2h · HOLD (loosened) — הפיזור התרחב — לעקוב בלבד (verify/doc-only)"
   },
   "profit": {
     "unavailable": true,
@@ -173,7 +173,7 @@
     {
       "id": "research-feed-unavailable",
       "source": "sandbox-research-findings",
-      "title": "רכבת-המחקר לא-נמדדה: לא-נמצא קובץ-ממצאים מ-9 הימים האחרונים (2026-10-15, 2026-10-14, 2026-10-13, 2026-10-12, 2026-10-11, 2026-10-10, 2026-10-09, 2026-10-08, 2026-10-07) — לבדוק את הפיד השבועי",
+      "title": "רכבת-המחקר לא-נמדדה: לא-נמצא קובץ-ממצאים מ-9 הימים האחרונים (2026-10-16, 2026-10-15, 2026-10-14, 2026-10-13, 2026-10-12, 2026-10-11, 2026-10-10, 2026-10-09, 2026-10-08) — לבדוק את הפיד השבועי",
       "riskClass": "SAFE",
       "value": 3,
       "effort": 1,
@@ -214,7 +214,7 @@
     {
       "id": "bus-sandbox-probe-blurt",
       "source": "bus-registry (A)",
-      "title": "פיד אדום: sandbox-probe-blurt — לא-נמצא ב-2 תאריכים אחרונים (2026-10-15, 2026-10-14)",
+      "title": "פיד אדום: sandbox-probe-blurt — לא-נמצא ב-2 תאריכים אחרונים (2026-10-16, 2026-10-15)",
       "riskClass": "MACHINE-PREP",
       "value": 7,
       "effort": 1,
@@ -229,7 +229,7 @@
     {
       "id": "bus-sandbox-probe-hive",
       "source": "bus-registry (A)",
-      "title": "פיד אדום: sandbox-probe-hive — לא-נמצא ב-2 תאריכים אחרונים (2026-10-15, 2026-10-14)",
+      "title": "פיד אדום: sandbox-probe-hive — לא-נמצא ב-2 תאריכים אחרונים (2026-10-16, 2026-10-15)",
       "riskClass": "MACHINE-PREP",
       "value": 7,
       "effort": 1,
@@ -244,7 +244,7 @@
     {
       "id": "bus-sandbox-research-findings",
       "source": "bus-registry (A)",
-      "title": "פיד אדום: sandbox-research-findings — לא-נמצא ב-9 תאריכים אחרונים (2026-10-15, 2026-10-14, 2026-10-13, 2026-10-12, 2026-10-11, 2026-10-10, 2026-10-09, 2026-10-08, 2026-10-07)",
+      "title": "פיד אדום: sandbox-research-findings — לא-נמצא ב-9 תאריכים אחרונים (2026-10-16, 2026-10-15, 2026-10-14, 2026-10-13, 2026-10-12, 2026-10-11, 2026-10-10, 2026-10-09, 2026-10-08)",
       "riskClass": "MACHINE-PREP",
       "value": 7,
       "effort": 1,
@@ -254,6 +254,21 @@
       "detail": {
         "ageHours": null,
         "httpStatus": 404
+      }
+    },
+    {
+      "id": "bus-domain-office-feed",
+      "source": "bus-registry (A)",
+      "title": "פיד מיושן: domain-office-feed — מיושן: 30h מעל החוק (24h)",
+      "riskClass": "MACHINE-PREP",
+      "value": 4,
+      "effort": 1,
+      "ownerWordRequired": false,
+      "status": "OPEN",
+      "executableBy": "next-retro",
+      "detail": {
+        "ageHours": 30.4,
+        "httpStatus": 200
       }
     }
   ],
@@ -280,7 +295,7 @@
     }
   ],
   "proposal": {
-    "file": "2026-10-15-research-feed-unavailable.md",
+    "file": "2026-10-16-research-feed-unavailable.md",
     "item": "research-feed-unavailable"
   }
 }
