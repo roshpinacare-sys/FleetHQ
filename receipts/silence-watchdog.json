@@ -1,44 +1,44 @@
 {
  "schema": "silence.watchdog/1",
- "at": "2026-10-16T15:00:13.778Z",
+ "at": "2026-10-16T15:40:56.776Z",
  "scope": "actions",
  "voices": [
   {
    "name": "origin/FleetHQ",
-   "lastActivity": "2026-10-16T15:00:11.000Z",
+   "lastActivity": "2026-10-16T15:40:52.000Z",
    "ageMin": 0,
    "maxSilenceMin": 240,
    "verdict": "alive",
    "detail": {
-    "subject": "pacemaker receipt: 2026-10-16T15:00:11Z"
+    "subject": "vault-seal [auto-economy]: 6 files — אטימה-חוזרת, כלום לא מת עם הסנדבו"
    }
   },
   {
    "name": "origin/Domain",
-   "lastActivity": "2026-10-16T14:56:31.000Z",
-   "ageMin": 4,
+   "lastActivity": "2026-10-16T15:40:05.000Z",
+   "ageMin": 1,
    "maxSilenceMin": 240,
    "verdict": "alive",
    "detail": {
-    "subject": "office window: AGING 2026-10-16T14:56:31Z"
+    "subject": "office-memory: foreman books sync 2026-10-16T15:40:05Z [skip ci]"
    }
   },
   {
    "name": "origin/Console",
-   "lastActivity": "2026-10-16T14:48:18.000Z",
-   "ageMin": 12,
+   "lastActivity": "2026-10-16T15:31:57.000Z",
+   "ageMin": 9,
    "maxSilenceMin": 240,
    "verdict": "alive",
    "detail": {
-    "subject": "pacemaker receipt: 2026-10-16T14:48:18Z"
+    "subject": "giants: local beat · 2026-10-16T15:31:57Z"
    }
   },
   {
    "name": "divergence/FleetHQ",
-   "lastActivity": "2026-10-16T13:39:14.000Z",
-   "ageMin": 81,
+   "lastActivity": "2026-10-16T15:24:04.000Z",
+   "ageMin": 17,
    "maxSilenceMin": 75,
-   "verdict": "SILENT-ALARM",
+   "verdict": "alive",
    "detail": {
     "source": "push-queue-receipt (via git)",
     "ahead": 0,
@@ -47,10 +47,10 @@
   },
   {
    "name": "divergence/Domain",
-   "lastActivity": "2026-10-16T13:39:14.000Z",
-   "ageMin": 81,
+   "lastActivity": "2026-10-16T15:24:04.000Z",
+   "ageMin": 17,
    "maxSilenceMin": 75,
-   "verdict": "SILENT-ALARM",
+   "verdict": "alive",
    "detail": {
     "source": "push-queue-receipt (via git)",
     "ahead": 0,
@@ -59,10 +59,10 @@
   },
   {
    "name": "divergence/Console",
-   "lastActivity": "2026-10-16T13:39:14.000Z",
-   "ageMin": 81,
+   "lastActivity": "2026-10-16T15:24:04.000Z",
+   "ageMin": 17,
    "maxSilenceMin": 75,
-   "verdict": "SILENT-ALARM",
+   "verdict": "alive",
    "detail": {
     "source": "push-queue-receipt (via git)",
     "ahead": 0,
@@ -71,40 +71,38 @@
   },
   {
    "name": "sandbox-ledger (via git)",
-   "lastActivity": "2026-10-16T14:59:19.789Z",
+   "lastActivity": "2026-10-16T15:39:59.592Z",
    "ageMin": 1,
    "maxSilenceMin": 180,
    "verdict": "alive",
    "detail": {
-    "localSummary": "2 ALARM(S): beat/grid-pulse: no data (cannot prove alive) · roster: unresolved —"
+    "localSummary": "4 ALARM(S): beat/money-watch: no data (cannot prove alive) · beat/dex-mirror: no"
    }
   },
   {
    "name": "pages/money",
-   "lastActivity": "2026-10-16T12:33:16.403Z",
-   "ageMin": 147,
+   "lastActivity": null,
+   "ageMin": null,
    "maxSilenceMin": 240,
-   "verdict": "alive",
+   "verdict": "no-data",
    "detail": {
-    "url": "dex/money.json"
+    "error": "http 404"
    }
   },
   {
    "name": "pages/site-audit",
-   "lastActivity": "2026-10-16T11:52:11.475Z",
-   "ageMin": 188,
+   "lastActivity": null,
+   "ageMin": null,
    "maxSilenceMin": 360,
-   "verdict": "alive",
+   "verdict": "no-data",
    "detail": {
-    "verdict": "unknown",
-    "at": "2026-10-16T11:52:11.475Z"
+    "error": "http 404"
    }
   }
  ],
  "alarms": [
-  "divergence/FleetHQ: silent 81min (limit 75)",
-  "divergence/Domain: silent 81min (limit 75)",
-  "divergence/Console: silent 81min (limit 75)"
+  "pages/money: no data (cannot prove alive)",
+  "pages/site-audit: no data (cannot prove alive)"
  ],
- "summary": "3 ALARM(S): divergence/FleetHQ: silent 81min (limit 75) · divergence/Domain: silent 81min (limit 75) · divergence/Console: silent 81min (limit 75)"
+ "summary": "2 ALARM(S): pages/money: no data (cannot prove alive) · pages/site-audit: no data (cannot prove alive)"
 }
