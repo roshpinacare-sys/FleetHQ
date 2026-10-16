@@ -27,7 +27,8 @@ const PORT = 3090;
 const CHECK_INTERVAL_MS = 30_000;
 const APP_TIMEOUT_MS = 10_000;
 const DOWN_STRIKES_TO_RESTART = 2;
-const RSS_RESTART_BYTES = 2.0 * 1024 * 1024 * 1024; // restart BEFORE kernel OOM (measured idle dev RSS ~1.3GB w/ heap cap)
+const RSS_RESTART_BYTES = 2.0 * 1024 * 1024 * 1024; // office process wall (measured idle dev RSS ~1.3GB w/ heap cap)
+const RSS_LEAK_WALL_BYTES = 3.2 * 1024 * 1024 * 1024; // global sum wall (law T30: wall counts ONLY the :3000 office server)
 const MIN_RESTART_GAP_MS = 3 * 60_000; // anti-flap
 const MAX_HEAP_MB = 1024;
 
@@ -53,20 +54,34 @@ function log(kind: string, detail: string) {
   console.log(`[guard] ${ev.at} ${kind} ${detail}`);
 }
 
-/** Sum of RSS of next-server processes (bytes) — measured from /proc. */
-function nextServerRss(): { bytes: number; pids: number[] } {
+/** RSS of every next-server process (bytes) — measured from /proc, per-pid. */
+function nextServerRssList(): { per: { pid: number; bytes: number; args: string }[]; sum: number } {
   try {
     const out = execSync(`ps -eo pid,rss,comm,args | grep -E 'next-server|next dev' | grep -v grep || true`, { encoding: 'utf8' });
-    let bytes = 0; const pids: number[] = [];
+    const per: { pid: number; bytes: number; args: string }[] = [];
     for (const line of out.split('\n')) {
       const m = line.trim().match(/^(\d+)\s+(\d+)\s+\S+\s+(.*)$/);
       if (!m) continue;
       const pid = Number(m[1]), rss = Number(m[2]), args = m[3];
       if (!args.includes('next')) continue;
-      bytes += rss * 1024; pids.push(pid);
+      per.push({ pid, bytes: rss * 1024, args });
     }
-    return { bytes, pids };
-  } catch { return { bytes: 0, pids: [] }; }
+    return { per, sum: per.reduce((a, p) => a + p.bytes, 0) };
+  } catch { return { per: [], sum: 0 }; }
+}
+
+/** The pid serving :3000 — mapped from ss (the office next-server), null if unknown. */
+function officePid(): number | null {
+  try {
+    const out = execSync(`ss -tlnp | grep ':3000 ' || true`, { encoding: 'utf8' });
+    const m = out.match(/pid=(\d+)/);
+    return m ? Number(m[1]) : null;
+  } catch { return null; }
+}
+
+function nextServerRss(): { bytes: number; pids: number[] } {
+  const { per, sum } = nextServerRssList();
+  return { bytes: sum, pids: per.map((p) => p.pid) };
 }
 
 async function appAlive(): Promise<boolean> {
@@ -111,23 +126,38 @@ async function tick() {
     return;
   }
   downStrikes = 0;
-  // proactive: restart before the kernel OOM-kills the box
-  if (rss.bytes > RSS_RESTART_BYTES && Date.now() - lastRestartAt > MIN_RESTART_GAP_MS) {
-    log('action', `next-server RSS ${(rss.bytes / 1e9).toFixed(2)}GB > wall → proactive restart (prevents OOM kill)`);
+  const { per, sum } = nextServerRssList();
+  const officePidNum = officePid();
+  const officeBytes = officePidNum ? per.find((p) => p.pid === officePidNum)?.bytes ?? sum : sum;
+  // law T30: the office restart wall counts ONLY the :3000 office process —
+  // transient verification servers (estate/giant runs) must not kill the office
+  if (officeBytes > RSS_RESTART_BYTES && Date.now() - lastRestartAt > MIN_RESTART_GAP_MS) {
+    log('action', `office :3000 RSS ${(officeBytes / 1e9).toFixed(2)}GB > wall → proactive restart (prevents OOM kill)`);
     killLeftovers();
     await new Promise(r => setTimeout(r, 2500));
     startApp();
     return;
   }
-  log('check-ok', `up; next-server pids=[${rss.pids.join(',')}] rss=${(rss.bytes / 1e6).toFixed(0)}MB`);
+  // leak-healing: global sum over the leak wall → a non-office next-server outlived
+  // its welcome (transient verification windows are minutes, not hours) → kill it
+  if (sum > RSS_LEAK_WALL_BYTES) {
+    const strays = per.filter((p) => p.pid !== officePidNum);
+    if (strays.length > 0) {
+      log('action', `sum RSS ${(sum / 1e9).toFixed(2)}GB > leak wall → killing ${strays.length} stray next-server(s) [${strays.map((p) => p.pid).join(',')}] (office ${officePidNum} spared)`);
+      try { strays.forEach((p) => { try { process.kill(p.pid, 'SIGKILL'); } catch {} }); } catch {}
+    }
+  }
+  log('check-ok', `up; office=${officePidNum} officeRSS=${(officeBytes / 1e6).toFixed(0)}MB sumRSS=${(sum / 1e6).toFixed(0)}MB pids=[${per.map((p) => p.pid).join(',')}]`);
 }
 
 function summary() {
-  const rss = nextServerRss();
+  const { per, sum } = nextServerRssList();
+  const officePidNum = officePid();
+  const officeBytes = officePidNum ? per.find((p) => p.pid === officePidNum)?.bytes ?? sum : sum;
   return {
     guard: { startedAt: startedAt.toISOString(), uptimeSec: Math.round((Date.now() - startedAt.getTime()) / 1000) },
-    measured: { checks, fails, restarts, downStrikes, nextServerRssMB: Math.round(rss.bytes / 1e6), nextServerPids: rss.pids },
-    law: { checkIntervalMs: CHECK_INTERVAL_MS, rssRestartWallGB: +(RSS_RESTART_BYTES / 1e9).toFixed(1), heapCapMB: MAX_HEAP_MB, antiFlapMin: MIN_RESTART_GAP_MS / 60000 },
+    measured: { checks, fails, restarts, downStrikes, officePid: officePidNum, officeRssMB: Math.round(officeBytes / 1e6), sumRssMB: Math.round(sum / 1e6), nextServerPids: per.map((p) => p.pid) },
+    law: { checkIntervalMs: CHECK_INTERVAL_MS, officeRssRestartWallGB: +(RSS_RESTART_BYTES / 1e9).toFixed(1), sumLeakWallGB: +(RSS_LEAK_WALL_BYTES / 1e9).toFixed(1), heapCapMB: MAX_HEAP_MB, antiFlapMin: MIN_RESTART_GAP_MS / 60000 },
     lastEvents: events.slice(-10),
   };
 }
