@@ -101,6 +101,32 @@ export interface WorldsPayload {
   verify: SourceBox<VerifyWire>;
   /** [T-watch] מישור-הבקרה — בריאות הצי כולו (GridWatch) */
   fleetHealth?: SourceBox<FleetHealthWire>;
+  /** [T-merge מהענן] מקורות-אמת של מסלולות-הענן — עולם-העצמי (SelfWorld) */
+  freshOracle?: SourceBox<FreshOracleWire>;
+  connectivity?: SourceBox<ConnectivityWire>;
+  bootVerify?: SourceBox<BootVerifyWire> & { ageH?: number };
+}
+
+/** [T-merge מהענן] האורקל-הטרי — fresh-oracle.yml (בתים-ציבוריים מול מחויבים) */
+export interface FreshOracleWire {
+  summary?: { verdict?: string; match?: number; checked?: number; drift?: number; missing?: number };
+  results?: { name?: string; verdict?: string; liveSha16?: string; committedSha16?: string }[];
+  [k: string]: unknown;
+}
+
+/** [T-merge מהענן] ביקורת-חיבוריות — office-ci (מה לא מחובר, נמדד) */
+export interface ConnectivityWire {
+  graph?: { trueOrphanCount?: number; codeFiles?: number; reachable?: number; libraryCount?: number; scaffoldCount?: number };
+  artifacts?: { unwired?: { path?: string; bytes?: number; sha16?: string }[] };
+  tools?: { unwiredCI?: string[] };
+  productSurface?: { routes?: string[] };
+  [k: string]: unknown;
+}
+
+/** [T-merge מהענן] קבלת-אתחול — office-selfcheck (גיל כנה) */
+export interface BootVerifyWire {
+  all_ok?: boolean;
+  [k: string]: unknown;
 }
 
 /** [T-watch] מישור-הבקרה — GridWatch/state/fleet-health.json (הצי רואה את עצמו) */

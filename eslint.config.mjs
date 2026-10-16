@@ -44,7 +44,7 @@ const eslintConfig = [...nextCoreWebVitals, ...nextTypescript, {
     "no-useless-escape": "off",
   },
 }, {
-  ignores: ["node_modules/**", ".next/**", "out/**", "build/**", "next-env.d.ts", "examples/**", "skills", "tmp/**", "download/**", "db/**", "t19b/**", "upload/**", "dist-office3d/**", "t24/agentcraft/**"]
+  ignores: ["node_modules/**", ".next/**", "out/**", "build/**", "next-env.d.ts", "examples/**", "skills", "tmp/**", "download/**", "db/**", "t19b/**", "upload/**", "dist-office3d/**", "t24/agentcraft/**", ".tmp-tools/**", "mini-services/duckai/**", "mini-services/agent-hq/**", "Console/**", "Domain/**", "fleethq/**", "public/console/**", ".vault-private-repo/**", ".shots/**"]
 }];
 
 export default eslintConfig;

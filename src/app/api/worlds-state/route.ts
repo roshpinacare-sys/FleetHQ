@@ -10,8 +10,8 @@
 import { NextResponse } from 'next/server';
 import { fetchTruth, ageMs } from '@/lib/gh-truth';
 import type {
-  BeaconWire, ChainWire, DecisionsWire, DexWire, FleetHealthWire, FlowDataWire, ForemanWire,
-  LighthouseWire, ValueScanWire, VerifyWire, WorldsPayload,
+  BeaconWire, BootVerifyWire, ChainWire, ConnectivityWire, DecisionsWire, DexWire, FleetHealthWire, FlowDataWire, ForemanWire,
+  FreshOracleWire, LighthouseWire, ValueScanWire, VerifyWire, WorldsPayload,
 } from '@/lib/worlds/types';
 
 export const revalidate = 0;
@@ -146,7 +146,7 @@ async function measureChain(): Promise<ChainWire | null> {
 }
 
 export async function GET() {
-  const [flow, lh, beacon, dex, vs, dec, foreman, chainRaw, verifyRaw, fleetHealth] = await Promise.all([
+  const [flow, lh, beacon, dex, vs, dec, foreman, chainRaw, verifyRaw, fleetHealth, freshOracle, connectivity, bootVerify] = await Promise.all([
     fetchTruth<FlowDataWire>('Sandbox', 'ops/flow/flow-map.json', { ttlMs: TTL_MS }),
     fetchTruth<LighthouseWire>('sovereign-lighthouse', 'state.json', { ttlMs: TTL_MS }),
     fetchTruth<BeaconWire>('sovereign-beacon', 'state.json', { ttlMs: TTL_MS }),
@@ -158,11 +158,18 @@ export async function GET() {
     fetchVerify(),
     // [T-watch] מישור-הבקרה — GridWatch ריפו ציבורי; TTL 120s (ה-watch עצמו רץ כל 30 דק')
     fetchTruth<FleetHealthWire>('GridWatch', 'state/fleet-health.json', { ttlMs: 120_000 }),
+    // [T-merge מהענן] מקורות-אמת של מסלולות-הענן — fresh-oracle / connectivity / boot-verify
+    fetchTruth<FreshOracleWire>('FleetHQ', 'receipts/fresh-oracle/latest.json', { ttlMs: TTL_MS }),
+    fetchTruth<ConnectivityWire>('FleetHQ', 'office/state/connectivity.json', { ttlMs: TTL_MS }),
+    fetchTruth<BootVerifyWire>('FleetHQ', 'receipts/boot-verify.json', { ttlMs: TTL_MS }),
   ]);
 
   const chain = chainRaw
     ? { ok: true as const, data: chainRaw, fetchedAt: new Date().toISOString(), ageMs: 0 }
     : { ok: false as const, error: 'unavailable' };
+  // [T-merge מהענן] גיל-כנה לקבלת-האתחול (שעות) — מזמן-הקבלה עצמו
+  const bootTsRaw = extractTs(bootVerify.data);
+  const bootAgeH = bootTsRaw !== null ? Math.round((Date.now() - bootTsRaw) / 3_600_000) : null;
 
   const payload: WorldsPayload = {
     fetchedAt: new Date().toISOString(),
@@ -178,6 +185,9 @@ export async function GET() {
       ? { ok: true, data: verifyRaw, fetchedAt: new Date().toISOString(), ageMs: 0 }
       : { ok: false, error: 'not-published-yet' },
     fleetHealth: box(fleetHealth),
+    freshOracle: box(freshOracle),
+    connectivity: box(connectivity),
+    bootVerify: { ...box(bootVerify), ...(bootAgeH !== null ? { ageH: bootAgeH } : {}) },
   };
 
   return NextResponse.json(payload, { headers: { 'x-worlds-cache': 'swr' } });

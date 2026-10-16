@@ -421,7 +421,7 @@ export class Office {
   goal?: Goal;
   books: BookView[] = [];
   status: ForemanStatus;
-  private emit: Emit;
+  emit: Emit; // [T-merge] sim.ts (demo driver, same service) emits through the same sanitized boundary
   private nextId = 1;
   private dispatcher?: ReturnType<typeof setInterval>;
   private heartbeat?: ReturnType<typeof setInterval>;

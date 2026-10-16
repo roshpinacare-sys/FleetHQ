@@ -111,7 +111,7 @@ export interface BookView {
 }
 
 export interface ForemanStatus {
-  backend: 'live' | 'sim';
+  backend: 'live' | 'sim' | 'static' | 'mirror';
   llmProvider: string;
   message: { he: string; en: string };
   startedAt: number;
@@ -168,6 +168,11 @@ export interface RepoFleetView {
   lastFetchAt: number | null; // epoch ms — .git/FETCH_HEAD mtime when present
   lastSyncError: string | null; // sanitized — never a URL, never a secret
   syncState: RepoSyncState;
+  /** [T-merge] CI-קיר — סיכום-הריצה האחרונה וקצב-הקומיטים; null/undefined = לא-נמדד (לעולם לא 0 מזויף) */
+  lastRunConclusion?: string | null;
+  lastRunStatus?: string | null;
+  commits7d?: number | null;
+  commits7dCapped?: boolean;
 }
 
 export interface SearchCapabilityView {
