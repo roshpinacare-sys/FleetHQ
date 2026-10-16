@@ -54,6 +54,25 @@ const SERVICES: { name: string; url: string }[] = [
 
 if (!existsSync(STATE_DIR)) mkdirSync(STATE_DIR, { recursive: true });
 
+// singleton law: bun --hot re-registers top-level setInterval on every reload
+// (measured 2026-10-16: one process ran ~3 concurrent cycles after edits →
+// 43 rows/s instead of 15.6). One rig only — pidfile gate + standby flag.
+const PIDFILE = join(STATE_DIR, 'rig.pid');
+let STANDBY = false;
+try {
+  const raw = readFileSync(PIDFILE, 'utf8').trim();
+  const oldPid = parseInt(raw, 10);
+  if (Number.isFinite(oldPid) && oldPid !== process.pid) {
+    let alive = true;
+    try { process.kill(oldPid, 0); } catch { alive = false; }
+    if (alive) {
+      STANDBY = true;
+      console.log(`[micro-work-rig] rig pid ${oldPid} already alive — standby mode (no cycles)`);
+    }
+  }
+} catch { /* no pidfile */ }
+if (!STANDBY) writeFileSync(PIDFILE, String(process.pid));
+
 // seq chain (survives rotation: newest archive is consulted when active journal is fresh)
 let seq = 0;
 let prevHash = '';
@@ -183,17 +202,24 @@ async function cycle(): Promise<void> {
   try { appendFileSync(join(STATE_DIR, 'rig.log'), `${new Date().toISOString()} cycle ${Date.now() - t0}ms cursor=${cursor}\n`); } catch {}
 }
 
-// measured stats
 const startedAt = Date.now();
 let cycles = 0;
 const journaledAtStart = seq;
-setInterval(() => {
+
+// hot-reload law: clear any interval this module registered in a previous
+// reload generation before registering a new one.
+const globalAny = globalThis as typeof globalThis & { __rigInterval?: ReturnType<typeof setInterval> };
+if (globalAny.__rigInterval) clearInterval(globalAny.__rigInterval);
+
+function mainLoop() {
+  if (STANDBY) return;
   void (async () => {
     try { await cycle(); cycles++; } catch (e) {
       try { journal('rig-error', { err: String(e).slice(0, 120) }); } catch {}
     }
   })();
-}, PROBE_INTERVAL_MS);
+}
+globalAny.__rigInterval = setInterval(mainLoop, PROBE_INTERVAL_MS);
 
 createServer((req, res) => {
   const j = (code: number, o: unknown) => { res.writeHead(code, { 'content-type': 'application/json' }); res.end(JSON.stringify(o, null, 1)); };
