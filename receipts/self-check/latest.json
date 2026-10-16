@@ -1,13 +1,11 @@
 {
- "at": "2026-10-16T13:17:05.897Z",
- "finishedAt": "2026-10-16T13:17:40.232Z",
+ "at": "2026-10-16T14:11:17.267Z",
+ "finishedAt": "2026-10-16T14:11:31.893Z",
  "checks": {
   "boot": {
    "app": {
-    "wasUp": false,
-    "spawned": true,
-    "pid": 20564,
-    "note": "office app booted by selfcheck (it must always work)"
+    "wasUp": true,
+    "spawned": false
    },
    "foreman": {
     "wasUp": true,
@@ -17,21 +15,21 @@
   "security": {
    "exit": 0,
    "verdict": "GREEN",
-   "detail": "SECURITY-REGRESSION: ALL GREEN (83/83)"
+   "detail": "SECURITY-REGRESSION: ALL GREEN (81/81)"
   },
   "connectivity": {
    "exit": 0,
-   "verdictHe": "נמדדו 12 קבצי-קוד יתומים ו-1 ארטיפקטים ללא צרכן",
-   "sha16": "de7259bd9037efff"
+   "verdictHe": "נמדדו 12 קבצי-קוד יתומים ו-3 ארטיפקטים ללא צרכן",
+   "sha16": "040e91e223191828"
   },
   "freshOracle": {
    "exit": 0,
    "verdict": "FRESH"
   },
   "silence": {
-   "exit": 0,
-   "summary": "11 ALARM(S): repo/FleetHQ: silent 270min (limit 180) · beat/grid-pulse: no data (cannot prove alive) · post/steem/acct-11: no data (ref missing in roster map from /home/z/estate/.env.local) · post/hive/acct-11: no data (ref missing in roster map from /home/z/estate/.env.local) · post/steem/acct-12: no data (ref missing in roster map from /home/z/estate/.env.local) · post/hive/acct-12: no data (ref missing in roster map from /home/z/estate/.env.local) · post/steem/acct-13: no data (ref missing in roster map from /home/z/estate/.env.local) · post/hive/acct-13: no data (ref missing in roster map from /home/z/estate/.env.local) · post/steem/acct-01: no data (ref missing in roster map from /home/z/estate/.env.local) · post/hive/acct-01: no data (ref missing in roster map from /home/z/estate/.env.local) · post/hive/acct-00: silent 8430min (limit 2880)",
-   "alarms": 11
+   "exit": 2,
+   "summary": "2 ALARM(S): beat/grid-pulse: no data (cannot prove alive) · roster: unresolved — no FLEET_ROSTER_MAP in env/estate/.env.local and no local map file; post voices unmeasurable",
+   "alarms": 2
   },
   "gitHealth": {
    "exit": 0,
@@ -40,29 +38,29 @@
      "name": "Console",
      "attached": true,
      "ahead": 0,
-     "behind": 0,
+     "behind": 1,
      "fsck": "ok"
     },
     {
      "name": "Domain",
      "attached": true,
      "ahead": 0,
-     "behind": 1,
+     "behind": 0,
      "fsck": "ok"
     },
     {
      "name": "FleetHQ",
      "attached": true,
-     "ahead": 1,
-     "behind": 332,
+     "ahead": 0,
+     "behind": 0,
      "fsck": "ok"
     }
    ]
   },
   "push": {
-   "ok": false,
-   "attempts": 3,
-   "note": "push failed after 3 jittered attempts — receipts remain local, next cycle retries (honest, no fakes)"
+   "ok": true,
+   "attempts": 1,
+   "note": "pushed"
   }
  },
  "state": "ok"
