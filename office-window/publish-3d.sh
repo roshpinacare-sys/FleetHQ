@@ -6,6 +6,7 @@
 # Fail-honest: missing artifacts → exit 1 BEFORE any push (never a half page).
 set -euo pipefail
 cd "$(dirname "$0")/.."   # repo root
+REPO_ROOT="$(pwd)"   # נשמר לפני-ה-worktree: הארטיפקטים-נבנים בשורש-הריפו, לא בענף
 
 TOKEN="${GH_TOKEN:-${GITHUB_TOKEN:-}}"
 if [ -z "$TOKEN" ]; then
@@ -49,10 +50,19 @@ git worktree add --detach "$WT" "$BASE" >/dev/null
   cp "$DIST_3D"/meta.json 3d/meta.json
   # office3d/ — עמוד-הכניסה-החדש: צופה-קולנועי של החדר-האמיתי (room-viewer),
   # והחדר-האינטראקטיבי-הקודם (v4) נשאר-זמין תחת office3d/legacy/ (additive-only).
-  node "$(pwd)/office-window/room-viewer.mjs" --3d "$DIST_3D" --out "$DIST_3D/../office3d/index.html" || true
+  node "$REPO_ROOT/office-window/room-viewer.mjs" --3d "$DIST_3D" --out "$DIST_3D/../office3d/index.html" || true
   mkdir -p office3d/legacy
   if [ -f "$DIST_3D/../office3d/index.html" ]; then cp "$DIST_3D/../office3d/index.html" office3d/index.html; fi
-  if [ -d "$(pwd)/dist-office3d" ]; then cp -r "$(pwd)/dist-office3d/." office3d/legacy/ 2>/dev/null || true; fi
+  # החדר-האינטראקטיבי = הבאנדל-הטרי מ-vite (REPO_ROOT — לא ה-worktree: שם הארטיפקט
+  # אף-פעם לא קיים, וזה בדיוק הבאג שהשאיר את legacy/ תקוע-על v4 מ-2026-10-14).
+  # החלפה-כוללה (rm+cp): שאריות-ה-v4 הישן (vendor/, index.html ישן) לא שורדות.
+  if [ -d "$REPO_ROOT/dist-office3d" ]; then
+    rm -rf office3d/legacy
+    mkdir -p office3d/legacy
+    cp -r "$REPO_ROOT/dist-office3d/." office3d/legacy/
+  else
+    echo "publish-3d: dist-office3d missing at $REPO_ROOT — legacy/ keeps previous content (honest)" >&2
+  fi
   git add index.html digest.json 3d/ office3d/
   if git diff --cached --quiet; then
     echo "publish-3d: dist identical to office-pages HEAD — nothing to commit"
