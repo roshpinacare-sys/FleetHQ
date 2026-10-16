@@ -1,9 +1,9 @@
-# ספר-המודעות-העצמית של הרשת — 2026-10-16T16:11:40.036Z
+# ספר-המודעות-העצמית של הרשת — 2026-10-16T17:24:05.584Z
 
-**40 ריפואים** (14 ציבוריים · 26 פרטיים) · **228 מכונות-יכולת** · **12 פעילים בשעה האחרונה** · תמונה-קודמת: 2026-10-16T15:00:21.611Z
+**40 ריפואים** (14 ציבוריים · 26 פרטיים) · **228 מכונות-יכולת** · **15 פעילים בשעה האחרונה** · תמונה-קודמת: 2026-10-16T16:11:40.036Z
 
 ## 💓 פעיל-עכשיו (דחיפה בשעה האחרונה)
-giant · Domain · FleetHQ · Sandbox · fleet-economy · saos-runtime · Autonomy · Pulse · GridWatch · Console · sovereign-lighthouse · steem
+Domain · FleetHQ · Autonomy · giant · Console · Pulse · Sandbox · fleet-economy · GridWatch · sovereign-lighthouse · Defi · saos-dex · saos-runtime · roshpina · sovereign-beacon
 
 ## 🧠 מפת-היכולות של הצי (המכונות והריפואים-בהן-הן-חיות)
 - **gitleaks** → Adsmarket, Console, Defi, Domain, Project-files, Saosmartwallet (+11)
