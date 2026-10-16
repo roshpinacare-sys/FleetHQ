@@ -93,6 +93,18 @@ sync_once() {
     log "nothing to commit"
     return 0
   fi
+  # ── VAULT LAW (2026-10-16, restore of commit 75520896): a books-sync commit
+  # carries ONLY the four book dirs. Foreign work parked in the index (other
+  # robots' staged deletions/adds) is evicted BEFORE staging — commit 75520896
+  # wiped 94 Domain workflows by riding exactly such parked deletions into a
+  # memory commit. Evicted paths stay in the working tree; their owner must
+  # commit them through its own discipline. ──
+  local parked
+  parked=$(git diff --cached --name-only 2>/dev/null | grep -vE '^(agents|books|reports|truth)/' | head -8)
+  if [ -n "$parked" ]; then
+    log "VAULT LAW: evicting foreign staged paths (never ride a memory commit): $(printf '%s ' $parked)"
+  fi
+  git reset -q HEAD -- . 2>/dev/null || true
   # add only the book dirs that actually exist (a missing pathspec aborts git add)
   local addpaths=""
   for d in agents books reports truth; do
@@ -100,6 +112,14 @@ sync_once() {
   done
   if [ -n "$addpaths" ]; then
     git add $addpaths 2>/dev/null || true
+  fi
+  # second gate: the staged set must be book-pure — anything else aborts loud
+  local foreign
+  foreign=$(git diff --cached --name-only 2>/dev/null | grep -vE '^(agents|books|reports|truth)/' | head -5)
+  if [ -n "$foreign" ]; then
+    log "VAULT LAW VIOLATION: foreign paths staged after reset — aborting commit: $(printf '%s ' $foreign)"
+    git reset -q HEAD -- . 2>/dev/null || true
+    return 1
   fi
   if git diff --cached --quiet; then
     log "nothing staged"
