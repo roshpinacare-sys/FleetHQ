@@ -143,6 +143,9 @@ if git -C "$OFFICE" rev-parse --verify main >/dev/null 2>&1; then
       echo "flush: office main MERGED into estate/FleetHQ (receipt lanes had moved; union merge, never force)"
     else
       echo "flush: office main NOT mergeable (real conflict) — honest skip; operator path"
+      # 32 cleanup law: never leave the estate mid-merge with a parked autostash
+      git -C "$FLEET" merge --abort 2>/dev/null || true
+      git -C "$FLEET" stash pop 2>/dev/null || git -C "$FLEET" stash drop 2>/dev/null || true
     fi
   else
     echo "flush: office clone unreachable — honest skip"
@@ -152,6 +155,13 @@ fi
 results="["; first=1; any_push=0
 for r in "${REPOS[@]}"; do
   d="$ESTATE/$r"
+  # 32 self-heal: a stuck mid-rebase/mid-merge from a crashed run would block
+  # every future drain — abort it and restore the parked autostash first.
+  if git -C "$d" rev-parse -q --verify REBASE_HEAD >/dev/null 2>&1; then
+    git -C "$d" rebase --abort 2>/dev/null || true
+    echo "flush: $r had a stuck rebase — aborted (self-heal)"
+  fi
+  git -C "$d" stash pop 2>/dev/null || git -C "$d" stash drop 2>/dev/null || true
   read -r A B <<<"$(divergence "$r")"
   verdict="in-sync"
   if [ "${A:-0}" -gt 0 ] || [ "${B:-0}" -gt 0 ]; then
@@ -160,6 +170,7 @@ for r in "${REPOS[@]}"; do
       verdict="pushed"; any_push=1
     else
       verdict="push-failed"
+      git -C "$d" stash pop 2>/dev/null || git -C "$d" stash drop 2>/dev/null || true
     fi
   fi
   read -r A2 B2 <<<"$(divergence "$r")"
