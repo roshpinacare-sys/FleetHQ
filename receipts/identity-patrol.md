@@ -1,10 +1,11 @@
-# identity-patrol — סיור-זהויות כלל-הצי (2026-10-16T18:06:57.246Z)
+# identity-patrol — סיור-זהויות כלל-הצי (2026-10-16T18:49:12.351Z)
 
-**פסק: VIOLATION** — 40 ריפואים נסרקו (30 קומיטים אחרונים כל-אחד) · הפרות: 54 · דולגו: 1
+**פסק: VIOLATION** — 40 ריפואים נסרקו (30 קומיטים אחרונים כל-אחד) · הפרות: 47 · דולגו: 1
 
 חוק: DECISIONS #10 — אין NAME@users.noreply.github.com פרט-ל-owner ו-github-actions[bot]; בוטים חותמים @agents.roshpinacare-sys.
 
 ## הפרות
+- `Sandbox` b2e6050a2f — author:local-beats@users.noreply.github.com + committer:local-beats@users.noreply.github.com — "sbx-grid: local artery · 2026-10-16T18:35:54Z"
 - `Sandbox` 2b3b287a97 — author:local-beats@users.noreply.github.com — "sbx-grid: local artery · 2026-10-16T18:05:57Z"
 - `Sandbox` a808806785 — author:local-beats@users.noreply.github.com + committer:local-beats@users.noreply.github.com — "sbx-grid: local artery · 2026-10-16T18:05:54Z"
 - `Sandbox` c4f027bea3 — author:local-beats@users.noreply.github.com — "sbx-grid: local artery · 2026-10-16T17:35:54Z"
@@ -22,9 +23,8 @@
 - `Sandbox` d40a1b7e1e — author:local-beats@users.noreply.github.com + committer:local-beats@users.noreply.github.com — "sbx-grid: local artery · 2026-10-16T16:05:55Z"
 - `Sandbox` 95b8c93d35 — author:local-beats@users.noreply.github.com + committer:local-beats@users.noreply.github.com — "sbx-grid: local artery · 2026-10-16T16:05:23Z"
 - `Sandbox` 1c3d0648a1 — author:local-beats@users.noreply.github.com + committer:local-beats@users.noreply.github.com — "sbx-grid: local artery · 2026-10-16T16:05:19Z"
-- `Sandbox` db61888fbc — author:local-beats@users.noreply.github.com — "sbx-grid: local artery · 2026-10-16T16:05:07Z"
-- `Sandbox` fbc7d9adcc — author:local-beats@users.noreply.github.com + committer:local-beats@users.noreply.github.com — "sbx-grid: local artery · 2026-10-16T16:05:05Z"
-- `Sandbox` 829ca33d42 — author:local-beats@users.noreply.github.com — "sbx-grid: local artery · 2026-10-16T15:35:14Z"
+- `Zip` 456f4cb8be — author:weave-anchor-zero[bot]@users.noreply.github.com + committer:weave-anchor-zero[bot]@users.noreply.github.com — "weave-anchor-zero: 2026-10-16T04:42:43.341Z · cp#1658 · Z Chain 9369 gasPrice 0x0 · att 17"
+- `Zip` 22c0ee274e — author:weave-anchor[bot]@users.noreply.github.com + committer:weave-anchor[bot]@users.noreply.github.com — "weave-anchor: 2026-10-16T04:42:00.626Z · cp#1657 · 1/3 chains · att 1716 · market 0s/0r"
 
 ## דולגו בכנות
 - sanbox — commits API 409
