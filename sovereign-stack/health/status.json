@@ -1,7 +1,7 @@
 {
- "ts": "2026-10-16T16:34:58Z",
+ "ts": "2026-10-16T16:55:22Z",
  "timeout_ms": 90000,
- "all_ok": true,
+ "all_ok": false,
  "accounts": {
   "source": "absent",
   "count": 0
@@ -11,37 +11,37 @@
    "name": "nextjs-control",
    "url": "http://localhost:3000/",
    "method": "GET",
-   "status": 200,
-   "latency_ms": 49,
-   "verdict": "OK",
-   "detail": "status=200 latency=49ms"
+   "status": null,
+   "latency_ms": 18645,
+   "verdict": "DOWN",
+   "detail": "RemoteDisconnected: Remote end closed connection without response"
   },
   {
    "name": "llm7-free",
    "url": "https://api.llm7.io/v1/models",
    "method": "GET",
    "status": 200,
-   "latency_ms": 242,
+   "latency_ms": 293,
    "verdict": "OK",
-   "detail": "status=200 latency=242ms"
+   "detail": "status=200 latency=293ms"
   },
   {
    "name": "eth-mainnet-rpc",
    "url": "https://eth.drpc.org",
    "method": "POST",
    "status": 200,
-   "latency_ms": 93,
+   "latency_ms": 65,
    "verdict": "OK",
-   "detail": "status=200 latency=93ms"
+   "detail": "status=200 latency=65ms"
   },
   {
    "name": "zero-rail-rpc",
    "url": "https://rpc.zero.tech",
    "method": "POST",
    "status": 200,
-   "latency_ms": 707,
+   "latency_ms": 403,
    "verdict": "OK",
-   "detail": "status=200 latency=707ms"
+   "detail": "status=200 latency=403ms"
   }
  ],
  "mem": {
@@ -49,5 +49,5 @@
   "mem_available_mb": 1793.3,
   "mem_total_mb": 4041.6
  },
- "sha256": "ce8d3fc47ef6fe07ba3c11d6af39943bf17016b1b6e1a544e139432ad256e13b"
+ "sha256": "7e2a1890812c96284adaa4ac849c341a06b636e97fd5cbd0996de1372c7f1938"
 }
