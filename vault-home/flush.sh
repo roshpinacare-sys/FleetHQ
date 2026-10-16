@@ -39,19 +39,47 @@ OWNER_REPO="roshpinacare-sys"
 # minutes-dead). A private repo is drained by the same PAT law as the rest.
 REPOS=(Console Domain FleetHQ Sandbox)
 AT="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+OFFICE="${SOVEREIGN_OFFICE_DIR:-/home/z/my-project}"
 
-# ---------- credential hunt ----------
-PAT="${GIT_PAT:-${GITHUB_PAT:-}}"
-if [ -z "$PAT" ] && [ -f "$ESTATE/.env.local" ]; then
-  PAT="$(sed -n 's/^GIT_PAT=//p;s/^GITHUB_PAT=//p' "$ESTATE/.env.local" | head -1 | tr -d '"'"'"'"' || true)"
-  PAT="$(echo "$PAT" | tr -d '"')" # belt & suspenders
+# ---------- credential hunt (32: WALK ALL SOURCES until one validates) ----------
+# BUG FIXED 2026-10-16: the old hunt took the FIRST found token and gave up on
+# its 401 — a dead token at source #1 blocked the LIVE token at source #3 and
+# the whole estate measured "no credential" while a valid PAT sat in the
+# office registry. Law now mirrors the gateway's brain-walk: try every source
+# in order; the first token that validates (HTTP 200 on api.github.com/user)
+# wins. Tokens are never printed — fingerprints only.
+hunt_candidates=()
+[ -n "${GIT_PAT:-}" ] && hunt_candidates+=("$GIT_PAT")
+[ -n "${GITHUB_PAT:-}" ] && hunt_candidates+=("$GITHUB_PAT")
+if [ -f "$ESTATE/.env.local" ]; then
+  t="$(sed -n 's/^GIT_PAT=//p;s/^GITHUB_PAT=//p' "$ESTATE/.env.local" | head -1 | tr -d "\"'" || true)"
+  [ -n "$t" ] && hunt_candidates+=("$t")
 fi
-if [ -z "$PAT" ] && [ -s /home/z/.secrets/keys/Tt.txt ]; then
-  PAT="$(head -1 /home/z/.secrets/keys/Tt.txt | tr -d '[:space:]')"
+if [ -s /home/z/.secrets/keys/Tt.txt ]; then
+  t="$(head -1 /home/z/.secrets/keys/Tt.txt | tr -d '[:space:]')"
+  [ -n "$t" ] && hunt_candidates+=("$t")
+fi
+# 32: the OFFICE registry (upload/pat.env — the same file src/lib/gh-pat.ts
+# reads; the unified PAT law of the keys-registry). Value after first '='.
+if [ -s "$OFFICE/upload/pat.env" ]; then
+  t="$(sed -n 's/^[^=]*=//p' "$OFFICE/upload/pat.env" | head -1 | tr -d '[:space:]')"
+  [ -n "$t" ] && hunt_candidates+=("$t")
 fi
 
-code="$(curl -s -o /dev/null -w '%{http_code}' --max-time 12 \
-  -H "Authorization: token $PAT" https://api.github.com/user 2>/dev/null || echo 000)"
+code=000
+PAT=""
+for cand in "${hunt_candidates[@]}"; do
+  [ -z "$cand" ] && continue
+  c="$(curl -s -o /dev/null -w '%{http_code}' --max-time 12 \
+    -H "Authorization: token $cand" https://api.github.com/user 2>/dev/null || echo 000)"
+  if [ "$c" = "200" ]; then
+    PAT="$cand"; code=200
+    echo "flush: credential WALKED to a live source (pat-sha16=$(printf %s "$cand" | sha256sum | cut -c1-16))"
+    break
+  else
+    echo "flush: candidate dead (http:$c, pat-sha16=$(printf %s "$cand" | sha256sum | cut -c1-16)) — walking to next source"
+  fi
+done
 
 # ---------- helpers ----------
 divergence() { # repo -> "ahead behind"
@@ -93,7 +121,6 @@ export GIT_TERMINAL_PROMPT=0
 
 # 32: office join — ff estate/FleetHQ to the office main (which already
 # contains origin/main by law), so the same push carries office engineering.
-OFFICE="${SOVEREIGN_OFFICE_DIR:-/home/z/my-project}"
 if git -C "$OFFICE" rev-parse --verify main >/dev/null 2>&1; then
   if git -C "$FLEET" fetch -q "$OFFICE" main 2>/dev/null; then
     if git -C "$FLEET" -c merge.autoStash=true merge --ff-only FETCH_HEAD 2>/dev/null; then
