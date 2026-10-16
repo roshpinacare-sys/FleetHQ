@@ -1,28 +1,30 @@
 {
- "at": "2026-10-16T10:53:08.067Z",
- "finishedAt": "2026-10-16T10:59:35.229Z",
+ "at": "2026-10-16T13:27:28.367Z",
+ "finishedAt": "2026-10-16T13:28:05.582Z",
  "checks": {
   "boot": {
    "app": {
     "wasUp": false,
     "spawned": true,
-    "pid": 22659,
-    "note": "spawned but health not confirmed within 90s — receipts will show the truth"
+    "pid": 2261,
+    "note": "office app booted by selfcheck (it must always work)"
    },
    "foreman": {
-    "wasUp": true,
-    "spawned": false
+    "wasUp": false,
+    "spawned": true,
+    "pid": 2373,
+    "note": "foreman booted by selfcheck on the REAL books (/home/z/estate/Domain)"
    }
   },
   "security": {
-   "exit": 1,
-   "verdict": "RED",
-   "detail": "SECURITY-REGRESSION: 2 FAILURE(S) (74/76)"
+   "exit": 0,
+   "verdict": "GREEN",
+   "detail": "SECURITY-REGRESSION: ALL GREEN (81/81)"
   },
   "connectivity": {
    "exit": 0,
    "verdictHe": "נמדדו 12 קבצי-קוד יתומים ו-3 ארטיפקטים ללא צרכן",
-   "sha16": "a9fd92976be15f73"
+   "sha16": "2a198a51c58eb88e"
   },
   "freshOracle": {
    "exit": 0,
@@ -30,8 +32,8 @@
   },
   "silence": {
    "exit": 2,
-   "summary": "3 ALARM(S): port/recruit: DOWN (:3041) · beat/grid-pulse: no data (cannot prove alive) · roster: unresolved — no FLEET_ROSTER_MAP in env/estate/.env.local and no local map file; post voices unmeasurable",
-   "alarms": 3
+   "summary": "6 ALARM(S): beat/money-watch: no data (cannot prove alive) · beat/dex-mirror: no data (cannot prove alive) · beat/grid-pulse: no data (cannot prove alive) · beat/office-ci-lite: no data (cannot prove alive) · beat/office-heartbeat: no data (cannot prove alive) · roster: unresolved — no FLEET_ROSTER_MAP in env/estate/.env.local and no local map file; post voices unmeasurable",
+   "alarms": 6
   },
   "gitHealth": {
    "exit": 0,
@@ -54,7 +56,7 @@
      "name": "FleetHQ",
      "attached": true,
      "ahead": 0,
-     "behind": 3,
+     "behind": 0,
      "fsck": "ok"
     }
    ]
