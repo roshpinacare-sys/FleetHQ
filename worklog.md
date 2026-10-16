@@ -2087,3 +2087,22 @@ Stage Summary:
 - Domain云资产从0个workflows恢复到96个（814文件全回+保留twin真实修复：market-exec TDZ-FIX/STALE-CURE、head-delegate DEAD-DELEGATION-CURE、marketing/products.json）
 - 经济引擎诚实性：dups=0（三重防线：KIND2SRC水印+单道口去重+boot种子）；稳态~97万笔/天全真实
 - 根因链完整记录：100MB限制→twin大删除→restore撞同限→本轮轮转法则终结此事故类
+---
+Task ID: 3
+Agent: Z.ai Code (main orchestrator)
+Task: תמשיך — rig停摆事故修复 + 架构断言重审（local_robots可见性缺口闭合）+ Pages数据源审计 + 同步跑步机
+
+Work Log:
+- 全检发现新缺陷：micro-work-rig自11:44:26静默停摆21分钟（journal零增长）而零警报——本地机器人liveness无任何 watched surface 可见（grid-watch看云端，guard只看:3000）
+- rig停摆根因：pidfile/standby单例逻辑在--hot重载时误判→循环全灭；修复=简化为仅globalThis interval清理（43行/s的原始bug本就是同进程重载代际，跨进程从未发生）；旧实例占:3095需按cwd-kill（pkill匹配不到裸bun命令）
+- rig复活验证：15行/s ✓、cycles=5、引擎恢复~691笔/60s（~1M/天运行率）
+- 架构断言重审（对照实测）：A1"git金库保一切"✓本会话端到端证明（双仓库0/0直推）；A2"经济~1M/天真实"✓但有SPOF缺口→闭合；A3"office以git为基准"✓；A4"零外部依赖"✓（rig纯localhost、engine纯本地文件+git）
+- 闭合缺口：fleet-health API新增local_robots块（rig journal age + engine settled_at age + guard events age，每机器人诚实verdict，加法可见性不闸all_ok防空警洪水）——实测：rig 0.2min/engine 0.4min/guard 0.1min全ok
+- Pages数据源审计：console.html的fetch源（agents/office-live.json、content/published.json）实测存在且twin的office-artery 11:50还在刷新——数据接线完好，"不够好"是质量判断非断线
+- 同步跑步机：twin每~2-3min推进，fetch-merge/autostash-rebase-push循环至0/0；"unable to update local ref"一次性怪错用干净autostash-rebase解决
+
+Stage Summary:
+- 断言重审产出真实修复：本地机器人liveness进入watched surface（fleet-health），SPOF缺口闭合
+- rig单例最终形态：interval-guard only（复杂度最小化——pidfile是引入停摆的过度设计）
+- Pages机械审计通过（链接PASS、数据源活、feed/og元数据完整）；质量改进留给下一轮有浏览器验证的专门任务
+- 双仓库0/0（FleetHQ=205eb00d）
