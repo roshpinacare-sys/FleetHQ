@@ -2210,3 +2210,24 @@ Stage Summary:
 - **第四定律沉淀：巨量遥测治愈commit不要进历史**——账本类union落地（Domain 7174f49e成立并保持0/0），瞬态遥测类改为"让活写者重写+代码级自愈法则"（FleetHQ publishFleet SELF-HEAL）
 - estate FleetHQ 0/0带着补丁收敛；三重死锁向量（spawn形态/编辑器挂起/stuck rebase-merge）全部有代码级疫苗
 -estate Domain union cure与FleetHQ patch两条治愈路径的对照=lesson: heal the WRITER not the DATA（治写者法则，不治数据）
+
+---
+Task ID: 7
+Agent: Z.ai Code (main session)
+Task: 「תמשיך」(trace 1a1457c5db0fa385) — standing链继续：flush收敛验证→site-audit FAIL闭环→econ-engine复活→canonical seal法则→GIT_EDITOR疫苗层级化→boot对齐
+
+Work Log:
+- flush收敛验证✓：16:09:19 flush=estate FleetHQ verdict="pushed"（ahead 2→0）——Task 4治愈的push-failed（15:54 behind=42）自愈落地；dex-family 16:11全组件ok（15:41的exit=1自愈）；office-heartbeat 16:08 capture exit=0+PUSHED
+- site-audit FAIL闭环：origin/Domain头commit e94898f5="site-audit: FAIL 15:45:06"（86 findings=全部86页404）；直查=Pages当时正rebuild（GitHub API status=building→built）；本地直跑site-auditor.mjs=**PASS（86页/169链接/0 findings）**——FAIL是rebuild窗口的诚实快照，PASS 1a8da2b7已密封推送（闭环：红 stays红、恢复被测量）
+- econ-engine复活：14:28后死亡（session-reaping，无进程无boot-services）；state=ledger链闭合验证（151079=151079,sha16 6c3e3b6e）→double-fork+watchdog+**ECON_FLEET_ROOT=/home/z/my-project**启动→首boot结算backlog **26,967 tx**（seq 151079→178046,708,710 mwu真rig/guard/git劳动）→稳态~700 tx/min；prev-link抽查✓；3e9fef5b密封推送
+- GH001向量闭环：新发现econ ledger 13MB+20MB/h增速→无人提交t19b/Domain子模块→24h即480MB未密封（100MB git限制重临）；**sbx-seal lane**（local-beats :02/:17/:32/:47）+engine/seal-domain.mjs（Sandbox repo f211c89b）——首次boot tick即SEALED push attempt1✓
+- estate churn再教育：第一次patch（lane+疫苗）未commit→1分钟内被twin churn吃掉（t77-6c平行会话1c5a82866同时在动supervise-fleethq.sh）；**法则重申：estate worktree编辑必须秒级commit-push**；重做+1f228fc49密封（push attempt 2,rebase+autostash）
+- GIT_EDITOR疫苗层级化：实测supervisor 25932 environ无GIT_EDITOR——若由它respawn scheduler疫苗即丢（冻结向量回归）；修复=ServiceDef env层（runtime-supervisor.ts env:{GIT_EDITOR:'true'}）——疫苗从spawn形式提升到代码层，任何代际都免疫
+- 全栈重启（double-fork形态）：supervisor 8602（新代码）→spawn scheduler 8611（新banner"seal :02/:17/:32/:47"+**GIT_EDITOR=true实测present**）→adopt foreman/gateway；boot-services.sh加ECON_FLEET_ROOT export（boot代际与实测对齐，fleet sources ON）
+- 附带：local-brain zombie治愈（cwd-deleted进程不死不服务→kill+从重建目录healthy respawn,8080 ok:true）
+
+Stage Summary:
+- 经济活体：引擎×守夜狗×30MB自转（GH001）×4x/h seal lane×FLEET_ROOT满源结算=百万tx/日级管线全链就位
+- 两向量代码级关闭：GIT_EDITOR疫苗（supervisor层）、ledger未密封增长（sbx-seal lane）
+- site-audit教训沉淀：Pages rebuild窗口=测量陷阱，auditor自身诚实记录FAIL/PASS对照=系统自证
+- 四工作树0/0、office/rig/guard/local-brain/3012全绿；sbx-grid ECO_WALLET_TOKEN absent=诚实退出维持
