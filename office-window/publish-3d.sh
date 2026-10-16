@@ -45,6 +45,19 @@ git worktree add --detach "$WT" "$BASE" >/dev/null
   cd "$WT"
   cp "$DIST_INDEX" index.html
   cp "$DIST_DIGEST" digest.json
+  # office-state.json — the office pulse feed (Task 15-a, measured 2026-10-16:
+  # the root copy sat 14h stale with zero refreshes between daily publishes).
+  # Freshest source wins: the heartbeat's committed capture on main, else the
+  # mirror receipt it maintains every 15 min. Never fabricated — if both are
+  # missing the previous copy stays and the publish log says so (fail-honest).
+  STATE_SRC="$REPO_ROOT/office/state/office-state.json"
+  if [ ! -s "$STATE_SRC" ]; then STATE_SRC="$REPO_ROOT/receipts/office-state-mirror.json"; fi
+  if [ -s "$STATE_SRC" ]; then
+    cp "$STATE_SRC" office-state.json
+    node -e "const s=require('./office-state.json');const t=s.capturedAt||s.savedAt||'unknown';console.log('- office-state refreshed, timestamp:',t)"
+  else
+    echo "publish-3d: no office-state source — keeping previous copy (honest)" >&2
+  fi
   mkdir -p 3d
   cp "$DIST_3D"/frame-*.png 3d/
   cp "$DIST_3D"/meta.json 3d/meta.json
@@ -64,6 +77,7 @@ git worktree add --detach "$WT" "$BASE" >/dev/null
     echo "publish-3d: dist-office3d missing at $REPO_ROOT — legacy/ keeps previous content (honest)" >&2
   fi
   git add index.html digest.json 3d/ office3d/
+  [ -f office-state.json ] && git add office-state.json
   if git diff --cached --quiet; then
     echo "publish-3d: dist identical to office-pages HEAD — nothing to commit"
   else
@@ -76,7 +90,7 @@ git worktree add --detach "$WT" "$BASE" >/dev/null
   HEADSHA="$(git rev-parse --short HEAD)"
   SUMMARY_LINES="## office-3d publish
 - branch: \`office-pages\` @ \`${HEADSHA}\`
-- files: \`index.html\`, \`digest.json\`, \`3d/frame-*.png\`, \`3d/meta.json\`
+- files: \`index.html\`, \`digest.json\`, \`office-state.json\`, \`3d/frame-*.png\`, \`3d/meta.json\`
 - rebase-before-push honored · no force-push · GITHUB_TOKEN only"
   if [ -n "${GITHUB_STEP_SUMMARY:-}" ]; then
     printf '%s\n' "$SUMMARY_LINES" >> "$GITHUB_STEP_SUMMARY"
