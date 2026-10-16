@@ -1,51 +1,55 @@
 {
  "schema": "silence.ledger/1",
- "at": "2026-10-16T18:22:16.857Z",
+ "at": "2026-10-16T18:42:53.277Z",
  "voices": [
   {
    "name": "repo/FleetHQ",
    "kind": "repo",
-   "lastActivity": "2026-10-16T18:20:22.000Z",
-   "ageMin": 2,
+   "lastActivity": "2026-10-16T18:41:31.000Z",
+   "ageMin": 1,
    "maxSilenceMin": 180,
    "verdict": "alive",
    "detail": {
-    "subject": "pacemaker receipt: 2026-10-16T18:20:22Z",
-    "divergence": "in-sync"
+    "subject": "pacemaker receipt: 2026-10-16T18:41:31Z",
+    "divergence": "ahead:0 behind:4"
    }
   },
   {
    "name": "repo/Domain",
    "kind": "repo",
-   "lastActivity": null,
-   "ageMin": null,
-   "maxSilenceMin": 180,
-   "verdict": "no-data"
-  },
-  {
-   "name": "repo/Console",
-   "kind": "repo",
-   "lastActivity": "2026-10-16T18:13:26.000Z",
+   "lastActivity": "2026-10-16T18:33:52.000Z",
    "ageMin": 9,
    "maxSilenceMin": 180,
    "verdict": "alive",
    "detail": {
-    "subject": "pacemaker receipt: 2026-10-16T18:13:26Z",
-    "divergence": "ahead:0 behind:1"
+    "subject": "office-memory: foreman books sync 2026-10-16T18:33:52Z [skip ci]",
+    "divergence": "ahead:0 behind:5"
+   }
+  },
+  {
+   "name": "repo/Console",
+   "kind": "repo",
+   "lastActivity": "2026-10-16T18:33:06.000Z",
+   "ageMin": 10,
+   "maxSilenceMin": 180,
+   "verdict": "alive",
+   "detail": {
+    "subject": "money-watch: local beat · 2026-10-16T18:33:06Z",
+    "divergence": "in-sync"
    }
   },
   {
    "name": "port/console:3000",
    "kind": "service",
-   "lastActivity": "2026-10-16T18:22:16.857Z",
+   "lastActivity": "2026-10-16T18:42:53.277Z",
    "ageMin": 0,
    "maxSilenceMin": 0,
-   "verdict": "SILENT-ALARM"
+   "verdict": "alive"
   },
   {
    "name": "port/fleethq:3002",
    "kind": "service",
-   "lastActivity": "2026-10-16T18:22:16.857Z",
+   "lastActivity": "2026-10-16T18:42:53.277Z",
    "ageMin": 0,
    "maxSilenceMin": 0,
    "verdict": "alive"
@@ -53,7 +57,7 @@
   {
    "name": "port/foreman",
    "kind": "service",
-   "lastActivity": "2026-10-16T18:22:16.857Z",
+   "lastActivity": "2026-10-16T18:42:53.277Z",
    "ageMin": 0,
    "maxSilenceMin": 0,
    "verdict": "alive"
@@ -61,7 +65,7 @@
   {
    "name": "port/gateway",
    "kind": "service",
-   "lastActivity": "2026-10-16T18:22:16.857Z",
+   "lastActivity": "2026-10-16T18:42:53.277Z",
    "ageMin": 0,
    "maxSilenceMin": 0,
    "verdict": "alive"
@@ -69,7 +73,7 @@
   {
    "name": "port/selfcheck",
    "kind": "service",
-   "lastActivity": "2026-10-16T18:22:16.857Z",
+   "lastActivity": "2026-10-16T18:42:53.277Z",
    "ageMin": 0,
    "maxSilenceMin": 0,
    "verdict": "alive"
@@ -77,7 +81,7 @@
   {
    "name": "port/recruit",
    "kind": "service",
-   "lastActivity": "2026-10-16T18:22:16.857Z",
+   "lastActivity": "2026-10-16T18:42:53.277Z",
    "ageMin": 0,
    "maxSilenceMin": 0,
    "verdict": "alive"
@@ -85,7 +89,7 @@
   {
    "name": "port/boot-verifier",
    "kind": "service",
-   "lastActivity": "2026-10-16T18:22:16.857Z",
+   "lastActivity": "2026-10-16T18:42:53.277Z",
    "ageMin": 0,
    "maxSilenceMin": 0,
    "verdict": "alive"
@@ -93,40 +97,40 @@
   {
    "name": "beat/money-watch",
    "kind": "beat",
-   "lastActivity": "2026-10-16T16:33:35.297Z",
-   "ageMin": 109,
+   "lastActivity": "2026-10-16T16:33:06.563Z",
+   "ageMin": 130,
    "maxSilenceMin": 130,
    "verdict": "alive"
   },
   {
    "name": "beat/dex-mirror",
    "kind": "beat",
-   "lastActivity": "2026-10-16T17:52:22.349Z",
-   "ageMin": 30,
+   "lastActivity": "2026-10-16T17:52:57.980Z",
+   "ageMin": 50,
    "maxSilenceMin": 70,
    "verdict": "alive"
   },
   {
    "name": "beat/grid-pulse",
    "kind": "beat",
-   "lastActivity": "2026-10-16T15:13:24.653Z",
-   "ageMin": 189,
+   "lastActivity": "2026-10-16T15:13:07.233Z",
+   "ageMin": 210,
    "maxSilenceMin": 730,
    "verdict": "alive"
   },
   {
    "name": "beat/office-ci-lite",
    "kind": "beat",
-   "lastActivity": "2026-10-16T18:18:30.091Z",
-   "ageMin": 4,
+   "lastActivity": "2026-10-16T18:18:25.754Z",
+   "ageMin": 24,
    "maxSilenceMin": 130,
    "verdict": "alive"
   },
   {
    "name": "beat/office-heartbeat",
    "kind": "beat",
-   "lastActivity": "2026-10-16T18:08:50.378Z",
-   "ageMin": 13,
+   "lastActivity": "2026-10-16T17:42:41.010Z",
+   "ageMin": 60,
    "maxSilenceMin": 130,
    "verdict": "alive"
   },
@@ -242,8 +246,7 @@
   }
  ],
  "alarms": [
-  "repo/Domain: no data (cannot prove alive)",
   "roster: unresolved — no FLEET_ROSTER_MAP in env/estate/.env.local and no local map file; post voices unmeasurable"
  ],
- "summary": "2 ALARM(S): repo/Domain: no data (cannot prove alive) · roster: unresolved — no FLEET_ROSTER_MAP in env/estate/.env.local and no local map file; post voices unmeasurable"
+ "summary": "1 ALARM(S): roster: unresolved — no FLEET_ROSTER_MAP in env/estate/.env.local and no local map file; post voices unmeasurable"
 }
