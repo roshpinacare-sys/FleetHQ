@@ -2252,3 +2252,20 @@ Stage Summary:
 - 三台conflict-machine全部落法：#1巨量遥测commit（6-b skip法）、#2 supervisor-state（untrack+ignore）、#3 office-state（SELF-HEAL消化+修bug）
 - flush自愈链完整：pull→conflict→checkout--theirs+add（修复后）→continue→push——17:39 slot实测待验
 - economy全链：mint(692/min)→rotate(30MB)→seal(4x/h)→双载体push，全部实测闭环
+
+---
+Task ID: 7-c
+Agent: Z.ai Code (main session)
+Task: flush push-failed终局——69-stash坟场发现+flush.sh pop毒化根因+resolve_uu法则落地
+
+Work Log:
+- SELF-HEAL修复后:39 flush仍push-failed→深挖到flush.sh本体（vault-home/flush.sh才是FleetHQ腿）：**pop毒化循环实测**——line164盲pop→pop conflict→UU遗留→line173 pull立即拒跑（"cannot merge with unmerged"）→push-failed→stash保留→下轮同样
+- **69个stash坟场**（全部"lineage-guard autostash"）：每个失败flush留下1+个parked stash；实测最新stash内容capturedAt=16:23 vs worktree=17:53:04 vs origin=17:53:53——**全部被活写者覆盖，零信息损失clear**
+- resolve_uu法则写进flush.sh（9d322faa7）：每次pop后+每次failed pull后→UU文件checkout --theirs(=本地/stash侧=活写者更新)+add双跑；MERGE_HEAD open则conclude；失败重试一次；**永不留UU毒**
+- 第二次backtick教训：SELF-HEAL注释里的`||`进bash模板=命令替换开启→"unexpected EOF"（17:40 flush实炸）——**法则升级：嵌入bash永无backtick**（注释也不行）；flush.sh里backticks无害（真bash文件注释不解析——两场景对照沉淀）
+- estate commit劫持教训重申：twin的staged文件会被下一个裸commit卷走（本幕office-ci/index.ts等7文件实测）——**estate里commit必带-- pathspec或先查staged**
+- scheduler换了3代（8611→22412→25507）每代载入增量修复代码；:32/:47 seal连击SEALED（4文件含轮转archive）
+
+Stage Summary:
+- FleetHQ push-failed根因链完整闭环：publishFleet ||bug（42206f937）→backtick注释（61551104c）→flush.sh pop毒化+69 stash（9d322faa7）——三层修复全部实测推上origin
+- 18:09 flush=patched flush.sh首航——预期四仓库全verdict收敛
