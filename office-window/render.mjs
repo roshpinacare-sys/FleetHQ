@@ -482,21 +482,21 @@ section{min-width:0}
 .tablewrap{overflow-x:auto; -webkit-overflow-scrolling:touch; max-width:100%}
 table{width:100%; border-collapse:collapse; font-size:.86rem; min-width:640px}
 th{color:var(--muted); text-align:start; font-weight:600; padding:8px 10px; border-bottom:1px solid var(--border); white-space:nowrap}
-td{padding:9px 10px; border-bottom:1px solid rgba(34,48,63,.55); vertical-align:top}
+td{padding:9px 10px; border-bottom:1px solid rgba(34,48,63,.55); vertical-align:middle}
 tr:last-child td{border-bottom:none}
 .num{font-variant-numeric:tabular-nums}
 .private-row td{color:var(--muted); font-size:.8rem}
-.run-name{font-size:.8rem}
+.run-name{font-size:.8rem; overflow-wrap:anywhere}
 .kv{list-style:none; margin:0; padding:0}
 .kv li{display:flex; justify-content:space-between; gap:12px; padding:7px 0; border-top:1px solid var(--border); font-size:.9rem}
 .kv li:first-child{border-top:none}
 .marketing .card p{font-size:.9rem}
 .frames{display:grid; gap:12px; grid-template-columns:1fr; margin-top:12px}
 .fig3d{margin:0; border:1px solid var(--border); border-radius:10px; overflow:hidden; background:var(--surface)}
-.fig3d img{display:block; width:100%; height:auto}
+.fig3d img{display:block; width:100%; height:auto; aspect-ratio:16/9; object-fit:cover}
+p,.goal-text,.report-excerpt,.meta{overflow-wrap:anywhere}
 @media (min-width:760px){
   .frames{grid-template-columns:1fr 1fr}
-  .frames .fig3d:first-child{grid-column:1 / -1}
 }
 .links{display:flex; flex-wrap:wrap; gap:10px; margin-top:12px}
 .links a{
