@@ -339,6 +339,40 @@ export async function GET() {
   const batcher = await postBatcherState();
   const bootwatcher = await bootWatcherState();
 
+  // local_robots (assertion-review cure 2026-10-16): the micro-work-rig halt
+  // (11:44→12:05Z) went unnoticed — local robots had no liveness visibility in
+  // any watched surface. Freshness here = mtime/age of each robot's own
+  // measured state file. Additive visibility only (does NOT gate all_ok — no
+  // alert flood on legit restarts); verdicts are honest per-robot.
+  const minsSince = (p: string, tsField?: string): number | null => {
+    try {
+      if (tsField) {
+        const j = JSON.parse(fs.readFileSync(p, 'utf8')) as Record<string, unknown>;
+        const t = Date.parse(String(j[tsField] ?? ''));
+        return Number.isFinite(t) ? (Date.now() - t) / 60000 : null;
+      }
+      return (Date.now() - fs.statSync(p).mtime.getTime()) / 60000;
+    } catch {
+      return null;
+    }
+  };
+  const robotVerdict = (ageMin: number | null, maxMin: number): string =>
+    ageMin === null ? 'absent' : ageMin > maxMin ? 'stale' : 'ok';
+  const local_robots = {
+    micro_work_rig: {
+      journal_age_min: minsSince(path.join(ROOT, 'mini-services/micro-work-rig/state/work-journal.jsonl')),
+      verdict: robotVerdict(minsSince(path.join(ROOT, 'mini-services/micro-work-rig/state/work-journal.jsonl')), 10),
+    },
+    econ_engine: {
+      settled_age_min: minsSince(path.join(ROOT, 't19b/Domain/agents/econ-engine-state.json'), 'settled_at'),
+      verdict: robotVerdict(minsSince(path.join(ROOT, 't19b/Domain/agents/econ-engine-state.json'), 'settled_at'), 10),
+    },
+    health_guard: {
+      events_age_min: minsSince(path.join(ROOT, 'mini-services/health-guard/state/guard-events.jsonl')),
+      verdict: robotVerdict(minsSince(path.join(ROOT, 'mini-services/health-guard/state/guard-events.jsonl')), 10),
+    },
+  };
+
   return Response.json({
     at,
     all_ok: allOk,
@@ -349,6 +383,7 @@ export async function GET() {
     tps,
     seal,
     books_lineage: lineage,
+    local_robots,
     gateway_telemetry: telem
       ? { at: telem.at ?? null, ok: telem.ok ?? null, error: telem.error ?? null }
       : null,
