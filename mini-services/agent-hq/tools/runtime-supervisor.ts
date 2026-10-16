@@ -92,6 +92,22 @@ const services: ServiceDef[] = [
     env: { GIT_EDITOR: 'true' },
     log: path.join(RUNTIME, 'local-beats.log'),
   },
+  {
+    // fleet-economy — the internal economy engine (wave-91, doctrine-4). Its
+    // own supervise-economy.sh loop was reaped with the agent shell (measured
+    // 2026-10-16: silent deaths, supervisor gone) and its engine.lock was
+    // briefly git-tracked (checkout/merge reset stale PIDs → honest-exit war;
+    // root-fixed in canon 30d7f1f via .gitignore). Now under supervisor
+    // ownership: liveness :3016 + single-writer lock respected (it exits
+    // honestly if another engine holds the book — the loser exits, the
+    // winner serves; takeover on the next dead tick).
+    name: 'fleet-economy',
+    port: 3016,
+    cwd: '/home/z/my-project/mini-services/fleet-economy',
+    script: 'index.ts',
+    env: {},
+    log: path.join(RUNTIME, 'fleet-economy.log'),
+  },
 ];
 
 type ServiceState = {
