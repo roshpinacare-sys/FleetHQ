@@ -1,7 +1,7 @@
 {
- "ts": "2026-10-16T14:30:02Z",
+ "ts": "2026-10-16T15:34:31Z",
  "timeout_ms": 90000,
- "all_ok": true,
+ "all_ok": false,
  "accounts": {
   "source": "absent",
   "count": 0
@@ -12,18 +12,18 @@
    "url": "http://localhost:3000/",
    "method": "GET",
    "status": 200,
-   "latency_ms": 60,
+   "latency_ms": 47,
    "verdict": "OK",
-   "detail": "status=200 latency=60ms"
+   "detail": "status=200 latency=47ms"
   },
   {
    "name": "llm7-free",
    "url": "https://api.llm7.io/v1/models",
    "method": "GET",
    "status": 200,
-   "latency_ms": 494,
+   "latency_ms": 294,
    "verdict": "OK",
-   "detail": "status=200 latency=494ms"
+   "detail": "status=200 latency=294ms"
   },
   {
    "name": "eth-mainnet-rpc",
@@ -39,15 +39,15 @@
    "url": "https://rpc.zero.tech",
    "method": "POST",
    "status": 200,
-   "latency_ms": 679,
+   "latency_ms": 363,
    "verdict": "OK",
-   "detail": "status=200 latency=679ms"
+   "detail": "status=200 latency=363ms"
   }
  ],
  "mem": {
-  "state": "OK",
-  "mem_available_mb": 1591.6,
+  "state": "LOW-MEM",
+  "mem_available_mb": 381.2,
   "mem_total_mb": 4041.6
  },
- "sha256": "ef4e7d8302a77e2eca38b46bc61ee1c220c97443fad64f69aef3bf8fc65732d7"
+ "sha256": "52c25e3deef8721080b033006b6438118e801652e2890cfcc3f2c9cbcde21fad"
 }
