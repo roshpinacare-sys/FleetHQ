@@ -1,0 +1,107 @@
+{
+  "service": "office-recruit",
+  "generatedAt": "2026-10-13T10:39:12.432Z",
+  "signals": {
+    "repos": [
+      {
+        "name": "Console",
+        "lastCommitAt": "2026-10-13T10:33:20Z",
+        "ageHours": 0.1,
+        "commits7d": 577,
+        "stale": false,
+        "aheadOfOrigin": 1,
+        "behindOrigin": 0,
+        "health": "active",
+        "isArchive": false,
+        "evidence": "git: last commit 2026-10-13T10:33:20Z, 577 commits/7d, ahead=1 behind=0 → active"
+      },
+      {
+        "name": "Domain",
+        "lastCommitAt": "2026-10-13T10:24:21Z",
+        "ageHours": 0.2,
+        "commits7d": 1304,
+        "stale": false,
+        "aheadOfOrigin": 0,
+        "behindOrigin": 0,
+        "health": "active",
+        "isArchive": false,
+        "evidence": "git: last commit 2026-10-13T10:24:21Z, 1304 commits/7d, ahead=0 behind=0 → active"
+      },
+      {
+        "name": "FleetHQ",
+        "lastCommitAt": "2026-10-13T10:27:21Z",
+        "ageHours": 0.2,
+        "commits7d": 1293,
+        "stale": false,
+        "aheadOfOrigin": 0,
+        "behindOrigin": 0,
+        "health": "active",
+        "isArchive": false,
+        "evidence": "git: last commit 2026-10-13T10:27:21Z, 1293 commits/7d, ahead=0 behind=0 → active"
+      },
+      {
+        "name": "Sandbox",
+        "lastCommitAt": "2026-10-13T09:43:51Z",
+        "ageHours": 0.9,
+        "commits7d": 1245,
+        "stale": false,
+        "aheadOfOrigin": 0,
+        "behindOrigin": 0,
+        "health": "active",
+        "isArchive": false,
+        "evidence": "git: last commit 2026-10-13T09:43:51Z, 1245 commits/7d, ahead=0 behind=0 → active"
+      }
+    ],
+    "openProposals": [
+      "2026-10-11-research-e1-spread-regime.md",
+      "2026-10-11-wo-fleethq-reds.md",
+      "2026-10-11-wo-unwired-adsmarket-marketing.md"
+    ],
+    "ciVerdict": "unknown",
+    "ciVerdictAt": "2026-10-13T09:41:45.849Z",
+    "freshOracleAgeHours": 0.3,
+    "operatorDirectives": 17,
+    "latestOperatorDirectiveAt": "2026-10-13T09:38:59.060Z"
+  },
+  "rolesNeeded": [
+    {
+      "role": "operator-orders-executor",
+      "roleHe": "מבצע-הנחיות-מפעיל",
+      "count": 17,
+      "targets": [
+        "latest (2026-10-13T09:38:59.060Z): [grid-watch] אדומים חדשים בצי (75): Domain/weave-ecosystem — failing; Domain/treasury-route — failing; Domain/ladder-ref"
+      ],
+      "evidence": [
+        "office/state/operator-inbox.jsonl — receipted owner words",
+        "directives on file: 17"
+      ],
+      "derivedFrom": "operator channel: the owner's directives are the office's first-priority work"
+    },
+    {
+      "role": "executor",
+      "roleHe": "מבצע-הצעות",
+      "count": 3,
+      "targets": [
+        "2026-10-11-research-e1-spread-regime.md",
+        "2026-10-11-wo-fleethq-reds.md",
+        "2026-10-11-wo-unwired-adsmarket-marketing.md"
+      ],
+      "evidence": [
+        "open proposal: 2026-10-11-research-e1-spread-regime.md",
+        "open proposal: 2026-10-11-wo-fleethq-reds.md",
+        "open proposal: 2026-10-11-wo-unwired-adsmarket-marketing.md"
+      ],
+      "derivedFrom": "office/PROPOSALS with no DONE/RESOLVED/CLOSED marker"
+    }
+  ],
+  "totals": {
+    "reposScanned": 4,
+    "staleRepos": 0,
+    "roles": 2
+  },
+  "noForgery": {
+    "failLoud": true,
+    "evidenceBound": true
+  },
+  "sha256": "450be326910bee1d220ccab332b03902d72b9b131cd630a3039c9ec8cdbc5fbc"
+}
