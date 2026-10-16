@@ -47,7 +47,13 @@ git worktree add --detach "$WT" "$BASE" >/dev/null
   mkdir -p 3d
   cp "$DIST_3D"/frame-*.png 3d/
   cp "$DIST_3D"/meta.json 3d/meta.json
-  git add index.html digest.json 3d/
+  # office3d/ — עמוד-הכניסה-החדש: צופה-קולנועי של החדר-האמיתי (room-viewer),
+  # והחדר-האינטראקטיבי-הקודם (v4) נשאר-זמין תחת office3d/legacy/ (additive-only).
+  node "$(pwd)/office-window/room-viewer.mjs" --3d "$DIST_3D" --out "$DIST_3D/../office3d/index.html" || true
+  mkdir -p office3d/legacy
+  if [ -f "$DIST_3D/../office3d/index.html" ]; then cp "$DIST_3D/../office3d/index.html" office3d/index.html; fi
+  if [ -d "$(pwd)/dist-office3d" ]; then cp -r "$(pwd)/dist-office3d/." office3d/legacy/ 2>/dev/null || true; fi
+  git add index.html digest.json 3d/ office3d/
   if git diff --cached --quiet; then
     echo "publish-3d: dist identical to office-pages HEAD — nothing to commit"
   else
