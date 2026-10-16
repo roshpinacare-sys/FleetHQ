@@ -2231,3 +2231,24 @@ Stage Summary:
 - 两向量代码级关闭：GIT_EDITOR疫苗（supervisor层）、ledger未密封增长（sbx-seal lane）
 - site-audit教训沉淀：Pages rebuild窗口=测量陷阱，auditor自身诚实记录FAIL/PASS对照=系统自证
 - 四工作树0/0、office/rig/guard/local-brain/3012全绿；sbx-grid ECO_WALLET_TOKEN absent=诚实退出维持
+
+---
+Task ID: 7-b
+Agent: Z.ai Code (main session)
+Task: 継続「תמשיך」(trace 1a145aadcbbcac89)第二幕——estate FleetHQ flush push-failed根因链：conflict-machine #2/#3发现+SELF-HEAL顺序bug修复+GH001轮转首次实战
+
+Work Log:
+- sbx-seal lane三连SEALED验证✓（boot :32/16:47/17:02各push attempt 1）——lane法则站稳
+- GH001轮转首次实战✓：17:19 ledger达67,040行/28MB→自动轮转 archive-151052-218091.jsonl.gz(2.5MB)，live从218092续链，prev=4317966267068ca8逐字闭合（log显示8字符截断=虚惊，实测16字符全等）；692 tx/min稳态持续
+- conflict-machine #2根治：runtime-supervisor-state.json（write-only实证：全库无读者，supervisor atomicWrite第135行唯一触点）被twin sweep+flush双写→每次pull --rebase冲突→untrack+gitignore（90184fa0e）
+- estate commit劫持实测：我commit时twin的staged遥测7文件+index.ts被一并卷入（estate共享index教训：**estate里裸git commit必先检查staged清单，或commit -- <paths>**）
+- rebase状态机第三次损坏（0 unmerged却拒continue）→Task 4 plumbing配方再战：abort→fetch→reset --soft origin/main→非payload文件全restore到origin（identity变更t77会话优先）→payload单发commit→push
+- conflict-machine #3（office-state:heartbeat :08写/flush :09拉=结构相邻窗口）确认存在但保持tracked（云端读者），改由SELF-HEAL消化
+- **SELF-HEAL顺序bug抓到**（16:54/17:09/17:24三次push-failed的同一根因）：`checkout --theirs || git add`——checkout成功时add被跳过→index留unmerged→continue拒跑→abort。修为checkout+add无条件双跑（42206f937）
+- scheduler 22412重启加载修复代码（supervisor spawn，GIT_EDITOR=true疫苗实测present）
+- 附带：office 16:40 DOWN=kernel OOM实测（dmesg:next-server 1.3GB被杀）→guard 17:00:48自愈重spawn（1GB heap cap）；local-brain zombie治愈（cwd-deleted→kill+从重建目录healthy respawn，8080 ok）；Sandbox compute-canary failures=设计内billing-wall探测（T-REARM，非bug）；identity-guard failures=10-13历史风暴
+
+Stage Summary:
+- 三台conflict-machine全部落法：#1巨量遥测commit（6-b skip法）、#2 supervisor-state（untrack+ignore）、#3 office-state（SELF-HEAL消化+修bug）
+- flush自愈链完整：pull→conflict→checkout--theirs+add（修复后）→continue→push——17:39 slot实测待验
+- economy全链：mint(692/min)→rotate(30MB)→seal(4x/h)→双载体push，全部实测闭环
