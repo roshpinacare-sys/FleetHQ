@@ -7,6 +7,10 @@ DIR="$(cd "$(dirname "$0")" && pwd)"
 LOG="$DIR/state/supervisor.log"
 mkdir -p "$DIR/state"
 
+# t77-6b: אבחון-מוות-עצמי — כל-אות-סיום-נרשמת-בכנות
+trap 'echo "$(date -u +%FT%TZ) SIGNAL-EXIT (term/hup/int)" >> "$DIR/state/supervisor-death.log"; exit 0' TERM HUP INT
+trap 'echo "$(date -u +%FT%TZ) NORMAL-EXIT-OR-CRASH line=$LINENO" >> "$DIR/state/supervisor-death.log"' EXIT
+
 inner_loop() {
   while true; do
     if ! curl -s -m 5 -o /dev/null http://127.0.0.1:3002 2>/dev/null; then
