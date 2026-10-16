@@ -1,44 +1,44 @@
 {
  "schema": "silence.watchdog/1",
- "at": "2026-10-16T11:56:31.606Z",
+ "at": "2026-10-16T15:00:13.778Z",
  "scope": "actions",
  "voices": [
   {
    "name": "origin/FleetHQ",
-   "lastActivity": "2026-10-16T11:56:24.000Z",
+   "lastActivity": "2026-10-16T15:00:11.000Z",
    "ageMin": 0,
    "maxSilenceMin": 240,
    "verdict": "alive",
    "detail": {
-    "subject": "sync twin"
+    "subject": "pacemaker receipt: 2026-10-16T15:00:11Z"
    }
   },
   {
    "name": "origin/Domain",
-   "lastActivity": "2026-10-16T11:54:48.000Z",
-   "ageMin": 2,
+   "lastActivity": "2026-10-16T14:56:31.000Z",
+   "ageMin": 4,
    "maxSilenceMin": 240,
    "verdict": "alive",
    "detail": {
-    "subject": "sync: twin beat (race)"
+    "subject": "office window: AGING 2026-10-16T14:56:31Z"
    }
   },
   {
    "name": "origin/Console",
-   "lastActivity": "2026-10-16T11:53:14.000Z",
-   "ageMin": 3,
+   "lastActivity": "2026-10-16T14:48:18.000Z",
+   "ageMin": 12,
    "maxSilenceMin": 240,
    "verdict": "alive",
    "detail": {
-    "subject": "pacemaker receipt: 2026-10-16T11:53:14Z"
+    "subject": "pacemaker receipt: 2026-10-16T14:48:18Z"
    }
   },
   {
    "name": "divergence/FleetHQ",
-   "lastActivity": "2026-10-16T11:54:15.000Z",
-   "ageMin": 2,
+   "lastActivity": "2026-10-16T13:39:14.000Z",
+   "ageMin": 81,
    "maxSilenceMin": 75,
-   "verdict": "alive",
+   "verdict": "SILENT-ALARM",
    "detail": {
     "source": "push-queue-receipt (via git)",
     "ahead": 0,
@@ -47,22 +47,22 @@
   },
   {
    "name": "divergence/Domain",
-   "lastActivity": "2026-10-16T11:54:15.000Z",
-   "ageMin": 2,
+   "lastActivity": "2026-10-16T13:39:14.000Z",
+   "ageMin": 81,
    "maxSilenceMin": 75,
-   "verdict": "alive",
+   "verdict": "SILENT-ALARM",
    "detail": {
     "source": "push-queue-receipt (via git)",
     "ahead": 0,
-    "behind": 5
+    "behind": 0
    }
   },
   {
    "name": "divergence/Console",
-   "lastActivity": "2026-10-16T11:54:15.000Z",
-   "ageMin": 2,
+   "lastActivity": "2026-10-16T13:39:14.000Z",
+   "ageMin": 81,
    "maxSilenceMin": 75,
-   "verdict": "alive",
+   "verdict": "SILENT-ALARM",
    "detail": {
     "source": "push-queue-receipt (via git)",
     "ahead": 0,
@@ -71,18 +71,18 @@
   },
   {
    "name": "sandbox-ledger (via git)",
-   "lastActivity": "2026-10-16T11:49:01.279Z",
-   "ageMin": 8,
+   "lastActivity": "2026-10-16T14:59:19.789Z",
+   "ageMin": 1,
    "maxSilenceMin": 180,
    "verdict": "alive",
    "detail": {
-    "localSummary": "3 ALARM(S): beat/grid-pulse: no data (cannot prove alive) · beat/office-ci-lite:"
+    "localSummary": "2 ALARM(S): beat/grid-pulse: no data (cannot prove alive) · roster: unresolved —"
    }
   },
   {
    "name": "pages/money",
-   "lastActivity": "2026-10-16T08:33:16.642Z",
-   "ageMin": 203,
+   "lastActivity": "2026-10-16T12:33:16.403Z",
+   "ageMin": 147,
    "maxSilenceMin": 240,
    "verdict": "alive",
    "detail": {
@@ -91,16 +91,20 @@
   },
   {
    "name": "pages/site-audit",
-   "lastActivity": "2026-10-16T09:33:50.762Z",
-   "ageMin": 143,
+   "lastActivity": "2026-10-16T11:52:11.475Z",
+   "ageMin": 188,
    "maxSilenceMin": 360,
    "verdict": "alive",
    "detail": {
     "verdict": "unknown",
-    "at": "2026-10-16T09:33:50.762Z"
+    "at": "2026-10-16T11:52:11.475Z"
    }
   }
  ],
- "alarms": [],
- "summary": "ALL VISIBLE VOICES ALIVE"
+ "alarms": [
+  "divergence/FleetHQ: silent 81min (limit 75)",
+  "divergence/Domain: silent 81min (limit 75)",
+  "divergence/Console: silent 81min (limit 75)"
+ ],
+ "summary": "3 ALARM(S): divergence/FleetHQ: silent 81min (limit 75) · divergence/Domain: silent 81min (limit 75) · divergence/Console: silent 81min (limit 75)"
 }
