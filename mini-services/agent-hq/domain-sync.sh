@@ -113,6 +113,18 @@ sync_once() {
   if [ -n "$addpaths" ]; then
     git add $addpaths 2>/dev/null || true
   fi
+  # ── VAULT LAW v2 (t77-4c, measured disaster 9b24b2572): a books-sync commit
+  # NEVER carries deletions. A sparse/partial clone worktree turns missing
+  # files into staged deletes — 9b24b2572 erased 482 files (141K lines) of
+  # agents/ + truth/ exactly this way, killing office-artery.mjs and
+  # triggering the every-10-min failure email storm. Deletions belong to
+  # their own explicit discipline — never to a memory commit. ──
+  local dels
+  dels=$(git diff --cached --name-only --diff-filter=D 2>/dev/null | head -50)
+  if [ -n "$dels" ]; then
+    log "VAULT LAW v2: blocking staged deletions (never ride a memory commit): $(printf '%s ' $dels | head -c 300)"
+    for f in $dels; do git reset -q HEAD -- "$f" 2>/dev/null || true; done
+  fi
   # second gate: the staged set must be book-pure — anything else aborts loud
   local foreign
   foreign=$(git diff --cached --name-only 2>/dev/null | grep -vE '^(agents|books|reports|truth)/' | head -5)
