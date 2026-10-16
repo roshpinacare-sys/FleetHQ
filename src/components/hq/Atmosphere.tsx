@@ -273,22 +273,22 @@ export function Atmosphere() {
     if (sunRef.current) {
       sunRef.current.position.set(C.sunPos.x + sway * SWAY_X, C.sunPos.y, C.sunPos.z);
       sunRef.current.color.copy(C.sunColor);
-      sunRef.current.intensity = C.sunIntensity * (1 + sway * SWAY_I);
+      sunRef.current.intensity = C.sunIntensity * (1 + sway * SWAY_I) * 0.82;
     }
     if (hemiRef.current) {
       hemiRef.current.color.copy(C.hemiSky);
       hemiRef.current.groundColor.copy(C.hemiGround);
-      hemiRef.current.intensity = C.hemiIntensity;
+      hemiRef.current.intensity = C.hemiIntensity * 0.46;
     }
     if (ambRef.current) {
       ambRef.current.color.copy(C.ambientColor);
-      ambRef.current.intensity = C.ambientIntensity;
+      ambRef.current.intensity = C.ambientIntensity * 0.46;
     }
     if (fillRef.current) {
       fillRef.current.color.copy(C.fillColor);
-      fillRef.current.intensity = C.fillIntensity;
+      fillRef.current.intensity = C.fillIntensity * 0.66;
     }
-    if (spotRef.current) spotRef.current.intensity = C.spotIntensity;
+    if (spotRef.current) spotRef.current.intensity = C.spotIntensity * 0.72;
     if (ptRef.current) {
       ptRef.current.color.copy(C.pointColor);
       ptRef.current.intensity = C.pointIntensity;
@@ -309,8 +309,8 @@ export function Atmosphere() {
   return (
     <group>
       {/* כיפה: שמיים-יום מעל, רצפת-אבן בהירה מתחת — החדר כולו נושם */}
-      <hemisphereLight ref={hemiRef} args={['#f6f0e2', '#cfc6b6', 3.15]} />
-      <ambientLight ref={ambRef} intensity={1.18} color="#c6bfb1" />
+      <hemisphereLight ref={hemiRef} args={['#f6f0e2', '#cfc6b6', 1.45]} />
+      <ambientLight ref={ambRef} intensity={0.55} color="#c6bfb1" />
       {/* שמש ראשית — מיקום/צבע/עצמה לפי שלב השעון-הירושלמי, צללים אמת */}
       <directionalLight
         ref={sunRef}
@@ -337,7 +337,7 @@ export function Atmosphere() {
         position={[0, 3.35, 0.6]}
         angle={0.75}
         penumbra={0.7}
-        intensity={2.1}
+        intensity={1.5}
         color="#ffd9a6"
         distance={14}
         decay={2}

@@ -17,7 +17,7 @@ import {
 } from '@/lib/hq/contract';
 import {
   makeWoodTexture, makeBrushedMetalTexture, makeMarbleTexture, makeFabricTexture,
-  makeMonitorScreen, makeNameplate, makeTaskWallTexture,
+  makeMonitorScreen, makeNameplate, makeFleetWallTexture,
   makeReceptionScreen, makeSignTexture,
 } from '@/lib/hq/textures';
 import { useHq } from '@/lib/hq/store';
@@ -33,7 +33,7 @@ type Nameplate = ReturnType<typeof makeNameplate>;
 
 const monitors = new Map<string, Monitor>();
 const nameplates = new Map<string, Nameplate>();
-let taskWallTex: ReturnType<typeof makeTaskWallTexture> | null = null;
+let taskWallTex: ReturnType<typeof makeFleetWallTexture> | null = null;
 let receptionTex: ReturnType<typeof makeReceptionScreen> | null = null;
 
 function monitorOf(id: string, name: string, color: string): Monitor {
@@ -67,12 +67,9 @@ export function StationSync() {
         ag?.activity || '', STATE_COLORS[ag?.state || 'idle'],
       );
     }
-    // לוח משימות
-    if (!taskWallTex) taskWallTex = makeTaskWallTexture();
-    taskWallTex.set(st.snap.tasks.map((t) => {
-      const c = crew.find((x) => x.id === t.assignee);
-      return { id: t.id, title: t.title, status: t.status, assignee: c?.name.he, color: c?.color };
-    }));
+    // לוח הצי החי (Task 8) — דופק-הצי החי מה-API (כלכלה · מסילות · שירותים)
+    if (!taskWallTex) taskWallTex = makeFleetWallTexture();
+    taskWallTex.set(st.fleet, st.tick);
     // קיר הגיט מוזן ב-GitWallSync (exec-14-3d: קיר-אמת פר-ספר + טיק-טריות)
     // קבלה
     if (!receptionTex) receptionTex = makeReceptionScreen();
@@ -333,7 +330,7 @@ function LeadTable({ mats }: { mats: OfficeMats }) {
  *  (משטח סטנדרטי עם הקרנה עדינה — לא בסיק-מסך שאינו מושפע מהתאורה). */
 function TaskWall({ mats }: { mats: OfficeMats }) {
   const focus = useFocus('wall', 'wall');
-  const tex = useMemo(() => (taskWallTex ??= makeTaskWallTexture()), []);
+  const tex = useMemo(() => (taskWallTex ??= makeFleetWallTexture()), []);
   const [x, z] = to3(TASK_WALL.cx, TASK_WALL.cy);
   const w = TASK_WALL.w * SCALE, h = TASK_WALL.h * SCALE;
   const wallInnerZ = -PLAN_H * SCALE / 2 + WALL_T; // פנים-הקיר הצפוני
@@ -349,7 +346,7 @@ function TaskWall({ mats }: { mats: OfficeMats }) {
       {/* משטח הקנבס — חומר מואר מהחדר + הקרנה עדינה לקריאות (לא זוהר-חלון) */}
       <mesh position={[0, 0, d / 2 + 0.004]}>
         <planeGeometry args={[w, h]} />
-        <meshStandardMaterial map={tex.tex} roughness={0.85} emissive="#ffffff" emissiveMap={tex.tex} emissiveIntensity={0.42} toneMapped={false} />
+        <meshStandardMaterial map={tex.tex} roughness={0.6} emissive="#ffffff" emissiveMap={tex.tex} emissiveIntensity={0.92} toneMapped={false} />
       </mesh>
       {/* כותרת מותאמת — רצועת-שם על גבי המסגרת */}
       <mesh position={[0, h / 2 + 0.085, d / 2 + 0.006]}>
@@ -358,7 +355,7 @@ function TaskWall({ mats }: { mats: OfficeMats }) {
       </mesh>
       <mesh position={[0, h / 2 + 0.085, d / 2 + 0.016]}>
         <planeGeometry args={[w * 0.5, 0.05]} />
-        <meshBasicMaterial map={useMemo(() => makeSignTexture('לוח המשימות', '#2b2015'), [])} transparent toneMapped={false} depthWrite={false} />
+        <meshBasicMaterial map={useMemo(() => makeSignTexture('לוח הצי החי', '#2b2015'), [])} transparent toneMapped={false} depthWrite={false} />
       </mesh>
       {/* מגש מרקרים בתחתית — אות-היכר של לובי פיזי */}
       <mesh position={[0, -h / 2 - 0.045, d / 2 + 0.035]} castShadow>
@@ -722,24 +719,175 @@ function CoffeeBar({ mats }: { mats: OfficeMats }) {
 
 // ─────────────── להבת הריבונות ───────────────
 /**
- * ליבת המשרד — להבת-הריבונות: קונוס שיידר רועש + תאורה פועמת.
- * סמל-המשרד; מרוסן: בלי ניצוצות, בלי הילה, בלי צל-נקודתי.
- * צבעי ליבה: ענבר-זהב (חם), בלי כחול.
+ * ליבת המשרד — להבת-הריבונות חיה (Task 8): קונוס שיידר + דופק-המצאה אמיתי.
+ * · גובה/עוצמת-האור נמדדים מקצב-העבודה החי (tx/min מה-API — החלקה אקספוננציאלית)
+ * · חלקיקי-מצאה: כל חלקיק = יחידת-עבודה שנטבעה; קצב-היווצרות ∝ tx/min
+ *   (מוגבל לביצועים), עולים מפיסגת-הלהבה, נעלמים בדהייה
+ * · טבעת-דופק על הרצפה מתרחבת בקצב-העבודה — הלהבה "נושמת" את הכלכלה האמיתית
+ * כנות: בלי דופק → קצב-בסיס רגוע (להבה סמלית), לא אפס ולא המצאה.
  */
+const MINT_PARTICLES = 240;
+const RISE_TEX = () => {
+  const c = document.createElement('canvas');
+  c.width = c.height = 64;
+  const ctx = c.getContext('2d')!;
+  const g = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
+  g.addColorStop(0, 'rgba(255,235,190,1)');
+  g.addColorStop(0.35, 'rgba(255,190,110,0.85)');
+  g.addColorStop(1, 'rgba(255,150,60,0)');
+  ctx.fillStyle = g; ctx.fillRect(0, 0, 64, 64);
+  const t = new THREE.CanvasTexture(c);
+  t.colorSpace = THREE.SRGBColorSpace;
+  return t;
+};
+
+let mintMat: THREE.ShaderMaterial | null = null;
+function getMintMaterial(): THREE.ShaderMaterial {
+  if (!mintMat) {
+    mintMat = new THREE.ShaderMaterial({
+      transparent: true,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending,
+      uniforms: { uMap: { value: RISE_TEX() } },
+      vertexShader: /* glsl */ `
+        attribute float aLife;
+        attribute float aSize;
+        varying float vLife;
+        void main() {
+          vLife = aLife;
+          vec4 mv = modelViewMatrix * vec4(position, 1.0);
+          gl_PointSize = aSize * (240.0 / -mv.z) * (0.4 + 0.6 * aLife);
+          gl_Position = projectionMatrix * mv;
+        }
+      `,
+      fragmentShader: /* glsl */ `
+        uniform sampler2D uMap;
+        varying float vLife;
+        void main() {
+          float a = texture2D(uMap, gl_PointCoord).a;
+          gl_FragColor = vec4(1.0, 0.78, 0.38, a * vLife * 0.9);
+        }
+      `,
+    });
+  }
+  return mintMat;
+}
+
+function MintParticles() {
+  const ref = useRef<THREE.Points>(null);
+  // מהירויות-עלייה — ref (בלי מוטציה על הגיאומטריה מחוץ-למאגרים)
+  const velRef = useRef<Float32Array>(new Float32Array(MINT_PARTICLES));
+  const geo = useMemo(() => {
+    const g = new THREE.BufferGeometry();
+    const pos = new Float32Array(MINT_PARTICLES * 3);
+    const life = new Float32Array(MINT_PARTICLES);
+    const size = new Float32Array(MINT_PARTICLES);
+    for (let i = 0; i < MINT_PARTICLES; i++) life[i] = -1; // מתים-מראש
+    g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+    g.setAttribute('aLife', new THREE.BufferAttribute(life, 1));
+    g.setAttribute('aSize', new THREE.BufferAttribute(size, 1));
+    return g;
+  }, []);
+
+  // מצב-מצאה: קצב חלק + פאזת-טפטוף
+  const rate = useRef(6);
+  const acc = useRef(0);
+  const lastSeq = useRef<number | null>(null);
+  const burst = useRef(0);
+
+  useFrame((_, dtRaw) => {
+    const dt = Math.min(dtRaw, 0.1);
+    const pts = ref.current;
+    if (!pts) return;
+    const g = geo;
+    const pos = g.getAttribute('position') as THREE.BufferAttribute;
+    const life = g.getAttribute('aLife') as THREE.BufferAttribute;
+    const size = g.getAttribute('aSize') as THREE.BufferAttribute;
+    const vel = velRef.current;
+
+    // קצב-המצאה מהדופק החי (tx/min — כנה: בלי דופק = קצב-סמל רגוע)
+    const f = useHq.getState().fleet;
+    const live = f?.econ?.txPerMin ?? null;
+    // החלקה אקספוננציאלית — בלי קפיצות-קנבס
+    rate.current += ((live !== null ? Math.min(46, 5 + live / 6) : 5) - rate.current) * (1 - Math.exp(-dt * 0.8));
+    // פרץ-דופק: קפיצת-רצף ניכרת → ניצוצות נוספים (אמת מניעה, לא אנימציה)
+    const seq = f?.econ?.seq ?? null;
+    if (seq !== null && lastSeq.current !== null && seq > lastSeq.current) {
+      burst.current = Math.min(14, burst.current + Math.min(6, (seq - lastSeq.current) / 40));
+    }
+    lastSeq.current = seq;
+    burst.current = Math.max(0, burst.current - dt * 3);
+
+    // היווצרות
+    acc.current += (rate.current + burst.current * 8) * dt;
+    const posArr = pos.array as Float32Array;
+    const lifeArr = life.array as Float32Array;
+    const sizeArr = size.array as Float32Array;
+    while (acc.current >= 1) {
+      acc.current -= 1;
+      // חלקיק מת הבא מהתור-העגול
+      let idx = -1;
+      for (let k = 0; k < MINT_PARTICLES; k++) {
+        const j = (Math.floor(rate.current * 7 + acc.current * 997) + k) % MINT_PARTICLES;
+        if (lifeArr[j] < 0) { idx = j; break; }
+      }
+      if (idx < 0) break;
+      const a = Math.random() * Math.PI * 2;
+      const r = 0.05 + Math.random() * 0.22;
+      posArr[idx * 3] = Math.cos(a) * r;
+      posArr[idx * 3 + 1] = 1.9 + Math.random() * 0.3;
+      posArr[idx * 3 + 2] = Math.sin(a) * r;
+      lifeArr[idx] = 1;
+      vel[idx] = 0.55 + Math.random() * 0.75;
+      sizeArr[idx] = 7 + Math.random() * 13;
+    }
+    // עדכון-חיים
+    for (let i = 0; i < MINT_PARTICLES; i++) {
+      if (lifeArr[i] < 0) continue;
+      lifeArr[i] -= dt * 0.42;
+      posArr[i * 3 + 1] += vel[i] * dt;
+      posArr[i * 3] += Math.sin((lifeArr[i] * 9 + i) * 1.7) * dt * 0.12;
+      if (lifeArr[i] <= 0) lifeArr[i] = -1;
+    }
+    pos.needsUpdate = true;
+    life.needsUpdate = true;
+    size.needsUpdate = true;
+  });
+
+  return <points ref={ref} geometry={geo} material={getMintMaterial()} frustumCulled={false} />;
+}
+
 export function FlameOfSovereignty() {
   const [x, z] = to3(FLAME[0], FLAME[1]);
   const base = useRef<THREE.Group>(null);
   const light = useRef<THREE.PointLight>(null);
+  const pulse = useRef<THREE.Mesh>(null);
   const focus = useFocus('flame', 'flame');
+  // דופק-הרצפה: טבעת מתרחבת-דועכת, קצב ∝ tx/min (חלק, בלי קפיצות)
+  const pulseT = useRef(0);
+  const rateS = useRef(6);
 
-  useFrame(({ clock }, dt) => {
-    void dt;
+  useFrame(({ clock }, dtRaw) => {
+    const dt = Math.min(dtRaw, 0.1);
     const t = clock.getElapsedTime();
+    const live = useHq.getState().fleet?.econ?.txPerMin ?? null;
+    rateS.current += ((live !== null ? Math.min(3.2, 0.55 + live / 90) : 0.55) - rateS.current) * (1 - Math.exp(-dt * 0.8));
+    const vigor = Math.min(1.6, 0.75 + rateS.current * 0.55); // 0.75..1.6
     if (base.current) {
       base.current.position.y = 1.02 + Math.sin(t * 1.8) * 0.03;
+      base.current.scale.setScalar(0.94 + 0.1 * vigor);
     }
     if (light.current) {
-      light.current.intensity = 2.4 + Math.sin(t * 7.3) * 0.5 + Math.sin(t * 11.7) * 0.3;
+      light.current.intensity = (1.55 + Math.sin(t * 7.3) * 0.3 + Math.sin(t * 11.7) * 0.18) * vigor;
+    }
+    pulseT.current += dt * rateS.current;
+    if (pulseT.current >= 1) pulseT.current -= 1;
+    if (pulse.current) {
+      const m = pulse.current.material as THREE.MeshBasicMaterial;
+      const p = pulseT.current;
+      pulse.current.scale.setScalar(0.6 + p * 2.4);
+      m.opacity = 0.5 * (1 - p) * Math.min(1, rateS.current);
+      pulse.current.visible = m.opacity > 0.02;
     }
   });
 
@@ -759,8 +907,13 @@ export function FlameOfSovereignty() {
         <ringGeometry args={[1.15, 1.28, 48]} />
         <meshStandardMaterial color="#ffb054" emissive="#ffb054" emissiveIntensity={0.55} transparent opacity={0.35} toneMapped={false} side={THREE.DoubleSide} />
       </mesh>
+      {/* טבעת-דופק חיה — כל התרחבות = מנת-עבודה נמדדת */}
+      <mesh ref={pulse} position-y={0.03} rotation-x={-Math.PI / 2}>
+        <ringGeometry args={[0.72, 0.86, 48]} />
+        <meshBasicMaterial color="#ffb054" transparent opacity={0.4} toneMapped={false} side={THREE.DoubleSide} depthWrite={false} />
+      </mesh>
 
-      {/* להבה — שיידר פרוצדורלי (סמל-המשרד; נטול ניצוצות והילות) */}
+      {/* להבה — שיידר פרוצדורלי */}
       <group ref={base} position-y={1.02}>
         <mesh>
           <coneGeometry args={[0.3, 1.25, 24, 20, true]} />
@@ -768,7 +921,10 @@ export function FlameOfSovereignty() {
         </mesh>
       </group>
 
-      <pointLight ref={light} position={[0, 1.5, 0]} color="#ffb054" intensity={2.6} distance={7.5} decay={2} />
+      {/* חלקיקי-מצאה — יחידות-עבודה עולות בקצב האמת */}
+      <MintParticles />
+
+      <pointLight ref={light} position={[0, 1.5, 0]} color="#ffb054" intensity={1.8} distance={7} decay={2} />
     </group>
   );
 }
@@ -804,17 +960,15 @@ function getFlameMaterial(): THREE.ShaderMaterial {
                      mix(hash(i+vec2(0,1)), hash(i+vec2(1,1)), u.x), u.y);
         }
         void main() {
-          // צורת הלהבה: צרה בראש, רחבה בבסיס — עם רעש נע כלפי מעלה
           float h = vUv.y;
           float n = noise(vec2(vUv.x * 6.0, vUv.y * 3.0 - uTime * 1.4)) * 0.55
                   + noise(vec2(vUv.x * 12.0 + 7.0, vUv.y * 6.0 - uTime * 2.2)) * 0.3;
           float body = smoothstep(0.0, 0.25, h) * (1.0 - smoothstep(0.55, 1.0, h + n * 0.42));
-          // ליבה לבנה-חמה, קצוות ענבר
           vec3 core = vec3(1.0, 0.92, 0.72);
           vec3 edge = vec3(1.0, 0.55, 0.18);
           vec3 col = mix(edge, core, pow(1.0 - h, 1.6) * body);
-          float a = body * (0.34 + n * 0.55);
-          gl_FragColor = vec4(col * (1.2 + n), a);
+          float a = body * (0.22 + n * 0.4);
+          gl_FragColor = vec4(col * (1.02 + n), a);
         }
       `,
     });

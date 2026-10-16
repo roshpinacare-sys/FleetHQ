@@ -362,8 +362,15 @@ export function joinCrewAtPosts(brains: Map<string, AgentBrain>, agents: { id: s
 export function createBrains(): Map<string, AgentBrain> {
   const m = new Map<string, AgentBrain>();
   for (const [id, d] of Object.entries(DESKS)) m.set(id, new AgentBrain(id, d));
-  // אלוף — עוגן שולחן עגול (עומד/נע בין הלוח לשולחן)
-  m.set('aluf', new AgentBrain('aluf', { x: LEAD_TABLE.x, y: LEAD_TABLE.y, face: 1.6, seat: [LEAD_TABLE.x, LEAD_TABLE.y] }));
+  // אלוף — שולחן עגול ראש-המטה (Task 8 — תיקון "הבוס תקוע בשולחן"):
+  // הכיסא היה במרכז-השולחן עצמו [1220,560] — בתוך-מעטפת-ההתנגשות (±105),
+  // resolveCircle דחף אותו והוא נתקע בשולחן לנצח (נמדד חי).
+  // הכיסא האמיתי: דרומית-לשולחן (y+135 — מחוץ-למעטפת), פנים צפונה אל
+  // מרכז-האולם והלהבה — עמדת-פיקוד נראית, לא סטטואל.
+  m.set('aluf', new AgentBrain('aluf', {
+    x: LEAD_TABLE.x, y: LEAD_TABLE.y, face: Math.PI,
+    seat: [LEAD_TABLE.x, LEAD_TABLE.y + 135],
+  }));
   return m;
 }
 

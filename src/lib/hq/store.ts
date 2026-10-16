@@ -27,6 +27,7 @@ import type {
 import { CREW_FALLBACK } from './protocol';
 import { createBrains, joinCrewAtPosts, type AgentBrain } from './world';
 import type { TruthInfo } from './truth';
+import type { FleetPulse } from '@/app/api/fleet-pulse/route';
 
 export type Lang = 'he' | 'en';
 
@@ -107,6 +108,12 @@ interface HqBridgeState {
   toasts: { id: number; text: string }[];
   /** גשר-האמת: מקורות הנתונים האמיתיים + טריותם (לצ'יפ הכנות בחדר) */
   truth: TruthInfo | null;
+  /** דופק-הצי החי (Task 8) — הפעילות הענפה: כלכלה · rig · guard · מסילות · גיט */
+  fleet: FleetPulse | null;
+  /** שעון-טיק חי (שנ') — מניע רינדור-מחדש של כל תצוגת-גיל/קצב בחדר */
+  tick: number;
+  syncFleet(p: FleetPulse): void;
+  beatTick(): void;
   /** השידור החי הקנוני (T20) — המראה ב-Domain + יומן-המשמרת */
   broadcast: BroadcastInfo | null;
   /** הצוות כבר הצטרף לעמדותיו (פעם-אחת) — בלי לידה-בדלת בכל סנכרון */
@@ -189,6 +196,8 @@ export const useHq = create<HqBridgeState>((set, get) => ({
   ui: {},
   toasts: [],
   truth: null,
+  fleet: null,
+  tick: 0,
   broadcast: null,
   broadcastJoined: false,
   assembly: false,
@@ -309,6 +318,12 @@ export const useHq = create<HqBridgeState>((set, get) => ({
   },
   setTruth(t) {
     set({ truth: t });
+  },
+  syncFleet(p) {
+    set({ fleet: p, tick: Math.floor(Date.now() / 1000) });
+  },
+  beatTick() {
+    set({ tick: Math.floor(Date.now() / 1000) });
   },
   syncBroadcast(b) {
     set({ broadcast: b });
