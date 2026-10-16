@@ -24,6 +24,7 @@ import { useHq } from '@/lib/hq/store';
 import { useDecisions } from '@/lib/hq/decisions';
 import { bus } from '@/lib/hq/world';
 import { STATE_COLORS, TASK_COL, type AgentState } from '@/lib/hq/protocol';
+import { probeGpuTier } from '@/lib/hq/gpu';
 import { GitWallSync, gitBoard } from './GitWallData';
 import { useOfficeMaterials, type OfficeMats } from './Architecture';
 
@@ -607,8 +608,10 @@ function Library({ mats }: { mats: OfficeMats }) {
 
 /** מנורת-קריאה חמה — אור מקומי יחיד לאזור-הספרייה (מרוסן: מרחק 6) */
 function LibraryLamp() {
+  // Task 9: פינוק-מאיץ בלבד — על מנוע-תוכנה כל נורה היא עלות-פר-פיקסל
+  if (probeGpuTier() !== 'hardware') return null;
   const [lx, lz] = to3(LIBRARY_TABLE[0], LIBRARY_TABLE[1]);
-  return <pointLight position={[lx + 0.3, 1.05, lz - 0.2]} intensity={6} distance={6} decay={2} color="#ffd9a0" />;
+  return <pointLight position={[lx + 0.3, 1.05, lz - 0.2]} intensity={2.2} distance={6} decay={2} color="#ffd9a0" />;
 }
 
 // ─────────────── קבלה ───────────────
@@ -726,7 +729,8 @@ function CoffeeBar({ mats }: { mats: OfficeMats }) {
  * · טבעת-דופק על הרצפה מתרחבת בקצב-העבודה — הלהבה "נושמת" את הכלכלה האמיתית
  * כנות: בלי דופק → קצב-בסיס רגוע (להבה סמלית), לא אפס ולא המצאה.
  */
-const MINT_PARTICLES = 240;
+
+const MINT_PARTICLES = probeGpuTier() === 'hardware' ? 240 : 120; // Task 9: מנוע-תוכנה = חצי-להקה
 const RISE_TEX = () => {
   const c = document.createElement('canvas');
   c.width = c.height = 64;
@@ -756,7 +760,13 @@ function getMintMaterial(): THREE.ShaderMaterial {
         void main() {
           vLife = aLife;
           vec4 mv = modelViewMatrix * vec4(position, 1.0);
-          gl_PointSize = aSize * (240.0 / -mv.z) * (0.4 + 0.6 * aLife);
+          // Task 9: (240/-z) gave 336–960px per particle at 5m — 240 additive
+          // particles = nuclear whiteout covering half the room (measured).
+          // 10/-z = a spark, not a supernova. Hard 24px cap: near-camera
+          // presets (wall/git) put particles at <1m — uncapped they hit
+          // 90-170px each and the software renderer dies on fill-rate
+          // (measured live: eval hangs at the wall preset without the cap).
+          gl_PointSize = min(aSize * (10.0 / -mv.z) * (0.4 + 0.6 * aLife), 24.0);
           gl_Position = projectionMatrix * mv;
         }
       `,
@@ -765,7 +775,7 @@ function getMintMaterial(): THREE.ShaderMaterial {
         varying float vLife;
         void main() {
           float a = texture2D(uMap, gl_PointCoord).a;
-          gl_FragColor = vec4(1.0, 0.78, 0.38, a * vLife * 0.9);
+          gl_FragColor = vec4(1.0, 0.78, 0.38, a * vLife * 0.55);
         }
       `,
     });
@@ -839,7 +849,7 @@ function MintParticles() {
       posArr[idx * 3 + 2] = Math.sin(a) * r;
       lifeArr[idx] = 1;
       vel[idx] = 0.55 + Math.random() * 0.75;
-      sizeArr[idx] = 7 + Math.random() * 13;
+      sizeArr[idx] = 2.2 + Math.random() * 3.4;
     }
     // עדכון-חיים
     for (let i = 0; i < MINT_PARTICLES; i++) {
@@ -878,7 +888,7 @@ export function FlameOfSovereignty() {
       base.current.scale.setScalar(0.94 + 0.1 * vigor);
     }
     if (light.current) {
-      light.current.intensity = (1.55 + Math.sin(t * 7.3) * 0.3 + Math.sin(t * 11.7) * 0.18) * vigor;
+      light.current.intensity = (0.95 + Math.sin(t * 7.3) * 0.16 + Math.sin(t * 11.7) * 0.1) * vigor;
     }
     pulseT.current += dt * rateS.current;
     if (pulseT.current >= 1) pulseT.current -= 1;
@@ -924,7 +934,7 @@ export function FlameOfSovereignty() {
       {/* חלקיקי-מצאה — יחידות-עבודה עולות בקצב האמת */}
       <MintParticles />
 
-      <pointLight ref={light} position={[0, 1.5, 0]} color="#ffb054" intensity={1.8} distance={7} decay={2} />
+      <pointLight ref={light} position={[0, 1.5, 0]} color="#ffb054" intensity={1.0} distance={5} decay={2} />
     </group>
   );
 }

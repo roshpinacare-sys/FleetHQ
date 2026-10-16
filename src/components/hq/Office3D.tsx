@@ -1,14 +1,22 @@
 /**
  * Office3D.tsx — שורש הקנבס: מרכיב את הסצנה כולה.
  * מוזן מהגשר (store.ts) — AgentHQ מזרים לכאן את המציאות האמיתית של הפורמן.
- * · MSAA מקורי (בלי פוסט-פרוססינג) — חדות-קצוות אמיתית בעלות-ביצועים נמוכה
- * · RoomReadiness מודד את הפריים האמיתי הראשון (לשכבת-ההכנה הכנה)
+ * ---------------------------------------------------------------------------
+ * חוק-המדרגות (Task 9 — השיעור-הקשה מ-Task 8):
+ *  Task 8 שלח PMREM + השתקפות-רצפה + Bloom + צללים-רכים גם אל סביבה בלי
+ *  מאיץ-GPU — והדף קפא לגמרי (מדידה חיה: SwiftShader תלה את הטאב, eval לא
+ *  נענה). מעכשיו הצינור הכבד רץ **רק על מאיץ-חומשה אמת** (probeGpuTier),
+ *  ושומר-סף-חירום (watchdog) מוריד הכל אם הפריים-הראשון מתעכב — כנות
+ *  מדודה במקום קפאון שקט. החיים (דופק-הצי, הצוות, הלוחות) הם התוכן —
+ *  הם רצים בכל מדרגה.
+ * · MSAA מקורי במדרגה-הכבדה — חדות-קצוות בעלות-ביצועים נמוכה
+ * · RoomReadiness מודד את הפריים האמיתי הראשון (לשכבת-ההכנה + ה-watchdog)
  * · אין שחקן — מצלמת הבמאי בלבד
  */
 'use client';
 
-import React, { useEffect, useMemo, useState } from 'react';
-import { Canvas, useThree } from '@react-three/fiber';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 import { EffectComposer, Bloom, Vignette } from '@react-three/postprocessing';
 import { PerformanceMonitor } from '@react-three/drei';
@@ -20,6 +28,8 @@ import { Crew } from './Crew';
 import { CameraDirector } from './CameraDirector';
 import { Atmosphere } from './Atmosphere';
 import { useHq } from '@/lib/hq/store';
+import { probeGpuTier } from '@/lib/hq/gpu';
+import { selectPreset } from './ViewDeck';
 
 /** מודד את הפריים המורכב האמיתי הראשון (draw-calls > 6) — אמת, לא הנחה */
 function RoomReadiness() {
@@ -43,9 +53,8 @@ function RoomReadiness() {
 }
 
 /**
- * EnvReflections (Task 8) — סביבת-מראות אמיתית (RoomEnvironment→PMREM) פעם-אחת:
- * המתכות/המסכים/הפליז מקבלים השתקפות-סביבה אמיתית במקום מט-מוות. מקומי
- * לחלוטין — בלי נכסי-רשת.
+ * EnvReflections — סביבת-מראות (RoomEnvironment→PMREM) פעם-אחת.
+ * רץ רק במדרגה-הכבדה (מאיץ-חומשה אמת) — על-גבי מנוע-תוכנה זה תלייה.
  */
 function EnvReflections() {
   const { gl, scene } = useThree();
@@ -63,8 +72,8 @@ function EnvReflections() {
   return null;
 }
 
-/** PostFX (Task 8) — Bloom ממוקד (מסכים אמיסיביים + להבה + ניאון) + Vignette.
- *  lite/מנוע-מוחלש → בלי פוסט-פרוססינג בכלל. */
+/** PostFX — Bloom ממוקד (מסכים אמיסיביים + להבה + ניאון) + Vignette.
+ *  רק מדרגה-כבדה; lite/מנוע-תוכנה/חירום → בלי פוסט-פרוססינג בכלל. */
 function PostFX({ off }: { off: boolean }) {
   if (off) return null;
   return (
@@ -75,21 +84,75 @@ function PostFX({ off }: { off: boolean }) {
   );
 }
 
+/** FrameGuard (Task 9) — שומר-רעב שקוף בתוך-הקנבס: אם זמן-פריים ממוצע
+ *  נשאר קיצוני (יותר מ-340ms) דרך 3 חלונות רצופים — הסצנה "נתקעה" במדידה.
+ *  במקום קפאון שקט: יורד למדרגת-חירום ובורח לתצפית-הכללית. חוק-החיים:
+ *  החדר חייב להישאר חי בכל זווית, בכל מכונה — מרוסן ומדוד. */
+function FrameGuard({ onStarve }: { onStarve: () => void }) {
+  const acc = useRef({ t: 0, n: 0, bad: 0, last: 0 });
+  useFrame((_, dtRaw) => {
+    const g = acc.current;
+    g.t += dtRaw;
+    g.n += 1;
+    if (g.t >= 2) {
+      const avg = g.t / Math.max(1, g.n);
+      if (avg > 0.34) {
+        g.bad += 1;
+        if (g.bad >= 3 && Date.now() - g.last > 15_000) {
+          g.bad = 0;
+          g.last = Date.now();
+          onStarve();
+        }
+      } else {
+        g.bad = 0;
+      }
+      g.t = 0;
+      g.n = 0;
+    }
+  });
+  return null;
+}
+
 export function Office3D() {
-  // התאמת-ביצועים אמיתית (Task 3D-MOBILE): במסך-קטן/מוחלש — פחות פיקסלים
-  // ובלי צללים. נמדד פעם-אחת בהרכבה (הרכיב רץ לקוח-בלבד).
-  const [lite] = useState(() =>
-    typeof window !== 'undefined' &&
-    (window.matchMedia('(max-width: 820px)').matches ||
-      (navigator.hardwareConcurrency ?? 8) <= 4));
-  // Task 8 — שומר-איכות אדפטיבי: מנוע אמיתי מדד FPS; ירידות חוזרות =
-  // הורדת-הילה/השתקפויות (יופי עם הנדסה — לא קריסה במכונה חלשה).
+  // אמת-המנוע נמדדת פעם-אחת לפני העלאת-הקנבס (הרכיב רץ לקוח-בלבד):
+  // מנוע-תוכנה/חסר = מדרגת-חיסכון מיד — לא מחכים ל-watchdog.
+  const gpu = useMemo(() => probeGpuTier(), []);
+  const [lite] = useState(() => {
+    if (typeof window === 'undefined') return true;
+    return (
+      gpu !== 'hardware' ||
+      window.matchMedia('(max-width: 820px)').matches ||
+      (navigator.hardwareConcurrency ?? 8) <= 4);
+  });
+  // מדרגה-כבדה: רק מאיץ-אמת + מסך-מלא + ליבות-מספיקות.
   const [heavy, setHeavy] = useState(true);
-  const perfOff = lite || !heavy;
+  // שומר-סף-חירום (Task 9): אם הפריים-האמיתי הראשון לא נמדד בתוך 9שנ' —
+  // מוריד את כל-הכבד בזמן-ריצה (בלי רענון): פוסט-פרוססינג, השתקפות,
+  // צללים — ומוריד dpr. זה ההבדל בין "יפה וקפוא" ל"חי תמיד".
+  const [panic, setPanic] = useState(false);
+  useEffect(() => {
+    if (lite) return; // מדרגת-חיסכון לא יכולה להיתקע על הכבד — אין מה להוריד
+    const t = setTimeout(() => {
+      if (!useHq.getState().roomReady) {
+        setPanic(true);
+        setHeavy(false);
+        console.warn('[hq] watchdog: first real frame late — shedding heavy tier (fail-honest)');
+      }
+    }, 9_000);
+    return () => clearTimeout(t);
+  }, [lite]);
+  const perfOff = lite || !heavy || panic;
+  // FrameGuard — בורח מזווית גוססת אל התצפית-הכללית + מדרגת-חירום (Task 9)
+  const onStarve = useMemo(() => () => {
+    console.warn('[hq] FrameGuard: sustained frame starvation — shedding to overview + emergency tier');
+    setPanic(true);
+    setHeavy(false);
+    selectPreset('overview');
+  }, []);
   return (
     <Canvas
-      shadows={lite ? false : 'soft'}
-      dpr={perfOff ? [0.75, 1.2] : [1, 1.75]}
+      shadows={!perfOff ? 'soft' : false}
+      dpr={perfOff ? [0.6, 0.9] : [1, 1.6]}
       camera={{ fov: 50, near: 0.1, far: 60, position: [4.4, 4.9, 6.4] }}
       onCreated={({ gl, scene, camera }) => {
         gl.shadowMap.type = THREE.PCFSoftShadowMap;
@@ -117,7 +180,7 @@ export function Office3D() {
             onFallback={() => setHeavy(false)}
             onDecline={() => setHeavy(false)}
           />
-          <EnvReflections />
+          {!perfOff && <EnvReflections />}
           <Architecture heavy={!perfOff} />
           <Stations />
           <Interior />
@@ -125,6 +188,7 @@ export function Office3D() {
           <CameraDirector />
           <Atmosphere />
           <RoomReadiness />
+          <FrameGuard onStarve={onStarve} />
           <PostFX off={perfOff} />
         </SuspenseBoundary>
       </SceneErrorBoundary>
