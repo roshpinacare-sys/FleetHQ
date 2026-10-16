@@ -53,6 +53,9 @@ jobs:
         env:
           GIT_PAT: ${{ secrets.OFFICE_GIT_PAT }}
         run: |
+          # R-fix 2026-10-16: the auto-seal once committed runtime files into this path —
+          # clone refuses a non-empty dir. Guard: clear it, always (belt over .gitignore suspenders).
+          rm -rf mini-services/agent-hq/Domain
           if [ -n "$GIT_PAT" ]; then
             git clone --depth 5 "https://x-access-token:${GIT_PAT}@github.com/roshpinacare-sys/Domain.git" mini-services/agent-hq/Domain
           else
