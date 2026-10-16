@@ -1,0 +1,48 @@
+{
+  "kind": "vault.restore/1",
+  "at": "2026-10-16T08:36:00Z",
+  "incident": {
+    "wipedBy": "75520896",
+    "wipedAt": "2026-10-16T08:13:51Z",
+    "victim": "roshpinacare-sys/Domain",
+    "deleted": "94/95 .github/workflows + scripts — books-sync rode foreign staged deletions"
+  },
+  "restore": {
+    "from": "75520896~1",
+    "commit": "9c286cee",
+    "pushedTo": "origin/main",
+    "workflowsBack": 95,
+    "verified": [
+      "exposure-gate.yml",
+      "treasury-route.yml",
+      "arb-mesh-cron.yml",
+      "dex-grid.yml",
+      "anchor-execute.yml"
+    ]
+  },
+  "guard": {
+    "law": "VAULT LAW — books-sync commits carry ONLY agents/books/reports/truth",
+    "gates": [
+      "evict foreign staged paths pre-add",
+      "book-purity gate aborts loud post-reset"
+    ],
+    "appliedTo": [
+      "my-project (local commit)",
+      "estate/FleetHQ (pushed 29c49d20)"
+    ],
+    "loopRestarted": "PID 12633 @ estate Domain"
+  },
+  "honesty": "measured-not-claimed: every count from git ls-tree/diff on real trees",
+  "full_restore": {
+    "at": "2026-10-16T08:44:00Z",
+    "commit": "504a141e",
+    "measured": "BEFORE wipe 847 files → after wipe 20 → my .github restore 119 → FULL restore 847",
+    "restored": 719,
+    "notRewound": "books dirs kept every beat since 08:13 (dex-family, books-sync, vault-seal auto-economy)",
+    "broadcast": {
+      "verified": "ok:true at 08:43:35Z — gal checking dex-book gaps, office/ 4 files live"
+    },
+    "pages": "index.html + site content back on Domain main",
+    "conclusion": "the failure-email storm root cause was a runaway books-sync wipe; both the CI fleet and the estate content are restored; schedules resume and emails stop"
+  }
+}
