@@ -1,42 +1,42 @@
 {
  "schema": "silence.watchdog/1",
- "at": "2026-10-16T04:47:44.536Z",
+ "at": "2026-10-16T06:27:35.909Z",
  "scope": "actions",
  "voices": [
   {
    "name": "origin/FleetHQ",
-   "lastActivity": "2026-10-16T04:47:33.000Z",
+   "lastActivity": "2026-10-16T06:27:31.000Z",
    "ageMin": 0,
    "maxSilenceMin": 240,
    "verdict": "alive",
    "detail": {
-    "subject": "pacemaker receipt: 2026-10-16T04:47:33Z"
+    "subject": "pacemaker receipt: 2026-10-16T06:27:31Z"
    }
   },
   {
    "name": "origin/Domain",
-   "lastActivity": "2026-10-16T04:46:58.000Z",
+   "lastActivity": "2026-10-16T06:26:33.000Z",
    "ageMin": 1,
    "maxSilenceMin": 240,
    "verdict": "alive",
    "detail": {
-    "subject": "office-heartbeat: crew shift persisted — memory/journal/tasks [skip ci"
+    "subject": "mirror-from-console: 2026-10-16T06:26:33Z · truth outputs mirrored fro"
    }
   },
   {
    "name": "origin/Console",
-   "lastActivity": "2026-10-16T04:41:55.000Z",
-   "ageMin": 6,
+   "lastActivity": "2026-10-16T06:20:27.000Z",
+   "ageMin": 7,
    "maxSilenceMin": 240,
    "verdict": "alive",
    "detail": {
-    "subject": "line-agreement: DIVERGE · 1 mismatches · 2026-10-16T04:41:55Z"
+    "subject": "dex-beat: h346603 · 0 credits · 2026-10-16T06:20Z"
    }
   },
   {
    "name": "divergence/FleetHQ",
    "lastActivity": "2026-10-13T11:24:03.000Z",
-   "ageMin": 3924,
+   "ageMin": 4024,
    "maxSilenceMin": 75,
    "verdict": "SILENT-ALARM",
    "detail": {
@@ -48,7 +48,7 @@
   {
    "name": "divergence/Domain",
    "lastActivity": "2026-10-13T11:24:03.000Z",
-   "ageMin": 3924,
+   "ageMin": 4024,
    "maxSilenceMin": 75,
    "verdict": "SILENT-ALARM",
    "detail": {
@@ -60,7 +60,7 @@
   {
    "name": "divergence/Console",
    "lastActivity": "2026-10-13T11:24:03.000Z",
-   "ageMin": 3924,
+   "ageMin": 4024,
    "maxSilenceMin": 75,
    "verdict": "SILENT-ALARM",
    "detail": {
@@ -71,18 +71,18 @@
   },
   {
    "name": "sandbox-ledger (via git)",
-   "lastActivity": "2026-10-13T15:52:15.402Z",
-   "ageMin": 3655,
+   "lastActivity": "2026-10-16T06:21:03.326Z",
+   "ageMin": 7,
    "maxSilenceMin": 180,
-   "verdict": "SILENT-ALARM",
+   "verdict": "alive",
    "detail": {
-    "localSummary": "1 ALARM(S): roster: unresolved — no FLEET_ROSTER_MAP in env/estate/.env.local an"
+    "localSummary": "6 ALARM(S): port/fleethq:3002: DOWN (:3002) · beat/money-watch: no data (cannot "
    }
   },
   {
    "name": "pages/money",
    "lastActivity": "2026-10-16T00:36:20.252Z",
-   "ageMin": 251,
+   "ageMin": 351,
    "maxSilenceMin": 240,
    "verdict": "SILENT-ALARM",
    "detail": {
@@ -91,24 +91,21 @@
   },
   {
    "name": "pages/site-audit",
-   "lastActivity": "2026-10-15T14:14:14.994Z",
-   "ageMin": 873,
+   "lastActivity": "2026-10-16T06:19:05.258Z",
+   "ageMin": 9,
    "maxSilenceMin": 360,
-   "verdict": "SILENT-ALARM",
+   "verdict": "alive",
    "detail": {
-    "verdict": "findings:1",
-    "at": "2026-10-15T14:14:14.994Z"
+    "verdict": "unknown",
+    "at": "2026-10-16T06:19:05.258Z"
    }
   }
  ],
  "alarms": [
-  "divergence/FleetHQ: silent 3924min (limit 75)",
-  "divergence/Domain: silent 3924min (limit 75)",
-  "divergence/Console: silent 3924min (limit 75)",
-  "sandbox-ledger (via git): silent 3655min (limit 180)",
-  "pages/money: silent 251min (limit 240)",
-  "pages/site-audit: silent 873min (limit 360)",
-  "pages/site-audit: LIVE SITE BROKEN (1 findings at 2026-10-15T14:14:14.994Z)"
+  "divergence/FleetHQ: silent 4024min (limit 75)",
+  "divergence/Domain: silent 4024min (limit 75)",
+  "divergence/Console: silent 4024min (limit 75)",
+  "pages/money: silent 351min (limit 240)"
  ],
- "summary": "7 ALARM(S): divergence/FleetHQ: silent 3924min (limit 75) · divergence/Domain: silent 3924min (limit 75) · divergence/Console: silent 3924min (limit 75) · sandbox-ledger (via git): silent 3655min (limit 180) · pages/money: silent 251min (limit 240) · pages/site-audit: silent 873min (limit 360) · pages/site-audit: LIVE SITE BROKEN (1 findings at 2026-10-15T14:14:14.994Z)"
+ "summary": "4 ALARM(S): divergence/FleetHQ: silent 4024min (limit 75) · divergence/Domain: silent 4024min (limit 75) · divergence/Console: silent 4024min (limit 75) · pages/money: silent 351min (limit 240)"
 }
