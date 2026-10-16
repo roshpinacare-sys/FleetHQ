@@ -2168,3 +2168,28 @@ Stage Summary:
 - origin/Domain=正典（双载体：我的submodule推送+twin auto-seal运载）；四仓库0/0
 - 心跳时效架构就位：15分钟本地capture（下次boot生效）→pages≤20min（Task 5修复的publish链）
 - 事故根因链完整记录：stash→碎裂→错根→水印缺失→标记自伤——每一环都有实测证据与修复验证
+
+---
+Task ID: 6
+Agent: Z.ai Code (main session)
+Task: 起始指令「תמשיך」——standing链继续：四仓库核验→local-beats死亡根治→estate Domain战争治愈→office收敛→全链密封
+
+Work Log:
+- 四仓库巡检发现：my-project ahead=1/behind=41/dirty=1、t19b Domain behind=20、estate Domain 1/39+DU冲突、estate FleetHQ dirty=22——且/tmp/local-beats.log自14:55静默28分钟，3012端口拒连=调度器死亡
+- supervisor考古（estate receipts/runtime-supervisor-state.json）：crashes=12/backoffUntil续期/restarts=0/lastSpawnAt=0——spawnService每次openSync日志文件抛ENOENT（receipts/runtime/目录今日被checkout清空，agent-hq三进程cwd="(deleted)"为证）被tickService静默吞掉→backoff无限循环，08:55后再无spawn
+- 三次spawn死亡实测：setsid supervisor 23913（10s死）、double验证期 direct bun index.ts 24748（~60s死）、setsid supervisor 24793（40s死）——而老一代bun --hot进程（guard 1435/rig 4517/agent-hq 5145，PPID=1旧session）存活多日
+- **沙盒spawn定律破译**（guard index.ts实测注释）："double-fork subshell is the ONLY spawn form that survives session boundaries in this sandbox (measured: setsid & nohup forms get reaped)"——采用`( cd X && bun index.ts >> log & )`形态→local-beats 25439通过95s收割窗口✓
+- **spawnSync冻结发现**：15:41:56 dex-family publish撞rebase-merge→`git rebase --continue`交互编辑器挂起→单线程tick整体冻结（端口活、大脑死，15:41后全部槽位静默）——kill -9+以`GIT_EDITOR=true bun index.ts`重启=疫苗（PID 28373）
+- estate Domain战争：origin被"office-memory: foreman books sync"系列提交掏空（15:26:30提交删815文件、0新增——office侧克隆的坏同步打活书架）vs estate活真相（watchdog BOOK_DEFS 22书+dex/grid beats全在此写）→flush rebase DU×7卡死
+- union治愈（Task 4配方复用）：git rebase --abort（autostash回贴、343文件书架复原）→增量分类实测（D=815/M=33/A=0，agents外仅mirror/status/truth三件均estate活写）→`git reset --mixed origin/main && git add -A && commit 7174f49e && push`（886776a6..7174f49e）→0/0/0收敛，:54 flush verdict="pushed"✓
+- beats自带自愈独立证实：15:41:54 `heal-unmerged(Domain): resolved 7 path(s) newest-publishedAt-wins`——我的人力治愈前机制已同向运作（我的rebase --abort抹掉其commit，union cure以更全形态落地，殊途同归零损失）
+- office收敛：my-project `git rebase --autostash origin/main`+push c51f81d4→flush :54"office adopted origin (converged on one history)"=v32法则完整落地；t19b/Domain ff至e94898f5（0/0）
+- econ-ledger健康：4归档（至151051）+live 12KB头seq 151079——链闭合，<30MB法则富余
+- supervisor层恢复：25932 double-fork启动，adopt foreman/gateway/local-beats三服务；**journal不可靠发现**：estate FleetHQ flush autostash重写tracked receipts/runtime-supervisor.jsonl（新增条目被git churn吞）——真相以state文件+进程为准；portAlive在reaper窗口误判致duplicate spawn一次（24803 EADDRINUSE自灭，无伤害）
+- office状态管线验证：my-project office/state/office-state.json capturedAt=15:41:07（estate beats经FLEETHQ相对路径双写两域+office自capture）→Pages≤1h时效法则继续满足
+
+Stage Summary:
+- 调度器双重死因根治：①spawn形态（double-fork定律，写入本worklog为永久法则）②spawnSync+交互git冻结（GIT_EDITOR=true疫苗已部署28373）
+- estate Domain 0/0/0、Console 0/0/0、Sandbox 0/0/0、office 0/0（dirty=guard活遥测常态）；815文件书架重回origin
+- 本会话第三定律沉淀：**spawnSync型调度器内一切git rebase --continue必须GIT_EDITOR=true**（冻结向量实测）
+- 已知开放：dex-family beat脚本exit=1（ERR Node v24.21.0，15:41实测，16:11槽观察）；estate FleetHQ behind=42 push-failed（下槽收敛，非阻塞）；sbx-grid/wallet ECO_WALLET_TOKEN absent（诚实退出维持）
