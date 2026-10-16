@@ -2124,3 +2124,21 @@ Stage Summary:
 - 全部继承待办清零：账本归档✓红灯✓rig manifest✓git失败邮件根因+自愈闭环✓全库审计✓
 - estate UU事故根因链：08:41心跳commit后stash-pop冲突残留stale index→阻塞8小时→union法则+plumbing治愈——git状态机损坏时soft-reset配方优于损坏的rebase状态机
 - 下一大项（Task 3遗留）：Pages站点质量改进+浏览器验证专门任务
+---
+Task ID: 5
+Agent: Z.ai Code (main orchestrator)
+Task: Pages站点质量专门任务 — office-state 14h stale根因修复 + 端到端/浏览器验证
+
+Work Log:
+- 数据新鲜度审计：digest.json 80s新鲜✓、正文HTML较新鲜✓（服务端渲染mirror收据）、3D帧每次bake新鲜✓——唯根目录office-state.json capturedAt=2026-10-15T23:21（14h+ stale）
+- 根因：publish-3d.sh从不拷office-state.json（publish.sh每日版才拷）→office-3d高频发布（今日8+次）全带旧文件；且该文件零运行时消费者（index/operator/potential/retro/legacy bundle全无fetch引用）=误导性孤儿
+- 修复（publish-3d.sh手术3处）：STATE_SRC层级=office/state/office-state.json（heartbeat每小时:41的capture）→receipts/office-state-mirror.json回退→都缺则保持旧件+log声明（fail-honest）；git add条件化；summary files清单更新；bash -n语法过
+- 心跳管线实况：local-beats的officeHeartbeat每小时:41跑（state文件key证：12:41/13:41两轮capture exit=0，capturedAt 13:42:06落地main）；GitHub Actions 15分钟lane自06:02全槽被drop（fleet已documented的schedule-skip问题，本地时拍是可靠骨干）；12:13的Actions成功系手动workflow_dispatch
+- 端到端验证：workflow_dispatch office-3d→轮询pages→office-state.json从2026-10-15T23:21→2026-10-16T12:41:33（14h→~1h，此后每次bake≤1h）
+- 浏览器验证（agent-browser，紧会话后即关）：落地页hero+chips（时间chip 13:39新鲜）+CTA横幅渲染✓；THE OFFICE段=173真实任务/1进行/0今日完成+诚实unknown卡✓；3D viewer=真实bake房间+名牌（אלוף/דוד/גל/ארז）+HUD双时间戳+导航按钮✓；零page errors；关闭后RAM恢复1,429MB、office 200无恙
+- 附带发现：estate FleetHQ flush beat在13:09/13:24的push-failed（1 ahead/342 behind）正是Task 4治愈的stale UU——下轮flush将自愈收敛；sbx-grid诚实退出（ECO_WALLET_TOKEN absent=不测不claim）
+
+Stage Summary:
+- Pages"活窗"时效14h+→≤1h（结构性修复，非表面刷新）；诚实法则全程保持（fail-honest回退+不伪造时间戳）
+- 全管线时效链闭环：local-beats每小时capture→main（≤1h）→office-3d每次bake发布携state→pages（bake每小时多次）→访客所见≤1h旧
+- 四仓库0/0维持；浏览器零错误；RAM零事故
