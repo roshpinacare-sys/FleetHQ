@@ -2106,3 +2106,21 @@ Stage Summary:
 - rig单例最终形态：interval-guard only（复杂度最小化——pidfile是引入停摆的过度设计）
 - Pages机械审计通过（链接PASS、数据源活、feed/og元数据完整）；质量改进留给下一轮有浏览器验证的专门任务
 - 双仓库0/0（FleetHQ=205eb00d）
+---
+Task ID: 4
+Agent: Z.ai Code (main orchestrator)
+Task: תמשיך — 全库审计 + estate FleetHQ卡死UU治愈 + git失败邮件根因闭环 + 四仓库0/0
+
+Work Log:
+- 同步纪律执行：fetch→审远端58 commit（全为twin standing loop回执）→rebase本地2 telemetry commit→直推FleetHQ（d7d7d84b..4cd0ecb5）→0/0
+- 三大遗留验证一次通过：①轮转链无缝（archive尾seq 64114→live头64115，state.last_sha16续链，live账本25.7MB<30MB法则内）②grid-watch not-ok=[]——上轮3红灯确认全绿③rig健康（cycles=434、manifest 63文件=depth-3真实覆盖、projected 1.35M tx/day）
+- 全库审计：disk 4.5G free(52%)、RAM 1,520MB available、ledger轮转法则生效中——发现estate FleetHQ checkout落后342/领先1且index含stale UU冲突（books-lineage-history.jsonl 1处冲突块，自08:41阻塞git卫生8小时）
+- estate UU治愈：冲突为同root哈希两条历史记录（08:45 vs 08:41）→union法则双保留（零数据丢失，jsonl验297条有效）；rebase状态机损坏（0 unmerged却拒continue）→改plumbing终局：fetch→soft reset→office/state还原云上freshest→单发commit+push→estate FleetHQ 0/0（fa4b4778..52c3ec88）
+- git失败邮件（每10分钟）根因闭环：①机制=GitHub对失败workflow的通知邮件×pacemaker三lane节奏（6/26/46+11/31/51+17/37/57≈每10min）②失败根因=100MB账本限制（Task 2轮转法则已修，今日首归档+链无缝实证）③自愈验证=GitHub API实测双仓库近期80 runs零failure→邮件源头消灭；estate发现的新观测器git-health.json（office-selfcheck 4.6节+tools/git-health.mjs）此后将看见0/0
+- 耐久配方沉淀：estate遥测push跑步机（云runner每分钟写同批receipts致rebase永撞）→单发配方替代（fetch→soft reset→office/state保云版→commit→push一气呵成，构造上无冲突）
+
+Stage Summary:
+- 四仓库全0/0：sandbox FleetHQ(4cd0ecb5)+sandbox Domain submodule+estate FleetHQ(52c3ec88)+estate Domain——沙盒任何时刻死亡零丢失
+- 全部继承待办清零：账本归档✓红灯✓rig manifest✓git失败邮件根因+自愈闭环✓全库审计✓
+- estate UU事故根因链：08:41心跳commit后stash-pop冲突残留stale index→阻塞8小时→union法则+plumbing治愈——git状态机损坏时soft-reset配方优于损坏的rebase状态机
+- 下一大项（Task 3遗留）：Pages站点质量改进+浏览器验证专门任务
