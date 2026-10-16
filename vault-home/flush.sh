@@ -153,6 +153,19 @@ if git -C "$OFFICE" rev-parse --verify main >/dev/null 2>&1; then
 fi
 
 results="["; first=1; any_push=0
+# 7b resolve-unmerged law (measured 2026-10-16 17:2x-17:5x): a pop conflict or a
+# failed merge leaves UU paths that poison EVERY later git op ("cannot merge
+# with unmerged") — the measured 69-stash graveyard + perpetual push-failed.
+# Resolution = freshness-wins (--theirs = the local/stash side = the live
+# writers' fresher output), then index add: checkout resolves the worktree,
+# add resolves the index — both, always (the publishFleet `||` lesson).
+resolve_uu() {
+  local d="$1" f
+  for f in $(git -C "$d" status --porcelain 2>/dev/null | grep '^\(UU\|AA\|DD\|DU\|UD\|AU\|UA\)' | awk '{print $2}'); do
+    git -C "$d" checkout --theirs -- "$f" 2>/dev/null || true
+    git -C "$d" add -- "$f" 2>/dev/null || true
+  done
+}
 for r in "${REPOS[@]}"; do
   d="$ESTATE/$r"
   # 32 self-heal: a stuck mid-rebase/mid-merge from a crashed run would block
@@ -162,6 +175,7 @@ for r in "${REPOS[@]}"; do
     echo "flush: $r had a stuck rebase — aborted (self-heal)"
   fi
   git -C "$d" stash pop 2>/dev/null || git -C "$d" stash drop 2>/dev/null || true
+  resolve_uu "$d"
   read -r A B <<<"$(divergence "$r")"
   verdict="in-sync"
   if [ "${A:-0}" -gt 0 ] || [ "${B:-0}" -gt 0 ]; then
@@ -174,8 +188,18 @@ for r in "${REPOS[@]}"; do
        git -C "$d" push -q origin main 2>/dev/null; then
       verdict="pushed"; any_push=1
     else
+      # 7b: a failed merge leaves UU paths (+ a parked MERGE_HEAD) — resolve
+      # freshness-wins, conclude the merge if one is open, retry once with a
+      # clean index before declaring failure. Never leave UU poison behind.
       verdict="push-failed"
-      git -C "$d" stash pop 2>/dev/null || git -C "$d" stash drop 2>/dev/null || true
+      resolve_uu "$d"
+      git -C "$d" rev-parse -q --verify MERGE_HEAD >/dev/null 2>&1 && GIT_EDITOR=true git -C "$d" merge --continue 2>/dev/null || true
+      if git -C "$d" -c rebase.autoStash=true -c merge.autoStash=true $pull_mode -X theirs -q origin main 2>/dev/null &&
+         git -C "$d" push -q origin main 2>/dev/null; then
+        verdict="pushed"; any_push=1
+      else
+        resolve_uu "$d"
+      fi
     fi
   fi
   read -r A2 B2 <<<"$(divergence "$r")"
