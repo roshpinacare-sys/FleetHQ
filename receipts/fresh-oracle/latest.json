@@ -1,6 +1,6 @@
 {
  "schema": "fleet.fresh-oracle/1",
- "at": "2026-10-16T08:23:12.978Z",
+ "at": "2026-10-16T08:53:16.124Z",
  "law": "FRESH only if sha256(live bytes) == sha256(committed deploy-ref bytes) AND no ops doc MISSING; DRIFT=RED (200-with-different-bytes); UNREACHABLE=UNKNOWN (network, retried once, reason kept); ops-doc age rows are honest amber (MISSING alone flips exit) — never faked green",
  "results": [
   {
@@ -11,9 +11,9 @@
    "committedStatus": 200,
    "liveError": null,
    "committedError": null,
-   "liveSha16": "d941cd1d1436f476",
-   "committedSha16": "d941cd1d1436f476",
-   "liveBytes": 38745,
+   "liveSha16": "b38c3c02e14711ab",
+   "committedSha16": "b38c3c02e14711ab",
+   "liveBytes": 38723,
    "verdict": "MATCH"
   },
   {
@@ -46,71 +46,71 @@
    "name": "Domain window",
    "liveUrl": "https://roshpinacare-sys.github.io/Domain/",
    "source": "Domain@main:index.html",
-   "liveStatus": 404,
-   "committedStatus": 404,
+   "liveStatus": 200,
+   "committedStatus": 200,
    "liveError": null,
    "committedError": null,
-   "liveSha16": null,
-   "committedSha16": null,
-   "liveBytes": null,
-   "verdict": "UNREACHABLE"
+   "liveSha16": "b60efef40c6a3605",
+   "committedSha16": "b60efef40c6a3605",
+   "liveBytes": 23419,
+   "verdict": "MATCH"
   },
   {
    "name": "Domain worlds room",
    "liveUrl": "https://roshpinacare-sys.github.io/Domain/office3d/",
    "source": "Domain@main:office3d/index.html",
-   "liveStatus": 404,
-   "committedStatus": 404,
+   "liveStatus": 200,
+   "committedStatus": 200,
    "liveError": null,
    "committedError": null,
-   "liveSha16": null,
-   "committedSha16": null,
-   "liveBytes": null,
-   "verdict": "UNREACHABLE"
+   "liveSha16": "8de74d62e69920c1",
+   "committedSha16": "8de74d62e69920c1",
+   "liveBytes": 919,
+   "verdict": "MATCH"
   },
   {
    "name": "Domain product catalog",
    "liveUrl": "https://roshpinacare-sys.github.io/Domain/marketing/",
    "source": "Domain@main:marketing/index.html",
-   "liveStatus": 404,
-   "committedStatus": 404,
+   "liveStatus": 200,
+   "committedStatus": 200,
    "liveError": null,
    "committedError": null,
-   "liveSha16": null,
-   "committedSha16": null,
-   "liveBytes": null,
-   "verdict": "UNREACHABLE"
+   "liveSha16": "c55cb843e48778d6",
+   "committedSha16": "c55cb843e48778d6",
+   "liveBytes": 24756,
+   "verdict": "MATCH"
   },
   {
    "name": "Domain product data",
    "liveUrl": "https://roshpinacare-sys.github.io/Domain/marketing/products.json",
    "source": "Domain@main:marketing/products.json",
-   "liveStatus": 404,
-   "committedStatus": 404,
+   "liveStatus": 200,
+   "committedStatus": 200,
    "liveError": null,
    "committedError": null,
-   "liveSha16": null,
-   "committedSha16": null,
-   "liveBytes": null,
-   "verdict": "UNREACHABLE"
+   "liveSha16": "99bc481f32f619de",
+   "committedSha16": "99bc481f32f619de",
+   "liveBytes": 6408,
+   "verdict": "MATCH"
   }
  ],
  "opsDocs": [
   {
    "name": "OPS-DOCS-SCAN",
    "verdict": "UNREACHABLE",
-   "error": "contents API HTTP 403"
+   "error": "contents API HTTP 404"
   }
  ],
  "summary": {
   "checked": 7,
-  "match": 3,
+  "match": 7,
   "drift": 0,
   "missing": 0,
-  "unreachable": 4,
+  "unreachable": 0,
   "opsDocsMissing": 0,
   "opsDocsStale": 0,
-  "verdict": "UNKNOWN-NETWORK"
+  "verdict": "FRESH"
  },
  "method": "https GET live URL + raw.githubusercontent deploy ref → sha256-16 byte equality"
 }
