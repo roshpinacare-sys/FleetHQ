@@ -22,10 +22,12 @@
 # where the sovereign's engineering waves live (T24-T31…: git-state cage,
 # mech-selftest, engineering board, health-guard, local-brain). Wipes #1-#3
 # and the 2026-10-16 reset proved it: unpushed office work DIES with the box
-# (local-brain + 2.1GB GGUF weights were erased untracked). Law: the office
-# side always adopts origin FIRST (merge origin/main into office main), so
-# estate/FleetHQ can fast-forward to it — never force, never rebase over the
-# office. If not ff-able, skip honestly (the office must adopt origin).
+# (local-brain + 2.1GB GGUF weights were erased untracked). Law: the estate
+# carries the office to origin — ff when possible, otherwise a REAL union
+# merge in the estate (the receipt lanes outrun any manual adoption, so the
+# office cannot always pre-adopt origin). Never force, never rebase the
+# office, never fake. After a successful push the office ff-adopts origin so
+# both sides converge on one history and the next wave fast-forwards cleanly.
 set -u
 
 ESTATE="${AGENT_HQ_FLEET_DIR:-/home/z/estate}"
@@ -128,14 +130,19 @@ export GIT_PAT="$PAT"
 export GIT_ASKPASS="${GIT_ASKPASS:-/home/z/.gitcred/askpass.sh}"
 export GIT_TERMINAL_PROMPT=0
 
-# 32: office join — ff estate/FleetHQ to the office main (which already
-# contains origin/main by law), so the same push carries office engineering.
+# 32: office join — carry office main into estate/FleetHQ: ff when possible,
+# else a real union merge in the estate (receipt lanes outrun manual adoption;
+# conflicts = honest skip, operator path). Then the drain loop pushes it.
 if git -C "$OFFICE" rev-parse --verify main >/dev/null 2>&1; then
   if git -C "$FLEET" fetch -q "$OFFICE" main 2>/dev/null; then
     if git -C "$FLEET" -c merge.autoStash=true merge --ff-only FETCH_HEAD 2>/dev/null; then
       echo "flush: office main ff-merged into estate/FleetHQ (engineering travels)"
+    elif git -C "$FLEET" -c merge.autoStash=true merge --no-ff --no-edit \
+         -m "flush: merge office main (sovereign engineering wave) into estate main" \
+         FETCH_HEAD 2>/dev/null; then
+      echo "flush: office main MERGED into estate/FleetHQ (receipt lanes had moved; union merge, never force)"
     else
-      echo "flush: office main NOT ff-able (diverged) — honest skip; office must adopt origin first"
+      echo "flush: office main NOT mergeable (real conflict) — honest skip; operator path"
     fi
   else
     echo "flush: office clone unreachable — honest skip"
@@ -163,3 +170,14 @@ done
 results+="]"
 emit_queue "valid" "$results"
 echo "flush: DRAINED (any_push=$any_push) — $results"
+
+# 32: converge the OFFICE clone onto origin after a successful push — the
+# office ff-adopts the merged history, so the next office wave fast-forwards
+# cleanly instead of piling merge commits. Honest deferral if it can't.
+if [ "$any_push" = 1 ] && git -C "$OFFICE" rev-parse --verify main >/dev/null 2>&1; then
+  if git -C "$OFFICE" -c rebase.autoStash=true pull --ff-only -q origin main 2>/dev/null; then
+    echo "flush: office adopted origin (converged on one history)"
+  else
+    echo "flush: office convergence deferred (honest) — next run will retry"
+  fi
+fi
