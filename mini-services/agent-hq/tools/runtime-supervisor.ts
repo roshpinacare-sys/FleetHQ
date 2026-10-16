@@ -85,7 +85,11 @@ const services: ServiceDef[] = [
     port: 3012,
     cwd: path.join(ROOT, 'mini-services/local-beats'),
     script: 'index.ts',
-    env: {},
+    // GIT_EDITOR vaccine (Task 7, 2026-10-16): the beats' spawnSync git flows
+    // (dex-family publish rebase --continue etc.) freeze the whole single-thread
+    // tick when an interactive editor opens. The scheduler must ALWAYS be born
+    // with GIT_EDITOR=true — measured freeze 15:41:56, vaccine proven since.
+    env: { GIT_EDITOR: 'true' },
     log: path.join(RUNTIME, 'local-beats.log'),
   },
 ];

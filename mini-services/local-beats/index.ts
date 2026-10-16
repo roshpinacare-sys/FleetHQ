@@ -504,6 +504,11 @@ function tick() {
   if (mi === 21) { const k = keyOf(d, "h"); if (!fired("sbx-tick", k)) { mark("sbx-tick", k); runSandbox("sbx-tick", "engine/sovereign-tick.mjs", 3); } }
   if (mi === 40) { const k = keyOf(d, "h"); if (!fired("sbx-wallet", k)) { mark("sbx-wallet", k); runSandbox("sbx-wallet", "engine/wallet-verify.mjs", 9); } }
   if (mi === 25 && ho % 2 === 0) { const k = keyOf(d, "h"); if (!fired("sbx-fleet", k)) { mark("sbx-fleet", k); runSandbox("sbx-fleet", "engine/fleet-verify.mjs", 14); } }
+  // ---- canonical-chain sealer (Task 7, 2026-10-16): the econ engine (sandbox
+  // Domain submodule) mints ~40k tx/h (~20MB/h). Without an in-submodule seal
+  // the ledger grows uncommitted (the GH001 race vector that killed pushes
+  // before). Seal the chain 4x/h, offset from flush :09/:24/:39/:54.
+  if (mi % 15 === 2) { const k = `${keyOf(d, "h")}:${mi}`; if (!fired("sbx-seal", k)) { mark("sbx-seal", k); runSandbox("sbx-seal", "engine/seal-domain.mjs", 5); } }
   // ---- office-retro (27-b): the published weekly slot + a 26h staleness
   // catch-up (1/day max) so a wipe or a dead Actions lane cannot leave the
   // office without its lessons (retro derives from live measurements only).
@@ -538,6 +543,6 @@ Bun.serve({
   }),
 });
 
-log("local-beats scheduler UP (flush-durable build 2026-10-13, 3-b office-hourly, 27-b arteries+retro, 27-d dex-family :11/:41 + giants :31) — beats: money-watch 2h:33, grid-pulse 03:13/15:13, dex-mirror h:52, dex-family h:11/h:41, giants h:31, office-ci-lite 2h:17, office-heartbeat 15m:08/23/38/53, flush :09/:24/:39/:54, sbx-arteries grid :05/:35 · tick :21 · wallet :40 · fleet 2h:25, office-retro Thu 07:43 + 26h-catchup, boot catch-up dex-mirror");
+log("local-beats scheduler UP (flush-durable build 2026-10-13, 3-b office-hourly, 27-b arteries+retro, 27-d dex-family :11/:41 + giants :31, 7 sbx-seal ledger 4x/h) — beats: money-watch 2h:33, grid-pulse 03:13/15:13, dex-mirror h:52, dex-family h:11/h:41, giants h:31, office-ci-lite 2h:17, office-heartbeat 15m:08/23/38/53, flush :09/:24/:39/:54, sbx-arteries grid :05/:35 · tick :21 · wallet :40 · fleet 2h:25 · seal :02/:17/:32/:47, office-retro Thu 07:43 + 26h-catchup, boot catch-up dex-mirror");
 setInterval(tick, 60_000);
 tick();
