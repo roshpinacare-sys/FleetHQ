@@ -53,8 +53,8 @@ function layout(p: WorldsPayload): { nodes: Placed[]; edges: { a: THREE.Vector3;
     inRepo.forEach((n, ni) => {
       const a2 = (ni / Math.max(1, inRepo.length)) * Math.PI * 2;
       const st = nodeState(n);
-      const x = cx + Math.cos(a2) * Math.min(ring, 3.4);
-      const z = cz + Math.sin(a2) * Math.min(ring, 3.4);
+      const x = cx + Math.cos(a2) * Math.min(ring, 5.2);
+      const z = cz + Math.sin(a2) * Math.min(ring, 5.2);
       const placed: Placed = {
         key: n.key!, x, z, color: st.color, h: st.h, he: st.he,
         repo, path: (n.path ?? n.key ?? '').slice(0, 60), feeds: n.feeds ?? '',
@@ -92,6 +92,8 @@ function EdgeLines({ edges }: { edges: { a: THREE.Vector3; b: THREE.Vector3; mis
 
 function Node({ n }: { n: Placed }) {
   const mesh = useRef<THREE.Mesh>(null);
+  // תוויות-מדורגות: שכנים על הטבעת לא נופלים לאותה-גובה — פיזור-קריא (Task 59)
+  const labelY = n.x + n.z >= 0 ? 0.55 : 1.05;
   useFrame((s) => {
     if (!mesh.current) return;
     const t = s.clock.elapsedTime;
@@ -104,7 +106,7 @@ function Node({ n }: { n: Placed }) {
         <cylinderGeometry args={[0.17, 0.21, n.h, 10]} />
         <meshStandardMaterial color={n.color} roughness={0.55} />
       </mesh>
-      <LabelSprite height={0.42} position={[0, n.h / 2 + 0.5, 0]}
+      <LabelSprite height={0.62} position={[0, n.h / 2 + labelY, 0]}
         spec={{ lines: [
           { text: `${n.path.split('/').pop() || n.path} · ${n.he}` },
         ] }} />
@@ -163,11 +165,11 @@ export function NetworkWorld({ p }: { p: WorldsPayload | null }) {
         ageHe={ageHe(lhAge ? Math.max(0, (Date.now() - Date.parse(lhAge)) / 1000) : null)}
         warn={missing > 0 ? `${missing} עורקים חסרים — כנות` : null}
       />
-      <div className="pointer-events-none absolute bottom-3 left-3 z-10 flex flex-wrap gap-1.5" dir="rtl">
-        <span className="sl-chip bg-[color:var(--surface-2)]/95">יתומים {orphans}</span>
-        <span className="sl-chip bg-[color:var(--surface-2)]/95">רוחות-רפאים {ghosts}</span>
-        <span className="sl-chip bg-[color:var(--surface-2)]/95">מזדקנים {stale}</span>
-        {p.lighthouse.ok ? <span className="sl-chip bg-[color:var(--surface-2)]/95">מגדלור חי</span> : <span className="sl-chip bg-amber-500/15 text-amber-700">מגדלור לא זמין</span>}
+      <div className="pointer-events-none absolute bottom-3 inset-x-3 z-10 flex flex-wrap gap-1.5" dir="rtl">
+        <span className="sl-chip sl-chip-wrap bg-[color:var(--surface-2)]/95">יתומים {orphans}</span>
+        <span className="sl-chip sl-chip-wrap bg-[color:var(--surface-2)]/95">רוחות-רפאים {ghosts}</span>
+        <span className="sl-chip sl-chip-wrap bg-[color:var(--surface-2)]/95">מזדקנים {stale}</span>
+        {p.lighthouse.ok ? <span className="sl-chip sl-chip-wrap bg-[color:var(--surface-2)]/95">מגדלור חי</span> : <span className="sl-chip sl-chip-wrap bg-amber-500/15 text-amber-700">מגדלור לא זמין</span>}
       </div>
     </div>
   );

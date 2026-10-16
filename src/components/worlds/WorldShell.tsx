@@ -75,7 +75,7 @@ export function WorldHud({ title, source, ageHe, warn }: {
         <span className="text-[color:var(--ink-3)]">{ageHe}</span>
       </div>
       {warn ? (
-        <div className="sl-chip border border-amber-600/40 bg-amber-500/10 px-3 py-1 text-[11.5px] text-amber-700 backdrop-blur dark:text-amber-400">
+        <div className="sl-chip sl-chip-wrap border border-amber-600/40 bg-amber-500/10 px-3 py-1 text-[11.5px] text-amber-700 backdrop-blur dark:text-amber-400">
           {warn}
         </div>
       ) : null}

@@ -163,6 +163,15 @@
   cursor: pointer;
   user-select: none;
   transition: background 0.15s ease, color 0.15s ease;
+  /* לא-חיתוך-חוק: צ'יפ אף פעם לא חורג מהורהו */
+  max-width: 100%;
+}
+
+/* טקסט-אמת ארוך בתוך צ'יפ — נשבר במקום להיחתך (רק בצ'יפי-מידע, לא בכפתורים) */
+.sl-chip-wrap {
+  overflow-wrap: anywhere;
+  white-space: normal;
+  text-align: start;
 }
 
 /* פאנל-HUD אחד לכל שכבת-הכרום (T19-c · refero): פינה אחידה 12px, קו-שערה אחד,

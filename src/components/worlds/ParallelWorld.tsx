@@ -60,8 +60,8 @@ function Rain({ x }: { x: number }) {
   );
 }
 
-function SoulTree({ member, state, activity, x }: {
-  member: (typeof WORLDS_CREW)[number]; state: CrewState; activity: string; x: number;
+function SoulTree({ member, state, activity, x, alt }: {
+  member: (typeof WORLDS_CREW)[number]; state: CrewState; activity: string; x: number; alt?: boolean;
 }) {
   const canopy = useRef<THREE.Mesh>(null);
   const glow = useRef<THREE.PointLight>(null);
@@ -113,7 +113,8 @@ function SoulTree({ member, state, activity, x }: {
       ) : null}
       <pointLight ref={glow} position={[0, 3, 0]} color={meta.mood === 'storm' ? '#c9d2d6' : member.color} intensity={0.6} distance={5} />
       {meta.mood === 'storm' ? <Rain x={x} /> : null}
-      <LabelSprite height={1.1} position={[0, 4.4, 0]}
+      {/* תוויות-מדורגות (Task 59): גובה לסירוגין — שכנים לא נופלים זה על זה */}
+      <LabelSprite height={1.05} position={[0, alt ? 5.15 : 4.35, 0]}
         spec={{ lines: [
           { text: `${member.he} · ${meta.he}` },
           { text: `מדידה: ${state} · מטאפורה: ${meta.mood === 'storm' ? 'סערה' : meta.mood === 'frozen' ? 'קרח' : meta.mood === 'work' ? 'זוהר' : meta.mood === 'bloom' ? 'פריחה' : 'רגוע'}`, small: true },
@@ -159,7 +160,7 @@ export function ParallelWorld({ p }: { p: WorldsPayload | null }) {
         </mesh>
         {WORLDS_CREW.map((m, i) => {
           const { state, activity } = stateOf(p, m.id);
-          return <SoulTree key={m.id} member={m} state={state} activity={activity} x={(i - (WORLDS_CREW.length - 1) / 2) * 3.1} />;
+          return <SoulTree key={m.id} member={m} state={state} activity={activity} alt={i % 2 === 1} x={(i - (WORLDS_CREW.length - 1) / 2) * 4.4} />;
         })}
         <OrbitControls makeDefault autoRotate autoRotateSpeed={0.35} minDistance={6} maxDistance={34} maxPolarAngle={Math.PI / 2.05} target={[0, 1.6, 0]} />
       </WorldCanvas>
@@ -169,7 +170,7 @@ export function ParallelWorld({ p }: { p: WorldsPayload | null }) {
         ageHe={mood.he}
         warn={mood.sky !== 'clear' ? mood.reasons.filter((r) => !r.includes('תקינה')).join(' · ') || null : null}
       />
-      <div className="pointer-events-none absolute bottom-3 left-3 z-10 max-w-[70%]" dir="rtl">
+      <div className="pointer-events-none absolute bottom-3 inset-x-3 z-10 max-w-[70%]" dir="rtl">
         <div className="sl-chip bg-[color:var(--surface-2)]/95 text-[11px]">
           חוק-העולם-המקביל: כל מטאפורה מוצגת לצד המדידה המילולית שלה — לעולם לא במקומה
         </div>
