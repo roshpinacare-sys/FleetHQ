@@ -1873,3 +1873,23 @@ Stage Summary:
 - שינויים: src/lib/git-state.ts, src/app/api/engineering/route.ts, tools/mech-selftest.ts, tools/queue-close.mjs, tools/engineering-a11.mjs, src/instrumentation.ts.
 - קומיטים: מקומי-T29 (git log -1), 82d740da1 (ops-intake), f4d77ada4 (Autonomy).
 - פתוח-כנה: 2 סדרי-P2-gridwatch (measured-unmatched; האדומים-נעלמו-בבריאות-הצי-החיה), 5 פערי-בעלים במחסן-המפתחות (סוד-מוח, owner-hive, CEX, מעטפות-ישנות, דלק-EVM).
+
+---
+Task ID: T30
+Agent: zai-code (main session, trace 1a143361a25ed1c1 — owner: "הסנדבוקס נפל, עדכן מהגיט, בחן את כל הגיט כולל הפרטיות, וודא שהריבונות מתקנת את עצמה")
+
+Work Log:
+- אודיט-פתיחה: הסנדבוקס אופס והוקם מחדש (guard-events מעיד: restart 05:31 + proactive-RSS 05:36 — השומר החזיר את המשרד לבד). git remote היה ריק; PAT (fine-grained, upload/pat.env — אותו-קובץ ש-gh-pat.ts קורא) אומת-חי 200 מול roshpinacare-sys.
+- פורנזיקה-מדידה: לענן FleetHQ 3130 קומיטים (מסלולות-חיים: pacemaker/decide/office-heartbeat/opens-closer/silence-watchdog), לסנדבוקס 29 קומיטים מקומיים (T24-T29), **אין אב-קדמון משותף** (merge-base exit 1 — היסטוריות לא-קשורות). הענן חסר את כל קוד-ההנדסה של הבעלים (git-state/mech-selftest/contract-facts/engineering — ABSENT).
+- מיזוג-ידיים (--allow-unrelated-histories): 50 קונפליקטים בלבד; מדיניות-מוצהרת — src/+configs+prisma=מקומי (חדש-יותר; וידוא-סופרסט deps), .gitignore=איחוד שתי-השורות, worklog.md=איחוד-כנה בשני-מקטעים מתויגים. קומיט 07cfc1da. אפס-push — הענן שייך למסלולות-עצמן.
+- תיקוני-איחוד (קומיט db1252b5): tsc מ-~25 שגיאות אמיתיות → **0** (owner-chat REPO לא-הוגדר-מעולם — באג-קדום שהיה מפיל הוראות-בעלים בזמן-ריצה; backend union +static+mirror; worlds-state אימץ את מקורות-אמת-הענן freshOracle/connectivity/bootVerify עם גיל-כנה; eslint/tsconfig איחוד-מדיניות). lint 0/0, mech-selftest PASS.
+- תשובה-מדידה לשאלת-הבעלים "האם הריבונות מתקנת את עצמה": **כן — נמדד**. 5 אדומים גרמו למיילים: (1) Autonomy sovereign-state נכשל fail-closed על 3 key-pointers ב-REGISTRY.json → sovereignty-repair תיקן-מקור 05:55:02 (a99fdff8a) → **ירוק 05:53**; (2) Domain dex-mirror נכשל על 27 hits → exposure-repair aliased acct-00 05:47:18 (2722e43e5) → ירוק 05:47; (3) Console estate-scrub → ירוק 05:54+06:02; (4) Domain estate-scrub (זהה) → אימות-ירוק-עצמי שלי ב-dispatch 06:12; (5) Sandbox compute-canary — מושבת כבר (חוק-T23). זמן-תיקון-עצמי נמדד: ~15-30 דק.
+- silence-watchdog 7 צלצולים עומדים = אבחנות-נכונות: 3×divergence+sandbox-ledger silent = התיבה עצמה מתה 5.5 ימים; pages/site-audit = פגם-HTML אמיתי באתר-החי. הריבונות **גילתה** הכל; המרפאים-לתיבה דרשו-תיבה.
+- חוק-ההקמה-מחדש הופעל בפועל: vault-home/boot-services.sh (committed, idempotent) — 4 שיבוטי-estate (Sandbox פרטי עם-ניקוי-טוקן), posting-key שוחזר מטביעת-אצבע, roster-map נבנה מהיסטוריית-Console, 5 שירותי-קול עלו (foreman :3010, selfcheck :3040, recruit :3041, boot-verifier :3042, gateway :3011, local-beats, shift-history). סטייה-מוצהרת: אפליקציית-ה-estate :3002 לא-עלתה (חוק-RAM: קיר-ה-RSS של-השומר סופר את כל-ה-next-servers — מלחמת-הפעלות על תיבת 4GB). תיקון-עצמי שלי: מחקתי config.json של-שער-המפעיל שנכתב עם **מפתח-ריק** (העתקת-ה-בלורט.evm אבדה באופס — fail-honest: אין-קונפיג = השער מסרב).
+- תיקון-אתר-חי: Domain readiness.html R-BALANCE (`</tr>` סוגר-`<td>` לא-סגור) — commit 92e2d88d, readback MATCH — הצלצול "LIVE SITE BROKEN" ייסגר בסריקה-הבאה.
+- קול-התיבה חזר לגיט: selfcheck /run → commit 3bcf5717e (06:21) — silence-ledger חי נדחף; הצלצולים העומדים-כעת כנים (beats-מתחממים, :3002 מכוון-מטה, refs-מלאים בסוד-הענן בלבד).
+
+Stage Summary:
+- הסנדבוקס מסונכרן-מהגיט: 3130 קומיטים-ענן אומצו + 29 קומיטים-מקומיים נשמרו, tsc/lint/selftest ירוקים, המשרד :3000 חי (guard יציב).
+- מענה-לשאלת-הבעלים: הריבונות **מודעת** (watchdog/leak-scan/exposure-gate/estate-scrub), **מתקנת** (sovereignty-repair/exposure-repair ~15-30 דק מדיד), **ומדווחת** (קבלות על הגיט). הפערים-שנמצאו-ותוקנו-היום: מפתח-ריק-בשער (אחרי-אופס), קוד-מת ב-owner-chat, אתר-חי-שבור, תיבה-מתה-שהמרפאים-שלה-היו-תלויים-בה.
+- חוקים-להמשך: אל-תריצו estate-:3002 על התיבה בלי-תיקון-קיר-השומר (לספור-רק-את-next-server-של-:3000 או להרים-קיר-פר-שירות); העתקות-הוולט (בלורט.evm וח') אבדו באופס — רק ה-uploads של-הבעלים משחזרים; אל-תדחפו מהסנדבוקס — המסלולות-בענן בעלות-הריפו.
