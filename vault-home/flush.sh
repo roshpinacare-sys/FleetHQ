@@ -17,6 +17,15 @@
 # (receipts/push-queue.json) of WHAT IS STUCK — the gap is measured, never
 # hidden. Push discipline mirrors the estate law: pull --rebase -X theirs
 # with autostash before every push (twins push constantly; upstream wins).
+#
+# 32 (2026-10-16): THE OFFICE CLONE JOINED THE DRAIN. /home/z/my-project is
+# where the sovereign's engineering waves live (T24-T31…: git-state cage,
+# mech-selftest, engineering board, health-guard, local-brain). Wipes #1-#3
+# and the 2026-10-16 reset proved it: unpushed office work DIES with the box
+# (local-brain + 2.1GB GGUF weights were erased untracked). Law: the office
+# side always adopts origin FIRST (merge origin/main into office main), so
+# estate/FleetHQ can fast-forward to it — never force, never rebase over the
+# office. If not ff-able, skip honestly (the office must adopt origin).
 set -u
 
 ESTATE="${AGENT_HQ_FLEET_DIR:-/home/z/estate}"
@@ -81,6 +90,21 @@ fi
 export GIT_PAT="$PAT"
 export GIT_ASKPASS="${GIT_ASKPASS:-/home/z/.gitcred/askpass.sh}"
 export GIT_TERMINAL_PROMPT=0
+
+# 32: office join — ff estate/FleetHQ to the office main (which already
+# contains origin/main by law), so the same push carries office engineering.
+OFFICE="${SOVEREIGN_OFFICE_DIR:-/home/z/my-project}"
+if git -C "$OFFICE" rev-parse --verify main >/dev/null 2>&1; then
+  if git -C "$FLEET" fetch -q "$OFFICE" main 2>/dev/null; then
+    if git -C "$FLEET" -c merge.autoStash=true merge --ff-only FETCH_HEAD 2>/dev/null; then
+      echo "flush: office main ff-merged into estate/FleetHQ (engineering travels)"
+    else
+      echo "flush: office main NOT ff-able (diverged) — honest skip; office must adopt origin first"
+    fi
+  else
+    echo "flush: office clone unreachable — honest skip"
+  fi
+fi
 
 results="["; first=1; any_push=0
 for r in "${REPOS[@]}"; do
