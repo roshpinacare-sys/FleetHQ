@@ -1,6 +1,6 @@
 {
  "schema": "saos.sovereign-decisions/1",
- "generatedAt": "2026-10-16T13:22:00.365Z",
+ "generatedAt": "2026-10-16T13:49:44.215Z",
  "policyVersion": "SOV-POLICY/1",
  "principle": "הריבונות מחליטה ומבצעת — הבעלים קבע (trace 1a12…f45d) שהמערכת מקבלת החלטות חכמות בעצמה בצורה הכי מתקדמת שיש; הפניה לבעלים = שלילת הריבונות. כל-החלטה: ראיה-מדודה + אימות-כפול. בעלים = בעלים; ריבונות = הגוף שמחליט.",
  "authority": "advisory",
@@ -20,29 +20,29 @@
   ]
  },
  "sense": {
-  "gridTruth": {
+  "openCloser": {
    "ok": true,
-   "ageMin": 51
+   "ageMin": 49
   },
   "decisionsPrev": {
    "ok": true,
-   "ageMin": 30
+   "ageMin": 28
   },
   "valueScan": {
    "ok": true,
-   "ageMin": 42
+   "ageMin": 69
   },
-  "gridHealth": {
+  "gridTruth": {
    "ok": true,
-   "ageMin": 83
-  },
-  "openCloser": {
-   "ok": true,
-   "ageMin": 22
+   "ageMin": 79
   },
   "officeState": {
    "ok": true,
-   "ageMin": 40
+   "ageMin": 8
+  },
+  "gridHealth": {
+   "ok": true,
+   "ageMin": 24
   }
  },
  "decisions": [
@@ -202,33 +202,28 @@
   {
    "id": "auto-fleet-health",
    "area": "operations",
-   "title": "15 workflows אדומים ב-4 ריפואים (מתוך 321) — GridWatch מרפא אוטונומית; סטריקים חוזרים = טריאז' הנדסי",
-   "status": "watch",
+   "title": "הצי ירוק — 321 workflows ב-39 ריפואים נמדדו תקינים",
+   "status": "clear",
    "evidence": {
     "source": "GridWatch/state/fleet-health.json",
-    "measuredAt": "2026-10-16T11:59:21.862Z",
+    "measuredAt": "2026-10-16T13:25:42.934Z",
     "totals": {
      "repos": 39,
      "public": 14,
      "private": 25,
      "workflows": 321,
-     "green": 190,
-     "amber": 116,
-     "red": 15
+     "green": 188,
+     "amber": 133,
+     "red": 0
     },
     "billingWorkflows": [],
-    "redRepos": [
-     "FleetHQ",
-     "Domain",
-     "Console",
-     "private-f1bf631a"
-    ],
-    "alertCount": 2,
+    "redRepos": [],
+    "alertCount": 0,
     "remediations": 0
    },
    "law": "ריפוי-עצמי בתוך-מעטפת (הפיך+מדוד בלבד); סטריקים ≥3 לא מנוסים שוב — מנותבים לטריאז' הנדסי",
    "policy": "SOV-POLICY/1",
-   "decidedAt": "2026-10-16T13:22:00.365Z",
+   "decidedAt": "2026-10-16T13:49:44.215Z",
    "by": "sovereign-decider"
   },
   {
@@ -245,7 +240,7 @@
     "selfHeal": "same-repo GITHUB_TOKEN + cross-repo CROSS_REVIVE_PAT (D1)"
    },
    "policy": "SOV-POLICY/1",
-   "decidedAt": "2026-10-16T13:22:00.365Z",
+   "decidedAt": "2026-10-16T13:49:44.215Z",
    "by": "sovereign-decider"
   },
   {
@@ -255,12 +250,12 @@
    "status": "clear",
    "evidence": {
     "source": "office-state.json",
-    "capturedAt": "2026-10-16T12:41:33.262Z",
+    "capturedAt": "2026-10-16T13:41:26.234Z",
     "tasks": "n/a"
    },
    "law": "אין דריסת-מסילות: למשרד יש לולאת-רטרו משלו; הריבונות מתעדת ומאמתת, לא לוקחת",
    "policy": "SOV-POLICY/1",
-   "decidedAt": "2026-10-16T13:22:00.365Z",
+   "decidedAt": "2026-10-16T13:49:44.215Z",
    "by": "sovereign-decider"
   }
  ],
