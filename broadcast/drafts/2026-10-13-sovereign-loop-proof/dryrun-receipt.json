@@ -1,0 +1,26 @@
+{
+  "protocol": "saos.dryrun.receipt/1",
+  "at": "2026-10-13T10:48:00Z",
+  "gate": "dryrun-sign",
+  "package": "broadcast/drafts/2026-10-13-sovereign-loop-proof/package.json",
+  "executed": [
+    { "step": "structure", "result": "PASS", "detail": "schema saos.broadcast.package/1 fields present; kind=ledger.post.draft; signed=false; broadcast=false; amounts.USDS=0; lineage root bound from receipts/books-lineage.json (root 90f984ca022158143013ec5ef8e2310f3b39338455767dd601c2e0c918981e53, 22 books, 2026-10-10T16:24:06.010Z)" },
+    { "step": "exposure-law", "result": "PASS", "detail": "Domain/scripts/exposure-rules.mjs violations() on title+body+package = 0 findings (estate names, key shapes, host paths, trace ids all absent)" },
+    { "step": "voice-law", "result": "PASS", "detail": "straight quotes only (0 typographic marks U+201C/D/2018/2019); 0 emoji; 0 banned-vocabulary hits (EN+HE lists of Domain/VOICE.md); 7 headings, 0 colons each; title 0 colons; body 2261 chars" },
+    { "step": "chain-read", "result": "PASS", "detail": "head block 110401986 measured at 2026-10-13T10:43Z; api.steemit.com and api.steem.fans answered identically; steem-api.eofix.io returned non-JSON (stays last in the browser fallback chain, honest)" },
+    { "step": "receipts", "result": "PASS", "detail": "every measurable claim in the body carries number + measurement date + a public URL a stranger can open (7 receipts listed in package.json)" }
+  ],
+  "failedClosed": {
+    "step": "sign",
+    "decision": "HALT",
+    "reason": "signing a public Steem transaction requires the posting WIF deployed by the custody bridge into the runtime env; that deployment does not exist on this machine, and the broadcast law forbids key material to be invented, imported from plaintext, or guessed — the executor MUST fail-closed with this exact reason (FleetHQ/broadcast/README.md, OWNER RELEASE 2026-10-10)",
+    "authority": "FleetHQ/broadcast/README.md sections: The law (5) + OWNER RELEASE 2026-10-10"
+  },
+  "ownerRelease": {
+    "recorded": "2026-10-10",
+    "text": "the broadcast lane was released for unattended operation up to the dryrun-sign gate; the signature remains the boundary until keys arrive through the custody bridge",
+    "covers": "draft generation, compaction, lineage anchoring, secret scanning, staging, dryrun checks (all executed here)",
+    "doesNotCover": "the signature itself on this machine (fail-closed above)"
+  },
+  "nextAuthorizedStep": "custody bridge deploys the posting WIF into the runtime env through its own gate; then the dryrun-sign produces exact transaction bytes, and the single-publisher lane (CR-0065) may schedule the draft inside persona windows. Until then the draft stays HELD here in broadcast/ — the public book is a live measured ledger (published-ledger lane) and does not carry staged drafts."
+}

@@ -1,0 +1,22 @@
+{
+  "type": "https://eips.ethereum.org/EIPS/eip-8004#registration-v1",
+  "name": "dex-sweep-agent",
+  "description": "The estate's capital-touching DEX agent: drafts and drives sweep legs (stable-quoted micro-runs) and cross-chain intents (SAOS-DEX-XC/1) on the saos-dex engine. Governed by the Layer-2 policy rulebook — every intent passes the policy gate before execution; STASIS brake overrides all.",
+  "services": [
+    { "name": "A2A", "endpoint": "https://github.com/roshpinacare-sys/Domain/blob/main/dex/xc-intents.json", "version": "SAOS-DEX-XC/1" },
+    { "name": "web", "endpoint": "https://roshpinacare-sys.github.io/Domain/dex/giants.json" },
+    { "name": "MCP", "endpoint": "https://github.com/roshpinacare-sys/FleetHQ/blob/main/sovereign/stack/runtime/mcp/tools.json", "version": "issue-label-1" }
+  ],
+  "x402Support": false,
+  "active": true,
+  "agentRegistry": "eip155:10:staged-deployment",
+  "deploymentStatus": "staged",
+  "capabilities": ["capital-sweep", "xc-intents", "market-read"],
+  "policyRef": "sovereign/stack/policy/policy.json#capital",
+  "runtimeRef": "github://roshpinacare-sys/Domain/.github/workflows/dex-beat.yml",
+  "ownerOfRecord": "roshpinacare-sys",
+  "trustAnchors": [
+    "github://roshpinacare-sys/Domain/actions/workflows/dex-beat.yml (hourly sweep flights)",
+    "console giants table: feeRateBps=30 live, feesAccruedMu>0, vol24h measured 2026-10-13"
+  ]
+}

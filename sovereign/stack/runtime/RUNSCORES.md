@@ -1,0 +1,126 @@
+# RUNSCORES — the harness scoring book
+
+- generatedAt: `2026-10-16T08:38:03.511Z`
+- STATE book age: 78min · api fetches: 2
+- counts: {"unknown":8,"healthy":107,"critical":2,"watch":1}
+
+| repo | workflow | class | lastConcl | lastRun |
+|---|---|---|---|---|
+| Domain | exposure-gate | critical | failure | 2026-10-16T07:11:44Z |
+| Autonomy | selfhood | critical | cancelled | 2026-10-16T05:09:05Z |
+| FleetHQ | silence-watchdog | healthy | success | 2026-10-16T07:11:00Z |
+| FleetHQ | runtime-pacemaker | healthy | success | 2026-10-16T07:10:49Z |
+| FleetHQ | office-ci | healthy | success | 2026-10-16T07:09:31Z |
+| FleetHQ | identity-guard | healthy | success | 2026-10-16T07:09:31Z |
+| FleetHQ | value-scan | healthy | success | 2026-10-16T07:00:17Z |
+| FleetHQ | claims-triage | healthy | success | 2026-10-16T06:58:58Z |
+| FleetHQ | sovereign-decider | healthy | success | 2026-10-16T06:58:31Z |
+| FleetHQ | sovereign-harness | healthy | success | 2026-10-16T06:26:55Z |
+| FleetHQ | sovereign-identity | healthy | success | 2026-10-16T06:26:50Z |
+| FleetHQ | sovereign-policy-gate | healthy | success | 2026-10-16T06:19:26Z |
+| FleetHQ | self-book | healthy | success | 2026-10-16T06:19:10Z |
+| FleetHQ | identity-patrol | healthy | success | 2026-10-16T06:11:21Z |
+| FleetHQ | office-heartbeat | healthy | success | 2026-10-16T06:02:40Z |
+| FleetHQ | fresh-oracle | healthy | success | 2026-10-16T05:08:46Z |
+| Domain | pages build and deployment | healthy | success | 2026-10-16T07:18:38Z |
+| Domain | grid-doctor | healthy | success | 2026-10-16T07:14:12Z |
+| Domain | pf-artery-keeper | healthy | success | 2026-10-16T07:13:07Z |
+| Domain | market-grid-cron | healthy | success | 2026-10-16T07:13:06Z |
+| Domain | fill-ledger-cron | healthy | success | 2026-10-16T07:13:05Z |
+| Domain | earn-audit-cron | healthy | success | 2026-10-16T07:13:04Z |
+| Domain | arb-mesh | healthy | success | 2026-10-16T07:13:03Z |
+| Domain | identity-guard | healthy | success | 2026-10-16T07:11:44Z |
+| Domain | dex-mirror | healthy | success | 2026-10-16T07:07:12Z |
+| Domain | dex-beat | healthy | success | 2026-10-16T07:06:10Z |
+| Domain | moment-watch | healthy | success | 2026-10-16T07:05:05Z |
+| Domain | voice-artery | healthy | success | 2026-10-16T07:04:44Z |
+| Domain | dex-watchdog | healthy | success | 2026-10-16T07:03:38Z |
+| Domain | estate-scrub | healthy | success | 2026-10-16T06:59:15Z |
+| Domain | office-artery | healthy | success | 2026-10-16T06:58:55Z |
+| Domain | human-cadence | healthy | success | 2026-10-16T06:58:54Z |
+| Domain | dex-core | healthy | success | 2026-10-16T06:58:52Z |
+| Domain | artery-integrity-twin | healthy | success | 2026-10-16T06:58:51Z |
+| Domain | network-census | healthy | success | 2026-10-16T06:56:55Z |
+| Domain | office-pulse | healthy | success | 2026-10-16T06:52:29Z |
+| Domain | office-pulse-twin | healthy | success | 2026-10-16T06:44:28Z |
+| Domain | dex-xc | healthy | success | 2026-10-16T06:44:27Z |
+| Domain | dex-router | healthy | success | 2026-10-16T06:44:26Z |
+| Domain | cloud-pulse | healthy | success | 2026-10-16T06:44:24Z |
+| Domain | tick-keeper | healthy | success | 2026-10-16T06:30:10Z |
+| Domain | sovereign-tick-cron | healthy | success | 2026-10-16T06:30:09Z |
+| Domain | sovereign-pulse | healthy | success | 2026-10-16T06:30:08Z |
+| Domain | book-audit | healthy | success | 2026-10-16T06:27:42Z |
+| Domain | dex-activation | healthy | success | 2026-10-16T06:27:30Z |
+| Domain | mirror-from-console | healthy | success | 2026-10-16T06:26:24Z |
+| Domain | cognition-beat | healthy | success | 2026-10-16T06:22:36Z |
+| Domain | fleet-heartbeat | healthy | success | 2026-10-16T06:22:18Z |
+| Domain | operator-console | healthy | success | 2026-10-16T06:20:52Z |
+| Domain | site-link-audit | healthy | success | 2026-10-16T06:18:56Z |
+| Domain | public-pulse | healthy | success | 2026-10-16T06:16:00Z |
+| Domain | press-bake | healthy | success | 2026-10-16T05:53:37Z |
+| Domain | sandbox-arteries | healthy | success | 2026-10-16T05:46:33Z |
+| Console | identity-guard | healthy | success | 2026-10-16T07:07:07Z |
+| Console | pages build and deployment | healthy | success | 2026-10-16T07:07:07Z |
+| Console | giants-beat | healthy | success | 2026-10-16T07:04:52Z |
+| Console | runtime-pacemaker | healthy | success | 2026-10-16T06:44:40Z |
+| Console | grid-pulse | healthy | success | 2026-10-16T06:44:29Z |
+| Console | console-publish | healthy | success | 2026-10-16T06:16:16Z |
+| Console | estate-scrub | healthy | success | 2026-10-16T06:02:47Z |
+| Console | chain-vitals | healthy | success | 2026-10-16T05:24:27Z |
+| Console | agent-verify | healthy | success | 2026-10-16T05:19:29Z |
+| Console | trigger-mesh | healthy | success | 2026-10-16T04:58:00Z |
+| Console | line-agreement | healthy | success | 2026-10-16T04:41:47Z |
+| Console | truth-gate | healthy | success | 2026-10-16T04:26:58Z |
+| Console | weave-census | healthy | success | 2026-10-16T04:18:41Z |
+| Console | agents-watch | healthy | success | 2026-10-16T00:42:00Z |
+| Console | money-watch | healthy | success | 2026-10-16T00:36:13Z |
+| Console | dex-watch | healthy | success | 2026-10-16T00:31:07Z |
+| saos-runtime | blurt-revival | healthy | success | 2026-10-16T07:11:44Z |
+| saos-runtime | grid-watchdog | healthy | success | 2026-10-16T06:31:02Z |
+| saos-runtime | system-map | healthy | success | 2026-10-16T05:04:29Z |
+| saos-runtime | self-memory | healthy | success | 2026-10-16T04:53:55Z |
+| saos-runtime | fee-engine | healthy | success | 2026-10-16T04:43:09Z |
+| saos-runtime | treasury-ladder | healthy | success | 2026-10-15T20:31:04Z |
+| saos-runtime | army-ladder | healthy | success | 2026-10-15T19:13:40Z |
+| saos-runtime | operator-triage | healthy | success | 2026-10-15T14:00:08Z |
+| saos-runtime | sovereign-evolution | healthy | success | 2026-10-15T12:06:44Z |
+| saos-runtime | custody-recover | healthy | success | 2026-10-15T08:34:50Z |
+| Autonomy | artery-participation | healthy | success | 2026-10-16T07:07:03Z |
+| Autonomy | sovereign-tick | healthy | success | 2026-10-16T07:06:55Z |
+| Autonomy | identity-guard | healthy | success | 2026-10-16T07:06:55Z |
+| Autonomy | artery-catchup | healthy | success | 2026-10-16T07:06:55Z |
+| Autonomy | floating-builds | healthy | success | 2026-10-16T07:06:38Z |
+| Autonomy | artery-decision-truth | healthy | success | 2026-10-16T06:58:53Z |
+| Autonomy | federation | healthy | success | 2026-10-16T06:57:26Z |
+| Autonomy | fleet-heal | healthy | success | 2026-10-16T06:57:23Z |
+| Autonomy | network-awareness | healthy | success | 2026-10-16T06:56:55Z |
+| Autonomy | contract-check | healthy | success | 2026-10-16T06:43:42Z |
+| Autonomy | artery-watch | healthy | success | 2026-10-16T06:43:38Z |
+| Autonomy | artery-wallet | healthy | success | 2026-10-16T06:22:03Z |
+| Autonomy | artery-grid | healthy | success | 2026-10-16T06:16:34Z |
+| Autonomy | compute-rearm | healthy | success | 2026-10-16T05:59:51Z |
+| Autonomy | artery-integrity | healthy | success | 2026-10-16T05:59:32Z |
+| Autonomy | claims-intake | healthy | success | 2026-10-16T04:58:37Z |
+| Autonomy | sovereign-decider | healthy | success | 2026-10-16T04:58:24Z |
+| Autonomy | office-growth | healthy | success | 2026-10-16T04:55:03Z |
+| Autonomy | run-score | healthy | success | 2026-10-16T04:52:35Z |
+| Autonomy | artery-scribe | healthy | success | 2026-10-16T04:50:18Z |
+| Autonomy | artery-desk | healthy | success | 2026-10-16T04:50:16Z |
+| Autonomy | network-self-awareness | healthy | success | 2026-10-16T04:45:42Z |
+| Autonomy | artery-flow | healthy | success | 2026-10-16T04:42:31Z |
+| Autonomy | operator-routing | healthy | success | 2026-10-16T04:40:54Z |
+| Autonomy | artery-defi | healthy | success | 2026-10-16T04:38:50Z |
+| Autonomy | artery-fleet | healthy | success | 2026-10-16T04:36:07Z |
+| Autonomy | value-scan | healthy | success | 2026-10-16T04:36:07Z |
+| Autonomy | fleet-yield | healthy | success | 2026-10-16T04:24:44Z |
+| sovereign-lighthouse | estate-redboard | healthy | success | 2026-10-16T06:44:00Z |
+| sovereign-lighthouse | lighthouse-pulse | healthy | success | 2026-10-16T05:49:05Z |
+| FleetHQ | sovereign-selfscan | unknown | — | 2026-10-16T07:19:27Z |
+| FleetHQ | opens-closer | unknown | — | 2026-10-16T07:00:01Z |
+| Domain | fleet-census-cron | unknown | — | 2026-10-16T07:19:14Z |
+| Domain | office-worldbeat | unknown | — | 2026-10-16T07:18:23Z |
+| Domain | grid-sentinel | unknown | — | 2026-10-16T07:11:59Z |
+| saos-runtime | sovereign-runtime | unknown | — | 2026-10-16T07:13:33Z |
+| Autonomy | sovereign-state | unknown | — | 2026-10-16T07:18:41Z |
+| Autonomy | verifier (truth & quality) | unknown | — | 2026-10-16T07:08:26Z |
+| sovereign-lighthouse | pages build and deployment | watch | success | 2026-10-12T11:15:46Z |
