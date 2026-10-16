@@ -3,6 +3,11 @@
  "warn_ms": 2000,
  "targets": [
   {
+   "name": "llamacpp-local",
+   "url": "http://localhost:8080/health",
+   "expect_status": 200
+  },
+  {
    "name": "nextjs-control",
    "url": "http://localhost:3000/",
    "expect_status": 200
@@ -16,27 +21,27 @@
    "name": "eth-mainnet-rpc",
    "url": "https://eth.drpc.org",
    "method": "POST",
+   "chain": "eth",
    "body": {
     "jsonrpc": "2.0",
     "id": 1,
     "method": "eth_blockNumber",
     "params": []
    },
-   "expect_status": 200,
-   "chain": "eth"
+   "expect_status": 200
   },
   {
    "name": "zero-rail-rpc",
    "url": "https://rpc.zero.tech",
    "method": "POST",
+   "chain": "eth",
    "body": {
     "jsonrpc": "2.0",
     "id": 1,
     "method": "eth_blockNumber",
     "params": []
    },
-   "expect_status": 200,
-   "chain": "eth"
+   "expect_status": 200
   }
  ]
 }
