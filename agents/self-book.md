@@ -1,26 +1,25 @@
-# ספר-המודעות-העצמית של הרשת — 2026-10-15T23:01:44.437Z
+# ספר-המודעות-העצמית של הרשת — 2026-10-16T00:22:02.216Z
 
-**39 ריפואים** (14 ציבוריים · 25 פרטיים) · **226 מכונות-יכולת** · **13 פעילים בשעה האחרונה** · תמונה-קודמת: 2026-10-15T21:48:57.728Z
+**39 ריפואים** (14 ציבוריים · 25 פרטיים) · **226 מכונות-יכולת** · **16 פעילים בשעה האחרונה** · תמונה-קודמת: 2026-10-15T23:01:44.437Z
 
 ## 💓 פעיל-עכשיו (דחיפה בשעה האחרונה)
-FleetHQ · Console · Domain · Pulse · Project-files · Autonomy · saos-runtime · steem · saos-dex · sovereign-lighthouse · Sandbox · sovereign-beacon · GridWatch
+Domain · Autonomy · Console · saos-dex · ops-intake · FleetHQ · Pulse · giant · saos-runtime · steem · Project-files · sovereign-lighthouse · Sandbox · ops-forge · Zip · GridWatch
 
 ## 🧠 מפת-היכולות של הצי (המכונות והריפואים-בהן-הן-חיות)
 - **gitleaks** → Adsmarket, Console, Defi, Domain, Project-files, Saosmartwallet (+11)
 - **workflow-yaml-guard** → Adsmarket, Console, Defi, Domain, Project-files, Saosmartwallet (+9)
 - **identity-guard** → Autonomy, Console, Domain, FleetHQ, GridWatch, Pulse (+3)
+- **token-forge** → Domain, Sandbox, steem
 - **fresh-oracle** → Autonomy, FleetHQ, Sandbox
 - **sovereign-decider** → Autonomy, FleetHQ, Sandbox
 - **value-scan** → Autonomy, FleetHQ, Sandbox
-- **token-forge** → Domain, Sandbox, steem
-- **runtime-pacemaker** → Console, FleetHQ
 - **agent-verify** → Console, Domain
-- **estate-scrub** → Console, Domain
-- **key-verify** → Console, Domain
 - **canary** → Defi, Domain
 - **dex-beat** → Domain, saos-dex
 - **dex-grid** → Domain, saos-dex
+- **estate-scrub** → Console, Domain
 - **exposure-gate** → Domain, TruthRail
+- **key-verify** → Console, Domain
 - **mm-supremacy** → Domain, saos-dex
 - **weave-anchor-lines** → Domain, Zip
 - **weave-ecosystem** → Domain, Zip
@@ -31,5 +30,6 @@ FleetHQ · Console · Domain · Pulse · Project-files · Autonomy · saos-runti
 - **artery-fleet** → Autonomy, Sandbox
 - **artery-flow** → Autonomy, Sandbox
 - **artery-grid** → Autonomy, Sandbox
+- **artery-integrity** → Autonomy, Sandbox
 
 *חוק: הספר-הזה הוא העין-העצמית של הרשת — נכתב-רק-ממדידה (API), ללא-המצאה, git-only, שורד-מחיקת-סנדבוקסים.*
