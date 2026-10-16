@@ -2193,3 +2193,20 @@ Stage Summary:
 - estate Domain 0/0/0、Console 0/0/0、Sandbox 0/0/0、office 0/0（dirty=guard活遥测常态）；815文件书架重回origin
 - 本会话第三定律沉淀：**spawnSync型调度器内一切git rebase --continue必须GIT_EDITOR=true**（冻结向量实测）
 - 已知开放：dex-family beat脚本exit=1（ERR Node v24.21.0，15:41实测，16:11槽观察）；estate FleetHQ behind=42 push-failed（下槽收敛，非阻塞）；sbx-grid/wallet ECO_WALLET_TOKEN absent（诚实退出维持）
+
+---
+Task ID: 6-b (addendum)
+Agent: Z.ai Code (main session)
+Task: estate FleetHQ union cure second-act——巨型治愈commit自身成为冲突源的结构教训+publishFleet自愈补丁
+
+Work Log:
+- FleetHQ union cure commit f5dd4943b（66文件遥测全量）在后续每次rebase重放时与孪生的同文件遥测大面积冲突（9 UU）——commit可再载的瞬态遥测载荷与孪生竞速=永久冲突机器
+- 决策（freshness-wins+务实）：rebase --skip丢弃f5dd4943b（载荷=beats分钟级重写的遥测，零持久损失），保留真持久价值=self-heal补丁commit 1070d77d3
+- 结构修复落地：publishFleet bash脚本装入SELF-HEAL块——pull --rebase冲突时取local-replayed侧（rebase语义theirs=本地=fresher遥测）+GIT_EDITOR=true rebase --continue/abort兜底+双push重试——根除"Cannot autostash"与spawnSync编辑器挂起两个死锁向量
+- 补丁语法校验（bun build）→竞速推送1070d77d3上origin（1轮落地）→调度器重启32751加载补丁代码（double-fork形态+GIT_EDITOR=true env）
+- 过程中实测autostash pop冲突×7→checkout HEAD+stash drop清理（活写者重写让冲突无意义）
+
+Stage Summary:
+- **第四定律沉淀：巨量遥测治愈commit不要进历史**——账本类union落地（Domain 7174f49e成立并保持0/0），瞬态遥测类改为"让活写者重写+代码级自愈法则"（FleetHQ publishFleet SELF-HEAL）
+- estate FleetHQ 0/0带着补丁收敛；三重死锁向量（spawn形态/编辑器挂起/stuck rebase-merge）全部有代码级疫苗
+-estate Domain union cure与FleetHQ patch两条治愈路径的对照=lesson: heal the WRITER not the DATA（治写者法则，不治数据）
