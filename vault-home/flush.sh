@@ -165,7 +165,12 @@ for r in "${REPOS[@]}"; do
   read -r A B <<<"$(divergence "$r")"
   verdict="in-sync"
   if [ "${A:-0}" -gt 0 ] || [ "${B:-0}" -gt 0 ]; then
-    if git -C "$d" -c rebase.autoStash=true pull --rebase -X theirs -q origin main 2>/dev/null &&
+    # 32 pull-mode law: FleetHQ carries office MERGE commits — rebasing over
+    # them flattens history and fights the office line forever. FleetHQ pulls
+    # with a union merge; the pure receipt twins keep the fast rebase law.
+    pull_mode="pull --rebase"
+    [ "$r" = "FleetHQ" ] && pull_mode="pull --no-rebase"
+    if git -C "$d" -c rebase.autoStash=true merge.autoStash=true $pull_mode -X theirs -q origin main 2>/dev/null &&
        git -C "$d" push -q origin main 2>/dev/null; then
       verdict="pushed"; any_push=1
     else
