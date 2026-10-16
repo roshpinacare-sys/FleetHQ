@@ -1,42 +1,42 @@
 {
  "schema": "silence.watchdog/1",
- "at": "2026-10-16T07:11:10.579Z",
+ "at": "2026-10-16T08:36:41.061Z",
  "scope": "actions",
  "voices": [
   {
    "name": "origin/FleetHQ",
-   "lastActivity": "2026-10-16T07:11:04.000Z",
+   "lastActivity": "2026-10-16T08:36:39.000Z",
    "ageMin": 0,
    "maxSilenceMin": 240,
    "verdict": "alive",
    "detail": {
-    "subject": "pacemaker receipt: 2026-10-16T07:11:04Z"
+    "subject": "pacemaker receipt: 2026-10-16T08:36:38Z"
    }
   },
   {
    "name": "origin/Domain",
-   "lastActivity": "2026-10-16T07:09:53.000Z",
-   "ageMin": 1,
+   "lastActivity": "2026-10-16T08:34:05.000Z",
+   "ageMin": 3,
    "maxSilenceMin": 240,
    "verdict": "alive",
    "detail": {
-    "subject": "office-worldbeat: advance the persistent world"
+    "subject": "restore: Domain CI fleet wiped by books-sync 75520896 — 94 workflows +"
    }
   },
   {
    "name": "origin/Console",
-   "lastActivity": "2026-10-16T07:07:04.000Z",
-   "ageMin": 4,
+   "lastActivity": "2026-10-16T08:33:16.000Z",
+   "ageMin": 3,
    "maxSilenceMin": 240,
    "verdict": "alive",
    "detail": {
-    "subject": "dex-beat: h350495 · 0 credits · 2026-10-16T07:07Z"
+    "subject": "money-watch: local beat · 2026-10-16T08:33:16Z"
    }
   },
   {
    "name": "divergence/FleetHQ",
-   "lastActivity": "2026-10-16T07:09:13.000Z",
-   "ageMin": 2,
+   "lastActivity": "2026-10-16T08:24:13.000Z",
+   "ageMin": 12,
    "maxSilenceMin": 75,
    "verdict": "alive",
    "detail": {
@@ -47,20 +47,20 @@
   },
   {
    "name": "divergence/Domain",
-   "lastActivity": "2026-10-16T07:09:13.000Z",
-   "ageMin": 2,
+   "lastActivity": "2026-10-16T08:24:13.000Z",
+   "ageMin": 12,
    "maxSilenceMin": 75,
    "verdict": "alive",
    "detail": {
     "source": "push-queue-receipt (via git)",
     "ahead": 0,
-    "behind": 14
+    "behind": 0
    }
   },
   {
    "name": "divergence/Console",
-   "lastActivity": "2026-10-16T07:09:13.000Z",
-   "ageMin": 2,
+   "lastActivity": "2026-10-16T08:24:13.000Z",
+   "ageMin": 12,
    "maxSilenceMin": 75,
    "verdict": "alive",
    "detail": {
@@ -71,36 +71,38 @@
   },
   {
    "name": "sandbox-ledger (via git)",
-   "lastActivity": "2026-10-16T06:53:31.326Z",
-   "ageMin": 18,
+   "lastActivity": "2026-10-16T08:23:13.015Z",
+   "ageMin": 13,
    "maxSilenceMin": 180,
    "verdict": "alive",
    "detail": {
-    "localSummary": "7 ALARM(S): port/recruit: DOWN (:3041) · beat/money-watch: no data (cannot prove"
+    "localSummary": "4 ALARM(S): port/recruit: DOWN (:3041) · beat/money-watch: no data (cannot prove"
    }
   },
   {
    "name": "pages/money",
-   "lastActivity": "2026-10-16T06:33:15.846Z",
-   "ageMin": 38,
+   "lastActivity": null,
+   "ageMin": null,
    "maxSilenceMin": 240,
-   "verdict": "alive",
+   "verdict": "no-data",
    "detail": {
-    "url": "dex/money.json"
+    "error": "http 404"
    }
   },
   {
    "name": "pages/site-audit",
-   "lastActivity": "2026-10-16T06:19:05.258Z",
-   "ageMin": 52,
+   "lastActivity": null,
+   "ageMin": null,
    "maxSilenceMin": 360,
-   "verdict": "alive",
+   "verdict": "no-data",
    "detail": {
-    "verdict": "unknown",
-    "at": "2026-10-16T06:19:05.258Z"
+    "error": "http 404"
    }
   }
  ],
- "alarms": [],
- "summary": "ALL VISIBLE VOICES ALIVE"
+ "alarms": [
+  "pages/money: no data (cannot prove alive)",
+  "pages/site-audit: no data (cannot prove alive)"
+ ],
+ "summary": "2 ALARM(S): pages/money: no data (cannot prove alive) · pages/site-audit: no data (cannot prove alive)"
 }
