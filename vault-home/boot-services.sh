@@ -250,8 +250,16 @@ done
 if [ -n "$EE_PID" ]; then
   log "  econ-engine already running (pid $EE_PID)"
 else
+  # Task 7 (2026-10-16): the fleet sources (rig journal / guard events / FleetHQ
+  # git cadence) are REAL measured work on THIS host — the engine must settle
+  # them (owner mandate Task 59: scale). Without ECON_FLEET_ROOT they skip
+  # honestly (cloud-safe), but on the host that meant silent under-settlement;
+  # the resurrected engine's state src-map proves past instances ran WITH them.
+  # Measured mint rate ~40k tx/h — the sbx-seal lane (local-beats, 4x/h) commits
+  # the chain to origin/Domain; the engine's own 30MB rotation (GH001) bounds it.
+  export ECON_FLEET_ROOT=/home/z/my-project
   nohup bash -c "cd $EE_DIR && while true; do node agents/econ-engine.cjs --loop 60; echo \"[boot-watchdog] exited code=\$? at \$(date -u +%H:%M:%SZ)\" >> /tmp/econ-engine.log; sleep 3; done" >> /tmp/econ-engine.log 2>&1 < /dev/null &
-  log "  econ-engine started (boot-session, single-writer sandbox law)"
+  log "  econ-engine started (boot-session, single-writer sandbox law, fleet sources ON)"
 fi
 
 # shift-history — the office's operational-log transcriptor (task 27-b, wipe-#4
