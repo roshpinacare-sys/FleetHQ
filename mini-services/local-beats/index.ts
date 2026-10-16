@@ -142,7 +142,19 @@ function publishFleet(name: string, paths: string[]): string {
     if ! git diff --cached --quiet; then
       git -c user.name="local-beats" -c user.email="local-beats@agents.roshpinacare-sys" commit -q -m "${name}: local heartbeat · $(date -u +%Y-%m-%dT%H:%M:%SZ)"
       git -c rebase.autoStash=true pull --rebase -q origin main || true
-      git push -q origin main
+      # SELF-HEAL (Task 6, 2026-10-16): a conflicted pull --rebase used to leave
+      # a stuck rebase-merge dir + UU paths that poisoned EVERY later publish
+      # ("Cannot autostash", spawnSync editor hang). Law: local replayed side is
+      # the freshest telemetry — take --theirs, finish the rebase, never leave
+      # the machine stuck. GIT_EDITOR=true kills the interactive-editor hang.
+      if git status --porcelain | grep -q '^UU\|^AA\|^DD\|^DU\|^UD'; then
+        for f in $(git status --porcelain | grep '^[UAD][UAD ]' | awk '{print $2}'); do
+          git checkout --theirs -- "$f" 2>/dev/null || git add -- "$f" 2>/dev/null || true
+        done
+        GIT_EDITOR=true git -c rebase.autoStash=true rebase --continue 2>/dev/null || git rebase --abort 2>/dev/null || true
+      fi
+      git push -q origin main || git pull --rebase -q origin main || true
+      git push -q origin main || true
       echo "PUSHED"
     else
       echo "NO-CHANGE"
