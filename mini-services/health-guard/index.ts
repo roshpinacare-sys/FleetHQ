@@ -27,7 +27,7 @@ const PORT = 3090;
 const CHECK_INTERVAL_MS = 30_000;
 const APP_TIMEOUT_MS = 10_000;
 const DOWN_STRIKES_TO_RESTART = 2;
-const RSS_RESTART_BYTES = 2.0 * 1024 * 1024 * 1024; // office process wall (measured idle dev RSS ~1.3GB w/ heap cap)
+const RSS_RESTART_BYTES = 1.5 * 1024 * 1024 * 1024; // office process wall (2026-10-16: kernel OOM-killed office at ~1.2GB anon-rss when box full — 2.0GB wall was TOO LATE)
 const RSS_LEAK_WALL_BYTES = 3.2 * 1024 * 1024 * 1024; // global sum wall (law T30: wall counts ONLY the :3000 office server)
 const MIN_RESTART_GAP_MS = 3 * 60_000; // anti-flap
 const MAX_HEAP_MB = 1024;
@@ -57,7 +57,7 @@ function log(kind: string, detail: string) {
 /** RSS of every next-server process (bytes) — measured from /proc, per-pid. */
 function nextServerRssList(): { per: { pid: number; bytes: number; args: string }[]; sum: number } {
   try {
-    const out = execSync(`ps -eo pid,rss,comm,args | grep -E 'next-server|next dev' | grep -v grep || true`, { encoding: 'utf8' });
+    const out = execSync(`ps -eo pid,rss,comm,args | grep -E 'next-server|next dev' | grep -v grep || true`, { encoding: 'utf8', timeout: 8000 });
     const per: { pid: number; bytes: number; args: string }[] = [];
     for (const line of out.split('\n')) {
       const m = line.trim().match(/^(\d+)\s+(\d+)\s+\S+\s+(.*)$/);
@@ -73,7 +73,7 @@ function nextServerRssList(): { per: { pid: number; bytes: number; args: string 
 /** The pid serving :3000 — mapped from ss (the office next-server), null if unknown. */
 function officePid(): number | null {
   try {
-    const out = execSync(`ss -tlnp | grep ':3000 ' || true`, { encoding: 'utf8' });
+    const out = execSync(`ss -tlnp | grep ':3000 ' || true`, { encoding: 'utf8', timeout: 8000 });
     const m = out.match(/pid=(\d+)/);
     return m ? Number(m[1]) : null;
   } catch { return null; }
@@ -94,13 +94,13 @@ async function appAlive(): Promise<boolean> {
 }
 
 function killLeftovers() {
-  try { execSync(`pkill -f 'next dev' || true; pkill -f 'next-server' || true`); } catch {}
+  try { execSync(`pkill -f 'next dev' || true; pkill -f 'next-server' || true`, { timeout: 8000 }); } catch {}
 }
 
 function startApp() {
   // double-fork subshell is the ONLY spawn form that survives session
   // boundaries in this sandbox (measured: setsid & nohup forms get reaped)
-  execSync(`( cd /home/z/my-project && NODE_OPTIONS=--max-old-space-size=${MAX_HEAP_MB} bun run dev > /home/z/my-project/dev.log 2>&1 < /dev/null & )`, { encoding: 'utf8' });
+  execSync(`( cd /home/z/my-project && NODE_OPTIONS=--max-old-space-size=${MAX_HEAP_MB} bun run dev > /home/z/my-project/dev.log 2>&1 < /dev/null & )`, { encoding: 'utf8', timeout: 8000 });
   restarts++; lastRestartAt = Date.now();
   log('restart', `spawned double-forked 'bun run dev' (heap cap ${MAX_HEAP_MB}MB), restarts=${restarts}`);
 }
@@ -171,5 +171,9 @@ createServer((req, res) => {
 }).listen(PORT, () => log('guard-up', `health-guard listening on :${PORT}, watching ${APP} every ${CHECK_INTERVAL_MS / 1000}s`));
 
 log('guard-start', `measured baseline: ${events.length} prior events loaded`);
-setInterval(tick, CHECK_INTERVAL_MS);
+setInterval(() => {
+  // wedge-law 2026-10-16: guard listened but stopped ticking (26min silent while office dead).
+  // Every tick runs inside try/catch and ALWAYS logs — silence is a bug, not a state.
+  try { void tick(); } catch (e) { try { log('tick-error', `tick threw: ${String(e).slice(0, 160)}`); } catch {} }
+}, CHECK_INTERVAL_MS);
 tick(); // first check immediately
