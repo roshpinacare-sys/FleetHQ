@@ -1,44 +1,44 @@
 {
  "schema": "silence.watchdog/1",
- "at": "2026-10-16T11:15:18.211Z",
+ "at": "2026-10-16T11:56:31.606Z",
  "scope": "actions",
  "voices": [
   {
    "name": "origin/FleetHQ",
-   "lastActivity": "2026-10-16T11:15:08.000Z",
+   "lastActivity": "2026-10-16T11:56:24.000Z",
    "ageMin": 0,
    "maxSilenceMin": 240,
    "verdict": "alive",
    "detail": {
-    "subject": "pacemaker receipt: 2026-10-16T11:15:07Z"
+    "subject": "sync twin"
    }
   },
   {
    "name": "origin/Domain",
-   "lastActivity": "2026-10-16T11:09:43.000Z",
-   "ageMin": 6,
+   "lastActivity": "2026-10-16T11:54:48.000Z",
+   "ageMin": 2,
    "maxSilenceMin": 240,
    "verdict": "alive",
    "detail": {
-    "subject": "vault-seal [auto-economy]: 14 files — אטימה-חוזרת, כלום לא מת עם הסנדב"
+    "subject": "sync: twin beat (race)"
    }
   },
   {
    "name": "origin/Console",
-   "lastActivity": "2026-10-16T10:44:12.000Z",
-   "ageMin": 31,
+   "lastActivity": "2026-10-16T11:53:14.000Z",
+   "ageMin": 3,
    "maxSilenceMin": 240,
    "verdict": "alive",
    "detail": {
-    "subject": "pacemaker receipt: 2026-10-16T10:44:12Z"
+    "subject": "pacemaker receipt: 2026-10-16T11:53:14Z"
    }
   },
   {
    "name": "divergence/FleetHQ",
-   "lastActivity": "2026-10-16T08:24:13.000Z",
-   "ageMin": 171,
+   "lastActivity": "2026-10-16T11:54:15.000Z",
+   "ageMin": 2,
    "maxSilenceMin": 75,
-   "verdict": "SILENT-ALARM",
+   "verdict": "alive",
    "detail": {
     "source": "push-queue-receipt (via git)",
     "ahead": 0,
@@ -47,22 +47,22 @@
   },
   {
    "name": "divergence/Domain",
-   "lastActivity": "2026-10-16T08:24:13.000Z",
-   "ageMin": 171,
+   "lastActivity": "2026-10-16T11:54:15.000Z",
+   "ageMin": 2,
    "maxSilenceMin": 75,
-   "verdict": "SILENT-ALARM",
+   "verdict": "alive",
    "detail": {
     "source": "push-queue-receipt (via git)",
     "ahead": 0,
-    "behind": 0
+    "behind": 5
    }
   },
   {
    "name": "divergence/Console",
-   "lastActivity": "2026-10-16T08:24:13.000Z",
-   "ageMin": 171,
+   "lastActivity": "2026-10-16T11:54:15.000Z",
+   "ageMin": 2,
    "maxSilenceMin": 75,
-   "verdict": "SILENT-ALARM",
+   "verdict": "alive",
    "detail": {
     "source": "push-queue-receipt (via git)",
     "ahead": 0,
@@ -71,41 +71,36 @@
   },
   {
    "name": "sandbox-ledger (via git)",
-   "lastActivity": "2026-10-16T11:12:46.351Z",
-   "ageMin": 3,
+   "lastActivity": "2026-10-16T11:49:01.279Z",
+   "ageMin": 8,
    "maxSilenceMin": 180,
    "verdict": "alive",
    "detail": {
-    "localSummary": "2 ALARM(S): beat/grid-pulse: no data (cannot prove alive) · roster: unresolved —"
+    "localSummary": "3 ALARM(S): beat/grid-pulse: no data (cannot prove alive) · beat/office-ci-lite:"
    }
   },
   {
    "name": "pages/money",
-   "lastActivity": null,
-   "ageMin": null,
+   "lastActivity": "2026-10-16T08:33:16.642Z",
+   "ageMin": 203,
    "maxSilenceMin": 240,
-   "verdict": "no-data",
+   "verdict": "alive",
    "detail": {
-    "error": "http 404"
+    "url": "dex/money.json"
    }
   },
   {
    "name": "pages/site-audit",
-   "lastActivity": null,
-   "ageMin": null,
+   "lastActivity": "2026-10-16T09:33:50.762Z",
+   "ageMin": 143,
    "maxSilenceMin": 360,
-   "verdict": "no-data",
+   "verdict": "alive",
    "detail": {
-    "error": "http 404"
+    "verdict": "unknown",
+    "at": "2026-10-16T09:33:50.762Z"
    }
   }
  ],
- "alarms": [
-  "divergence/FleetHQ: silent 171min (limit 75)",
-  "divergence/Domain: silent 171min (limit 75)",
-  "divergence/Console: silent 171min (limit 75)",
-  "pages/money: no data (cannot prove alive)",
-  "pages/site-audit: no data (cannot prove alive)"
- ],
- "summary": "5 ALARM(S): divergence/FleetHQ: silent 171min (limit 75) · divergence/Domain: silent 171min (limit 75) · divergence/Console: silent 171min (limit 75) · pages/money: no data (cannot prove alive) · pages/site-audit: no data (cannot prove alive)"
+ "alarms": [],
+ "summary": "ALL VISIBLE VOICES ALIVE"
 }
