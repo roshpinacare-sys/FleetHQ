@@ -934,7 +934,11 @@ export function FlameOfSovereignty() {
       {/* חלקיקי-מצאה — יחידות-עבודה עולות בקצב האמת */}
       <MintParticles />
 
-      <pointLight ref={light} position={[0, 1.5, 0]} color="#ffb054" intensity={1.0} distance={5} decay={2} />
+      {/* Task 9: על מנוע-תוכנה הלהבה זוהרת מהשיידר האדיטיבי בלבד — נורת-הנקודה
+          היא עלות-פר-פיקסל נוספת בכל-פריים (מאיץ בלבד) */}
+      {probeGpuTier() === 'hardware' && (
+        <pointLight ref={light} position={[0, 1.5, 0]} color="#ffb054" intensity={1.0} distance={5} decay={2} />
+      )}
     </group>
   );
 }

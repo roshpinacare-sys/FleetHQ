@@ -113,6 +113,18 @@ function FrameGuard({ onStarve }: { onStarve: () => void }) {
   return null;
 }
 
+/** DemandPulse (Task 9) — פעימת-רינדור 4Hz למדרגת-חיסכון: החדר חי
+ *  (הצוות זז, הלוחות נטענים, הלהבה נושמת) אך הרנדור סריאלי — בלי-תור
+ *  מצטבר. זה ההבדל בין חי-לאט לבין תקוע-לנצח. */
+function DemandPulse() {
+  const invalidate = useThree((s) => s.invalidate);
+  useEffect(() => {
+    const iv = setInterval(() => invalidate(), 250);
+    return () => clearInterval(iv);
+  }, [invalidate]);
+  return null;
+}
+
 export function Office3D() {
   // אמת-המנוע נמדדת פעם-אחת לפני העלאת-הקנבס (הרכיב רץ לקוח-בלבד):
   // מנוע-תוכנה/חסר = מדרגת-חיסכון מיד — לא מחכים ל-watchdog.
@@ -142,7 +154,7 @@ export function Office3D() {
     return () => clearTimeout(t);
   }, [lite]);
   const perfOff = lite || !heavy || panic;
-  // FrameGuard — בורח מזווית גוססת אל התצפית-הכללית + מדרגת-חירום (Task 9)
+  // FrameGuard — רק במדרגה-הכבדה: במדרגת-חיסכון אין מה להשיל (הכל כבר מינימלי)
   const onStarve = useMemo(() => () => {
     console.warn('[hq] FrameGuard: sustained frame starvation — shedding to overview + emergency tier');
     setPanic(true);
@@ -151,6 +163,14 @@ export function Office3D() {
   }, []);
   return (
     <Canvas
+      // Task 9 (measured live): on software GL, an always-on rAF at 60fps
+      // queues frames into the SwiftShader command buffer far faster than the
+      // GPU process consumes them (0.3–1 fps real) — the backlog grows
+      // without bound and the renderer main thread wedges forever. frameloop='demand'
+      // + a 4Hz invalidator coalesces that backlog to ONE queued frame:
+      // the room breathes slowly but can never wedge. The DOM HUD stays
+      // fully live at 60fps either way.
+      frameloop={lite ? 'demand' : 'always'}
       shadows={!perfOff ? 'soft' : false}
       dpr={perfOff ? [0.6, 0.9] : [1, 1.6]}
       camera={{ fov: 50, near: 0.1, far: 60, position: [4.4, 4.9, 6.4] }}
@@ -188,7 +208,8 @@ export function Office3D() {
           <CameraDirector />
           <Atmosphere />
           <RoomReadiness />
-          <FrameGuard onStarve={onStarve} />
+          {!lite && <FrameGuard onStarve={onStarve} />}
+          {lite && <DemandPulse />}
           <PostFX off={perfOff} />
         </SuspenseBoundary>
       </SceneErrorBoundary>

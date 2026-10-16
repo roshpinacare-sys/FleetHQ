@@ -195,8 +195,8 @@ function makeGitWallBoard() {
       // Task 9: updatedAtMs במדד-דקות (לא חותמת-גולמית) — בלי זה הקיר היה
       // מצויר מחדש בכל סקר-דופק גם כששום-דבר לא השתנה (ההעלאה עצמה יקרה).
       const minuteBucket = Math.floor((next.updatedAtMs ?? 0) / 60_000);
-      const sig = next.rows.map((r) => `${r.name}|${r.dotColor}|${r.commitsLabel}`).join('#') + '|' + minuteBucket + '|' + (next.seq ?? '') + '|' + (next.txPerMin ?? '');
-      const prevSig = data.rows.map((r) => `${r.name}|${r.dotColor}|${r.commitsLabel}`).join('#') + '|' + Math.floor((data.updatedAtMs ?? 0) / 60_000) + '|' + (data.seq ?? '') + '|' + (data.txPerMin ?? '');
+      const sig = next.rows.map((r) => `${r.name}|${r.dotColor}|${r.commitsLabel}`).join('#') + '|' + minuteBucket + '|' + Math.floor((next.seq ?? 0) / 250) + '|' + Math.round(next.txPerMin ?? 0);
+      const prevSig = data.rows.map((r) => `${r.name}|${r.dotColor}|${r.commitsLabel}`).join('#') + '|' + Math.floor((data.updatedAtMs ?? 0) / 60_000) + '|' + Math.floor((data.seq ?? 0) / 250) + '|' + Math.round(data.txPerMin ?? 0);
       data = next;
       if (sig !== prevSig) dyn.markDirty();
     },
