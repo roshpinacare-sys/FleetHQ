@@ -60,10 +60,19 @@ if [ -s /home/z/.secrets/keys/Tt.txt ]; then
   [ -n "$t" ] && hunt_candidates+=("$t")
 fi
 # 32: the OFFICE registry (upload/pat.env — the same file src/lib/gh-pat.ts
-# reads; the unified PAT law of the keys-registry). Value after first '='.
+# reads; the unified PAT law of the keys-registry). Parse = EXACTLY gh-pat.ts:
+# if the file contains '=', take everything after the FIRST '='; else the raw
+# trimmed content (the file may be a bare token with no key= prefix at all).
+# A shape check (ghp_/gho_/ghu_/ghs_/ghr_/github_pat_) filters garbage lines.
 if [ -s "$OFFICE/upload/pat.env" ]; then
-  t="$(sed -n 's/^[^=]*=//p' "$OFFICE/upload/pat.env" | head -1 | tr -d '[:space:]')"
-  [ -n "$t" ] && hunt_candidates+=("$t")
+  raw="$(tr -d '[:space:]' < "$OFFICE/upload/pat.env" | head -c 4096)"
+  case "$raw" in
+    *=*) t="${raw#*=}" ;;
+    *)   t="$raw" ;;
+  esac
+  case "$t" in
+    gh[pousr]_*|github_pat_*) [ -n "$t" ] && hunt_candidates+=("$t") ;;
+  esac
 fi
 
 code=000
