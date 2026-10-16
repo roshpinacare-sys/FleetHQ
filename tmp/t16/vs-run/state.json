@@ -1,0 +1,196 @@
+{
+ "schema": "roshpina.value-scan/1",
+ "generatedAt": "2026-10-12T00:05:28Z",
+ "publisher": "value-scan.yml (GitHub Actions, keyless, T13)",
+ "degraded": [],
+ "sources": {
+  "beacon": true,
+  "lighthouse": true,
+  "flow-map": true,
+  "dex": true,
+  "foreman": true,
+  "office-pulse": true,
+  "decider-d1-policy": true
+ },
+ "metrics": {
+  "treasuryNetSp": 2925.6,
+  "treasuryFloor": 3000.0,
+  "treasuryGapSp": 74.4,
+  "minOperatorSp": 11.9,
+  "operatorFloor": 100.0,
+  "operatorGapSp": 88.1,
+  "steemHead": 110360591,
+  "chainTreasurySp": 2925.6,
+  "beaconChainMatch": true,
+  "arteriesFresh": 7,
+  "arteriesTotal": 7,
+  "blockedTasks": 1,
+  "errorAgents": 0,
+  "flowNodes": 34,
+  "flowOrphans": 0,
+  "flowGhosts": 0,
+  "flowStale": 9,
+  "dexVerdict": "ARMED-STABLE",
+  "dexOpenOrders": 12,
+  "d1Consumer": {
+   "policyBasis": "2026-10-11T23:12:04Z",
+   "deciderStateAgeOk": true,
+   "operatingFloorSp": 2800.0,
+   "treasuryVsKeepSp": 125.6,
+   "operatorInterimFloors": [
+    {
+     "operator": "cashmachine",
+     "measuredSp": 75.2,
+     "policyFloorSp": 75,
+     "gapSp": -0.2,
+     "ok": true
+    },
+    {
+     "operator": "haran",
+     "measuredSp": 78.4,
+     "policyFloorSp": 75,
+     "gapSp": -3.4,
+     "ok": true
+    },
+    {
+     "operator": "israelnews",
+     "measuredSp": 94.0,
+     "policyFloorSp": 75,
+     "gapSp": -19.0,
+     "ok": true
+    },
+    {
+     "operator": "lsa",
+     "measuredSp": 79.8,
+     "policyFloorSp": 75,
+     "gapSp": -4.8,
+     "ok": true
+    },
+    {
+     "operator": "macrame",
+     "measuredSp": 75.1,
+     "policyFloorSp": 75,
+     "gapSp": -0.1,
+     "ok": true
+    },
+    {
+     "operator": "siq",
+     "measuredSp": 31.1,
+     "policyFloorSp": 30,
+     "gapSp": -1.1,
+     "ok": true
+    },
+    {
+     "operator": "tov",
+     "measuredSp": 31.2,
+     "policyFloorSp": 30,
+     "gapSp": -1.2,
+     "ok": true
+    },
+    {
+     "operator": "wic",
+     "measuredSp": 32.7,
+     "policyFloorSp": 30,
+     "gapSp": -2.7,
+     "ok": true
+    },
+    {
+     "operator": "wog",
+     "measuredSp": 11.9,
+     "policyFloorSp": 20,
+     "gapSp": 8.1,
+     "ok": false
+    },
+    {
+     "operator": "woq",
+     "measuredSp": 70.0,
+     "policyFloorSp": 75,
+     "gapSp": 5.0,
+     "ok": false
+    },
+    {
+     "operator": "hcsoldier4",
+     "measuredSp": 17.0,
+     "policyFloorSp": 30,
+     "gapSp": 13.0,
+     "ok": false
+    },
+    {
+     "operator": "hcsoldier5",
+     "measuredSp": 17.0,
+     "policyFloorSp": 30,
+     "gapSp": 13.0,
+     "ok": false
+    },
+    {
+     "operator": "hcsoldier6",
+     "measuredSp": 17.0,
+     "policyFloorSp": 30,
+     "gapSp": 13.0,
+     "ok": false
+    }
+   ],
+   "operatorsBelowPolicyFloor": [
+    "wog",
+    "woq",
+    "hcsoldier4",
+    "hcsoldier5",
+    "hcsoldier6"
+   ]
+  }
+ },
+ "verdictHe": "1 משימות חסומות — שחרור-צוות · פער-רצפת-אוצרה 74.4 SP · פער-רצפת-מפעילים 88.1 SP",
+ "topIds": [
+  "eng-unblock",
+  "econ-treasury-floor",
+  "econ-operator-floor"
+ ],
+ "opportunities": [
+  {
+   "id": "econ-treasury-floor",
+   "area": "כלכלה",
+   "titleHe": "פער-רצפת-אוצרה 74.4 SP",
+   "valueHe": "השלמת הרצפה = יציבות-אוצרה מלאה; אופציות מתועדות: שחרור-האצלה-אסורה (244.2 SP, 7 ימים) / רצפות-מדורגות / הכנסות-DEX — הכרעת-בעלים",
+   "evidence": "אוצרה 2925.6 < 3,000 · נמדד במשואה keyless",
+   "source": "sovereign-beacon state.json",
+   "effort": "M"
+  },
+  {
+   "id": "econ-operator-floor",
+   "area": "כלכלה",
+   "titleHe": "פער-רצפת-מפעילים 88.1 SP",
+   "valueHe": "מפעיל מינימלי 11.9 מתחת לרצפת 100 — חוסן-הפעלה",
+   "evidence": "minOperatorSp=11.9",
+   "source": "sovereign-beacon state.json",
+   "effort": "M"
+  },
+  {
+   "id": "eng-unblock",
+   "area": "הנדסה",
+   "titleHe": "1 משימות חסומות — שחרור-צוות",
+   "valueHe": "משימה-חסומה = ערך-תקוע; שחרור = זרימה-מחדש",
+   "evidence": "t1083: סיור שגרה: צלב בין שני ספרי צי ודווח על פערים שנמצאו",
+   "source": "FleetHQ office-state.json",
+   "effort": "S"
+  },
+  {
+   "id": "biz-dex-scale",
+   "area": "עסקים",
+   "titleHe": "DEX חי (ARMED-STABLE) · 12 פקודות פתוחות",
+   "valueHe": "הרחבת-עומק-ספר-הפקודות = הכנסה-מיקרו-מסחרית מתמשכת (ראה 1,480 order-ops ביום-שעבר)",
+   "evidence": "verdict=ARMED-STABLE · publishedAt=2026-10-11T13:40:06.612Z",
+   "source": "Domain dex/grid.json",
+   "effort": "M"
+  },
+  {
+   "id": "biz-hive-leg",
+   "area": "עסקים",
+   "titleHe": "רגל-HIVE של ה-DEX — פוטנציאל נזילות שני",
+   "valueHe": "Hive-נזיל 13k+ מדווח — רגל-שנייה פעילה מרחיבה-הכנסות",
+   "evidence": "hive verdict=ARMED-WAITING",
+   "source": "Domain dex/grid.json",
+   "effort": "L"
+  }
+ ],
+ "law": "דיווח-בלבד על כלכלת-רצפות; הכרעה = הבעלים. אין זיופים — כל הזדמנות עם ראיה ומקור."
+}

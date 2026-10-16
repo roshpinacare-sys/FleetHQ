@@ -21,6 +21,8 @@ import { memo, useEffect, useState } from 'react';
 import { bus, director, type PresetId } from '@/lib/hq/world';
 import { CAMERA_PRESETS } from '@/lib/hq/contract';
 import { useHq, type Lang } from '@/lib/hq/store';
+import { useDecisions } from '@/lib/hq/decisions';
+import { BEAT_STALE_MS } from '@/lib/hq/broadcast';
 import { setTour } from './CameraDirector';
 
 /** שידור בחירת נקודת תצפית למצלמת הבמאי (אירוע דומיין יחיד, בלי קפלים) */
@@ -64,20 +66,65 @@ const ModeChip = memo(function ModeChip({ lang }: { lang: Lang }) {
   );
 });
 
+/** פאנל-השידור החי (T20) — המשמרת הקנונית חיה בענן והחדר מצטרף אליה.
+ *  מוצג רק מה שנמדד — פאזה, גיל-הפעימה ואירועי יומן-המשמרת האמיתיים.
+ *  פעימה מעל 30 דק' או מראה חסרה = מוצג בכנות ולא ירוק-מזויף. */
+const BroadcastPanel = memo(function BroadcastPanel({ lang }: { lang: Lang }) {
+  const broadcast = useHq((s) => s.broadcast);
+  const [, force] = useState(0);
+  useEffect(() => {
+    const iv = setInterval(() => force((n) => n + 1), 30_000);
+    return () => clearInterval(iv);
+  }, []);
+  if (!broadcast) return null;
+  const he = lang === 'he';
+  const beatAgeMin = broadcast.beatAgeMs !== null ? Math.round(broadcast.beatAgeMs / 60_000) : null;
+  const stale = !broadcast.ok || (beatAgeMin !== null && broadcast.beatAgeMs! >= BEAT_STALE_MS);
+  const beat = beatAgeMin !== null
+    ? (he ? `פעימה לפני ${beatAgeMin} דק'` : `beat ${beatAgeMin}m ago`)
+    : (he ? 'ללא פעימה' : 'no beat');
+  const head = broadcast.ok
+    ? (he ? `שידור חי · ${broadcast.phase} · ${beat}` : `Live broadcast · ${beat}`)
+    : (he ? `משמרת מקומית · ${broadcast.phase} — המראה לא נענתה` : `Local shift · mirror unreachable`);
+  const whoName = (id: string) =>
+    useHq.getState().snap.crew.find((c) => c.id === id)?.name[lang] ?? id;
+  const events = broadcast.journal.slice(-4).reverse();
+  return (
+    <div className="sl-panel px-3 py-2" dir="rtl" role="status">
+      <div className="flex items-center gap-2">
+        <span className="sl-dot" style={{ backgroundColor: stale ? 'var(--st-attention)' : 'var(--st-ok)' }} aria-hidden="true" />
+        <span className="text-[12px] font-semibold" style={{ color: 'var(--ink)' }}>{head}</span>
+      </div>
+      {events.length > 0 && (
+        <ul className="mt-1.5 space-y-1">
+          {events.map((e, i) => (
+            <li key={`${e.at}-${i}`} className="flex items-baseline gap-1.5 text-[11.5px] leading-5 text-[color:var(--ink-2)]">
+              <span className="shrink-0 font-semibold" style={{ color: 'var(--ink-3)' }}>{whoName(e.who)}</span>
+              <span className="truncate">{e.text}</span>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+});
+
 /** Task 11-a — HUD נתונים אמיתיים מינימלי: יעד פעיל + ספירת לוח-המשימות +
  *  הכרעות — הכל מה-store (אותה אמת של הסוקט/המראה), טוקני-עיצוב קיימים.
  *  מה שלא נמדד לא מוצג — אין כאן מספר יבש. */
 const RoomHud = memo(function RoomHud({ lang }: { lang: Lang }) {
   const goal = useHq((s) => s.snap.goal);
   const tasks = useHq((s) => s.snap.tasks);
-  const decisions = useHq((s) => s.snap.decisions);
   const journal = useHq((s) => s.feedJournal);
+  const queue = useDecisions((s) => s.queue);
+  const foreman = useDecisions((s) => s.foreman);
   const he = lang === 'he';
   const count = (st: string) => tasks.filter((t) => t.status === st).length;
   const done = count('done');
   const active = count('todo') + count('doing') + count('review') + count('blocked');
-  const openD = decisions.filter((d) => d.status === 'open').length;
-  const answeredD = decisions.length - openD;
+  // פנקס-ההכרעות (T22) — המדידה בענן, לא הסנאפשוט הריק של הפורמן
+  const openD = (queue?.ok ? queue.open : 0) + (foreman?.ok ? foreman.items.filter((x) => x.status === 'open').length : 0);
+  const p0 = queue?.ok ? queue.p0 : 0;
   return (
     <div
       className="pointer-events-none absolute start-3 top-3 z-10 flex max-w-[64%] flex-col gap-2"
@@ -95,12 +142,15 @@ const RoomHud = memo(function RoomHud({ lang }: { lang: Lang }) {
           )}
         </div>
       )}
+      <BroadcastPanel lang={lang} />
       <div className="flex flex-wrap items-center gap-2">
         <span className="sl-panel px-3 py-2 text-[12px] font-semibold text-[color:var(--ink-2)]">
           {he ? `לוח: ${done} בוצעו · ${active} פתוחות` : `Wall: ${done} done · ${active} open`}
         </span>
         <span className="sl-panel px-3 py-2 text-[12px] font-semibold text-[color:var(--ink-2)]">
-          {he ? `הכרעות: ${answeredD} הוכרעו${openD ? ` · ${openD} פתוחות` : ''}` : `Decisions: ${answeredD} resolved${openD ? ` · ${openD} open` : ''}`}
+          {he
+            ? `הכרעות: ${openD} פתוחות${p0 > 0 ? ` · ${p0} חמורות` : ''}`
+            : `Decisions: ${openD} open${p0 > 0 ? ` · ${p0} critical` : ''}`}
         </span>
         {journal && (journal.rescuedCount != null || journal.reviewRoundsTotal != null) && (
           <span className="sl-panel px-3 py-2 text-[12px] font-semibold text-[color:var(--ink-3)]">
@@ -166,7 +216,9 @@ const TruthChip = memo(function TruthChip({ lang }: { lang: Lang }) {
   const he = lang === 'he';
   const truthBase = truth.foremanCapturedAt ?? truth.fetchedAt;
   const ageMin = Math.max(0, Math.round((Date.now() - truthBase) / 60_000));
-  const stale = ageMin >= 30;
+  // סף-החיות מוצדק: מקור-הפורמן מתעדכן בקצב של ~30–60 דק' (ריתמת-workflow נמדדת);
+  // 90 דק' = 2×ריתמה — מעבר לזה זה באמת מיושן. 30 דק' סימנו "STALE" גם נתון-טרי.
+  const stale = ageMin >= 90;
   const parts: string[] = [];
   if (truth.foremanOk) parts.push(he ? 'פורמן' : 'foreman');
   if (truth.pulseVerdict) parts.push(`דופק ${truth.pulseVerdict}`);

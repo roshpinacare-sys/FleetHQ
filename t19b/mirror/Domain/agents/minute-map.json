@@ -1,0 +1,170 @@
+{
+ "protocol": "SAOS-MINUTE-MAP/1",
+ "measured_at": "2026-10-12T01:00:00Z",
+ "law": "one workflow minute = one machine; GitHub schedule starvation measured Z-70 (tick+earn-audit: zero schedule events; fired schedules ran hours late) — collisions multiply the starvation surface · Z-71: three drift rows repaired (files are the operational truth; deep-audit F8 measured the disagreement)",
+ "workflows": {
+  "agent-verify.yml": [
+   "56 */2 * * *"
+  ],
+  "anchor-execute.yml": [
+   "55 * * * *"
+  ],
+  "audience-analyst.yml": [
+   "31 5 * * *"
+  ],
+  "cloud-heart.yml": [
+   "17,47 * * * *"
+  ],
+  "cloud-pulse.yml": [
+   "35 0 * * *"
+  ],
+  "content-campaign.yml": [
+   "5 13 * * *"
+  ],
+  "content-reviewer.yml": [
+   "4 5 * * *"
+  ],
+  "daily-claim.yml": [
+   "34 2 * * *"
+  ],
+  "daily-digest.yml": [
+   "5 1 * * *"
+  ],
+  "dex-beat.yml": [
+   "53 */2 * * *"
+  ],
+  "dex-grid.yml": [
+   "43 3 * * *"
+  ],
+  "dex-mirror.yml": [
+   "52 * * * *"
+  ],
+  "earn-audit-cron.yml": [
+   "7,37 * * * *"
+  ],
+  "econ-desk.yml": [
+   "14 */4 * * *"
+  ],
+  "economy-engine.yml": [
+   "22 */2 * * *"
+  ],
+  "fill-ledger-cron.yml": [
+   "18,48 * * * *"
+  ],
+  "fleet-census-cron.yml": [
+   "14 2 * * *"
+  ],
+  "foundry-mesh-tests.yml": [
+   "27 5 * * *"
+  ],
+  "grid-trigger-twin.yml": [
+   "8,38 * * * *"
+  ],
+  "ladder-refresh.yml": [
+   "36 */6 * * *"
+  ],
+  "market-grid-cron.yml": [
+   "21,51 * * * *"
+  ],
+  "mirror-from-console.yml": [
+   "15 * * * *"
+  ],
+  "moment-watch.yml": [
+   "12,42 * * * *"
+  ],
+  "org-gitleaks.yml": [
+   "44 1,7,13,19 * * *"
+  ],
+  "org-selftests.yml": [
+   "23 3 * * *"
+  ],
+  "proof-pipeline.yml": [
+   "40 4 * * *"
+  ],
+  "public-pulse.yml": [
+   "4 6 * * *"
+  ],
+  "recruit.yml": [
+   "44 4 * * *"
+  ],
+  "self-audience.yml": [
+   "30 14 * * *"
+  ],
+  "soldiers-curate.yml": [
+   "40 6,18 * * *"
+  ],
+  "sovereign-selftests.yml": [
+   "25 6 * * *"
+  ],
+  "sovereign-tick-cron.yml": [
+   "11,41 * * * *"
+  ],
+  "tick-keeper.yml": [
+   "2,32 * * * *"
+  ],
+  "treasury-route.yml": [
+   "20 16 * * *"
+  ],
+  "tri-bridge.yml": [
+   "5 15 * * *"
+  ],
+  "twin-audit.yml": [
+   "19 6 * * *"
+  ],
+  "watchdog.yml": [
+   "10 * * * *"
+  ],
+  "weave-anchor-lines.yml": [
+   "33 */2 * * *"
+  ],
+  "weave-anchor-ping.yml": [
+   "9 * * * *"
+  ],
+  "weave-ecosystem.yml": [
+   "30 6 * * *"
+  ],
+  "weave-heart.yml": [
+   "13 * * * *"
+  ],
+  "weave-mirror.yml": [
+   "57 * * * *"
+  ],
+  "web-publish.yml": [
+   "6,26,46 * * * *"
+  ],
+  "evo-windows.yml": [
+   "19 3 * * 0"
+  ],
+  "operator-console.yml": [
+   "0,39 * * * *"
+  ]
+ },
+ "collisions_before_reslot": 14,
+ "collisions_after_reslot": 0,
+ "reslot": [
+  "sovereign-tick 12,42→11,41",
+  "fill-ledger 17,47→18,48",
+  "web-publish 3,23,43→6,26,46",
+  "market-grid 23,53→21,51",
+  "grid-trigger-twin 9,39→8,38",
+  "econ-desk 10/4→14/4",
+  "ladder-refresh 33/6→36/6",
+  "recruit 04:40→04:52",
+  "daily-claim 02:37→02:34",
+  "content-reviewer 05:07→05:04",
+  "audience-analyst 05:37→05:31",
+  "daily-digest 01:10→01:05",
+  "content-campaign 13:10→13:05",
+  "economy-engine 17/2→22/2",
+  "agent-verify 55/2→56/2",
+  "sovereign-selftests 06:17→06:25",
+  "foundry-mesh-tests 05:17→05:27",
+  "fleet-census 02:11→02:14",
+  "org-selftests 03:26→03:23",
+  "dex-grid 03:48→03:43",
+  "recruit 04:52→04:44"
+ ],
+ "new": [
+  "tick-keeper 2,32 (the self-healing pulse, CR-0048)"
+ ]
+}

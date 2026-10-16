@@ -1,0 +1,57 @@
+#
+# empty string on every run since day one while miscounting this flow as
+# home-platform feed is ever declared, wire it as a vars. reference — the desk
+# freshness-faking, every run). Same-repo checkout/push = built-in github.token.
+
+name: public-pulse
+
+on:
+  schedule:
+    - cron: '21 6 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: public-pulse
+  cancel-in-progress: false
+
+jobs:
+  pulse:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout (keyless — same-repo only, R26 CR-0054)
+        uses: actions/checkout@v4
+        with:
+          token: ${{ github.token }}
+          fetch-depth: 1
+
+      - name: Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Compose the pulse books (keyless, fail-soft)
+        run: node agents/public-pulse.cjs
+
+      - name: Publish the books
+        if: always()
+        run: |
+          git config user.name "public-pulse"
+          git config user.email "public-pulse@users.noreply.github.com"
+          node agents/redact-telemetry.mjs about/team.json public/pulse.json agents/receipts/public-pulse-receipt.json
+          git add public/pulse.json about/team.json agents/receipts/public-pulse-receipt.json
+          if git diff --cached --quiet; then
+            echo "books unchanged"
+            exit 0
+          fi
+          git commit -m "public-pulse: refresh public pulse books $(date -u +%Y-%m-%dT%H:%M:%SZ) [skip ci]"
+          for attempt in 1 2 3; do
+            git pull --rebase origin main && git push origin HEAD:main && { echo "books published (attempt ${attempt})"; exit 0; }
+            echo "push failed (attempt ${attempt})"
+            sleep 5
+          done
+          echo "could not publish the books after 3 attempts"
+          exit 1

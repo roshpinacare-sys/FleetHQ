@@ -1,0 +1,219 @@
+{
+ "schema": "roshpina.sovereign-decider/1",
+ "generatedAt": "2026-10-11T21:35:39Z",
+ "publisher": "sovereign-decider.yml (GitHub Actions, keyless, T14)",
+ "charter": "ops/sovereign/DECIDER/CHARTER.md",
+ "charterMandateAt": "2026-10-11T21:20Z",
+ "ownerMandateVerbatim": "זה צריך להיות מוכרע על ידי הריבונות ממש לא על ידי תמשיך מה שהכי טוב ושיועיל שיעשו לבד הם לא צריכים לחכות להוראות וודא את זה",
+ "degraded": [],
+ "chainVerify": {
+  "head": 110357590,
+  "mult": 0.0006202044470254455,
+  "treasuryNetSp": 2925.6,
+  "minOperatorSp": 11.9,
+  "beaconChainMatch": true
+ },
+ "decisions": [
+  {
+   "id": "D1-econ-treasury-floor",
+   "area": "כלכלה",
+   "status": "ENFORCED",
+   "priority": "P1",
+   "titleHe": "רצפת-האוצרה — הכרעה-כלכלית-ריבונית",
+   "verdictHe": "הריבונות הכריעה בעצמה: מדיניות-מדורגת-ביניים אוכפת-מעתה (אופציה A, 19 נק') — רצפות-מפעילים 75/30/20 לפי-מדידה, קו-שימור 2800, יעד-3000 במקביל-דרך-מנועי-התשואה; שחרור-הזרימה-הנכנסת נדחה-ב-R2 (היה-מוריד-למטה-מהמסילה); המתנה-לבעלים פסולה (צו-סעיף 1).",
+   "options": [
+    {
+     "id": "A",
+     "he": "מדיניות-מדורגת-ביניים: רצפות-מפעילים 75/30/20 לפי-מדידה + קו-שימור 2800 כרצפת-תפעול עד-שיקום-3000 + המשך-מנועי-התשואה (DEX חי · curation). keyless — אוכף-מיד.",
+     "scores": {
+      "safety": 5,
+      "reversibility": 5,
+      "valueNow": 3,
+      "effort": 1
+     },
+     "total": 19,
+     "status": "CHOSEN"
+    },
+    {
+     "id": "B",
+     "he": "שחרור-הזרימה-הנכנסת (undelegate ה-244.2 SP-הנכנסים) — נדחה: מוריד-את-האוצרה ל~2681.4 SP מתחת-למסילה (הפרת R2) ושחרור-האצלות-היוצאות עורף-את-רגלי-הצי.",
+     "scores": {
+      "safety": 1,
+      "reversibility": 4,
+      "valueNow": 1,
+      "effort": 2
+     },
+     "total": 9,
+     "status": "REJECTED"
+    },
+    {
+     "id": "C",
+     "he": "המתנה-להוראות-בעלים — פסול-מראש לפי-צו-סעיף-1 (הריבונות-מכריעה-בעצמה).",
+     "scores": {
+      "safety": 0,
+      "reversibility": 0,
+      "valueNow": 0,
+      "effort": 0
+     },
+     "total": 0,
+     "status": "REJECTED"
+    }
+   ],
+   "chosen": [
+    "A"
+   ],
+   "evidence": [
+    "אוצרה נמדדת 2925.6 SP (ראש 110357590, מכפיל 0.000620204)",
+    "יעד 3000 · פער 74.4 SP · מסילת-שימור 2800 (R2)",
+    "האצלה-יוצאת-נמדדת 1344.6 SP · נכנסת-נמדדת 244.2 SP",
+    "משואה מפרסמת 2925.6 SP · תואם=True",
+    "סריקת-היסטוריה: 3000 ops-אחרונים (עד idx 87207)",
+    "האצלות-אחרונות למפעילי-הצי: ~242.1 SP (רגלי-הצי — חיוניות, אין-לשחרר)"
+   ],
+   "policy": {
+    "treasury": {
+     "operatingFloorSp": 2800.0,
+     "targetSp": 3000.0,
+     "note": "קו-השימור = רצפת-תפעול-ביניים; היעד-3000 נשאר-היעד (ביניים-כנה, לא-ויתור)"
+    },
+    "operatorInterimFloors": [
+     {
+      "operator": "israelnews",
+      "measuredSp": 94.0,
+      "tier": 1,
+      "interimFloorSp": 75
+     },
+     {
+      "operator": "lsa",
+      "measuredSp": 79.8,
+      "tier": 1,
+      "interimFloorSp": 75
+     },
+     {
+      "operator": "haran",
+      "measuredSp": 78.4,
+      "tier": 1,
+      "interimFloorSp": 75
+     },
+     {
+      "operator": "cashmachine",
+      "measuredSp": 75.2,
+      "tier": 1,
+      "interimFloorSp": 75
+     },
+     {
+      "operator": "macrame",
+      "measuredSp": 75.1,
+      "tier": 1,
+      "interimFloorSp": 75
+     },
+     {
+      "operator": "woq",
+      "measuredSp": 70.0,
+      "tier": 1,
+      "interimFloorSp": 75
+     },
+     {
+      "operator": "wic",
+      "measuredSp": 32.7,
+      "tier": 2,
+      "interimFloorSp": 30
+     },
+     {
+      "operator": "tov",
+      "measuredSp": 31.2,
+      "tier": 2,
+      "interimFloorSp": 30
+     },
+     {
+      "operator": "siq",
+      "measuredSp": 31.1,
+      "tier": 2,
+      "interimFloorSp": 30
+     },
+     {
+      "operator": "hcsoldier4",
+      "measuredSp": 17.0,
+      "tier": 2,
+      "interimFloorSp": 30
+     },
+     {
+      "operator": "hcsoldier5",
+      "measuredSp": 17.0,
+      "tier": 2,
+      "interimFloorSp": 30
+     },
+     {
+      "operator": "hcsoldier6",
+      "measuredSp": 17.0,
+      "tier": 2,
+      "interimFloorSp": 30
+     },
+     {
+      "operator": "wog",
+      "measuredSp": 11.9,
+      "tier": 3,
+      "interimFloorSp": 20
+     }
+    ],
+    "operatorsBelowInterimFloor": [
+     "woq",
+     "hcsoldier4",
+     "hcsoldier5",
+     "hcsoldier6",
+     "wog"
+    ],
+    "soldiersFloorSp": 20,
+    "yieldEngines": {
+     "dex": "continue-armed (keyless engine, כבר-חי)",
+     "curation": "continue"
+    },
+    "basis": "measured-only (CHARTER סעיף 2)",
+    "review": "RE-MEASURE בכל פעימה; שינוי-רק-דרך-הפנקס (REVOKED/עדכון-גרסה)"
+   },
+   "decidedAt": "2026-10-11T21:35:39Z",
+   "decidedBy": "sovereign-decider-v1 (CHARTER)"
+  },
+  {
+   "id": "D2-eng-errors",
+   "area": "הנדסה",
+   "status": "ENFORCED",
+   "priority": "P0",
+   "titleHe": "תקלות-הצוות — ניתוב-תיקון-ריבוני",
+   "verdictHe": "הריבונות מדרגת P0 עצמאית: תיקון 3 סוכנים בתקלה ושחרור 1 משימות חסומות — מנותב למסילות-ההנדסה ולמנוע-הצמיחה (work-orders) מיד, ללא-המתנה-להוראות (צו-סעיף 1).",
+   "evidence": [
+    "סוכנים בתקלה (מדוד): aluf, gal, erez",
+    "משימות חסומות (מדוד): t1083",
+    "עבודות-פתוחות ממנוע-הצמיחה (צריכה): WO-FleetHQ-reds, WO-saos-runtime-reds"
+   ],
+   "routing": {
+    "foreman": [
+     "aluf",
+     "gal",
+     "erez"
+    ],
+    "officeGrowthWorkOrders": [
+     "WO-FleetHQ-reds",
+     "WO-saos-runtime-reds"
+    ]
+   },
+   "decidedAt": "2026-10-11T21:35:39Z",
+   "decidedBy": "sovereign-decider-v1 (CHARTER)"
+  },
+  {
+   "id": "D3-flow-weave",
+   "area": "רשת",
+   "status": "ENFORCED",
+   "priority": "P2",
+   "titleHe": "מפת-הזרימה — חיבור-עורקים",
+   "verdictHe": "הריבונות מכריעה: חיבור 0 יתומים וטיפול ב-2 רוחות-רפאים במסילת-מחבר-העורקים — everything-uses-everything, ללא-המתנה.",
+   "evidence": [
+    "orphans=0 · ghosts=2 (flow-map.json, F-series — צריכה בלבד)"
+   ],
+   "decidedAt": "2026-10-11T21:35:39Z",
+   "decidedBy": "sovereign-decider-v1 (CHARTER)"
+  }
+ ],
+ "noAction": [],
+ "law": "MEASURE→OPTIONS→SCORE→DECIDE→PUBLISH→VERIFY→RE-MEASURE · R1-R5 ב-CHARTER"
+}

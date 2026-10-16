@@ -131,10 +131,8 @@ const GALLERY: FrameSpec[] = [
   // קיר-צפון — בין לוח-המשימות למדף
   { pos: [2.75, 0, NORTH_Z], rotY: 0, w: 0.54, h: 0.72, kind: 'cactus', variant: 2, frame: 'brass' },
   { pos: [4.35, 0, NORTH_Z], rotY: 0, w: 0.62, h: 0.82, kind: 'psy', variant: 3, frame: 'walnut' },
-  // קיר-דרום — ממערב-לדלת (הראשונה שנראית בכניסה). תיקון-מדידה: המרכז היה
-  // x=-3.3 וקצה-המסגרת (-3.73) חפף את קצה-החלון (-3.6); המרכז x=-2.4 מרחיק
-  // את המסגרת מהחלון לגמרי (תופסת -2.83..-1.97 — כולה על קיר-מלא).
-  { pos: [-2.4, 0, SOUTH_Z], rotY: Math.PI, w: 0.86, h: 0.64, kind: 'psy', variant: 2, frame: 'brass' },
+  // קיר-דרום — ממערב-לדלת (הראשונה שנראית בכניסה)
+  { pos: [-3.3, 0, SOUTH_Z], rotY: Math.PI, w: 0.86, h: 0.64, kind: 'psy', variant: 2, frame: 'brass' },
 ];
 
 export function ArtGallery() {

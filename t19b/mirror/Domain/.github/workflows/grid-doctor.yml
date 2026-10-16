@@ -1,0 +1,47 @@
+name: grid-doctor
+on:
+  schedule: [{cron: '19 * * * *'}]
+  workflow_dispatch: {}
+permissions:
+  contents: write
+  # grid-guard needs actions:write to re-ignite the engine twin (same-repo
+  # workflow_dispatch) when the beat goes stale — the never-stops law
+  # (owner trace 1a1…59b5).
+  actions: write
+concurrency:
+  group: grid-doctor
+  cancel-in-progress: false
+jobs:
+  truth:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 1}
+      - uses: actions/setup-node@v4
+        with: {node-version: 20}
+      - name: live chain audit (read-only, no secrets, no broadcasts)
+        run: node agents/grid-doctor.cjs
+      # grid-guard — never-stops law (owner trace 1a1…59b5: "אין מצב כזה
+      # שהוא לא עובד"). GitHub crons dilute under load (measured 48→12-24 runs/day),
+      # so cadence alone is not a guarantee. The guard MEASURES beat age + Console
+      # mirror age + HIVE working inventory every run and RE-IGNITES the engine
+      # (workflow_dispatch) when stale or when real inventory lands. Idempotent
+      # (≥2h between dispatches), exit-0 always (never breaks the truth book),
+      # zero secret material printed — ZIP_PAT only authenticates API calls.
+      - name: grid-guard (stale-guard + flow-watch — measure, then re-ignite)
+        env:
+          ZIP_PAT: ${{ secrets.ZIP_PAT }}
+        run: node agents/grid-guard.mjs
+      - name: commit truth book
+        run: |
+          git config user.name "grid-doctor[bot]"
+          git config user.email "grid-doctor[bot]@users.noreply.github.com"
+          git add agents/grid-truth.json agents/grid-truth.md agents/grid-truth-history.jsonl agents/grid-guard-state.json agents/grid-guard.jsonl
+          if git diff --cached --quiet; then echo "no truth changes"; else
+            for i in 1 2 3; do
+              git -c rebase.autoStash=true pull --rebase origin main >/dev/null 2>&1 || true
+              git commit -m "grid-doctor v2: live fleet truth + drift + phantom-claims $(date -u +%Y-%m-%dT%H:%M:%SZ) [skip ci]" >/dev/null 2>&1 && break || sleep 5
+            done
+            git push origin main >/dev/null 2>&1 || true
+          fi

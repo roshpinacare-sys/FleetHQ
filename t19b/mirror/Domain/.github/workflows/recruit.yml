@@ -1,0 +1,88 @@
+name: recruit
+on:
+  schedule: [{cron: "44 4 * * *"}]
+  workflow_dispatch: {}
+permissions:
+  contents: write
+concurrency:
+  group: recruit
+  cancel-in-progress: false
+jobs:
+  recruit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 1}
+      - uses: actions/checkout@v4
+        with:
+          repository: roshpinacare-sys/Defi
+          token: ${{ secrets.WEAVE_OPS_PAT }}
+          path: canon-defi
+          fetch-depth: 1
+      - uses: actions/setup-node@v4
+        with: {node-version: 20}
+      - name: "run mechanism desks (evidence for the board)"
+        run: |
+          node agents/reconcile.cjs || true
+          node agents/workflow-audit.cjs || true
+          node agents/page-laws.cjs || true
+      - name: "run self-recruitment desk"
+        run: node agents/recruit.cjs
+      - name: "run venture desk (two-sided ledger board, Z-31)"
+        run: node agents/venture-desk.cjs
+        env:
+          DEFU_DIR: ${{ github.workspace }}/canon-defi
+      - name: "run canon liveness (canon reachability legs, Z-42)"
+        run: node agents/canon-liveness.cjs
+        env:
+          DEFU_DIR: ${{ github.workspace }}/canon-defi
+      - name: "run hands book (execution surfaces probed, Z-43 cua-patterns)"
+        run: node agents/hands-book.cjs
+        env:
+          DEFU_DIR: ${{ github.workspace }}/canon-defi
+      - name: "run daily pulse (self-improvement loop, verify-only, CR-0009)"
+        run: node agents/pulse.cjs
+        env:
+          DEFU_DIR: ${{ github.workspace }}/canon-defi
+      - name: "run harness audit (five-subsystem judge node, Z-35)"
+        run: node agents/harness-audit.cjs
+        env:
+          DEFU_DIR: ${{ github.workspace }}/canon-defi
+      - name: "run desk evals (runnable expectations, Z-36)"
+        run: node agents/evals/run-evals.cjs
+      - name: "run command guard scan (mechanical override, Z-38)"
+        run: node agents/command-guard.cjs scan .github/workflows agents
+        env:
+          DEFU_DIR: ${{ github.workspace }}/canon-defi
+      - name: "run cognitive rail (inference registry + keyless probes, Z-39)"
+        run: |
+          node agents/cognitive-rail.cjs catalog
+          node agents/cognitive-rail.cjs probe
+        env:
+          DEFU_DIR: ${{ github.workspace }}/canon-defi
+      - name: "run collapse drill (containment proof, Z-40 emergence.ai)"
+        run: node agents/collapse-drill.cjs
+        env:
+          DEFU_DIR: ${{ github.workspace }}/canon-defi
+      - name: "run one-bloc desk (whole-git convergence map, Task 23)"
+        run: node agents/one-bloc.cjs
+        env:
+          ONE_BLOC_TOKEN: ${{ secrets.ZIP_PAT }}
+          DEFU_DIR: ${{ github.workspace }}/canon-defi
+      - name: "run ci-hands (the fleet's hands on its own CI estate, Task 26 cua adoption)"
+        run: node agents/ci-hands.cjs
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          DEFU_DIR: ${{ github.workspace }}/canon-defi
+      - name: commit board
+        run: |
+          git config user.name "recruit[bot]"
+          git config user.email "recruit[bot]@users.noreply.github.com"
+          git add agents/recruitment.json agents/recruitment.md agents/ventures.json agents/ventures.md agents/fills-ledger.json agents/harness-audit.json agents/harness-audit.md agents/evals/eval-results.json agents/evals/eval-results.md agents/reconciliation.json agents/reconciliation.md agents/workflow-audit.json agents/workflow-audit.md agents/page-laws.json agents/page-laws.md agents/change-requests agents/command-guard.json agents/rail-ledger.json agents/collapse-drill.json agents/receipts/collapse-drill-receipt.json agents/one-bloc.json agents/one-bloc.md agents/fleet-indicators.json agents/fleet-indicators.md agents/canon-liveness.json agents/canon-liveness.md agents/ci-hands.json agents/ci-hands.md agents/hands-book.json agents/hands-book.md agents/pulse-book.json agents/pulse-book.md 2>/dev/null || true
+          if git diff --cached --quiet; then echo "no board changes"; else
+            for i in 1 2 3; do
+              git -c rebase.autoStash=true pull --rebase origin main >/dev/null 2>&1 || true
+              git commit -m "recruit+ventures: army openings + two-sided ledger board $(date -u +%Y-%m-%dT%H:%M:%SZ) [skip ci]" >/dev/null 2>&1 && break || sleep 5
+            done
+            git push origin main >/dev/null 2>&1 || true
+          fi

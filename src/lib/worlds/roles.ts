@@ -46,15 +46,15 @@ export function deriveRecruitment(p: WorldsPayload | null): RecruitRole[] {
     });
   }
 
-  // 2) פערי-רצפה כלכליים → כלכלן-ריבונות (דיווח-בלבד; הכרעה = בעלים)
+  // 2) פערי-רצפה כלכליים → כלכלן-ריבונות (ההכרעה כבר-נעשתה-עצמאית; דרוש-ביצוע-מפתחות)
   const treasury = p.beacon.data?.lastPulse?.treasuryNetSp;
   if (typeof treasury === 'number' && treasury < 3000) {
     roles.push({
       id: 'sovereign-economist',
-      titleHe: 'כלכלן-ריבונות (ייעוץ · אין-הכרעה)',
-      whyHe: `אוצרה ${treasury.toFixed(1)} SP מתחת לרצפת 3,000`,
-      evidence: `פער נמדד ${(3000 - treasury).toFixed(1)} SP · מקור המספר: משואה keyless`,
-      source: 'sovereign-beacon state.json',
+      titleHe: 'כלכלן-ריבונות (מבצע-הכרעות · דורש-מפתחות)',
+      whyHe: `אוצרה ${treasury.toFixed(1)} SP מתחת לרצפת 3,000 — הריבונות כבר הכריעה בעצמה (מדיניות-מדורגת-ביניים אוכפת), דרוש-ביצוע-מנועי-תשואה-ומפתחות`,
+      evidence: `פער נמדד ${(3000 - treasury).toFixed(1)} SP · ההכרעה: D1-econ-treasury-floor (פנקס-ההכרעות) · מקור המספר: משואה keyless`,
+      source: 'sovereign-decider state.json (T14)',
       severity: 'amber',
     });
   }

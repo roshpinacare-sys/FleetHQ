@@ -1,0 +1,19 @@
+{
+  "id": "CR-0008",
+  "from": "Task 29 wave (doctrine Authority Map + strix security-lineage adoption)",
+  "tier": "B",
+  "opened_at": "2026-10-03T03:20:00Z",
+  "proposes": "Constitutional amendment + adoption: (1) fleet-desk-operator SKILL.md v1.1.0 — new Authority Map section encoding the owner's 2026-10-03 statement verbatim (wallet=owner authority; everything else=sovereignty-decided; owner-held possessions=possession-gated) with the reinterpret-forward rule for historical owner-gated labels; (2) SKILL-AUTHORING-STANDARD.md — tier C redefined as WALLET-OR-POSSESSION-LOCK, existing only for those two lock domains; (3) new package skills/security-strix-operator (usestrix/strix lineage, Apache-2.0, eval Task 28, mirror sha 99c0711): authorization boundary (estate assets only), honest feasibility table (sandbox has no Docker -> OSS CLI blocked here; cloud=wallet), honest run-reading (exit-code semantics, budget-wrap caveats, run.json cost-vs-budget); (4) THIRD-PARTY-NOTICES.md section 3 (Apache-2.0 attribution + change-state declaration, zero upstream bodies copied); (5) skill-library-gate.cjs v1.1.0 — second lineage pin (strix sha 99c0711 + Apache-2.0 reference mechanically enforced in notices); (6) run-evals.cjs v1.11.0 + E21 (strip-restore predicate proves the pin is a code fact); (7) harness-audit.cjs v1.13.0 doctrine-anchor check; (8) feature_list.json feat-012.",
+  "rationale": "The owner redefined the authority topology: non-wallet decisions belong to the sovereignty (the desk), not to the owner. That statement changes how every future blocked/deferred item is interpreted — it must live in the desk's operating skill, not only in a chat log (roles-as-data law: a rule not encoded is not a rule). The same wave answers the owner's Task 25-28 lineage: the owner-pointed strix repo (66.2k stars, Apache-2.0, active) becomes the security-domain reference family; its own honest-engineering patterns (digest-bound approvals, unknown-state flags, cost-vs-budget proofs, authorization guardrail) are the strongest third-party parallel to the house laws, so the lineage is pinned mechanically like the MIT one.",
+  "risk": "Authority drift in BOTH directions — over-deferring (desk asks the owner for non-wallet matters, violating the map) and under-deferring (desk opens the wallet). Mitigated: the map is a judge-checked anchor (doctrine check in every audit); tier C is narrowed to wallet/possession only; the strix operator package hard-codes the absolute authorization boundary and the wallet stop.",
+  "rollback": "git revert the wave commit: restores fleet-desk-operator v1.0.0 (no Authority Map), standard tier-C wording, 6-package library, gate v1.0.1 (single lineage pin), evals v1.10.0 (E20), judge v1.12.0, feature_list 11 features. Zero chain, money, or CI-workflow surface touched.",
+  "verdict": "PASS",
+  "judged_by": "harness-audit",
+  "judged_at": "2026-10-03T03:40:00Z",
+  "receipts": [
+    "agents/skill-library.json (gate v1.1.0 GREEN, 7 packages, offenders 0)",
+    "agents/evals/eval-results.json (E21 PASS; 21/21 total — strip-caught + restore-clean proved in fresh tmp library)",
+    "agents/harness-audit.json (v1.13.0: doctrine-anchor check PASS)",
+    "init.sh DOMAIN-INIT-OK exit 0 (syntax gate -> STASIS proof -> guard battery -> FWI THRIVING -> judge)"
+  ]
+}

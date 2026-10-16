@@ -1,0 +1,114 @@
+# and WIRE everything. The sibling wired the observer (:23/:53); this wires the MEASUREMENT
+# leg: every fill_order of the fleet's trading account is captured, deduped, and replayed
+#
+#    active) AND by the desks themselves; two independent gates, one law.
+#    session-side, owner-gated (MARKET_CYCLE_LIVE=1 remains a human decision).
+#  · DEDUPE — the desk's fill registry makes re-runs idempotent: a fill already in
+#    the keyless coord-bus reader rides it as an independent leg: every saos.*
+#    custom_json op on the head account (weave checkpoints, platform snapshots, future
+#    (primary+cross fingerprints must match or nothing is written). TWO independent
+
+name: fill-ledger-cron
+
+on:
+  schedule:
+    - cron: '39 */3 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: fill-ledger-cron
+  cancel-in-progress: false
+
+jobs:
+  tick:
+    runs-on: ubuntu-latest
+    timeout-minutes: 9
+    steps:
+      - name: Checkout this repo (the desk is read-only — official chain surfaces only)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: STASIS brake (FATE-DEFENSE law
+        id: brake
+        run: |
+          # measurement lane. The old gate halted on active===true alone and darkened the
+          ST=$(node -p "const s=JSON.parse(require('fs').readFileSync('agents/STASIS.json','utf8'));s.active===true ? ('armed mode='+(s.mode||'full')) : 'standing-by'" 2>/dev/null || echo "unreadable")
+          echo "active=$ST" >> "$GITHUB_OUTPUT"
+          if [ "$ST" != "standing-by" ]; then
+            echo "[STASIS-STAGED-OBSERVE] fill-ledger-cron · brake $ST — the keyless measurement lane continues per scope law"
+          else
+            echo "STASIS-LIFTED fill-ledger-cron · $ST"
+          fi
+
+      - name: tick (keyless fill measurement + deduped ledger rows)
+        if: true
+        env:
+          FILL_LEDGER_MAX_PAGES: '15'
+        run: node agents/fill-ledger.cjs
+        # The desk is fail-soft by law (CR-0039 law 9): every error lands in the run row
+        # and the process exits 0 — the tick always reaches the publish step, and the
+
+      - name: coord-bus (keyless saos.* custom_json read — CR-0048, split-brain guarded)
+        if: true
+        env:
+          COORD_BUS_MAX_PAGES: '40'  # CR-0048: the head churns ~28 ops/min of limit orders — a 30-min tick needs ~850 ops of reach (the watermark walk normally stops in 1-2 pages)
+        run: node agents/coord-bus.cjs
+
+      - name: publish the tick back to the ledger
+        if: true
+        run: |
+          set -u
+          git config user.name "fill-ledger-cron[bot]"
+          git config user.email "fill-ledger-cron[bot]@users.noreply.github.com"
+          git add -A 2>/dev/null || true
+          if git diff --cached --quiet; then
+            echo "no ledger change — clean exit"
+          else
+            git commit -m "fill-ledger: tick $(date -u +%FT%TZ) [skip ci]"
+            ok=0
+            for attempt in 1 2 3; do
+              if git -c rebase.autoStash=true pull --rebase origin main && git push origin HEAD:main; then
+                echo "ledger published (attempt ${attempt})"; ok=1; break
+              fi
+              echo "publish failed (attempt ${attempt})"
+              sleep 5
+            done
+            [ "$ok" = "1" ] || { echo "could not publish the ledger after 3 attempts - fail-loud"; exit 1; }
+          fi
+
+      - name: publish the bus book (independent no-noise — CR-0048)
+        if: true
+        run: |
+          set -u
+          git config user.name "coord-bus-cron[bot]"
+          git config user.email "coord-bus-cron[bot]@users.noreply.github.com"
+          git add agents/coord-bus.json 2>/dev/null || true
+          if git diff --cached --quiet; then
+            echo "bus unchanged — clean exit"
+          else
+            git commit -m "coord-bus: tick $(date -u +%FT%TZ) [skip ci]"
+            ok2=0
+            for attempt in 1 2 3; do
+              if git -c rebase.autoStash=true pull --rebase origin main && git push origin HEAD:main; then
+                echo "bus published (attempt ${attempt})"; ok2=1; break
+              fi
+              echo "bus publish failed (attempt ${attempt})"
+              sleep 5
+            done
+            [ "$ok2" = "1" ] || { echo "could not publish the bus book after 3 attempts - fail-loud"; exit 1; }
+          fi
+
+      - name: Halt receipt (this shift belongs to the breaker)
+        if: false
+        run: |
+          echo "STASIS-HALT fill-ledger-cron · breaker active — the ledger stands still by law, not by neglect."
+          echo "Resume only after root-cause + judge-node green (see agents/STASIS.json resumePolicy)."

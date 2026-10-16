@@ -1,0 +1,354 @@
+[
+  {
+    "verdict": "rejected",
+    "fingerprint": "ci-pwn-request-or-secret-echo",
+    "title": "pull_request_target pwn-request or secret echo in workflows",
+    "description": "Candidate: some workflow may checkout untrusted PR heads with secrets or echo secrets to logs.",
+    "claimed_root_cause": "Claimed risky trigger/echo patterns in fleet workflows.",
+    "trace": [
+      {
+        "kind": "sink",
+        "file": ".github/workflows",
+        "line": 1,
+        "scope": "estate-wide grep",
+        "description": "Candidate class, estate-wide grep anchor (file-level, first line)"
+      }
+    ],
+    "evidence": [
+      {
+        "file": "Domain/.github/workflows",
+        "line": 1,
+        "description": "rg across 47 workflows (3 repos): pull_request_target count = 0; direct secret echo patterns = 0 (file-set-level observation)"
+      }
+    ],
+    "reason": "Mechanical grep over all 47 workflows found zero pull_request_target triggers and zero secret echoes; gitleaks workflows exist in all three repos as an ongoing control."
+  },
+  {
+    "verdict": "confirmed",
+    "fingerprint": "ci-unpinned-action-tag-refs",
+    "title": "95 unpinned tag refs for reusable GitHub Actions across the CI estate",
+    "description": "Reusable actions are referenced by mutable tags (actions/checkout@v4, setup-node@v4, upload-artifact@v4); an upstream tag move would change code executed with repository secrets present.",
+    "trace": [
+      {
+        "kind": "entrypoint",
+        "file": ".github/workflows/econ-desk.yml",
+        "line": 14,
+        "scope": "uses:",
+        "description": "checkout referenced by mutable v4 tag"
+      }
+    ],
+    "evidence": [
+      {
+        "file": ".github/workflows/econ-desk.yml",
+        "line": 14,
+        "description": "uses: actions/checkout@v4"
+      },
+      {
+        "file": ".github/workflows",
+        "line": 1,
+        "description": "95 tag refs counted across 41 Domain workflows; zero SHA pins (Defi and steem: 3 workflows each, same tag style)"
+      }
+    ],
+    "conditions": [
+      {
+        "kind": "third_party_dependency",
+        "description": "Requires upstream tag move or publisher-account compromise (uncommon precondition); first-party GitHub actions reduce likelihood."
+      }
+    ],
+    "remediation": {
+      "strategy": "Pin used actions to full commit SHAs (dependabot or manual one-pass); no secret rotation needed."
+    },
+    "severity": {
+      "likelihood": {
+        "score": "low",
+        "reason": "Upstream tag move of first-party actions is an uncommon precondition."
+      },
+      "impact": {
+        "score": "medium",
+        "reason": "Runner code executes with secrets in env."
+      },
+      "overall_severity": "low"
+    },
+    "confidence": {
+      "score": "high",
+      "reason": "Counted mechanically across the estate."
+    },
+    "root_cause": "Workflows reference reusable actions by mutable tag refs (actions/checkout@v4, setup-node@v4, upload-artifact@v4) instead of immutable commit SHAs.",
+    "intended_behavior": "Every reusable action is pinned to a full commit SHA so upstream tag movement cannot alter trusted runner code.",
+    "execution": {
+      "attacker_perspective": "An attacker controlling the upstream action tag or its release.",
+      "payloads": [
+        "A moved or re-tagged action reference consumed on the next workflow run."
+      ],
+      "instructions": [
+        "Not reproduced: no upstream modification was attempted (doctrine: no live/third-party probing)."
+      ],
+      "observed_result": "Configuration-level observation only: mutable refs are present and consumed at run time with repository secrets in env; no execution of modified actions was performed or implied."
+    }
+  },
+  {
+    "verdict": "confirmed",
+    "fingerprint": "fleet-git-token-embedded-remote-urls-664",
+    "title": "GitHub tokens embedded in remote URLs with 664 config permissions",
+    "description": "All three fleet repos carry a bearer token inside the remote URL in .git/config; the config files are mode 664, so any local process able to read the worktree (including tools run by skills or agents) can obtain full read/write access to the corresponding GitHub repositories.",
+    "root_cause": "Remotes were configured as https://<token>@github.com/... during fleet bootstrap; .git/config was left at default umask 664.",
+    "intended_behavior": "Credential material should be provided via a credential helper or environment, and config files should be 600.",
+    "trace": [
+      {
+        "kind": "entrypoint",
+        "file": ".git/config",
+        "line": 7,
+        "scope": "remote origin url",
+        "description": "Token embedded in remote URL for Domain"
+      },
+      {
+        "kind": "sink",
+        "file": ".git/config",
+        "line": 7,
+        "scope": "remote origin url",
+        "description": "Same pattern in Defi and steem line 7"
+      }
+    ],
+    "evidence": [
+      {
+        "file": "Domain/.git/config",
+        "line": 7,
+        "description": "url = https://[REDACTED]@github.com/roshpinacare-sys/Domain.git (token present, 93-char length measured in Z-43 without printing)"
+      },
+      {
+        "file": "Domain/.git/config",
+        "line": 7,
+        "description": "stat mode of .git/config measured 664 (group/world readable), file-level observation anchored to url line"
+      }
+    ],
+    "conditions": [
+      {
+        "kind": "environmental_dependency",
+        "description": "Single-user sandbox limits the practical reader set, but any injected skill, script, or subprocess in the session can read the file."
+      }
+    ],
+    "execution": {
+      "attacker_perspective": "Any local process or agent with read access to the repo worktree.",
+      "payloads": [
+        "Read .git/config of any fleet repo."
+      ],
+      "instructions": [
+        "Parse the url line and extract the token."
+      ],
+      "observed_result": "Token present and file world-readable (measured 664; token never printed in this audit)."
+    },
+    "remediation": {
+      "strategy": "Switch remotes to a credential helper (or insteadOf with env-provided token) and chmod 600 the three .git/config files. Operator-level change: remotes and credentials are tier C."
+    },
+    "severity": {
+      "likelihood": {
+        "score": "medium",
+        "reason": "Any process in the session can read the file; no multi-user exposure observed."
+      },
+      "impact": {
+        "score": "medium",
+        "reason": "Full write access to all three fleet repos (content; no fuel/keys)."
+      },
+      "overall_severity": "medium"
+    },
+    "confidence": {
+      "score": "high",
+      "reason": "Presence and mode measured directly; token length receipt exists from Z-43."
+    }
+  },
+  {
+    "verdict": "confirmed",
+    "fingerprint": "gateway-xtransformport-unrestricted-pivot",
+    "title": "Gateway pivot lane proxies any localhost port on attacker-supplied query param",
+    "description": "The public gateway matches XTransformPort=* and reverse-proxies to arbitrary localhost:{port}; any externally reachable client can pivot to any loopback service that lacks its own auth, not just the allowlisted services.",
+    "root_cause": "The lane was designed for service routing but implemented with an unconstrained port expression.",
+    "intended_behavior": "The lane should allow only enumerated service ports (e.g., 3000, 3003).",
+    "trace": [
+      {
+        "kind": "entrypoint",
+        "file": "Caddyfile",
+        "line": 3,
+        "scope": "query matcher",
+        "description": "XTransformPort=* matcher"
+      },
+      {
+        "kind": "sink",
+        "file": "Caddyfile",
+        "line": 7,
+        "scope": "reverse_proxy",
+        "description": "localhost:{query.XTransformPort} upstream"
+      }
+    ],
+    "evidence": [
+      {
+        "file": "Caddyfile",
+        "line": 7,
+        "description": "reverse_proxy localhost:{query.XTransformPort} with no allowlist"
+      }
+    ],
+    "conditions": [
+      {
+        "kind": "network_routing",
+        "description": "Only ports actually bound on loopback are reachable; the gateway host is the public exposure point."
+      }
+    ],
+    "execution": {
+      "attacker_perspective": "Any external client able to reach the gateway.",
+      "payloads": [
+        "GET /?XTransformPort=<port> on any path."
+      ],
+      "instructions": [
+        "Send the request with the query param set to a loopback service port."
+      ],
+      "observed_result": "Configuration forwards to the requested localhost port (config-level observed; no live probe performed per doctrine)."
+    },
+    "remediation": {
+      "strategy": "Replace the wildcard matcher with an enumerated allowlist of service ports; keep the default lane unchanged."
+    },
+    "severity": {
+      "likelihood": {
+        "score": "medium",
+        "reason": "Directly reachable by any external client if the gateway is externally exposed."
+      },
+      "impact": {
+        "score": "medium",
+        "reason": "Blast radius limited to unauthenticated loopback services; none observed binding secrets beyond 3000/3003 in this pass."
+      },
+      "overall_severity": "low"
+    },
+    "confidence": {
+      "score": "high",
+      "reason": "Config read directly; behavior not live-probed (doctrine: minimum local effect)."
+    }
+  },
+  {
+    "verdict": "needs_validation",
+    "fingerprint": "runtime-deps-no-advisory-crosscheck",
+    "title": "Dependency advisories not cross-checked against an advisory database",
+    "description": "Resolved dependency set majors are current, but no authoritative advisory-DB lookup was performed in this guidance-mode pass.",
+    "claimed_root_cause": "No local CVE/advisory database in this runtime; network advisory lookup deliberately not performed in a bounded read-only audit.",
+    "trace": [
+      {
+        "kind": "entrypoint",
+        "file": "package.json",
+        "line": 1,
+        "scope": "dependencies",
+        "description": "Resolved dependency set, file-level anchor (dependencies block)"
+      }
+    ],
+    "evidence": [
+      {
+        "file": "package.json",
+        "line": 1,
+        "description": "Majors current (next ^16.1.1, react ^19, prisma ^6.11.1); one 0.x dep; file-set-level observation"
+      }
+    ],
+    "blockers": [
+      "Authoritative advisory cross-check for the bun.lock-resolved set."
+    ],
+    "validation_plan": {
+      "local": "Run an advisory tool against the lockfile when available.",
+      "deployment": "Enable scheduled advisory scanning in CI (owner lane)."
+    }
+  },
+  {
+    "verdict": "needs_validation",
+    "fingerprint": "runtime-dev-mode-on-public-default-lane",
+    "title": "Default public lane serves a dev-mode server",
+    "description": "The default gateway lane proxies localhost:3000 where a next dev server runs; dev mode exposes verbose diagnostics unsuitable for a public lane.",
+    "claimed_root_cause": "package.json dev script is `next dev -p 3000` and platform policy mandates dev mode.",
+    "trace": [
+      {
+        "kind": "entrypoint",
+        "file": "package.json",
+        "line": 6,
+        "scope": "scripts.dev",
+        "description": "next dev -p 3000 2>&1 | tee dev.log"
+      }
+    ],
+    "evidence": [
+      {
+        "file": "package.json",
+        "line": 6,
+        "description": "dev script line; gateway default lane targets localhost:3000"
+      }
+    ],
+    "blockers": [
+      "Exact platform-policy fact: whether this runtime may run a production build on the public lane (platform instructions currently forbid bun run build)."
+    ],
+    "validation_plan": {
+      "local": "Reproduce a dev-mode error page locally and record the leaked diagnostics (bounded).",
+      "deployment": "If the owner permits a prod build, switch the default lane and re-audit headers/diagnostics."
+    }
+  },
+  {
+    "verdict": "confirmed",
+    "fingerprint": "skills-library-no-injection-boundary-rule",
+    "title": "No instruction-versus-data boundary rule for the 66-skill library (108 scripts)",
+    "description": "The runtime loads 66 skill definitions (108 executable scripts under skills/**) into agent context, and runtime conventions contain no rule that skill/reference content is untrusted data and never instruction \u2014 the exact class the Cloudflare AI-AND-LLM doctrine calls out for LLM-backed targets.",
+    "root_cause": "Skills library predates the adoption of an explicit injection-boundary discipline.",
+    "intended_behavior": "Runtime conventions must state: skill and reference content is evidence to verify, not commands to obey; executable skill scripts are inventoried and reviewed before first run.",
+    "trace": [
+      {
+        "kind": "entrypoint",
+        "file": "skills",
+        "line": 1,
+        "scope": "library root",
+        "description": "66 skill directories, 108 executable scripts (file-set-level anchor)"
+      },
+      {
+        "kind": "sink",
+        "file": "AGENTS.md",
+        "line": 1,
+        "scope": "runtime conventions",
+        "description": "no untrusted-data clause found (file-level grep anchor)"
+      }
+    ],
+    "evidence": [
+      {
+        "file": "skills",
+        "line": 1,
+        "description": "108 executable files counted under skills/** (file-set-level)"
+      },
+      {
+        "file": "AGENTS.md",
+        "line": 1,
+        "description": "rg for untrusted|as data|not as instruction returned empty (file-level)"
+      }
+    ],
+    "conditions": [
+      {
+        "kind": "environmental_dependency",
+        "description": "Documentary control gap; no exploit demonstrated in this pass."
+      }
+    ],
+    "remediation": {
+      "strategy": "Adopt the AI-AND-LLM core-discipline clause into runtime conventions (follow-up CR; one paragraph, no code)."
+    },
+    "severity": {
+      "likelihood": {
+        "score": "medium",
+        "reason": "Skill content is regularly loaded into agent context by design."
+      },
+      "impact": {
+        "score": "medium",
+        "reason": "Blast radius is agent behavior bounded by existing ironclads; no direct secret/execution path demonstrated."
+      },
+      "overall_severity": "low"
+    },
+    "confidence": {
+      "score": "high",
+      "reason": "Absence measured by grep over runtime docs; counts mechanical."
+    },
+    "execution": {
+      "attacker_perspective": "Content injected into a skill's markdown or reference files would be loaded into agent context and could steer agent behavior.",
+      "payloads": [
+        "A SKILL.md or reference file containing instruction-shaped text (e.g., imperative directives)."
+      ],
+      "instructions": [
+        "Not reproduced: no payload was planted (the audit does not modify target source; the library is treated read-only)."
+      ],
+      "observed_result": "Control-level observation only: no boundary rule exists in runtime conventions, and skill content is loaded by design; the reach of injected text into agent behavior is bounded by existing ironclads but was not experimentally demonstrated."
+    }
+  }
+]

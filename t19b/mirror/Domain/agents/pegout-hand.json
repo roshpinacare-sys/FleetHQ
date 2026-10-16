@@ -1,0 +1,44 @@
+{
+ "protocol": "SAOS-PEGOUT-HAND/1",
+ "at": "2026-10-04T16:08:33.363Z",
+ "agent": "pegout-hand v1.0.0 (R44 THE OPPOSING HANDS, CR-0074)",
+ "vault": {
+  "present": true,
+  "pub": "STM5HhJD5WUXu8vPhDmLaC2fTuuJYkwxF62Rt17HZ5G2PbnBvuHXF",
+  "path": "~/my-project/.fleet/headcorner-derived.json"
+ },
+ "live": false,
+ "queueFile": "dex/pegout-queue.json",
+ "rows": [
+  {
+   "intentId": "401c2409c4583ac5",
+   "asset": "STEEM",
+   "amountMu": "9358",
+   "dest": "treasury",
+   "corridor": "KEYED-DESK (steem active in the protected desks — operator-gated broadcast)",
+   "verdict": "REFUSED-DEST-NOT-ESTATE",
+   "satoshi": "9"
+  }
+ ],
+ "summary": {
+  "verdict": "ALL-REFUSED-OR-PLAN",
+  "fireable": 0,
+  "refused": 1,
+  "total": 1,
+  "refusedByLaw": [
+   "401c2409c4583ac5:REFUSED-DEST-NOT-ESTATE(treasury)"
+  ]
+ },
+ "allowlist": {
+  "size": 15,
+  "law": "chain payouts fire ONLY to estate-roster accounts — REFUSED-DEST-NOT-ESTATE otherwise"
+ },
+ "laws": [
+  "dest-allowlist: estate roster only — a payout to a non-estate name is refused, never broadcast",
+  "keyed only: LIVE requires PEGOUT_LIVE=1 + the vault; keyless runs report, never sign",
+  "sovereign crypto: own transfer serializer (golden-vector verified vs steem-js) + gate-crypto signCompact",
+  "floor law: µ floors to the chain 3-decimal precision; below chain dust the row is refused",
+  "single-writer: the queue is consumed atomically; rows marked in place with txid or refusal",
+  "rail proof: a 0.001 self-transfer (value-neutral, receipted) proves the hand — one per day"
+ ]
+}

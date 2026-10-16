@@ -1,0 +1,162 @@
+{
+  "ok": true,
+  "at": "2026-10-11T23:46:55Z",
+  "agent": "reef-harness-evo v1.0.2 (Z-61 CR-0030 [renumbered from CR-0029]; Z-62 v1.0.1 incumbent-anchor fix + v1.0.2 storm-ladder env-tunability, CR-0033 — GEPA-class harness evolution over the CR-0027 guarded executor)",
+  "laws": [
+    "VERIFY-ONLY (the desk measures and books; adoption only via a judged tier-B CR)",
+    "SERVE-WINDOW ×2 (shim v1.1.0 TEST instance + reef, killed in finally, verified dead; live :3040 untouched)",
+    "GUARD-IN-PATH (every candidate runs behind the same CR-0019 guard — a hostile prompt can only lose)",
+    "FRESH-FIXTURE (distinct integer seeds per episode; verifier recomputes truth from disk)",
+    "MEASURED-SELECTION (best mean reward; tie → fewer mean turns; final tie → incumbent)"
+  ],
+  "reflection": {
+    "receipt": "072de6d127594c1cb624c2841f8e7a07",
+    "proposed": 1,
+    "raw_chars": 982
+  },
+  "pool": [
+    {
+      "label": "v1-incumbent",
+      "rationale": "seed (CR-0027 canonical harness, read from the runner source)",
+      "chars": 689
+    },
+    {
+      "label": "strict-file-inspection-first",
+      "rationale": "Forces complete file enumeration before summing to prevent partial sums.",
+      "chars": 799
+    }
+  ],
+  "evaluations": [
+    {
+      "label": "v1-incumbent",
+      "rationale": "seed (CR-0027 canonical harness, read from the runner source)",
+      "eps": [
+        {
+          "seed": "11,29,391,7,101",
+          "attempt": true,
+          "reward": 1,
+          "turns": 4,
+          "bash": 3,
+          "denies": 0,
+          "file": 493,
+          "expected": 493,
+          "receiptCount": 4,
+          "ms": 2626
+        },
+        {
+          "seed": "14,40,408,21,124",
+          "attempt": true,
+          "reward": 1,
+          "turns": 4,
+          "bash": 3,
+          "denies": 0,
+          "file": 493,
+          "expected": 493,
+          "receiptCount": 4,
+          "ms": 2560
+        }
+      ],
+      "attempts": 2,
+      "meanReward": 1,
+      "meanTurns": 4,
+      "denies": 0
+    },
+    {
+      "label": "strict-file-inspection-first",
+      "rationale": "Forces complete file enumeration before summing to prevent partial sums.",
+      "eps": [
+        {
+          "seed": "18,34,392,14,114",
+          "attempt": false,
+          "reward": null,
+          "status": "UPSTREAM-FAIL",
+          "note": "non-attempt (never counted as reward 0)"
+        },
+        {
+          "seed": "21,45,409,28,137",
+          "attempt": false,
+          "reward": null,
+          "status": "UPSTREAM-FAIL",
+          "note": "non-attempt (never counted as reward 0)"
+        }
+      ],
+      "attempts": 0,
+      "meanReward": null,
+      "meanTurns": null,
+      "denies": 0
+    }
+  ],
+  "winner": {
+    "label": "v1-incumbent",
+    "meanReward": 1,
+    "meanTurns": 4
+  },
+  "winnerPromptFile": "/tmp/reef-rung3/harness-0.txt",
+  "serve_windows": {
+    "shim": {
+      "started": true,
+      "pid": 11592,
+      "killed": true,
+      "verified_dead": true
+    },
+    "reef": {
+      "started": true,
+      "pid": 11598,
+      "killed": true,
+      "verified_dead": true
+    }
+  },
+  "rows": [
+    {
+      "id": "shim",
+      "status": "TEST-INSTANCE-UP",
+      "detail": "v1.1.0 queue instance on 3052 (retry/backoff for the measured batch; live :3040 untouched)"
+    },
+    {
+      "id": "reef",
+      "status": "SERVE-UP",
+      "detail": "reef on 8900 upstreaming to the 3052 test instance"
+    },
+    {
+      "id": "reflection",
+      "status": "PROPOSED",
+      "detail": "receipt 072de6d1… · 1 variants accepted of 1 requested"
+    },
+    {
+      "id": "ep:v1-incumbent#0",
+      "status": "REWARD-1",
+      "detail": "turns=4 bash=3 file=493 truth=493"
+    },
+    {
+      "id": "ep:v1-incumbent#1",
+      "status": "REWARD-1",
+      "detail": "turns=4 bash=3 file=493 truth=493"
+    },
+    {
+      "id": "ep:strict-file-inspection-first#0",
+      "status": "NON-ATTEMPT",
+      "detail": "status=UPSTREAM-FAIL upstream_fail=turn 2: ReefClientError: Reef service returned 502: inference provider returned "
+    },
+    {
+      "id": "ep:strict-file-inspection-first#1",
+      "status": "NON-ATTEMPT",
+      "detail": "status=UPSTREAM-FAIL upstream_fail=turn 1: ReefClientError: Reef service returned 502: inference provider returned "
+    },
+    {
+      "id": "selection",
+      "status": "MEASURED",
+      "detail": "winner=v1-incumbent meanReward=1 attempts=2/2 (incumbent mean=1)"
+    },
+    {
+      "id": "shim",
+      "status": "SERVE-WINDOW-CLOSED",
+      "detail": "shim verified dead=true"
+    },
+    {
+      "id": "reef",
+      "status": "SERVE-WINDOW-CLOSED",
+      "detail": "reef verified dead=true"
+    }
+  ],
+  "note": "adoption is a CR act, not a desk act — the winner prompt is preserved at winnerPromptFile for the judged landing"
+}

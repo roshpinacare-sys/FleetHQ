@@ -1,0 +1,22 @@
+# reef Rung 3 — guarded agent episode stack (CR-0027, Z-60).
+# Same external-provider shape as Rung 2 (CR-0023) but the agent-record ledger is
+# SHARED with the Rung-2 store: the sqlite filename is hash(scenario), so a new
+# scenario lands as a sibling store file in the same directory — one reef ledger
+# dir, one file per scenario (basic-arithmetic | rung3-guarded-agent | ...).
+# Upstream stays the CR-0015 z-ai shim (keyless tier B). No GPU, no Docker.
+schema-version: 2
+reef:
+  host: 127.0.0.1
+  port: 8900
+  token: ${REEF_TOKEN}
+recipe:
+  implementation: recipe
+inference:
+  upstream-url: http://127.0.0.1:3040
+  upstream-api-key: ${REEF_UPSTREAM_API_KEY}
+  upstream-model: z-ai
+  timeout-s: 300
+storage:
+  agent-record-dir: /tmp/reef-run/.reef/agent-record
+  artifact-work-dir: /tmp/reef-rung3/.reef/artifact-work
+  artifact-cache-dir: /tmp/reef-rung3/.reef/artifact-cache

@@ -1,0 +1,23 @@
+# T16 probe — minimal scheduling experiment: does a NEW workflow with a cron get
+# registered at all in this repo? (value-scan/sovereign-decider schedules never fired
+# since creation; dispatches work; org-wide scans show no other defects.)
+# The run itself proves or disproves registration — no commits, no side effects.
+name: cron-probe-t16
+on:
+  schedule: [{cron: '*/5 * * * *'}]
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cron-probe-t16
+  cancel-in-progress: false
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: probe (run-existence is the evidence)
+        run: echo "schedule-probe $(date -u +%Y-%m-%dT%H:%M:%SZ)"

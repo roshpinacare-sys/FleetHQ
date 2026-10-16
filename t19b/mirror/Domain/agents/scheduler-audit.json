@@ -1,0 +1,529 @@
+{
+  "format": "SAOS-SCHEDULER-AUDIT/1",
+  "agent": "scheduler-audit",
+  "verdict": "SCHEDULER-STARVED",
+  "ownerLanguage": "he",
+  "ownerLanguageRule": "owner-facing replies: עברית (Hebrew) — the owner reads Hebrew; repo/CI artifacts stay English",
+  "sections": {
+    "pulse": {
+      "rows": [
+        {
+          "file": "agent-verify.yml",
+          "crons": [
+            "56 */2 * * *"
+          ],
+          "expectedSlots": 12,
+          "observed": 6,
+          "lastScheduledAt": "2026-10-04T02:57:10Z",
+          "unparseableCrons": 0,
+          "verdict": "DEGRADED"
+        },
+        {
+          "file": "anchor-execute.yml",
+          "crons": [
+            "55 * * * *"
+          ],
+          "expectedSlots": 23,
+          "observed": 10,
+          "lastScheduledAt": "2026-10-04T02:24:20Z",
+          "unparseableCrons": 0,
+          "verdict": "DEGRADED"
+        },
+        {
+          "file": "audience-analyst.yml",
+          "crons": [
+            "31 5 * * *"
+          ],
+          "expectedSlots": 1,
+          "observed": 1,
+          "lastScheduledAt": "2026-10-03T05:51:46Z",
+          "unparseableCrons": 0,
+          "verdict": "PULSE"
+        },
+        {
+          "file": "cloud-heart.yml",
+          "crons": [
+            "17,47 * * * *"
+          ],
+          "expectedSlots": 47,
+          "observed": 17,
+          "lastScheduledAt": "2026-10-04T02:35:12Z",
+          "unparseableCrons": 0,
+          "verdict": "DEGRADED"
+        },
+        {
+          "file": "cloud-pulse.yml",
+          "crons": [
+            "35 0 * * *"
+          ],
+          "expectedSlots": 1,
+          "observed": 1,
+          "lastScheduledAt": "2026-10-04T03:55:23Z",
+          "unparseableCrons": 0,
+          "verdict": "PULSE"
+        },
+        {
+          "file": "content-campaign.yml",
+          "crons": [
+            "5 13 * * *"
+          ],
+          "expectedSlots": 1,
+          "observed": 1,
+          "lastScheduledAt": "2026-10-03T18:20:33Z",
+          "unparseableCrons": 0,
+          "verdict": "PULSE"
+        },
+        {
+          "file": "content-reviewer.yml",
+          "crons": [
+            "4 5 * * *"
+          ],
+          "expectedSlots": 1,
+          "observed": 1,
+          "lastScheduledAt": "2026-10-03T05:26:18Z",
+          "unparseableCrons": 0,
+          "verdict": "PULSE"
+        },
+        {
+          "file": "daily-claim.yml",
+          "crons": [
+            "34 2 * * *"
+          ],
+          "expectedSlots": 1,
+          "observed": 0,
+          "lastScheduledAt": "2026-10-03T02:59:19Z",
+          "unparseableCrons": 0,
+          "verdict": "STARVED"
+        },
+        {
+          "file": "daily-digest.yml",
+          "crons": [
+            "5 1 * * *"
+          ],
+          "expectedSlots": 1,
+          "observed": 1,
+          "lastScheduledAt": "2026-10-04T04:00:05Z",
+          "unparseableCrons": 0,
+          "verdict": "PULSE"
+        },
+        {
+          "file": "dex-beat.yml",
+          "crons": [
+            "53 */2 * * *"
+          ],
+          "expectedSlots": 12,
+          "observed": 6,
+          "lastScheduledAt": "2026-10-04T02:21:38Z",
+          "unparseableCrons": 0,
+          "verdict": "DEGRADED"
+        },
+        {
+          "file": "dex-grid.yml",
+          "crons": [
+            "43 3 * * *"
+          ],
+          "expectedSlots": 0,
+          "observed": 0,
+          "lastScheduledAt": "2026-10-03T04:05:18Z",
+          "unparseableCrons": 0,
+          "verdict": "UNMEASURED"
+        },
+        {
+          "file": "dex-mirror.yml",
+          "crons": [
+            "52 * * * *"
+          ],
+          "expectedSlots": 23,
+          "observed": 10,
+          "lastScheduledAt": "2026-10-04T02:17:38Z",
+          "unparseableCrons": 0,
+          "verdict": "DEGRADED"
+        },
+        {
+          "file": "earn-audit-cron.yml",
+          "crons": [
+            "7,37 * * * *"
+          ],
+          "expectedSlots": 46,
+          "observed": 1,
+          "lastScheduledAt": "2026-10-04T02:47:16Z",
+          "unparseableCrons": 0,
+          "verdict": "DEGRADED"
+        },
+        {
+          "file": "econ-desk.yml",
+          "crons": [
+            "14 */4 * * *"
+          ],
+          "expectedSlots": 6,
+          "observed": 5,
+          "lastScheduledAt": "2026-10-04T03:21:49Z",
+          "unparseableCrons": 0,
+          "verdict": "PULSE"
+        },
+        {
+          "file": "economy-engine.yml",
+          "crons": [
+            "22 */2 * * *"
+          ],
+          "expectedSlots": 12,
+          "observed": 7,
+          "lastScheduledAt": "2026-10-04T02:55:16Z",
+          "unparseableCrons": 0,
+          "verdict": "DEGRADED"
+        },
+        {
+          "file": "fill-ledger-cron.yml",
+          "crons": [
+            "18,48 * * * *"
+          ],
+          "expectedSlots": 47,
+          "observed": 1,
+          "lastScheduledAt": "2026-10-04T02:55:11Z",
+          "unparseableCrons": 0,
+          "verdict": "DEGRADED"
+        },
+        {
+          "file": "fleet-census-cron.yml",
+          "crons": [
+            "14 2 * * *"
+          ],
+          "expectedSlots": 1,
+          "observed": 1,
+          "lastScheduledAt": "2026-10-04T04:08:26Z",
+          "unparseableCrons": 0,
+          "verdict": "PULSE"
+        },
+        {
+          "file": "foundry-mesh-tests.yml",
+          "crons": [
+            "27 5 * * *"
+          ],
+          "expectedSlots": 1,
+          "observed": 1,
+          "lastScheduledAt": "2026-10-03T05:37:41Z",
+          "unparseableCrons": 0,
+          "verdict": "PULSE"
+        },
+        {
+          "file": "grid-trigger-twin.yml",
+          "crons": [
+            "8,38 * * * *"
+          ],
+          "expectedSlots": 46,
+          "observed": 17,
+          "lastScheduledAt": "2026-10-04T02:55:02Z",
+          "unparseableCrons": 0,
+          "verdict": "DEGRADED"
+        },
+        {
+          "file": "ladder-refresh.yml",
+          "crons": [
+            "36 */6 * * *"
+          ],
+          "expectedSlots": 4,
+          "observed": 3,
+          "lastScheduledAt": "2026-10-04T03:55:19Z",
+          "unparseableCrons": 0,
+          "verdict": "PULSE"
+        },
+        {
+          "file": "market-grid-cron.yml",
+          "crons": [
+            "21,51 * * * *"
+          ],
+          "expectedSlots": 47,
+          "observed": 1,
+          "lastScheduledAt": "2026-10-04T02:55:06Z",
+          "unparseableCrons": 0,
+          "verdict": "DEGRADED"
+        },
+        {
+          "file": "mirror-from-console.yml",
+          "crons": [
+            "15 * * * *"
+          ],
+          "expectedSlots": 24,
+          "observed": 10,
+          "lastScheduledAt": "2026-10-04T02:38:49Z",
+          "unparseableCrons": 0,
+          "verdict": "DEGRADED"
+        },
+        {
+          "file": "moment-watch.yml",
+          "crons": [
+            "12,42 * * * *"
+          ],
+          "expectedSlots": 47,
+          "observed": 18,
+          "lastScheduledAt": "2026-10-04T04:07:35Z",
+          "unparseableCrons": 0,
+          "verdict": "DEGRADED"
+        },
+        {
+          "file": "org-gitleaks.yml",
+          "crons": [
+            "44 1,7,13,19 * * *"
+          ],
+          "expectedSlots": 4,
+          "observed": 3,
+          "lastScheduledAt": "2026-10-04T02:35:05Z",
+          "unparseableCrons": 0,
+          "verdict": "PULSE"
+        },
+        {
+          "file": "org-selftests.yml",
+          "crons": [
+            "23 3 * * *"
+          ],
+          "expectedSlots": 1,
+          "observed": 0,
+          "lastScheduledAt": "2026-10-03T03:41:23Z",
+          "unparseableCrons": 0,
+          "verdict": "STARVED"
+        },
+        {
+          "file": "proof-pipeline.yml",
+          "crons": [
+            "40 4 * * *"
+          ],
+          "expectedSlots": 1,
+          "observed": 1,
+          "lastScheduledAt": "2026-10-03T04:49:59Z",
+          "unparseableCrons": 0,
+          "verdict": "PULSE"
+        },
+        {
+          "file": "public-pulse.yml",
+          "crons": [
+            "4 6 * * *"
+          ],
+          "expectedSlots": 1,
+          "observed": 1,
+          "lastScheduledAt": "2026-10-03T06:26:27Z",
+          "unparseableCrons": 0,
+          "verdict": "PULSE"
+        },
+        {
+          "file": "recruit.yml",
+          "crons": [
+            "44 4 * * *"
+          ],
+          "expectedSlots": 1,
+          "observed": 1,
+          "lastScheduledAt": "2026-10-03T04:52:02Z",
+          "unparseableCrons": 0,
+          "verdict": "PULSE"
+        },
+        {
+          "file": "self-audience.yml",
+          "crons": [
+            "30 14 * * *"
+          ],
+          "expectedSlots": 1,
+          "observed": 1,
+          "lastScheduledAt": "2026-10-03T18:36:26Z",
+          "unparseableCrons": 0,
+          "verdict": "PULSE"
+        },
+        {
+          "file": "soldiers-curate.yml",
+          "crons": [
+            "40 6,18 * * *"
+          ],
+          "expectedSlots": 2,
+          "observed": 2,
+          "lastScheduledAt": "2026-10-04T00:54:34Z",
+          "unparseableCrons": 0,
+          "verdict": "PULSE"
+        },
+        {
+          "file": "sovereign-selftests.yml",
+          "crons": [
+            "25 6 * * *"
+          ],
+          "expectedSlots": 1,
+          "observed": 1,
+          "lastScheduledAt": "2026-10-03T06:37:00Z",
+          "unparseableCrons": 0,
+          "verdict": "PULSE"
+        },
+        {
+          "file": "sovereign-tick-cron.yml",
+          "crons": [
+            "11,41 * * * *"
+          ],
+          "expectedSlots": 47,
+          "observed": 1,
+          "lastScheduledAt": "2026-10-04T02:55:05Z",
+          "unparseableCrons": 0,
+          "verdict": "DEGRADED"
+        },
+        {
+          "file": "tick-keeper.yml",
+          "crons": [
+            "2,32 * * * *"
+          ],
+          "expectedSlots": 46,
+          "observed": 1,
+          "lastScheduledAt": "2026-10-04T02:52:01Z",
+          "unparseableCrons": 0,
+          "verdict": "DEGRADED"
+        },
+        {
+          "file": "treasury-route.yml",
+          "crons": [
+            "20 16 * * *"
+          ],
+          "expectedSlots": 1,
+          "observed": 1,
+          "lastScheduledAt": "2026-10-03T20:09:40Z",
+          "unparseableCrons": 0,
+          "verdict": "PULSE"
+        },
+        {
+          "file": "tri-bridge.yml",
+          "crons": [
+            "5 15 * * *"
+          ],
+          "expectedSlots": 1,
+          "observed": 1,
+          "lastScheduledAt": "2026-10-03T18:59:35Z",
+          "unparseableCrons": 0,
+          "verdict": "PULSE"
+        },
+        {
+          "file": "twin-audit.yml",
+          "crons": [
+            "19 6 * * *"
+          ],
+          "expectedSlots": 1,
+          "observed": 1,
+          "lastScheduledAt": "2026-10-03T06:44:24Z",
+          "unparseableCrons": 0,
+          "verdict": "PULSE"
+        },
+        {
+          "file": "watchdog.yml",
+          "crons": [
+            "10 * * * *"
+          ],
+          "expectedSlots": 24,
+          "observed": 10,
+          "lastScheduledAt": "2026-10-04T02:33:42Z",
+          "unparseableCrons": 0,
+          "verdict": "DEGRADED"
+        },
+        {
+          "file": "weave-anchor-lines.yml",
+          "crons": [
+            "33 */2 * * *"
+          ],
+          "expectedSlots": 12,
+          "observed": 7,
+          "lastScheduledAt": "2026-10-04T02:42:39Z",
+          "unparseableCrons": 0,
+          "verdict": "DEGRADED"
+        },
+        {
+          "file": "weave-anchor-ping.yml",
+          "crons": [
+            "9 * * * *"
+          ],
+          "expectedSlots": 24,
+          "observed": 10,
+          "lastScheduledAt": "2026-10-04T02:32:35Z",
+          "unparseableCrons": 0,
+          "verdict": "DEGRADED"
+        },
+        {
+          "file": "weave-ecosystem.yml",
+          "crons": [
+            "30 6 * * *"
+          ],
+          "expectedSlots": 1,
+          "observed": 1,
+          "lastScheduledAt": "2026-10-03T06:59:33Z",
+          "unparseableCrons": 0,
+          "verdict": "PULSE"
+        },
+        {
+          "file": "weave-heart.yml",
+          "crons": [
+            "13 * * * *"
+          ],
+          "expectedSlots": 24,
+          "observed": 10,
+          "lastScheduledAt": "2026-10-04T02:33:46Z",
+          "unparseableCrons": 0,
+          "verdict": "DEGRADED"
+        },
+        {
+          "file": "weave-mirror.yml",
+          "crons": [
+            "57 * * * *"
+          ],
+          "expectedSlots": 23,
+          "observed": 10,
+          "lastScheduledAt": "2026-10-04T02:23:16Z",
+          "unparseableCrons": 0,
+          "verdict": "DEGRADED"
+        },
+        {
+          "file": "web-publish.yml",
+          "crons": [
+            "6,26,46 * * * *"
+          ],
+          "expectedSlots": 70,
+          "observed": 22,
+          "lastScheduledAt": "2026-10-04T02:54:36Z",
+          "unparseableCrons": 0,
+          "verdict": "DEGRADED"
+        }
+      ]
+    },
+    "boundary": {
+      "schedulerLastSeenAt": "2026-10-04T04:08:26Z",
+      "starvedNames": [
+        "daily-claim.yml",
+        "org-selftests.yml"
+      ],
+      "degradedNames": [
+        "agent-verify.yml",
+        "anchor-execute.yml",
+        "cloud-heart.yml",
+        "dex-beat.yml",
+        "dex-mirror.yml",
+        "earn-audit-cron.yml",
+        "economy-engine.yml",
+        "fill-ledger-cron.yml",
+        "grid-trigger-twin.yml",
+        "market-grid-cron.yml",
+        "mirror-from-console.yml",
+        "moment-watch.yml",
+        "sovereign-tick-cron.yml",
+        "tick-keeper.yml",
+        "watchdog.yml",
+        "weave-anchor-lines.yml",
+        "weave-anchor-ping.yml",
+        "weave-heart.yml",
+        "weave-mirror.yml",
+        "web-publish.yml"
+      ],
+      "unmeasuredNames": [
+        "dex-grid.yml"
+      ]
+    },
+    "heal": {
+      "candidates": [],
+      "cap": 3,
+      "law": "STARVED ∧ keyless ∧ not-host ∧ not-keeper"
+    },
+    "window": {
+      "from": "2026-10-03T04:08:35.420Z",
+      "to": "2026-10-04T04:08:35.420Z",
+      "graceMinutes": 40
+    }
+  },
+  "at": "2026-10-04T16:14:26.103Z"
+}

@@ -1,228 +1,194 @@
-// /api/worlds-state — גשר-האמת של העולמות (T-59 worlds-wiring, Task 15 lane claim a3643a40).
-// המקור ש-worlds/README מכריז עליו ושהיה חסר (404 נמדד ב-FleetHQ וב-Sandbox).
-// אפס סודות: כל המקורות keyless פומביים. כל מקור עשוי להיפול → ok:false + error —
-// לעולם לא מילוי-מדומה (חוק-האמת של worlds/). cache 60s.
-import { NextResponse } from 'next/server'
-import { readFile } from 'fs/promises'
-import { readFileSync } from 'fs'
-import path from 'path'
+/**
+ * /api/worlds-state — מקרר-האמת של העולמות (צד-שרת בלבד). [T13 · T14 · T-audit]
+ * ---------------------------------------------------------------------------
+ * · כל-מקור נאחזר דרך gh-truth: ציבורי=raw, פרטי(Sandbox/beacon/lighthouse)=API-מאומת-שרת.
+ *   (לפני-התיקון: 5 מקורות-פרטיים נאחזרו אנונימית → 404 תמידי → "חמש-עולמות-חיים" היו חצי-מתות.)
+ * · SWR: אין-חסימות-ארוכות; תשובה מיידית מהקאש + רענון-רקע.
+ * · כל-מקור נושא fetchedAt + ageMs; נתון-גולמי עתיק (>24h) מסומן staleData (חוק-החיות).
+ * · fail-soft לכל-מקור — התשובה תמיד כנה לגבי מה שחסר. אין המצאות.
+ */
+import { NextResponse } from 'next/server';
+import { fetchTruth, ageMs } from '@/lib/gh-truth';
+import type {
+  BeaconWire, BootVerifyWire, ChainWire, ConnectivityWire, DecisionsWire, DexWire, FleetHealthWire, FlowDataWire, ForemanWire,
+  FreshOracleWire, LighthouseWire, ValueScanWire, VerifyWire, WorldsPayload,
+} from '@/lib/worlds/types';
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 0;
 
-const ORG = 'roshpinacare-sys'
-const RAW = `https://raw.githubusercontent.com/${ORG}`
-const SRC = {
-  flow: `${RAW}/Sandbox/main/ops/flow/flow-map.json`,
-  lighthouse: `${RAW}/sovereign-lighthouse/main/state.json`,
-  beacon: `${RAW}/sovereign-beacon/main/state.json`,
-  dex: `${RAW}/Domain/main/dex/pnl-desk.json`,
-  officeState: `${RAW}/FleetHQ/main/office/state/office-state.json`,
-  valueScan: `${RAW}/FleetHQ/main/office/state/value-scan.json`,
-  // [zai-14] החיבורים החסרים — קבלות שהיו ללא קורא, עכשיו אוכל
-  connectivity: `${RAW}/FleetHQ/main/office/state/connectivity.json`,
-  bootVerify: `${RAW}/FleetHQ/main/receipts/boot-verify.json`,
-  // [T15] רשת-האמת של הקונסולה — המאמת-העצמאי + שער-האמת
-  agentVerify: `${RAW}/Console/main/agent/verify/results.json`,
-  truthGate: `${RAW}/Console/main/truth/latest.json`,
-  freshOracle: `${RAW}/FleetHQ/main/receipts/fresh-oracle/latest.json`,
+const TTL_MS = 60_000;
+const STALE_LAW_MS = 24 * 60 * 60 * 1000; // חוק-החיות: >24h = היסטורי
+
+interface SourceBox<T> {
+  ok: boolean;
+  error?: string;
+  data?: T;
+  fetchedAt?: string;
+  ageMs?: number;
+  staleData?: boolean;
 }
 
-// זהות מדויקת של מדידת-השרשרת — שכפול נאמן של beacon-pulse.yml (מקור-האמת הפומבי).
-// חשבון-האוצר נגזר בזמן-ריצה (env או קידוד) — אפס-קישור-זהות במקור הפומבי (חוק PUBLISHING-POLICY).
-const OWNER_ACC = Buffer.from(process.env.OWNER_STEEM_ACC ?? 'aGVhZGNvcm5lcg==', 'base64').toString('utf8') // אוצר-הבעלים
-// צי-החשבונות נגזר בזמן-ריצה ממפת-הרפרנסים (FLEET_ROSTER_MAP: env, או שורה בודדת
-// ב-/home/z/estate/.env.local — אותו חוזה-סביבה כמו local-beats envFor). הרפרנסים
-// (acct-NN) הם הזהות-הפומבית; שמות-השרשרת לעולם לא נופלים לקוד-המקור הפומבי.
-// כשל-גלוי: רוסטר חסר → הצי מתרוקן (המדידה ממשיכה עם אוצר-הבעלים בלבד, ok:false אין —
-// המדידה כן רצה; היעדר-צי נרשם כיעדר, לא מומצא).
-const FLEET_REF_ORDER = ['acct-03', 'acct-05', 'acct-10', 'acct-07', 'acct-04', 'acct-08', 'acct-09', 'acct-06', 'acct-01', 'acct-11', 'acct-12', 'acct-13']
-const FLEET_ACCS: string[] = (() => {
-  try {
-    const raw = process.env.FLEET_ROSTER_MAP
-      ?? readFileSync('/home/z/estate/.env.local', 'utf-8').match(/^FLEET_ROSTER_MAP=(.*)$/m)?.[1]
-    const refs = raw ? (JSON.parse(raw) as { refs?: Record<string, string> }).refs : null
-    return refs ? FLEET_REF_ORDER.map((r) => refs[r]).filter(Boolean) : []
-  } catch {
-    return []
-  }
-})()
-const STEEM_ACCS = [OWNER_ACC, ...FLEET_ACCS]
-const num = (x: unknown) => parseFloat(String(x ?? '0').split(' ')[0]) || 0
-
-async function fetchJson<T = Record<string, unknown>>(url: string, ms = 9000): Promise<{ ok: boolean; status: number; data: T | null; error?: string }> {
-  try {
-    const res = await fetch(url, { signal: AbortSignal.timeout(ms), cache: 'no-store' })
-    if (!res.ok) return { ok: false, status: res.status, data: null, error: `HTTP ${res.status}` }
-    return { ok: true, status: res.status, data: (await res.json()) as T }
-  } catch (e) {
-    return { ok: false, status: 0, data: null, error: e instanceof Error ? e.message : 'unknown' }
-  }
-}
-
-async function steemRpc<T>(method: string, params: unknown[]): Promise<T | null> {
-  const body = { jsonrpc: '2.0', method: 'call', params: ['condenser_api', method, params], id: 1 }
-  try {
-    const res = await fetch('https://api.steemit.com', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
-      signal: AbortSignal.timeout(9000),
-      cache: 'no-store',
-    })
-    if (!res.ok) return null
-    const j = (await res.json()) as { result?: T }
-    return j.result ?? null
-  } catch {
-    return null
-  }
-}
-
-async function measureChain(): Promise<{ ok: boolean; error?: string; head?: number; time?: string; treasuryNetSp?: number | null; delegatedOutSp?: number | null; receivedInSp?: number | null; balanceSteem?: number | null }> {
-  const dp = await steemRpc<{ head_block_number: number; time: string; total_vesting_fund_steem: string; total_vesting_shares: string }>('get_dynamic_global_properties', [])
-  if (!dp) return { ok: false, error: 'steem rpc unavailable' }
-  const k = num(dp.total_vesting_fund_steem) / num(dp.total_vesting_shares)
-  const accs = await steemRpc<{ name: string; vesting_shares: string; received_vesting_shares: string; delegated_vesting_shares: string; balance: string }[]>('get_accounts', [STEEM_ACCS])
-  if (!accs || !Array.isArray(accs)) return { ok: false, error: 'steem accounts unavailable' }
-  let treasuryNetSp: number | null = null
-  let delegatedOutSp: number | null = null
-  let receivedInSp: number | null = null
-  let balanceSteem: number | null = null
-  for (const a of accs) {
-    if (!a) continue
-    const net = (num(a.vesting_shares) + num(a.received_vesting_shares) - num(a.delegated_vesting_shares)) * k
-    if (a.name === OWNER_ACC) {
-      treasuryNetSp = Math.round(net * 10) / 10
-      delegatedOutSp = Math.round(num(a.delegated_vesting_shares) * k * 10) / 10
-      receivedInSp = Math.round(num(a.received_vesting_shares) * k * 10) / 10
-      balanceSteem = num(a.balance)
+function extractTs(d: unknown, depth = 0): number | null {
+  if (!d || typeof d !== 'object' || depth > 2) return null;
+  const o = d as Record<string, unknown>;
+  for (const k of ['at', 'updatedAt', 'generatedAt', 'publishedAt', 'measuredAt', 'fetchedAt', 'timestamp']) {
+    const v = o[k];
+    if (typeof v === 'string') {
+      const t = Date.parse(v);
+      if (!Number.isNaN(t)) return t;
     }
   }
-  return { ok: true, head: dp.head_block_number, time: dp.time, treasuryNetSp, delegatedOutSp, receivedInSp, balanceSteem }
+  for (const v of Object.values(o)) {
+    if (v && typeof v === 'object') {
+      const t = extractTs(v, depth + 1);
+      if (t) return t;
+    }
+  }
+  return null;
 }
 
-type Src<T> = { ok: boolean; error?: string; data: T | null }
-
-async function collect(): Promise<Record<string, unknown>> {
-  const [flowR, lhR, bcnR, dexR, officeRaw, vsR, chainR, connRaw, bootRaw, oracleRaw, agentVerifyR, truthGateR] = await Promise.all([
-    fetchJson(SRC.flow),
-    fetchJson(SRC.lighthouse),
-    fetchJson(SRC.beacon),
-    fetchJson(SRC.dex),
-    fetchJson(SRC.officeState),
-    fetchJson(SRC.valueScan),
-    measureChain(),
-    fetchJson(SRC.connectivity),
-    fetchJson(SRC.bootVerify),
-    fetchJson(SRC.freshOracle),
-    fetchJson(SRC.agentVerify),
-    fetchJson(SRC.truthGate),
-  ])
-
-  // ---- foreman: עדיפות לקובץ המקומי (האפליקציה רצה ב-worktree — הטרי ביותר), raw כגיבוי
-  type OfficeState = { capturedAt?: string; connected?: boolean; statusHe?: string; agents?: { id?: string; state?: string; activity?: string; since?: number }[]; tasks?: { id?: string; title?: string; status?: string; assignee?: string; updatedAt?: number }[] }
-  let foreman: Src<OfficeState> = { ok: false, error: 'unavailable', data: null }
-  try {
-    const local = await readFile(path.join(process.cwd(), 'office', 'state', 'office-state.json'), 'utf-8')
-    foreman = { ok: true, data: JSON.parse(local) as OfficeState }
-  } catch {
-    if (officeRaw.ok) foreman = { ok: true, data: officeRaw.data as OfficeState }
-    else foreman = { ok: false, error: officeRaw.error ?? 'office-state unavailable', data: null }
+function box<T>(r: { ok: boolean; data: T | null; error?: string; fetchedAt: string }): SourceBox<T> {
+  if (!r.ok || r.data === null) {
+    return { ok: false, error: r.error ?? 'unavailable', fetchedAt: r.fetchedAt, ageMs: ageMs(r.fetchedAt) };
   }
-  const os = foreman.data
-  const foremanWire = {
-    capturedAt: os?.capturedAt ?? null,
-    connected: os?.connected ?? null,
-    statusHe: os?.statusHe ?? null,
-    agents: (os?.agents ?? []).map((a) => ({ id: a.id, state: a.state, activity: a.activity, since: a.since })),
-    tasks: (os?.tasks ?? []).map((t) => ({ id: t.id, title: t.title, status: t.status, assignee: t.assignee, updatedAt: t.updatedAt })),
-  }
-
-  // ---- beacon / lighthouse: state.pulses[] (החדשה ראשונה) + state.lastPulse
-  type BeaconState = { generatedAt?: string; lastPulse?: Record<string, unknown>; pulses?: Record<string, unknown>[] }
-  const pulseOf = (s: BeaconState | null) => s?.lastPulse ?? s?.pulses?.[0] ?? null
-  const bcn = bcnR.data as BeaconState | null
-  const lh = lhR.data as BeaconState | null
-
-  // ---- dex: pnl-desk → DexWire (מיפוי כנה — רק מה שקיים)
-  type Pnl = { generatedAt?: string; verdict?: string; law?: string; sources?: { fillLedger?: { fetched?: boolean; rows?: number } }; lifetime?: Record<string, unknown> }
-  const pnl = dexR.data as Pnl | null
-  const dexWire = pnl ? {
+  const ts = extractTs(r.data);
+  return {
     ok: true,
-    publishedAt: pnl.generatedAt ?? null,
-    verdict: pnl.verdict ?? null,
-    real: pnl.sources?.fillLedger?.fetched === true,
-    honesty: { law: pnl.law ?? null, fills: pnl.lifetime?.fills ?? null, edgePct: pnl.lifetime?.edgePct ?? null },
-  } : null
-
-  // ---- [zai-14] connectivity / bootVerify / freshOracle: מקומי-קודם (ה-worktree הכי-טרי), raw כגיבוי
-  const localFirst = async <T,>(localPath: string, raw: { ok: boolean; error?: string; data: T | null }): Promise<Src<T>> => {
-    try {
-      const local = await readFile(path.join(process.cwd(), localPath), 'utf-8')
-      return { ok: true, data: JSON.parse(local) as T }
-    } catch {
-      return raw.ok
-        ? { ok: true, data: raw.data as T }
-        : { ok: false, error: raw.error ?? 'unavailable', data: null }
-    }
-  }
-  const connectivity = await localFirst<Record<string, unknown>>('office/state/connectivity.json', connRaw)
-  const bootVerify = await localFirst<Record<string, unknown>>('receipts/boot-verify.json', bootRaw)
-  const freshOracle = await localFirst<Record<string, unknown>>('receipts/fresh-oracle/latest.json', oracleRaw)
-  // גיל כנה של קבלת-האתחול — stale מוצג כ-stale, לעולם לא מולבש כטרי
-  const bootAgeH = bootVerify.ok && bootVerify.data && typeof (bootVerify.data as { at?: string }).at === 'string'
-    ? Math.round((Date.now() - Date.parse((bootVerify.data as { at: string }).at)) / 3_600_000 * 10) / 10
-    : null
-
-// ---- [T15] רשת-האמת: המאמת-העצמאי (51 טענות מדודות) + שער-האמת של האתר-החי —
-// כשל → צ'יפ-אמבר כנה במשרד; אפס-כשל → המדידה-הירוקה המפורסמת. אפס-המצאות.
-const avData = agentVerifyR.data as { summary?: { total: number; passed: number; failed: number; verdict: string }; generatedAt?: string; results?: { id: string; ok: boolean; details?: string }[] } | null
-const tgData = truthGateR.data as { at?: string; verdict?: string; counts?: { pass: number; fail: number; skip: number }; results?: { gate: string; status: string; note?: string; measured?: string }[] } | null
-const verifyWire = (agentVerifyR.ok || truthGateR.ok) ? {
-  ok: true as const,
-  error: null,
-  data: {
-    summary: avData?.summary ?? null,
-    generatedAt: avData?.generatedAt ?? null,
-    failures: (avData?.results ?? []).filter((r) => !r.ok).map((r) => ({ id: r.id, details: r.details })),
-    truthGate: tgData ? {
-      at: tgData.at ?? null,
-      verdict: tgData.verdict ?? null,
-      counts: tgData.counts ?? null,
-      redGates: (tgData.results ?? []).filter((g) => g.status === 'FAIL').map((g) => ({ gate: g.gate, note: g.note ?? null, measured: g.measured ?? null })),
-    } : null,
-  },
-} : { ok: false as const, error: truthGateR.error ?? agentVerifyR.error ?? 'verify unavailable', data: null }
-  const out = {
-    fetchedAt: new Date().toISOString(),
-    flow: { ok: flowR.ok, error: flowR.error, data: flowR.data },
-    lighthouse: { ok: lhR.ok, error: lhR.error, data: lh ? { generatedAt: lh.generatedAt ?? null, lastPulse: pulseOf(lh), lastKnownAlive: (lh as Record<string, unknown>).lastKnownAlive ?? null } : null },
-    beacon: { ok: bcnR.ok, error: bcnR.error, data: bcn ? { generatedAt: bcn.generatedAt ?? null, lastPulse: pulseOf(bcn), lastKnownAlive: (bcn as Record<string, unknown>).lastKnownAlive ?? null } : null },
-    dex: { ok: dexR.ok, error: dexR.error, data: dexWire },
-    valueScan: vsR.ok
-      ? { ok: true, data: vsR.data }
-      : { ok: false, error: 'טרם פורסם — value-scan.yml רץ על הגיט כל 30 דק׳', data: null },
-    foreman: { ok: foreman.ok, error: foreman.error, data: foremanWire },
-    chain: { ok: chainR.ok, error: chainR.error, data: chainR.ok ? chainR : null },
-    connectivity: { ok: connectivity.ok, error: connectivity.error, data: connectivity.data },
-    bootVerify: { ok: bootVerify.ok, error: bootVerify.error, ageH: bootAgeH, data: bootVerify.data },
-    freshOracle: { ok: freshOracle.ok, error: freshOracle.error, data: freshOracle.data },
-    verify: { ok: verifyWire.ok, error: verifyWire.error, data: verifyWire.data },
-  }
-  return out
+    data: r.data,
+    fetchedAt: r.fetchedAt,
+    ageMs: ageMs(r.fetchedAt),
+    ...(ts !== null && Date.now() - ts > STALE_LAW_MS ? { staleData: true } : {}),
+  };
 }
 
-let cache: { at: number; payload: Record<string, unknown> } | null = null
-const TTL = 60_000
+/** [T15] רשת-האמת: המאמת-העצמי (51 טענות מדודות) + שער-האמת של האתר-החי */
+async function fetchVerify(): Promise<VerifyWire | null> {
+  const [avRaw, tgRaw] = await Promise.all([
+    fetchTruth<{ summary?: { total: number; passed: number; failed: number; verdict: string }; generatedAt?: string; results?: { id: string; ok: boolean; details?: string }[] }>(
+      'Console', 'agent/verify/results.json', { ttlMs: TTL_MS }),
+    fetchTruth<{ at?: string; verdict?: string; counts?: { pass: number; fail: number; skip: number }; results?: { gate: string; status: string; note?: string; measured?: string }[] }>(
+      'Console', 'truth/latest.json', { ttlMs: TTL_MS }),
+  ]);
+  if (!avRaw.ok && !tgRaw.ok) return null;
+  return {
+    summary: avRaw.data?.summary,
+    generatedAt: avRaw.data?.generatedAt,
+    failures: (avRaw.data?.results ?? []).filter((r) => !r.ok).map((r) => ({ id: r.id, details: r.details })),
+    truthGate: tgRaw.data ? {
+      at: tgRaw.data.at,
+      verdict: tgRaw.data.verdict,
+      counts: tgRaw.data.counts,
+      redGates: (tgRaw.data.results ?? []).filter((g) => g.status === 'FAIL').map((g) => ({ gate: g.gate, note: g.note, measured: g.measured })),
+    } : undefined,
+  };
+}
+
+/** מדידת-שרשרת ישירה — המרה מדויקת (ביקורת-אמת עצמאית למשואה) */
+// [T27 perf] SWR cache for chain measurement: a live round-trip to Steem costs ~0.8-1s per request.
+// Display law — the measurement is presented with its fetchedAt, single-flight background refresh.
+// A 60s TTL does not change the treasury picture (vesting calculations move slowly), but the endpoint
+// goes from ~1s to tens of ms on warm cache.
+const chainG = globalThis as unknown as {
+  __chainCache?: { at: number; chain: ChainWire | null };
+  __chainInflight?: Promise<ChainWire | null>;
+};
+const CHAIN_TTL_MS = 60_000;
+
+async function measureChainCached(): Promise<ChainWire | null> {
+  const cache = chainG.__chainCache;
+  const age = cache ? Date.now() - cache.at : Infinity;
+  if (cache && age < CHAIN_TTL_MS) return cache.chain;
+  if (chainG.__chainInflight) return cache ? cache.chain : chainG.__chainInflight;
+  const p = measureChain()
+    .then((c) => {
+      chainG.__chainCache = { at: Date.now(), chain: c };
+      return c;
+    })
+    .finally(() => {
+      chainG.__chainInflight = undefined;
+    });
+  chainG.__chainInflight = p;
+  if (cache) return cache.chain;
+  return p;
+}
+
+async function measureChain(): Promise<ChainWire | null> {
+  const POST = 'https://api.steemit.com';
+  try {
+    const body = (method: string, params: unknown[]) =>
+      JSON.stringify({ jsonrpc: '2.0', id: 1, method, params });
+    const h = { 'Content-Type': 'application/json' };
+    const [gRes, aRes] = await Promise.all([
+      fetch(POST, { method: 'POST', body: body('condenser_api.get_dynamic_global_properties', []), headers: h, cache: 'no-store', signal: AbortSignal.timeout(7000) }),
+      fetch(POST, { method: 'POST', body: body('condenser_api.get_accounts', [['headcorner']]), headers: h, cache: 'no-store', signal: AbortSignal.timeout(7000) }),
+    ]);
+    if (!gRes.ok || !aRes.ok) return null;
+    const gp = (await gRes.json())?.result;
+    const acc = (await aRes.json())?.result?.[0];
+    if (!gp || !acc) return null;
+    const tvs = parseFloat(String(gp.total_vesting_shares ?? '0'));
+    const tvf = parseFloat(String(gp.total_vesting_fund_steem ?? '0'));
+    if (!tvs || !tvf) return null;
+    const mult = tvf / tvs;
+    const vests = parseFloat(String(acc.vesting_shares ?? '0'));
+    const dele = parseFloat(String(acc.delegated_vesting_shares ?? '0'));
+    const recv = parseFloat(String(acc.received_vesting_shares ?? '0'));
+    return {
+      head: gp.head_block_number, time: gp.time, mult,
+      treasuryNetSp: Math.round((vests - dele + recv) * mult * 10) / 10,
+      delegatedOutSp: Math.round(dele * mult * 10) / 10,
+      receivedInSp: Math.round(recv * mult * 10) / 10,
+      balanceSteem: parseFloat(String(acc.balance ?? '0')),
+    };
+  } catch {
+    return null;
+  }
+}
 
 export async function GET() {
-  if (cache && Date.now() - cache.at < TTL) return NextResponse.json(cache.payload)
-  try {
-    const payload = await collect()
-    cache = { at: Date.now(), payload }
+  const [flow, lh, beacon, dex, vs, dec, foreman, chainRaw, verifyRaw, fleetHealth, freshOracle, connectivity, bootVerify] = await Promise.all([
+    fetchTruth<FlowDataWire>('Sandbox', 'ops/flow/flow-map.json', { ttlMs: TTL_MS }),
+    fetchTruth<LighthouseWire>('sovereign-lighthouse', 'state.json', { ttlMs: TTL_MS }),
+    fetchTruth<BeaconWire>('sovereign-beacon', 'state.json', { ttlMs: TTL_MS }),
+    fetchTruth<DexWire>('Domain', 'dex/grid.json', { ttlMs: TTL_MS }),
+    fetchTruth<ValueScanWire>('Sandbox', 'ops/sovereign/VALUE-SCAN/state.json', { ttlMs: TTL_MS }),
+    fetchTruth<DecisionsWire>('Sandbox', 'ops/sovereign/DECIDER/state.json', { ttlMs: TTL_MS }),
+    fetchTruth<ForemanWire>('FleetHQ', 'office/state/office-state.json', { ttlMs: TTL_MS }),
+    measureChainCached(),
+    fetchVerify(),
+    // [T-watch] מישור-הבקרה — GridWatch ריפו ציבורי; TTL 120s (ה-watch עצמו רץ כל 30 דק')
+    fetchTruth<FleetHealthWire>('GridWatch', 'state/fleet-health.json', { ttlMs: 120_000 }),
+    // [T-merge מהענן] מקורות-אמת של מסלולות-הענן — fresh-oracle / connectivity / boot-verify
+    fetchTruth<FreshOracleWire>('FleetHQ', 'receipts/fresh-oracle/latest.json', { ttlMs: TTL_MS }),
+    fetchTruth<ConnectivityWire>('FleetHQ', 'office/state/connectivity.json', { ttlMs: TTL_MS }),
+    fetchTruth<BootVerifyWire>('FleetHQ', 'receipts/boot-verify.json', { ttlMs: TTL_MS }),
+  ]);
 
-    return NextResponse.json(payload)
-  } catch (err) {
-    if (cache) return NextResponse.json(cache.payload)
-    return NextResponse.json({ fetchedAt: new Date().toISOString(), error: `worlds-state bridge failed: ${(err as Error).message}` }, { status: 502 })
-  }
+  const chain = chainRaw
+    ? { ok: true as const, data: chainRaw, fetchedAt: new Date().toISOString(), ageMs: 0 }
+    : { ok: false as const, error: 'unavailable' };
+  // [T-merge מהענן] גיל-כנה לקבלת-האתחול (שעות) — מזמן-הקבלה עצמו
+  const bootTsRaw = extractTs(bootVerify.data);
+  const bootAgeH = bootTsRaw !== null ? Math.round((Date.now() - bootTsRaw) / 3_600_000) : null;
+
+  const payload: WorldsPayload = {
+    fetchedAt: new Date().toISOString(),
+    flow: box(flow),
+    lighthouse: box(lh),
+    beacon: box(beacon),
+    dex: box(dex),
+    valueScan: box(vs),
+    decisions: box(dec),
+    foreman: box(foreman),
+    chain,
+    verify: verifyRaw
+      ? { ok: true, data: verifyRaw, fetchedAt: new Date().toISOString(), ageMs: 0 }
+      : { ok: false, error: 'not-published-yet' },
+    fleetHealth: box(fleetHealth),
+    freshOracle: box(freshOracle),
+    connectivity: box(connectivity),
+    bootVerify: { ...box(bootVerify), ...(bootAgeH !== null ? { ageH: bootAgeH } : {}) },
+  };
+
+  return NextResponse.json(payload, { headers: { 'x-worlds-cache': 'swr' } });
 }

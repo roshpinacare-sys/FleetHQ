@@ -1,0 +1,69 @@
+#
+#
+
+name: tri-bridge
+
+on:
+  schedule:
+    - cron: '1 15 * * *'
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: tri-bridge
+  cancel-in-progress: false
+
+jobs:
+  cross-publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      NODE_PATH: /tmp/steemjs/node_modules
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: STASIS gate (mechanical, FATE-DEFENSE law
+        id: brake
+        run: |
+          ST=$(node -p "JSON.parse(require('fs').readFileSync('agents/STASIS.json','utf8')).active===true")
+          echo "active=$ST" >> "$GITHUB_OUTPUT"
+          if [ "$ST" = "true" ]; then
+            echo "STASIS-HALT tri-bridge · the breaker is active — capital lanes obey (votes + blurt fuel transfers)"
+          fi
+
+      - name: Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: steem client (steem@0.7.11 — same signer as the fleet)
+        run: |
+          npm install --prefix /tmp/steemjs steem@0.7.11 --omit=dev --no-audit --no-fund --loglevel=error
+          NODE_PATH=/tmp/steemjs/node_modules node -e "require('steem'); console.log('steem-js OK')"
+
+      - name: cross-publish today's posts (hive + blurt, verify-then-sign)
+        if: steps.brake.outputs.active != 'true'
+        env:
+          SA_FLEET_KEYS: ${{ secrets.SA_FLEET_KEYS }}
+          SA_HEAD_ACTIVE: ${{ secrets.SA_HEAD_ACTIVE }}
+          RECEIPT_OUT: agents/receipts/tribridge-receipt.json
+        run: node agents/tribridge.cjs
+
+      - name: commit receipts (secretless)
+        run: |
+          git config user.name "saos-tribridge"
+          git config user.email "tribridge@saos.local"
+          mkdir -p agents/receipts
+          for p in agents/receipts/tribridge-receipt*.json; do [ -e "$p" ] && git add "$p" || true; done
+          if git diff --cached --quiet; then
+            echo "no receipt changes"
+          else
+            git commit -m "tri-bridge: cross-chain receipts · $(date -u +%Y-%m-%dT%H:%M:%SZ) [skip ci]"
+            git -c rebase.autoStash=true pull --rebase origin main || true
+            git push origin HEAD:main
+          fi

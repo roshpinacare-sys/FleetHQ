@@ -1,0 +1,131 @@
+{
+  "ok": true,
+  "at": "2026-10-03T15:08:54Z",
+  "agent": "laya-triage v1.0.0 (Z-59, CR-0025 — advisory-only serve-window desk over the CR-0023 serving proof)",
+  "laws": [
+    "SERVE-WINDOW (spawned per run, stopped in finally)",
+    "ENGLISH-ONLY (LAYA_MODELS=english — multilingual OOMs)",
+    "UNCALIBRATED-CONFIDENCE (en ckpt invalid temperatures — ordering hints only)",
+    "ADVISORY-ONLY (no gate/proposal/ledger mutation; this book is the only artifact)"
+  ],
+  "serve": {
+    "status": "healthy",
+    "loaded": [
+      "english"
+    ],
+    "revision": "55cf4c4ebb4ebe31b2550e8bdf3bd21b99753851",
+    "device": "cpu"
+  },
+  "counts": {
+    "candidates": 8,
+    "triaged": 8,
+    "skipped": 0
+  },
+  "rows": [
+    {
+      "id": "lane:alirezarezvani/claude-sk",
+      "kind": "probe-queued",
+      "status": "TRIAGED",
+      "latency_ms": 2014,
+      "lane": "content",
+      "lane_confidence": 0.2791,
+      "urgency": 1.5188,
+      "urgency_label": "blocking",
+      "actionable_yes_prob": 0.1086,
+      "routing": "english",
+      "confidence": "uncalibrated (en checkpoint ships invalid temperatures — laya RuntimeWarning, CR-0023)"
+    },
+    {
+      "id": "lane:usestrix/strix",
+      "kind": "probe-parked",
+      "status": "TRIAGED",
+      "latency_ms": 1933,
+      "lane": "content",
+      "lane_confidence": 0.2996,
+      "urgency": 1.7542,
+      "urgency_label": "blocking",
+      "actionable_yes_prob": 0.9148,
+      "routing": "english",
+      "confidence": "uncalibrated (en checkpoint ships invalid temperatures — laya RuntimeWarning, CR-0023)"
+    },
+    {
+      "id": "lane:NandhaKishorM/laya",
+      "kind": "probe-queued",
+      "status": "TRIAGED",
+      "latency_ms": 1943,
+      "lane": "runtime",
+      "lane_confidence": 0.3971,
+      "urgency": 1.5083,
+      "urgency_label": "blocking",
+      "actionable_yes_prob": 0.4099,
+      "routing": "english",
+      "confidence": "uncalibrated (en checkpoint ships invalid temperatures — laya RuntimeWarning, CR-0023)"
+    },
+    {
+      "id": "lane:Sumanth077/Hands-On-AI-E",
+      "kind": "probe-queued",
+      "status": "TRIAGED",
+      "latency_ms": 1924,
+      "lane": "content",
+      "lane_confidence": 0.277,
+      "urgency": 1.5334,
+      "urgency_label": "blocking",
+      "actionable_yes_prob": 0.413,
+      "routing": "english",
+      "confidence": "uncalibrated (en checkpoint ships invalid temperatures — laya RuntimeWarning, CR-0023)"
+    },
+    {
+      "id": "lane:vercel-labs/openreview",
+      "kind": "probe-queued",
+      "status": "TRIAGED",
+      "latency_ms": 1946,
+      "lane": "runtime",
+      "lane_confidence": 0.5002,
+      "urgency": 1.4016,
+      "urgency_label": "soon",
+      "actionable_yes_prob": 0.0884,
+      "routing": "english",
+      "confidence": "uncalibrated (en checkpoint ships invalid temperatures — laya RuntimeWarning, CR-0023)"
+    },
+    {
+      "id": "lane:Alishahryar1/free-claude",
+      "kind": "probe-queued",
+      "status": "TRIAGED",
+      "latency_ms": 1923,
+      "lane": "runtime",
+      "lane_confidence": 0.6375,
+      "urgency": 1.125,
+      "urgency_label": "soon",
+      "actionable_yes_prob": 0.0555,
+      "routing": "english",
+      "confidence": "uncalibrated (en checkpoint ships invalid temperatures — laya RuntimeWarning, CR-0023)"
+    },
+    {
+      "id": "lane:NanoNets/Graft",
+      "kind": "probe-queued",
+      "status": "TRIAGED",
+      "latency_ms": 1958,
+      "lane": "runtime",
+      "lane_confidence": 0.2818,
+      "urgency": 1.588,
+      "urgency_label": "blocking",
+      "actionable_yes_prob": 0.1188,
+      "routing": "english",
+      "confidence": "uncalibrated (en checkpoint ships invalid temperatures — laya RuntimeWarning, CR-0023)"
+    },
+    {
+      "id": "lane:msitarzewski/agency-agen",
+      "kind": "probe-queued",
+      "status": "TRIAGED",
+      "latency_ms": 1921,
+      "lane": "content",
+      "lane_confidence": 0.2751,
+      "urgency": 1.5295,
+      "urgency_label": "blocking",
+      "actionable_yes_prob": 0.1694,
+      "routing": "english",
+      "confidence": "uncalibrated (en checkpoint ships invalid temperatures — laya RuntimeWarning, CR-0023)"
+    }
+  ],
+  "note": "advisory input for the pulse/humans — lane ownership + urgency ordering; scores are NOT calibrated probabilities"
+}

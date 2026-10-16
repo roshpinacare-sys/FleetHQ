@@ -10,11 +10,9 @@
 import React, { useEffect, useState } from 'react';
 import { Canvas, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
-import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
 import { Architecture } from './Architecture';
 import { Stations } from './Stations';
 import { Interior } from './Interior';
-import { Realism } from './Realism';
 import { Crew } from './Crew';
 import { CameraDirector } from './CameraDirector';
 import { Atmosphere } from './Atmosphere';
@@ -31,9 +29,6 @@ function RoomReadiness() {
       if (gl.info.render.calls > 6) {
         settled = true;
         useHq.getState().setRoomReady(true);
-        // R58 — חוזה-הבייק (office-3d-bake): הפריים-האמיתי-הראשון נחשף גם
-        // לחלון — מדידה מהרנדרר עצמו (draw-calls > 6), לא שעון-עצר.
-        (window as unknown as Record<string, unknown>).__hqRoomReady = true;
         return;
       }
       raf = requestAnimationFrame(check);
@@ -67,16 +62,6 @@ export function Office3D() {
         // Task 51 (אור-יום): הערפל הפנימי בצבע-אור-יום — לילה נשאר רק בחלונות.
         // הישן (#241e18, 22→60) בלע בחצי-החדר הרחוק לתוך-שחור (מדד-בסיס 51).
         scene.fog = new THREE.Fog('#ddd6c8', 26, 62);
-        // R58 — תאורת-סביבה IBL (כלי-הגרפיקה של "הענקים"): כל-החומרים
-        // כבר מוגדרים עם envMapIntensity (בטון/עץ/מתכת/שיש/פליז) — אבל
-        // מעולם לא היתה מפת-סביבה, והמאפיין ישב מנוצל. RoomEnvironment
-        // מייצר IBL פרוצדורלי (אפס-נכסים, אפס-רשת) — השתקפויות רכות
-        // אמת במתכות, עומק-תאורה בחדר. עוצמה מרוסנת — הבמאי נשאר האור הראשי.
-        const pmrem = new THREE.PMREMGenerator(gl);
-        const envScene = new RoomEnvironment();
-        scene.environment = pmrem.fromScene(envScene, 0.04).texture;
-        scene.environmentIntensity = 0.42;
-        pmrem.dispose();
         // debug hook (dev): window.__hq
         (window as unknown as Record<string, unknown>).__hq = { gl, scene, camera };
       }}
@@ -87,7 +72,6 @@ export function Office3D() {
           <Architecture />
           <Stations />
           <Interior />
-          <Realism />
           <Crew />
           <CameraDirector />
           <Atmosphere />

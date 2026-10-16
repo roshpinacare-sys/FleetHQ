@@ -1,0 +1,20 @@
+{
+  "id": "CR-0002",
+  "from": "Z-38 wave (orchestrator, destructive_command_guard adoption)",
+  "tier": "B",
+  "opened_at": "2026-10-02T22:45:00Z",
+  "proposes": "Adopt the Dicklesworthstone/destructive_command_guard mechanism as a fleet-native gate: (1) agents/command-guard.cjs v1.0.0 — pre-execution classification (whitelist-first, default-allow, zero-false-negatives on books/agents, data-vs-execution context detection, fleet-sync-idiom booked allow-with-reason); (2) evals E7-E9 pin the contract (deny destructive, allow the rebase law, scan CI surfaces clean-or-booked); (3) harness-audit check #27 watches the gate + ledger stamp; (4) recruit.yml runs the scan mode on CI and persists the ledger.",
+  "rationale": "Z-37's OVERRIDE PROTOCOL is prose — a law that lives only in writing is advisory. The study's lesson: the refusal must be mechanical, evaluated before execution with zero judgment latency. Cross-check receipt: THEIR binary (dcg v0.15.2) scanned OUR repo — 12 findings, all triaged to the mirror-bot sync idiom (regenerable CI checkout) + 1 out-of-scope heredoc; our guard reproduces that triage (11 sync-idiom booked allows, 0 false DENYs on real CI).",
+  "risk": "Low: the guard is advisory-by-default in CI (fail-soft, exit 0, scan mode books findings); nothing in the signing lanes changes. Main risk = false positives blocking legit ops — mitigated by whitelist-first + default-allow + E7 asserting the rebase law stays ALLOW.",
+  "rollback": "git revert the command-guard.cjs + evals + audit-check hunk; the ledger file is data and can be deleted. No books or signing lanes touched.",
+  "verdict": "PASS",
+  "judged_by": "harness-audit v1.3.0 (fresh-process run 2026-10-02: 30 PASS / 0 WARN / 0 FAIL; check #27 verdict 'mechanical override live' green; evals E7-E9 PASS: denies=reset-hard,push-force,rm-rf allows=rebase-law; data-context ALLOW; session sync-idiom DENY; CI scan 0 DENY / 11 booked)",
+  "judged_at": "2026-10-02T22:47:00Z",
+  "receipts": [
+    "agents/command-guard.cjs",
+    "agents/command-guard.json",
+    "agents/evals/run-evals.cjs",
+    "agents/harness-audit.cjs",
+    "agents/sovereignty.md"
+  ]
+}

@@ -1,0 +1,114 @@
+# CONTENT-CAMPAIGN — הקול הפומבי העמוד (מסע-תוכן יומי) · AGENT-Z
+#
+# שונה מ-daily-digest (דיווח-משימה): כאן סלוט-תוכן יומי, נושא-על לכל יום מהארסנל
+# (ledger/grid/receipts/ladder/ecosystem/engineering/week).
+#
+# היגיינה-תוכן (9-a): דקת-השידור אינה קבועה עוד — ה-cron מפעיל את הריצה, והסקריפט
+# מרסן את דקת-הפרסום מקרית בתוך חלון-שעה (CONTENT_JITTER_MAX_MIN, ברירת-מחדל 50 דק').
+# אין Slot:/Layer:/קודי-מעקב/נתיבי-ריפו בתוכן-על-השרשרת; גילוי-חתימת-מכונה נשאר.
+#
+# מפתח: posting בלבד — זיהוי ביט-מול-ביט מול רשות-ה-posting
+# החיה של @headcorner, שער-RC, אידמפוטנט מהשרשרת (saos-<theme>-<YYYYMMDD>).
+# אסור-לזייף: מקור לא-זמין = "unavailable — nothing faked".
+
+name: content-campaign
+
+on:
+  schedule:
+    - cron: '5 13 * * *'  # הפעלה יומית — דקת-הפרסום מרוסנת בקוד (חלון-שעה), לא כאן
+  workflow_dispatch:
+    inputs:
+      dry:
+        description: 'dry — build the post, print it, broadcast nothing'
+        required: false
+        default: true
+        type: boolean
+
+permissions:
+  contents: read
+
+concurrency:
+  group: content-campaign
+  cancel-in-progress: false
+
+jobs:
+  campaign:
+    runs-on: ubuntu-latest
+    timeout-minutes: 70  # מכסה את הרסן-הדקה של ההיגיינה (עד ~50 דק') + בנייה + שידור
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Checkout KPI source (Defi is private — read via vault PAT; honest skip if denied)
+        continue-on-error: true
+        uses: actions/checkout@v4
+        with:
+          repository: roshpinacare-sys/Defi
+          ref: main
+          token: ${{ secrets.ZIP_PAT }}
+          path: defi-kpi
+          fetch-depth: 1
+
+      - name: Checkout peg offer source (saos-dex — same vault PAT; honest skip if denied)
+        continue-on-error: true
+        uses: actions/checkout@v4
+        with:
+          repository: roshpinacare-sys/saos-dex
+          ref: main
+          token: ${{ secrets.ZIP_PAT }}
+          path: saos-dex-offer
+          fetch-depth: 1
+
+      - name: Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Steem client (steem@0.7.11 — the home signing template)
+        run: npm install --prefix /tmp/steemjs steem@0.7.11 --omit=dev --no-audit --no-fund --loglevel=error
+
+      # T-49: שרשרת-ההתחברות-העצמית (T-47) — הסוכן משיג-את-ה-WIF בעצמו מן-הכספת:
+      # קרדנשל-ה-runner (SBX_FLEET_PAT) → שיבוט-כספת → auto-unseal → rails.env.enc →
+      # VAULT_STEEM_POSTING_WIF. אפס-דפוס-על-המסך · אפס-קובץ-פלטה-שנותר · כישלון
+      # כנה = המשך-לסודות-הריפו (שער-הביט-מול-ביט מכריע-בכל-מקרה — אפס-זיוף).
+      - name: Vault self-auth (T-47 chain — the agent fetches its own WIF)
+        continue-on-error: true
+        env:
+          FLEET_PAT: ${{ secrets.SBX_FLEET_PAT }}
+        run: |
+          set -uo pipefail
+          rm -rf /tmp/fleet-vault
+          if [ -z "$FLEET_PAT" ]; then echo "[vault-selfauth] no PAT secret — honest skip"; exit 0; fi
+          if ! git clone --depth 1 "https://x-access-token:${FLEET_PAT}@github.com/roshpinacare-sys/fleet-vault.git" /tmp/fleet-vault 2>/dev/null; then
+            echo "[vault-selfauth] clone failed — honest skip to repo secrets"
+            exit 0
+          fi
+          if ! (cd /tmp/fleet-vault && bash auto-unseal.sh); then
+            echo "[vault-selfauth] unseal failed — honest skip to repo secrets"
+            exit 0
+          fi
+          # vaultlib.sh: VAULT_DIR="$VAULT_ROOT/vault" — session-pass חי-באח-של-השיבוט,
+          # לא-בתוך-השיבוט (נמדד-חי-בענן 19:24: unseal-OK אך-הנתיב-שנבדק-היה-שגוי)
+          SP="/tmp/vault/.session-pass"
+          [ -s "$SP" ] || SP="$(find /tmp -maxdepth 3 -name '.session-pass' 2>/dev/null | head -1)"
+          [ -s "$SP" ] || { echo "[vault-selfauth] no session pass — honest skip"; exit 0; }
+          VAULT_TMP_P="$(cat "$SP")" openssl enc -d -aes-256-cbc -pbkdf2 -iter 200000 \
+            -in /tmp/fleet-vault/rails.env.enc -out /tmp/.rails.wif -pass env:VAULT_TMP_P 2>/dev/null || exit 0
+          W="$(grep -E '^STEEM_POSTING_WIF=' /tmp/.rails.wif | head -1 | cut -d= -f2- | tr -d '\"')"
+          if [ -n "$W" ]; then
+            echo "VAULT_STEEM_POSTING_WIF=$W" >> "$GITHUB_ENV"
+            echo "[vault-selfauth] WIF exported from vault — bit-for-bit gate decides downstream"
+          else
+            echo "[vault-selfauth] WIF slot absent — honest skip"
+          fi
+          shred -u /tmp/.rails.wif "$SP" 2>/dev/null || rm -f /tmp/.rails.wif "$SP"
+          rm -rf /tmp/fleet-vault /tmp/vault
+
+      - name: Daily themed post (posting-only, measured, idempotent)
+        env:
+          STEEM_POSTING_WIF: ${{ secrets.STEEM_POSTING_WIF }}
+          WEAVE_STEEM_WIF: ${{ secrets.WEAVE_STEEM_WIF }}
+          STEEM_JS_DIR: /tmp/steemjs
+          GH_PAT: ${{ secrets.ZIP_PAT }}
+          CONTENT_DRY: ${{ inputs.dry && '1' || '' }}
+        run: node agents/content-campaign.mjs

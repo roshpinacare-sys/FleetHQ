@@ -1,0 +1,17 @@
+{
+ "id": "CR-0028",
+ "from": "sovereign desk (operator 'תמשיך' — continue: Z-59's booked next small step: pulse consumes the laya advisory triage)",
+ "tier": "B",
+ "opened_at": "2026-10-03T15:38:00Z",
+ "proposes": "pulse v1.1.0 — the daily pulse (CR-0009 loop) CONSUMES the laya advisory triage book (CR-0025 output) as an input: proposals gain a non-gating advisory field (lane / urgency / urgency_label / actionable_yes_prob / confidence:'uncalibrated' / source_at) joined by proposal id. Freshness law (CARRY-LAW family, sharpened for hints): measured NUMBERS carry (venture-desk), HINTS don't — a triage book older than 36h is STALE-NOT-JOINED (nothing attached), an unparseable timestamp is UNTIMED-NOT-JOINED, an absent book is ABSENT with an honest note; only FRESH (≤36h) books join. ADVISORY-ONLY law holds mechanically: the join happens AFTER dispositions are derived (E23-pinned predicate untouched, DISPOSITIONS still exactly 6), laws gain advisoryGates:false, book+md carry the advisory section with the uncalibrated-confidence flag on every joined row.",
+ "evidence": [
+  "live-fire local lane 2026-10-03T15:39Z: mode JOINED-FRESH, 7 of 8 triage rows matched current proposals by id (the 8th — lane:NandhaKishorM/laya — no longer queued in the current pulse; honest partial join), dispositions byte-identical to the pre-CR run (7 PROPOSED-CR / 2 GATED-BLOCKED / 4 DEFERRED-TIER-C / 4 ROLLED-BACK / 1 BOOKED)",
+  "E23 white-box + black-box re-run GREEN after the change (deriveDisposition exact for all 7 kinds, verifyOnly=true, autoApply=false, advisoryGates=false, fresh book, proposals=14 in the eval context)",
+  "full evals suite 26/26 PASS post-landing (E17 was independently red on environment drift — L1 leg restored at the canonical adjacent path, see CR-0027 receipts; unrelated to this CR)"
+ ],
+ "verdict": "PASS",
+ "judged_by": "operator-ordered landing per Z-59 stage summary booking; receipts mechanical (E23 pins the non-gating surface; advisory never touches gates)",
+ "judged_at": "2026-10-03T15:52:00Z",
+ "renumber_note": "CR-0026 → CR-0028 (fourth numbering collision, later-mover law): sibling d8ecbc0 lineage took CR-0026 (their shim-queue CR renumbered from CR-0024) before this push; file renamed, id + renumber_note booked inside, zero content changes. CR-0027 (reef Rung 3) verified free at rename time.",
+ "notes": "The two-step advisory loop is now closed end-to-end: pulse-book.json → laya-triage.cjs (serve-window, advisory typed decisions) → pulse.cjs (advisory join). CI note: laya-triage stays CI-skipped (off-budget by booked design), so in CI contexts the pulse will honestly book ABSENT or STALE-NOT-JOINED — the join is a local-lane surface by design."
+}

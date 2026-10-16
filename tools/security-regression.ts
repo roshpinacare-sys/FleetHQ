@@ -175,7 +175,7 @@ for (const [p, expected] of SENSITIVE) {
     createdBy: 'aluf',
     createdAt: 1,
     updatedAt: 1,
-  }) as { id: string; title: string; description: string; status: string };
+  }) as { id: string; title: string; description: string; status: string; dependsOn: string[] };
   must(!t.title.includes('sk-0000fake'), 'E task title redacts sk-shaped text');
   must(!t.description.includes('ghp_0000'), 'E task description redacts ghp-shaped text');
   must(t.id === 't1' && t.status === 'todo' && t.dependsOn.length === 0, 'E ids/status/arrays pass untouched');

@@ -7,9 +7,9 @@
  * · גלגלת/צביטה = התרחקות בגבולות נקודת התצפית
  * · נקודות תצפית מוגדרות (סרגל החדר) + מיקוד ישות בקליק (bus 'focus')
  * · Esc מחזיר לתצפית הכללית; העדפת reduced-motion = מעברים מיידיים
- * · יבוא-המשרד-הקודם (מילת-הבעלים המילולית: "שלא מעבירים את העכבר זה מסתובב"):
- *   הסיור-המודרך מתחיל לבד עם-הכנת-החדר; כל קלט מחזיר שליטה מיד; 10 שניות
- *   מנוחה מחזירות את הסיור מעצמן. ?tour=off = כיבוי-מפורש לכל-אורך-הסשן.
+ * · Task 11-a — סיור-מודרך (ברירת-מחדל אחרי הפריים הראשון): דולי חלק ומרוסן
+ *   תחנות → פודיום → לוח → ספרייה, עם הקפה-סרק עדינה בין-התחנות. כל קלט
+ *   מצביע (גרירה/גלגלת/מגע/מקלדת) מחזיר שליטה מיידית — לא רכת-הרים, עדין.
  * · המצלמה לעולם לא יוצאת מהקירות ולא לוקחת שליטה בפתאומיות
  */
 'use client';
@@ -64,19 +64,17 @@ const TOUR_DWELL_S = 7.5;
 /** קצב ההקפה-הסרק בתוך שהייה (רדיאנים/שנ' — עדין: היקף שלם בדקה-שעון) */
 const TOUR_ORBIT_RPS = 0.045;
 
-/** התחלה/עצירה של הסיור — מדווחת לסרגל באירוע דומיין אחד (בלי קפלים).
- *  R54: הסיור נכנס רק מכפתור מפורש — אין-התנעה-עצמית בכלל. */
+/** התחלה/עצירה של הסיור — מדווחת לסרגל באירוע דומיין אחד (בלי קפלים) */
 export function setTour(on: boolean) {
   director.tour = on;
+  tourArmed = false; // הפעלה ידנית — אין עוד התנעה-אוטומטית
   window.dispatchEvent(new CustomEvent('hq-camera-tour', { detail: { on } }));
 }
 
-/** הפסקת-סיור — תמיד דרך setTour כדי שהצ'יפ בסרגל יישאר אמין */
-function disarmTour() { if (director.tour) setTour(false); }
-
-/** ?tour=off — כיבוי-מפורש: הסיור לא מתחיל ולא חוזר לעולם בסשן הזה */
-const TOUR_OFF = typeof window !== 'undefined'
-  && new URLSearchParams(window.location.search).get('tour') === 'off';
+/** נשק-התנעה-אוטומטית: מופעלת פעם אחת עם הפריים הראשון, ומתבטלת לתמיד
+ *  בכל קלט-משתמש (החוק: המצלמה לא חוטפת שליטה בחזרה). */
+let tourArmed = true;
+function disarmTour() { tourArmed = false; director.tour = false; }
 
 /** קלט: גרירת-הקפה + גלגלת + צביטה. בלי מקלדת-משחק; Esc בלבד (בסרגל וכאן) */
 function useCameraInput() {
@@ -169,13 +167,17 @@ export function CameraDirector() {
     return () => mq.removeEventListener?.('change', set);
   }, []);
 
-  // יבוא-החוק-מהמשרד-הקודם: הסיור מתחיל לבד עם-הכנת-החדר (בלי קלט, בלי כפתור).
-  // ?tour=off מכבה לגמרי; reduced-motion (העדפת-מערכת) גובר — כמו-תמיד.
+  // Task 11-a — התנעת-סיור אוטומטית: פעם-אחת, עם הפריים האמיתי הראשון,
+  // רק אם המשתמש עוד לא נגע, בלי reduced-motion, ואם לא נשללה (?tour=off).
   useEffect(() => {
-    if (TOUR_OFF) return;
+    if (new URLSearchParams(window.location.search).get('tour') === 'off') {
+      tourArmed = false;
+      return;
+    }
     return useHq.subscribe((s) => {
-      if (s.roomReady && !s.sceneFailed && !director.reducedMotion && !director.tour) {
-        setTour(true);
+      if (tourArmed && s.roomReady && !s.sceneFailed && !director.reducedMotion) {
+        tourArmed = false;
+        director.tour = true;
       }
     });
   }, []);
@@ -245,15 +247,13 @@ export function CameraDirector() {
     const kLook = instant ? 1 : 1 - Math.exp(-dt * (onTour ? 2.1 : 4.2));
     first.current = false;
 
-    // R54 — אפס-תנועה-מחוץ-לסיור ולמיקוד: העדשה לא זזה בשום-ציר בלי קלט.
-
-    // חוק-המנוחה (יבוא מהמשרד-הקודם): 10 שניות בלי-קלט — הסיור חוזר מעצמו.
-    // מיקוד פעיל (המשתמש בוחן ישות) לא נקטע לעולם; ?tour=off ו-reduced-motion
-    // מנועים מראש.
-    if (!TOUR_OFF && !director.reducedMotion && !director.tour && !director.focus
-        && useHq.getState().roomReady
-        && Date.now() - state.lastInputAt > 10_000) {
-      setTour(true);
+    // נשימה קולנועית (Task 3D-LIVE): אחרי 25 שנ' ללא קלט — סחרור איטי ועדין
+    // סביב נקודת-המבט + נשימת-מרחק זעירה. כל קלט עוצר; reduced-motion מנטרל.
+    // (union 11-a+T12: הנשימה חיה רק מחוץ-לסיור — הסיור בעל-הקפה-משלו)
+    if (!onTour && !instant && !director.focus && state.lastInputAt > 0 && Date.now() - state.lastInputAt > 25_000) {
+      state.yawTo += dt * 0.014; // ~0.8°/שנ' — כמעט לא מורגש, החדר "חי"
+      state.distTo += Math.sin(Date.now() / 9000) * dt * 0.02;
+      state.distTo = Math.max(state.minDist, Math.min(state.maxDist, state.distTo));
     }
 
     // Task 11-a — כיריאוגרפיית הסיור: כל תחנה במסלול היא נקודת-תצפית
