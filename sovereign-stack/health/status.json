@@ -1,7 +1,7 @@
 {
- "ts": "2026-10-16T16:04:47Z",
+ "ts": "2026-10-16T16:10:00Z",
  "timeout_ms": 90000,
- "all_ok": true,
+ "all_ok": false,
  "accounts": {
   "source": "absent",
   "count": 0
@@ -11,37 +11,37 @@
    "name": "nextjs-control",
    "url": "http://localhost:3000/",
    "method": "GET",
-   "status": 200,
-   "latency_ms": 44,
-   "verdict": "OK",
-   "detail": "status=200 latency=44ms"
+   "status": null,
+   "latency_ms": 90089,
+   "verdict": "DOWN",
+   "detail": "TimeoutError: timed out"
   },
   {
    "name": "llm7-free",
    "url": "https://api.llm7.io/v1/models",
    "method": "GET",
    "status": 200,
-   "latency_ms": 226,
+   "latency_ms": 279,
    "verdict": "OK",
-   "detail": "status=200 latency=226ms"
+   "detail": "status=200 latency=279ms"
   },
   {
    "name": "eth-mainnet-rpc",
    "url": "https://eth.drpc.org",
    "method": "POST",
    "status": 200,
-   "latency_ms": 62,
+   "latency_ms": 63,
    "verdict": "OK",
-   "detail": "status=200 latency=62ms"
+   "detail": "status=200 latency=63ms"
   },
   {
    "name": "zero-rail-rpc",
    "url": "https://rpc.zero.tech",
    "method": "POST",
    "status": 200,
-   "latency_ms": 376,
+   "latency_ms": 359,
    "verdict": "OK",
-   "detail": "status=200 latency=376ms"
+   "detail": "status=200 latency=359ms"
   }
  ],
  "mem": {
@@ -49,5 +49,5 @@
   "mem_available_mb": 562.8,
   "mem_total_mb": 4041.6
  },
- "sha256": "f74cd5584bc35a6254a2fd5b58ef139f3d9251eabd9aefe17867b3e7d5ad4475"
+ "sha256": "2833cac676d91c686cc2a2c4a69579a5a5dbc5c1f005f7369687edaa5f118528"
 }
