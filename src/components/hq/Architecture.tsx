@@ -6,6 +6,7 @@
 
 import { useMemo } from 'react';
 import * as THREE from 'three';
+import { MeshReflectorMaterial } from '@react-three/drei';
 import { PLAN_W, PLAN_H, SCALE, WALL_H, WALL_T, to3, FLAME, RECEPTION } from '@/lib/hq/contract';
 import {
   makeConcreteTexture, makeWoodTexture, makeWallTexture, makeBlindsTexture,
@@ -50,7 +51,7 @@ const WALL_SPECS: WallSpec[] = [
 /** אורך הקיר לאורך ציר ההליכה */
 const LEN = { north: PLAN_W * SCALE, south: PLAN_W * SCALE, west: PLAN_H * SCALE, east: PLAN_H * SCALE };
 
-export function Architecture() {
+export function Architecture({ heavy = true }: { heavy?: boolean }) {
   const mats = useOfficeMaterials();
   const skyline = useMemo(() => makeSkylineTexture(), []);
   const blinds = useMemo(() => makeBlindsTexture(), []);
@@ -58,10 +59,7 @@ export function Architecture() {
   return (
     <group>
       {/* ── רצפה ── */}
-      <mesh rotation-x={-Math.PI / 2} receiveShadow>
-        <planeGeometry args={[PLAN_W * SCALE, PLAN_H * SCALE]} />
-        <primitive object={mats.concrete} attach="material" />
-      </mesh>
+      <LiveFloor mats={mats} heavy={heavy} />
 
       {/* שטיח מרכזי עגול סביב הלהבה */}
       <FloorRug />
@@ -182,6 +180,45 @@ export function useOfficeMaterials(): OfficeMats {
 }
 
 // ─────────────── שטיח ───────────────
+/**
+ * LiveFloor (Task 8) — רצפת-בטון מלוטשת: MeshReflectorMaterial במסך-מלא
+ * (השתקפות-רכה של המסכים/הניאון/הלהבה — מראה showfloor מודרני) · בטון רגיל
+ * במסך-קטן/מוחלש (בלי עלות-רנדור-שני). מדידת-מסך פעם-אחת בהרכבה.
+ */
+function LiveFloor({ mats, heavy }: { mats: OfficeMats; heavy: boolean }) {
+  const [lite] = useMemo(() => {
+    const ok = typeof window !== 'undefined' &&
+      !window.matchMedia('(max-width: 820px)').matches &&
+      (navigator.hardwareConcurrency ?? 8) > 4;
+    return [!ok];
+  }, []);
+  const size: [number, number] = [PLAN_W * SCALE, PLAN_H * SCALE];
+  if (lite || !heavy) {
+    return (
+      <mesh rotation-x={-Math.PI / 2} receiveShadow>
+        <planeGeometry args={size} />
+        <primitive object={mats.concrete} attach="material" />
+      </mesh>
+    );
+  }
+  return (
+    <mesh rotation-x={-Math.PI / 2} receiveShadow>
+      <planeGeometry args={size} />
+      <MeshReflectorMaterial
+        resolution={1024}
+        blur={[300, 90]}
+        mixBlur={0.86}
+        mixStrength={1.15}
+        mirror={0.32}
+        roughness={0.82}
+        metalness={0.06}
+        map={makeConcreteTexture()}
+        color="#cfc9bc"
+      />
+    </mesh>
+  );
+}
+
 function FloorRug() {
   const carpet = useMemo(() => {
     const t = makeCarpetTexture('#cabfa6');

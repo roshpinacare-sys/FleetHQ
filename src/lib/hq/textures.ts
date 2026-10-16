@@ -426,108 +426,204 @@ export function makeBubbleTexture(): { tex: THREE.CanvasTexture; set: (text: str
 }
 
 /** לוח המשימות הפיזי — קנבן 4 עמודות (מתוכנן → בעבודה → בביקורת → הושלם) */
-export function makeTaskWallTexture(): { tex: THREE.CanvasTexture; set: (tasks: { id: string; title: string; status: string; assignee?: string; color?: string }[]) => void; update: (now: number) => void } {
-  let tasks: { id: string; title: string; status: string; assignee?: string; color?: string }[] = [];
-  const COLS: [string, string, string][] = [
-    ['todo', 'מתוכנן', '#9aa0a8'],
-    ['doing', 'בעבודה', '#d946ef'],
-    ['review', 'בביקורת', '#fbbf24'],
-    ['done', 'הושלם', '#34d399'],
-  ];
-  const dyn = new DynTex(1600, 860, (ctx, w, h) => {
-    // לוח שעם כהה
-    const g = ctx.createLinearGradient(0, 0, 0, h);
-    g.addColorStop(0, '#4a3a2a'); g.addColorStop(1, '#3c2f22');
-    ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
-    // גרגר שעם
-    for (let i = 0; i < 2600; i++) {
-      const a = Math.random() * 0.05;
-      ctx.fillStyle = Math.random() > 0.5 ? `rgba(255,220,160,${a})` : `rgba(0,0,0,${a})`;
-      ctx.fillRect(Math.random() * w, Math.random() * h, 2 + Math.random() * 3, 2);
+/** זמן-יחסי עברי קצר — לכל הלוחות החיים */
+export function relHe(ms: number | null | undefined): string {
+  if (!ms || !Number.isFinite(ms)) return '—';
+  const s = Math.max(0, (Date.now() - ms) / 1000);
+  if (s < 45) return 'עכשיו';
+  if (s < 3600) return `${Math.round(s / 60)} דק'`;
+  if (s < 86400) return `${Math.floor(s / 3600)} שע'`;
+  return `${Math.floor(s / 86400)} ימ'`;
+}
+
+/**
+ * makeFleetWallTexture (Task 8) — לוח הצי החי: מסך-פיקוד חי במקום לוח-שעם קפוא.
+ * מציג את הפעילות הענפה שלפני-המשרד, ישירות מהמקורות הנמדדים:
+ * קצב-טעיפת-הכלכלה (tx/min · mwu/min) · מספר-הרצף החי · פילוח-מקורות
+ * (rig/guard/git/offev) · מסילות-ה-beats עם ורדיקט אמיתי · טיקר-אירועים.
+ * כנות-מלאה: pulse=null → מסך "ממתין לדופק" — לעולם לא מספרים מומצאים.
+ */
+export function makeFleetWallTexture(): {
+  tex: THREE.CanvasTexture; set: (pulse: unknown, tick: number) => void; update: (now: number) => void;
+} {
+  interface Pulse {
+    ts: number;
+    econ: {
+      seq: number | null; minted: number | null; lastSha16: string | null; lastAt: number | null;
+      txPerMin: number | null; mwuPerMin: number | null; windowMin: number;
+      kinds: { kind: string; count: number; mwu: number }[]; spark: number[];
+      recent: { at: number; kind: string; venue: string; amount: number }[];
+    } | null;
+    services: { name: string; ok: boolean; ms: number }[];
+    repos: { repo: string; hash: string; subject: string; at: number }[];
+    lanes: { lane: string; at: number; ok: boolean; brief: string }[];
+    pages: { ageMin: number | null };
+  }
+  let pulse: Pulse | null = null;
+  let tick = 0;
+  const W = 1600, H = 860;
+  const AMBER = '#ffb054', TEAL = '#54d8c0', OK = '#3ddc97', BAD = '#ff6b5e', DIM = 'rgba(158,178,198,0.85)';
+  const mono = (px: number) => `${px}px ui-monospace,'JetBrains Mono',monospace`;
+  const hef = (px: number, wgt = 500) => `${wgt} ${px}px 'Heebo',system-ui,sans-serif`;
+
+  const dyn = new DynTex(W, H, (ctx, w, h) => {
+    // רקע — מסך-פיקוד כהה
+    const bg = ctx.createLinearGradient(0, 0, 0, h);
+    bg.addColorStop(0, '#0b111a'); bg.addColorStop(1, '#0d1520');
+    ctx.fillStyle = bg; ctx.fillRect(0, 0, w, h);
+    // רשת עדינה
+    ctx.strokeStyle = 'rgba(120,160,200,0.055)'; ctx.lineWidth = 1;
+    for (let gx = 0; gx < w; gx += 80) { ctx.beginPath(); ctx.moveTo(gx, 0); ctx.lineTo(gx, h); ctx.stroke(); }
+    for (let gy = 0; gy < h; gy += 80) { ctx.beginPath(); ctx.moveTo(0, gy); ctx.lineTo(w, gy); ctx.stroke(); }
+    ctx.direction = 'rtl'; ctx.textBaseline = 'middle';
+
+    const age = pulse ? relHe(pulse.ts) : '—';
+
+    // ── כותרת ──
+    ctx.fillStyle = AMBER; ctx.font = hef(44, 800);
+    ctx.fillText('לוח הצי החי', w - 36, 54);
+    ctx.fillStyle = DIM; ctx.font = hef(24);
+    ctx.fillText(`FLEET PULSE · מקור: המכונה הריבונית`, w - 36, 104);
+    // נקודת-חיים פועמת
+    const beat = 0.55 + 0.45 * Math.sin((tick % 2) * Math.PI);
+    ctx.fillStyle = pulse ? OK : BAD;
+    ctx.beginPath(); ctx.arc(46, 54, 10 + 3 * beat, 0, 7); ctx.fill();
+    ctx.fillStyle = pulse ? OK : BAD; ctx.font = hef(26, 600); ctx.textAlign = 'left';
+    ctx.fillText(pulse ? `חי · ${age}` : 'ממתין לדופק', 70, 54);
+    ctx.textAlign = 'right';
+
+    if (!pulse || !pulse.econ) {
+      ctx.fillStyle = DIM; ctx.font = hef(34); ctx.textAlign = 'center';
+      ctx.fillText('אין דופק — הלוח כנה, לא ממציא', w / 2, h / 2);
+      return;
     }
-    // חוק ה-RTL: הקנבן נקרא ימין→שמאל — העמודה הראשונה (מתוכנן) בצד ימין.
-    // מראת אינדקס העמודה: x0 = (COLS.length-1-ci)*cw — בדיוק כחוק לוח-המשימות
-    // שתוקן במשרד הדו-ממדי (הזרימה ימין→שמאל, לעולם לא שמאל→ימין).
-    const cw = w / 4;
-    COLS.forEach(([key, label, col], ci) => {
-      const x0 = (COLS.length - 1 - ci) * cw;
-      ctx.fillStyle = 'rgba(0,0,0,0.22)'; ctx.fillRect(x0 + 8, 74, cw - 16, h - 88);
-      ctx.direction = 'rtl'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-      ctx.fillStyle = col; ctx.font = "700 34px 'Heebo',system-ui,sans-serif";
-      ctx.fillText(label, x0 + cw / 2, 40);
-      ctx.fillRect(x0 + cw / 2 - 44, 62, 88, 3);
-      // כרטיסים
-      const cards = tasks.filter((t) => t.status === key).slice(0, 6);
-      cards.forEach((t, i) => {
-        const cy = 92 + i * 126;
-        const cx = x0 + 18, cwid = cw - 36;
-        ctx.fillStyle = 'rgba(245,240,230,0.96)';
-        roundRect(ctx, cx, cy, cwid, 108, 10); ctx.fill();
-        // פס מקצה בצבע המקבל
-        ctx.fillStyle = t.color || col;
-        roundRect(ctx, cx, cy, 10, 108, 5); ctx.fill();
-        ctx.direction = 'rtl'; ctx.textAlign = 'right';
-        ctx.fillStyle = '#26221c'; ctx.font = "600 25px 'Heebo',system-ui,sans-serif";
-        const tt = t.title.length > 26 ? t.title.slice(0, 25) + '…' : t.title;
-        ctx.fillText(tt, cx + cwid - 22, cy + 34);
-        ctx.fillStyle = '#6b6459'; ctx.font = "500 21px 'Heebo',system-ui,sans-serif";
-        ctx.fillText(t.assignee || '', cx + cwid - 22, cy + 74);
-      });
+    const e = pulse.econ;
+
+    // ── שורת KPI ──
+    const kpis: [string, string, string][] = [
+      ["עסקאות/דק'", e.txPerMin !== null ? String(e.txPerMin) : '—', "עבודה נמדדת · 5 דק'"],
+      ["mwu/דק'", e.mwuPerMin !== null ? e.mwuPerMin.toLocaleString('he-IL') : '—', 'יחידות-עבודה'],
+      ['רצף', e.seq !== null ? e.seq.toLocaleString('he-IL') : '—', 'פנקס-הכלכלה'],
+      ['שירותים', `${pulse.services.filter((s) => s.ok).length}/${pulse.services.length}`, 'דופק-פורטים'],
+    ];
+    const kw = (w - 72) / 4;
+    kpis.forEach(([label, val, sub], i) => {
+      const x1 = w - 36 - i * (kw + 8) - kw; // RTL: הראשון מימין
+      ctx.fillStyle = 'rgba(255,255,255,0.045)';
+      roundRect(ctx, x1, 148, kw, 118, 14); ctx.fill();
+      ctx.strokeStyle = 'rgba(255,176,84,0.18)'; ctx.lineWidth = 1.5;
+      roundRect(ctx, x1, 148, kw, 118, 14); ctx.stroke();
+      ctx.textAlign = 'center';
+      ctx.fillStyle = i === 2 ? TEAL : AMBER; ctx.font = mono(52);
+      ctx.fillText(val, x1 + kw / 2, 196);
+      ctx.fillStyle = '#dfe7f0'; ctx.font = hef(24, 700);
+      ctx.fillText(label, x1 + kw / 2, 234);
+      ctx.fillStyle = 'rgba(140,160,180,0.7)'; ctx.font = hef(17);
+      ctx.fillText(sub, x1 + kw / 2, 256);
     });
+
+    // ── ספארקליין — קצב 5 דק' (30 דגימות של 10שנ') ──
+    const sx0 = 36, sw = w - 72, sy0 = 310, sh = 150;
+    ctx.fillStyle = 'rgba(255,255,255,0.03)';
+    roundRect(ctx, sx0, sy0 - 34, sw, sh + 56, 12); ctx.fill();
+    ctx.textAlign = 'right'; ctx.fillStyle = DIM; ctx.font = hef(22, 600);
+    ctx.fillText('קצב-העבודה · 5 הדקות האחרונות (עסקאות ל-10שנ)', w - 52, sy0 - 8);
+    const spark = e.spark ?? [];
+    const mx = Math.max(1, ...spark);
+    const pts: [number, number][] = spark.map((v, i) => [
+      sx0 + (i / Math.max(1, spark.length - 1)) * sw,
+      sy0 + sh - (v / mx) * (sh - 14) - 4,
+    ]);
+    // מילוי-שטח זוהר
+    const grad = ctx.createLinearGradient(0, sy0, 0, sy0 + sh);
+    grad.addColorStop(0, 'rgba(84,216,192,0.42)'); grad.addColorStop(1, 'rgba(84,216,192,0.02)');
+    ctx.beginPath();
+    pts.forEach(([px, py], i) => { if (i) ctx.lineTo(px, py); else ctx.moveTo(px, py); });
+    ctx.lineTo(sx0 + sw, sy0 + sh); ctx.lineTo(sx0, sy0 + sh); ctx.closePath();
+    ctx.fillStyle = grad; ctx.fill();
+    // קו
+    ctx.beginPath();
+    pts.forEach(([px, py], i) => { if (i) ctx.lineTo(px, py); else ctx.moveTo(px, py); });
+    ctx.strokeStyle = TEAL; ctx.lineWidth = 3; ctx.stroke();
+    // נקודה חיה בקצה
+    if (pts.length) {
+      const [lx, ly] = pts[pts.length - 1];
+      ctx.fillStyle = TEAL; ctx.beginPath(); ctx.arc(lx, ly, 5 + 2.5 * beat, 0, 7); ctx.fill();
+    }
+
+    // ── פילוח-מקורות (bars RTL) ──
+    const kinds = (e.kinds ?? []).slice(0, 5);
+    const ky0 = sy0 + sh + 66;
+    const maxK = Math.max(1, ...kinds.map((k) => k.count));
+    const bw = w - 320;
+    ctx.textAlign = 'right'; ctx.fillStyle = DIM; ctx.font = hef(22, 600);
+    ctx.fillText("פילוח-מקורות · ספירה/5 דק'", w - 52, ky0 - 26);
+    const KIND_COLS: Record<string, string> = {
+      rig: '#54d8c0', guard: '#ffb054', git: '#a78bfa', offev: '#e07b54',
+      fleet: '#7fd4ff', beat: '#f2b8d0', journal: '#c9d3a8', mesh: '#8fd0ff',
+    };
+    kinds.forEach((k, i) => {
+      const y = ky0 + i * 34;
+      const bl = (k.count / maxK) * bw;
+      ctx.fillStyle = 'rgba(255,255,255,0.05)';
+      roundRect(ctx, 280, y, bw, 22, 8); ctx.fill();
+      ctx.fillStyle = KIND_COLS[k.kind] ?? TEAL;
+      roundRect(ctx, 280 + bw - bl, y, Math.max(6, bl), 22, 8); ctx.fill();
+      ctx.fillStyle = '#e6edf4'; ctx.font = hef(21, 700);
+      ctx.fillText(`${k.kind}`, w - 52, y + 11);
+      ctx.textAlign = 'left'; ctx.fillStyle = 'rgba(158,178,198,0.95)'; ctx.font = mono(18);
+      ctx.fillText(`${k.count} · ${k.mwu.toLocaleString('he-IL')} mwu`, 292, y + 11);
+      ctx.textAlign = 'right';
+    });
+
+    // ── מסילות-ה-beats ──
+    const ly0 = ky0 + kinds.length * 34 + 26;
+    ctx.textAlign = 'right'; ctx.fillStyle = DIM; ctx.font = hef(22, 600);
+    ctx.fillText('מסילות-ההפעלה · local-beats', w - 52, ly0);
+    const lanes = (pulse.lanes ?? []).slice(0, 8);
+    const lw = (w - 88) / 4, lh = 62;
+    lanes.forEach((l, i) => {
+      const row = Math.floor(i / 4), col = i % 4;
+      const x1 = w - 44 - (col + 1) * lw - col * 6; // RTL
+      const y1 = ly0 + 14 + row * (lh + 8);
+      ctx.fillStyle = 'rgba(255,255,255,0.04)';
+      roundRect(ctx, x1, y1, lw, lh, 10); ctx.fill();
+      ctx.strokeStyle = l.ok ? 'rgba(61,220,151,0.35)' : 'rgba(255,107,94,0.45)';
+      ctx.lineWidth = 1.4; roundRect(ctx, x1, y1, lw, lh, 10); ctx.stroke();
+      ctx.fillStyle = l.ok ? OK : BAD;
+      ctx.beginPath(); ctx.arc(x1 + lw - 20, y1 + 20, 6, 0, 7); ctx.fill();
+      ctx.textAlign = 'right'; ctx.fillStyle = '#e6edf4'; ctx.font = hef(21, 700);
+      ctx.fillText(l.lane, x1 + lw - 36, y1 + 20);
+      ctx.fillStyle = 'rgba(158,178,198,0.85)'; ctx.font = hef(17);
+      ctx.fillText(relHe(l.at), x1 + lw - 36, y1 + 44);
+      ctx.textAlign = 'left'; ctx.fillStyle = l.ok ? 'rgba(61,220,151,0.85)' : 'rgba(255,107,94,0.9)'; ctx.font = mono(16);
+      ctx.fillText(l.ok ? 'OK' : 'FAIL', x1 + 14, y1 + 20);
+    });
+
+    // ── טיקר אירוע-אחרון ──
+    const last = (e.recent ?? [])[0];
+    ctx.fillStyle = 'rgba(255,176,84,0.10)';
+    ctx.fillRect(0, h - 54, w, 54);
+    ctx.strokeStyle = 'rgba(255,176,84,0.25)';
+    ctx.beginPath(); ctx.moveTo(0, h - 54 + 0.5); ctx.lineTo(w, h - 54 + 0.5); ctx.stroke();
+    ctx.textAlign = 'right'; ctx.fillStyle = AMBER; ctx.font = hef(23, 700);
+    const txt = last ? `${last.kind} · ${last.venue} · ${last.amount} mwu` : 'אין אירועים';
+    ctx.fillText(txt, w - 36, h - 26);
+    ctx.textAlign = 'left'; ctx.fillStyle = 'rgba(158,178,198,0.8)'; ctx.font = mono(18);
+    ctx.fillText(`sha16 ${e.lastSha16 ?? '—'}`, 36, h - 26);
   });
+
   return {
     tex: dyn.tex,
-    set: (ts) => {
-      const sig = ts.map((t) => t.id + t.status + (t.assignee || '')).join('|');
-      if (sig !== tasks.map((t) => t.id + t.status + (t.assignee || '')).join('|')) { tasks = ts; dyn.markDirty(); }
+    set(p, t) {
+      pulse = p as Pulse | null;
+      tick = t;
+      dyn.markDirty();
     },
     update: (now) => dyn.update(now),
   };
 }
 
-/** קיר הגיט — זרם קומיטים חי על מסך ענק */
-export function makeGitWireTexture(): { tex: THREE.CanvasTexture; set: (commits: { hash: string; subject: string; author: string; ts: number }[]) => void; update: (now: number) => void } {
-  let commits: { hash: string; subject: string; author: string; ts: number }[] = [];
-  let clock = 0;
-  const dyn = new DynTex(1280, 720, (ctx, w, h) => {
-    ctx.fillStyle = '#0a0d0a'; ctx.fillRect(0, 0, w, h);
-    // רשת רקע
-    ctx.strokeStyle = 'rgba(120,200,150,0.07)'; ctx.lineWidth = 1;
-    for (let x = 0; x < w; x += 64) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke(); }
-    for (let y = 0; y < h; y += 64) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke(); }
-    ctx.direction = 'rtl'; ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
-    ctx.fillStyle = '#8fe3ae'; ctx.font = "700 40px 'Heebo',system-ui,sans-serif";
-    ctx.fillText('קיר הגיט · זרם הקומיטים של ספרי הצי', w - 28, 46);
-    ctx.fillStyle = 'rgba(140,230,170,0.6)'; ctx.font = "500 24px ui-monospace,monospace";
-    ctx.textAlign = 'left';
-    ctx.fillText(clock > 0.5 ? '● streaming' : '○ streaming', 28, 46);
-    const list = commits.slice(0, 12);
-    list.forEach((c, i) => {
-      const y = 120 + i * 46;
-      ctx.textAlign = 'left'; ctx.direction = 'ltr';
-      ctx.fillStyle = 'rgba(143,227,174,0.75)'; ctx.font = "500 24px ui-monospace,monospace";
-      ctx.fillText(c.hash.slice(0, 7), 28, y);
-      ctx.fillStyle = 'rgba(220,225,218,0.85)'; ctx.font = "500 26px 'Heebo',system-ui,sans-serif";
-      const subj = c.subject.length > 46 ? c.subject.slice(0, 45) + '…' : c.subject;
-      ctx.fillText(subj, 150, y);
-      ctx.fillStyle = 'rgba(140,146,150,0.6)'; ctx.font = "400 22px 'Heebo',system-ui,sans-serif";
-      ctx.textAlign = 'right';
-      ctx.fillText(c.author, w - 28, y);
-    });
-    if (!list.length) {
-      ctx.textAlign = 'center'; ctx.direction = 'rtl';
-      ctx.fillStyle = 'rgba(150,155,150,0.5)'; ctx.font = "500 30px 'Heebo',system-ui,sans-serif";
-      ctx.fillText('ממתין לזרם…', w / 2, h / 2);
-    }
-  });
-  return {
-    tex: dyn.tex,
-    set: (cs) => { commits = cs; dyn.markDirty(); },
-    update: (now) => { clock = (now / 700) % 2; dyn.update(now); },
-  };
-}
-
-/** מסך לוח שנה/מדדים בקבלה */
 export function makeReceptionScreen(): { tex: THREE.CanvasTexture; set: (s: { mode: string; provider: string; ops: number; goal?: string }) => void; update: (now: number) => void } {
   let info: { mode: string; provider: string; ops: number; goal?: string } = { mode: '…', provider: '…', ops: 0, goal: '' };
   const dyn = new DynTex(560, 380, (ctx, w, h) => {

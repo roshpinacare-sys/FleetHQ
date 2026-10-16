@@ -8,7 +8,7 @@
  * · Task 11-a — שלט-מסלול (פינת-החדר): חי / מראה — מציאות נמדדה מ-{savedAt} /
  *   הדגמה (סימן-מים DEMO) + HUD נתונים אמיתיים מינימלי (יעד · לוח-משימות ·
  *   הכרעות) מה-store בלבד, עם טוקני-העיצוב הקיימים.
- * · סיור: צ'יפ "סיור" מפעיל את מצלמת-הבמאי הקולנועית; כל קלט משתמש מחזיר שליטה.
+ * · Task 8 — הסיור נמחק: אין סרט-קבוע, המצלמה תמיד בשליטת-המשתמש.
  * · טוסטים: הודעות אמיתיות בלבד (הגיעו מהפורמן דרך הגשר).
  * · T19-c (refero): סולם-גופנים ממושמע (11 / 12 / 12.5), מקצב ריווח 4/8,
  *   פאנל-HUD אחד (.sl-panel — עומק עדין במקום מסגרות-כפולות), memo לחלקים
@@ -23,7 +23,6 @@ import { CAMERA_PRESETS } from '@/lib/hq/contract';
 import { useHq, type Lang } from '@/lib/hq/store';
 import { useDecisions } from '@/lib/hq/decisions';
 import { BEAT_STALE_MS } from '@/lib/hq/broadcast';
-import { setTour } from './CameraDirector';
 
 /** שידור בחירת נקודת תצפית למצלמת הבמאי (אירוע דומיין יחיד, בלי קפלים) */
 export function selectPreset(id: PresetId) {
@@ -109,6 +108,47 @@ const BroadcastPanel = memo(function BroadcastPanel({ lang }: { lang: Lang }) {
   );
 });
 
+/** FleetChip (Task 8) — דופק-הצי החי ב-HUD: הפעילות הענפה שלפני-המשרד,
+ *  חיה כל שנייה (מה-tick של החנות): עסקאות/דק' · mwu/דק' · רצף · שירותים ·
+ *  מסילות-חיות · גיל-הדופק. כנות: בלי דופק — "ממתין" בצבע-תשומת-הלב. */
+const FleetChip = memo(function FleetChip({ lang }: { lang: Lang }) {
+  const fleet = useHq((s) => s.fleet);
+  const tick = useHq((s) => s.tick);
+  const he = lang === 'he';
+  if (!fleet) {
+    return (
+      <div className="sl-panel flex items-center gap-2 px-3 py-2" dir="rtl" role="status">
+        <span className="sl-dot" style={{ backgroundColor: 'var(--st-attention)' }} aria-hidden="true" />
+        <span className="text-[12px] font-semibold text-[color:var(--ink-2)]">{he ? 'דופק-הצי מתחבר…' : 'Fleet pulse connecting…'}</span>
+      </div>
+    );
+  }
+  const e = fleet.econ;
+  const ok = fleet.services.filter((s) => s.ok).length;
+  const lanesAlive = fleet.lanes.filter((l) => Date.now() - l.at < 30 * 60_000).length;
+  const ageS = Math.max(0, Math.floor((Date.now() - fleet.ts) / 1000));
+  void tick; // הטיק מניע רינדור-מחדש של הגיל — המספרים חיים
+  const live = e !== null && (Date.now() - (e.lastAt ?? 0)) < 120_000;
+  return (
+    <div className="sl-panel flex flex-wrap items-center gap-x-3 gap-y-0.5 px-3 py-2" dir="rtl" role="status">
+      <span className="flex items-center gap-1.5">
+        <span className="sl-dot" style={{ backgroundColor: live ? 'var(--st-ok)' : 'var(--st-attention)' }} aria-hidden="true" />
+        <span className="text-[11px] font-bold uppercase tracking-wide text-[color:var(--ink-3)]">{he ? 'דופק-הצי' : 'Fleet pulse'}</span>
+      </span>
+      {e && (
+        <>
+          <span className="text-[12px] font-bold text-[color:var(--ink)]">{e.txPerMin ?? '—'} <span className="font-medium text-[color:var(--ink-3)]">tx/דק'</span></span>
+          <span className="text-[12px] font-bold text-[color:var(--ink)]">{e.mwuPerMin?.toLocaleString('he-IL') ?? '—'} <span className="font-medium text-[color:var(--ink-3)]">mwu/דק'</span></span>
+          <span className="text-[12px] font-bold" style={{ color: 'var(--accent)' }}>#{e.seq?.toLocaleString('he-IL') ?? '—'}</span>
+        </>
+      )}
+      <span className="text-[12px] font-semibold text-[color:var(--ink-2)]">{he ? `שירותים ${ok}/${fleet.services.length}` : `svc ${ok}/${fleet.services.length}`}</span>
+      <span className="text-[12px] font-semibold text-[color:var(--ink-2)]">{he ? `מסילות ${lanesAlive}` : `lanes ${lanesAlive}`}</span>
+      <span className="text-[11px] text-[color:var(--ink-3)]">{he ? `לפני ${ageS} שנ'` : `${ageS}s ago`}</span>
+    </div>
+  );
+});
+
 /** Task 11-a — HUD נתונים אמיתיים מינימלי: יעד פעיל + ספירת לוח-המשימות +
  *  הכרעות — הכל מה-store (אותה אמת של הסוקט/המראה), טוקני-עיצוב קיימים.
  *  מה שלא נמדד לא מוצג — אין כאן מספר יבש. */
@@ -131,6 +171,7 @@ const RoomHud = memo(function RoomHud({ lang }: { lang: Lang }) {
       dir="rtl"
       aria-label={he ? 'מדדי-המשרד' : 'Office metrics'}
     >
+      <FleetChip lang={lang} />
       {goal && (
         <div className="sl-panel px-3 py-2">
           <div className="text-[11px] font-bold uppercase tracking-wide text-[color:var(--ink-3)]">{he ? 'היעד הנוכחי' : 'Current goal'}</div>
@@ -287,28 +328,13 @@ const PresetDeck = memo(function PresetDeck({ lang }: { lang: Lang }) {
   }, []);
 
   const he = lang === 'he';
-  const [tourOn, setTourOn] = useState(director.tour);
-  useEffect(() => {
-    const on = (e: Event) => setTourOn(Boolean((e as CustomEvent<{ on?: boolean }>).detail?.on));
-    window.addEventListener('hq-camera-tour', on as EventListener);
-    return () => window.removeEventListener('hq-camera-tour', on as EventListener);
-  }, []);
   return (
     <nav
       className="sl-panel pointer-events-auto absolute bottom-12 left-1/2 z-10 flex max-w-[96%] -translate-x-1/2 flex-nowrap items-center gap-1 overflow-x-auto p-1 sm:bottom-3"
       dir="rtl"
       aria-label={he ? 'נקודות תצפית בחדר' : 'Room camera presets'}
     >
-      {/* Task 11-a — הסיור הקולנועי: כל קלט-משתמש מחזיר שליטה מיידית */}
-      <button
-        onClick={() => setTour(!tourOn)}
-        aria-pressed={tourOn}
-        title={he ? 'סיור-מודרך בין התחנות — כל לחיצה בחדר מחזירה שליטה' : 'Guided tour between the stations — any click returns control'}
-        className="sl-chip !border-transparent !bg-transparent !text-[12px] !font-semibold hover:!bg-[color:var(--surface-2)]"
-        style={tourOn ? { background: 'var(--accent-dim)', color: 'var(--accent)' } : undefined}
-      >
-        {tourOn ? (he ? '◉ הסיור חי — לחיצה מחזירה שליטה' : '◉ Tour live — click to take control') : (he ? '▶ סיור' : '▶ Tour')}
-      </button>
+      {/* Task 8 — הסיור נמחק מהסרגל: אין סרט, שליטת-משתמש בלבד */}
       <span className="mx-0.5 h-4 w-px bg-[color:var(--line)]" aria-hidden="true" />
       {CAMERA_PRESETS.map((p, i) => {
         const on = focusId ? false : active === p.id;

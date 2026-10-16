@@ -134,7 +134,7 @@ export const CAMERA_PRESETS: CameraPreset[] = [
     yaw: Math.PI, pitch: 0.42, dist: 5.0, minDist: 2.6, maxDist: 8,
   },
   {
-    id: 'wall', label: { he: 'לוח המשימות', en: 'Task board' },
+    id: 'wall', label: { he: 'לוח הצי החי', en: 'Fleet board' },
     // Task 47 ROOT CAUSE: the old yaw≈π placed the camera NORTH of the
     // target (inside/behind the north wall) where the room-bounds clamp
     // pressed it against the board — the view degenerated and the board was
