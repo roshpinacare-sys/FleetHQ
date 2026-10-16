@@ -151,7 +151,7 @@ function publishFleet(name: string, paths: string[]): string {
         for f in $(git status --porcelain | grep '^[UAD][UAD ]' | awk '{print $2}'); do
           # Task 7b fix (measured 17:24): checkout --theirs succeeds but leaves
           # the path UNMERGED in the index — rebase --continue then refuses.
-          # The old `||` ran git add only when checkout FAILED. Law: checkout
+          # The old '||' ran git add only when checkout FAILED. Law: checkout
           # resolves the worktree, git add resolves the INDEX. Both, always.
           git checkout --theirs -- "$f" 2>/dev/null || true
           git add -- "$f" 2>/dev/null || true
