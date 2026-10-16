@@ -44,29 +44,7 @@ const eslintConfig = [...nextCoreWebVitals, ...nextTypescript, {
     "no-useless-escape": "off",
   },
 }, {
-  // SOVEREIGNTY PROTOCOL §4 (zero-bug linting): legacy/vendored fleet trees
-  // must not compromise the office's deployment cycles. The sovereign modules
-  // (src/, mini-services/, vault/) stay fully linted; the trees below are the
-  // team's legacy console/domain library and vendored copies — data, not app.
-  ignores: [
-    "node_modules/**",
-    ".next/**",
-    "out/**",
-    "build/**",
-    "next-env.d.ts",
-    "examples/**",
-    "skills",
-    ".tmp-tools/**",
-    "mini-services/duckai/**",
-    "Console/**",
-    "Domain/**",
-    "fleethq/**",
-    "public/console/**",
-    ".vault-private-repo/**",
-    "download/**",
-    "upload/**",
-    ".shots/**",
-  ]
+  ignores: ["node_modules/**", ".next/**", "out/**", "build/**", "next-env.d.ts", "examples/**", "skills", "tmp/**", "download/**", "db/**", "t19b/**", "upload/**", "dist-office3d/**", "t24/agentcraft/**", ".tmp-tools/**", "mini-services/duckai/**", "mini-services/agent-hq/**", "Console/**", "Domain/**", "fleethq/**", "public/console/**", ".vault-private-repo/**", ".shots/**"]
 }];
 
 export default eslintConfig;

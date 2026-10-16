@@ -284,55 +284,6 @@ export function makeSignTexture(text: string, color: string, sub?: string): THRE
   return t;
 }
 
-// ─────────────── דוכן ההחלטות — מסך-חי-מוסבר (R53) ───────────────
-// הבעלים: "לא ברור למה משמש דוכן ההחלטות". התשובה נמדדת על-גבי הדוכן עצמו:
-// מה-הוא-משרת, מה-ההכרעה-האחרונה (מסנכרון החנות — אמת-בלבד), כמה-פתוחות.
-// אפס-המצאה: בלי-החלטות-המסך אומר-זאת-בכנות ומציג-את-הספירות.
-export function makeDecisionPodiumPlate(): {
-  tex: THREE.CanvasTexture;
-  set: (d: { question: string; status: string; createdAt: number | null } | null, open: number, answered: number) => void;
-  update: (now: number) => void;
-} {
-  let latest: { question: string; status: string; createdAt: number | null } | null = null;
-  let openCount = 0;
-  let answeredCount = 0;
-  // R54 — פלטה-קומפקטית עברית-בלבד (היתה 768×360 עם שאלת-האנגלית הגולמית
-  // מרחפת בחדר — נמדד). מה-נשאר: מצב-ההכרעה + גיל + ספירות. הפירוט — בפאנל.
-  const dyn = new DynTex(640, 200, (ctx, w, h) => {
-    ctx.fillStyle = 'rgba(14,11,8,0.92)'; ctx.fillRect(0, 0, w, h);
-    const accent = openCount > 0 ? '#e07b54' : '#5a4636';
-    // פס-עוגן בצד — במקום זוהר-מסך-ענק
-    ctx.fillStyle = accent; ctx.fillRect(0, 0, 8, h);
-    ctx.direction = 'rtl'; ctx.textBaseline = 'middle'; ctx.textAlign = 'right';
-    // כותרת-קטנה + נקודת-מצב
-    ctx.beginPath(); ctx.arc(w - 26, 34, 8, 0, 7); ctx.fillStyle = openCount > 0 ? '#e07b54' : '#4f6b57'; ctx.fill();
-    ctx.fillStyle = '#f2e5d8'; ctx.font = "700 34px 'Heebo','Assistant',system-ui,sans-serif";
-    ctx.fillText('דוכן ההחלטות', w - 48, 34);
-    // מצב-ההכרעה האחרונה — עברית בלבד, נמדד
-    if (latest) {
-      const isOpen = latest.status !== 'answered';
-      const mins = latest.createdAt ? Math.max(0, Math.round((Date.now() - latest.createdAt) / 60000)) : null;
-      const ago = mins == null ? '' : mins < 1 ? 'עכשיו' : mins < 60 ? ` · לפני ${mins} דק'` : ` · לפני ${Math.floor(mins / 60)} שע'`;
-      ctx.fillStyle = isOpen ? '#e8a583' : '#9dc38a';
-      ctx.font = "600 30px 'Heebo','Assistant',system-ui,sans-serif";
-      ctx.fillText(isOpen ? `הכרעה פתוחה — ממתינה להכרעה${ago}` : `האחרונה נפתרה${ago}`, w - 28, 92);
-    } else {
-      ctx.fillStyle = '#9b8a76'; ctx.font = "500 28px 'Heebo','Assistant',system-ui,sans-serif";
-      ctx.fillText('אין הכרעות שנמדדו עדיין', w - 28, 92);
-    }
-    // ספירות
-    ctx.textAlign = 'left'; ctx.fillStyle = '#c9b8a2'; ctx.font = "600 24px 'Heebo','Assistant',system-ui,sans-serif";
-    ctx.fillText(`פתוחות: ${openCount}  ·  נפתרו: ${answeredCount}`, 26, 158);
-  });
-  return {
-    tex: dyn.tex,
-    set: (d, open, answered) => {
-      latest = d; openCount = open; answeredCount = answered; dyn.markDirty();
-    },
-    update: (now) => dyn.update(now),
-  };
-}
-
 // ─────────────── מנהל מסכים דינמיים ───────────────
 
 type Painter = (ctx: CanvasRenderingContext2D, w: number, h: number) => void;
@@ -366,15 +317,11 @@ export class DynTex {
   }
 }
 
-/** מסך CRT של צג שולחן — עבודה-אמת בראש (מצב · פעילות · מטלה) + שורות-יומן */
+/** מסך CRT של צג שולחן — שורות לוג חיות בצבע הסוכן */
 export function makeMonitorScreen(agentName: string, agentColor: string): {
-  tex: THREE.CanvasTexture;
-  setLogs: (lines: { kind: string; text: string }[]) => void;
-  setWork: (w: { stateHe: string; stateCol: string; activity: string; task: string; taskStatusHe: string } | null) => void;
-  update: (now: number) => void;
+  tex: THREE.CanvasTexture; setLogs: (lines: { kind: string; text: string }[]) => void; update: (now: number) => void;
 } {
   const lines: { kind: string; text: string }[] = [];
-  let work: { stateHe: string; stateCol: string; activity: string; task: string; taskStatusHe: string } | null = null;
   const dyn = new DynTex(640, 400, (ctx, w, h) => {
     // רקע מסך
     ctx.fillStyle = '#0b0e12'; ctx.fillRect(0, 0, w, h);
@@ -387,33 +334,11 @@ export function makeMonitorScreen(agentName: string, agentColor: string): {
     ctx.font = "500 18px ui-monospace,monospace";
     ctx.textAlign = 'left';
     ctx.fillText('● LIVE', 16, 22);
-    // R58 — פס-העבודה האמיתית: מה הסוכן עושה עכשיו לפי המדידה האחרונה.
-    // אפס-המצאה: בלי מדידה — "המתנה למדידה", לעולם לא עבודה-מדומה.
-    ctx.direction = 'rtl'; ctx.textAlign = 'right';
-    if (work) {
-      ctx.fillStyle = 'rgba(255,255,255,0.045)'; ctx.fillRect(0, 44, w, 92);
-      ctx.fillStyle = work.stateCol;
-      ctx.beginPath(); ctx.arc(w - 26, 66, 7, 0, 7); ctx.fill();
-      ctx.font = "700 24px 'Heebo',system-ui,sans-serif";
-      ctx.fillText(work.stateHe, w - 42, 66);
-      ctx.fillStyle = 'rgba(226,224,218,0.92)'; ctx.font = "500 20px 'Heebo',system-ui,sans-serif";
-      const act = work.activity.length > 44 ? work.activity.slice(0, 43) + '…' : work.activity;
-      ctx.fillText(act || '—', w - 16, 98);
-      if (work.task) {
-        ctx.fillStyle = 'rgba(150,214,190,0.85)'; ctx.font = "500 19px 'Heebo',system-ui,sans-serif";
-        const t = work.task.length > 38 ? work.task.slice(0, 37) + '…' : work.task;
-        ctx.fillText(`מטלה: ${t} · ${work.taskStatusHe}`, w - 16, 126);
-      }
-    } else {
-      ctx.fillStyle = 'rgba(255,255,255,0.045)'; ctx.fillRect(0, 44, w, 92);
-      ctx.fillStyle = 'rgba(200,198,192,0.5)'; ctx.font = "500 20px 'Heebo',system-ui,sans-serif";
-      ctx.fillText('המתנה למדידה ראשונה…', w - 16, 90);
-    }
     // שורות
-    const visible = lines.slice(-9);
+    const visible = lines.slice(-13);
     ctx.textAlign = 'right'; ctx.direction = 'rtl';
     visible.forEach((l, i) => {
-      const y = 168 + i * 24;
+      const y = 74 + i * 24;
       const kindCol =
         l.kind === 'tool' ? '#54d8c0' :
         l.kind === 'result' ? '#9be37a' :
@@ -433,8 +358,6 @@ export function makeMonitorScreen(agentName: string, agentColor: string): {
     sg.addColorStop(0, 'rgba(255,255,255,0.05)'); sg.addColorStop(0.5, 'rgba(255,255,255,0)'); sg.addColorStop(1, 'rgba(255,255,255,0.03)');
     ctx.fillStyle = sg; ctx.fillRect(0, 0, w, h);
   });
-  const sameWork = (a: NonNullable<typeof work> | null, b: NonNullable<typeof work> | null) =>
-    a === b || (!!a && !!b && a.stateHe === b.stateHe && a.activity === b.activity && a.task === b.task && a.taskStatusHe === b.taskStatusHe);
   return {
     tex: dyn.tex,
     setLogs: (ls) => {
@@ -442,11 +365,6 @@ export function makeMonitorScreen(agentName: string, agentColor: string): {
       if (!changed) for (let i = 0; i < ls.length; i++) if (ls[i] !== lines[i]) { changed = true; break; }
       if (!changed) return;
       lines.length = 0; lines.push(...ls);
-      dyn.markDirty();
-    },
-    setWork: (nw) => {
-      if (sameWork(work, nw)) return;
-      work = nw;
       dyn.markDirty();
     },
     update: (now) => dyn.update(now),
@@ -459,28 +377,26 @@ export function makeNameplate(
 ): { tex: THREE.CanvasTexture; set: (activity: string, stateCol: string) => void; update: (now: number) => void } {
   let activity = '';
   let stateCol = '#71717a';
-  // R54 — שלט-שם-קומפקטי (היה 512×160 פאנל-שחור-כבד — נמדד כמסה מרחפת).
-  // גוף שקוף-ירוק-חלש, טיפוגרפיה צמודה: שם + תפקיד + שורת-מצב.
-  const dyn = new DynTex(480, 132, (ctx, w, h) => {
+  const dyn = new DynTex(512, 160, (ctx, w, h) => {
     ctx.clearRect(0, 0, w, h);
-    // גוף שלט — שקוף, קל-משקל
-    ctx.fillStyle = 'rgba(14,14,17,0.74)';
-    roundRect(ctx, 4, 4, w - 8, h - 8, 14); ctx.fill();
-    // פס צבע דק
+    // גוף שלט
+    ctx.fillStyle = 'rgba(12,12,14,0.88)';
+    roundRect(ctx, 6, 6, w - 12, h - 12, 18); ctx.fill();
+    // פס צבע
     ctx.fillStyle = color;
-    roundRect(ctx, 4, 4, 9, h - 8, 4.5); ctx.fill();
+    roundRect(ctx, 6, 6, 14, h - 12, 7); ctx.fill();
     ctx.direction = 'rtl'; ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
-    ctx.fillStyle = '#f4f2ee'; ctx.font = "700 36px 'Heebo',system-ui,sans-serif";
-    ctx.fillText(name, w - 74, 34);
-    ctx.fillStyle = color; ctx.font = "500 21px 'Heebo',system-ui,sans-serif";
-    ctx.fillText(title, w - 74, 68);
-    ctx.fillStyle = 'rgba(214,212,206,0.82)'; ctx.font = "400 20px 'Heebo',system-ui,sans-serif";
-    const act = activity.length > 34 ? activity.slice(0, 33) + '…' : activity;
-    ctx.fillText(act || '—', w - 74, 100);
+    ctx.fillStyle = '#f4f2ee'; ctx.font = "700 44px 'Heebo',system-ui,sans-serif";
+    ctx.fillText(name, w - 92, 44);
+    ctx.fillStyle = color; ctx.font = "500 27px 'Heebo',system-ui,sans-serif";
+    ctx.fillText(title, w - 92, 88);
+    ctx.fillStyle = 'rgba(210,208,202,0.85)'; ctx.font = "400 24px 'Heebo',system-ui,sans-serif";
+    const act = activity.length > 30 ? activity.slice(0, 29) + '…' : activity;
+    ctx.fillText(act || '—', w - 92, 128);
     // נקודת מצב
     ctx.fillStyle = stateCol;
-    ctx.shadowColor = stateCol; ctx.shadowBlur = 10;
-    ctx.beginPath(); ctx.arc(w - 36, 34, 8, 0, 7); ctx.fill();
+    ctx.shadowColor = stateCol; ctx.shadowBlur = 12;
+    ctx.beginPath(); ctx.arc(w - 44, 44, 10, 0, 7); ctx.fill();
     ctx.shadowBlur = 0;
   });
   return {
@@ -551,19 +467,11 @@ export function makeTaskWallTexture(): { tex: THREE.CanvasTexture; set: (tasks: 
         ctx.fillStyle = t.color || col;
         roundRect(ctx, cx, cy, 10, 108, 5); ctx.fill();
         ctx.direction = 'rtl'; ctx.textAlign = 'right';
-        ctx.fillStyle = '#26221c'; ctx.font = "600 21px 'Heebo',system-ui,sans-serif";
-        // R54 — הכתובת נשארת-בתוך-הכרטיס (נמדד: גלישה-מחוץ-לכרטיס בכרטיסים
-        // ארוכים) — חיתוך-מדידה לפי-רוחב-אמת + אליפסיס
-        const maxW = cwid - 40;
-        let tt = t.title;
-        while (tt.length > 6 && ctx.measureText(tt).width > maxW) tt = tt.slice(0, -2);
-        if (tt !== t.title) tt = tt.slice(0, -1) + '…';
+        ctx.fillStyle = '#26221c'; ctx.font = "600 25px 'Heebo',system-ui,sans-serif";
+        const tt = t.title.length > 26 ? t.title.slice(0, 25) + '…' : t.title;
         ctx.fillText(tt, cx + cwid - 22, cy + 34);
-        ctx.fillStyle = '#6b6459'; ctx.font = "500 20px 'Heebo',system-ui,sans-serif";
-        let asn = t.assignee || '';
-        while (asn.length > 4 && ctx.measureText(asn).width > maxW) asn = asn.slice(0, -2);
-        if (asn !== (t.assignee || '')) asn = asn.slice(0, -1) + '…';
-        ctx.fillText(asn, cx + cwid - 22, cy + 74);
+        ctx.fillStyle = '#6b6459'; ctx.font = "500 21px 'Heebo',system-ui,sans-serif";
+        ctx.fillText(t.assignee || '', cx + cwid - 22, cy + 74);
       });
     });
   });

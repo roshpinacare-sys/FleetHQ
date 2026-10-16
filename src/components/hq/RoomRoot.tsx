@@ -11,6 +11,9 @@
 import { useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import { startTruthBridge } from '@/lib/hq/truth-bridge';
+import { startBroadcastBridge } from '@/lib/hq/broadcast';
+import { startDecisionsBridge, useDecisions } from '@/lib/hq/decisions';
+import { useHq } from '@/lib/hq/store';
 
 const Room3D = dynamic(() => import('@/components/hq/Room3D'), {
   ssr: false,
@@ -26,8 +29,16 @@ const Room3D = dynamic(() => import('@/components/hq/Room3D'), {
 
 export function RoomRoot() {
   useEffect(() => {
-    const stop = startTruthBridge(45_000);
-    return stop;
+    const stopTruth = startTruthBridge(45_000);
+    // גשר-השידור (T20) — המשמרת הקנונית חיה בענן; החדר מצטרף אליה באמצעה
+    const stopBroadcast = startBroadcastBridge(60_000);
+    // גשר-פנקס-ההכרעות (T22) — הדוכן חי מהמדידה בענן
+    const stopDecisions = startDecisionsBridge(120_000);
+    // חוק-ההתכנסות: סדר-עבודה פתוח P0 → הצוות מתכנס לדוכן (אמת מניעה, לא אנימציה)
+    const unsub = useDecisions.subscribe((s) => {
+      useHq.getState().syncAssembly(s.loaded && s.p0Count > 0);
+    });
+    return () => { stopTruth(); stopBroadcast(); stopDecisions(); unsub(); };
   }, []);
   return (
     <div className="relative h-full w-full">

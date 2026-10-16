@@ -85,7 +85,7 @@ const ROSTER_NAME_TO_REF = (() => {
     if (j && typeof j.refs === 'object') for (const [r, n] of Object.entries(j.refs)) ingest(r, n);
     if (j && typeof j.names === 'object') for (const [n, r] of Object.entries(j.names)) ingest(r, n);
     if (j && typeof j === 'object') for (const [k, v] of Object.entries(j)) {
-      if (typeof k === 'string' && typeof v === 'string') (k.startsWith('acct-') ? ingest(k, v) : ingest(v, k));
+      if (typeof k === 'string' && typeof v === 'string') { if (k.startsWith('acct-')) ingest(k, v); else ingest(v, k); }
     }
     return m;
   } catch { return new Map(); }

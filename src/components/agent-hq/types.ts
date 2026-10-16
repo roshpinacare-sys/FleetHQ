@@ -111,14 +111,7 @@ export interface BookView {
 }
 
 export interface ForemanStatus {
-  /** 'live' = the real foreman streams over the socket (חי).
-   *  'mirror' = the room renders the foreman's REAL journal snapshot
-   *  (office-state-mirror.json) frozen at its savedAt — measured reality,
-   *  never synthetic (מראה — מציאות נמדדה).
-   *  'static' = exec-14-3d static bundle — public digest feed, zero backend
-   *  (מדיג'סט פומבי; כל מה שלא נמדד מוצג '—' — כנות).
-   *  'sim' = explicit demo mode only — DEMO watermark is mandatory (חוק-הכנות). */
-  backend: 'live' | 'sim' | 'mirror' | 'static';
+  backend: 'live' | 'sim' | 'static' | 'mirror';
   llmProvider: string;
   message: { he: string; en: string };
   startedAt: number;
@@ -150,10 +143,6 @@ export interface GitPulse {
   /** The truthful per-repo sync/health inventory (foreman gitfleet wire, read-only).
    *  Optional for backward compatibility — absent means "not known yet", never green. */
   fleet?: RepoFleetView[];
-  /** R57 — ספרי-הצי האמיתיים מ-Domain/agents/office-live.json (books.list).
-   *  זהו מקור-האמת של קיר-הגיט בחדר: טריות נמדדת פר-ספר (ageHours/fresh/empty).
-   *  חסר = לא נמדד — הקיר יראה ריקות-כנה, לעולם לא 0/ירוק מומצא. */
-  books?: { name: string; ageHours: number | null; fresh: boolean; empty: boolean }[];
 }
 
 export type RepoSyncState =
@@ -179,15 +168,11 @@ export interface RepoFleetView {
   lastFetchAt: number | null; // epoch ms — .git/FETCH_HEAD mtime when present
   lastSyncError: string | null; // sanitized — never a URL, never a secret
   syncState: RepoSyncState;
-  /** exec-14-3d — measured CI pulse of the repo's last run (office digest wire
-   *  carries it; the foreman wire may omit it). Optional — absent means
-   *  "not measured", the wall renders '—', never a fake state. */
-  lastRunStatus?: string | null;
+  /** [T-merge] CI-קיר — סיכום-הריצה האחרונה וקצב-הקומיטים; null/undefined = לא-נמדד (לעולם לא 0 מזויף) */
   lastRunConclusion?: string | null;
-  /** Measured 7-day commit count (capped feeds render "100+"). null = not measured. */
+  lastRunStatus?: string | null;
   commits7d?: number | null;
-  /** True when the 7-day count hit the wire's measurement cap ("100+" = honest cap, not a guess). */
-  commits7dCapped?: boolean | null;
+  commits7dCapped?: boolean;
 }
 
 export interface SearchCapabilityView {

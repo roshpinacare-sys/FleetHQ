@@ -63,11 +63,7 @@ export const LEAD_WALL_SPOT: [number, number] = [860, 180];
 
 export const FLAME: [number, number] = [800, 545];
 export const RECEPTION: { x: number; y: number; face: number } = { x: 800, y: 882, face: 0 }; // פונה דרום (לכניסה)
-/** R57 (נמדד-חי): הדוכן ישב על (310,430) — והעמוד-המבני ב-(-5.6,-1.9) עמד
- *  בתוך הבימה עצמה (מרחק 1.15מ' מהמרכז, רדיוס-בימה 1.7מ') — עמוד חודר
- *  רהיט. המקום החדש (255,505): מרחק 2.3מ' משני העמודים המערביים —
- *  בימה נקייה, והדוכן נשאר במערב מול הצוות. */
-export const PODIUM: { x: number; y: number; face: number } = { x: 255, y: 505, face: Math.PI / 2 }; // פונה מזרח (אל תוך המשרד)
+export const PODIUM: { x: number; y: number; face: number } = { x: 310, y: 430, face: Math.PI / 2 }; // פונה מזרח (אל תוך המשרד)
 export const LIBRARY_TABLE: [number, number] = [1170, 275];
 export const COFFEE: { x: number; y: number } = { x: 1472, y: 780 };
 
@@ -149,22 +145,20 @@ export const CAMERA_PRESETS: CameraPreset[] = [
   },
   {
     id: 'git', label: { he: 'קיר הגיט', en: 'Git wall' },
-    // R57 (measured live): from the SE the sight-line crossed the structural
-    // pillar (−5.6,−1.9) and the wall showed behind it half-blocked. The
-    // camera now stands in the NW corner corridor, due-east of the wall —
-    // the whole board in frame, zero structures crossing.
     target: [gitWall3[0], 1.5, gitWall3[1]],
-    yaw: -0.5, pitch: 0.14, dist: 5.4, minDist: 2.4, maxDist: 8,
+    yaw: -0.2, pitch: 0.12, dist: 4.8, minDist: 2.4, maxDist: 8,
   },
   {
     id: 'podium', label: { he: 'דוכן ההחלטות', en: 'Decisions' },
-    // R54 (measured live): the framing must show the lectern's FRONT (glow
-    // strip + mic) — the front normal is rotated 0.42π (SW), so the camera
-    // stands ESE along it. R57: after the podium moved off the structural
-    // pillar, the same law re-measured — target mid-lectern, ESE, slightly
-    // elevated: lectern + decision ring + wall sign in one clean frame.
-    target: [podium3[0] + 0.42, 1.2, podium3[1] - 0.2],
-    yaw: Math.PI * 0.3, pitch: 0.2, dist: 4.0, minDist: 1.9, maxDist: 7,
+    // Task 47-fix (measured live, twice): yaw π/2 put the camera due-EAST of
+    // the group CENTER — the lectern (offset +0.42/−0.3 inside the group,
+    // front normal rotated 0.42π) was framed as a dark back-slab with the
+    // decision glow strip facing away. The preset now targets the LECTERN
+    // itself at its top (1.12m), from ENE along the lectern's actual front
+    // normal (yaw = its own rotation), slightly elevated so the glow strip,
+    // the mic and the open-decision ring all read in one frame.
+    target: [podium3[0] + 0.42, 1.12, podium3[1] - 0.3],
+    yaw: Math.PI * 0.42, pitch: 0.19, dist: 3.0, minDist: 1.8, maxDist: 7,
   },
   {
     id: 'library', label: { he: 'הספרייה', en: 'Library' },
@@ -210,17 +204,12 @@ export const PENDANTS: [number, number, number][] = (() => {
   return out;
 })();
 
-/** כתוביות ניאון — [x, גובה, z, רוחב, טקסט, צבע, rotY].
- *  R57 תיקון-שורש נמדד: הפאטרן הישן [...to3(x,y), h] שם את z3 בסלוט-הגובה —
- *  שני שלטים נקברו מתחת-לרצפה, אחד רחף מעל-הגג ואחד בגובה-ברך. עתה צירים
- *  מפורשים: מרכז-x, גובה-אמת, ולכל שלט-קיר מרחק 5-2 ס"מ מפנים-הקיר.
- *  שלט-הדוכן תלוי-מהתקרה מעל-הבימה (hang:true — כבלים ב-Neons), כי קיר-המערב
- *  שם חלון-תריס (z∈[-1.65,0.95]) — אין קיר-מלא לתלייה. */
-export const NEON_SIGNS: { pos: [number, number, number]; w: number; text: string; sub?: string; color: string; rotY: number; hang?: boolean }[] = [
-  { pos: [0, 3.02, -5.99], w: 3.4, text: 'מפקדת הצי', sub: 'FLEET HQ', color: '#ffb054', rotY: 0 },
-  { pos: [0, 2.75, 5.95], w: 2.6, text: 'FLEET HQ', sub: 'משרד ריבוני · סוכני AI', color: '#54d8c0', rotY: Math.PI },
-  { pos: [(PODIUM.x - 800) * 0.0125, 2.6, (PODIUM.y - 500) * 0.0125], w: 1.9, text: 'דוכן ההחלטות', color: '#e07b54', rotY: Math.PI / 2, hang: true },
-  { pos: [9.76 - 0.06, 2.6, 0.75], w: 1.7, text: 'הספרייה', color: '#a78bfa', rotY: -Math.PI / 2 },
+/** כתוביות ניאון — [x, z, גובה, רוחב, טקסט, צבע, rotY] */
+export const NEON_SIGNS: { pos: [number, number, number]; w: number; text: string; sub?: string; color: string; rotY: number }[] = [
+  { pos: [...to3(800, 18), 2.9], w: 3.4, text: 'מפקדת הצי', sub: 'FLEET HQ', color: '#ffb054', rotY: 0 },
+  { pos: [...to3(800, 984), 2.75], w: 2.6, text: 'FLEET HQ', sub: 'משרד ריבוני · סוכני AI', color: '#54d8c0', rotY: Math.PI },
+  { pos: [...to3(310, 320), 2.5], w: 1.9, text: 'דוכן ההחלטות', color: '#e07b54', rotY: Math.PI / 2 },
+  { pos: [...to3(1450, 560), 2.6], w: 1.7, text: 'הספרייה', color: '#a78bfa', rotY: -Math.PI / 2 },
 ];
 
 // ─────────────── התנגשויות (מלבנים ביחידות תוכנית) ───────────────

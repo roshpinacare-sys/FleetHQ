@@ -12,7 +12,7 @@
 import {
   PLAN_W, PLAN_H, SCALE,
   DESKS, LEAD_TABLE, TASK_WALL, PODIUM, LIBRARY_TABLE, FLAME, COFFEE,
-  resolveCircle, ENTRANCE,
+  resolveCircle,
 } from './contract';
 import type { AgentState, Station } from './protocol';
 
@@ -103,6 +103,40 @@ export function agentVisualFresh(state: AgentState, fresh: boolean): AgentVisual
 /** חלון-הטריות של החדר — זהה לחלון של פס-המדדים ב-AgentHQ (75 שניות). */
 export const ROOM_STALE_MS = 75_000;
 
+// ─────────────── חוק-הפאזות — זהה למנוע-העולם הקנוני ───────────────
+/**
+ * חוק-הפאזות של המשמרת — לפי שעת ירושלים, זהה במדויק ל-office/engine.mjs
+ * (המנוע המשותף של השידור ב-Domain). שינוי-חוק כאן מחייב עדכון שם — ולהיפך.
+ * הצטרפות לשידור = הצוות נמצא בעמדתו לפי הפאזה הנוכחית, לא נולד בדלת.
+ */
+export type PhaseKind = 'open' | 'day' | 'lunch' | 'evening' | 'night';
+export function phaseOfJerusalem(tMs: number): { kind: PhaseKind; he: string } {
+  const { h } = jerusalemHM(tMs);
+  if (h >= 7 && h < 9) return { kind: 'open', he: 'פתיחת משמרת' };
+  if (h >= 9 && h < 12) return { kind: 'day', he: 'משמרת בוקר' };
+  if (h >= 12 && h < 13) return { kind: 'lunch', he: 'הפסקת צהריים' };
+  if (h >= 13 && h < 18) return { kind: 'day', he: 'משמרת צהריים' };
+  if (h >= 18 && h < 22) return { kind: 'evening', he: 'סיכומי ערב' };
+  return { kind: 'night', he: 'משמרת לילה' };
+}
+
+let hCacheKey = -1;
+let hCache = { h: 10, m: 0 };
+function jerusalemHM(tMs: number) {
+  const key = Math.floor(tMs / 60000);
+  if (key !== hCacheKey) {
+    hCacheKey = key;
+    try {
+      const s = new Intl.DateTimeFormat('en-GB', {
+        timeZone: 'Asia/Jerusalem', hour: '2-digit', minute: '2-digit', hour12: false,
+      }).format(new Date(tMs));
+      const [hh, mm] = s.split(':').map((v) => parseInt(v, 10));
+      hCache = { h: hh % 24, m: mm };
+    } catch { hCache = { h: 10, m: 0 }; }
+  }
+  return hCache;
+}
+
 // ─────────────── מוח סוכן ───────────────
 /**
  * מתורגם מ-AgentView של הפורמן לתנועה במרחב.
@@ -140,17 +174,33 @@ export class AgentBrain {
   constructor(id: string, desk: { x: number; y: number; face: number; seat: [number, number] }) {
     this.id = id;
     this.desk = desk;
-    // Task 53 — כניסה-חיה (השוואה מול office3d/v2 שם החדר "חי" מהשנייה-הראשונה):
-    // הצוות נכנס מהדלת-הדרומית והולך לתחנתו בכל-טעינה. פיזור דטרמיניסטי
-    // לפי-ה-id (לא מקהל-מסונכרנת, אותה-כניסה בכל-טעינה), התחלה מדורגת.
-    // זו ניווט, לא עבודה — המצב-האמיתי מוצג בשלט מהשנייה-הראשונה (חוק-הכנות).
-    const s = spreadOf(id);
-    this.x = ENTRANCE[0] + (s - 0.5) * 140;
-    this.y = ENTRANCE[1] - 10 - s * 26;
-    this.yaw = Math.PI;      // פנימה (צפונה)
-    this.yawTarget = Math.PI;
-    this.arrived = false;
-    this.waitT = 0.35 + s * 3.1; // כניסה מדורגת — אחד-אחד, לא נהר
+    // חוק-ההצטרפות לשידור (T20): המשרד הוא שידור של משמרת מתמשכת —
+    // הצופה מצטרף באמצע משמרת והצוות כבר בעמדתו. אין לידה-בדלת ואין מצעד-כניסה
+    // בפתיחת דף. המיקום הראשוני — מושב השולחן שלי; הסנכרון הראשון ממקם לפי
+    // הפאזה האמיתית (joinCrewAtPosts) עוד לפני הפריים הראשון.
+    this.x = desk.seat[0];
+    this.y = desk.seat[1];
+    this.yaw = desk.face;
+    this.yawTarget = desk.face;
+    this.arrived = true;
+    this.waitT = 0;
+  }
+
+  /** הצטרפות לשידור — הצמדה לעמדת-היעד הנוכחית בלי תנועה. נקרא פעם-אחת
+   *  בסנכרון הראשון אחרי שהמצב האמיתי ידוע: הסוכן כבר בעמדתו מהשנייה-הראשונה,
+   *  כמו שידור חי שמצטרפים אליו באמצע. */
+  joinAt() {
+    const tgt = this.target;
+    if (tgt) {
+      this.x = tgt.x;
+      this.y = tgt.y;
+      if (tgt.face !== undefined) { this.yaw = tgt.face; this.yawTarget = tgt.face; }
+    }
+    this.arrived = true;
+    this.waitT = 0;
+    this.walkAmt = 0;
+    this.lastD = 0;
+    this.stuckT = 0;
   }
 
   /** תרגום AgentView → יעד. נקרא מהצד שסונכרן עם הסוקט */
@@ -178,10 +228,18 @@ export class AgentBrain {
       const sy = TASK_WALL.cy + 140 + (this.id === 'aluf' ? 0 : s * 50);
       this.setTarget({ x: sx, y: sy, face: Math.PI, kind: 'stand' });
     } else if (station === 'podium') {
-      // R57 — אחרי-הזזת-הבימה (חוץ-מהעמוד): עמדת-העמידה מזרחית-לבימה
-      // מחוץ-לרדיוס (1.7מ'), לא עליה (היתה +50..80 יח' — בתוך-הבימה)
-      const s = spreadOf(this.id);
-      this.setTarget({ x: PODIUM.x + 150 + s * 40, y: PODIUM.y - 40 + s * 60, face: -Math.PI / 2, kind: 'stand' });
+      // התכנסות-הדוכן (T22, הרכב-נמדד): ראש-המטה מציג מאחורי הדוכן — פנים
+      // אל-תוך-האולם ואל-המצלמה, כמו נואם על בימה; השאר — קהל דרומית-מזרחית
+      // לבימה, פנים אל הדוכן, בלי לחסום את מסלול-המצלמה (נמדד: נואם שעומד
+      // בין המצלמה לדוכן חוסם את כל-הפריים מאחורי-גבו).
+      if (this.id === 'aluf') {
+        this.setTarget({ x: PODIUM.x - 62, y: PODIUM.y + 14, face: 1.97, kind: 'stand' });
+      } else {
+        const s = spreadOf(this.id);
+        const ax = PODIUM.x + 26 + s * 66;
+        const ay = PODIUM.y + 92 + s * 28;
+        this.setTarget({ x: ax, y: ay, face: Math.atan2(PODIUM.x - ax, PODIUM.y - ay), kind: 'stand' });
+      }
     } else if (station === 'library') {
       const s = spreadOf(this.id);
       this.setTarget({ x: LIBRARY_TABLE[0] - 50 + s * 100, y: LIBRARY_TABLE[1] + 45 + s * 30, face: -0.35, kind: 'stand' });
@@ -286,6 +344,17 @@ export class AgentBrain {
     if (dyaw > Math.PI) dyaw -= Math.PI * 2;
     if (dyaw < -Math.PI) dyaw += Math.PI * 2;
     this.yaw += dyaw * Math.min(1, dtAnim * 6);
+  }
+}
+
+/** הצטרפות-מלאה של הצוות לשידור — סנכרון מצב ואז הצמדה לעמדה. נקרא מהחנות
+ *  בסנכרון-האמת הראשון בלבד (broadcastJoined) כדי שהצטרפות לא תחזור על עצמה. */
+export function joinCrewAtPosts(brains: Map<string, AgentBrain>, agents: { id: string; state: AgentState; station: Station; activity: string }[]) {
+  for (const a of agents) {
+    const b = brains.get(a.id);
+    if (!b) continue;
+    b.syncState(a.state, a.station, a.activity);
+    b.joinAt();
   }
 }
 
