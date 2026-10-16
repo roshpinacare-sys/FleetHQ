@@ -1,6 +1,6 @@
 {
  "schema": "fleet.fresh-oracle/1",
- "at": "2026-10-16T15:22:22.583Z",
+ "at": "2026-10-16T15:39:59.500Z",
  "law": "FRESH only if sha256(live bytes) == sha256(committed deploy-ref bytes) AND no ops doc MISSING; DRIFT=RED (200-with-different-bytes); UNREACHABLE=UNKNOWN (network, retried once, reason kept); ops-doc age rows are honest amber (MISSING alone flips exit) — never faked green",
  "results": [
   {
@@ -47,39 +47,39 @@
    "liveUrl": "https://roshpinacare-sys.github.io/Domain/",
    "source": "Domain@main:index.html",
    "liveStatus": 200,
-   "committedStatus": 200,
+   "committedStatus": 404,
    "liveError": null,
    "committedError": null,
    "liveSha16": "b60efef40c6a3605",
-   "committedSha16": "b60efef40c6a3605",
+   "committedSha16": null,
    "liveBytes": 23419,
-   "verdict": "MATCH"
+   "verdict": "UNREACHABLE"
   },
   {
    "name": "Domain worlds room",
    "liveUrl": "https://roshpinacare-sys.github.io/Domain/office3d/",
    "source": "Domain@main:office3d/index.html",
    "liveStatus": 200,
-   "committedStatus": 200,
+   "committedStatus": 404,
    "liveError": null,
    "committedError": null,
    "liveSha16": "8de74d62e69920c1",
-   "committedSha16": "8de74d62e69920c1",
+   "committedSha16": null,
    "liveBytes": 919,
-   "verdict": "MATCH"
+   "verdict": "UNREACHABLE"
   },
   {
    "name": "Domain product catalog",
    "liveUrl": "https://roshpinacare-sys.github.io/Domain/marketing/",
    "source": "Domain@main:marketing/index.html",
    "liveStatus": 200,
-   "committedStatus": 200,
+   "committedStatus": 404,
    "liveError": null,
    "committedError": null,
    "liveSha16": "c55cb843e48778d6",
-   "committedSha16": "c55cb843e48778d6",
+   "committedSha16": null,
    "liveBytes": 24756,
-   "verdict": "MATCH"
+   "verdict": "UNREACHABLE"
   },
   {
    "name": "Domain product data",
@@ -104,13 +104,13 @@
  ],
  "summary": {
   "checked": 7,
-  "match": 7,
+  "match": 4,
   "drift": 0,
   "missing": 0,
-  "unreachable": 0,
+  "unreachable": 3,
   "opsDocsMissing": 0,
   "opsDocsStale": 0,
-  "verdict": "FRESH"
+  "verdict": "UNKNOWN-NETWORK"
  },
  "method": "https GET live URL + raw.githubusercontent deploy ref → sha256-16 byte equality"
 }
