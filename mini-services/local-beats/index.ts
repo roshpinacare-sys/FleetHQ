@@ -475,10 +475,16 @@ function tick() {
   if (mi === 31) { const k = keyOf(d, "h"); if (!fired("giants", k)) { mark("giants", k); run("giants", CONSOLE, "dex/giants.mjs", []); } }
   if ((ho === 3 || ho === 15) && mi === 13) { const k = keyOf(d, "h"); if (!fired("grid-pulse", k)) { mark("grid-pulse", k); run("grid-pulse", CONSOLE, "agents/grid-pulse.mjs", []); } }
   if (mi === 17 && ho % 2 === 0) { const k = keyOf(d, "h"); if (!fired("office-ci-lite", k)) { mark("office-ci-lite", k); officeCiLite(); } }
-  // office-heartbeat — hourly at :41 (3-b: was every-2h; the owner measured a
-  // 3h-old capturedAt in the aging band. A 30s read-only socket capture per
-  // hour is cheap; a missed slot now ages the state ≤ ~65min, not ≤ ~125min).
-  if (mi === 41) { const k = keyOf(d, "h"); if (!fired("office-heartbeat", k)) { mark("office-heartbeat", k); officeHeartbeat(); } }
+  // office-heartbeat — every 15min at :08/:23/:38/:53 (Task 6, measured
+  // 2026-10-16: the GitHub 15-min Actions lane (cron 9,24,39,54) produced ZERO
+  // scheduled runs 06:02→12:13 while the workflow was marked active — the
+  // fleet-documented schedule-skip struck for 6h+ straight, so the 3-b hourly
+  // local beat aged the public room up to ~80min. A 30s read-only socket
+  // capture 4x/hour keeps the room ≤ ~20min fresh with zero cloud dependency —
+  // the same Actions-minutes-wall→local-successor law as the 27-b arteries.
+  // Per-slot dedup key (the hourly key would swallow three of four slots;
+  // offset from flush :09/:24/:39/:54 to avoid push stampede).
+  if (mi % 15 === 8) { const k = `${keyOf(d, "h")}:${mi}`; if (!fired("office-heartbeat", k)) { mark("office-heartbeat", k); officeHeartbeat(); } }
   // ---- Sandbox arteries (27-b): same cadences as their Sandbox Actions crons
   // (grid */30, tick hourly, wallet hourly :40, fleet 2h:25) — the veins that
   // died on the private-repo Actions minutes wall, now local (see runSandbox).
@@ -520,6 +526,6 @@ Bun.serve({
   }),
 });
 
-log("local-beats scheduler UP (flush-durable build 2026-10-13, 3-b office-hourly, 27-b arteries+retro, 27-d dex-family :11/:41 + giants :31) — beats: money-watch 2h:33, grid-pulse 03:13/15:13, dex-mirror h:52, dex-family h:11/h:41, giants h:31, office-ci-lite 2h:17, office-heartbeat h:41, flush :09/:24/:39/:54, sbx-arteries grid :05/:35 · tick :21 · wallet :40 · fleet 2h:25, office-retro Thu 07:43 + 26h-catchup, boot catch-up dex-mirror");
+log("local-beats scheduler UP (flush-durable build 2026-10-13, 3-b office-hourly, 27-b arteries+retro, 27-d dex-family :11/:41 + giants :31) — beats: money-watch 2h:33, grid-pulse 03:13/15:13, dex-mirror h:52, dex-family h:11/h:41, giants h:31, office-ci-lite 2h:17, office-heartbeat 15m:08/23/38/53, flush :09/:24/:39/:54, sbx-arteries grid :05/:35 · tick :21 · wallet :40 · fleet 2h:25, office-retro Thu 07:43 + 26h-catchup, boot catch-up dex-mirror");
 setInterval(tick, 60_000);
 tick();
