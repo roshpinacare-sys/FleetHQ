@@ -1,0 +1,29 @@
+{
+  "at": "2026-10-16T14:35:03.446Z",
+  "actor": "post-batcher",
+  "kind": "ledger.post.draft",
+  "schema": "broadcast-pkg/v1",
+  "book": {
+    "id": "econ-book",
+    "file": "agents/econ-book.json",
+    "title": "Econ Book — measured economics of the fleet"
+  },
+  "refs": {
+    "task": "t6",
+    "book": "agents/econ-book.json",
+    "lineage_root": "1d3224ecccc3edad1c158c0e306b6db023745c863a52931ec31b738db09e8506"
+  },
+  "amounts": {
+    "USDS": 0
+  },
+  "body_compact": "{\n \"at\": \"2026-10-16T14:26:54.634Z\",\n \"ok\": true,\n \"verdict\": \"internal settlements measured from real events — every tx carries evidence, zero synthetic\",\n \"engine\": \"econ-engine/2\",\n \"units\": \"mWU (1 WU = 1000 mWU)\",\n \"sources\": \"journal, Domain-git(all), mesh, FleetHQ-git(all), guard, office-events, watchdog, host-mem, fresh-oracle, self-check, pacemaker, health-chain, office-ci, gateway-telemetry, books-lineage, office-3d, runtime-supervisor\",\n \"day24\": {\n  \"transactions\": 4,\n  \"mwu\": 2000\n },\n \"totals\": {\n  \"tx\": 4,\n  \"mwu\": 2000\n },\n \"venues\": {\n  \"robot-labor settlement\": 4\n },\n \"participants\": 3,\n \"top_workers\": [\n  {\n   \"who\": \"robot:office-worldbeat\",\n   \"mwu\": 1000\n  },\n  {\n   \"who\": \"robot:network-census\",\n   \"mwu\": 500\n  },\n  {\n   \"who\": \"robot:office-memory\",\n   \"mwu\": 500\n  }\n ],\n \"honesty\": \"no network, no keys, no invented numbers — evidence refs point at real journal/git/mesh records\"\n}",
+  "chars": {
+    "orig": 917,
+    "compact": 917,
+    "ratio": 1
+  },
+  "signed": false,
+  "broadcast": false,
+  "status": "BROADCAST-READY",
+  "note": "staged only — dispatch requires the dryrun-sign gate and explicit owner release; no keys were touched by the batcher"
+}
