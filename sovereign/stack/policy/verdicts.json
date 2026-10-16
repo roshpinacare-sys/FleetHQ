@@ -1,21 +1,41 @@
 {
   "protocol": "SAOS-POLICY-GATE/1",
-  "generatedAt": "2026-10-16T08:41:16.512Z",
-  "runUrl": "https://github.com/roshpinacare-sys/FleetHQ/actions/runs/38875329593",
+  "generatedAt": "2026-10-16T09:54:04.904Z",
+  "runUrl": "https://github.com/roshpinacare-sys/FleetHQ/actions/runs/38883602493",
   "stasis": {
     "active": false,
-    "stagedLanes": [],
-    "readErr": "agents/STASIS.json -> 404"
+    "stagedLanes": [
+      "grid",
+      "claims",
+      "dex-batch-settle",
+      "powerup",
+      "delegation",
+      "connect",
+      "general",
+      "dex-core",
+      "arb-mesh",
+      "dex-activation"
+    ],
+    "readErr": null
   },
   "xc": {
     "verdicts": [],
-    "stats": null,
-    "err": "dex/xc-intents.json -> 404"
+    "stats": {
+      "bookIntents": 1,
+      "validated24h": 0,
+      "protocol": "SAOS-DEX-XC/1"
+    },
+    "err": null
   },
   "state": {
     "verdicts": [],
-    "err": "dex/state.json -> 404",
-    "aggregate": null
+    "err": null,
+    "aggregate": {
+      "beatNotionalUsd": 0,
+      "dayNotionalUsd": 0,
+      "verdict": "PASS",
+      "reasons": []
+    }
   },
   "summary": {
     "xc": {},
