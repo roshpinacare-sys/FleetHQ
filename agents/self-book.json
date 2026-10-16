@@ -1,7 +1,7 @@
 {
  "protocol": "SAOS-SELF-BOOK/1",
- "at": "2026-10-16T00:22:02.216Z",
- "prevAt": "2026-10-15T23:01:44.437Z",
+ "at": "2026-10-16T00:26:12.538Z",
+ "prevAt": "2026-10-16T00:22:02.216Z",
  "law": "הרשת מודעת לעצמה: מלאי-מלא + חדשנות + יכולות, כל 30 דק', git-only",
  "totals": {
   "repos": 39,
@@ -13,27 +13,25 @@
  "newSincePrev": {
   "newRepos": [],
   "newWorkflows": [],
-  "rootChangedCount": 3,
+  "rootChangedCount": 1,
   "rootChanged": [
-   "Domain",
-   "Console",
-   "sovereign-lighthouse"
+   "saos-runtime"
   ]
  },
  "aliveLastHour": [
+  "saos-runtime",
   "Domain",
   "Autonomy",
+  "FleetHQ",
+  "Sandbox",
   "Console",
   "saos-dex",
   "ops-intake",
-  "FleetHQ",
   "Pulse",
   "giant",
-  "saos-runtime",
   "steem",
   "Project-files",
   "sovereign-lighthouse",
-  "Sandbox",
   "ops-forge",
   "Zip",
   "GridWatch"
@@ -394,103 +392,128 @@
    ]
   },
   {
-   "machine": "adsmarket-panel",
+   "machine": "army-ladder",
    "repos": [
-    "Domain"
+    "saos-runtime"
    ]
   },
   {
-   "machine": "anchor-execute",
+   "machine": "blurt-revival",
    "repos": [
-    "Domain"
+    "saos-runtime"
    ]
   },
   {
-   "machine": "arb-mesh",
+   "machine": "custody-recover",
    "repos": [
-    "Domain"
+    "saos-runtime"
    ]
   },
   {
-   "machine": "artery-integrity-twin",
+   "machine": "escrow-payroll",
    "repos": [
-    "Domain"
+    "saos-runtime"
    ]
   },
   {
-   "machine": "audience-analyst",
+   "machine": "fee-engine",
    "repos": [
-    "Domain"
+    "saos-runtime"
    ]
   },
   {
-   "machine": "blurt-connect",
+   "machine": "fleet-rotation-a",
    "repos": [
-    "Domain"
+    "saos-runtime"
    ]
   },
   {
-   "machine": "book-audit",
+   "machine": "gen2-rotation",
    "repos": [
-    "Domain"
+    "saos-runtime"
    ]
   },
   {
-   "machine": "bootstrap-pages",
+   "machine": "grid-watchdog",
    "repos": [
-    "Domain"
+    "saos-runtime"
    ]
   },
   {
-   "machine": "cloud-heart",
+   "machine": "operator-triage",
    "repos": [
-    "Domain"
+    "saos-runtime"
    ]
   },
   {
-   "machine": "cloud-pulse",
+   "machine": "owner-key-adopt",
    "repos": [
-    "Domain"
+    "saos-runtime"
    ]
   },
   {
-   "machine": "cognition-beat",
+   "machine": "self-memory",
    "repos": [
-    "Domain"
+    "saos-runtime"
    ]
   },
   {
-   "machine": "content-campaign",
+   "machine": "sovereign-evolution",
    "repos": [
-    "Domain"
+    "saos-runtime"
    ]
   },
   {
-   "machine": "content-gate",
+   "machine": "sovereign-runtime",
    "repos": [
-    "Domain"
+    "saos-runtime"
    ]
   },
   {
-   "machine": "content-reviewer",
+   "machine": "system-map",
    "repos": [
-    "Domain"
+    "saos-runtime"
    ]
   },
   {
-   "machine": "content-truth-wave",
+   "machine": "treasury-ladder",
    "repos": [
-    "Domain"
+    "saos-runtime"
    ]
   }
  ],
  "repos": [
   {
+   "name": "saos-runtime",
+   "private": false,
+   "description": "SAOS sovereign runtime host — Actions runner heartbeat; clones the private engine tree at runtime (R244). No keys, no se",
+   "createdAt": "2026-10-07T16:44:12Z",
+   "pushedAt": "2026-10-16T00:25:52Z",
+   "workflows": [
+    "army-ladder.yml",
+    "blurt-revival.yml",
+    "custody-recover.yml",
+    "escrow-payroll.yml",
+    "fee-engine.yml",
+    "fleet-rotation-a.yml",
+    "gen2-rotation.yml",
+    "grid-watchdog.yml",
+    "operator-triage.yml",
+    "owner-key-adopt.yml",
+    "self-memory.yml",
+    "sovereign-evolution.yml",
+    "sovereign-runtime.yml",
+    "system-map.yml",
+    "treasury-ladder.yml"
+   ],
+   "treeSig": ".gitignore:43|README.md:490|STATUS.md:2643|blurt-nodes.json:561|package-lock.json:1098|package.json:296"
+  },
+  {
    "name": "Domain",
    "private": false,
    "description": "Domain — חזית-הרשת הפומבית של SAOS: דף-המוצרים, חדר-המשרד החי, ועוגני-אמת ציבוריים (GitHub Pages)",
    "createdAt": "2026-09-19T23:39:18Z",
-   "pushedAt": "2026-10-16T00:20:59Z",
+   "pushedAt": "2026-10-16T00:25:01Z",
    "workflows": [
     "adsmarket-panel.yml",
     "agent-verify.yml",
@@ -595,7 +618,7 @@
    "private": false,
    "description": "המוח הריבוני על דקות-ציבור: עורקי-ההחלטה, הלמידה, הצמיחה — רץ 24/7 ללא תלות בשום סנדבוקס. Public compute, private memory",
    "createdAt": "2026-10-12T20:33:22Z",
-   "pushedAt": "2026-10-16T00:21:47Z",
+   "pushedAt": "2026-10-16T00:22:53Z",
    "workflows": [
     "artery-catchup.yml",
     "artery-decision-truth.yml",
@@ -640,6 +663,79 @@
     "verifier.yml"
    ],
    "treeSig": "NETWORK-MANIFEST.md:7746|README.md:3346|SECURITY.md:3714"
+  },
+  {
+   "name": "FleetHQ",
+   "private": false,
+   "description": "Fleet HQ — a live operations room where real AI agents plan, work and report on your data books in real time. מפקדת הצי",
+   "createdAt": "2026-10-07T23:26:07Z",
+   "pushedAt": "2026-10-16T00:22:47Z",
+   "workflows": [
+    "claims-triage.yml",
+    "fresh-oracle.yml",
+    "identity-guard.yml",
+    "identity-patrol.yml",
+    "office-3d.yml",
+    "office-ci.yml",
+    "office-heartbeat.yml",
+    "office-retro.yml",
+    "office-window.yml",
+    "opens-closer.yml",
+    "runtime-pacemaker.yml",
+    "self-book.yml",
+    "silence-watchdog.yml",
+    "sovereign-decider.yml",
+    "sovereign-harness.yml",
+    "sovereign-identity.yml",
+    "sovereign-policy-gate.yml",
+    "sovereign-selfscan.yml",
+    "value-scan.yml"
+   ],
+   "treeSig": ".env.example:2902|.gitattributes:148|.gitignore:2668|Caddyfile:493|DESIGN.md:17516|FLEET-BINDING.md:3149|LICENSE:1073|MEMORY.md:23709|README.md:14945|SECURITY.md:4559|SOVEREIGNTY.md:31644|bun.lock:365334|components.json:430|eslint.config.mjs:2195|next.config.ts:1347|package.json:3662|postcss.config.mjs:81|sovereign-agent.env.example:577|tailwind.config.ts:1696|tsconfig.json:760|v4-index-top.png:126096|worklog.md:169938"
+  },
+  {
+   "name": "Sandbox",
+   "private": true,
+   "description": "Sandbox — מראת-הענן החיה של סביבת-הפיתוח הראשית (my-project mirror)",
+   "createdAt": "2026-10-09T11:00:27Z",
+   "pushedAt": "2026-10-16T00:22:15Z",
+   "workflows": [
+    "agent-access.yml",
+    "agent-roster-reseal.yml",
+    "artery-catchup.yml",
+    "artery-decision-truth.yml",
+    "artery-fleet.yml",
+    "artery-flow.yml",
+    "artery-grid.yml",
+    "artery-integrity.yml",
+    "artery-participation.yml",
+    "artery-scribe.yml",
+    "artery-wallet.yml",
+    "artery-watch.yml",
+    "compute-canary.yml",
+    "evo-windows-staleness.yml",
+    "federation.yml",
+    "fleet-heal.yml",
+    "fleet-yield.yml",
+    "fresh-oracle.yml",
+    "hive-probe.yml",
+    "identity-guard.yml",
+    "key-proof.yml",
+    "office-growth.yml",
+    "pages.yml",
+    "profit-oracle.yml",
+    "research-lane.yml",
+    "retro.yml",
+    "sovereign-decider.yml",
+    "sovereign-invariants.yml",
+    "sovereign-state.yml",
+    "sovereign.yml",
+    "token-forge.yml",
+    "token-watchdog.yml",
+    "value-scan.yml",
+    "verifier.yml"
+   ],
+   "treeSig": ".gitignore:257|AGENT-LEDGER.md:1089|README.md:11678|SECURITY.md:3714|worklog.md:45819"
   },
   {
    "name": "Console",
@@ -704,35 +800,6 @@
    "treeSig": "README.md:6294"
   },
   {
-   "name": "FleetHQ",
-   "private": false,
-   "description": "Fleet HQ — a live operations room where real AI agents plan, work and report on your data books in real time. מפקדת הצי",
-   "createdAt": "2026-10-07T23:26:07Z",
-   "pushedAt": "2026-10-16T00:22:00Z",
-   "workflows": [
-    "claims-triage.yml",
-    "fresh-oracle.yml",
-    "identity-guard.yml",
-    "identity-patrol.yml",
-    "office-3d.yml",
-    "office-ci.yml",
-    "office-heartbeat.yml",
-    "office-retro.yml",
-    "office-window.yml",
-    "opens-closer.yml",
-    "runtime-pacemaker.yml",
-    "self-book.yml",
-    "silence-watchdog.yml",
-    "sovereign-decider.yml",
-    "sovereign-harness.yml",
-    "sovereign-identity.yml",
-    "sovereign-policy-gate.yml",
-    "sovereign-selfscan.yml",
-    "value-scan.yml"
-   ],
-   "treeSig": ".env.example:2902|.gitattributes:148|.gitignore:2668|Caddyfile:493|DESIGN.md:17516|FLEET-BINDING.md:3149|LICENSE:1073|MEMORY.md:23709|README.md:14945|SECURITY.md:4559|SOVEREIGNTY.md:31644|bun.lock:365334|components.json:430|eslint.config.mjs:2195|next.config.ts:1347|package.json:3662|postcss.config.mjs:81|sovereign-agent.env.example:577|tailwind.config.ts:1696|tsconfig.json:760|v4-index-top.png:126096|worklog.md:169938"
-  },
-  {
    "name": "Pulse",
    "private": false,
    "description": "Pulse — איבר-הדופק של הרשת · fleet heartbeat: autonomous census every 30min on GitHub Actions (public = unlimited free m",
@@ -755,31 +822,6 @@
     "trust-heartbeat.yml"
    ],
    "treeSig": ".env:50|.gitignore:1468|01-overview.png:849654|02-wall.png:386090|03-git.png:310819|04-podium.png:484637|05-reception.png:708501|06-library.png:465126|Caddyfile:493|README.md:2271|SYSTEM.md:1837|bun.lock:291502|components.json:430|eslint.config.mjs:1713|next.config.ts:1172|package.json:3494|postcss.config.mjs:81|tailwind.config.ts:1696|tsconfig.json:730|worklog.md:356956"
-  },
-  {
-   "name": "saos-runtime",
-   "private": false,
-   "description": "SAOS sovereign runtime host — Actions runner heartbeat; clones the private engine tree at runtime (R244). No keys, no se",
-   "createdAt": "2026-10-07T16:44:12Z",
-   "pushedAt": "2026-10-15T23:55:26Z",
-   "workflows": [
-    "army-ladder.yml",
-    "blurt-revival.yml",
-    "custody-recover.yml",
-    "escrow-payroll.yml",
-    "fee-engine.yml",
-    "fleet-rotation-a.yml",
-    "gen2-rotation.yml",
-    "grid-watchdog.yml",
-    "operator-triage.yml",
-    "owner-key-adopt.yml",
-    "self-memory.yml",
-    "sovereign-evolution.yml",
-    "sovereign-runtime.yml",
-    "system-map.yml",
-    "treasury-ladder.yml"
-   ],
-   "treeSig": ".gitignore:43|README.md:490|STATUS.md:2645|blurt-nodes.json:561|package-lock.json:1098|package.json:296"
   },
   {
    "name": "steem",
@@ -822,50 +864,6 @@
     "lighthouse-pulse.yml"
    ],
    "treeSig": "README.md:625|REVIVAL-2026-10-11.md:1310|grid.json:22902|index.html:1703|state.json:57685"
-  },
-  {
-   "name": "Sandbox",
-   "private": true,
-   "description": "Sandbox — מראת-הענן החיה של סביבת-הפיתוח הראשית (my-project mirror)",
-   "createdAt": "2026-10-09T11:00:27Z",
-   "pushedAt": "2026-10-15T23:50:20Z",
-   "workflows": [
-    "agent-access.yml",
-    "agent-roster-reseal.yml",
-    "artery-catchup.yml",
-    "artery-decision-truth.yml",
-    "artery-fleet.yml",
-    "artery-flow.yml",
-    "artery-grid.yml",
-    "artery-integrity.yml",
-    "artery-participation.yml",
-    "artery-scribe.yml",
-    "artery-wallet.yml",
-    "artery-watch.yml",
-    "compute-canary.yml",
-    "evo-windows-staleness.yml",
-    "federation.yml",
-    "fleet-heal.yml",
-    "fleet-yield.yml",
-    "fresh-oracle.yml",
-    "hive-probe.yml",
-    "identity-guard.yml",
-    "key-proof.yml",
-    "office-growth.yml",
-    "pages.yml",
-    "profit-oracle.yml",
-    "research-lane.yml",
-    "retro.yml",
-    "sovereign-decider.yml",
-    "sovereign-invariants.yml",
-    "sovereign-state.yml",
-    "sovereign.yml",
-    "token-forge.yml",
-    "token-watchdog.yml",
-    "value-scan.yml",
-    "verifier.yml"
-   ],
-   "treeSig": ".gitignore:257|AGENT-LEDGER.md:1089|README.md:11678|SECURITY.md:3714|worklog.md:45819"
   },
   {
    "name": "ops-forge",
