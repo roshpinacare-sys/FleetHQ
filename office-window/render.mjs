@@ -544,6 +544,18 @@ footer .stamp{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; 
     </a>
   </section>
 
+  <section id="office3d-live-cta" aria-labelledby="h-office3d-live" style="margin-top:14px">
+    <a href="office3d-live/" rel="noopener" style="display:block;text-decoration:none;color:inherit;background:linear-gradient(135deg,#16211f 0%,#1f3a33 45%,#241a2b 100%);border:1px solid #2a6b57;border-radius:18px;padding:20px 22px;transition:transform .2s ease, box-shadow .2s ease" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 14px 40px rgba(45,212,191,.25)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
+      <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+        <div style="flex:1;min-width:220px">
+          <h2 id="h-office3d-live" style="margin:0 0 4px;font-size:1.25rem;color:#2dd4bf">המשרד השני — תלת-מימד-אינטראקטיבי (r3f)</h2>
+          <p style="margin:0;color:#c5ddd6;font-size:.95rem;line-height:1.6">הבנייה-האינטראקטיבית-העצמאית: סיור-חופשי-בחדר, הצוות-בעבודתו, אמת-כלכלית-מהשרשרת. עומד-בפני-עצמו — אפס-שרת, אפס-סוד, גיט-בלבד.</p>
+        </div>
+        <div style="background:#2dd4bf;color:#0c1f1b;font-weight:800;border-radius:12px;padding:10px 18px;font-size:.95rem;white-space:nowrap">כניסה למשרד השני ←</div>
+      </div>
+    </a>
+  </section>
+
   <section id="room3d" aria-labelledby="h-room3d">
     <div class="sec-head"><span class="sec-num">1</span><h2 id="h-room3d">החדר התלת-ממדי — פריימי-אופה<span class="en">THE 3D ROOM — baked frames (mirror scene)</span></h2></div>
     ${renderRoom3D()}
