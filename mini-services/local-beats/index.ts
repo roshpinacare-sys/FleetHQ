@@ -149,7 +149,12 @@ function publishFleet(name: string, paths: string[]): string {
       # the machine stuck. GIT_EDITOR=true kills the interactive-editor hang.
       if git status --porcelain | grep -q '^UU\|^AA\|^DD\|^DU\|^UD'; then
         for f in $(git status --porcelain | grep '^[UAD][UAD ]' | awk '{print $2}'); do
-          git checkout --theirs -- "$f" 2>/dev/null || git add -- "$f" 2>/dev/null || true
+          # Task 7b fix (measured 17:24): checkout --theirs succeeds but leaves
+          # the path UNMERGED in the index — rebase --continue then refuses.
+          # The old `||` ran git add only when checkout FAILED. Law: checkout
+          # resolves the worktree, git add resolves the INDEX. Both, always.
+          git checkout --theirs -- "$f" 2>/dev/null || true
+          git add -- "$f" 2>/dev/null || true
         done
         GIT_EDITOR=true git -c rebase.autoStash=true rebase --continue 2>/dev/null || git rebase --abort 2>/dev/null || true
       fi
