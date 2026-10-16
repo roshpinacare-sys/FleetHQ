@@ -53,9 +53,55 @@
   #veil .box p{font-size:12px;margin:0;max-width:420px;line-height:1.7}
   #veil .spin{width:26px;height:26px;margin:0 auto 12px;border-radius:50%;border:3px solid #cfc6b2;border-top-color:#a1794f;animation:spin 1s linear infinite}
   @keyframes spin{to{transform:rotate(360deg)}}
-  @media (max-width:820px){ #feeds{display:none} #legend{display:none} #subtitle{display:none} #card{width:210px} }
+  /* mobile (measured 2026-10-16 @390px): הפס-עליון התקפל ל-122px וכיסה רבע-חדר;
+   * סרגל-התצפיות התפרס ל-4 שורות (146px); ההינט התנגש עם הכפתורים. תיקון: שורה-אחת-גוללת
+   * למעלה, כפתורים-קומפקטיים למטה, הינט מוסתר (המידע חוזר בכל-מסך-גדול). */
+  @media (max-width:820px){
+    #feeds{display:none} #legend{display:none} #subtitle{display:none} #card{width:210px}
+    #topbar{flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;gap:4px;padding:6px 8px;
+      padding-top:max(6px,env(safe-area-inset-top));scrollbar-width:none;-webkit-overflow-scrolling:touch}
+    #topbar::-webkit-scrollbar{display:none}
+    #topbar .chip{flex:none;font-size:11px;padding:3px 8px}
+    #title{flex:none;font-size:12px}
+    #viewbar{bottom:10px;gap:5px;max-width:calc(100vw - 16px)}
+    .vbtn{font-size:11px;padding:6px 10px;min-height:30px;border-radius:9px}
+    #hint{display:none}
+  }
 </style>
 <script type="importmap">{ "imports": { "three": "./vendor/three.module.min.js" } }</script>
+<script>
+/* אמת-כנה במקום טעינה-נצחית: אם אין תמיכת-importmap / WebGL, או שהפריים-הראשון לא הגיע —
+ * מציגים כשל-מפורש על-המסך (בלי המצאה, בלי ספינר-אינסוף). חוק-הכנות של המשרד. */
+(function () {
+  function fail(he, en) {
+    if (window.__hqRoomReady) return;                       // החדר חי — אין-מה-לדווח
+    var box = document.querySelector('#veil .box');
+    if (!box) return;
+    var sp = box.querySelector('.spin'); if (sp) sp.remove();
+    box.innerHTML = '<h1>המשרד לא נטען — כישלון-גלוי</h1>'
+      + '<p>' + he + '</p>'
+      + '<p style="direction:ltr;opacity:.75;font-size:11px;margin-top:6px">' + en + '</p>'
+      + '<p style="margin-top:10px"><a href="./" style="color:#a1794f">ניסיון-חוזר</a> · '
+      + '<a href="../" style="color:#a1794f">חלון-הפריימים האפויים</a></p>';
+  }
+  window.__hqFail = fail;
+  if (!window.HTMLScriptElement || !HTMLScriptElement.supports || !HTMLScriptElement.supports('importmap')) {
+    fail('הדפדפן הזה ישן מכדי להריץ את החדר החי (אין תמיכה ב-import-map). עדכנו דפדפן, או צפו בפריימים האפויים בעמוד הראשי.', 'unsupported: importmap');
+    return;
+  }
+  window.addEventListener('error', function (e) {
+    if (window.__hqRoomReady) return;
+    var m = e && (e.message || (e.target && e.target.tagName === 'SCRIPT' && 'script load failed'));
+    if (m) fail('שגיאה בטעינת החדר התלת-מימדי — הדפדפן עצר אותה.', String(m).slice(0, 160));
+  }, true);
+  window.addEventListener('unhandledrejection', function (e) {
+    if (!window.__hqRoomReady) fail('החדר נתקע בטעינה (Promise נכשל).', String(e && e.reason).slice(0, 160));
+  });
+  setTimeout(function () {
+    if (!window.__hqRoomReady) fail('אחרי 20 שניות לא הופיע פריים-ראשון — כנה: משהו נכשל. רעננו, או צפו בפריימים האפויים בעמוד הראשי.', 'first-frame timeout: 20s');
+  }, 20000);
+})();
+</script>
 </head>
 <body>
 <div id="app"></div>
@@ -292,7 +338,14 @@ scene.background = new THREE.Color(0xd9d2c3);
 scene.fog = new THREE.Fog(0xd9d2c3, 30, 68);
 const camera = new THREE.PerspectiveCamera(52, innerWidth / innerHeight, .1, 140);
 camera.position.set(15, 10, 17);
-const renderer = new THREE.WebGLRenderer({ antialias: !isLite, powerPreference: 'high-performance' });
+let renderer;
+try {
+  renderer = new THREE.WebGLRenderer({ antialias: !isLite, powerPreference: 'high-performance' });
+} catch (err) {
+  // WebGL חסום/חסר — כישלון-גלוי מיידי במקום מסך-טעינה-נצחי
+  if (window.__hqFail) window.__hqFail('הדפדפן חוסם WebGL — החדר החי זקוק לו כדי לרנדר. אפשרו WebGL, או צפו בפריימים האפויים בעמוד הראשי.', 'WebGL unavailable: ' + (err && err.message || ''));
+  throw err;
+}
 renderer.setSize(innerWidth, innerHeight);
 renderer.setPixelRatio(Math.min(devicePixelRatio, isLite ? 1 : 1.75));
 renderer.outputColorSpace = THREE.SRGBColorSpace;
