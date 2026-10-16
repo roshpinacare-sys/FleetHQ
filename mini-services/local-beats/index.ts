@@ -38,8 +38,9 @@
  * froze → veritas read STALE. Fixed in office-selfcheck; this beat restores
  * the heartbeat cadence Actions used to own.
  */
-import { spawnSync } from "node:child_process";
-import { appendFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { spawn, spawnSync } from "node:child_process";
+import { appendFileSync, closeSync, existsSync, mkdirSync, openSync, readFileSync, writeFileSync } from "node:fs";
+import { connect } from "node:net";
 import { join } from "node:path";
 
 const CONSOLE = "/home/z/estate/Console";
@@ -363,6 +364,47 @@ function retroStaleHours(): number | null {
   } catch { return null; }
 }
 
+// ---- economy-guard (wave-91, doctrine-4, 2026-10-16): the internal economy
+// engine (:3016) and the platform web (:3000) have NO external keeper after
+// their own dev-guard died with them (measured double-failure 17:5xZ: engine
+// lock file was git-tracked → checkout reset stale PIDs → honest-exit war →
+// engine dead → its in-engine dev-guard dead → next-dev unreived → dark web).
+// THIS beat is the last-line keeper: local-beats is a live-tree process, so a
+// child it spawns SURVIVES the sandbox reaper (the same survival law the
+// runtime-supervisor comments document). Cadence: every minute, port-probe
+// first — a healthy service is never touched; a dead one gets exactly one
+// detached spawn per probe window. Zero overlap with runtime-supervisor
+// (supervisor spawns on ITS dead ticks; both paths are port-gated, the loser
+// exits clean on EADDRINUSE by design).
+function portUp(port: number, timeoutMs = 1500): Promise<boolean> {
+  return new Promise((resolve) => {
+    const sock = connect(port, "127.0.0.1");
+    const done = (ok: boolean) => { try { sock.destroy(); } catch { /* already */ } resolve(ok); };
+    sock.setTimeout(timeoutMs);
+    sock.once("connect", () => done(true));
+    sock.once("timeout", () => done(false));
+    sock.once("error", () => done(false));
+  });
+}
+let lastGuardLog = 0;
+async function economyGuard() {
+  const targets: Array<{ port: number; cwd: string; cmd: string; args: string[]; logf: string; name: string }> = [
+    { port: 3016, cwd: "/home/z/my-project/mini-services/fleet-economy", cmd: process.execPath, args: ["index.ts"], logf: "/home/z/my-project/mini-services/fleet-economy/economy.log", name: "fleet-economy" },
+    { port: 3000, cwd: "/home/z/my-project", cmd: process.execPath, args: ["run", "dev"], logf: "/home/z/my-project/dev.log", name: "next-dev" },
+  ];
+  for (const t of targets) {
+    try {
+      if (await portUp(t.port)) continue;
+      const out = openSync(t.logf, "a");
+      const child = spawn(t.cmd, t.args, { cwd: t.cwd, detached: true, stdio: ["ignore", out, out], env: { ...process.env, GIT_EDITOR: "true" } });
+      child.unref();
+      closeSync(out);
+      if (Date.now() - lastGuardLog > 120_000) { lastGuardLog = Date.now(); log(`economy-guard: ${t.name} down → detached revive pid=${child.pid}`); }
+      else log(`economy-guard: ${t.name} down → detached revive pid=${child.pid}`);
+    } catch (e) { log(`economy-guard: ${t.name} revive error: ${String(e).slice(0, 80)}`); }
+  }
+}
+
 function retroBeat() {
   if (running.has("office-retro")) { log("office-retro: skipped — previous flight still running"); return; }
   running.add("office-retro");
@@ -522,6 +564,8 @@ function tick() {
     const stale = retroStaleHours();
     if (stale !== null && stale > 26) { const k = keyOf(d, "d"); if (!fired("retro-catchup", k)) { mark("retro-catchup", k); log(`office-retro: catch-up fired (retro-state generatedAt ${stale.toFixed(1)}h old > 26h law)`); retroBeat(); } }
   }
+  // economy-guard (wave-91): every tick — port-gated, spawns only the dead.
+  economyGuard();
   // flush every 15min at :09/:24/:39/:54 — dedupe key PER SLOT (four fires per
   // hour, so the hourly key used by the other beats would swallow three of them)
   if (mi % 15 === 9) { const k = `${keyOf(d, "h")}:${mi}`; if (!fired("flush", k)) { mark("flush", k); flushBeat(); } }
