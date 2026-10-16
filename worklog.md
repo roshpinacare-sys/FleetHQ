@@ -2005,3 +2005,24 @@ Stage Summary:
 - tx24: 4,530 נמדדו ב-8 מקומות-מסחר, 77 משתתפים — מ-20 בסיסת-ההשוואה: מינוף 226x.
 - המסלול לרבבות: כל זרם-אירועים חדש בריבונות = מקור-סליקה חדש; הצינור מוכן (הוספת-מקור = בלוק אחד).
 - כנות: watchdog-meter=0 ב-24ש׳ (אין אירועים — כנה), office-events דל-קצב (9/24ש׳) — לא מנופח-מלאכותית.
+
+---
+Task ID: 59-a
+Agent: Z.ai Code (main session, continuation after sandbox recovery)
+Task: git同步+金库密封+经济引擎扩容（17源）
+
+Work Log:
+- git纪律闭环：审查远端13提交（全部机器人收据/opens-closer/auto-economy金库密封）→ 软重置本地UUID坏消息提交 → ff到origin/main → stash保护下rebase → 密封guard-events → **本机push实测成功**（75fab32e、3b8af1b1两连推，0领先/0落后）。
+- 断言重审①：Task 58的"本机可push"断言本会话再次实测为真；旧断言"本机无凭证、只能云端孪生push"已被推翻两次。
+- 断言重审②：发现并发风险——stash输出显示"On office-pages"，证实有机器人在操作员git操作中途切换分支；reflog证实本次未受损，但需加锁机制。
+- 工具层bug再证：显示通道吞"[字母"序列（od字节级证实git对象完好）；所有验证必须以字节为准。
+- 经济引擎复活：旧循环PID随沙盒崩溃死亡（ps证实无进程）；Domain本地是exposure-strike强制重写前的旧镜像（unrelated histories）→ 硬重置到新canon 83c0b5f1。
+- econ-engine v2（17源）：+9条真实流（fresh-oracle 100 / self-check 120 / pacemaker-beat 300 / health-chain 250 / office-ci 400（真实构建）/ gateway-telemetry 80 / books-lineage 150 / office-3d 500（真实WebGL渲染）/ runtime-supervisor 200 mWU）；+容忍式只读fetch+git --all（云端孪生dex-family每13秒劳动直接结算到本地）；+KIND2SRC显式映射（修复未知kind误推进mesh水位的隐患bug）；版本econ-engine/2，book新增sources字段。
+- 试运行minted=448（新源24h回填窗），tx24=4820→5304；exactly-once验证：紧接着的循环minted=0。
+- 驻留循环setsid复活（PID 11631，120s周期）；引擎v2密封并推送到Domain canon（66db1f60，0/0）。
+
+Stage Summary:
+- FleetHQ与Domain两canon均0领先/0落后——沙盒即刻死亡也不丢失任何工作。
+- 经济引擎：20基础 → 4,530（Task 58-b）→ **5,304 tx/24h @ 17真实源**（265x）；全部带证据指针、零合成、exactly-once水位线、sha16哈希链。
+- 万级杠杆已接线：云端孪生的dex-family/worldbeat/census劳动经fetch+--all流入结算。
+- 待续：办公室live显示以git为基准验证；git操作锁（机器人并发切分支）；git失败邮件根因。
