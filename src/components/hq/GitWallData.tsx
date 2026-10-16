@@ -188,12 +188,15 @@ function makeGitWallBoard() {
     ctx.font = "500 20px ui-monospace,monospace";
     ctx.fillStyle = tone;
     ctx.fillText(`● ${data.sha16 ?? 'sha16 —'}`, 28, H - FOOTER_H / 2);
-  });
+  }, 3000); // Task 9: שלב-ציור מרוסן 3שנ' — הקיר חי אך בלי-עלות-הצפה על מנוע-תוכנה
   return {
     tex: dyn.tex,
     set(next: BoardData) {
-      const sig = next.rows.map((r) => `${r.name}|${r.dotColor}|${r.commitsLabel}`).join('#') + '|' + (next.updatedAtMs ?? '') + '|' + (next.seq ?? '') + '|' + (next.txPerMin ?? '');
-      const prevSig = data.rows.map((r) => `${r.name}|${r.dotColor}|${r.commitsLabel}`).join('#') + '|' + (data.updatedAtMs ?? '') + '|' + (data.seq ?? '') + '|' + (data.txPerMin ?? '');
+      // Task 9: updatedAtMs במדד-דקות (לא חותמת-גולמית) — בלי זה הקיר היה
+      // מצויר מחדש בכל סקר-דופק גם כששום-דבר לא השתנה (ההעלאה עצמה יקרה).
+      const minuteBucket = Math.floor((next.updatedAtMs ?? 0) / 60_000);
+      const sig = next.rows.map((r) => `${r.name}|${r.dotColor}|${r.commitsLabel}`).join('#') + '|' + minuteBucket + '|' + (next.seq ?? '') + '|' + (next.txPerMin ?? '');
+      const prevSig = data.rows.map((r) => `${r.name}|${r.dotColor}|${r.commitsLabel}`).join('#') + '|' + Math.floor((data.updatedAtMs ?? 0) / 60_000) + '|' + (data.seq ?? '') + '|' + (data.txPerMin ?? '');
       data = next;
       if (sig !== prevSig) dyn.markDirty();
     },
@@ -236,8 +239,9 @@ export function GitWallSync() {
       (window as unknown as Record<string, unknown>).__hqWall = hqWall;
     };
     apply();
-    // טיק-ציור: DynTex מצויר רק דרך update() — הגיל-היחסי חי כל שנייה
-    const repaint = setInterval(() => { apply(); gitBoard().update(Date.now()); }, 1000);
+    // טיק-ציור: DynTex מצויר רק דרך update() — Task 9: קצב רגוע 4שנ' (מותאם
+    // לסקר-הדופק עצמו); הגיל-היחסי הוא מדד-דקות — 4שנ' נדיב מדי.
+    const repaint = setInterval(() => { apply(); gitBoard().update(Date.now()); }, 4_000);
     return () => clearInterval(repaint);
   }, []);
   return null;

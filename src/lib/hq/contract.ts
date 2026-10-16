@@ -145,8 +145,12 @@ export const CAMERA_PRESETS: CameraPreset[] = [
   },
   {
     id: 'git', label: { he: 'קיר הגיט', en: 'Git wall' },
+    // Task 9 (measured live ×2): the old orbit tween + a camera parked on the
+    // podium cluster starved the software renderer to a hang. Snap-jump is
+    // enforced in CameraDirector; this SE diagonal keeps the lectern out of
+    // the lens and the whole wall in frame.
     target: [gitWall3[0], 1.5, gitWall3[1]],
-    yaw: -0.2, pitch: 0.12, dist: 4.8, minDist: 2.4, maxDist: 8,
+    yaw: 0.5, pitch: 0.12, dist: 5.0, minDist: 3.0, maxDist: 8,
   },
   {
     id: 'podium', label: { he: 'דוכן ההחלטות', en: 'Decisions' },

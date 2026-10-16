@@ -47,7 +47,9 @@ export function makeConcreteTexture(): THREE.CanvasTexture {
   // Task 51 (daylight): light limestone floor — the dark #35322e slab made the
   // whole room read as a night club (measured mean-luma 22-35/255).
   const g = ctx.createLinearGradient(0, 0, 1024, 1024);
-  g.addColorStop(0, '#d9d3c6'); g.addColorStop(0.5, '#cfc9bb'); g.addColorStop(1, '#d5cfc1');
+  // Task 9: one step deeper/warmer — the pale limestone washed out under
+  // the flame lights (measured whiteout); deeper greige restores contrast.
+  g.addColorStop(0, '#cfc8b7'); g.addColorStop(0.5, '#c3bcaa'); g.addColorStop(1, '#c9c2b0');
   ctx.fillStyle = g; ctx.fillRect(0, 0, 1024, 1024);
   // כתמי שחיקה רכים
   for (let i = 0; i < 90; i++) {
@@ -295,18 +297,25 @@ export class DynTex {
   painter: Painter;
   dirty = true;
   last = 0;
-  constructor(w: number, h: number, painter: Painter) {
+  minInterval: number;
+  constructor(w: number, h: number, painter: Painter, minInterval = 200) {
     const [c, ctx] = makeCanvas(w, h);
     this.canvas = c; this.ctx = ctx; this.painter = painter;
+    this.minInterval = minInterval;
     this.tex = new THREE.CanvasTexture(c);
     this.tex.colorSpace = THREE.SRGBColorSpace;
     this.tex.anisotropy = 4;
+    // Task 9 (measured live): mipmap regeneration on SwiftShader is pure CPU
+    // cost for screen textures viewed head-on — killing it removes the
+    // single most expensive part of every upload on weak machines.
+    this.tex.generateMipmaps = false;
+    this.tex.minFilter = THREE.LinearFilter;
     this.draw();
   }
   markDirty() { this.dirty = true; }
-  /** מצויר לכל היותר פעם ב-200ms */
+  /** מצויר לכל היותר פעם אחת כל minInterval (ברירת-מחדל 200ms) */
   update(now: number) {
-    if (!this.dirty || now - this.last < 200) return;
+    if (!this.dirty || now - this.last < this.minInterval) return;
     this.last = now;
     this.draw();
   }
@@ -461,6 +470,9 @@ export function makeFleetWallTexture(): {
   }
   let pulse: Pulse | null = null;
   let tick = 0;
+  let lastSig = '';
+  let lastTick = -999;
+  let drawnOnce = false;
   const W = 1600, H = 860;
   const AMBER = '#ffb054', TEAL = '#54d8c0', OK = '#3ddc97', BAD = '#ff6b5e', DIM = 'rgba(158,178,198,0.85)';
   const mono = (px: number) => `${px}px ui-monospace,'JetBrains Mono',monospace`;
@@ -611,14 +623,29 @@ export function makeFleetWallTexture(): {
     ctx.fillText(txt, w - 36, h - 26);
     ctx.textAlign = 'left'; ctx.fillStyle = 'rgba(158,178,198,0.8)'; ctx.font = mono(18);
     ctx.fillText(`sha16 ${e.lastSha16 ?? '—'}`, 36, h - 26);
-  });
+  }, 3000); // Task 9: שלב-ציור מרוסן — הלוח הגדול לא מצייר יותר מדי-פעם ב-3שנ'
 
   return {
     tex: dyn.tex,
     set(p, t) {
+      // Task 9 (measured live): this used to markDirty UNCONDITIONALLY on
+      // every store tick (1s) — a 1600×860 canvas redraw + GPU upload + CPU
+      // mipmap regeneration EVERY SECOND intermittently wedged the software
+      // renderer (5.5MB/s churn). Redraw only on real data change; the
+      // age/ticker rows live through update() at a calm cadence.
+      const e = p as Pulse | null;
+      const sig = e
+        ? `${e.seq}|${e.txPerMin}|${e.mwuPerMin}|${e.lastSha16}|${e.services?.length ?? 0}|${e.lanes?.map((l) => `${l.lane}:${l.ok}`).join(',')}|${e.pages?.ageMin ?? ''}`
+        : 'null';
+      const changed = sig !== lastSig || t - lastTick >= 30;
+      lastSig = sig;
+      lastTick = t;
       pulse = p as Pulse | null;
       tick = t;
-      dyn.markDirty();
+      if (changed || !drawnOnce) {
+        drawnOnce = true;
+        dyn.markDirty();
+      }
     },
     update: (now) => dyn.update(now),
   };
@@ -626,6 +653,7 @@ export function makeFleetWallTexture(): {
 
 export function makeReceptionScreen(): { tex: THREE.CanvasTexture; set: (s: { mode: string; provider: string; ops: number; goal?: string }) => void; update: (now: number) => void } {
   let info: { mode: string; provider: string; ops: number; goal?: string } = { mode: '…', provider: '…', ops: 0, goal: '' };
+  let lastKey = '';
   const dyn = new DynTex(560, 380, (ctx, w, h) => {
     ctx.fillStyle = '#101014'; ctx.fillRect(0, 0, w, h);
     ctx.direction = 'rtl'; ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
@@ -640,7 +668,19 @@ export function makeReceptionScreen(): { tex: THREE.CanvasTexture; set: (s: { mo
     ctx.fillStyle = 'rgba(190,192,188,0.9)'; ctx.font = "400 24px 'Heebo',system-ui,sans-serif";
     wrapText(ctx, info.goal || '—', w - 24, 268, w - 48, 34, 3);
   });
-  return { tex: dyn.tex, set: (s) => { info = s; dyn.markDirty(); }, update: (now) => dyn.update(now) };
+  // Task 9: dirty-on-change — this screen was re-uploaded every store tick (1s)
+  return {
+    tex: dyn.tex,
+    set: (s) => {
+      const key = `${s.mode}|${s.provider}|${s.ops}|${s.goal ?? ''}`;
+      info = s;
+      if (key !== lastKey) {
+        lastKey = key;
+        dyn.markDirty();
+      }
+    },
+    update: (now) => dyn.update(now),
+  };
 }
 
 // ─────────────── utils ───────────────

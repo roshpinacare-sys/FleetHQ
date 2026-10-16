@@ -17,12 +17,32 @@
  */
 'use client';
 
-import { memo, useEffect, useState } from 'react';
+import { memo, useEffect, useMemo, useState } from 'react';
 import { bus, director, type PresetId } from '@/lib/hq/world';
 import { CAMERA_PRESETS } from '@/lib/hq/contract';
 import { useHq, type Lang } from '@/lib/hq/store';
 import { useDecisions } from '@/lib/hq/decisions';
 import { BEAT_STALE_MS } from '@/lib/hq/broadcast';
+import { probeGpuTier, gpuLabel } from '@/lib/hq/gpu';
+
+/** צ'יפ אמת-המנוע (Task 9): באיזו מדרגת-רינדור החדר באמת רץ — נמדד,
+ *  לא מנוחש. כנות גלויה במקום תקלה שקטה: מנוע-תוכנה = מדרגת-חיסכון חיה. */
+const TierChip = memo(function TierChip({ lang }: { lang: Lang }) {
+  const tier = useMemo(() => probeGpuTier(), []);
+  const he = lang === 'he';
+  const { text, color } =
+    tier === 'hardware'
+      ? { text: he ? 'מנוע: מאיץ-חומשה — מדרגה מלאה' : 'engine: hardware GPU — full tier', color: 'var(--st-ok)' }
+      : tier === 'software'
+        ? { text: he ? 'מנוע: תוכנה (בלי GPU) — מדרגת-חיסכון חיה' : 'engine: software (no GPU) — live saver tier', color: 'var(--st-info)' }
+        : { text: he ? 'מנוע: WebGL חסר' : 'engine: WebGL missing', color: 'var(--st-attention)' };
+  return (
+    <div className="sl-panel pointer-events-none absolute bottom-14 left-3 z-10 hidden items-center gap-2 px-3 py-2 sm:flex" dir="rtl" role="status">
+      <span className="sl-dot" style={{ backgroundColor: color }} aria-hidden="true" />
+      <span className="text-[12px] font-medium text-[color:var(--ink-2)]" title={gpuLabel()}>{text}</span>
+    </div>
+  );
+});
 
 /** שידור בחירת נקודת תצפית למצלמת הבמאי (אירוע דומיין יחיד, בלי קפלים) */
 export function selectPreset(id: PresetId) {
@@ -87,7 +107,8 @@ const BroadcastPanel = memo(function BroadcastPanel({ lang }: { lang: Lang }) {
     : (he ? `משמרת מקומית · ${broadcast.phase} — המראה לא נענתה` : `Local shift · mirror unreachable`);
   const whoName = (id: string) =>
     useHq.getState().snap.crew.find((c) => c.id === id)?.name[lang] ?? id;
-  const events = broadcast.journal.slice(-4).reverse();
+  // Task 9: שני-אירועים אחרונים בלבד — הפאנל כיסה ~25% מהסצנה (נמדד בצילום)
+  const events = broadcast.journal.slice(-2).reverse();
   return (
     <div className="sl-panel px-3 py-2" dir="rtl" role="status">
       <div className="flex items-center gap-2">
@@ -366,6 +387,7 @@ export function ViewDeck() {
       <PreparingVeil lang={lang} />
       <PresetDeck lang={lang} />
       <RoomStatus lang={lang} />
+      <TierChip lang={lang} />
       <TruthChip lang={lang} />
     </>
   );

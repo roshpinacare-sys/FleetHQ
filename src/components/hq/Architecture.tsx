@@ -221,7 +221,7 @@ function LiveFloor({ mats, heavy }: { mats: OfficeMats; heavy: boolean }) {
 
 function FloorRug() {
   const carpet = useMemo(() => {
-    const t = makeCarpetTexture('#cabfa6');
+    const t = makeCarpetTexture('#a6835a');
     t.repeat.set(1, 1); // גבול אחד — בלי חריצים
     return t;
   }, []);

@@ -42,7 +42,7 @@ function noteInput() {
   state.lastInputAt = Date.now();
 }
 
-function applyPreset(id: PresetId) {
+function applyPreset(id: PresetId, snap = true) {
   const p = CAMERA_PRESETS.find((x) => x.id === id) ?? CAMERA_PRESETS[0];
   state.minDist = p.minDist;
   state.maxDist = p.maxDist;
@@ -50,6 +50,17 @@ function applyPreset(id: PresetId) {
   state.yawTo = p.yaw;
   state.pitchTo = p.pitch;
   state.distTo = p.dist;
+  if (snap) {
+    // Task 9 (measured live ×2): the orbit tween from overview to a wall
+    // preset sweeps the camera THROUGH the flame's additive cone + the lamp
+    // zone — on a software renderer a single such frame takes 10–30s+ and
+    // the tab wedges (rAF/timers all starve; no watchdog can even fire).
+    // Preset jumps are therefore instant: snappy, predictable, alive.
+    state.look.copy(state.lookTo);
+    state.yaw = state.yawTo;
+    state.pitch = state.pitchTo;
+    state.dist = state.distTo;
+  }
 }
 
 // ─────── Task 8 — הסיור נמחק: אין סרט קבוע, המשתמש שולט תמיד ───────
@@ -158,6 +169,7 @@ export function CameraDirector() {
       state.minDist = preset.dist * 0.55;
       state.maxDist = preset.dist * 1.9;
       state.lookTo.set(wx, kind === 'wall' || kind === 'git' ? 1.5 : 1.15, wz);
+      state.look.copy(state.lookTo); // Task 9: מיקוד מיידי — בלי שייט-מצלמה דרך הלהבה
       state.yawTo = Math.atan2(dx / dl, dz / dl);
       state.pitchTo = preset.pitch;
       state.distTo = preset.dist;

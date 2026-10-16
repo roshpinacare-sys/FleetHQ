@@ -24,6 +24,7 @@ import { useFrame } from '@react-three/fiber';
 import { ContactShadows } from '@react-three/drei';
 import * as THREE from 'three';
 import { PLAN_H, SCALE } from '@/lib/hq/contract';
+import { probeGpuTier } from '@/lib/hq/gpu';
 
 // tmp (מחוץ לקומפוננטה — בלי הקצאות בפריים)
 const tmpVec = new THREE.Vector3();
@@ -186,6 +187,10 @@ const SWAY_X = 0.9;
 const SWAY_I = 0.12;
 
 export function Atmosphere() {
+  // Task 9 — אמת-מנוע: על מנוע-תוכנה (בלי GPU) תקציב-האור נחתך — כל נורה
+  // היא עלות-פר-פיקסל-פר-פריים בSwiftShader (נמדד: OOM + תקיעה). החדר נשאר
+  // חם מהשמש+המילוי+הלהבה; הזרקור והמילוי-הדרומי הם פינוק-מאיץ בלבד.
+  const sw = useMemo(() => probeGpuTier() !== 'hardware', []);
   // refs לגופי-האור הנעים; rim נשאר סטטי (היררכיית 11-a ללא-שינוי)
   const sunRef = useRef<THREE.DirectionalLight>(null);
   const hemiRef = useRef<THREE.HemisphereLight>(null);
@@ -331,7 +336,8 @@ export function Atmosphere() {
       <directionalLight ref={fillRef} position={[8.5, 5.2, 2.5]} intensity={1.05} color="#e2e8ec" />
       {/* Task 11-a — אור-שפה (rim) מצפון-מזרח — סטטי, מנתק דמויות מהרקע */}
       <directionalLight position={[3.5, 4.2, -8.5]} intensity={0.55} color="#dfe8f0" />
-      {/* זרקור מרכזי חם מעל הלהבה — לב-החדר נשאר נקודת-המוקד */}
+      {/* זרקור מרכזי חם מעל הלהבה — לב-החדר נשאר נקודת-המוקד (מאיץ בלבד) */}
+      {!sw && (
       <spotLight
         ref={spotRef}
         position={[0, 3.35, 0.6]}
@@ -345,9 +351,11 @@ export function Atmosphere() {
         shadow-mapSize={[1024, 1024]}
         shadow-bias={-0.0003}
       />
-      {/* אור מילוי מהדרום (קבלה) */}
-      <pointLight ref={ptRef} position={[0, 2.6, 4.6]} intensity={1.15} color="#ffcf9e" distance={10} decay={2} />
-      {/* Task 11-a — צללי-מגע רכים: אחיזת-קרקע כנה (512, אמצעי-הצגה בלבד) */}
+      )}
+      {/* אור מילוי מהדרום (קבלה) — מאיץ בלבד */}
+      {!sw && <pointLight ref={ptRef} position={[0, 2.6, 4.6]} intensity={0.6} color="#ffcf9e" distance={8} decay={2} />}
+      {/* Task 11-a — צללי-מגע רכים: אחיזת-קרקע כנה. על מנוע-תוכנה — פריים
+          אחד סטטי (frames=1): רינדור-עומק של-הסצנה כולה בכל-פריים הוא מתיקון. */}
       <ContactShadows
         position={[0, 0.002, 0]}
         scale={26}
@@ -356,7 +364,7 @@ export function Atmosphere() {
         blur={2.6}
         opacity={0.32}
         color="#4a3f30"
-        frames={Infinity}
+        frames={sw ? 1 : Infinity}
       />
 
       {/* exec-14 — גוון-שמיים עדין מעל קו-הרקיע: שכבת-כיסוי שקופה בלבד 12ס"מ
