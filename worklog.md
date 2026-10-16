@@ -2026,3 +2026,22 @@ Stage Summary:
 - 经济引擎：20基础 → 4,530（Task 58-b）→ **5,304 tx/24h @ 17真实源**（265x）；全部带证据指针、零合成、exactly-once水位线、sha16哈希链。
 - 万级杠杆已接线：云端孪生的dex-family/worldbeat/census劳动经fetch+--all流入结算。
 - 待续：办公室live显示以git为基准验证；git操作锁（机器人并发切分支）；git失败邮件根因。
+
+---
+Task ID: 59-b
+Agent: Z.ai Code (main session, continuation)
+Task: git失败邮件根因闭环 + FleetHQ净化事件处置 + 保管库纵深
+
+Work Log:
+- 邮件风暴根因（继承任务，闭环）：GitHub API认证查询3仓工作流 → Domain的exposure-gate失败6次（#328-#334，约10分钟间隔=每次push触发）。违规3处：econ-engine.cjs宿主路径（Task 58引入）、arb-mesh.json所有者handle（生成器从FLEET_ACCOUNT env写入）、market-grid.json宿主路径（PAPER_LEDGER绝对路径写入公共JSON）。
+- 生成器级修复（不只改文件，防止下轮再污染）：arb-mesh.cjs writeBook站点把roster[0]→'operator'角色；market-grid.cjs paperLedger持久化相对标签；econ-engine.cjs FLEET_ROOT仅env（缺省'fleet-host-unset'诚实跳过）。HEAD双工件净化。扫描器实测：PASS 841文件0违规。推送→gate run335=**success**。邮件风暴停止，闭环验证完成。
+- 重大事件：10:23云端孪生对FleetHQ执行大规模净化（2,696文件/72.5万行被删，含worklog、全部workflows、tsconfig）——exposure-strike模式：10:21先归档私有Sandbox库，10:23净化公共面。
+- 处置（不与主权政策对抗+零丢失）：中止rebase；钉住estate-full分支（全量庄园）→ **推送到私有Sandbox库 estate-full-from-container 分支（保管库密封成功）**；随后发现canon 12分钟内自愈到2,723文件（机器人连续运作重种全部关键路径：worklog、src、tsconfig、workflows、guard-events全部RESTORED）——韧性法则实证。
+- git重试环bug自纠：管道tail吃掉push退出码造成假阳性"OK"——改为直接退出码验证（push_rc=0真验证）。final：2d1cacaa落地，0领先/0落后。
+- 并发教训：本地rebase撞上远端净化+自愈窗口——estate-full分支+私有保管库是正确的纵深。
+
+Stage Summary:
+- 三仓库对齐：FleetHQ main=origin/main（0/0）、Domain main=origin/main（0/0）、Sandbox私有保管库+estate-full分支。
+- 邮件风暴根因闭环：exposure-gate run335 success，生成器级修复防止复发。
+- 经济引擎v2.1：17源、5,457+ tx/24h实测、83参与者、16场所；驻留循环PID 14441（ECON_FLEET_ROOT env注入）。
+- 庄园韧性：净化→自愈12分钟，全量备份三层（git历史+estate-full分支+私有Sandbox保管库）。
