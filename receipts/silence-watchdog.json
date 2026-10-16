@@ -1,42 +1,42 @@
 {
  "schema": "silence.watchdog/1",
- "at": "2026-10-16T15:40:56.776Z",
+ "at": "2026-10-16T16:23:52.284Z",
  "scope": "actions",
  "voices": [
   {
    "name": "origin/FleetHQ",
-   "lastActivity": "2026-10-16T15:40:52.000Z",
+   "lastActivity": "2026-10-16T16:23:47.000Z",
    "ageMin": 0,
    "maxSilenceMin": 240,
    "verdict": "alive",
    "detail": {
-    "subject": "vault-seal [auto-economy]: 6 files — אטימה-חוזרת, כלום לא מת עם הסנדבו"
+    "subject": "pacemaker receipt: 2026-10-16T16:23:47Z"
    }
   },
   {
    "name": "origin/Domain",
-   "lastActivity": "2026-10-16T15:40:05.000Z",
+   "lastActivity": "2026-10-16T16:22:24.000Z",
    "ageMin": 1,
    "maxSilenceMin": 240,
    "verdict": "alive",
    "detail": {
-    "subject": "office-memory: foreman books sync 2026-10-16T15:40:05Z [skip ci]"
+    "subject": "office-memory: foreman books sync 2026-10-16T16:22:24Z [skip ci]"
    }
   },
   {
    "name": "origin/Console",
-   "lastActivity": "2026-10-16T15:31:57.000Z",
-   "ageMin": 9,
+   "lastActivity": "2026-10-16T16:11:45.000Z",
+   "ageMin": 12,
    "maxSilenceMin": 240,
    "verdict": "alive",
    "detail": {
-    "subject": "giants: local beat · 2026-10-16T15:31:57Z"
+    "subject": "pacemaker receipt: 2026-10-16T16:11:45Z"
    }
   },
   {
    "name": "divergence/FleetHQ",
-   "lastActivity": "2026-10-16T15:24:04.000Z",
-   "ageMin": 17,
+   "lastActivity": "2026-10-16T16:09:22.000Z",
+   "ageMin": 15,
    "maxSilenceMin": 75,
    "verdict": "alive",
    "detail": {
@@ -47,20 +47,20 @@
   },
   {
    "name": "divergence/Domain",
-   "lastActivity": "2026-10-16T15:24:04.000Z",
-   "ageMin": 17,
+   "lastActivity": "2026-10-16T16:09:22.000Z",
+   "ageMin": 15,
    "maxSilenceMin": 75,
    "verdict": "alive",
    "detail": {
     "source": "push-queue-receipt (via git)",
     "ahead": 0,
-    "behind": 0
+    "behind": 3
    }
   },
   {
    "name": "divergence/Console",
-   "lastActivity": "2026-10-16T15:24:04.000Z",
-   "ageMin": 17,
+   "lastActivity": "2026-10-16T16:09:22.000Z",
+   "ageMin": 15,
    "maxSilenceMin": 75,
    "verdict": "alive",
    "detail": {
@@ -71,38 +71,36 @@
   },
   {
    "name": "sandbox-ledger (via git)",
-   "lastActivity": "2026-10-16T15:39:59.592Z",
-   "ageMin": 1,
+   "lastActivity": "2026-10-16T16:12:59.981Z",
+   "ageMin": 11,
    "maxSilenceMin": 180,
    "verdict": "alive",
    "detail": {
-    "localSummary": "4 ALARM(S): beat/money-watch: no data (cannot prove alive) · beat/dex-mirror: no"
+    "localSummary": "1 ALARM(S): roster: unresolved — no FLEET_ROSTER_MAP in env/estate/.env.local an"
    }
   },
   {
    "name": "pages/money",
-   "lastActivity": null,
-   "ageMin": null,
+   "lastActivity": "2026-10-16T12:33:16.403Z",
+   "ageMin": 231,
    "maxSilenceMin": 240,
-   "verdict": "no-data",
+   "verdict": "alive",
    "detail": {
-    "error": "http 404"
+    "url": "dex/money.json"
    }
   },
   {
    "name": "pages/site-audit",
-   "lastActivity": null,
-   "ageMin": null,
+   "lastActivity": "2026-10-16T16:18:58.067Z",
+   "ageMin": 5,
    "maxSilenceMin": 360,
-   "verdict": "no-data",
+   "verdict": "alive",
    "detail": {
-    "error": "http 404"
+    "verdict": "unknown",
+    "at": "2026-10-16T16:18:58.067Z"
    }
   }
  ],
- "alarms": [
-  "pages/money: no data (cannot prove alive)",
-  "pages/site-audit: no data (cannot prove alive)"
- ],
- "summary": "2 ALARM(S): pages/money: no data (cannot prove alive) · pages/site-audit: no data (cannot prove alive)"
+ "alarms": [],
+ "summary": "ALL VISIBLE VOICES ALIVE"
 }
