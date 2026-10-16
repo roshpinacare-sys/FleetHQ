@@ -1,0 +1,29 @@
+{
+  "at": "2026-10-16T14:35:03.446Z",
+  "actor": "post-batcher",
+  "kind": "ledger.post.draft",
+  "schema": "broadcast-pkg/v1",
+  "book": {
+    "id": "fills-ledger",
+    "file": "agents/fills-ledger.json",
+    "title": "Fills Ledger — executed transactions"
+  },
+  "refs": {
+    "task": "t6",
+    "book": "agents/fills-ledger.json",
+    "lineage_root": "1d3224ecccc3edad1c158c0e306b6db023745c863a52931ec31b738db09e8506"
+  },
+  "amounts": {
+    "USDS": 0
+  },
+  "body_compact": "{\n \"at\": \"2026-10-16T10:46:22.288Z\",\n \"ok\": true,\n \"verdict\": \"no fills executed — this ledger is empty by truth, not by loss\",\n \"fills\": [],\n \"note\": \"the office routes and audits; it has never placed an order. When real fills exist, they land here with tx hashes.\"\n}",
+  "chars": {
+    "orig": 268,
+    "compact": 268,
+    "ratio": 1
+  },
+  "signed": false,
+  "broadcast": false,
+  "status": "BROADCAST-READY",
+  "note": "staged only — dispatch requires the dryrun-sign gate and explicit owner release; no keys were touched by the batcher"
+}

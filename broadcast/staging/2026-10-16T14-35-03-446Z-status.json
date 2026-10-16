@@ -1,0 +1,29 @@
+{
+  "at": "2026-10-16T14:35:03.446Z",
+  "actor": "post-batcher",
+  "kind": "ledger.post.draft",
+  "schema": "broadcast-pkg/v1",
+  "book": {
+    "id": "status",
+    "file": "status.json",
+    "title": "Office Status — the live service matrix"
+  },
+  "refs": {
+    "task": "t6",
+    "book": "status.json",
+    "lineage_root": "1d3224ecccc3edad1c158c0e306b6db023745c863a52931ec31b738db09e8506"
+  },
+  "amounts": {
+    "USDS": 0
+  },
+  "body_compact": "{\n \"at\": \"2026-10-16T10:46:22.288Z\",\n \"ok\": true,\n \"services\": {\n  \"reception_3000\": \"up\",\n  \"foreman_3010\": \"up\",\n  \"sovereign_gateway_3011\": \"up\"\n },\n \"gateway\": {\n  \"requests\": 0,\n  \"answered\": 0,\n  \"failed\": 0,\n  \"compactions\": 0,\n  \"last_answered_via\": null,\n  \"brains_total\": 13,\n  \"family_priority\": [\n   {\n    \"rank\": 1,\n    \"family\": \"kilo\",\n    \"score\": 0.5\n   },\n   {\n    \"rank\": 2,\n    \"family\": \"llm7\",\n    \"score\": 0.5\n   },\n   {\n    \"rank\": 3,\n    \"family\": \"pollinations\",\n    \"score\": 0.5\n   },\n   {\n    \"rank\": 4,\n    \"family\": \"ovh\",\n    \"score\": 0.5\n   }\n  ]\n }\n}",
+  "chars": {
+    "orig": 583,
+    "compact": 583,
+    "ratio": 1
+  },
+  "signed": false,
+  "broadcast": false,
+  "status": "BROADCAST-READY",
+  "note": "staged only — dispatch requires the dryrun-sign gate and explicit owner release; no keys were touched by the batcher"
+}
