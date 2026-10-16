@@ -1,11 +1,13 @@
 {
- "at": "2026-10-16T09:23:08.045Z",
- "finishedAt": "2026-10-16T09:23:22.589Z",
+ "at": "2026-10-16T10:53:08.067Z",
+ "finishedAt": "2026-10-16T10:59:35.229Z",
  "checks": {
   "boot": {
    "app": {
-    "wasUp": true,
-    "spawned": false
+    "wasUp": false,
+    "spawned": true,
+    "pid": 22659,
+    "note": "spawned but health not confirmed within 90s — receipts will show the truth"
    },
    "foreman": {
     "wasUp": true,
@@ -13,14 +15,14 @@
    }
   },
   "security": {
-   "exit": 0,
-   "verdict": "GREEN",
-   "detail": "SECURITY-REGRESSION: ALL GREEN (80/80)"
+   "exit": 1,
+   "verdict": "RED",
+   "detail": "SECURITY-REGRESSION: 2 FAILURE(S) (74/76)"
   },
   "connectivity": {
    "exit": 0,
    "verdictHe": "נמדדו 12 קבצי-קוד יתומים ו-3 ארטיפקטים ללא צרכן",
-   "sha16": "5edf76ab3ee30345"
+   "sha16": "a9fd92976be15f73"
   },
   "freshOracle": {
    "exit": 0,
@@ -45,14 +47,14 @@
      "name": "Domain",
      "attached": true,
      "ahead": 0,
-     "behind": 2,
+     "behind": 0,
      "fsck": "ok"
     },
     {
      "name": "FleetHQ",
      "attached": true,
      "ahead": 0,
-     "behind": 2,
+     "behind": 3,
      "fsck": "ok"
     }
    ]
