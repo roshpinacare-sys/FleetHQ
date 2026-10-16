@@ -1,11 +1,13 @@
 {
- "at": "2026-10-16T14:11:17.267Z",
- "finishedAt": "2026-10-16T14:11:31.893Z",
+ "at": "2026-10-16T16:22:11.139Z",
+ "finishedAt": "2026-10-16T16:22:33.181Z",
  "checks": {
   "boot": {
    "app": {
-    "wasUp": true,
-    "spawned": false
+    "wasUp": false,
+    "spawned": true,
+    "pid": 21152,
+    "note": "office app booted by selfcheck (it must always work)"
    },
    "foreman": {
     "wasUp": true,
@@ -20,7 +22,7 @@
   "connectivity": {
    "exit": 0,
    "verdictHe": "נמדדו 12 קבצי-קוד יתומים ו-3 ארטיפקטים ללא צרכן",
-   "sha16": "040e91e223191828"
+   "sha16": "81d32e37576a97b0"
   },
   "freshOracle": {
    "exit": 0,
@@ -28,38 +30,38 @@
   },
   "silence": {
    "exit": 2,
-   "summary": "2 ALARM(S): beat/grid-pulse: no data (cannot prove alive) · roster: unresolved — no FLEET_ROSTER_MAP in env/estate/.env.local and no local map file; post voices unmeasurable",
-   "alarms": 2
+   "summary": "1 ALARM(S): roster: unresolved — no FLEET_ROSTER_MAP in env/estate/.env.local and no local map file; post voices unmeasurable",
+   "alarms": 1
   },
   "gitHealth": {
-   "exit": 0,
+   "exit": 1,
    "repos": [
     {
      "name": "Console",
      "attached": true,
      "ahead": 0,
-     "behind": 1,
+     "behind": 0,
      "fsck": "ok"
     },
     {
      "name": "Domain",
      "attached": true,
      "ahead": 0,
-     "behind": 0,
+     "behind": 4,
      "fsck": "ok"
     },
     {
      "name": "FleetHQ",
-     "attached": true,
+     "attached": false,
      "ahead": 0,
-     "behind": 0,
+     "behind": 4,
      "fsck": "ok"
     }
    ]
   },
   "push": {
    "ok": true,
-   "attempts": 1,
+   "attempts": 2,
    "note": "pushed"
   }
  },
