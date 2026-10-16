@@ -126,15 +126,15 @@ export function BusinessWorld({ p }: { p: WorldsPayload | null }) {
         ageHe={head ? `ראש-שרשרת ${head.toLocaleString('en-US')}` : 'לא ידוע'}
         warn={gap !== null && gap > 0 ? `פער-רצפה נמדד ${gap.toFixed(1)} SP — כנות מלאה` : null}
       />
-      <div className="pointer-events-none absolute bottom-3 left-3 z-10 flex flex-wrap gap-1.5" dir="rtl">
+      <div className="pointer-events-none absolute bottom-3 inset-x-3 z-10 flex flex-wrap gap-1.5" dir="rtl">
         {audit ? (
-          <span className={`sl-chip ${audit.ok ? 'bg-[color:var(--surface-2)]/95' : 'bg-amber-500/15 text-amber-700'}`}>
+          <span className={`sl-chip sl-chip-wrap ${audit.ok ? 'bg-[color:var(--surface-2)]/95' : 'bg-amber-500/15 text-amber-700'}`}>
             {audit.ok
               ? `ביקורת-אמת: המשואה מאומתת מול השרשרת (סטייה ${audit.diff.toFixed(1)} SP)`
               : `ביקורת-אמת: חוסר-התאמה נמדד ${audit.diff.toFixed(1)} SP בין מפורסם לשרשרת`}
           </span>
         ) : (
-          <span className="sl-chip bg-amber-500/15 text-amber-700">ביקורת-אמת: מדידת-שרשרת לא זמינה כרגע</span>
+          <span className="sl-chip sl-chip-wrap bg-amber-500/15 text-amber-700">ביקורת-אמת: מדידת-שרשרת לא זמינה כרגע</span>
         )}
         {p.verify?.data ? (
           (() => {
@@ -148,19 +148,19 @@ export function BusinessWorld({ p }: { p: WorldsPayload | null }) {
             if (!allGreen && v.failures?.length) bits.push(`כשלים: ${v.failures.map((f) => f.id).join(', ')}`);
             if (!allGreen && tg?.redGates?.length) bits.push(tg.redGates.map((g) => `${g.gate} ${g.note ?? ''}`.trim()).join(' · '));
             return (
-              <span className={`sl-chip ${allGreen ? 'bg-[color:var(--surface-2)]/95' : 'bg-amber-500/15 text-amber-700'}`}>
+              <span className={`sl-chip sl-chip-wrap ${allGreen ? 'bg-[color:var(--surface-2)]/95' : 'bg-amber-500/15 text-amber-700'}`}>
                 רשת-האמת: {bits.join(' · ') || 'לא ידוע'}
               </span>
             );
           })()
         ) : (
-          <span className="sl-chip bg-amber-500/15 text-amber-700">רשת-האמת: לא מפורסם עדיין</span>
+          <span className="sl-chip sl-chip-wrap bg-amber-500/15 text-amber-700">רשת-האמת: לא מפורסם עדיין</span>
         )}
         {p.chain.data?.receivedInSp ? (
-          <span className="sl-chip bg-[color:var(--surface-2)]/95">האצלה-נכנסת {p.chain.data.receivedInSp.toFixed(1)} SP</span>
+          <span className="sl-chip sl-chip-wrap bg-[color:var(--surface-2)]/95">האצלה-נכנסת {p.chain.data.receivedInSp.toFixed(1)} SP</span>
         ) : null}
         {p.chain.data?.delegatedOutSp ? (
-          <span className="sl-chip bg-[color:var(--surface-2)]/95">האצלה-יוצאת {p.chain.data.delegatedOutSp.toFixed(1)} SP</span>
+          <span className="sl-chip sl-chip-wrap bg-[color:var(--surface-2)]/95">האצלה-יוצאת {p.chain.data.delegatedOutSp.toFixed(1)} SP</span>
         ) : null}
       </div>
     </div>
