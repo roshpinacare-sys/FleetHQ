@@ -44,6 +44,19 @@ const ASKPASS = "/home/z/.gitcred/askpass.sh";
 
 const sha16 = (s: string) => createHash("sha256").update(s).digest("hex").slice(0, 16);
 
+/* חוק-PATH-המובטח (85-c: יתומי-דור-ישן נולדו-בלי-bun ב-PATH → posix_spawn ENOENT):
+ *   bun/bunx נפתרים-מוחלט + כל-צאצא מקבל PATH עם /home/z/.bun/bin. */
+const GUARANTEED_PATH = ["/home/z/.bun/bin", "/usr/local/bin", "/usr/local/sbin", "/usr/bin", "/usr/sbin", "/bin", "/sbin", process.env.PATH ?? ""].join(":");
+function resolveBun(name: "bun" | "bunx"): string {
+  for (const base of ["/home/z/.bun/bin", "/usr/local/bin"]) {
+    const cand = `${base}/${name}`;
+    if (fs.existsSync(cand)) return cand;
+  }
+  return name; // נפילה-כנה
+}
+const BUN = resolveBun("bun");
+const BUNX = resolveBun("bunx");
+
 type BootInfo = { wasUp: boolean; spawned: boolean; pid?: number; note?: string };
 
 let lastRun: Record<string, unknown> = { at: null, state: "booting" };
@@ -55,7 +68,7 @@ function sh(cmd: string, args: string[], cwd: string, timeoutMs: number, extraEn
       cwd,
       timeout: timeoutMs,
       encoding: "utf8",
-      env: { ...process.env, ...extraEnv, GIT_ASKPASS: ASKPASS, GIT_TERMINAL_PROMPT: "0" },
+      env: { ...process.env, PATH: GUARANTEED_PATH, ...extraEnv, GIT_ASKPASS: ASKPASS, GIT_TERMINAL_PROMPT: "0" },
       stdio: ["ignore", "pipe", "pipe"],
     });
     return { code: 0, out };
@@ -89,7 +102,7 @@ function spawnDetached(cmd: string, args: string[], cwd: string, logFile: string
     cwd,
     detached: true,
     stdio: ["ignore", out, out],
-    env: { ...process.env, ...extraEnv },
+    env: { ...process.env, PATH: GUARANTEED_PATH, ...extraEnv },
   });
   child.unref();
   return child.pid ?? -1;
@@ -100,11 +113,11 @@ async function ensureApp(): Promise<BootInfo> {
     return { wasUp: true, spawned: false };
   // self-heal: the office app needs its install tree too
   if (!existsSync(join(FLEETHQ, "node_modules"))) {
-    const inst = sh("bun", ["install", "--frozen-lockfile"], FLEETHQ, 300_000);
+    const inst = sh(BUN, ["install", "--frozen-lockfile"], FLEETHQ, 300_000);
     if (inst.code !== 0)
       return { wasUp: false, spawned: false, note: `bun install failed: ${inst.out.slice(0, 200)}` };
   }
-  const pid = spawnDetached("bunx", ["next", "dev", "-p", String(APP_PORT)], FLEETHQ, "/tmp/office-selfcheck-app.log", { NEXT_TELEMETRY_DISABLED: "1" });
+  const pid = spawnDetached(BUNX, ["next", "dev", "-p", String(APP_PORT)], FLEETHQ, "/tmp/office-selfcheck-app.log", { NEXT_TELEMETRY_DISABLED: "1" });
   for (let i = 0; i < 30; i++) {
     await new Promise((r) => setTimeout(r, 3000));
     if (await httpOk(`http://localhost:${APP_PORT}/api/fleet-health`))
@@ -120,11 +133,11 @@ async function ensureForeman(): Promise<BootInfo> {
   // (measured first run: 'Cannot find package socket.io' — the office repairs itself)
   const svcDir = join(FLEETHQ, "mini-services", "agent-hq");
   if (!existsSync(join(svcDir, "node_modules"))) {
-    const inst = sh("bun", ["install"], svcDir, 120_000);
+    const inst = sh(BUN, ["install"], svcDir, 120_000);
     if (inst.code !== 0)
       return { wasUp: false, spawned: false, note: `bun install failed: ${inst.out.slice(0, 200)}` };
   }
-  const pid = spawnDetached("bun", ["run", "dev"], svcDir, "/tmp/office-selfcheck-foreman.log", {
+  const pid = spawnDetached(BUN, ["run", "dev"], svcDir, "/tmp/office-selfcheck-foreman.log", {
     AGENT_HQ_PORT: String(FOREMAN_PORT),
     AGENT_HQ_DATA_DIR: REAL_BOOKS_DIR, // the REAL Domain books — wired, not demo
     // env parity with the security suite (the suite got it, the boot didn't —
@@ -182,7 +195,7 @@ async function runOnce(): Promise<void> {
     // env parity law: the suite must measure the SAME reality the foreman
     // runs on (real estate Domain books + the real FleetHQ clone) — first
     // run measured a stale default path and honestly failed on it.
-    const sec = sh("bun", ["tools/security-regression.ts", String(APP_PORT), String(FOREMAN_PORT)], FLEETHQ, 180_000, {
+    const sec = sh(BUN, ["tools/security-regression.ts", String(APP_PORT), String(FOREMAN_PORT)], FLEETHQ, 180_000, {
       AGENT_HQ_DATA_DIR: REAL_BOOKS_DIR,
       AGENT_HQ_FLEET_DIR: FLEETHQ,
     });
