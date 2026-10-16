@@ -1,26 +1,52 @@
 {
  "schema": "fleet.connectivity-audit/1",
- "generatedAt": "2026-10-16T07:25:23.818Z",
+ "generatedAt": "2026-10-16T07:39:57.965Z",
  "doctrine": "measured-not-claimed: every verdict from a real graph walk; bytes+sha256 attached; library/scaffold classified honestly, never as orphans",
  "graph": {
-  "codeFiles": 112,
+  "codeFiles": 145,
   "entryPoints": [
+   "src/app/api/crew-closure/route.ts",
+   "src/app/api/decisions/route.ts",
+   "src/app/api/decisions-cycle/route.ts",
+   "src/app/api/engineering/route.ts",
    "src/app/api/fleet-health/route.ts",
    "src/app/api/foreman/health/route.ts",
+   "src/app/api/keys-registry/route.ts",
+   "src/app/api/network-claim/route.ts",
+   "src/app/api/network-self/route.ts",
+   "src/app/api/office-state/route.ts",
    "src/app/api/operator/message/route.ts",
    "src/app/api/operator/unlock/route.ts",
+   "src/app/api/owner-chat/route.ts",
+   "src/app/api/owner-gate/route.ts",
+   "src/app/api/queue-graph/route.ts",
    "src/app/api/recruit/route.ts",
+   "src/app/api/roast/route.ts",
+   "src/app/api/route.ts",
+   "src/app/api/sessions/route.ts",
    "src/app/api/v1/[...path]/route.ts",
    "src/app/api/veritas/route.ts",
    "src/app/api/visitor-chat/route.ts",
+   "src/app/api/world-broadcast/route.ts",
    "src/app/api/worlds-state/route.ts",
    "src/app/layout.tsx",
    "src/app/page.tsx",
    "src/app/v1/[...path]/route.ts",
    "src/app/worlds/page.tsx"
   ],
-  "reachable": 65,
+  "reachable": 83,
   "orphans": [
+   "src/components/agent-hq/AgentHQ.tsx",
+   "src/components/agent-hq/GitWire.tsx",
+   "src/components/agent-hq/Network.tsx",
+   "src/components/agent-hq/Office.tsx",
+   "src/components/agent-hq/OperatorGate.tsx",
+   "src/components/agent-hq/ReceptionChat.tsx",
+   "src/components/agent-hq/StackHealth.tsx",
+   "src/components/agent-hq/VeritasPanel.tsx",
+   "src/components/agent-hq/i18n.ts",
+   "src/components/agent-hq/panels.tsx",
+   "src/components/hq/Realism.tsx",
    "src/components/ui/accordion.tsx",
    "src/components/ui/alert-dialog.tsx",
    "src/components/ui/alert.tsx",
@@ -37,6 +63,7 @@
    "src/components/ui/collapsible.tsx",
    "src/components/ui/command.tsx",
    "src/components/ui/context-menu.tsx",
+   "src/components/ui/dialog.tsx",
    "src/components/ui/drawer.tsx",
    "src/components/ui/dropdown-menu.tsx",
    "src/components/ui/form.tsx",
@@ -66,10 +93,68 @@
    "src/components/ui/toggle-group.tsx",
    "src/components/ui/toggle.tsx",
    "src/components/ui/tooltip.tsx",
+   "src/components/worlds/SelfWorld.tsx",
    "src/hooks/use-mobile.ts",
-   "src/lib/db.ts"
+   "src/instrumentation.ts",
+   "src/lib/contract-facts.ts",
+   "src/lib/hq/feed.ts"
   ],
   "classified": [
+   {
+    "file": "src/components/agent-hq/AgentHQ.tsx",
+    "class": "orphan",
+    "note": null
+   },
+   {
+    "file": "src/components/agent-hq/GitWire.tsx",
+    "class": "orphan",
+    "note": null
+   },
+   {
+    "file": "src/components/agent-hq/i18n.ts",
+    "class": "orphan",
+    "note": null
+   },
+   {
+    "file": "src/components/agent-hq/Network.tsx",
+    "class": "orphan",
+    "note": null
+   },
+   {
+    "file": "src/components/agent-hq/Office.tsx",
+    "class": "orphan",
+    "note": null
+   },
+   {
+    "file": "src/components/agent-hq/OperatorGate.tsx",
+    "class": "orphan",
+    "note": null
+   },
+   {
+    "file": "src/components/agent-hq/panels.tsx",
+    "class": "orphan",
+    "note": null
+   },
+   {
+    "file": "src/components/agent-hq/ReceptionChat.tsx",
+    "class": "orphan",
+    "note": null
+   },
+   {
+    "file": "src/components/agent-hq/StackHealth.tsx",
+    "class": "orphan",
+    "note": null
+   },
+   {
+    "file": "src/components/agent-hq/VeritasPanel.tsx",
+    "class": "orphan",
+    "note": null
+   },
+   {
+    "file": "src/components/hq/Realism.tsx",
+    "class": "orphan",
+    "note": null
+   },
    {
     "file": "src/components/ui/accordion.tsx",
     "class": "library",
@@ -147,6 +232,11 @@
    },
    {
     "file": "src/components/ui/context-menu.tsx",
+    "class": "library",
+    "note": null
+   },
+   {
+    "file": "src/components/ui/dialog.tsx",
     "class": "library",
     "note": null
    },
@@ -296,19 +386,34 @@
     "note": null
    },
    {
+    "file": "src/components/worlds/SelfWorld.tsx",
+    "class": "orphan",
+    "note": null
+   },
+   {
     "file": "src/hooks/use-mobile.ts",
     "class": "library",
     "note": null
    },
    {
-    "file": "src/lib/db.ts",
-    "class": "scaffold",
-    "note": "prisma scaffold (default User/Post) — template leftover, dormant by design until a persistence lane claims it"
+    "file": "src/instrumentation.ts",
+    "class": "orphan",
+    "note": null
+   },
+   {
+    "file": "src/lib/contract-facts.ts",
+    "class": "orphan",
+    "note": null
+   },
+   {
+    "file": "src/lib/hq/feed.ts",
+    "class": "orphan",
+    "note": null
    }
   ],
-  "libraryCount": 46,
-  "scaffoldCount": 1,
-  "trueOrphanCount": 0
+  "libraryCount": 47,
+  "scaffoldCount": 0,
+  "trueOrphanCount": 15
  },
  "artifacts": {
   "scanned": 38,
@@ -324,11 +429,18 @@
   "wired": 37
  },
  "tools": {
-  "scanned": 18,
+  "scanned": 26,
   "unwiredCI": [
+   "tools/check-contrast.mjs",
    "tools/clock-probe.mjs",
+   "tools/engineering-a11.mjs",
+   "tools/gen-contract.mjs",
+   "tools/git-cage.mjs",
    "tools/git-health.mjs",
+   "tools/mech-selftest.ts",
    "tools/office3d-r3f/build.mjs",
+   "tools/office3d-static/operator-gate.ts",
+   "tools/queue-close.mjs",
    "tools/security-regression.ts",
    "tools/silence-ledger.mjs"
   ]
@@ -339,10 +451,10 @@
    "/worlds"
   ]
  },
- "verdictHe": "נמדדו 0 קבצי-קוד יתומים ו-1 ארטיפקטים ללא צרכן",
+ "verdictHe": "נמדדו 12 קבצי-קוד יתומים ו-1 ארטיפקטים ללא צרכן",
  "selfProof": {
   "algo": "sha256-16",
   "of": "this document sans selfProof field",
-  "sha16": "4c089b14af6b9be0"
+  "sha16": "f94b74799c470a12"
  }
 }
