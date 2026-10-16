@@ -234,6 +234,26 @@ else
   log "  local-beats started"
 fi
 
+# econ-engine — the economy's single writer (Task 6, 2026-10-16). Measured:
+# every econ-engine instance spawned from an interactive shell died within
+# ~2-5min (platform session-reaping; setsid/nohup/watchdog did not survive —
+# 7 silent deaths), while BOOT-SESSION processes (local-beats 08:47, engine
+# 11:55→14:14) lived for hours. Law: the engine must be born from the boot
+# session. CWD-probe identity (the local-beats lesson: cmdline strings lie),
+# watchdog loop for self-heal, single canonical chain lives in the SANDBOX
+# submodule (estate worktree churn kills residents — measured).
+EE_DIR="/home/z/my-project/t19b/Domain"
+EE_PID=""
+for p in $(pgrep -f "econ-engine.cjs" 2>/dev/null); do
+  if [ "$(readlink -f "/proc/$p/cwd" 2>/dev/null)" = "$EE_DIR" ]; then EE_PID=$p; break; fi
+done
+if [ -n "$EE_PID" ]; then
+  log "  econ-engine already running (pid $EE_PID)"
+else
+  nohup bash -c "cd $EE_DIR && while true; do node agents/econ-engine.cjs --loop 60; echo \"[boot-watchdog] exited code=\$? at \$(date -u +%H:%M:%SZ)\" >> /tmp/econ-engine.log; sleep 3; done" >> /tmp/econ-engine.log 2>&1 < /dev/null &
+  log "  econ-engine started (boot-session, single-writer sandbox law)"
+fi
+
 # shift-history — the office's operational-log transcriptor (task 27-b, wipe-#4
 # law: a STANDING service, not a UI-dependent one). Before this it was only
 # plantable by /api/foreman/health — which (a) nobody may poll for hours and
