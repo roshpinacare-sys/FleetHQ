@@ -634,8 +634,11 @@ export function makeFleetWallTexture(): {
       // renderer (5.5MB/s churn). Redraw only on real data change; the
       // age/ticker rows live through update() at a calm cadence.
       const e = p as Pulse | null;
+      // Task 9: seq/tx/mwu bucketed — the exact live numbers live in the DOM
+      // HUD; a 1600×860 wall repaint per 4s poll (just because the counter
+      // moved) was the last recurring 5-10s stall on software GL.
       const sig = e
-        ? `${e.seq}|${e.txPerMin}|${e.mwuPerMin}|${e.lastSha16}|${e.services?.length ?? 0}|${e.lanes?.map((l) => `${l.lane}:${l.ok}`).join(',')}|${e.pages?.ageMin ?? ''}`
+        ? `${Math.floor((e.seq ?? 0) / 500)}|${Math.round(e.txPerMin ?? 0)}|${Math.round((e.mwuPerMin ?? 0) / 50)}|${e.lastSha16}|${e.services?.length ?? 0}|${e.lanes?.map((l) => `${l.lane}:${l.ok}`).join(',')}|${e.pages?.ageMin ?? ''}`
         : 'null';
       const changed = sig !== lastSig || t - lastTick >= 30;
       lastSig = sig;

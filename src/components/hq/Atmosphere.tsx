@@ -334,8 +334,8 @@ export function Atmosphere() {
       />
       {/* מילוי-שמיים מהמזרח — רך, בלי צללים; אפס פינה-שחורה בחצי-המזרחי */}
       <directionalLight ref={fillRef} position={[8.5, 5.2, 2.5]} intensity={1.05} color="#e2e8ec" />
-      {/* Task 11-a — אור-שפה (rim) מצפון-מזרח — סטטי, מנתק דמויות מהרקע */}
-      <directionalLight position={[3.5, 4.2, -8.5]} intensity={0.55} color="#dfe8f0" />
+      {/* Task 11-a — אור-שפה (rim) מצפון-מזרח — סטטי (מאיץ בלבד — Task 9) */}
+      {!sw && <directionalLight position={[3.5, 4.2, -8.5]} intensity={0.55} color="#dfe8f0" />}
       {/* זרקור מרכזי חם מעל הלהבה — לב-החדר נשאר נקודת-המוקד (מאיץ בלבד) */}
       {!sw && (
       <spotLight
