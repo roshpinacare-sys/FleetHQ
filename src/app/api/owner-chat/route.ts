@@ -13,6 +13,7 @@ import { resolveGithubPat } from '@/lib/gh-pat';
 
 const GH_API = 'https://api.github.com';
 const ORG = 'roshpinacare-sys';
+const REPO = 'Sandbox'; // התיבה-חיה — אומת-חי (contents API 200, inbox.jsonl 19KB)
 const PATH = 'ops/sovereign/OWNER-CHANNEL/inbox.jsonl';
 const BOUND = 60;
 
@@ -49,7 +50,7 @@ async function appendInbox(line: string): Promise<{ ok: boolean; sha?: string; e
   let existing = '';
   let sha: string | undefined;
   if (got.status === 200) {
-    sha = got.body.sha as string | undefined;
+    sha = (got.body as { sha?: string }).sha;
     existing = Buffer.from((got.body.content as string) ?? '', 'base64').toString('utf-8');
   } else if (got.status !== 404) {
     return { ok: false, error: `קריאת-התיבה נכשלה (${got.status})` };
@@ -68,7 +69,7 @@ async function appendInbox(line: string): Promise<{ ok: boolean; sha?: string; e
   const rb = await gh('GET', `/repos/${ORG}/${REPO}/contents/${PATH}?ref=main`);
   const back = Buffer.from(((rb.body?.content as string) ?? ''), 'base64').toString('utf-8');
   if (!back.includes(line)) return { ok: false, error: 'readback-נכשל — ההוראה לא אומתה-על-הגיט' };
-  return { ok: true, sha: (put.body.commit?.sha as string)?.slice(0, 9) };
+  return { ok: true, sha: ((put.body as { commit?: { sha?: string } }).commit?.sha as string | undefined)?.slice(0, 9) };
 }
 
 async function ignite(event: string): Promise<{ ok: boolean; http?: number; error?: string }> {

@@ -76,7 +76,7 @@ export async function POST(req: Request) {
     let keyfit: Record<string, unknown> | null = null;
     try {
       const { runKeyfit } = await import('@/lib/keyfit');
-      keyfit = await runKeyfit(secret);
+      keyfit = (await runKeyfit(secret)) as unknown as Record<string, unknown>;
     } catch {
       keyfit = { ok: false, error: 'keyfit-unavailable' };
     }

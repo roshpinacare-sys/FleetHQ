@@ -121,7 +121,7 @@ setTimeout(() => {
   try {
     const j = JSON.parse(readFileSync('receipts/office-state-mirror.json', 'utf8'));
     const jd: unknown[] = Array.isArray(j?.decisions) ? j.decisions : [];
-    const known = new Set(state.decisions.map((d: { id?: string }) => d?.id));
+    const known = new Set(state.decisions.map((d: unknown) => (d as { id?: string })?.id));
     for (const d of jd.slice().reverse()) {
       const o = d as { id?: string };
       if (!o?.id || known.has(o.id)) continue;

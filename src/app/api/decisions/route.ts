@@ -46,7 +46,7 @@ interface SourceBox<T> {
   staleData?: boolean;
 }
 
-function box<T>(r: { ok: boolean; data: T | null; error?: string; fetchedAt: string }, items: T, rawTs: number | null): SourceBox<T> {
+function box<T>(r: { ok: boolean; data: unknown; error?: string; fetchedAt: string }, items: T, rawTs: number | null): SourceBox<T> {
   const age = ageMs(r.fetchedAt);
   const stale = rawTs !== null && Date.now() - rawTs > STALE_LAW_MS;
   return r.ok && r.data !== null
