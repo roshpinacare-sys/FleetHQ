@@ -1,9 +1,9 @@
-# ספר-המודעות-העצמית של הרשת — 2026-10-17T17:10:30.488Z
+# ספר-המודעות-העצמית של הרשת — 2026-10-17T18:30:25.943Z
 
-**43 ריפואים** (15 ציבוריים · 28 פרטיים) · **237 מכונות-יכולת** · **11 פעילים בשעה האחרונה** · תמונה-קודמת: 2026-10-17T16:56:31.284Z
+**43 ריפואים** (15 ציבוריים · 28 פרטיים) · **237 מכונות-יכולת** · **8 פעילים בשעה האחרונה** · תמונה-קודמת: 2026-10-17T17:10:30.488Z
 
 ## 💓 פעיל-עכשיו (דחיפה בשעה האחרונה)
-Autonomy · Domain · FleetHQ · sovereign-runner-kit · Console · saos-runtime · saos-dex · Sandbox · GridWatch · giant · roshpina
+FleetHQ · Autonomy · Domain · saos-runtime · steem · Project-files · saos-dex · Console
 
 ## 🧠 מפת-היכולות של הצי (המכונות והריפואים-בהן-הן-חיות)
 - **gitleaks** → Adsmarket, Console, Defi, Domain, Project-files, Saosmartwallet (+11)
@@ -15,6 +15,7 @@ Autonomy · Domain · FleetHQ · sovereign-runner-kit · Console · saos-runtime
 - **dex-beat** → Domain, saos-dex, saos-runtime
 - **token-forge** → Domain, Sandbox, steem
 - **ci** → Saosmartwallet, saos-dex, saos-sovereign-foundry
+- **runtime-pacemaker** → Console, FleetHQ
 - **artery-catchup** → Autonomy, Sandbox
 - **artery-decision-truth** → Autonomy, Sandbox
 - **artery-fleet** → Autonomy, Sandbox
@@ -30,6 +31,5 @@ Autonomy · Domain · FleetHQ · sovereign-runner-kit · Console · saos-runtime
 - **fleet-heal** → Autonomy, Sandbox
 - **fleet-yield** → Autonomy, Sandbox
 - **hive-probe** → Autonomy, Sandbox
-- **key-proof** → Autonomy, Sandbox
 
 *חוק: הספר-הזה הוא העין-העצמית של הרשת — נכתב-רק-ממדידה (API), ללא-המצאה, git-only, שורד-מחיקת-סנדבוקסים.*
