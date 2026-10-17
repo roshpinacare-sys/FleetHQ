@@ -1,42 +1,42 @@
 {
  "schema": "silence.watchdog/1",
- "at": "2026-10-17T01:26:14.096Z",
+ "at": "2026-10-17T06:18:49.330Z",
  "scope": "actions",
  "voices": [
   {
    "name": "origin/FleetHQ",
-   "lastActivity": "2026-10-17T01:26:05.000Z",
-   "ageMin": 0,
+   "lastActivity": "2026-10-17T06:16:02.000Z",
+   "ageMin": 3,
    "maxSilenceMin": 240,
    "verdict": "alive",
    "detail": {
-    "subject": "pacemaker receipt: 2026-10-17T01:26:05Z"
+    "subject": "harness: scores + repair proposals + mcp edge"
    }
   },
   {
    "name": "origin/Domain",
-   "lastActivity": "2026-10-17T01:26:07.000Z",
-   "ageMin": 0,
+   "lastActivity": "2026-10-17T05:14:17.000Z",
+   "ageMin": 65,
    "maxSilenceMin": 240,
    "verdict": "alive",
    "detail": {
-    "subject": "fleet-heartbeat: engine book 2026-10-17T01:26:06Z [skip ci]"
+    "subject": "[netrun-10-c] dex-mirror failing streak: scope the exposure gate to th"
    }
   },
   {
    "name": "origin/Console",
-   "lastActivity": "2026-10-17T01:19:33.000Z",
-   "ageMin": 7,
+   "lastActivity": "2026-10-17T04:57:07.000Z",
+   "ageMin": 82,
    "maxSilenceMin": 240,
    "verdict": "alive",
    "detail": {
-    "subject": "dex-beat: h412768 · 0 credits · 2026-10-17T01:19Z"
+    "subject": "[netrun-9-c] agents-watch: dynamic account-wide enumeration replaces h"
    }
   },
   {
    "name": "divergence/FleetHQ",
    "lastActivity": "2026-10-16T21:24:04.000Z",
-   "ageMin": 242,
+   "ageMin": 535,
    "maxSilenceMin": 75,
    "verdict": "SILENT-ALARM",
    "detail": {
@@ -48,7 +48,7 @@
   {
    "name": "divergence/Domain",
    "lastActivity": "2026-10-16T21:24:04.000Z",
-   "ageMin": 242,
+   "ageMin": 535,
    "maxSilenceMin": 75,
    "verdict": "SILENT-ALARM",
    "detail": {
@@ -60,7 +60,7 @@
   {
    "name": "divergence/Console",
    "lastActivity": "2026-10-16T21:24:04.000Z",
-   "ageMin": 242,
+   "ageMin": 535,
    "maxSilenceMin": 75,
    "verdict": "SILENT-ALARM",
    "detail": {
@@ -72,9 +72,9 @@
   {
    "name": "sandbox-ledger (via git)",
    "lastActivity": "2026-10-17T01:08:55.901Z",
-   "ageMin": 17,
+   "ageMin": 310,
    "maxSilenceMin": 180,
-   "verdict": "alive",
+   "verdict": "SILENT-ALARM",
    "detail": {
     "localSummary": "4 ALARM(S): beat/money-watch: no data (cannot prove alive) · beat/grid-pulse: no"
    }
@@ -82,7 +82,7 @@
   {
    "name": "pages/money",
    "lastActivity": "2026-10-16T20:33:07.509Z",
-   "ageMin": 293,
+   "ageMin": 586,
    "maxSilenceMin": 240,
    "verdict": "SILENT-ALARM",
    "detail": {
@@ -92,7 +92,7 @@
   {
    "name": "pages/site-audit",
    "lastActivity": "2026-10-16T16:18:58.067Z",
-   "ageMin": 547,
+   "ageMin": 840,
    "maxSilenceMin": 360,
    "verdict": "SILENT-ALARM",
    "detail": {
@@ -102,11 +102,12 @@
   }
  ],
  "alarms": [
-  "divergence/FleetHQ: silent 242min (limit 75)",
-  "divergence/Domain: silent 242min (limit 75)",
-  "divergence/Console: silent 242min (limit 75)",
-  "pages/money: silent 293min (limit 240)",
-  "pages/site-audit: silent 547min (limit 360)"
+  "divergence/FleetHQ: silent 535min (limit 75)",
+  "divergence/Domain: silent 535min (limit 75)",
+  "divergence/Console: silent 535min (limit 75)",
+  "sandbox-ledger (via git): silent 310min (limit 180)",
+  "pages/money: silent 586min (limit 240)",
+  "pages/site-audit: silent 840min (limit 360)"
  ],
- "summary": "5 ALARM(S): divergence/FleetHQ: silent 242min (limit 75) · divergence/Domain: silent 242min (limit 75) · divergence/Console: silent 242min (limit 75) · pages/money: silent 293min (limit 240) · pages/site-audit: silent 547min (limit 360)"
+ "summary": "6 ALARM(S): divergence/FleetHQ: silent 535min (limit 75) · divergence/Domain: silent 535min (limit 75) · divergence/Console: silent 535min (limit 75) · sandbox-ledger (via git): silent 310min (limit 180) · pages/money: silent 586min (limit 240) · pages/site-audit: silent 840min (limit 360)"
 }
