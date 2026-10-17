@@ -1,17 +1,17 @@
-# identity-patrol — סיור-זהויות כלל-הצי (2026-10-17T21:00:40.647Z)
+# identity-patrol — סיור-זהויות כלל-הצי (2026-10-17T21:45:07.930Z)
 
 **פסק: VIOLATION** — 43 ריפואים נסרקו (30 קומיטים אחרונים כל-אחד) · הפרות: 44 · דולגו: 1
 
 חוק: DECISIONS #10 — אין NAME@users.noreply.github.com פרט-ל-owner ו-github-actions[bot]; בוטים חותמים @agents.roshpinacare-sys.
 
 ## הפרות
+- `Autonomy` 0d6044879c — author:41898282+github-actions[bot]@users.noreply.github.com — "office-growth: VALUE-MAP measured [ci]"
+- `Autonomy` ba0abf7c12 — author:41898282+github-actions[bot]@users.noreply.github.com — "office-growth: work-orders measured [ci]"
+- `Autonomy` 4ff448f2f1 — author:41898282+github-actions[bot]@users.noreply.github.com — "office-growth: potential.json measured [ci]"
 - `sovereign-runner-kit` b1237a4b5d — committer:zai-audit-agent@users.noreply.github.com — "[netrun-10-b] owner decision brief: Actions-minutes wall in private repos (QUEUE-20261016-"
 - `sovereign-runner-kit` 35ae2a2033 — committer:zai-audit-agent@users.noreply.github.com — "[netrun-wave8] orchestrator: claims 8-a/8-b/8-c -> DONE with verification evidence"
 - `sovereign-runner-kit` 58b5b98fe3 — committer:zai-audit-agent@users.noreply.github.com — "[netrun-8-c] publish netrun executor contract: NETRUN.md + netrun.sh (tasks.example.tsv fa"
 - `sovereign-runner-kit` b3b2549128 — author:zai-audit-agent@users.noreply.github.com + committer:zai-audit-agent@users.noreply.github.com — "[phase0-zai] add fleet-wide agent coordination protocol (anti-overwrite registry)"
-- `Autonomy` 0d6044879c — author:41898282+github-actions[bot]@users.noreply.github.com — "office-growth: VALUE-MAP measured [ci]"
-- `Autonomy` ba0abf7c12 — author:41898282+github-actions[bot]@users.noreply.github.com — "office-growth: work-orders measured [ci]"
-- `Autonomy` 4ff448f2f1 — author:41898282+github-actions[bot]@users.noreply.github.com — "office-growth: potential.json measured [ci]"
 - `giant` 44e6fe7ceb — author:41898282+github-actions[bot]@users.noreply.github.com + committer:41898282+github-actions[bot]@users.noreply.github.com — "trust-heartbeat: autonomous scan (no-sandbox) — 2026-10-17T19:53Z"
 - `giant` 6711d38ae1 — author:41898282+github-actions[bot]@users.noreply.github.com + committer:41898282+github-actions[bot]@users.noreply.github.com — "trust-heartbeat: autonomous scan (no-sandbox) — 2026-10-17T16:45Z"
 - `giant` 2d0e383900 — author:41898282+github-actions[bot]@users.noreply.github.com + committer:41898282+github-actions[bot]@users.noreply.github.com — "trust-heartbeat: autonomous scan (no-sandbox) — 2026-10-17T13:22Z"
