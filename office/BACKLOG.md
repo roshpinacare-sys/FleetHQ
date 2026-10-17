@@ -1,13 +1,13 @@
 # תיק-העבודות של המשרד (BACKLOG)
 
-> מחזור-השיפור-העצמי · office/retro.mjs · SAOS-OFFICE-RETRO/1 · 2026-10-16 15:00 UTC · [owner-directive]
+> מחזור-השיפור-העצמי · office/retro.mjs · SAOS-OFFICE-RETRO/1 · 2026-10-17 20:47 UTC · [owner-directive]
 
 ## סיכום נמדד
 
-- **אוטובוס**: 8 green · 1 amber · 5 red · 2 grey (רישום: fallback-embedded)
+- **אוטובוס**: 9 green · 1 amber · 5 red · 1 grey (רישום: fallback-embedded)
 - **שערי-בעלים**: לא-ידוע (מקור-השערים פרטי/לא-נגיש — כנה)
 - **מחקר**: לא-נמדד (כנה)
-- **E1 spread-regime (built-in)**: SPREAD-REGIME: value=400bps · delta=+306.50 vs 93.5 · מקור-בן-14.2h · HOLD (loosened) — הפיזור התרחב — לעקוב בלבד (verify/doc-only)
+- **E1 spread-regime (built-in)**: SPREAD-REGIME: value=0bps · delta=-93.50 vs 93.5 · מקור-בן-2.9h · PASS (tightened) — הפיזור הצטמצם — נזילות-צד-הגריד משתפרת
 - **צווי-עבודה (work-orders)**: לא-ידוע (כנה)
 - **רווחיות (profit-oracle)**: לא-זמין — profit-oracle לא-נגיש (HTTP 404) — כנה, לא-מדומה (14b עשוי שלא להיות באוויר עדיין)
 - **פריטים**: 7 (SAFE 1 · MACHINE-PREP 6 · OWNER-WORD 0)
@@ -26,17 +26,17 @@
 
 | # | id | מקור | כותרת | מחלקת-סיכון | ערך | מאמץ | דבר-בעלים | executableBy |
 |---|----|------|-------|-------------|-----|------|-----------|--------------|
-| 1 | `research-feed-unavailable` | sandbox-research-findings | רכבת-המחקר לא-נמדדה: לא-נמצא קובץ-ממצאים מ-9 הימים האחרונים (2026-10-16, 2026-10-15, 20… | SAFE | 3 | 1 | — | `next-retro` |
+| 1 | `research-feed-unavailable` | sandbox-research-findings | רכבת-המחקר לא-נמדדה: לא-נמצא קובץ-ממצאים מ-9 הימים האחרונים (2026-10-17, 2026-10-16, 20… | SAFE | 3 | 1 | — | `next-retro` |
 | 2 | `bus-sandbox-flow-map` | bus-registry (A) | פיד אדום: sandbox-flow-map — HTTP 404 | MACHINE-PREP | 7 | 1 | — | `next-retro` |
 | 3 | `bus-sandbox-lessons-ledger` | bus-registry (A) | פיד אדום: sandbox-lessons-ledger — HTTP 404 | MACHINE-PREP | 7 | 1 | — | `next-retro` |
-| 4 | `bus-sandbox-probe-blurt` | bus-registry (A) | פיד אדום: sandbox-probe-blurt — לא-נמצא ב-2 תאריכים אחרונים (2026-10-16, 2026-10-15) | MACHINE-PREP | 7 | 1 | — | `next-retro` |
-| 5 | `bus-sandbox-probe-hive` | bus-registry (A) | פיד אדום: sandbox-probe-hive — לא-נמצא ב-2 תאריכים אחרונים (2026-10-16, 2026-10-15) | MACHINE-PREP | 7 | 1 | — | `next-retro` |
-| 6 | `bus-sandbox-research-findings` | bus-registry (A) | פיד אדום: sandbox-research-findings — לא-נמצא ב-9 תאריכים אחרונים (2026-10-16, 2026-10-… | MACHINE-PREP | 7 | 1 | — | `next-retro` |
-| 7 | `bus-domain-office-feed` | bus-registry (A) | פיד מיושן: domain-office-feed — מיושן: 30h מעל החוק (24h) | MACHINE-PREP | 4 | 1 | — | `next-retro` |
+| 4 | `bus-sandbox-probe-blurt` | bus-registry (A) | פיד אדום: sandbox-probe-blurt — לא-נמצא ב-2 תאריכים אחרונים (2026-10-17, 2026-10-16) | MACHINE-PREP | 7 | 1 | — | `next-retro` |
+| 5 | `bus-sandbox-probe-hive` | bus-registry (A) | פיד אדום: sandbox-probe-hive — לא-נמצא ב-2 תאריכים אחרונים (2026-10-17, 2026-10-16) | MACHINE-PREP | 7 | 1 | — | `next-retro` |
+| 6 | `bus-sandbox-research-findings` | bus-registry (A) | פיד אדום: sandbox-research-findings — לא-נמצא ב-9 תאריכים אחרונים (2026-10-17, 2026-10-… | MACHINE-PREP | 7 | 1 | — | `next-retro` |
+| 7 | `bus-domain-office-feed` | bus-registry (A) | פיד מיושן: domain-office-feed — מיושן: 60h מעל החוק (24h) | MACHINE-PREP | 4 | 1 | — | `next-retro` |
 
 ## הצעה ראשית של המחזור
 
-- **קובץ**: [PROPOSALS/2026-10-16-research-feed-unavailable.md](PROPOSALS/2026-10-16-research-feed-unavailable.md) — עבור הפריט המדורג ראשון.
+- **קובץ**: [PROPOSALS/2026-10-17-research-feed-unavailable.md](PROPOSALS/2026-10-17-research-feed-unavailable.md) — עבור הפריט המדורג ראשון.
 
 ## גבולות (חוקי-המחזור)
 
@@ -48,4 +48,4 @@
 - כנות: לא-ידוע נשאר לא-ידוע; פיד אדום מודפס אדום
 
 ---
-*נוצר אוטומטית על-ידי המשרד · SAOS-OFFICE-RETRO/1 · אפס-סודות (סרוק fail-closed) · ISO 2026-10-16T15:00:06.564Z*
+*נוצר אוטומטית על-ידי המשרד · SAOS-OFFICE-RETRO/1 · אפס-סודות (סרוק fail-closed) · ISO 2026-10-17T20:47:21.614Z*
