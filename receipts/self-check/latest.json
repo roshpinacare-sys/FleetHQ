@@ -1,28 +1,30 @@
 {
- "at": "2026-10-16T20:52:11.244Z",
- "finishedAt": "2026-10-16T20:54:25.169Z",
+ "at": "2026-10-17T00:38:53.331Z",
+ "finishedAt": "2026-10-17T00:39:28.090Z",
  "checks": {
   "boot": {
    "app": {
     "wasUp": false,
     "spawned": true,
-    "pid": 30213,
-    "note": "spawned but health not confirmed within 90s — receipts will show the truth"
+    "pid": 1908,
+    "note": "office app booted by selfcheck (it must always work)"
    },
    "foreman": {
-    "wasUp": true,
-    "spawned": false
+    "wasUp": false,
+    "spawned": true,
+    "pid": 1963,
+    "note": "foreman booted by selfcheck on the REAL books (/home/z/estate/Domain)"
    }
   },
   "security": {
-   "exit": 1,
-   "verdict": "RED",
-   "detail": "SECURITY-REGRESSION: 2 FAILURE(S) (75/77)"
+   "exit": 0,
+   "verdict": "GREEN",
+   "detail": "SECURITY-REGRESSION: ALL GREEN (81/81)"
   },
   "connectivity": {
    "exit": 0,
    "verdictHe": "נמדדו 12 קבצי-קוד יתומים ו-3 ארטיפקטים ללא צרכן",
-   "sha16": "0bf91796586977a5"
+   "sha16": "8eeba9083579c37e"
   },
   "freshOracle": {
    "exit": 0,
@@ -30,11 +32,11 @@
   },
   "silence": {
    "exit": 2,
-   "summary": "1 ALARM(S): roster: unresolved — no FLEET_ROSTER_MAP in env/estate/.env.local and no local map file; post voices unmeasurable",
-   "alarms": 1
+   "summary": "6 ALARM(S): beat/money-watch: no data (cannot prove alive) · beat/dex-mirror: no data (cannot prove alive) · beat/grid-pulse: no data (cannot prove alive) · beat/office-ci-lite: no data (cannot prove alive) · beat/office-heartbeat: no data (cannot prove alive) · roster: unresolved — no FLEET_ROSTER_MAP in env/estate/.env.local and no local map file; post voices unmeasurable",
+   "alarms": 6
   },
   "gitHealth": {
-   "exit": 1,
+   "exit": 0,
    "repos": [
     {
      "name": "Console",
@@ -46,23 +48,23 @@
     {
      "name": "Domain",
      "attached": true,
-     "ahead": null,
-     "behind": null,
+     "ahead": 0,
+     "behind": 0,
      "fsck": "ok"
     },
     {
      "name": "FleetHQ",
      "attached": true,
-     "ahead": null,
-     "behind": null,
-     "fsck": "fail"
+     "ahead": 0,
+     "behind": 0,
+     "fsck": "ok"
     }
    ]
   },
   "push": {
-   "ok": false,
-   "attempts": 3,
-   "note": "push failed after 3 jittered attempts — receipts remain local, next cycle retries (honest, no fakes)"
+   "ok": true,
+   "attempts": 1,
+   "note": "pushed"
   }
  },
  "state": "ok"
