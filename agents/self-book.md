@@ -1,12 +1,9 @@
-# ספר-המודעות-העצמית של הרשת — 2026-10-17T21:00:42.636Z
+# ספר-המודעות-העצמית של הרשת — 2026-10-17T21:45:10.403Z
 
-**43 ריפואים** (15 ציבוריים · 28 פרטיים) · **238 מכונות-יכולת** · **17 פעילים בשעה האחרונה** · תמונה-קודמת: 2026-10-17T19:23:52.913Z
-
-## ⚙️ מכונות-חדשות/שהוסרו מאז-התמונה
-- sovereign-runner-kit: +fleet-keeper.yml
+**43 ריפואים** (15 ציבוריים · 28 פרטיים) · **238 מכונות-יכולת** · **19 פעילים בשעה האחרונה** · תמונה-קודמת: 2026-10-17T21:00:42.636Z
 
 ## 💓 פעיל-עכשיו (דחיפה בשעה האחרונה)
-FleetHQ · sovereign-runner-kit · Autonomy · saos-coordination · vault-home · saos-runtime · Domain · steem · Console · ops-control · execution-fabric · saos-dex · Project-files · giant · GridWatch · fleet-economy · roshpina
+FleetHQ · Autonomy · Domain · sovereign-runner-kit · saos-dex · giant · roshpina · Sandbox · Console · execution-fabric · saos-owner-channel · saos-runtime · fleet-economy · saos-coordination · steem · vault-home · ops-control · Project-files · GridWatch
 
 ## 🧠 מפת-היכולות של הצי (המכונות והריפואים-בהן-הן-חיות)
 - **gitleaks** → Adsmarket, Console, Defi, Domain, Project-files, Saosmartwallet (+11)
