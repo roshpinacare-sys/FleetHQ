@@ -638,7 +638,7 @@ export function makeFleetWallTexture(): {
       // HUD; a 1600×860 wall repaint per 4s poll (just because the counter
       // moved) was the last recurring 5-10s stall on software GL.
       const sig = e
-        ? `${Math.floor((e.seq ?? 0) / 500)}|${Math.round(e.txPerMin ?? 0)}|${Math.round((e.mwuPerMin ?? 0) / 50)}|${e.lastSha16}|${e.services?.length ?? 0}|${e.lanes?.map((l) => `${l.lane}:${l.ok}`).join(',')}|${e.pages?.ageMin ?? ''}`
+        ? `${Math.floor((e.econ?.seq ?? 0) / 500)}|${Math.round(e.econ?.txPerMin ?? 0)}|${Math.round((e.econ?.mwuPerMin ?? 0) / 50)}|${e.econ?.lastSha16 ?? ''}|${e.services?.length ?? 0}|${e.lanes?.map((l) => `${l.lane}:${l.ok}`).join(',')}|${e.pages?.ageMin ?? ''}`
         : 'null';
       const changed = sig !== lastSig || t - lastTick >= 30;
       lastSig = sig;
