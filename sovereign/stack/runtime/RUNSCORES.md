@@ -1,17 +1,17 @@
 # RUNSCORES — the harness scoring book
 
-- generatedAt: `2026-10-17T00:48:11.748Z`
-- STATE book age: 13min · api fetches: 8
-- counts: {"unknown":10,"healthy":107,"critical":4,"flaky":4,"watch":1}
+- generatedAt: `2026-10-17T06:15:55.551Z`
+- STATE book age: 341min · api fetches: 8
+- counts: {"unknown":10,"healthy":107,"critical":6,"flaky":2,"watch":1}
 
 | repo | workflow | class | lastConcl | lastRun |
 |---|---|---|---|---|
 | FleetHQ | office-ci | critical | failure | 2026-10-17T00:30:41Z |
+| Domain | dex-mirror | critical | failure | 2026-10-17T00:29:29Z |
 | Domain | estate-scrub | critical | failure | 2026-10-17T00:28:22Z |
+| Domain | arb-mesh | critical | failure | 2026-10-17T00:20:37Z |
 | Domain | exposure-gate | critical | failure | 2026-10-17T00:01:37Z |
 | Autonomy | selfhood | critical | cancelled | 2026-10-16T23:54:13Z |
-| Domain | dex-mirror | flaky | failure | 2026-10-17T00:29:29Z |
-| Domain | arb-mesh | flaky | failure | 2026-10-17T00:20:37Z |
 | Console | console-publish | flaky | failure | 2026-10-16T21:41:31Z |
 | Autonomy | artery-grid | flaky | failure | 2026-10-16T23:57:16Z |
 | FleetHQ | silence-watchdog | healthy | success | 2026-10-17T00:33:29Z |
