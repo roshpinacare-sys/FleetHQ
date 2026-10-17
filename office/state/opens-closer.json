@@ -1,10 +1,10 @@
 {
  "schema": "saos.opens-closer.v1",
- "generatedAt": "2026-10-17T02:00:17.196Z",
- "verdictHe": "3 נפלו מעל SLA (recruit 3678דק>SLA1660, ventures 3677דק>SLA1660, products 7420דק>SLA2910) — הוערו: אין",
+ "generatedAt": "2026-10-17T11:06:04.726Z",
+ "verdictHe": "11 נפלו מעל SLA (office-state 598דק>SLA180, beacon 576דק>SLA100, lighthouse 576דק>SLA80, value-scan 576דק>SLA90, domain-pulse 557דק>SLA180, sovereign-decider 580דק>SLA90, live 566דק>SLA180, grid 606דק>SLA125, recruit 4224דק>SLA1660, ventures 4223דק>SLA1660, products 7966דק>SLA2910) — הוערו: office-state,beacon,lighthouse,value-scan,domain-pulse,live,grid",
  "metrics": {
-  "staleCount": 3,
-  "dispatchedCount": 0
+  "staleCount": 11,
+  "dispatchedCount": 7
  },
  "checks": [
   {
@@ -12,10 +12,10 @@
    "url": "https://raw.githubusercontent.com/roshpinacare-sys/FleetHQ/main/office/state/office-state.json",
    "slaMin": 180,
    "stateTs": "2026-10-17T01:08:13.278Z",
-   "ageMin": 52,
-   "stale": false,
-   "dispatched": false,
-   "dispatchStatus": null,
+   "ageMin": 598,
+   "stale": true,
+   "dispatched": true,
+   "dispatchStatus": "dispatched 204",
    "healNote": "same-repo dispatch, GITHUB_TOKEN"
   },
   {
@@ -23,10 +23,10 @@
    "url": "https://raw.githubusercontent.com/roshpinacare-sys/sovereign-beacon/main/state.json",
    "slaMin": 100,
    "stateTs": "2026-10-17T01:30:25Z",
-   "ageMin": 30,
-   "stale": false,
-   "dispatched": false,
-   "dispatchStatus": null,
+   "ageMin": 576,
+   "stale": true,
+   "dispatched": true,
+   "dispatchStatus": "cross-repo dispatched 204 (CROSS_REVIVE_PAT)",
    "healNote": "cross-repo dispatch via CROSS_REVIVE_PAT secret (owner authority delegated to the sovereignty — T-63 D1, claim 440e40f3)"
   },
   {
@@ -34,10 +34,10 @@
    "url": "https://raw.githubusercontent.com/roshpinacare-sys/sovereign-lighthouse/main/state.json",
    "slaMin": 80,
    "stateTs": "2026-10-17T01:30:27Z",
-   "ageMin": 30,
-   "stale": false,
-   "dispatched": false,
-   "dispatchStatus": null,
+   "ageMin": 576,
+   "stale": true,
+   "dispatched": true,
+   "dispatchStatus": "cross-repo dispatched 204 (CROSS_REVIVE_PAT)",
    "healNote": "cross-repo dispatch via CROSS_REVIVE_PAT secret (owner authority delegated to the sovereignty — T-63 D1, claim 440e40f3)"
   },
   {
@@ -45,10 +45,10 @@
    "url": "https://raw.githubusercontent.com/roshpinacare-sys/FleetHQ/main/office/state/value-scan.json",
    "slaMin": 90,
    "stateTs": "2026-10-17T01:30:35.101Z",
-   "ageMin": 30,
-   "stale": false,
-   "dispatched": false,
-   "dispatchStatus": null,
+   "ageMin": 576,
+   "stale": true,
+   "dispatched": true,
+   "dispatchStatus": "dispatched 204",
    "healNote": "same-repo dispatch, GITHUB_TOKEN (added T-63 — GitHub scheduler drops these runs too, measured 176min vs SLA 90)"
   },
   {
@@ -56,10 +56,10 @@
    "url": "https://raw.githubusercontent.com/roshpinacare-sys/Domain/main/office/data.json",
    "slaMin": 180,
    "stateTs": "2026-10-17T01:49:25.206Z",
-   "ageMin": 11,
-   "stale": false,
-   "dispatched": false,
-   "dispatchStatus": null,
+   "ageMin": 557,
+   "stale": true,
+   "dispatched": true,
+   "dispatchStatus": "cross-repo dispatched 204 (CROSS_REVIVE_PAT)",
    "healNote": "cross-repo dispatch via CROSS_REVIVE_PAT — T-72 correction: the healNote claimed the writer is NOT a workflow (T-62), but Domain/.github/workflows/office-pulse.yml measures + commits office/data.json (office-pulse-bot, measured commits 21:37Z/22:20Z 2026-10-12); the blind spot is closed"
   },
   {
@@ -67,10 +67,10 @@
    "url": "https://raw.githubusercontent.com/roshpinacare-sys/FleetHQ/main/office/state/sovereign-decisions.json",
    "slaMin": 90,
    "stateTs": "2026-10-17T01:25:40.247Z",
-   "ageMin": 35,
-   "stale": false,
+   "ageMin": 580,
+   "stale": true,
    "dispatched": false,
-   "dispatchStatus": null,
+   "dispatchStatus": "HTTP 422",
    "healNote": "same-repo dispatch, GITHUB_TOKEN — T-72 blind-spot closure: the decision organ itself was never watched (cadence 30min + 30min grace + 30min measured scheduler lag); the immune system now watches its own driver"
   },
   {
@@ -78,10 +78,10 @@
    "url": "https://raw.githubusercontent.com/roshpinacare-sys/Domain/main/agents/office-live.json",
    "slaMin": 180,
    "stateTs": "2026-10-17T01:39:46.548Z",
-   "ageMin": 21,
-   "stale": false,
-   "dispatched": false,
-   "dispatchStatus": null,
+   "ageMin": 566,
+   "stale": true,
+   "dispatched": true,
+   "dispatchStatus": "cross-repo dispatched 204 (CROSS_REVIVE_PAT)",
    "healNote": "cross-repo dispatch via CROSS_REVIVE_PAT (Domain/office-artery.yml, measured dispatchable) — T-63 D1 authority"
   },
   {
@@ -89,10 +89,10 @@
    "url": "https://raw.githubusercontent.com/roshpinacare-sys/Domain/main/agents/grid-truth.json",
    "slaMin": 125,
    "stateTs": "2026-10-17T01:00:28.548Z",
-   "ageMin": 60,
-   "stale": false,
-   "dispatched": false,
-   "dispatchStatus": null,
+   "ageMin": 606,
+   "stale": true,
+   "dispatched": true,
+   "dispatchStatus": "cross-repo dispatched 204 (CROSS_REVIVE_PAT)",
    "healNote": "cross-repo dispatch via CROSS_REVIVE_PAT (Domain/grid-doctor.yml, measured dispatchable) — T-63 D1 authority"
   },
   {
@@ -100,7 +100,7 @@
    "url": "https://raw.githubusercontent.com/roshpinacare-sys/Domain/main/dex/grid.json",
    "slaMin": 1800,
    "stateTs": "2026-10-16T23:45:48.938Z",
-   "ageMin": 134,
+   "ageMin": 680,
    "stale": false,
    "dispatched": false,
    "dispatchStatus": null,
@@ -111,7 +111,7 @@
    "url": "https://raw.githubusercontent.com/roshpinacare-sys/Domain/main/agents/recruitment.json",
    "slaMin": 1660,
    "stateTs": "2026-10-14T12:42:17.221Z",
-   "ageMin": 3678,
+   "ageMin": 4224,
    "stale": true,
    "dispatched": false,
    "dispatchStatus": null,
@@ -122,7 +122,7 @@
    "url": "https://raw.githubusercontent.com/roshpinacare-sys/Domain/main/agents/ventures.json",
    "slaMin": 1660,
    "stateTs": "2026-10-14T12:42:54.397Z",
-   "ageMin": 3677,
+   "ageMin": 4223,
    "stale": true,
    "dispatched": false,
    "dispatchStatus": null,
@@ -133,7 +133,7 @@
    "url": "https://raw.githubusercontent.com/roshpinacare-sys/Domain/main/marketing/products.json",
    "slaMin": 2910,
    "stateTs": "2026-10-11T22:20:00Z",
-   "ageMin": 7420,
+   "ageMin": 7966,
    "stale": true,
    "dispatched": false,
    "dispatchStatus": null,
