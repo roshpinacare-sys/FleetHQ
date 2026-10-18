@@ -67,6 +67,11 @@ jobs:
           curl -sS -o /dev/null -w "models-ipv4: code=%{http_code} connect=%{time_connect}s tls=%{time_appconnect}s total=%{time_total}s\n" \
             --max-time 15 -4 -H "Authorization: Bearer $NVIDIA_API_KEY_2" \
             "${NVIDIA_BASE_URL_2:-https://integrate.api.nvidia.com/v1}/models" || echo "models-ipv4: TIMEOUT/BLOCKED"
+          curl -sS -o /tmp/chat-diag.json -w "chat-ipv4: code=%{http_code} total=%{time_total}s\n" \
+            --max-time 45 -4 -H "Authorization: Bearer $NVIDIA_API_KEY_2" -H "Content-Type: application/json" \
+            -d '{"model":"z-ai/glm-5.3-flash","messages":[{"role":"user","content":"Say OK"}],"max_tokens":8}' \
+            "${NVIDIA_BASE_URL_2:-https://integrate.api.nvidia.com/v1}/chat/completions" || echo "chat-ipv4: TIMEOUT/BLOCKED"
+          python3 -c "import json; d=json.load(open('/tmp/chat-diag.json')); c=d.get('choices',[{}])[0].get('message',{}).get('content',''); print('chat-ipv4 reply:', (c[:40]+'…') if c and len(c)>40 else (c or d.get('detail') or str(d)[:120]))" 2>/dev/null || true
           # NIM cold path can exceed iFixAi's hardcoded 30s preflight
           # (CONNECTION_TEST_TIMEOUT — vendor constant) — retry warm-path, honest recording
           BRAIN_OK=0
