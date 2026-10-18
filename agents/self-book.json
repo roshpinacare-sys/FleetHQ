@@ -1,70 +1,73 @@
 {
  "protocol": "SAOS-SELF-BOOK/1",
- "at": "2026-10-18T05:16:04.001Z",
- "prevAt": "2026-10-18T03:56:39.986Z",
+ "at": "2026-10-18T08:51:59.633Z",
+ "prevAt": "2026-10-18T05:16:04.001Z",
  "law": "הרשת מודעת לעצמה: מלאי-מלא + חדשנות + יכולות, כל 30 דק', git-only",
  "totals": {
-  "repos": 43,
-  "publicRepos": 15,
+  "repos": 44,
+  "publicRepos": 16,
   "privateRepos": 28,
-  "machines": 255,
-  "aliveLastHour": 21
+  "machines": 260,
+  "aliveLastHour": 15
  },
  "newSincePrev": {
-  "newRepos": [],
+  "newRepos": [
+   "sovereign-executor"
+  ],
   "newWorkflows": [
    {
-    "repo": "Autonomy",
+    "repo": "Domain",
     "added": [
-     "artery-pacer.yml"
+     "autonomy-guardian.yml"
+    ],
+    "removed": []
+   },
+   {
+    "repo": "saos-runtime",
+    "added": [
+     "builder-catchup.yml",
+     "organ-guardian.yml"
     ],
     "removed": []
    },
    {
     "repo": "sovereign-runner-kit",
     "added": [
-     "agent-shield.yml",
-     "deploy-gate.yml"
+     "capability-gate.yml"
     ],
     "removed": []
    }
   ],
   "rootChangedCount": 10,
   "rootChanged": [
-   "fleet-economy",
-   "Console",
-   "Domain",
-   "giant",
-   "Autonomy",
-   "saos-runtime",
-   "sovereign-runner-kit",
    "sovereign-lighthouse",
+   "Domain",
+   "fleet-economy",
+   "giant",
    "saos-coordination",
-   "saos-owner-channel"
+   "saos-owner-channel",
+   "saos-runtime",
+   "execution-fabric",
+   "saos-dex",
+   "sovereign-runner-kit"
   ]
  },
  "aliveLastHour": [
   "FleetHQ",
-  "fleet-economy",
-  "Pulse",
+  "sovereign-beacon",
+  "sovereign-lighthouse",
   "Console",
   "Domain",
+  "fleet-economy",
   "giant",
   "steem",
-  "sovereign-beacon",
-  "Autonomy",
-  "roshpina",
-  "saos-runtime",
-  "saos-dex",
-  "Sandbox",
-  "saos-desk",
-  "sovereign-runner-kit",
-  "sovereign-lighthouse",
-  "Project-files",
-  "GridWatch",
-  "Zip",
   "saos-coordination",
-  "Defi"
+  "saos-owner-channel",
+  "saos-runtime",
+  "execution-fabric",
+  "saos-dex",
+  "ops-control",
+  "Autonomy"
  ],
  "capabilities": [
   {
@@ -179,13 +182,6 @@
    ]
   },
   {
-   "machine": "ci-probe",
-   "repos": [
-    "fleet-economy",
-    "steem"
-   ]
-  },
-  {
    "machine": "agent-verify",
    "repos": [
     "Console",
@@ -267,6 +263,13 @@
    "repos": [
     "Domain",
     "Zip"
+   ]
+  },
+  {
+   "machine": "ci-probe",
+   "repos": [
+    "fleet-economy",
+    "steem"
    ]
   },
   {
@@ -524,7 +527,7 @@
    "private": false,
    "description": "Fleet HQ — a live operations room where real AI agents plan, work and report on your data books in real time. מפקדת הצי",
    "createdAt": "2026-10-07T23:26:07Z",
-   "pushedAt": "2026-10-18T05:16:02Z",
+   "pushedAt": "2026-10-18T08:51:57Z",
    "workflows": [
     "claims-triage.yml",
     "fresh-oracle.yml",
@@ -550,36 +553,34 @@
    "treeSig": "--width:61600|.env.example:2902|.gitattributes:148|.gitignore:2082|Caddyfile:1120|DESIGN.md:17516|FLEET-BINDING.md:3149|LICENSE:1073|MEMORY.md:23709|README.md:14945|SECURITY.md:4559|SOVEREIGNTY.md:31644|analyze-exec.py:1494|analyze2.py:2053|analyze3.py:1041|analyze4.py:1225|analyze5.py:1288|analyze6.py:2111|analyze7.py:1731|analyze8.py:1312|append-worklog-t7.py:5772|append-worklog-t7b.py:5096|append-worklog-t9.py:5782|bun.lock:365532|chain-scan.py:3328|components.json:430|decider.py:3052|eslint.config.mjs:1905|fetch-hb-log.py:1207|fetch-hb2.py:2297|fetch2.py:1577|final-keyaudit.py:7012|gh-put.py:2304|ghenv.sh:493|keyfit-audit.py:7334|next.config.ts:357|package-lock.json:612345|package.json:3735|postcss.config.mjs:81|probe-state.py:2137|publish-domain-office3d.py:8454|publish-fleethq-office3d.py:5109|set-delegation-secret.py:2136|sovereign-agent.env.example:577|supervise-fleethq.sh:3406|tailwind.config.ts:1696|tsconfig.json:829|v4-index-top.png:126096|vault-verdict.py:10390|verify-chain.py:2080|verify-post.py:1149|watchdog-fleethq.sh:612|worklog.md:382478"
   },
   {
-   "name": "fleet-economy",
-   "private": true,
-   "description": "הכלכלה-הפנימית-הריבונית — ספר-hash-chain חי · auto-sealed",
-   "createdAt": "2026-10-16T14:28:48Z",
-   "pushedAt": "2026-10-18T05:15:31Z",
+   "name": "sovereign-beacon",
+   "private": false,
+   "description": "Rosh Pina — sovereign lighthouse (out-of-machine console)",
+   "createdAt": "2026-10-10T06:14:30Z",
+   "pushedAt": "2026-10-18T08:51:13Z",
    "workflows": [
-    "ci-probe.yml",
-    "economy-beat.yml"
+    "beacon-pulse.yml"
    ],
-   "treeSig": "beat-local.sh:3048|economy.log:4017|index.ts:65405|package.json:535|run-economy-beat.mjs:5748|supervise-economy.sh:824"
+   "treeSig": "README.md:621|REVIVAL-2026-10-11.md:1389|index.html:3742|state.json:10173"
   },
   {
-   "name": "Pulse",
+   "name": "sovereign-lighthouse",
    "private": false,
-   "description": "Pulse — איבר-הדופק של הרשת · fleet heartbeat: autonomous census every 30min on GitHub Actions (public = unlimited free m",
-   "createdAt": "2026-10-12T19:43:19Z",
-   "pushedAt": "2026-10-18T05:15:24Z",
+   "description": "מגדלור ריבוני — Sovereign Lighthouse: זיכרון חוץ-מכונה עצמאי (RTL עברית)",
+   "createdAt": "2026-10-10T06:53:25Z",
+   "pushedAt": "2026-10-18T08:51:01Z",
    "workflows": [
-    "heartbeat.yml",
-    "identity-guard.yml",
-    "sovereign-voice.yml"
+    "estate-redboard.yml",
+    "lighthouse-pulse.yml"
    ],
-   "treeSig": "BENCHMARK.md:7982|BOOTSTRAP.md:6088|CHANGELOG.md:1115|DECISIONS.md:109890|PROMPTS.md:2025|README.md:3923|VERSION.md:448|index.html:18100|sovereign.html:2719"
+   "treeSig": "README.md:625|REVIVAL-2026-10-11.md:1310|grid.json:13927|index.html:6140|state.json:27184"
   },
   {
    "name": "Console",
    "private": false,
    "description": "Console — קונסולת-ה-DEX הריבונית: dex-beat שעתי, גריד-מסחר מדוד, קבלות-ריצות חיות",
    "createdAt": "2026-09-14T18:29:10Z",
-   "pushedAt": "2026-10-18T05:15:01Z",
+   "pushedAt": "2026-10-18T08:50:58Z",
    "workflows": [
     "agent-verify.yml",
     "agents-watch.yml",
@@ -610,7 +611,7 @@
    "private": false,
    "description": "Domain — חזית-הרשת הפומבית של SAOS: דף-המוצרים, חדר-המשרד החי, ועוגני-אמת ציבוריים (GitHub Pages)",
    "createdAt": "2026-09-19T23:39:18Z",
-   "pushedAt": "2026-10-18T05:14:43Z",
+   "pushedAt": "2026-10-18T08:48:13Z",
    "workflows": [
     "adsmarket-panel.yml",
     "agent-verify.yml",
@@ -618,6 +619,7 @@
     "arb-mesh-cron.yml",
     "artery-integrity-twin.yml",
     "audience-analyst.yml",
+    "autonomy-guardian.yml",
     "blurt-connect.yml",
     "book-audit.yml",
     "bootstrap-pages.yml",
@@ -710,26 +712,38 @@
     "web-publish.yml",
     "workflow-yaml-guard.yml"
    ],
-   "treeSig": ".gitignore:65|.gitleaks.toml:603|.gitleaksignore:4004|.nojekyll:0|404.html:4945|AGENTS.md:9642|BLOC.md:8163|CUA-ADOPTION.md:4616|FATE-DEFENSE.md:12504|FLEET-NOTE.md:5938|GRID-STATUS.md:5651|README.md:23790|STATE-REPORT-20261012.md:1129|STATE-REPORT-20261013.md:1129|STATE-REPORT-20261014.md:1129|STATE-REPORT-20261015.md:1129|STATE-REPORT-20261016.md:1129|STATE-REPORT-20261017.md:1129|VOICE.md:3637|acid-engine.js:38285|acid.html:42701|badges.html:10901|bun.lock:339|changelog.html:5191|console.html:77127|defi.html:42150|deposits.html:37246|dev.html:36754|favicon.svg:449|feature_list.json:123276|feed.xml:5246|gate-crypto.js:18042|gate.html:29316|giant-standard.html:2418|giants.html:53166|index.html:25422|init.sh:3624|landing.html:2597|manifest.webmanifest:510|mirror-report.json:1326|mirror.json:74006|money.html:54849|net.html:28233|package.json:59|products.html:23909|pulse.json:2092|readiness.html:32040|render.mjs:11979|reports.html:9537|roast.html:2484|robots.txt:179|runner-kit.html:24818|saos-live.js:36274|saos-live.json:1155|sitemap.html:15173|sitemap.xml:9347|sovereign.html:39015|standard.html:2394|status.json:50174|tools.html:9898|truth.html:30987|versus.html:30283|wallet.html:178624"
+   "treeSig": ".gitignore:65|.gitleaks.toml:603|.gitleaksignore:4004|.nojekyll:0|404.html:4945|AGENTS.md:9642|BLOC.md:8163|CUA-ADOPTION.md:4616|FATE-DEFENSE.md:12504|FLEET-NOTE.md:5938|GRID-STATUS.md:5688|README.md:23790|STATE-REPORT-20261012.md:1129|STATE-REPORT-20261013.md:1129|STATE-REPORT-20261014.md:1129|STATE-REPORT-20261015.md:1129|STATE-REPORT-20261016.md:1129|STATE-REPORT-20261017.md:1129|VOICE.md:3637|acid-engine.js:38285|acid.html:42701|badges.html:10901|bun.lock:339|changelog.html:5191|console.html:77127|defi.html:42150|deposits.html:37246|dev.html:36754|favicon.svg:449|feature_list.json:123276|feed.xml:5181|gate-crypto.js:18042|gate.html:29316|giant-standard.html:2418|giants.html:53166|index.html:25693|init.sh:3624|landing.html:2597|manifest.webmanifest:510|mirror-report.json:1326|mirror.json:74006|money.html:54849|net.html:28233|package.json:59|products.html:23909|pulse.json:2453|readiness.html:32040|receipts.html:4966|render.mjs:11979|reports.html:9537|roast.html:2484|robots.txt:179|runner-kit.html:24818|saos-live.js:36274|saos-live.json:1155|sitemap.html:15173|sitemap.xml:9347|sovereign.html:39015|standard.html:2394|status.json:50710|tools.html:9898|truth.html:30987|versus.html:30283|wallet.html:178624"
+  },
+  {
+   "name": "fleet-economy",
+   "private": true,
+   "description": "הכלכלה-הפנימית-הריבונית — ספר-hash-chain חי · auto-sealed",
+   "createdAt": "2026-10-16T14:28:48Z",
+   "pushedAt": "2026-10-18T08:47:29Z",
+   "workflows": [
+    "ci-probe.yml",
+    "economy-beat.yml"
+   ],
+   "treeSig": "beat-local.sh:3048|economy.log:4017|index.ts:71822|package.json:535|run-economy-beat.mjs:10049|supervise-economy.sh:824"
   },
   {
    "name": "giant",
    "private": false,
    "description": "GIANT — מערכת-האמת של SAOS: הפלטפורמה המאוחדת (ערוץ-אחד · אפס-כפילויות · תקן-ענקים). קונברגנציה נדרשת לכל-הליינים (DECIS",
    "createdAt": "2026-10-14T19:03:34Z",
-   "pushedAt": "2026-10-18T05:14:27Z",
+   "pushedAt": "2026-10-18T08:43:12Z",
    "workflows": [
     "ext-audit.yml",
     "trust-heartbeat.yml"
    ],
-   "treeSig": ".env:50|.gitignore:1621|01-overview.png:849654|02-wall.png:386090|03-git.png:310819|04-podium.png:484637|05-reception.png:708501|06-library.png:465126|Caddyfile:1120|README.md:2271|SYSTEM.md:1837|bun.lock:293171|components.json:430|economy-beat-host.mjs:10187|eslint.config.mjs:1739|next.config.ts:2441|package.json:3528|postcss.config.mjs:81|sovereign-builder-host.mjs:4780|tailwind.config.ts:1696|tsconfig.json:730|worklog.md:547209"
+   "treeSig": ".env:50|.gitignore:1608|01-overview.png:849654|02-wall.png:386090|03-git.png:310819|04-podium.png:484637|05-reception.png:708501|06-library.png:465126|Caddyfile:1120|README.md:2271|SYSTEM.md:1837|bun.lock:293171|components.json:430|eslint.config.mjs:1739|next.config.ts:2441|package.json:3528|postcss.config.mjs:81|tailwind.config.ts:1696|tsconfig.json:730|worklog.md:1707239"
   },
   {
    "name": "steem",
    "private": true,
    "description": "SAOS — Steem AI Agent OS sovereign cycle (Task 114 snapshot restored) — PRIVATE",
    "createdAt": "2026-09-07T11:47:10Z",
-   "pushedAt": "2026-10-18T05:13:06Z",
+   "pushedAt": "2026-10-18T08:30:00Z",
    "workflows": [
     "ci-probe.yml",
     "directive-now.yml",
@@ -745,22 +759,105 @@
    "treeSig": ".gitignore:4055|.gitleaks.toml:2300|.gitleaksignore:179433|AGENT-BRIEFING.md:13240|AGENTS.md:3350|CONTROLS-THAT-EXIST.md:10891|CRITICAL-KEY-EXPOSURE.md:11613|CRITICAL-R11-KEY-BROADCAST.md:1174|Caddyfile:961|ENGINEER_BRIEF.md:11029|FLEET-NOTE.md:1088|MANIFEST.txt:2378|PATCH-SPEC-P11.md:5198|README.md:57980|THE_WEAVE.md:12642|bun.lock:358946|components.json:430|eslint.config.mjs:2269|feature_list.json:2807|init.sh:1303|next.config.ts:866|package.json:3685|postcss.config.mjs:81|progress.md:1124|session-handoff.md:1031|tailwind.config.ts:1696|tsconfig.json:730|worklog.md:904391"
   },
   {
-   "name": "sovereign-beacon",
+   "name": "saos-coordination",
+   "private": true,
+   "description": "Multi-agent coordination: locks, claims, merge order. READ BEFORE ANY WRITE.",
+   "createdAt": "2026-10-17T01:53:11Z",
+   "pushedAt": "2026-10-18T08:22:48Z",
+   "workflows": [],
+   "treeSig": "GHIDRA.md:4516|IFIXAI.md:6040|LANE-A-BLUEPRINT.md:5409|LOCKS.md:99653|NVIDIA-NIM.md:5574|PHASE0-STATUS.md:3884|RECOVERY.md:7436|worklog-agent-zai.md:641370"
+  },
+  {
+   "name": "saos-owner-channel",
+   "private": true,
+   "description": "saos-owner-channel — ערוץ-הבעלים הישיר בעלים↔ריבונות: פרוטוקול-גיט-ילידי, אינטגריות-sha256, מחזור-חיים-משפטי, אין-טענות-",
+   "createdAt": "2026-10-14T18:35:04Z",
+   "pushedAt": "2026-10-18T08:19:06Z",
+   "workflows": [],
+   "treeSig": ".gitignore:32|BOOTSTRAP-COMMAND-CENTER.sh:1940|BOOTSTRAP.sh:2309|CLAIMS.json:26604|COORDINATION.md:29913|PROTOCOL.md:2727|README.md:4368|RESURRECTION.md:2239|TOOLS-REGISTRY.md:22576|bun.lock:1361|package.json:657|state.json:653|tools-registry.json:31681|tsconfig.json:452"
+  },
+  {
+   "name": "saos-runtime",
    "private": false,
-   "description": "Rosh Pina — sovereign lighthouse (out-of-machine console)",
-   "createdAt": "2026-10-10T06:14:30Z",
-   "pushedAt": "2026-10-18T05:12:38Z",
+   "description": "SAOS sovereign runtime host — Actions runner heartbeat; clones the private engine tree at runtime (R244). No keys, no se",
+   "createdAt": "2026-10-07T16:44:12Z",
+   "pushedAt": "2026-10-18T08:17:09Z",
    "workflows": [
-    "beacon-pulse.yml"
+    "arb-grid.yml",
+    "army-ladder.yml",
+    "blurt-revival.yml",
+    "builder-catchup.yml",
+    "custody-recover.yml",
+    "dex-beat.yml",
+    "directive-now.yml",
+    "escrow-payroll.yml",
+    "fee-engine.yml",
+    "fleet-fuel.yml",
+    "fleet-rotation-a.yml",
+    "gen2-rotation.yml",
+    "ghidra-lab.yml",
+    "grid-watchdog.yml",
+    "hive-custody-revival.yml",
+    "operator-triage.yml",
+    "organ-guardian.yml",
+    "owner-key-adopt.yml",
+    "owner-powerdown.yml",
+    "self-memory.yml",
+    "sovereign-builder.yml",
+    "sovereign-evolution.yml",
+    "sovereign-pulse.yml",
+    "sovereign-runtime.yml",
+    "system-map.yml",
+    "treasury-ladder.yml"
    ],
-   "treeSig": "README.md:621|REVIVAL-2026-10-11.md:1389|index.html:3742|state.json:10173"
+   "treeSig": ".gitignore:43|README.md:490|STATUS.md:2730|blurt-nodes.json:561|index.html:1908|package-lock.json:1098|package.json:296"
+  },
+  {
+   "name": "execution-fabric",
+   "private": true,
+   "description": "רשת-הביצוע — Execution Fabric: dispatch → LLM ladder → hash-chain ledger. Git = existence.",
+   "createdAt": "2026-10-17T10:23:13Z",
+   "pushedAt": "2026-10-18T08:16:26Z",
+   "workflows": [],
+   "treeSig": ".gitignore:860|Caddyfile:493|README.md:8353|bun.lock:328127|components.json:430|eslint.config.mjs:1632|next.config.ts:233|package.json:3213|postcss.config.mjs:81|tailwind.config.ts:1696|tsconfig.json:730|worklog.md:119813"
+  },
+  {
+   "name": "saos-dex",
+   "private": false,
+   "description": "SAOS-DEX — הבורסה הריבונית: ספר-הזמנות דטרמיניסטי + AMM 30bps + ארנת-חיילים אוטונומית (מורשת saos-dex + grid98)",
+   "createdAt": "2026-09-07T13:27:19Z",
+   "pushedAt": "2026-10-18T08:13:13Z",
+   "workflows": [
+    "arb-scan.yml",
+    "ci.yml",
+    "dex-beat.yml",
+    "dex-grid.yml",
+    "gitleaks.yml",
+    "grid-trigger.yml",
+    "hive-heartbeat.yml",
+    "identity-guard.yml",
+    "llm-bridge.yml",
+    "mm-supremacy.yml",
+    "selftest.yml",
+    "workflow-yaml-guard.yml"
+   ],
+   "treeSig": ".env.example:2447|.gitignore:3059|.gitleaksignore:497|AGENT-BRIEFING.md:1121|ARCHITECTURE_ROADMAP.md:9046|BUILDQUEUE.json:1518|CHANGELOG.md:3262|CHAOS_TEST_RESULTS.md:3417|CONTROLS-THAT-EXIST.md:1141|DECISIONS.md:25379|DEPLOYMENT_CHECKLIST.md:8155|EPOCH-PATCH-SPEC.md:9972|FLEET-NOTE.md:1088|LIQUIDITY_STRATEGY.md:5927|NETWORK-SUMMARY.md:19274|PHISHING_DEFENSE.md:5364|README.md:7088|RELAY-PATCH-2.md:1129|STATUS.md:25325|bun.lock:56803|cloud-beat.ts:67630|door-first-drop.ts:7578|door-full-cycle.ts:12185|door-money-market.ts:10149|grid-beat.ts:49082|next.config.ts:644|package.json:3356|postcss.config.mjs:94|save-first-cycle.ts:9548|sbd-rail-first-cycle.ts:6118|t15-selftest-results.json:920|tsconfig.json:777|ve-first-cycle.ts:10685"
+  },
+  {
+   "name": "ops-control",
+   "private": true,
+   "description": "SAOS Fleet coordination: claims ledger, ownership partition, freeze zones, verification gates (9-agent operation)",
+   "createdAt": "2026-10-17T01:52:59Z",
+   "pushedAt": "2026-10-18T08:04:23Z",
+   "workflows": [],
+   "treeSig": "FREEZE.md:1263|OWNERSHIP.md:2000|PROTOCOL.md:3019|SERVICES.md:2883|VERIFICATION.md:1126"
   },
   {
    "name": "Autonomy",
    "private": false,
    "description": "המוח הריבוני על דקות-ציבור: עורקי-ההחלטה, הלמידה, הצמיחה — רץ 24/7 ללא תלות בשום סנדבוקס. Public compute, private memory",
    "createdAt": "2026-10-12T20:33:22Z",
-   "pushedAt": "2026-10-18T05:09:48Z",
+   "pushedAt": "2026-10-18T07:59:30Z",
    "workflows": [
     "artery-builder.yml",
     "artery-catchup.yml",
@@ -820,7 +917,7 @@
    "private": true,
    "description": "Roshpina — Sovereign Trust & Value Platform: profit (fee engine + cost arbitrage) + protection (fail-closed guard, hash-",
    "createdAt": "2026-09-07T13:25:36Z",
-   "pushedAt": "2026-10-18T05:09:26Z",
+   "pushedAt": "2026-10-18T07:52:25Z",
    "workflows": [
     "controls-audit.yml",
     "gitleaks.yml",
@@ -830,67 +927,64 @@
    "treeSig": ".gitignore:172|.gitleaksignore:497|2026-09-11-roast-78-addendum.md:1199|AGENT-BRIEFING.md:1225|CONTROLS-THAT-EXIST.md:1245|CRITICAL-R11-KEY-BROADCAST.md:1179|FLEET-NOTE.md:1088|PATCH-SPEC-P10.md:10172|README.md:2299|SAOS-BRIEFING-2026-09-11-ROAST-80.md:1207|SAOS-BRIEFING-2026-09-11-ROAST-84.md:1207|SAOS-COIN-DOSSIER-2026-09-12-V77.md:1203|SAOS-DAILY-REPORT-2026-09-11-ADSMARKET.md:1227|SAOS-DAILY-REPORT-2026-09-11-FOUNDRY.md:1219|SAOS-DAILY-REPORT-2026-09-11.md:1187|SAOS-PULSE-2026-09-11-H16-COMPLETE.md:1223|SAOS-PULSE-2026-09-11-H16-SIX-OF-SIX.md:1231|SAOS-PULSE-2026-09-11-H17-REPEAT.md:1215|SAOS-PULSE-2026-09-11-H18-THIRD-CYCLE.md:1235|SAOS-PULSE-2026-09-11-H19-FOURTH-CYCLE.md:1239|SAOS-PULSE-2026-09-11-H20-FULL-MATRIX-CONSOLIDATION-2.md:1297|SAOS-PULSE-2026-09-11-H20-FULL-MATRIX-CONSOLIDATION.md:1291|SAOS-PULSE-2026-09-11-H21-SIXTH-CYCLE.md:1235|SAOS-PULSE-2026-09-11-H22-H23-AUTOMATION.md:1247|SAOS-STRATEGY-2026-09-11-ADSMARKET.md:1211|bun.lock:298891|components.json:430|eslint.config.mjs:1112|index.html:1960|kernel-smoke.ts:52162|next.config.ts:233|package.json:3017|postcss.config.mjs:81|tailwind.config.ts:1696|tsconfig.json:821"
   },
   {
-   "name": "saos-runtime",
+   "name": "sovereign-runner-kit",
    "private": false,
-   "description": "SAOS sovereign runtime host — Actions runner heartbeat; clones the private engine tree at runtime (R244). No keys, no se",
-   "createdAt": "2026-10-07T16:44:12Z",
-   "pushedAt": "2026-10-18T05:08:47Z",
+   "description": "שכבת-הביצוע-הריבונית — המכשיר שלנו הוא המנוע, GitHub ספר-בלבד. Device-side execution, zero GitHub minutes, blockchain-an",
+   "createdAt": "2026-10-12T16:05:03Z",
+   "pushedAt": "2026-10-18T07:45:08Z",
    "workflows": [
-    "arb-grid.yml",
-    "army-ladder.yml",
-    "blurt-revival.yml",
-    "custody-recover.yml",
-    "dex-beat.yml",
-    "directive-now.yml",
-    "escrow-payroll.yml",
-    "fee-engine.yml",
-    "fleet-fuel.yml",
-    "fleet-rotation-a.yml",
-    "gen2-rotation.yml",
-    "ghidra-lab.yml",
-    "grid-watchdog.yml",
-    "hive-custody-revival.yml",
-    "operator-triage.yml",
-    "owner-key-adopt.yml",
-    "owner-powerdown.yml",
-    "self-memory.yml",
-    "sovereign-builder.yml",
-    "sovereign-evolution.yml",
-    "sovereign-pulse.yml",
-    "sovereign-runtime.yml",
-    "system-map.yml",
-    "treasury-ladder.yml"
+    "agent-shield.yml",
+    "capability-gate.yml",
+    "deploy-gate.yml",
+    "fleet-keeper.yml",
+    "netrun-loop.yml",
+    "scout-loop.yml"
    ],
-   "treeSig": ".gitignore:43|README.md:490|STATUS.md:2753|blurt-nodes.json:561|index.html:1908|package-lock.json:1098|package.json:296"
+   "treeSig": ".gitignore:44|AGENT-COORDINATION.md:42106|DECISION-BRIEF-actions-minutes.md:5547|NETRUN.md:6453|README.md:5540|SECURITY-INCIDENT-2026-10.md:4412|ToS-COMPLIANCE.md:3260|netrun.sh:2948|queue2netrun.mjs:6765|register-gh-runner.sh:1649|setup-device.sh:3477|tasks.example.tsv:615"
   },
   {
-   "name": "saos-dex",
+   "name": "GridWatch",
    "private": false,
-   "description": "SAOS-DEX — הבורסה הריבונית: ספר-הזמנות דטרמיניסטי + AMM 30bps + ארנת-חיילים אוטונומית (מורשת saos-dex + grid98)",
-   "createdAt": "2026-09-07T13:27:19Z",
-   "pushedAt": "2026-10-18T05:07:30Z",
+   "description": "Fleet control plane: measures every repo & workflow health, auto-remediates failures, feeds the sovereign decider. The g",
+   "createdAt": "2026-10-12T20:06:08Z",
+   "pushedAt": "2026-10-18T07:40:39Z",
    "workflows": [
-    "arb-scan.yml",
-    "ci.yml",
-    "dex-beat.yml",
-    "dex-grid.yml",
+    "flow-map.yml",
+    "grid-watch.yml",
+    "identity-guard.yml"
+   ],
+   "treeSig": "README.md:1647|grid-watch.mjs:18529"
+  },
+  {
+   "name": "saos-control-center",
+   "private": true,
+   "description": "Sovereign Control Center — smart key login (any WIF, live chain-verify), AES-256-GCM vault, owner-lock, agent API, realt",
+   "createdAt": "2026-09-09T07:55:14Z",
+   "pushedAt": "2026-10-18T07:26:03Z",
+   "workflows": [
+    "control-center-build.yml",
     "gitleaks.yml",
-    "grid-trigger.yml",
-    "hive-heartbeat.yml",
-    "identity-guard.yml",
-    "llm-bridge.yml",
-    "mm-supremacy.yml",
-    "selftest.yml",
     "workflow-yaml-guard.yml"
    ],
-   "treeSig": ".env.example:2447|.gitignore:3061|.gitleaksignore:497|AGENT-BRIEFING.md:1121|ARCHITECTURE_ROADMAP.md:9046|BUILDQUEUE.json:1518|CHANGELOG.md:3262|CHAOS_TEST_RESULTS.md:3417|CONTROLS-THAT-EXIST.md:1141|DECISIONS.md:25379|DEPLOYMENT_CHECKLIST.md:8155|EPOCH-PATCH-SPEC.md:9972|FLEET-NOTE.md:1088|LIQUIDITY_STRATEGY.md:5927|NETWORK-SUMMARY.md:19274|PHISHING_DEFENSE.md:5364|README.md:7088|RELAY-PATCH-2.md:1129|STATUS.md:25325|bun.lock:56803|cloud-beat.ts:67630|door-first-drop.ts:7578|door-full-cycle.ts:12185|door-money-market.ts:10149|grid-beat.ts:49082|next.config.ts:644|package.json:3356|postcss.config.mjs:94|save-first-cycle.ts:9548|sbd-rail-first-cycle.ts:6118|t15-selftest-results.json:920|tsconfig.json:777|ve-first-cycle.ts:10685"
+   "treeSig": ".env.example:121|.gitattributes:20|.gitignore:1921|.gitleaksignore:497|AGENTS.md:12541|BOOTSTRAP.md:4033|BREAKGLASS-DRILL.json:2062|Caddyfile:1120|ECONOMY-DOCTRINE.md:13403|FLEET-NOTE.md:1641|MEMORY.md:43004|MORNING-REPORT.md:2230|README-SAOS.md:5526|SAOS-BRIEFING-2026-09-11-ROAST-84.md:1218|SAOS-CI-OUTAGE-2026-10-06.md:5841|SAOS-COIN-DOSSIER-2026-09-12-V77.md:1214|SAOS-DAILY-REPORT-2026-09-11-ADSMARKET.md:1238|SAOS-DAILY-REPORT-2026-09-11-FOUNDRY.md:1230|SAOS-DAILY-REPORT-2026-09-11.md:1198|SAOS-PULSE-2026-09-11-H16-COMPLETE.md:1234|SAOS-PULSE-2026-09-11-H16-SIX-OF-SIX.md:1242|SAOS-PULSE-2026-09-11-H17-REPEAT.md:1226|SAOS-PULSE-2026-09-11-H18-THIRD-CYCLE.md:1246|SAOS-PULSE-2026-09-11-H19-FOURTH-CYCLE.md:1250|SAOS-PULSE-2026-09-11-H20-FULL-MATRIX-CONSOLIDATION-2.md:1308|SAOS-PULSE-2026-09-11-H20-FULL-MATRIX-CONSOLIDATION.md:1302|SAOS-PULSE-2026-09-11-H21-SIXTH-CYCLE.md:1246|SAOS-PULSE-2026-09-11-H22-H23-AUTOMATION.md:1258|SAOS-STRATEGY-2026-09-11-ADSMARKET.md:1222|bun.lock:365841|components.json:430|dex-dev.log.tail:1048576|eslint.config.mjs:1686|genesis-report.json:2673|next.config.ts:1614|package.json:3622|postcss.config.mjs:81|research-r.mjs:1142|tsconfig.json:890|worklog.md:1135492"
+  },
+  {
+   "name": "sovereign-executor",
+   "private": false,
+   "description": "Sovereign executor plane — free public-minutes carrier for the private fleet lanes (smart separation: content stays priv",
+   "createdAt": "2026-10-18T05:52:49Z",
+   "pushedAt": "2026-10-18T07:18:36Z",
+   "workflows": [
+    "fleet-beat.yml"
+   ],
+   "treeSig": "README.md:1811"
   },
   {
    "name": "Sandbox",
    "private": true,
    "description": "Sandbox — מראת-הענן החיה של סביבת-הפיתוח הראשית (my-project mirror)",
    "createdAt": "2026-10-09T11:00:27Z",
-   "pushedAt": "2026-10-18T05:05:35Z",
+   "pushedAt": "2026-10-18T06:35:20Z",
    "workflows": [
     "agent-access.yml",
     "agent-roster-reseal.yml",
@@ -930,47 +1024,24 @@
    "treeSig": ".gitignore:257|AGENT-LEDGER.md:1089|README.md:11678|SECURITY.md:3714|worklog.md:47669"
   },
   {
-   "name": "saos-desk",
-   "private": true,
-   "description": "Sovereign Trading Boardroom (R338) - multi-agent cabinet, deterministic risk kernel, mandate-gated, paper-first, checkpo",
-   "createdAt": "2026-10-14T12:31:16Z",
-   "pushedAt": "2026-10-18T05:04:09Z",
-   "workflows": [],
-   "treeSig": ".gitignore:20|LAWS.md:7160|README.md:7009|mandate.json:2323|package.json:335|selftest.mjs:51513"
-  },
-  {
-   "name": "sovereign-runner-kit",
+   "name": "Pulse",
    "private": false,
-   "description": "שכבת-הביצוע-הריבונית — המכשיר שלנו הוא המנוע, GitHub ספר-בלבד. Device-side execution, zero GitHub minutes, blockchain-an",
-   "createdAt": "2026-10-12T16:05:03Z",
-   "pushedAt": "2026-10-18T05:02:20Z",
+   "description": "Pulse — איבר-הדופק של הרשת · fleet heartbeat: autonomous census every 30min on GitHub Actions (public = unlimited free m",
+   "createdAt": "2026-10-12T19:43:19Z",
+   "pushedAt": "2026-10-18T06:30:32Z",
    "workflows": [
-    "agent-shield.yml",
-    "deploy-gate.yml",
-    "fleet-keeper.yml",
-    "netrun-loop.yml",
-    "scout-loop.yml"
+    "heartbeat.yml",
+    "identity-guard.yml",
+    "sovereign-voice.yml"
    ],
-   "treeSig": ".gitignore:44|AGENT-COORDINATION.md:35605|DECISION-BRIEF-actions-minutes.md:5547|NETRUN.md:6453|README.md:5540|SECURITY-INCIDENT-2026-10.md:4412|ToS-COMPLIANCE.md:3260|netrun.sh:2948|queue2netrun.mjs:6765|register-gh-runner.sh:1649|setup-device.sh:3477|tasks.example.tsv:615"
-  },
-  {
-   "name": "sovereign-lighthouse",
-   "private": false,
-   "description": "מגדלור ריבוני — Sovereign Lighthouse: זיכרון חוץ-מכונה עצמאי (RTL עברית)",
-   "createdAt": "2026-10-10T06:53:25Z",
-   "pushedAt": "2026-10-18T05:00:26Z",
-   "workflows": [
-    "estate-redboard.yml",
-    "lighthouse-pulse.yml"
-   ],
-   "treeSig": "README.md:625|REVIVAL-2026-10-11.md:1310|grid.json:12928|index.html:6140|state.json:22577"
+   "treeSig": "BENCHMARK.md:7982|BOOTSTRAP.md:6088|CHANGELOG.md:1115|DECISIONS.md:109890|PROMPTS.md:2025|README.md:3923|VERSION.md:448|index.html:18100|sovereign.html:2719"
   },
   {
    "name": "Project-files",
    "private": true,
    "description": "Project-files — ארכיון-ZIP היסטורי ללא קוד (מועמד-פינוי — העתקים נגישים ב-vault-home)",
    "createdAt": "2026-09-07T10:33:44Z",
-   "pushedAt": "2026-10-18T04:59:57Z",
+   "pushedAt": "2026-10-18T05:54:50Z",
    "workflows": [
     "archive-keeper.yml",
     "gitleaks.yml",
@@ -979,17 +1050,34 @@
    "treeSig": ".gitleaksignore:497|2026-09-11-roast-78-addendum.md:1204|CRITICAL-R11-KEY-BROADCAST.md:1184|README.md:2018|SAOS-BRIEFING-2026-09-11-ROAST-80.md:1212|SAOS-BRIEFING-2026-09-11-ROAST-84.md:1212|SAOS-COIN-DOSSIER-2026-09-12-V77.md:1208|SAOS-DAILY-REPORT-2026-09-11-ADSMARKET.md:1232|SAOS-DAILY-REPORT-2026-09-11-FOUNDRY.md:1224|SAOS-DAILY-REPORT-2026-09-11.md:1192|SAOS-PULSE-2026-09-11-H16-COMPLETE.md:1228|SAOS-PULSE-2026-09-11-H16-SIX-OF-SIX.md:1236|SAOS-PULSE-2026-09-11-H17-REPEAT.md:1220|SAOS-PULSE-2026-09-11-H18-THIRD-CYCLE.md:1240|SAOS-PULSE-2026-09-11-H19-FOURTH-CYCLE.md:1244|SAOS-PULSE-2026-09-11-H20-FULL-MATRIX-CONSOLIDATION-2.md:1302|SAOS-PULSE-2026-09-11-H20-FULL-MATRIX-CONSOLIDATION.md:1296|SAOS-PULSE-2026-09-11-H21-SIXTH-CYCLE.md:1240|SAOS-PULSE-2026-09-11-H22-H23-AUTOMATION.md:1252|SAOS-STRATEGY-2026-09-11-ADSMARKET.md:1216|TITAI_v18_VERIFIED_INSTALLER_WITH_ARCHITECTURE (3).zip:4405873|V33_30_controlled_human_ux_pilot_instrumentation_patch (2).zip:194892|ecos_v568_canonical.zip:5983501|qodo-v24.30.49-pass76-quota-gauge (2).zip:1494597|srs_sovereign_runtime_substrate_v8.2.0 (2).zip:4578799|steem-main (1).zip:24380608|tfa-evolution-studio-validated (2).zip:2570954|unified-platform-v33.56-custody-authority-persistence (2).zip:22542807|workspace-v0.0.1 (2).zip:2170990|zip-to-pdf-polyglot-9.1.0 (3).zip:529432"
   },
   {
-   "name": "GridWatch",
-   "private": false,
-   "description": "Fleet control plane: measures every repo & workflow health, auto-remediates failures, feeds the sovereign decider. The g",
-   "createdAt": "2026-10-12T20:06:08Z",
-   "pushedAt": "2026-10-18T04:51:20Z",
+   "name": "saos-markets",
+   "private": true,
+   "description": "saos-markets — הבורסה-המדומה של-המדינה-הכלכלית: מדדי-שווקים-מובילים דטרמיניסטיים + אוצר-המשרדים (ניסוי AI-מנהל-מדינה) + ",
+   "createdAt": "2026-10-14T18:14:39Z",
+   "pushedAt": "2026-10-18T05:21:09Z",
+   "workflows": [],
+   "treeSig": ".gitignore:43|FLEET-DOCKING.md:3550|FRONT-BACK.md:2392|README.md:740|SECURITY.md:2372|bun.lock:1355|package.json:648|tsconfig.json:477"
+  },
+  {
+   "name": "saos-agents",
+   "private": true,
+   "description": "Self-measuring agent orchestration core: a task graph that cannot be lied to (done-only-via-verified-push), an operator ",
+   "createdAt": "2026-10-07T22:06:12Z",
+   "pushedAt": "2026-10-18T05:20:44Z",
    "workflows": [
-    "flow-map.yml",
-    "grid-watch.yml",
-    "identity-guard.yml"
+    "gitleaks.yml",
+    "selftest-gate.yml"
    ],
-   "treeSig": "README.md:1647|grid-watch.mjs:18529"
+   "treeSig": ".gitattributes:320|.gitignore:69|LICENSE:1073|README.md:7831|REVIVAL-2026-10-11.md:1349|SECURITY.md:1580|package.json:893"
+  },
+  {
+   "name": "saos-desk",
+   "private": true,
+   "description": "Sovereign Trading Boardroom (R338) - multi-agent cabinet, deterministic risk kernel, mandate-gated, paper-first, checkpo",
+   "createdAt": "2026-10-14T12:31:16Z",
+   "pushedAt": "2026-10-18T05:04:09Z",
+   "workflows": [],
+   "treeSig": ".gitignore:20|LAWS.md:7160|README.md:7009|mandate.json:2323|package.json:335|selftest.mjs:51513"
   },
   {
    "name": "Zip",
@@ -1015,15 +1103,6 @@
    "treeSig": ".env.example:374|.gitignore:3987|.gitleaks.toml:4291|.gitleaksignore:5179|AGENTS.md:15101|BENCHMARK-ADOPT.md:5634|BENCHMARK.md:31608|CONSOLE-POLICY.md:13008|COORDINATION.md:51888|ECOSYSTEM-ROADMAP.md:14850|EDGE-MAP-20261007.md:14066|FLEET-NOTE.md:1088|NETWORK-EVOLUTION.md:10968|README.md:4218|REVIVE-FROM-WIPE.md:7354|SAOS.md:16476|SECURITY-AUDIT-2026-09-28.md:5090|SOVEREIGN-INDEX.md:5129|SOVEREIGNTY-DECISIONS.md:12172|SOVEREIGNTY.md:72689|TRUTH-AUDIT.md:62920|VERIFY.md:6061|bun.lock:347191|components.json:430|ecosystem-dup-t23c-2026-10-13.json:12507|eslint.config.mjs:1900|feature_list.json:16981|fleet-supervisor.sh:2462|init.sh:6649|next.config.ts:717|package.json:3562|postcss.config.mjs:81|progress.md:68059|r110-keeper-fleet-up.png:156674|r110-mobile-390.png:51101|r110-verify-plant-9of9.png:146400|r112-array-status.png:76140|r112-desktop-full.png:741349|r112-flows-chains.png:69267|r112-keeper-fleet-up.png:57660|r112-mobile-390.png:69357|r131-mission-ladder-desktop.png:64754|r131-mission-ladder-mobile.png:47766|r136-activation-door.png:183907|r136-gate-desktop.png:143228|r136-gate-mobile-390.png:77007|r206-sovereign-gate.png:140017|r41-array-desktop.png:78320|r41-array-mobile.png:64278|r45-array-wheel.png:464960|r45-final-array.png:483999|session-handoff.md:5485|tailwind.config.ts:1696|taskR30-vault-live.png:83994|taskR33-deposits-desktop.png:102602|taskR33-deposits-mobile.png:55571|taskR33-final.png:72095|tsconfig.json:806|worklog.md:2068944"
   },
   {
-   "name": "saos-coordination",
-   "private": true,
-   "description": "Multi-agent coordination: locks, claims, merge order. READ BEFORE ANY WRITE.",
-   "createdAt": "2026-10-17T01:53:11Z",
-   "pushedAt": "2026-10-18T04:37:06Z",
-   "workflows": [],
-   "treeSig": "GHIDRA.md:4516|IFIXAI.md:6040|LANE-A-BLUEPRINT.md:5409|LOCKS.md:84511|NVIDIA-NIM.md:5574|PHASE0-STATUS.md:3884|RECOVERY.md:6183"
-  },
-  {
    "name": "Defi",
    "private": true,
    "description": "Defi — מסילת-DeFi של הריבונות: מדיניות וניתוח (רול-אפ מתוכנן לתוך saos-dex)",
@@ -1035,24 +1114,6 @@
     "workflow-yaml-guard.yml"
    ],
    "treeSig": "DOCTRINE.md:3931|MISSION-1000.md:5389|README.md:3203|TRIGGER-CHAIN.md:3847"
-  },
-  {
-   "name": "execution-fabric",
-   "private": true,
-   "description": "רשת-הביצוע — Execution Fabric: dispatch → LLM ladder → hash-chain ledger. Git = existence.",
-   "createdAt": "2026-10-17T10:23:13Z",
-   "pushedAt": "2026-10-18T04:07:41Z",
-   "workflows": [],
-   "treeSig": ".gitignore:860|Caddyfile:493|README.md:8353|bun.lock:328127|components.json:430|eslint.config.mjs:1632|next.config.ts:233|package.json:3213|postcss.config.mjs:81|tailwind.config.ts:1696|tsconfig.json:730|worklog.md:106994"
-  },
-  {
-   "name": "saos-owner-channel",
-   "private": true,
-   "description": "saos-owner-channel — ערוץ-הבעלים הישיר בעלים↔ריבונות: פרוטוקול-גיט-ילידי, אינטגריות-sha256, מחזור-חיים-משפטי, אין-טענות-",
-   "createdAt": "2026-10-14T18:35:04Z",
-   "pushedAt": "2026-10-18T03:59:02Z",
-   "workflows": [],
-   "treeSig": ".gitignore:32|BOOTSTRAP.sh:2309|CLAIMS.json:26604|COORDINATION.md:29913|PROTOCOL.md:2727|README.md:4368|RESURRECTION.md:2239|TOOLS-REGISTRY.md:22576|bun.lock:1361|package.json:657|state.json:653|tools-registry.json:31681|tsconfig.json:452"
   },
   {
    "name": "Saosmartwallet",
@@ -1076,15 +1137,6 @@
    "pushedAt": "2026-10-18T00:31:02Z",
    "workflows": [],
    "treeSig": ".gitignore:281|MANIFEST.json:9946|README.md:4433|SECURITY-ADVISORY-R11B.md:2906|SOVEREIGNTY.md:38729|auto-unseal.sh:4673|boot-services.sh:3520|boot-sovereign.sh:12472|fleet-rot2.keys.enc:3632|keys.env.enc:3008|rails.env.enc:640|recover-estate.sh:5000|ssh-keys.tar.enc:3461152|vault.sh:7098|vaultlib.sh:10948|worklog.md:15859|wrap.sh:5412"
-  },
-  {
-   "name": "ops-control",
-   "private": true,
-   "description": "SAOS Fleet coordination: claims ledger, ownership partition, freeze zones, verification gates (9-agent operation)",
-   "createdAt": "2026-10-17T01:52:59Z",
-   "pushedAt": "2026-10-17T20:55:56Z",
-   "workflows": [],
-   "treeSig": "FREEZE.md:1263|OWNERSHIP.md:2000|PROTOCOL.md:3019|SERVICES.md:2883|VERIFICATION.md:1126"
   },
   {
    "name": "sandbox-private",
@@ -1121,28 +1173,6 @@
     "workflow-yaml-guard.yml"
    ],
    "treeSig": ".dcg.toml:494|.gitignore:2365|.gitleaksignore:1452|.tmp-ws2a-log.txt:0|.tmp-ws2a-one.ts:315|.tmp-ws2a.ts:1601|.tmp-ws2c.ts:961|2026-09-11-roast-78-addendum.md:1214|AGENT-BRIEFING.md:1136|AGENTS.md:7641|CLAIMS-AUDIT-2026-09-12.md:12715|CLAIMS-AUDIT-PREVIEW-2026-09-12.md:1227|CONTROLS-THAT-EXIST.md:1156|CRITICAL-R11-KEY-BROADCAST.md:1194|Caddyfile:795|EPOCH-PATCH-SPEC.md:1147|FLEET-NOTE.md:1088|HISTORY.md:210591|README.md:4093|RELAY-PATCH-2.md:1144|SAOS-BRIEFING-2026-09-11-OUTER-ANCHOR.md:6469|SAOS-BRIEFING-2026-09-11-ROAST-80.md:1222|SAOS-BRIEFING-2026-09-11-ROAST-84.md:1222|SAOS-DAILY-REPORT-2026-09-11-ADSMARKET.md:1242|SAOS-DAILY-REPORT-2026-09-11-FOUNDRY.md:1234|SAOS-DAILY-REPORT-2026-09-11.md:1202|SAOS-PULSE-2026-09-29-V94-FULL-VAULT.md:7665|SAOS-PULSE-2026-09-30-V95-TRUTH-CENSUS.md:5689|SAOS-PULSE-2026-09-30-V96-THE-WORDS-IN-THE-VAULTS.md:6037|SAOS-PULSE-2026-09-30-V97-PREVIEW-TRUTH.md:8230|SAOS-PULSE-2026-09-30-V98-ONE-NETWORK.md:8216|SAOS-PULSE-2026-10-01-V99-SOVEREIGN-REVOLUTION.md:9708|SAOS-STRATEGY-2026-09-11-ADSMARKET.md:1226|STOP-ORDER-KEYS-DISTRIBUTION-2026-09-13.md:4018|bun.lock:368626|components.json:430|eslint.config.mjs:1661|feature_list.json:27473|foundry.toml:957|init.sh:2405|mm-live.tmp.json:0|next.config.ts:1469|package.json:3613|postcss.config.mjs:81|progress.md:8665|session-handoff.md:5556|tailwind.config.ts:1696|tmp-ws2c-out.txt:46|tmp-ws2c.ts:2711|tsconfig.json:781|v80-agri-desktop.png:428940|v80-agri-final.png:420576|v80-agri-mobile.png:52535|v81-agri-desktop.png:496600|v81-agri-mobile.png:63346|v86-agri-desktop.png:724689|v86-agri-edge-panel.png:150739|v86-agri-mobile.png:618720|worklog.md:268490"
-  },
-  {
-   "name": "saos-markets",
-   "private": true,
-   "description": "saos-markets — הבורסה-המדומה של-המדינה-הכלכלית: מדדי-שווקים-מובילים דטרמיניסטיים + אוצר-המשרדים (ניסוי AI-מנהל-מדינה) + ",
-   "createdAt": "2026-10-14T18:14:39Z",
-   "pushedAt": "2026-10-17T04:06:43Z",
-   "workflows": [],
-   "treeSig": ".gitignore:43|FLEET-DOCKING.md:3550|FRONT-BACK.md:2392|README.md:740|SECURITY.md:2372|bun.lock:1355|package.json:648|tsconfig.json:477"
-  },
-  {
-   "name": "saos-control-center",
-   "private": true,
-   "description": "Sovereign Control Center — smart key login (any WIF, live chain-verify), AES-256-GCM vault, owner-lock, agent API, realt",
-   "createdAt": "2026-09-09T07:55:14Z",
-   "pushedAt": "2026-10-17T02:24:33Z",
-   "workflows": [
-    "control-center-build.yml",
-    "gitleaks.yml",
-    "workflow-yaml-guard.yml"
-   ],
-   "treeSig": ".env.example:121|.gitattributes:20|.gitignore:1921|.gitleaksignore:497|AGENTS.md:12541|BOOTSTRAP.md:4033|BREAKGLASS-DRILL.json:2062|Caddyfile:1120|ECONOMY-DOCTRINE.md:13403|FLEET-NOTE.md:1641|MEMORY.md:43004|MORNING-REPORT.md:2230|README-SAOS.md:5526|SAOS-BRIEFING-2026-09-11-ROAST-84.md:1218|SAOS-CI-OUTAGE-2026-10-06.md:5841|SAOS-COIN-DOSSIER-2026-09-12-V77.md:1214|SAOS-DAILY-REPORT-2026-09-11-ADSMARKET.md:1238|SAOS-DAILY-REPORT-2026-09-11-FOUNDRY.md:1230|SAOS-DAILY-REPORT-2026-09-11.md:1198|SAOS-PULSE-2026-09-11-H16-COMPLETE.md:1234|SAOS-PULSE-2026-09-11-H16-SIX-OF-SIX.md:1242|SAOS-PULSE-2026-09-11-H17-REPEAT.md:1226|SAOS-PULSE-2026-09-11-H18-THIRD-CYCLE.md:1246|SAOS-PULSE-2026-09-11-H19-FOURTH-CYCLE.md:1250|SAOS-PULSE-2026-09-11-H20-FULL-MATRIX-CONSOLIDATION-2.md:1308|SAOS-PULSE-2026-09-11-H20-FULL-MATRIX-CONSOLIDATION.md:1302|SAOS-PULSE-2026-09-11-H21-SIXTH-CYCLE.md:1246|SAOS-PULSE-2026-09-11-H22-H23-AUTOMATION.md:1258|SAOS-STRATEGY-2026-09-11-ADSMARKET.md:1222|bun.lock:365841|components.json:430|dex-dev.log.tail:1048576|eslint.config.mjs:1686|genesis-report.json:2673|next.config.ts:1614|package.json:3622|postcss.config.mjs:81|research-r.mjs:1142|tsconfig.json:890|worklog.md:1135492"
   },
   {
    "name": "SovereignConsole",
@@ -1205,18 +1235,6 @@
     "workflow-yaml-guard.yml"
    ],
    "treeSig": ".env.example:1864|.gitignore:1271|.gitleaksignore:741|2026-09-11-roast-78-addendum.md:1213|AGENT-BRIEFING.md:1135|AGENTS.md:5588|CONTROLS-THAT-EXIST.md:1155|CRITICAL-R11-KEY-BROADCAST.md:1193|EPOCH-PATCH-SPEC.md:1146|README.md:1972|RELAY-PATCH-2.md:1143|SAOS-BRIEFING-2026-09-11-ROAST-80.md:1221|SAOS-BRIEFING-2026-09-11-ROAST-84.md:1221|SAOS-COIN-DOSSIER-2026-09-12-V77.md:1217|SAOS-DAILY-REPORT-2026-09-11-ADSMARKET.md:1241|SAOS-DAILY-REPORT-2026-09-11.md:1201|SAOS-STRATEGY-2026-09-11-ADSMARKET.md:1225|bun.lock:132516|eslint.config.mjs:763|next.config.ts:688|package.json:1583|postcss.config.mjs:80|tsconfig.json:841|worklog.md:470694"
-  },
-  {
-   "name": "saos-agents",
-   "private": true,
-   "description": "Self-measuring agent orchestration core: a task graph that cannot be lied to (done-only-via-verified-push), an operator ",
-   "createdAt": "2026-10-07T22:06:12Z",
-   "pushedAt": "2026-10-14T02:29:33Z",
-   "workflows": [
-    "gitleaks.yml",
-    "selftest-gate.yml"
-   ],
-   "treeSig": ".gitattributes:320|.gitignore:69|LICENSE:1073|README.md:7831|REVIVAL-2026-10-11.md:1349|SECURITY.md:1580|package.json:893"
   },
   {
    "name": "Adsmarket",
