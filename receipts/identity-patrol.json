@@ -1,13 +1,22 @@
 {
  "protocol": "FLEET-IDENTITY-PATROL/1",
- "at": "2026-10-18T08:52:01.254Z",
+ "at": "2026-10-18T12:01:07.798Z",
  "law": "DECISIONS #10 — no NAME@users.noreply.github.com except owner + github-actions[bot]; bots sign @agents.roshpinacare-sys",
  "scope": "44 repos (private included) · last 30 commits each",
  "verdict": "VIOLATION",
  "scannedCount": 44,
  "skippedCount": 1,
- "violationsCount": 36,
+ "violationsCount": 38,
  "violations": [
+  {
+   "repo": "Domain",
+   "sha": "46b1d28721",
+   "message": "token-forge: verdict (metadata only) [ci]",
+   "bad": [
+    "author:41898282+github-actions[bot]@users.noreply.github.com"
+   ],
+   "date": "2026-10-18T11:23:20Z"
+  },
   {
    "repo": "giant",
    "sha": "8c284c7d0d",
@@ -40,6 +49,16 @@
   },
   {
    "repo": "sovereign-executor",
+   "sha": "ff6fdeaeae",
+   "message": "fleet-beat: receipts 2026-10-18T11:42:18Z [skip ci]",
+   "bad": [
+    "author:fleet-beat[bot]@users.noreply.github.com",
+    "committer:fleet-beat[bot]@users.noreply.github.com"
+   ],
+   "date": "2026-10-18T11:42:18Z"
+  },
+  {
+   "repo": "sovereign-executor",
    "sha": "ad98faa8ba",
    "message": "fleet-beat: receipts 2026-10-18T07:18:35Z [skip ci]",
    "bad": [
@@ -57,6 +76,26 @@
     "committer:fleet-beat[bot]@users.noreply.github.com"
    ],
    "date": "2026-10-18T06:02:07Z"
+  },
+  {
+   "repo": "Zip",
+   "sha": "ca22d646aa",
+   "message": "weave-anchor-zero: 2026-10-18T09:43:11.298Z · cp#1674 · Z Chain 9369 gasPrice 0x0 · att 17",
+   "bad": [
+    "author:weave-anchor-zero[bot]@users.noreply.github.com",
+    "committer:weave-anchor-zero[bot]@users.noreply.github.com"
+   ],
+   "date": "2026-10-18T09:43:19Z"
+  },
+  {
+   "repo": "Zip",
+   "sha": "51fa83a12f",
+   "message": "weave-anchor: 2026-10-18T09:42:31.906Z · cp#1673 · 1/3 chains · att 1732 · market 0s/0r",
+   "bad": [
+    "author:weave-anchor[bot]@users.noreply.github.com",
+    "committer:weave-anchor[bot]@users.noreply.github.com"
+   ],
+   "date": "2026-10-18T09:43:07Z"
   },
   {
    "repo": "Zip",
@@ -167,46 +206,6 @@
     "committer:weave-anchor-zero[bot]@users.noreply.github.com"
    ],
    "date": "2026-10-16T20:36:38Z"
-  },
-  {
-   "repo": "Zip",
-   "sha": "1e68ccb42d",
-   "message": "weave-anchor: 2026-10-16T20:34:11.794Z · cp#1661 · 1/3 chains · att 1720 · market 0s/0r",
-   "bad": [
-    "author:weave-anchor[bot]@users.noreply.github.com",
-    "committer:weave-anchor[bot]@users.noreply.github.com"
-   ],
-   "date": "2026-10-16T20:34:51Z"
-  },
-  {
-   "repo": "Zip",
-   "sha": "26d1f34de9",
-   "message": "weave-anchor-zero: 2026-10-16T19:37:12.227Z · cp#1660 · Z Chain 9369 gasPrice 0x0 · att 17",
-   "bad": [
-    "author:weave-anchor-zero[bot]@users.noreply.github.com",
-    "committer:weave-anchor-zero[bot]@users.noreply.github.com"
-   ],
-   "date": "2026-10-16T19:37:20Z"
-  },
-  {
-   "repo": "Zip",
-   "sha": "0465f2ba97",
-   "message": "weave-anchor: 2026-10-16T19:36:29.094Z · cp#1659 · 1/3 chains · att 1718 · market 0s/0r",
-   "bad": [
-    "author:weave-anchor[bot]@users.noreply.github.com",
-    "committer:weave-anchor[bot]@users.noreply.github.com"
-   ],
-   "date": "2026-10-16T19:37:07Z"
-  },
-  {
-   "repo": "Zip",
-   "sha": "456f4cb8be",
-   "message": "weave-anchor-zero: 2026-10-16T04:42:43.341Z · cp#1658 · Z Chain 9369 gasPrice 0x0 · att 17",
-   "bad": [
-    "author:weave-anchor-zero[bot]@users.noreply.github.com",
-    "committer:weave-anchor-zero[bot]@users.noreply.github.com"
-   ],
-   "date": "2026-10-16T04:42:51Z"
   }
  ],
  "skipped": [
