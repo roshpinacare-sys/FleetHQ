@@ -1,6 +1,6 @@
 {
  "schema": "saos.sovereign-decisions/1",
- "generatedAt": "2026-10-18T11:00:50.092Z",
+ "generatedAt": "2026-10-18T11:33:26.593Z",
  "policyVersion": "SOV-POLICY/1",
  "principle": "הריבונות מחליטה ומבצעת — הבעלים קבע (trace 1a12…f45d) שהמערכת מקבלת החלטות חכמות בעצמה בצורה הכי מתקדמת שיש; הפניה לבעלים = שלילת הריבונות. כל-החלטה: ראיה-מדודה + אימות-כפול. בעלים = בעלים; ריבונות = הגוף שמחליט.",
  "authority": "advisory",
@@ -22,27 +22,27 @@
  "sense": {
   "gridTruth": {
    "ok": true,
-   "ageMin": 306
-  },
-  "openCloser": {
-   "ok": true,
-   "ageMin": 31
-  },
-  "officeState": {
-   "ok": true,
-   "ageMin": 194
-  },
-  "decisionsPrev": {
-   "ok": true,
-   "ageMin": 30
-  },
-  "gridHealth": {
-   "ok": true,
-   "ageMin": 60
+   "ageMin": 339
   },
   "valueScan": {
    "ok": true,
-   "ageMin": 130
+   "ageMin": 33
+  },
+  "openCloser": {
+   "ok": true,
+   "ageMin": 3
+  },
+  "decisionsPrev": {
+   "ok": true,
+   "ageMin": 33
+  },
+  "officeState": {
+   "ok": true,
+   "ageMin": 25
+  },
+  "gridHealth": {
+   "ok": true,
+   "ageMin": 7
   }
  },
  "decisions": [
@@ -206,7 +206,7 @@
    "status": "watch",
    "evidence": {
     "source": "GridWatch/state/fleet-health.json",
-    "measuredAt": "2026-10-18T10:01:15.295Z",
+    "measuredAt": "2026-10-18T11:26:42.564Z",
     "totals": {
      "repos": 44,
      "public": 16,
@@ -220,8 +220,8 @@
     "redRepos": [
      "saos-dex",
      "Console",
-     "saos-runtime",
      "private-2c5b51b1",
+     "saos-runtime",
      "private-d1e4e20a",
      "private-3bc73345",
      "private-340a4d07"
@@ -231,24 +231,24 @@
    },
    "law": "ריפוי-עצמי בתוך-מעטפת (הפיך+מדוד בלבד); סטריקים ≥3 לא מנוסים שוב — מנותבים לטריאז' הנדסי",
    "policy": "SOV-POLICY/1",
-   "decidedAt": "2026-10-18T11:00:50.092Z",
+   "decidedAt": "2026-10-18T11:33:26.593Z",
    "by": "sovereign-decider"
   },
   {
    "id": "auto-freshness",
    "area": "operations",
-   "title": "טריות הצי: 6 נפלו מעל SLA (lighthouse 85דק>SLA80, value-scan 99דק>SLA90, domain-pulse 263דק>SLA180, live 327דק>SLA180, gr",
+   "title": "טריות הצי: 4 נפלו מעל SLA (domain-pulse 323דק>SLA180, live 387דק>SLA180, grid 335דק>SLA125, products 9430דק>SLA2910) — הו",
    "status": "watch",
    "evidence": {
     "source": "FleetHQ/office/state/opens-closer.json",
     "metrics": {
-     "staleCount": 6,
-     "dispatchedCount": 2
+     "staleCount": 4,
+     "dispatchedCount": 0
     },
     "selfHeal": "same-repo GITHUB_TOKEN + cross-repo CROSS_REVIVE_PAT (D1)"
    },
    "policy": "SOV-POLICY/1",
-   "decidedAt": "2026-10-18T11:00:50.092Z",
+   "decidedAt": "2026-10-18T11:33:26.593Z",
    "by": "sovereign-decider"
   },
   {
@@ -258,12 +258,12 @@
    "status": "clear",
    "evidence": {
     "source": "office-state.json",
-    "capturedAt": "2026-10-18T07:47:04.515Z",
+    "capturedAt": "2026-10-18T11:08:01.461Z",
     "tasks": "n/a"
    },
    "law": "אין דריסת-מסילות: למשרד יש לולאת-רטרו משלו; הריבונות מתעדת ומאמתת, לא לוקחת",
    "policy": "SOV-POLICY/1",
-   "decidedAt": "2026-10-18T11:00:50.092Z",
+   "decidedAt": "2026-10-18T11:33:26.593Z",
    "by": "sovereign-decider"
   }
  ],
