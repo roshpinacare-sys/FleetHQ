@@ -1,14 +1,13 @@
-# ספר-המודעות-העצמית של הרשת — 2026-10-18T12:01:06.082Z
+# ספר-המודעות-העצמית של הרשת — 2026-10-18T12:38:25.617Z
 
-**44 ריפואים** (16 ציבוריים · 28 פרטיים) · **263 מכונות-יכולת** · **21 פעילים בשעה האחרונה** · תמונה-קודמת: 2026-10-18T08:51:59.633Z
+**44 ריפואים** (16 ציבוריים · 28 פרטיים) · **263 מכונות-יכולת** · **21 פעילים בשעה האחרונה** · תמונה-קודמת: 2026-10-18T12:01:06.082Z
 
 ## ⚙️ מכונות-חדשות/שהוסרו מאז-התמונה
-- Domain: +pulse-bake.yml
-- saos-owner-channel: +arsenal-sentinel.yml
-- sovereign-runner-kit: +registry-verify.yml
+- saos-runtime: +arsenal-sentinel.yml
+- saos-owner-channel:  −arsenal-sentinel.yml
 
 ## 💓 פעיל-עכשיו (דחיפה בשעה האחרונה)
-FleetHQ · Domain · Autonomy · sovereign-lighthouse · saos-coordination · saos-owner-channel · giant · fleet-economy · saos-runtime · steem · sovereign-runner-kit · roshpina · ops-control · saos-dex · sovereign-executor · Console · Zip · execution-fabric · Project-files · GridWatch · sovereign-beacon
+FleetHQ · Autonomy · Domain · Sandbox · Console · saos-dex · steem · roshpina · sovereign-lighthouse · saos-runtime · giant · execution-fabric · saos-control-center · saos-sovereign-platform · fleet-economy · sovereign-runner-kit · saos-coordination · saos-owner-channel · ops-control · sovereign-executor · Zip
 
 ## 🧠 מפת-היכולות של הצי (המכונות והריפואים-בהן-הן-חיות)
 - **gitleaks** → Adsmarket, Console, Defi, Domain, Project-files, Saosmartwallet (+11)
@@ -21,20 +20,20 @@ FleetHQ · Domain · Autonomy · sovereign-lighthouse · saos-coordination · sa
 - **token-forge** → Domain, Sandbox, steem
 - **ci** → Saosmartwallet, saos-dex, saos-sovereign-foundry
 - **runtime-pacemaker** → Console, FleetHQ
-- **agent-verify** → Console, Domain
-- **canary** → Defi, Domain
-- **dex-grid** → Domain, saos-dex
-- **estate-scrub** → Console, Domain
-- **exposure-gate** → Domain, TruthRail
-- **key-verify** → Console, Domain
-- **mm-supremacy** → Domain, saos-dex
-- **sovereign-pulse** → Domain, saos-runtime
-- **weave-anchor-lines** → Domain, Zip
-- **weave-ecosystem** → Domain, Zip
-- **weave-heart** → Domain, Zip
-- **web-publish** → Domain, Zip
 - **artery-catchup** → Autonomy, Sandbox
 - **artery-decision-truth** → Autonomy, Sandbox
 - **artery-fleet** → Autonomy, Sandbox
+- **artery-flow** → Autonomy, Sandbox
+- **artery-grid** → Autonomy, Sandbox
+- **artery-integrity** → Autonomy, Sandbox
+- **artery-participation** → Autonomy, Sandbox
+- **artery-scribe** → Autonomy, Sandbox
+- **artery-wallet** → Autonomy, Sandbox
+- **artery-watch** → Autonomy, Sandbox
+- **evo-windows-staleness** → Autonomy, Sandbox
+- **federation** → Autonomy, Sandbox
+- **fleet-heal** → Autonomy, Sandbox
+- **fleet-yield** → Autonomy, Sandbox
+- **hive-probe** → Autonomy, Sandbox
 
 *חוק: הספר-הזה הוא העין-העצמית של הרשת — נכתב-רק-ממדידה (API), ללא-המצאה, git-only, שורד-מחיקת-סנדבוקסים.*
