@@ -97,6 +97,7 @@ jobs:
       - name: Build ifixai-audit.json (measured facts only)
         env:
           BRAIN_HOST: ${{ secrets.NVIDIA_BASE_URL_2 }}
+          BRAIN_REASON: "runner→NIM chat measured BLOCKED (models 200/0.17s, raw chat 000/45s, 2026-10-18) — brain audit runs on the sandbox lane, publishes to this same branch; mock proof is this run's live signal"
         run: node office-window/ifixai-audit-build.mjs office-window/dist/ifixai-audit.json
 
       - name: Fleet digest + render (publish.sh prerequisites)

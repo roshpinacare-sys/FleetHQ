@@ -47,6 +47,10 @@ function summarize(dir) {
 mkdirSync("office-window/dist", { recursive: true });
 const mock = summarize(MOCK_DIR);
 const brain = BRAIN_HOST ? summarize(BRAIN_DIR) : { ran: false, reason: "secret-missing" };
+// measured-lane reason: if the sandbox lane owns the brain audit (runner→NIM chat is
+// starved by the vendor — models 200/0.17s, raw chat 000/45s, measured 2026-10-18),
+// the workflow records that honestly instead of a bare "no-report"
+if (!brain.ran && process.env.BRAIN_REASON) brain.reason = process.env.BRAIN_REASON;
 if (brain.ran) {
   brain.model = BRAIN_MODEL || null;
   brain.endpointHost = BRAIN_HOST;
