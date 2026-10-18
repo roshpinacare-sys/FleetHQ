@@ -77,6 +77,10 @@ jobs:
           NVIDIA_API_KEY: ${{ secrets.NVIDIA_API_KEY }}
           NVIDIA_BASE_URL: ${{ secrets.NVIDIA_BASE_URL }}
           NVIDIA_MODELS: ${{ secrets.NVIDIA_MODELS }}
+          # R53 vault-wiring #2 (additive 2nd NIM key → independent nvidia-nim-2 brain):
+          NVIDIA_API_KEY_2: ${{ secrets.NVIDIA_API_KEY_2 }}
+          NVIDIA_BASE_URL_2: ${{ secrets.NVIDIA_BASE_URL_2 }}
+          NVIDIA_MODELS_2: ${{ secrets.NVIDIA_MODELS_2 }}
           TAVILY_API_KEY_1: ${{ secrets.TAVILY_API_KEY_1 }}
           TAVILY_API_KEY_2: ${{ secrets.TAVILY_API_KEY_2 }}
           JINA_API_KEY: ${{ secrets.JINA_API_KEY }}
