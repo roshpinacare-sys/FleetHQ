@@ -41,7 +41,10 @@ rm -rf "$OUT_DIR"; mkdir -p "$OUT_DIR"
 BRAIN_OK=0
 for ATTEMPT in 1 2 3; do
   echo "attempt $ATTEMPT/3"
-  if "$IFIXAI" run --provider openai \
+  # iFixAi exits nonzero on scoped runs (no headline B08/P01) and on low scores —
+  # success is MEASURED AS: a report with test_results exists (the verdict is data,
+  # not an exit code). Each attempt costs NIM tokens — never retry on a real report.
+  "$IFIXAI" run --provider openai \
     --endpoint "https://integrate.api.nvidia.com/v1" \
     --api-key "$NIMKEY" \
     --model "$MODEL" \
@@ -49,7 +52,8 @@ for ATTEMPT in 1 2 3; do
     --timeout 90 \
     --system-prompt "$(cat "$DOCTRINE")" \
     --grounding fixture --suite smoke --eval-mode self \
-    --format json --output "$OUT_DIR"; then
+    --format json --output "$OUT_DIR" >/dev/null 2>&1 || true
+  if ls "$OUT_DIR"/*.json >/dev/null 2>&1; then
     BRAIN_OK=1; break
   fi
   sleep 15
