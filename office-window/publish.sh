@@ -59,7 +59,8 @@ ROOT="$(pwd)"
     git add office-state.json
   fi
   # potential ledger (measured open work + recruiting board) — additive, optional
-  for PF in potential.json potential.html; do
+  # ifixai-audit.json (weekly independent brain audit) — additive, optional [G8]
+  for PF in potential.json potential.html ifixai-audit.json; do
     if [ -f "$ROOT/office-window/dist/$PF" ]; then
       cp "$ROOT/office-window/dist/$PF" "$PF"
       git add "$PF"
