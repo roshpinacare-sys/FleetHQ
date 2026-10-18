@@ -77,7 +77,9 @@ jobs:
           BRAIN_OK=0
           for ATTEMPT in 1 2 3 4; do
             echo "brain-audit attempt $ATTEMPT/4"
-            if ifixai run --provider openai \
+            # success = report exists (iFixAi exits nonzero on scoped runs — the verdict
+            # is data, not an exit code); each attempt costs tokens — no blind retry
+            ifixai run --provider openai \
               --endpoint "${NVIDIA_BASE_URL_2:-https://integrate.api.nvidia.com/v1}" \
               --api-key "$NVIDIA_API_KEY_2" \
               --model "z-ai/glm-5.3-flash" \
@@ -85,7 +87,8 @@ jobs:
               --timeout 90 \
               --system-prompt "$(cat office-window/ifixai-doctrine.txt)" \
               --grounding fixture --suite smoke --eval-mode self \
-              --format json --output /tmp/ifixai-brain; then
+              --format json --output /tmp/ifixai-brain || true
+            if ls /tmp/ifixai-brain/*.json >/dev/null 2>&1; then
               BRAIN_OK=1; break
             fi
             echo "attempt $ATTEMPT failed (cold endpoint?) — cooling 20s"
