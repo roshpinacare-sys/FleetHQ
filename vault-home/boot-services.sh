@@ -24,6 +24,32 @@ INSTALL=0
 
 log(){ echo "[boot $(date -u +%H:%M:%S)] $*"; }
 
+# ---------------------------------------------------------------- 0.5 steem vault
+# TASK-16 (2026-10-19): the upload copies are GONE (upload/ holds pat.env only) —
+# the canonical key vault is now the PRIVATE repo roshpinacare-sys/steem@main
+# (.secrets/: army-keys.json · exec-armed.json · headcorner.key). This stage
+# pulls them fresh on EVERY boot (wipe-proof), verifies by fingerprint
+# (fail-honest), never logs contents. sha256 prefixes recorded in worklog.md
+# (Task 16, 2026-10-18): 1f629a9245ca122b / 87d7d1a958dcc4b0 / 3c5ecf21d0050b83.
+log "stage0.5: steem key vault from private repo (fingerprint law)"
+if [ -n "${GIT_PAT:-}" ]; then
+  mkdir -p /home/z/.secrets/steem
+  STEEM_OK=0
+  for f in army-keys.json exec-armed.json headcorner.key; do
+    curl -sS -m 30 -H "Authorization: Bearer ${GIT_PAT}" \
+      "https://raw.githubusercontent.com/roshpinacare-sys/steem/main/.secrets/$f" \
+      -o "/home/z/.secrets/steem/$f" 2>/dev/null
+    SZ=$(stat -c %s "/home/z/.secrets/steem/$f" 2>/dev/null || echo 0)
+    if [ "$SZ" -gt 8 ]; then STEEM_OK=$((STEEM_OK+1)); else log "  WARN: $f fetch failed (size=$SZ) — fail-honest"; rm -f "/home/z/.secrets/steem/$f"; fi
+  done
+  FP=$(sha256sum /home/z/.secrets/steem/headcorner.key 2>/dev/null | cut -c1-16)
+  if [ "$FP" = "3c5ecf21d0050b83" ]; then log "  headcorner.key fingerprint VERIFIED"; else log "  WARN: headcorner fingerprint mismatch ($FP) — operator gate may need upload copy (fail-honest)"; fi
+  unset FP STEEM_OK SZ
+  chmod 700 /home/z/.secrets/steem 2>/dev/null; chmod 600 /home/z/.secrets/steem/* 2>/dev/null
+else
+  log "  WARN: GIT_PAT absent — steem vault not fetched (fail-honest)"
+fi
+
 # ---------------------------------------------------------------- 1. secrets
 log "stage1: secrets vault from upload copies (fingerprint law)"
 mkdir -p /home/z/.secrets/keys
@@ -83,8 +109,11 @@ chmod 700 /home/z/.gitcred/askpass.sh
 # The key itself lives only in the vault copy; the config holds salt+hash only.
 log "stage3: operator gate config (salt regenerated, same credential unlocks)"
 mkdir -p /home/z/.operator
-if [ ! -f /home/z/.operator/config.json ]; then
-  KEY=$(tr -d '[:space:]' < "/home/z/.secrets/keys/בלורט.evm")
+# TASK-16: prefer the upload copy; fall back to the steem vault (stage0.5) — wipe-proof.
+GATE_KEYFILE="/home/z/.secrets/keys/בלורט.evm"
+[ -f "$GATE_KEYFILE" ] || GATE_KEYFILE="/home/z/.secrets/steem/headcorner.key"
+if [ ! -f /home/z/.operator/config.json ] && [ -f "$GATE_KEYFILE" ]; then
+  KEY=$(tr -d '[:space:]' < "$GATE_KEYFILE")
   SALT=$(node -e "console.log(require('crypto').randomBytes(16).toString('hex'))")
   HASH=$(printf '%s' "$SALT$KEY" | node -e "let d='';process.stdin.on('data',c=>d+=c).on('end',()=>console.log(require('crypto').createHash('sha256').update(d).digest('hex')))")
   node -e "console.log(JSON.stringify({salt:process.argv[1],hash:process.argv[2]}))" "$SALT" "$HASH" > /home/z/.operator/config.json
@@ -98,8 +127,11 @@ chmod 700 /home/z/.operator 2>/dev/null; chmod 600 /home/z/.operator/config.json
 # ---------------------------------------------------------------- 4. estate env
 log "stage4: /home/z/estate/.env.local (master credential from vault copy)"
 mkdir -p "$ESTATE"
-if [ ! -f "$ESTATE/.env.local" ]; then
-  KEY=$(tr -d '[:space:]' < "/home/z/.secrets/keys/בלורט.evm")
+# TASK-16: same fallback law as stage3 (upload copy → steem vault headcorner.key).
+MASTER_KEYFILE="/home/z/.secrets/keys/בלורט.evm"
+[ -f "$MASTER_KEYFILE" ] || MASTER_KEYFILE="/home/z/.secrets/steem/headcorner.key"
+if [ ! -f "$ESTATE/.env.local" ] && [ -f "$MASTER_KEYFILE" ]; then
+  KEY=$(tr -d '[:space:]' < "$MASTER_KEYFILE")
   { echo "HEAD_CORNER_MASTER=$KEY"
     [ -n "${GIT_PAT:-}" ] && echo "GITHUB_PAT=$GIT_PAT"
   } > "$ESTATE/.env.local"
