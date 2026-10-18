@@ -1,17 +1,17 @@
-# identity-patrol — סיור-זהויות כלל-הצי (2026-10-18T16:22:42.893Z)
+# identity-patrol — סיור-זהויות כלל-הצי (2026-10-18T16:29:13.254Z)
 
 **פסק: VIOLATION** — 45 ריפואים נסרקו (30 קומיטים אחרונים כל-אחד) · הפרות: 46 · דולגו: 1
 
 חוק: DECISIONS #10 — אין NAME@users.noreply.github.com פרט-ל-owner ו-github-actions[bot]; בוטים חותמים @agents.roshpinacare-sys.
 
 ## הפרות
+- `Autonomy` 0989257d31 — author:41898282+github-actions[bot]@users.noreply.github.com — "office-growth: VALUE-MAP measured [ci]"
+- `Autonomy` 80050b5498 — author:41898282+github-actions[bot]@users.noreply.github.com — "office-growth: work-orders measured [ci]"
+- `Autonomy` a1d6cdd1ba — author:41898282+github-actions[bot]@users.noreply.github.com — "office-growth: potential.json measured [ci]"
 - `steem` e954e65cb3 — author:saos-exec-bot@users.noreply.github.com + committer:saos-exec-bot@users.noreply.github.com — "exec-cycle (runtime-bridge W5): doctrine-capped broadcast receipts (txids, zero keys) [ski"
 - `steem` d5f5e84761 — author:saos-exec-bot@users.noreply.github.com + committer:saos-exec-bot@users.noreply.github.com — "exec-cycle (runtime-bridge W5): doctrine-capped broadcast receipts (txids, zero keys) [ski"
 - `steem` b1cedc4d11 — author:saos-exec-bot@users.noreply.github.com + committer:saos-exec-bot@users.noreply.github.com — "exec-cycle (runtime-bridge W5): doctrine-capped broadcast receipts (txids, zero keys) [ski"
 - `steem` d785f7f19d — author:saos-exec-bot@users.noreply.github.com + committer:saos-exec-bot@users.noreply.github.com — "exec-cycle (runtime-bridge W5): doctrine-capped broadcast receipts (txids, zero keys) [ski"
-- `Autonomy` 0989257d31 — author:41898282+github-actions[bot]@users.noreply.github.com — "office-growth: VALUE-MAP measured [ci]"
-- `Autonomy` 80050b5498 — author:41898282+github-actions[bot]@users.noreply.github.com — "office-growth: work-orders measured [ci]"
-- `Autonomy` a1d6cdd1ba — author:41898282+github-actions[bot]@users.noreply.github.com — "office-growth: potential.json measured [ci]"
 - `saos-dex` caf3eb1142 — author:sovereign-builder[bot]@users.noreply.github.com + committer:sovereign-builder[bot]@users.noreply.github.com — "sovereign-builder: freshness-report 2026-10-18T13:20:25Z [skip ci]"
 - `saos-dex` 32b51d1ec4 — author:sovereign-builder[bot]@users.noreply.github.com + committer:sovereign-builder[bot]@users.noreply.github.com — "sovereign-builder: build-status 2026-10-18T12:48:46Z [skip ci]"
 - `giant` 59f1f684e9 — author:41898282+github-actions[bot]@users.noreply.github.com + committer:41898282+github-actions[bot]@users.noreply.github.com — "trust-heartbeat: autonomous scan (no-sandbox) — 2026-10-18T13:42Z"
