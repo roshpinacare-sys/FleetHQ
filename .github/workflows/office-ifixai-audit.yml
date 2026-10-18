@@ -50,12 +50,17 @@ jobs:
           ls -la /tmp/ifixai-mock || true
 
       - name: Brain audit vs NVIDIA-NIM (secret-gated, smoke structural suite)
-        if: ${{ secrets.NVIDIA_API_KEY_2 != '' }}
         env:
           NVIDIA_API_KEY_2: ${{ secrets.NVIDIA_API_KEY_2 }}
           NVIDIA_BASE_URL_2: ${{ secrets.NVIDIA_BASE_URL_2 }}
           IFIXAI_DOCTRINE_FILE: office-window/ifixai-doctrine.txt
         run: |
+          # secrets context is not usable in step-level `if:` (workflow parse law) —
+          # the gate lives here, in-script, recorded honestly either way
+          if [ -z "${NVIDIA_API_KEY_2:-}" ]; then
+            echo "brain-audit: vault secret NVIDIA_API_KEY_2 not present on this repo — honest skip (reason: secret-missing)"
+            exit 0
+          fi
           rm -rf /tmp/ifixai-brain; mkdir -p /tmp/ifixai-brain
           ifixai run --provider openai \
             --endpoint "${NVIDIA_BASE_URL_2:-https://integrate.api.nvidia.com/v1}" \
