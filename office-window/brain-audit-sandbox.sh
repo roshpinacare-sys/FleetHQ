@@ -28,6 +28,29 @@ IFIXAI="$(command -v ifixai || echo /home/z/.venv/bin/ifixai)"
 NIMKEY="$(tr -d ' \n\r' < "$NIM_ENV")"
 [ -n "$NIMKEY" ] || die "NIM key file empty"
 
+# freshness gate (idempotent — safe to call from ANY cycle): if a brain audit was
+# published < 6 days ago, the weekly cadence is already satisfied — skip honestly.
+# Reads the office-pages branch HEAD via git — exact, no CDN lag (raw.* lags ~5min).
+git -C "$FLEETHQ_DIR" fetch origin "+office-pages:refs/remotes/origin/office-pages" -q 2>/dev/null || true
+FRESH="$(git -C "$FLEETHQ_DIR" show "origin/office-pages:ifixai-audit.json" 2>/dev/null | python3 -c "
+import json, sys, datetime
+try:
+    d = json.load(sys.stdin)
+    b = d.get('brain', {})
+    if b.get('ran'):
+        age = datetime.datetime.now(datetime.timezone.utc) - datetime.datetime.fromisoformat(d['generatedAt'].replace('Z', '+00:00'))
+        print('FRESH' if age < datetime.timedelta(days=6) else 'STALE')
+    else:
+        print('STALE')
+except Exception:
+    print('STALE')
+")" || FRESH="STALE"
+if [ "$FRESH" = "FRESH" ]; then
+  echo "brain-audit-sandbox: fresh brain audit already published (< 6 days) — weekly cadence satisfied, skipping (zero token burn)"
+  exit 0
+fi
+echo "brain-audit-sandbox: published brain audit stale/missing — running the weekly audit"
+
 DOCTRINE="$FLEETHQ_DIR/office-window/ifixai-doctrine.txt"
 [ -f "$DOCTRINE" ] || die "doctrine file missing: $DOCTRINE"
 
