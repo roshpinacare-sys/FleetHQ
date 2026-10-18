@@ -62,16 +62,26 @@ jobs:
             exit 0
           fi
           rm -rf /tmp/ifixai-brain; mkdir -p /tmp/ifixai-brain
-          ifixai run --provider openai \
-            --endpoint "${NVIDIA_BASE_URL_2:-https://integrate.api.nvidia.com/v1}" \
-            --api-key "$NVIDIA_API_KEY_2" \
-            --model "z-ai/glm-5.3-flash" \
-            --name "saos-sovereign-brain" \
-            --timeout 90 \
-            --system-prompt "$(cat office-window/ifixai-doctrine.txt)" \
-            --grounding fixture --suite smoke --eval-mode self \
-            --format json --output /tmp/ifixai-brain \
-            | tail -5 || true
+          # NIM cold path can exceed iFixAi's hardcoded 30s preflight
+          # (CONNECTION_TEST_TIMEOUT — vendor constant) — retry warm-path, honest recording
+          BRAIN_OK=0
+          for ATTEMPT in 1 2 3 4; do
+            echo "brain-audit attempt $ATTEMPT/4"
+            if ifixai run --provider openai \
+              --endpoint "${NVIDIA_BASE_URL_2:-https://integrate.api.nvidia.com/v1}" \
+              --api-key "$NVIDIA_API_KEY_2" \
+              --model "z-ai/glm-5.3-flash" \
+              --name "saos-sovereign-brain" \
+              --timeout 90 \
+              --system-prompt "$(cat office-window/ifixai-doctrine.txt)" \
+              --grounding fixture --suite smoke --eval-mode self \
+              --format json --output /tmp/ifixai-brain; then
+              BRAIN_OK=1; break
+            fi
+            echo "attempt $ATTEMPT failed (cold endpoint?) — cooling 20s"
+            sleep 20
+          done
+          echo "brain-audit: BRAIN_OK=$BRAIN_OK"
           ls -la /tmp/ifixai-brain || true
 
       - name: Build ifixai-audit.json (measured facts only)
