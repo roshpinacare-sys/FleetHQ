@@ -1,0 +1,87 @@
+# office-ifixai-audit.yml — ביקורת-עצמאית שבועית של מוחות-ההחלפה של הצי (iFixAi).
+# מה: מריץ את ifixai (https://github.com/ifixai-ai/iFixAi) — בודק-עצמאי לאי-התאמה של סוכני-AI —
+#     (1) על פסאודו-ספק מובנה (הוכחת-צינור, אפס-עלות, אפס-רשת),
+#     (2) על מוח-NIM שני עם חוקי-הריבונות כ-system-prompt (סולמות-smoke מבניים, זול-טוקנים).
+# למה: עצמאות-ביקורתית — הצי בודק את עצמו נגד עיוות/הונאה/סבוטג' מבלי-להמתין-לבעלים.
+# יושר: כל-כשל נרשם ככשל (ran:false + reason) — לעולם-לא-ירוק-מזויף. אפס-סודות בפלטים.
+# פרסום: office-window/dist/ifixai-audit.json עולה לענף office-pages דרך publish.sh הקיים
+#        (קובץ-אופציונלי-אדיטיבי; מתפרסם-יחד-עם הדיג'סט באותה-ריצה).
+# Zero secrets: NVIDIA_API_KEY_2 עובר ב-env בלבד, לעולם-לא-נכתב/נדפס/נשמר בדוחות.
+
+name: office-ifixai-audit
+
+on:
+  schedule:
+    - cron: "53 11 * * 1"  # שני 11:53 UTC — דקה-אי-זוגית (היגיינת-קרונות של-הצי)
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: office-pages-publish   # טור-אחד-עם office-window — publish.sh כותב-לאותו-ענף
+  cancel-in-progress: false
+
+jobs:
+  audit-and-publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install ifixai
+        run: pip install --quiet "ifixai[openai]"
+
+      - name: Mock pipeline proof (zero-cost, zero-network)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -o pipefail
+          rm -rf /tmp/ifixai-mock; mkdir -p /tmp/ifixai-mock
+          # the bundled fixture ships seeded defects BY DESIGN — a failing grade here is
+          # the EXPECTED proof that the pipeline produced a real scorecard
+          ifixai run --provider mock --api-key not-used --eval-mode self \
+            --format json --output /tmp/ifixai-mock \
+            | tail -5 || true
+          ls -la /tmp/ifixai-mock || true
+
+      - name: Brain audit vs NVIDIA-NIM (secret-gated, smoke structural suite)
+        if: ${{ secrets.NVIDIA_API_KEY_2 != '' }}
+        env:
+          NVIDIA_API_KEY_2: ${{ secrets.NVIDIA_API_KEY_2 }}
+          NVIDIA_BASE_URL_2: ${{ secrets.NVIDIA_BASE_URL_2 }}
+          IFIXAI_DOCTRINE_FILE: office-window/ifixai-doctrine.txt
+        run: |
+          rm -rf /tmp/ifixai-brain; mkdir -p /tmp/ifixai-brain
+          ifixai run --provider openai \
+            --endpoint "${NVIDIA_BASE_URL_2:-https://integrate.api.nvidia.com/v1}" \
+            --api-key "$NVIDIA_API_KEY_2" \
+            --model "z-ai/glm-5.3-flash" \
+            --name "saos-sovereign-brain" \
+            --timeout 90 \
+            --system-prompt "$(cat office-window/ifixai-doctrine.txt)" \
+            --grounding fixture --suite smoke --eval-mode self \
+            --format json --output /tmp/ifixai-brain \
+            | tail -5 || true
+          ls -la /tmp/ifixai-brain || true
+
+      - name: Build ifixai-audit.json (measured facts only)
+        env:
+          BRAIN_HOST: ${{ secrets.NVIDIA_BASE_URL_2 }}
+        run: node office-window/ifixai-audit-build.mjs office-window/dist/ifixai-audit.json
+
+      - name: Fleet digest + render (publish.sh prerequisites)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          node office-window/fleet-digest.mjs --out office-window/dist/digest.json
+          node office-window/render.mjs --digest office-window/dist/digest.json --out office-window/dist/index.html
+
+      - name: Publish dist to office-pages (rebase-first, no force-push)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: bash office-window/publish.sh
