@@ -1,13 +1,17 @@
-# ספר-המודעות-העצמית של הרשת — 2026-10-18T05:16:04.001Z
+# ספר-המודעות-העצמית של הרשת — 2026-10-18T08:51:59.633Z
 
-**43 ריפואים** (15 ציבוריים · 28 פרטיים) · **255 מכונות-יכולת** · **21 פעילים בשעה האחרונה** · תמונה-קודמת: 2026-10-18T03:56:39.986Z
+**44 ריפואים** (16 ציבוריים · 28 פרטיים) · **260 מכונות-יכולת** · **15 פעילים בשעה האחרונה** · תמונה-קודמת: 2026-10-18T05:16:04.001Z
+
+## 🌱 ריפואים-חדשים שנולדו מאז-התמונה (הבעלים בונה — והרשת רואה)
+- **sovereign-executor**
 
 ## ⚙️ מכונות-חדשות/שהוסרו מאז-התמונה
-- Autonomy: +artery-pacer.yml
-- sovereign-runner-kit: +agent-shield.yml, +deploy-gate.yml
+- Domain: +autonomy-guardian.yml
+- saos-runtime: +builder-catchup.yml, +organ-guardian.yml
+- sovereign-runner-kit: +capability-gate.yml
 
 ## 💓 פעיל-עכשיו (דחיפה בשעה האחרונה)
-FleetHQ · fleet-economy · Pulse · Console · Domain · giant · steem · sovereign-beacon · Autonomy · roshpina · saos-runtime · saos-dex · Sandbox · saos-desk · sovereign-runner-kit · sovereign-lighthouse · Project-files · GridWatch · Zip · saos-coordination · Defi
+FleetHQ · sovereign-beacon · sovereign-lighthouse · Console · Domain · fleet-economy · giant · steem · saos-coordination · saos-owner-channel · saos-runtime · execution-fabric · saos-dex · ops-control · Autonomy
 
 ## 🧠 מפת-היכולות של הצי (המכונות והריפואים-בהן-הן-חיות)
 - **gitleaks** → Adsmarket, Console, Defi, Domain, Project-files, Saosmartwallet (+11)
@@ -20,7 +24,6 @@ FleetHQ · fleet-economy · Pulse · Console · Domain · giant · steem · sove
 - **token-forge** → Domain, Sandbox, steem
 - **ci** → Saosmartwallet, saos-dex, saos-sovereign-foundry
 - **runtime-pacemaker** → Console, FleetHQ
-- **ci-probe** → fleet-economy, steem
 - **agent-verify** → Console, Domain
 - **estate-scrub** → Console, Domain
 - **key-verify** → Console, Domain
@@ -33,6 +36,7 @@ FleetHQ · fleet-economy · Pulse · Console · Domain · giant · steem · sove
 - **weave-ecosystem** → Domain, Zip
 - **weave-heart** → Domain, Zip
 - **web-publish** → Domain, Zip
+- **ci-probe** → fleet-economy, steem
 - **directive-now** → saos-runtime, steem
 - **hive-custody-revival** → saos-runtime, steem
 
