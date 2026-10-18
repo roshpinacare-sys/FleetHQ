@@ -55,11 +55,11 @@ interface ServiceDef {
 const services: ServiceDef[] = [
   {
     name: 'foreman',
-    port: Number(process.env.AGENT_HQ_PORT || 3010),
+    port: Number(process.env.AGENT_HQ_PORT || 3020),
     cwd: path.join(ROOT, 'mini-services/agent-hq'),
     script: 'index.ts',
     env: {
-      AGENT_HQ_PORT: String(process.env.AGENT_HQ_PORT || 3010),
+      AGENT_HQ_PORT: String(process.env.AGENT_HQ_PORT || 3020),
       AGENT_HQ_DATA_DIR: process.env.AGENT_HQ_DATA_DIR
         || (fs.existsSync(path.join(path.dirname(ROOT), 'Domain')) ? path.join(path.dirname(ROOT), 'Domain') : path.join(ROOT, 'Domain')),
       // the office's own code repo (the git-learning wire studies it):
