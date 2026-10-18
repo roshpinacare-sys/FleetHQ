@@ -18,6 +18,9 @@
 //   2. OpenRouter          (OPENROUTER_API_KEY — 1 strong + :free rotation)
 //   3. NVIDIA NIM          (NVIDIA_API_KEY — owner-sealed 2026-10-09, verified live:
 //                           nemotron-3-super-120b / nemotron-3-ultra-550b / deepseek-v4.1)
+//   3b. NVIDIA NIM #2      (NVIDIA_API_KEY_2 — 2nd owner-sealed key 2026-10-18, additive
+//                           rotation brain, verified live: glm-5.3-flash / glm-5.3 /
+//                           nemotron-3-super-120b / nemotron-3.5-lightning-30b)
 //   4. Groq                (GROQ_API_KEY — generous free tier)
 //   5. Cerebras            (CEREBRAS_API_KEY — free tier)
 //   6. Mistral La Plateforme (MISTRAL_API_KEY — free tier)
@@ -200,6 +203,28 @@ function buildBrains(): Brain[] {
         'nvidia/nemotron-3-ultra-550b-a55b',
         'deepseek-ai/deepseek-v4.1-flash',
         'nvidia/nemotron-3.5-lightning-30b-a3b',
+      ]),
+    });
+  }
+  // ---- KEYED brain — NVIDIA NIM #2 (second owner-sealed key, additive rotation).
+  // Same per-brain cooldown law as the OpenRouter multi-key rotation: each key is
+  // its OWN brain, so a rate-limited or exhausted key cools down while traffic
+  // walks on — the primary NIM key above is never touched (key rotation = the
+  // owner's act alone). Owner-supplied 2nd key sealed in the vault 2026-10-18 and
+  // verified LIVE on this account: glm-5.3-flash ✓ · glm-5.3 ✓ ·
+  // nemotron-3-super-120b-a12b ✓ · nemotron-3.5-lightning-30b-a3b ✓
+  // (the giant ultra-550b / kimi-k2.6 answers only after a long cold start —
+  // they stay reachable via NVIDIA_MODELS_2, ordered AFTER the proven fast ones.)
+  if (process.env.NVIDIA_API_KEY_2) {
+    brains.push({
+      name: 'nvidia-nim-2',
+      base: process.env.NVIDIA_BASE_URL_2 || 'https://integrate.api.nvidia.com/v1',
+      key: process.env.NVIDIA_API_KEY_2,
+      models: parseModels(process.env.NVIDIA_MODELS_2, [
+        'z-ai/glm-5.3-flash',
+        'nvidia/nemotron-3-super-120b-a12b',
+        'nvidia/nemotron-3.5-lightning-30b-a3b',
+        'z-ai/glm-5.3',
       ]),
     });
   }
