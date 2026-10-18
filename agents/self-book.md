@@ -1,17 +1,14 @@
-# ספר-המודעות-העצמית של הרשת — 2026-10-18T08:51:59.633Z
+# ספר-המודעות-העצמית של הרשת — 2026-10-18T12:01:06.082Z
 
-**44 ריפואים** (16 ציבוריים · 28 פרטיים) · **260 מכונות-יכולת** · **15 פעילים בשעה האחרונה** · תמונה-קודמת: 2026-10-18T05:16:04.001Z
-
-## 🌱 ריפואים-חדשים שנולדו מאז-התמונה (הבעלים בונה — והרשת רואה)
-- **sovereign-executor**
+**44 ריפואים** (16 ציבוריים · 28 פרטיים) · **263 מכונות-יכולת** · **21 פעילים בשעה האחרונה** · תמונה-קודמת: 2026-10-18T08:51:59.633Z
 
 ## ⚙️ מכונות-חדשות/שהוסרו מאז-התמונה
-- Domain: +autonomy-guardian.yml
-- saos-runtime: +builder-catchup.yml, +organ-guardian.yml
-- sovereign-runner-kit: +capability-gate.yml
+- Domain: +pulse-bake.yml
+- saos-owner-channel: +arsenal-sentinel.yml
+- sovereign-runner-kit: +registry-verify.yml
 
 ## 💓 פעיל-עכשיו (דחיפה בשעה האחרונה)
-FleetHQ · sovereign-beacon · sovereign-lighthouse · Console · Domain · fleet-economy · giant · steem · saos-coordination · saos-owner-channel · saos-runtime · execution-fabric · saos-dex · ops-control · Autonomy
+FleetHQ · Domain · Autonomy · sovereign-lighthouse · saos-coordination · saos-owner-channel · giant · fleet-economy · saos-runtime · steem · sovereign-runner-kit · roshpina · ops-control · saos-dex · sovereign-executor · Console · Zip · execution-fabric · Project-files · GridWatch · sovereign-beacon
 
 ## 🧠 מפת-היכולות של הצי (המכונות והריפואים-בהן-הן-חיות)
 - **gitleaks** → Adsmarket, Console, Defi, Domain, Project-files, Saosmartwallet (+11)
@@ -25,19 +22,19 @@ FleetHQ · sovereign-beacon · sovereign-lighthouse · Console · Domain · flee
 - **ci** → Saosmartwallet, saos-dex, saos-sovereign-foundry
 - **runtime-pacemaker** → Console, FleetHQ
 - **agent-verify** → Console, Domain
-- **estate-scrub** → Console, Domain
-- **key-verify** → Console, Domain
 - **canary** → Defi, Domain
 - **dex-grid** → Domain, saos-dex
+- **estate-scrub** → Console, Domain
 - **exposure-gate** → Domain, TruthRail
+- **key-verify** → Console, Domain
 - **mm-supremacy** → Domain, saos-dex
 - **sovereign-pulse** → Domain, saos-runtime
 - **weave-anchor-lines** → Domain, Zip
 - **weave-ecosystem** → Domain, Zip
 - **weave-heart** → Domain, Zip
 - **web-publish** → Domain, Zip
-- **ci-probe** → fleet-economy, steem
-- **directive-now** → saos-runtime, steem
-- **hive-custody-revival** → saos-runtime, steem
+- **artery-catchup** → Autonomy, Sandbox
+- **artery-decision-truth** → Autonomy, Sandbox
+- **artery-fleet** → Autonomy, Sandbox
 
 *חוק: הספר-הזה הוא העין-העצמית של הרשת — נכתב-רק-ממדידה (API), ללא-המצאה, git-only, שורד-מחיקת-סנדבוקסים.*
