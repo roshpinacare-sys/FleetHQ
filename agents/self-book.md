@@ -1,12 +1,9 @@
-# ספר-המודעות-העצמית של הרשת — 2026-10-19T19:29:18.976Z
+# ספר-המודעות-העצמית של הרשת — 2026-10-19T20:47:51.810Z
 
-**45 ריפואים** (17 ציבוריים · 28 פרטיים) · **278 מכונות-יכולת** · **23 פעילים בשעה האחרונה** · תמונה-קודמת: 2026-10-19T18:41:40.964Z
-
-## ⚙️ מכונות-חדשות/שהוסרו מאז-התמונה
-- sovereign-runner-kit: +night-steward.yml
+**45 ריפואים** (17 ציבוריים · 28 פרטיים) · **278 מכונות-יכולת** · **21 פעילים בשעה האחרונה** · תמונה-קודמת: 2026-10-19T19:29:18.976Z
 
 ## 💓 פעיל-עכשיו (דחיפה בשעה האחרונה)
-FleetHQ · saos-dex · Domain · steem · Autonomy · execution-fabric · saos-console-zai · giant · fleet-economy · sovereign-runner-kit · sovereign-executor · Sandbox · saos-coordination · sovereign-lighthouse · saos-runtime · Console · roshpina · Pulse · saos-control-center · GridWatch · SovereignConsole · ops-control · sovereign-beacon
+FleetHQ · saos-dex · Console · Domain · giant · Autonomy · saos-console-zai · execution-fabric · fleet-economy · sovereign-beacon · Sandbox · sovereign-executor · Pulse · saos-runtime · steem · ops-forge · sovereign-lighthouse · saos-desk · Project-files · GridWatch · sovereign-runner-kit
 
 ## 🧠 מפת-היכולות של הצי (המכונות והריפואים-בהן-הן-חיות)
 - **gitleaks** → Adsmarket, Console, Defi, Domain, Project-files, Saosmartwallet (+11)
@@ -22,17 +19,17 @@ FleetHQ · saos-dex · Domain · steem · Autonomy · execution-fabric · saos-c
 - **dex-grid** → Domain, saos-dex
 - **mm-supremacy** → Domain, saos-dex
 - **agent-verify** → Console, Domain
-- **canary** → Defi, Domain
 - **estate-scrub** → Console, Domain
+- **key-verify** → Console, Domain
+- **canary** → Defi, Domain
 - **exposure-gate** → Domain, TruthRail
 - **hive-adopt-t21** → Domain, saos-runtime
-- **key-verify** → Console, Domain
 - **sovereign-pulse** → Domain, saos-runtime
 - **weave-anchor-lines** → Domain, Zip
 - **weave-ecosystem** → Domain, Zip
 - **weave-heart** → Domain, Zip
 - **web-publish** → Domain, Zip
-- **ci-probe** → fleet-economy, steem
-- **directive-now** → saos-runtime, steem
+- **agent-9-vault-sync** → Autonomy, saos-runtime
+- **artery-catchup** → Autonomy, Sandbox
 
 *חוק: הספר-הזה הוא העין-העצמית של הרשת — נכתב-רק-ממדידה (API), ללא-המצאה, git-only, שורד-מחיקת-סנדבוקסים.*
