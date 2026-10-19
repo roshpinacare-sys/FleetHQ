@@ -161,7 +161,16 @@ jobs:
             git rebase --abort 2>/dev/null || true
             git merge --abort 2>/dev/null || true
             git reset -q --hard origin/main
-            publish_once; rc=$?
+            # wave-19.34 (measured 19:16:06Z failure): GitHub runs steps under
+            # `bash -e` — `publish_once; rc=$?` let a push REJECTION kill the
+            # whole step instantly, so this 8-attempt race loop never actually
+            # retried the exact race it was built for (one "remote rejected"
+            # → 0.01s later exit 1, zero retries in the log). The `|| rc=$?`
+            # idiom makes the failure condition-safe so the loop below can do
+            # what its own comment promises: absorb sibling races with
+            # backoff. Every attempt still re-fetches and re-applies from the
+            # snapshot; never force, never drops history.
+            rc=0; publish_once || rc=$?
             if [ "$rc" = "0" ]; then ok=1; echo "PUSH-OK attempt $i"; break; fi
             if [ "$rc" = "2" ]; then ok=1; echo "no receipt delta (origin already holds this payload) — honest exit 0"; break; fi
             if sibling_stand_down; then ok=1; break; fi
