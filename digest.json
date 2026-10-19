@@ -1,6 +1,6 @@
 {
   "schema": "roshpinacare.fleet-digest/1",
-  "generatedAt": "2026-10-19T07:30:28.827Z",
+  "generatedAt": "2026-10-19T11:09:00.373Z",
   "owner": "roshpinacare-sys",
   "tokenMode": "gh-token",
   "repoListMode": "token-public-list",
@@ -11,22 +11,22 @@
     "privateCount": 0,
     "unverifiedOmitted": 0,
     "visibilityRecheck": "fail-closed",
-    "rateLimitRemaining": 4960,
+    "rateLimitRemaining": 4964,
     "degradedEarly": false
   },
   "repos": [
     {
       "name": "FleetHQ",
       "private": false,
-      "pushedAt": "2026-10-19T07:30:20Z",
+      "pushedAt": "2026-10-19T11:08:51Z",
       "defaultBranch": "main",
       "description": "Fleet HQ — a live operations room where real AI agents plan, work and report on your data books in real time. מפקדת הצי",
       "lastRun": {
-        "name": "value-scan",
+        "name": "runtime-pacemaker",
         "status": "in_progress",
         "conclusion": null,
-        "at": "2026-10-19T07:30:18Z",
-        "url": "https://github.com/roshpinacare-sys/FleetHQ/actions/runs/39216404997"
+        "at": "2026-10-19T11:08:56Z",
+        "url": "https://github.com/roshpinacare-sys/FleetHQ/actions/runs/39242524676"
       },
       "lastRunReason": null,
       "commits7d": 100,
@@ -36,15 +36,15 @@
     {
       "name": "Domain",
       "private": false,
-      "pushedAt": "2026-10-19T07:30:15Z",
+      "pushedAt": "2026-10-19T11:08:33Z",
       "defaultBranch": "main",
       "description": "Domain — חזית-הרשת הפומבית של SAOS: דף-המוצרים, חדר-המשרד החי, ועוגני-אמת ציבוריים (GitHub Pages)",
       "lastRun": {
         "name": "pages build and deployment",
-        "status": "in_progress",
-        "conclusion": null,
-        "at": "2026-10-19T07:30:17Z",
-        "url": "https://github.com/roshpinacare-sys/Domain/actions/runs/39216402259"
+        "status": "completed",
+        "conclusion": "success",
+        "at": "2026-10-19T11:08:35Z",
+        "url": "https://github.com/roshpinacare-sys/Domain/actions/runs/39242480162"
       },
       "lastRunReason": null,
       "commits7d": 100,
@@ -54,15 +54,87 @@
     {
       "name": "saos-dex",
       "private": false,
-      "pushedAt": "2026-10-19T07:29:27Z",
+      "pushedAt": "2026-10-19T11:08:16Z",
       "defaultBranch": "main",
       "description": "SAOS-DEX — הבורסה הריבונית: ספר-הזמנות דטרמיניסטי + AMM 30bps + ארנת-חיילים אוטונומית (מורשת saos-dex + grid98)",
       "lastRun": {
-        "name": "dex-selftest",
+        "name": "workflow-yaml-guard",
         "status": "completed",
-        "conclusion": "failure",
-        "at": "2026-10-19T07:20:16Z",
-        "url": "https://github.com/roshpinacare-sys/saos-dex/actions/runs/39215331689"
+        "conclusion": "success",
+        "at": "2026-10-19T11:01:36Z",
+        "url": "https://github.com/roshpinacare-sys/saos-dex/actions/runs/39241635874"
+      },
+      "lastRunReason": null,
+      "commits7d": 100,
+      "commits7dCapped": true,
+      "commitsReason": null
+    },
+    {
+      "name": "Autonomy",
+      "private": false,
+      "pushedAt": "2026-10-19T11:08:07Z",
+      "defaultBranch": "main",
+      "description": "המוח הריבוני על דקות-ציבור: עורקי-ההחלטה, הלמידה, הצמיחה — רץ 24/7 ללא תלות בשום סנדבוקס. Public compute, private memory.",
+      "lastRun": {
+        "name": "sovereign-state",
+        "status": "in_progress",
+        "conclusion": null,
+        "at": "2026-10-19T11:07:58Z",
+        "url": "https://github.com/roshpinacare-sys/Autonomy/actions/runs/39242405821"
+      },
+      "lastRunReason": null,
+      "commits7d": 100,
+      "commits7dCapped": true,
+      "commitsReason": null
+    },
+    {
+      "name": "giant",
+      "private": false,
+      "pushedAt": "2026-10-19T11:07:53Z",
+      "defaultBranch": "main",
+      "description": "GIANT — מערכת-האמת של SAOS: הפלטפורמה המאוחדת (ערוץ-אחד · אפס-כפילויות · תקן-ענקים). קונברגנציה נדרשת לכל-הליינים (DECISIONS #42).",
+      "lastRun": {
+        "name": "ext-audit",
+        "status": "completed",
+        "conclusion": "success",
+        "at": "2026-10-19T10:58:54Z",
+        "url": "https://github.com/roshpinacare-sys/giant/actions/runs/39241313671"
+      },
+      "lastRunReason": null,
+      "commits7d": 100,
+      "commits7dCapped": true,
+      "commitsReason": null
+    },
+    {
+      "name": "saos-runtime",
+      "private": false,
+      "pushedAt": "2026-10-19T11:04:13Z",
+      "defaultBranch": "main",
+      "description": "SAOS sovereign runtime host — Actions runner heartbeat; clones the private engine tree at runtime (R244). No keys, no secrets in tree.",
+      "lastRun": {
+        "name": "army-ladder",
+        "status": "in_progress",
+        "conclusion": null,
+        "at": "2026-10-19T11:06:53Z",
+        "url": "https://github.com/roshpinacare-sys/saos-runtime/actions/runs/39242271737"
+      },
+      "lastRunReason": null,
+      "commits7d": 100,
+      "commits7dCapped": true,
+      "commitsReason": null
+    },
+    {
+      "name": "sovereign-lighthouse",
+      "private": false,
+      "pushedAt": "2026-10-19T11:00:58Z",
+      "defaultBranch": "main",
+      "description": "מגדלור ריבוני — Sovereign Lighthouse: זיכרון חוץ-מכונה עצמאי (RTL עברית)",
+      "lastRun": {
+        "name": "estate-redboard",
+        "status": "completed",
+        "conclusion": "success",
+        "at": "2026-10-19T11:00:33Z",
+        "url": "https://github.com/roshpinacare-sys/sovereign-lighthouse/actions/runs/39241507045"
       },
       "lastRunReason": null,
       "commits7d": 100,
@@ -72,15 +144,105 @@
     {
       "name": "Pulse",
       "private": false,
-      "pushedAt": "2026-10-19T07:24:36Z",
+      "pushedAt": "2026-10-19T11:00:49Z",
       "defaultBranch": "main",
       "description": "Pulse — איבר-הדופק של הרשת · fleet heartbeat: autonomous census every 30min on GitHub Actions (public = unlimited free minutes), task queue, sandbox-independent. §7 sanitized runner shell.",
       "lastRun": {
-        "name": "heartbeat",
+        "name": "pages build and deployment",
+        "status": "completed",
+        "conclusion": "success",
+        "at": "2026-10-19T11:00:51Z",
+        "url": "https://github.com/roshpinacare-sys/Pulse/actions/runs/39241544468"
+      },
+      "lastRunReason": null,
+      "commits7d": 100,
+      "commits7dCapped": true,
+      "commitsReason": null
+    },
+    {
+      "name": "Console",
+      "private": false,
+      "pushedAt": "2026-10-19T11:00:37Z",
+      "defaultBranch": "main",
+      "description": "Console — קונסולת-ה-DEX הריבונית: dex-beat שעתי, גריד-מסחר מדוד, קבלות-ריצות חיות",
+      "lastRun": {
+        "name": "pages build and deployment",
+        "status": "completed",
+        "conclusion": "success",
+        "at": "2026-10-19T11:00:38Z",
+        "url": "https://github.com/roshpinacare-sys/Console/actions/runs/39241518492"
+      },
+      "lastRunReason": null,
+      "commits7d": 100,
+      "commits7dCapped": true,
+      "commitsReason": null
+    },
+    {
+      "name": "sovereign-executor",
+      "private": false,
+      "pushedAt": "2026-10-19T10:57:03Z",
+      "defaultBranch": "main",
+      "description": "Sovereign executor plane — free public-minutes carrier for the private fleet lanes (smart separation: content stays private, execution public).",
+      "lastRun": {
+        "name": "fleet-beat",
         "status": "in_progress",
         "conclusion": null,
-        "at": "2026-10-19T07:30:02Z",
-        "url": "https://github.com/roshpinacare-sys/Pulse/actions/runs/39216373352"
+        "at": "2026-10-19T10:57:04Z",
+        "url": "https://github.com/roshpinacare-sys/sovereign-executor/actions/runs/39241108012"
+      },
+      "lastRunReason": null,
+      "commits7d": 43,
+      "commits7dCapped": false,
+      "commitsReason": null
+    },
+    {
+      "name": "sovereign-runner-kit",
+      "private": false,
+      "pushedAt": "2026-10-19T10:49:42Z",
+      "defaultBranch": "main",
+      "description": "שכבת-הביצוע-הריבונית — המכשיר שלנו הוא המנוע, GitHub ספר-בלבד. Device-side execution, zero GitHub minutes, blockchain-anchored receipts",
+      "lastRun": {
+        "name": "beat-keepalive",
+        "status": "in_progress",
+        "conclusion": null,
+        "at": "2026-10-19T10:44:56Z",
+        "url": "https://github.com/roshpinacare-sys/sovereign-runner-kit/actions/runs/39239655936"
+      },
+      "lastRunReason": null,
+      "commits7d": 96,
+      "commits7dCapped": false,
+      "commitsReason": null
+    },
+    {
+      "name": "sovereign-beacon",
+      "private": false,
+      "pushedAt": "2026-10-19T10:30:21Z",
+      "defaultBranch": "main",
+      "description": "Rosh Pina — sovereign lighthouse (out-of-machine console)",
+      "lastRun": {
+        "name": "beat-keepalive",
+        "status": "in_progress",
+        "conclusion": null,
+        "at": "2026-10-19T10:35:46Z",
+        "url": "https://github.com/roshpinacare-sys/sovereign-beacon/actions/runs/39238579216"
+      },
+      "lastRunReason": null,
+      "commits7d": 94,
+      "commits7dCapped": false,
+      "commitsReason": null
+    },
+    {
+      "name": "GridWatch",
+      "private": false,
+      "pushedAt": "2026-10-19T10:15:52Z",
+      "defaultBranch": "main",
+      "description": "Fleet control plane: measures every repo & workflow health, auto-remediates failures, feeds the sovereign decider. The grid sees itself.",
+      "lastRun": {
+        "name": "identity-guard",
+        "status": "completed",
+        "conclusion": "success",
+        "at": "2026-10-19T10:15:53Z",
+        "url": "https://github.com/roshpinacare-sys/GridWatch/actions/runs/39236200301"
       },
       "lastRunReason": null,
       "commits7d": 100,
@@ -106,150 +268,6 @@
       "commitsReason": null
     },
     {
-      "name": "Autonomy",
-      "private": false,
-      "pushedAt": "2026-10-19T07:24:06Z",
-      "defaultBranch": "main",
-      "description": "המוח הריבוני על דקות-ציבור: עורקי-ההחלטה, הלמידה, הצמיחה — רץ 24/7 ללא תלות בשום סנדבוקס. Public compute, private memory.",
-      "lastRun": {
-        "name": "verifier (truth & quality)",
-        "status": "pending",
-        "conclusion": null,
-        "at": "2026-10-19T07:23:57Z",
-        "url": "https://github.com/roshpinacare-sys/Autonomy/actions/runs/39215722057"
-      },
-      "lastRunReason": null,
-      "commits7d": 100,
-      "commits7dCapped": true,
-      "commitsReason": null
-    },
-    {
-      "name": "sovereign-runner-kit",
-      "private": false,
-      "pushedAt": "2026-10-19T07:17:43Z",
-      "defaultBranch": "main",
-      "description": "שכבת-הביצוע-הריבונית — המכשיר שלנו הוא המנוע, GitHub ספר-בלבד. Device-side execution, zero GitHub minutes, blockchain-anchored receipts",
-      "lastRun": {
-        "name": "beat-keepalive",
-        "status": "in_progress",
-        "conclusion": null,
-        "at": "2026-10-19T07:13:43Z",
-        "url": "https://github.com/roshpinacare-sys/sovereign-runner-kit/actions/runs/39214632742"
-      },
-      "lastRunReason": null,
-      "commits7d": 88,
-      "commits7dCapped": false,
-      "commitsReason": null
-    },
-    {
-      "name": "sovereign-executor",
-      "private": false,
-      "pushedAt": "2026-10-19T07:17:16Z",
-      "defaultBranch": "main",
-      "description": "Sovereign executor plane — free public-minutes carrier for the private fleet lanes (smart separation: content stays private, execution public).",
-      "lastRun": {
-        "name": "fleet-beat",
-        "status": "in_progress",
-        "conclusion": null,
-        "at": "2026-10-19T07:04:05Z",
-        "url": "https://github.com/roshpinacare-sys/sovereign-executor/actions/runs/39213610171"
-      },
-      "lastRunReason": null,
-      "commits7d": 38,
-      "commits7dCapped": false,
-      "commitsReason": null
-    },
-    {
-      "name": "saos-runtime",
-      "private": false,
-      "pushedAt": "2026-10-19T07:12:53Z",
-      "defaultBranch": "main",
-      "description": "SAOS sovereign runtime host — Actions runner heartbeat; clones the private engine tree at runtime (R244). No keys, no secrets in tree.",
-      "lastRun": {
-        "name": "army-ladder",
-        "status": "in_progress",
-        "conclusion": null,
-        "at": "2026-10-19T07:28:25Z",
-        "url": "https://github.com/roshpinacare-sys/saos-runtime/actions/runs/39216201454"
-      },
-      "lastRunReason": null,
-      "commits7d": 100,
-      "commits7dCapped": true,
-      "commitsReason": null
-    },
-    {
-      "name": "Console",
-      "private": false,
-      "pushedAt": "2026-10-19T07:11:37Z",
-      "defaultBranch": "main",
-      "description": "Console — קונסולת-ה-DEX הריבונית: dex-beat שעתי, גריד-מסחר מדוד, קבלות-ריצות חיות",
-      "lastRun": {
-        "name": "identity-guard",
-        "status": "completed",
-        "conclusion": "success",
-        "at": "2026-10-19T07:11:39Z",
-        "url": "https://github.com/roshpinacare-sys/Console/actions/runs/39214412420"
-      },
-      "lastRunReason": null,
-      "commits7d": 100,
-      "commits7dCapped": true,
-      "commitsReason": null
-    },
-    {
-      "name": "sovereign-lighthouse",
-      "private": false,
-      "pushedAt": "2026-10-19T06:53:02Z",
-      "defaultBranch": "main",
-      "description": "מגדלור ריבוני — Sovereign Lighthouse: זיכרון חוץ-מכונה עצמאי (RTL עברית)",
-      "lastRun": {
-        "name": "estate-redboard",
-        "status": "completed",
-        "conclusion": "success",
-        "at": "2026-10-19T06:52:35Z",
-        "url": "https://github.com/roshpinacare-sys/sovereign-lighthouse/actions/runs/39212454461"
-      },
-      "lastRunReason": null,
-      "commits7d": 100,
-      "commits7dCapped": true,
-      "commitsReason": null
-    },
-    {
-      "name": "giant",
-      "private": false,
-      "pushedAt": "2026-10-19T06:50:54Z",
-      "defaultBranch": "main",
-      "description": "GIANT — מערכת-האמת של SAOS: הפלטפורמה המאוחדת (ערוץ-אחד · אפס-כפילויות · תקן-ענקים). קונברגנציה נדרשת לכל-הליינים (DECISIONS #42).",
-      "lastRun": {
-        "name": "trust-heartbeat",
-        "status": "completed",
-        "conclusion": "success",
-        "at": "2026-10-19T02:58:16Z",
-        "url": "https://github.com/roshpinacare-sys/giant/actions/runs/39192436755"
-      },
-      "lastRunReason": null,
-      "commits7d": 100,
-      "commits7dCapped": true,
-      "commitsReason": null
-    },
-    {
-      "name": "sovereign-beacon",
-      "private": false,
-      "pushedAt": "2026-10-19T06:29:54Z",
-      "defaultBranch": "main",
-      "description": "Rosh Pina — sovereign lighthouse (out-of-machine console)",
-      "lastRun": {
-        "name": "beat-keepalive",
-        "status": "in_progress",
-        "conclusion": null,
-        "at": "2026-10-19T07:23:47Z",
-        "url": "https://github.com/roshpinacare-sys/sovereign-beacon/actions/runs/39215704593"
-      },
-      "lastRunReason": null,
-      "commits7d": 95,
-      "commits7dCapped": false,
-      "commitsReason": null
-    },
-    {
       "name": "ops-intake",
       "private": false,
       "pushedAt": "2026-10-19T06:27:09Z",
@@ -261,24 +279,6 @@
         "conclusion": "success",
         "at": "2026-10-19T06:24:17Z",
         "url": "https://github.com/roshpinacare-sys/ops-intake/actions/runs/39209706045"
-      },
-      "lastRunReason": null,
-      "commits7d": 100,
-      "commits7dCapped": true,
-      "commitsReason": null
-    },
-    {
-      "name": "GridWatch",
-      "private": false,
-      "pushedAt": "2026-10-19T06:14:38Z",
-      "defaultBranch": "main",
-      "description": "Fleet control plane: measures every repo & workflow health, auto-remediates failures, feeds the sovereign decider. The grid sees itself.",
-      "lastRun": {
-        "name": "identity-guard",
-        "status": "completed",
-        "conclusion": "success",
-        "at": "2026-10-19T06:14:40Z",
-        "url": "https://github.com/roshpinacare-sys/GridWatch/actions/runs/39208786024"
       },
       "lastRunReason": null,
       "commits7d": 100,
@@ -307,13 +307,13 @@
   "grid": {
     "status": "measured",
     "source": "Domain dex/grid.json (public mirror)",
-    "publishedAt": "2026-10-18T23:23:33.577Z",
+    "publishedAt": "2026-10-19T09:05:16.217Z",
     "engine": "saos-dex/1.1 grid-beat · R24 external flow + R99 HIVE leg",
     "real": true,
     "armed": true,
-    "verdict": "ARMED-LIVE",
+    "verdict": "ARMED-WAITING",
     "blocker": [
-      "broadcast failing: 10/30 chain ops rejected this run (\"broadcast answered without id\") — stale key/authority or node fault; verdict cannot be stable until signing succeeds"
+      "POLICY-HALT (steem leg): per-op notional 75.878 SBD > cap 41 (lane grid) ; kelly-cap: gear cap 100→41 SBD (mode=kelly; winRate=0.774 WLR=0.400 kelly=0.210 safe=0.105 ×4 → 41/100) — atomic refresh skipped, ladder untouched"
     ],
     "chains": [
       "STEEM",
@@ -323,22 +323,22 @@
       "verdict": "ARMED-WAITING",
       "authorityOk": true,
       "blocker": [
-        "hive book mid deviates 14648bps from external parity: refusing to trade a broken market"
+        "hive book mid deviates 14342bps from external parity: refusing to trade a broken market"
       ]
     }
   },
   "fleetTruth": {
     "status": "measured",
     "source": "Domain agents/grid-truth.json (grid-doctor, live chain RPC — zero self-reports)",
-    "generatedAt": "2026-10-19T06:25:07.940Z",
+    "generatedAt": "2026-10-19T10:55:00.072Z",
     "by": "grid-doctor v2.3-aggregate",
     "steem": {
-      "effectivePower": 106.403,
+      "effectivePower": 106.404,
       "accountsAlive": 4,
       "liquid": 0
     },
     "hive": {
-      "effectivePower": 32.452,
+      "effectivePower": 32.453,
       "accountsAlive": 1
     }
   },
