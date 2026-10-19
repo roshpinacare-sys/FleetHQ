@@ -208,7 +208,7 @@ function publishSandbox(name: string): string {
     cd "${SANDBOX}"
     git add receipts 2>/dev/null || true
     if ! git diff --cached --quiet; then
-      git -c user.name="local-beats" -c user.email="roshpinacare-sys@users.noreply.github.com" commit -q -m "${name}: local artery · $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+      git -c user.name="local-beats" -c user.email="roshpinacare-sys@users.noreply.github.com" commit -q -m "${name}: local artery · $(date -u +%Y-%m-%dT%H:%M:%SZ) [skip ci]"
       git -c rebase.autoStash=true pull --rebase -X theirs -q origin main || true
       git push -q origin main 2>/dev/null || echo "push deferred (flush drains)"
     else
