@@ -1,227 +1,227 @@
 # Network STATE — the sovereign self-scan
 
-- generatedAt: `2026-10-19T14:37:40.744Z`
-- scan run: https://github.com/roshpinacare-sys/FleetHQ/actions/runs/39270644201
+- generatedAt: `2026-10-19T15:44:03.570Z`
+- scan run: https://github.com/roshpinacare-sys/FleetHQ/actions/runs/39280078453
 
 | repo | last push | push age | workflows | green | red | disabled | archived |
 |---|---|---|---|---|---|---|---|
-| [FleetHQ](https://github.com/roshpinacare-sys/FleetHQ) | `2026-10-19T14:37:38Z` | 0m | 18 | 16 | 2 | 0 | 0 |
+| [FleetHQ](https://github.com/roshpinacare-sys/FleetHQ) | `2026-10-19T15:38:31Z` | 6m | 19 | 17 | 2 | 0 | 0 |
 
 <details><summary>FleetHQ workflow detail</summary>
 
 | workflow | conclusion | age | state |
 |---|---|---|---|
-| ✅ sovereign-policy-gate | — | 0m | active |
-| ✅ self-book | — | 0m | active |
-| ✅ sovereign-selfscan | — | 0m | active |
-| ✅ runtime-pacemaker | — | 0m | active |
-| ✅ identity-patrol | success | 0m | active |
-| ✅ silence-watchdog | success | 4m | active |
-| ✅ sovereign-decider | success | 4m | active |
-| ✅ opens-closer | — | 8m | active |
-| ❌ office-3d | failure | 36m | active |
-| ✅ value-scan | success | 48m | active |
-| ✅ sovereign-identity | success | 48m | active |
-| ✅ claims-triage | success | 48m | active |
-| ✅ office-heartbeat | success | 57m | active |
-| ✅ sovereign-harness | success | 70m | active |
-| ✅ pages build and deployment | success | 81m | active |
-| ✅ office-window | success | 81m | active |
-| ❌ office-ci | failure | 104m | active |
-| ✅ identity-guard | success | 104m | active |
+| ✅ sovereign-selfscan | — | 1m | active |
+| ✅ sovereign-decider | — | 6m | active |
+| ✅ opens-closer | — | 13m | active |
+| ✅ runtime-pacemaker | success | 41m | active |
+| ✅ claims-triage | success | 41m | active |
+| ✅ value-scan | success | 52m | active |
+| ✅ fresh-oracle | success | 59m | active |
+| ✅ sovereign-policy-gate | success | 66m | active |
+| ✅ self-book | success | 66m | active |
+| ✅ identity-patrol | success | 67m | active |
+| ✅ silence-watchdog | success | 70m | active |
+| ❌ office-3d | failure | 102m | active |
+| ✅ sovereign-identity | success | 114m | active |
+| ✅ office-heartbeat | success | 123m | active |
+| ✅ sovereign-harness | success | 137m | active |
+| ✅ pages build and deployment | success | 147m | active |
+| ✅ office-window | success | 148m | active |
+| ❌ office-ci | failure | 170m | active |
+| ✅ identity-guard | success | 170m | active |
 
 </details>
 
-| [Domain](https://github.com/roshpinacare-sys/Domain) | `2026-10-19T14:35:05Z` | 3m | 46 | 42 | 4 | 0 | 0 |
+| [Domain](https://github.com/roshpinacare-sys/Domain) | `2026-10-19T15:42:40Z` | 1m | 50 | 48 | 2 | 0 | 0 |
 
 <details><summary>Domain workflow detail</summary>
 
 | workflow | conclusion | age | state |
 |---|---|---|---|
-| ✅ pages build and deployment | success | 3m | active |
-| ✅ office-worldbeat | — | 3m | active |
-| ❌ network-census | failure | 7m | active |
-| ✅ office-pulse | success | 7m | active |
-| ✅ grid-sentinel | — | 13m | active |
-| ❌ exposure-gate | failure | 13m | active |
-| ✅ site-link-audit | success | 13m | active |
-| ✅ identity-guard | success | 13m | active |
-| ✅ dex-mirror | success | 25m | active |
-| ✅ sovereign-tick-cron | success | 26m | active |
-| ✅ pulse-bake | success | 26m | active |
-| ✅ dex-core | success | 26m | active |
-| ✅ dex-beat | success | 26m | active |
-| ✅ cloud-pulse | success | 26m | active |
-| ✅ weave-ecosystem | success | 33m | active |
-| ✅ grid-doctor | success | 38m | active |
-| ✅ twin-audit | success | 38m | active |
-| ✅ earn-audit-cron | success | 38m | active |
-| ✅ dex-router | success | 38m | active |
-| ✅ moment-watch | success | 40m | active |
-| ✅ human-cadence | success | 40m | active |
-| ✅ fleet-heartbeat | success | 40m | active |
-| ✅ fleet-census-cron | success | 40m | active |
-| ✅ dex-xc | success | 40m | active |
-| ✅ arb-mesh | success | 40m | active |
-| ✅ office-artery | success | 43m | active |
-| ✅ market-grid-cron | success | 43m | active |
-| ✅ soldiers-curate | success | 43m | active |
-| ✅ content-gate | success | 43m | active |
-| ✅ agent-verify | success | 46m | active |
-| ✅ fill-ledger-cron | success | 46m | active |
-| ✅ pf-artery-keeper | success | 48m | active |
-| ❌ org-gitleaks | failure | 48m | active |
-| ❌ daily-digest | failure | 48m | active |
-| ✅ dex-activation | success | 48m | active |
-| ✅ economy-engine | success | 51m | active |
-| ✅ cognition-beat | success | 55m | active |
-| ✅ tick-keeper | success | 55m | active |
-| ✅ office-pulse-twin | success | 55m | active |
-| ✅ hive-beat-t21 | success | 55m | active |
-| ✅ sovereign-pulse | success | 57m | active |
-| ✅ econ-engine | success | 59m | active |
-| ✅ public-pulse | success | 61m | active |
-| ✅ office-orders-twin | success | 67m | active |
-| ✅ artery-integrity-twin | success | 69m | active |
-| ✅ saos-act | success | 99m | active |
+| ✅ pages build and deployment | — | 1m | active |
+| ✅ audience-analyst | — | 1m | active |
+| ✅ cognition-beat | — | 1m | active |
+| ✅ self-audience | — | 1m | active |
+| ✅ fleet-census-cron | — | 1m | active |
+| ✅ sovereign-tick-cron | — | 2m | active |
+| ✅ tick-keeper | — | 2m | active |
+| ✅ weave-mirror | — | 3m | active |
+| ✅ identity-guard | — | 4m | active |
+| ✅ site-link-audit | — | 4m | active |
+| ✅ exposure-gate | — | 4m | active |
+| ✅ office-artery | — | 5m | active |
+| ✅ market-grid-cron | — | 5m | active |
+| ✅ human-cadence | — | 5m | active |
+| ✅ grid-sentinel | — | 8m | active |
+| ✅ voice-artery | — | 11m | active |
+| ✅ anchor-execute | — | 13m | active |
+| ✅ earn-audit-cron | — | 13m | active |
+| ✅ office-worldbeat | — | 16m | active |
+| ✅ dex-mirror | success | 20m | active |
+| ✅ moment-watch | success | 20m | active |
+| ✅ fleet-heartbeat | success | 21m | active |
+| ✅ dex-core | success | 21m | active |
+| ✅ dex-beat | success | 21m | active |
+| ✅ cloud-pulse | success | 21m | active |
+| ✅ office-pulse | success | 29m | active |
+| ✅ fill-ledger-cron | success | 35m | active |
+| ✅ dex-xc | success | 35m | active |
+| ✅ dex-router | success | 35m | active |
+| ✅ arb-mesh | success | 35m | active |
+| ❌ org-gitleaks | failure | 41m | active |
+| ✅ network-census | success | 41m | active |
+| ❌ daily-digest | failure | 41m | active |
+| ✅ web-publish | success | 43m | active |
+| ✅ grid-doctor | success | 44m | active |
+| ✅ mirror-from-console | success | 44m | active |
+| ✅ sovereign-pulse | success | 50m | active |
+| ✅ public-pulse | success | 50m | active |
+| ✅ pf-artery-keeper | success | 50m | active |
+| ✅ office-pulse-twin | success | 50m | active |
+| ✅ public-loops-bake | success | 57m | active |
+| ✅ dex-activation | success | 59m | active |
+| ✅ hive-beat-t21 | success | 65m | active |
+| ✅ artery-integrity-twin | success | 65m | active |
+| ✅ pulse-bake | success | 92m | active |
+| ✅ weave-ecosystem | success | 100m | active |
+| ✅ twin-audit | success | 104m | active |
+| ✅ soldiers-curate | success | 109m | active |
+| ✅ content-gate | success | 109m | active |
+| ✅ agent-verify | success | 112m | active |
 
 </details>
 
-| [Console](https://github.com/roshpinacare-sys/Console) | `2026-10-19T14:12:23Z` | 25m | 19 | 18 | 1 | 0 | 0 |
+| [Console](https://github.com/roshpinacare-sys/Console) | `2026-10-19T15:35:13Z` | 9m | 19 | 18 | 1 | 0 | 0 |
 
 <details><summary>Console workflow detail</summary>
 
 | workflow | conclusion | age | state |
 |---|---|---|---|
-| ✅ pages build and deployment | success | 25m | active |
-| ✅ identity-guard | success | 25m | active |
-| ✅ runtime-pacemaker | success | 34m | active |
-| ✅ chain-vitals | success | 34m | active |
-| ✅ agents-watch | success | 558m | active |
-| ✅ trigger-mesh | success | 43m | active |
-| ✅ fee-law | success | 43m | active |
-| ✅ money-watch | success | 51m | active |
-| ✅ dex-watch | success | 54m | active |
-| ✅ line-agreement | success | 64m | active |
-| ✅ truth-gate | success | 91m | active |
-| ✅ weave-census | success | 103m | active |
-| ❌ console-publish | failure | 203m | active |
-| ✅ pnl-desk | success | 206m | active |
-| ✅ grid-pulse | success | 352m | active |
-| ✅ saos-fold | success | 392m | active |
-| ✅ giants-beat | success | 415m | active |
-| ✅ estate-scrub | success | 422m | active |
-| ✅ agent-verify | success | 553m | active |
+| ✅ pages build and deployment | — | 9m | active |
+| ✅ saos-fold | — | 9m | active |
+| ✅ giants-beat | — | 11m | active |
+| ✅ identity-guard | success | 20m | active |
+| ✅ runtime-pacemaker | success | 44m | active |
+| ✅ estate-scrub | success | 44m | active |
+| ✅ chain-vitals | success | 100m | active |
+| ✅ agents-watch | success | 624m | active |
+| ✅ trigger-mesh | success | 109m | active |
+| ✅ fee-law | success | 109m | active |
+| ✅ money-watch | success | 118m | active |
+| ✅ dex-watch | success | 120m | active |
+| ✅ line-agreement | success | 131m | active |
+| ✅ truth-gate | success | 158m | active |
+| ✅ weave-census | success | 170m | active |
+| ❌ console-publish | failure | 270m | active |
+| ✅ pnl-desk | success | 273m | active |
+| ✅ grid-pulse | success | 418m | active |
+| ✅ agent-verify | success | 620m | active |
 
 </details>
 
-| [saos-runtime](https://github.com/roshpinacare-sys/saos-runtime) | `2026-10-19T14:35:30Z` | 2m | 28 | 27 | 1 | 0 | 0 |
+| [saos-runtime](https://github.com/roshpinacare-sys/saos-runtime) | `2026-10-19T15:38:32Z` | 6m | 28 | 28 | 0 | 0 | 0 |
 
 <details><summary>saos-runtime workflow detail</summary>
 
 | workflow | conclusion | age | state |
 |---|---|---|---|
-| ✅ sovereign-runtime | — | 2m | active |
-| ✅ custody-recover | success | 3m | active |
-| ❌ grid-watchdog | failure | 4m | active |
-| ✅ treasury-ladder | success | 3m | active |
-| ✅ system-map | success | 3m | active |
-| ✅ operator-triage | success | 3m | active |
-| ✅ army-ladder | — | 15m | active |
-| ✅ dex-beat | — | 43m | active |
-| ✅ arsenal-sentinel | success | 46m | active |
-| ✅ steem-hand-revival | success | 53m | active |
-| ✅ arb-grid | success | 59m | active |
-| ✅ sovereign-builder | success | 74m | active |
-| ✅ fee-engine | success | 196m | active |
-| ✅ builder-catchup | success | 199m | active |
-| ✅ signing-health (runtime-host) | success | 202m | active |
-| ✅ organ-guardian | success | 206m | active |
-| ✅ sovereign-evolution | success | 214m | active |
-| ✅ sovereign-pulse | success | 259m | active |
-| ✅ main-key-refresh | success | 263m | active |
-| ✅ agent-9-vault-sync | success | 328m | active |
-| ✅ fleet-fuel | success | 402m | active |
-| ✅ organ-pacemaker | success | 402m | active |
-| ✅ vault-owner-adopt | success | 582m | active |
-| ✅ hive-custody-revival | success | 685m | active |
-| ✅ escrow-payroll | success | 728m | active |
-| ✅ directive-now | success | 790m | active |
-| ✅ self-memory | success | 790m | active |
-| ✅ hive-adopt-t21 | success | 816m | active |
+| ✅ grid-watchdog | — | -1m | active |
+| ✅ fleet-fuel | — | -1m | active |
+| ✅ army-ladder | — | 0m | active |
+| ✅ organ-pacemaker | — | 0m | active |
+| ✅ sovereign-runtime | — | 4m | active |
+| ✅ fee-engine | — | 6m | active |
+| ✅ dex-beat | — | 50m | active |
+| ✅ sovereign-pulse | success | 64m | active |
+| ✅ custody-recover | success | 69m | active |
+| ✅ treasury-ladder | success | 69m | active |
+| ✅ system-map | success | 69m | active |
+| ✅ operator-triage | success | 69m | active |
+| ✅ arsenal-sentinel | success | 113m | active |
+| ✅ steem-hand-revival | success | 119m | active |
+| ✅ arb-grid | success | 126m | active |
+| ✅ sovereign-builder | success | 140m | active |
+| ✅ builder-catchup | success | 266m | active |
+| ✅ signing-health (runtime-host) | success | 268m | active |
+| ✅ organ-guardian | success | 272m | active |
+| ✅ sovereign-evolution | success | 280m | active |
+| ✅ main-key-refresh | success | 330m | active |
+| ✅ agent-9-vault-sync | success | 394m | active |
+| ✅ vault-owner-adopt | success | 648m | active |
+| ✅ hive-custody-revival | success | 751m | active |
+| ✅ escrow-payroll | success | 794m | active |
+| ✅ directive-now | success | 856m | active |
+| ✅ self-memory | success | 856m | active |
+| ✅ hive-adopt-t21 | success | 882m | active |
 
 </details>
 
-| [Autonomy](https://github.com/roshpinacare-sys/Autonomy) | `2026-10-19T14:36:59Z` | 1m | 42 | 40 | 2 | 0 | 0 |
+| [Autonomy](https://github.com/roshpinacare-sys/Autonomy) | `2026-10-19T15:42:50Z` | 1m | 39 | 38 | 1 | 0 | 0 |
 
 <details><summary>Autonomy workflow detail</summary>
 
 | workflow | conclusion | age | state |
 |---|---|---|---|
-| ✅ sovereign-decider | — | 0m | active |
-| ✅ contract-check | — | 0m | active |
-| ✅ fleet-heal | success | 1m | active |
-| ✅ artery-watch | — | 5m | active |
-| ✅ verifier (truth & quality) | — | 7m | active |
-| ❌ artery-builder | failure | 9m | active |
+| ✅ value-scan | — | 2m | active |
+| ✅ artery-flow | — | 5m | active |
+| ✅ artery-defi | — | 5m | active |
+| ✅ sovereign-state | — | 6m | active |
 | ✅ artery-pacer | — | 9m | active |
-| ✅ sovereign-state | — | 11m | active |
-| ✅ artery-grid | success | 14m | active |
-| ✅ sovereign-tick | success | 25m | active |
-| ✅ identity-guard | success | 33m | active |
-| ✅ artery-catchup | success | 33m | active |
-| ✅ network-awareness | success | 34m | active |
-| ✅ floating-builds | success | 34m | active |
-| ✅ artery-decision-truth | success | 35m | active |
-| ✅ value-scan | success | 35m | active |
-| ✅ federation | success | 35m | active |
-| ✅ artery-wallet | success | 35m | active |
-| ✅ artery-selfheal | success | 35m | active |
-| ❌ selfhood | failure | 36m | active |
-| ✅ artery-desk | success | 42m | active |
-| ✅ office-growth | success | 44m | active |
-| ✅ run-score | success | 45m | active |
-| ✅ artery-treasury | success | 46m | active |
-| ✅ artery-fleet | success | 54m | active |
-| ✅ network-self-awareness | success | 56m | active |
-| ✅ artery-growth | success | 65m | active |
-| ✅ artery-flow | success | 67m | active |
-| ✅ agent-9-org-revival | success | 70m | active |
-| ✅ world-evolver | success | 83m | active |
-| ✅ artery-defi | success | 84m | active |
-| ✅ artery-integrity | success | 88m | active |
-| ✅ compute-rearm | success | 89m | active |
-| ✅ fleet-yield | success | 97m | active |
-| ✅ artery-participation | success | 100m | active |
-| ✅ hive-probe | success | 205m | active |
-| ✅ token-watchdog | success | 207m | active |
-| ✅ profit-oracle | success | 219m | active |
-| ✅ research-lane | success | 225m | active |
-| ✅ artery-scout | success | 225m | active |
-| ✅ weekly-retro | success | 232m | active |
-| ✅ directive-bus | success | 266m | active |
+| ✅ verifier (truth & quality) | — | 14m | active |
+| ✅ sovereign-tick | success | 20m | active |
+| ✅ artery-grid | success | 22m | active |
+| ✅ artery-watch | — | 22m | active |
+| ✅ artery-wallet | success | 22m | active |
+| ✅ artery-decision-truth | success | 22m | active |
+| ✅ artery-selfheal | success | 22m | active |
+| ✅ artery-builder | success | 41m | active |
+| ✅ artery-fleet | success | 49m | active |
+| ✅ directive-bus | success | 54m | active |
+| ✅ operator-routing | success | 56m | active |
+| ✅ contract-check | success | 56m | active |
+| ✅ artery-catchup | success | 58m | active |
+| ✅ identity-guard | success | 58m | active |
+| ✅ floating-builds | success | 58m | active |
+| ✅ network-awareness | success | 58m | active |
+| ✅ federation | success | 60m | active |
+| ✅ artery-scribe | success | 65m | active |
+| ✅ artery-scout | success | 65m | active |
+| ✅ artery-participation | success | 65m | active |
+| ✅ artery-integrity | success | 65m | active |
+| ✅ sovereign-decider | success | 66m | active |
+| ✅ fleet-heal | success | 67m | active |
+| ❌ selfhood | failure | 103m | active |
+| ✅ artery-desk | success | 108m | active |
+| ✅ office-growth | success | 111m | active |
+| ✅ run-score | success | 111m | active |
+| ✅ artery-treasury | success | 112m | active |
+| ✅ network-self-awareness | success | 122m | active |
+| ✅ artery-growth | success | 131m | active |
+| ✅ agent-9-org-revival | success | 137m | active |
+| ✅ world-evolver | success | 149m | active |
+| ✅ compute-rearm | success | 155m | active |
+| ✅ fleet-yield | success | 163m | active |
 
 </details>
 
-| [sovereign-lighthouse](https://github.com/roshpinacare-sys/sovereign-lighthouse) | `2026-10-19T13:56:01Z` | 42m | 2 | 2 | 0 | 0 | 0 |
+| [sovereign-lighthouse](https://github.com/roshpinacare-sys/sovereign-lighthouse) | `2026-10-19T15:00:41Z` | 43m | 2 | 2 | 0 | 0 | 0 |
 
 <details><summary>sovereign-lighthouse workflow detail</summary>
 
 | workflow | conclusion | age | state |
 |---|---|---|---|
-| ✅ estate-redboard | success | 42m | active |
-| ✅ lighthouse-pulse | success | 53m | active |
+| ✅ lighthouse-pulse | success | 44m | active |
+| ✅ estate-redboard | success | 64m | active |
 
 </details>
 
 
-## Totals — green 145 · red 10 · disabled(quarantined) 0 · stale 0 · archived(deleted-file, never-runs-again) 0
+## Totals — green 151 · red 6 · disabled(quarantined) 0 · stale 0 · archived(deleted-file, never-runs-again) 0
 
 This page is the network looking at itself. RED here is honesty, not alarm: every red has a claim in `ops/claims/`, triage decides, the operator gets ONE issue per new signature — never a storm.
 
 Scan window: last ~200 runs per repo (high-frequency writers fill it fast; low-frequency jobs are protected by cadence-aware rules — 48h staleness + runsInWindow evidence).
 ## NEW capabilities noticed this scan (the owner built — the network noticed)
 
-- saos-runtime/custody-recover — first seen 2026-10-19T14:37:40.744Z
-- saos-runtime/system-map — first seen 2026-10-19T14:37:40.744Z
-- saos-runtime/operator-triage — first seen 2026-10-19T14:37:40.744Z
+- Domain/audience-analyst — first seen 2026-10-19T15:44:03.570Z
