@@ -120,7 +120,17 @@ async function runCageSelftest(): Promise<{ checks: CageCheck[]; pass: boolean; 
   let pass = false;
   let raw = '';
   const out = await new Promise<{ code: number; stdout: string; stderr: string }>((resolveP, rejectP) => {
-    const p = spawn('node', ['tools/git-cage.mjs', '--selftest'], {
+    // Turbopack statically resolves spawn() targets relative to THIS file and fails
+    // the build on repo-root-relative paths (measured wave-19.33, run 39298418758:
+    // "Can't resolve ('tools/git-cage.mjs' | <dynamic>)"). Compute the path at runtime
+    // from process.cwd() so the resolver sees a dynamic value and the root tool is found.
+    // Turbopack (Next 16.1.3) statically traces child_process.spawn targets and
+    // hard-fails the build on ANY statically-visible script path — it folds even
+    // process.cwd() to ROOT (measured x3, wave-19.33: literal path, path.join,
+    // and template literal all rejected with 'server relative imports are not
+    // implemented yet'). Runtime semantics are preserved exactly by executing
+    // through the shell with the same cwd: same node, same tool, same repo root.
+    const p = spawn('sh', ['-c', 'node tools/git-cage.mjs --selftest'], {
       cwd: process.cwd(),
       env: { ...process.env },
       stdio: ['ignore', 'pipe', 'pipe'],
