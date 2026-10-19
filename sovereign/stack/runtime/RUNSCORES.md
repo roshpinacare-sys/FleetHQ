@@ -1,7 +1,7 @@
 # RUNSCORES — the harness scoring book
 
-- generatedAt: `2026-10-19T00:10:27.061Z`
-- STATE book age: 102min · api fetches: 11
+- generatedAt: `2026-10-19T00:30:57.485Z`
+- STATE book age: 122min · api fetches: 11
 - counts: {"unknown":12,"healthy":135,"critical":10,"flaky":1}
 
 | repo | workflow | class | lastConcl | lastRun |
