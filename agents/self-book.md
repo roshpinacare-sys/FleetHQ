@@ -1,9 +1,9 @@
-# ספר-המודעות-העצמית של הרשת — 2026-10-19T10:13:48.505Z
+# ספר-המודעות-העצמית של הרשת — 2026-10-19T11:28:30.610Z
 
-**45 ריפואים** (16 ציבוריים · 29 פרטיים) · **276 מכונות-יכולת** · **18 פעילים בשעה האחרונה** · תמונה-קודמת: 2026-10-19T08:51:54.528Z
+**45 ריפואים** (16 ציבוריים · 29 פרטיים) · **276 מכונות-יכולת** · **22 פעילים בשעה האחרונה** · תמונה-קודמת: 2026-10-19T10:13:48.505Z
 
 ## 💓 פעיל-עכשיו (דחיפה בשעה האחרונה)
-FleetHQ · saos-dex · Domain · Autonomy · saos-console-zai · execution-fabric · saos-desk · fleet-economy · Pulse · sovereign-executor · saos-runtime · steem · Console · Project-files · sovereign-lighthouse · roshpina · giant · saos-control-center
+FleetHQ · Domain · giant · saos-console-zai · Autonomy · fleet-economy · roshpina · saos-dex · saos-runtime · steem · Sandbox · execution-fabric · saos-coordination · Project-files · sovereign-runner-kit · Console · Adsmarket · sovereign-lighthouse · Pulse · sovereign-executor · Zip · sovereign-beacon
 
 ## 🧠 מפת-היכולות של הצי (המכונות והריפואים-בהן-הן-חיות)
 - **gitleaks** → Adsmarket, Console, Defi, Domain, Project-files, Saosmartwallet (+11)
@@ -12,18 +12,18 @@ FleetHQ · saos-dex · Domain · Autonomy · saos-console-zai · execution-fabri
 - **fresh-oracle** → Autonomy, FleetHQ, Sandbox
 - **sovereign-decider** → Autonomy, FleetHQ, Sandbox
 - **value-scan** → Autonomy, FleetHQ, Sandbox
-- **ci** → Saosmartwallet, saos-dex, saos-sovereign-foundry
 - **dex-beat** → Domain, saos-dex, saos-runtime
 - **token-forge** → Domain, Sandbox, steem
+- **ci** → Saosmartwallet, saos-dex, saos-sovereign-foundry
 - **runtime-pacemaker** → Console, FleetHQ
-- **dex-grid** → Domain, saos-dex
-- **mm-supremacy** → Domain, saos-dex
 - **agent-verify** → Console, Domain
 - **canary** → Defi, Domain
+- **dex-grid** → Domain, saos-dex
 - **estate-scrub** → Console, Domain
 - **exposure-gate** → Domain, TruthRail
 - **hive-adopt-t21** → Domain, saos-runtime
 - **key-verify** → Console, Domain
+- **mm-supremacy** → Domain, saos-dex
 - **sovereign-pulse** → Domain, saos-runtime
 - **weave-anchor-lines** → Domain, Zip
 - **weave-ecosystem** → Domain, Zip
