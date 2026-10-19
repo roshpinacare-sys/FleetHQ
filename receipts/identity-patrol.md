@@ -1,10 +1,11 @@
-# identity-patrol — סיור-זהויות כלל-הצי (2026-10-19T19:59:27.591Z)
+# identity-patrol — סיור-זהויות כלל-הצי (2026-10-19T20:09:32.373Z)
 
-**פסק: VIOLATION** — 45 ריפואים נסרקו (30 קומיטים אחרונים כל-אחד) · הפרות: 40 · דולגו: 1
+**פסק: VIOLATION** — 45 ריפואים נסרקו (30 קומיטים אחרונים כל-אחד) · הפרות: 41 · דולגו: 1
 
 חוק: DECISIONS #10 — אין NAME@users.noreply.github.com פרט-ל-owner ו-github-actions[bot]; בוטים חותמים @agents.roshpinacare-sys.
 
 ## הפרות
+- `steem` c0483f9bbb — author:saos-exec-bot@users.noreply.github.com + committer:saos-exec-bot@users.noreply.github.com — "exec-cycle (runtime-bridge W5): doctrine-capped broadcast receipts (txids, zero keys) [ski"
 - `steem` 1b4793e878 — author:saos-exec-bot@users.noreply.github.com + committer:saos-exec-bot@users.noreply.github.com — "exec-cycle: doctrine-capped broadcast receipts (txids, zero keys) [skip ci]"
 - `steem` 752d21eb7c — author:saos-armyseal-bot@users.noreply.github.com + committer:saos-armyseal-bot@users.noreply.github.com — "armyseal-selfcontain: army keys pass → self-contained meta (W16 owner-law: וודא כספת שיהיה"
 - `sovereign-executor` 453f0675d2 — author:fleet-beat[bot]@users.noreply.github.com + committer:fleet-beat[bot]@users.noreply.github.com — "fleet-beat: receipts 2026-10-19T19:38:22Z [skip ci]"
@@ -24,7 +25,6 @@
 - `Zip` 7ccba5a64d — author:weave-anchor-zero[bot]@users.noreply.github.com + committer:weave-anchor-zero[bot]@users.noreply.github.com — "weave-anchor-zero: 2026-10-19T04:53:49.890Z · cp#1691 · Z Chain 9369 gasPrice 0x0 · att 17"
 - `Zip` 57fe8c9d8f — author:weave-anchor[bot]@users.noreply.github.com + committer:weave-anchor[bot]@users.noreply.github.com — "weave-anchor: 2026-10-19T04:53:07.643Z · cp#1690 · 1/3 chains · att 1749 · market 0s/0r"
 - `Zip` 2c46883ca7 — author:weave-anchor-zero[bot]@users.noreply.github.com + committer:weave-anchor-zero[bot]@users.noreply.github.com — "weave-anchor-zero: 2026-10-18T23:22:31.550Z · cp#1689 · Z Chain 9369 gasPrice 0x0 · att 17"
-- `Zip` bbeeaf5bbb — author:weave-anchor[bot]@users.noreply.github.com + committer:weave-anchor[bot]@users.noreply.github.com — "weave-anchor: 2026-10-18T23:21:15.203Z · cp#1688 · 1/3 chains · att 1747 · market 0s/0r"
 
 ## דולגו בכנות
 - sanbox — commits API 409
