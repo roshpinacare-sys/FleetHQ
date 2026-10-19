@@ -1,14 +1,14 @@
-# identity-patrol — סיור-זהויות כלל-הצי (2026-10-18T23:37:10.426Z)
+# identity-patrol — סיור-זהויות כלל-הצי (2026-10-19T00:50:08.341Z)
 
-**פסק: VIOLATION** — 45 ריפואים נסרקו (30 קומיטים אחרונים כל-אחד) · הפרות: 49 · דולגו: 1
+**פסק: VIOLATION** — 45 ריפואים נסרקו (30 קומיטים אחרונים כל-אחד) · הפרות: 46 · דולגו: 1
 
 חוק: DECISIONS #10 — אין NAME@users.noreply.github.com פרט-ל-owner ו-github-actions[bot]; בוטים חותמים @agents.roshpinacare-sys.
 
 ## הפרות
-- `giant` 3f7b082532 — author:41898282+github-actions[bot]@users.noreply.github.com + committer:41898282+github-actions[bot]@users.noreply.github.com — "trust-heartbeat: autonomous scan (no-sandbox) — 2026-10-18T22:06Z"
-- `giant` 60a9475348 — author:41898282+github-actions[bot]@users.noreply.github.com + committer:41898282+github-actions[bot]@users.noreply.github.com — "trust-heartbeat: autonomous scan (no-sandbox) — 2026-10-18T19:53Z"
-- `giant` d3cd285225 — author:41898282+github-actions[bot]@users.noreply.github.com + committer:41898282+github-actions[bot]@users.noreply.github.com — "trust-heartbeat: autonomous scan (no-sandbox) — 2026-10-18T17:01Z"
 - `saos-dex` 833e376707 — author:sovereign-builder[bot]@users.noreply.github.com + committer:sovereign-builder[bot]@users.noreply.github.com — "sovereign-builder: ui-audit 2026-10-18T23:17:12Z [skip ci]"
+- `steem` e813078eeb — author:saos-exec-bot@users.noreply.github.com + committer:saos-exec-bot@users.noreply.github.com — "exec-cycle (runtime-bridge W5): doctrine-capped broadcast receipts (txids, zero keys) [ski"
+- `steem` 48e13b2d85 — author:saos-exec-bot@users.noreply.github.com + committer:saos-exec-bot@users.noreply.github.com — "exec-cycle (runtime-bridge W5): doctrine-capped broadcast receipts (txids, zero keys) [ski"
+- `sovereign-executor` cb67cc2df3 — author:fleet-beat[bot]@users.noreply.github.com + committer:fleet-beat[bot]@users.noreply.github.com — "fleet-beat: receipts 2026-10-19T00:27:10Z [skip ci]"
 - `sovereign-executor` 61466466e9 — author:fleet-beat[bot]@users.noreply.github.com + committer:fleet-beat[bot]@users.noreply.github.com — "fleet-beat: receipts 2026-10-18T23:30:13Z [skip ci]"
 - `sovereign-executor` 390be9ccc6 — author:fleet-beat[bot]@users.noreply.github.com + committer:fleet-beat[bot]@users.noreply.github.com — "fleet-beat: receipts 2026-10-18T22:31:00Z [skip ci]"
 - `sovereign-executor` 66854979a5 — author:fleet-beat[bot]@users.noreply.github.com + committer:fleet-beat[bot]@users.noreply.github.com — "fleet-beat: receipts 2026-10-18T21:34:18Z [skip ci]"
@@ -22,9 +22,9 @@
 - `sovereign-executor` ff6fdeaeae — author:fleet-beat[bot]@users.noreply.github.com + committer:fleet-beat[bot]@users.noreply.github.com — "fleet-beat: receipts 2026-10-18T11:42:18Z [skip ci]"
 - `sovereign-executor` ad98faa8ba — author:fleet-beat[bot]@users.noreply.github.com + committer:fleet-beat[bot]@users.noreply.github.com — "fleet-beat: receipts 2026-10-18T07:18:35Z [skip ci]"
 - `sovereign-executor` 78ac1c8fbd — author:fleet-beat[bot]@users.noreply.github.com + committer:fleet-beat[bot]@users.noreply.github.com — "fleet-beat: receipts 2026-10-18T06:02:07Z [skip ci]"
-- `steem` 48e13b2d85 — author:saos-exec-bot@users.noreply.github.com + committer:saos-exec-bot@users.noreply.github.com — "exec-cycle (runtime-bridge W5): doctrine-capped broadcast receipts (txids, zero keys) [ski"
 - `Zip` 2c46883ca7 — author:weave-anchor-zero[bot]@users.noreply.github.com + committer:weave-anchor-zero[bot]@users.noreply.github.com — "weave-anchor-zero: 2026-10-18T23:22:31.550Z · cp#1689 · Z Chain 9369 gasPrice 0x0 · att 17"
 - `Zip` bbeeaf5bbb — author:weave-anchor[bot]@users.noreply.github.com + committer:weave-anchor[bot]@users.noreply.github.com — "weave-anchor: 2026-10-18T23:21:15.203Z · cp#1688 · 1/3 chains · att 1747 · market 0s/0r"
+- `Zip` ac10a9e778 — author:weave-anchor-zero[bot]@users.noreply.github.com + committer:weave-anchor-zero[bot]@users.noreply.github.com — "weave-anchor-zero: 2026-10-18T20:54:39.261Z · cp#1687 · Z Chain 9369 gasPrice 0x0 · att 17"
 
 ## דולגו בכנות
 - sanbox — commits API 409
