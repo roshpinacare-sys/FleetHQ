@@ -1,17 +1,20 @@
 {
  "schema": "office.ci/1",
- "at": "2026-10-19T18:16:51.820Z",
+ "at": "2026-10-19T18:26:50.626Z",
  "repo": "roshpinacare-sys/FleetHQ",
- "sha": "db497bae8ffe",
+ "sha": "8d99cb41b0fc",
  "checks": {
-  "lint": "pass",
-  "typecheck": "pass"
+  "install": "fail",
+  "prismaGenerate": "fail",
+  "typecheck": "fail",
+  "productionBuild": "fail",
+  "connectivityAudit": "pass"
  },
- "overall": "PASS",
- "reason": "local beat: lint=pass typecheck=pass (full 5-check suite stays with Actions office-ci)",
+ "overall": "FAIL",
+ "reason": "failing checks: install,prismaGenerate,typecheck,productionBuild",
  "provenance": {
-  "runId": "39301123278",
-  "runUrl": "https://github.com/roshpinacare-sys/FleetHQ/actions/runs/39301123278",
-  "sha": "db497bae8ffe28a0873ea9bf4285f5587006e648"
+  "runId": "39302477025",
+  "runUrl": "https://github.com/roshpinacare-sys/FleetHQ/actions/runs/39302477025",
+  "sha": "8d99cb41b0fc901cf8a3c3adf9df3c29934f3fa2"
  }
 }
