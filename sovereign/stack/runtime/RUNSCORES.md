@@ -1,8 +1,8 @@
 # RUNSCORES — the harness scoring book
 
-- generatedAt: `2026-10-19T05:12:45.412Z`
-- STATE book age: 100min · api fetches: 5
-- counts: {"unknown":12,"healthy":116,"critical":4,"watch":1}
+- generatedAt: `2026-10-19T05:21:06.136Z`
+- STATE book age: 108min · api fetches: 5
+- counts: {"unknown":12,"healthy":116,"critical":4,"flaky":1}
 
 | repo | workflow | class | lastConcl | lastRun |
 |---|---|---|---|---|
@@ -10,6 +10,7 @@
 | Domain | office3d-guard | critical | failure | 2026-10-19T03:12:40Z |
 | Console | console-publish | critical | failure | 2026-10-19T00:28:01Z |
 | Autonomy | selfhood | critical | cancelled | 2026-10-19T01:13:23Z |
+| Domain | dex-mirror | flaky | failure | 2026-10-19T03:20:21Z |
 | FleetHQ | runtime-pacemaker | healthy | success | 2026-10-19T03:32:34Z |
 | FleetHQ | identity-guard | healthy | success | 2026-10-19T03:31:06Z |
 | FleetHQ | office-ci | healthy | success | 2026-10-19T03:31:06Z |
@@ -138,4 +139,3 @@
 | Autonomy | verifier (truth & quality) | unknown | — | 2026-10-19T03:25:43Z |
 | Autonomy | artery-pacer | unknown | — | 2026-10-19T03:25:29Z |
 | Autonomy | sovereign-state | unknown | — | 2026-10-19T03:19:36Z |
-| Domain | dex-mirror | watch | failure | 2026-10-19T03:20:21Z |
