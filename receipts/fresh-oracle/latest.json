@@ -1,6 +1,6 @@
 {
  "schema": "fleet.fresh-oracle/1",
- "at": "2026-10-20T14:04:01.496Z",
+ "at": "2026-10-20T14:34:23.896Z",
  "law": "FRESH only if sha256(live bytes) == sha256(committed deploy-ref bytes) AND no ops doc MISSING; DRIFT=RED (200-with-different-bytes); UNREACHABLE=UNKNOWN (network, retried once, reason kept); ops-doc age rows are honest amber (MISSING alone flips exit) — never faked green",
  "results": [
   {
@@ -11,10 +11,11 @@
    "committedStatus": 200,
    "liveError": null,
    "committedError": null,
-   "liveSha16": "a3c4521262b4f317",
-   "committedSha16": "a3c4521262b4f317",
-   "liveBytes": 49425,
-   "verdict": "MATCH"
+   "liveSha16": "76a877ca4489d3b0",
+   "committedSha16": "76a877ca4489d3b0",
+   "liveBytes": 49457,
+   "verdict": "MATCH",
+   "note": "settled after deploy-lag re-measure (+20s) — was mid-publish"
   },
   {
    "name": "FleetHQ potential board",
@@ -24,9 +25,9 @@
    "committedStatus": 200,
    "liveError": null,
    "committedError": null,
-   "liveSha16": "f2b93a8b3fa07930",
-   "committedSha16": "f2b93a8b3fa07930",
-   "liveBytes": 18166,
+   "liveSha16": "37bb71e4be79d38f",
+   "committedSha16": "37bb71e4be79d38f",
+   "liveBytes": 18161,
    "verdict": "MATCH"
   },
   {
@@ -37,9 +38,9 @@
    "committedStatus": 200,
    "liveError": null,
    "committedError": null,
-   "liveSha16": "618ea042c70e2015",
-   "committedSha16": "618ea042c70e2015",
-   "liveBytes": 25077,
+   "liveSha16": "1b8d3cd1aa7ec19e",
+   "committedSha16": "1b8d3cd1aa7ec19e",
+   "liveBytes": 25072,
    "verdict": "MATCH"
   },
   {
