@@ -1,30 +1,30 @@
-# identity-patrol — סיור-זהויות כלל-הצי (2026-10-20T02:03:21.112Z)
+# identity-patrol — סיור-זהויות כלל-הצי (2026-10-20T03:33:14.323Z)
 
-**פסק: VIOLATION** — 45 ריפואים נסרקו (30 קומיטים אחרונים כל-אחד) · הפרות: 46 · דולגו: 1
+**פסק: VIOLATION** — 45 ריפואים נסרקו (30 קומיטים אחרונים כל-אחד) · הפרות: 47 · דולגו: 1
 
 חוק: DECISIONS #10 — אין NAME@users.noreply.github.com פרט-ל-owner ו-github-actions[bot]; בוטים חותמים @agents.roshpinacare-sys.
 
 ## הפרות
 - `steem` 464d6748a6 — author:saos-exec-bot@users.noreply.github.com + committer:saos-exec-bot@users.noreply.github.com — "exec-cycle (runtime-bridge W5): doctrine-capped broadcast receipts (txids, zero keys) [ski"
 - `steem` f5d474550e — author:saos-exec-bot@users.noreply.github.com + committer:saos-exec-bot@users.noreply.github.com — "exec-cycle: doctrine-capped broadcast receipts (txids, zero keys) [skip ci]"
-- `saos-dex` 20f3f4ecb4 — author:sovereign-builder[bot]@users.noreply.github.com + committer:sovereign-builder[bot]@users.noreply.github.com — "sovereign-builder: build-status 2026-10-20T00:24:04Z [skip ci]"
+- `sovereign-executor` c0da98a9b8 — author:fleet-beat[bot]@users.noreply.github.com + committer:fleet-beat[bot]@users.noreply.github.com — "fleet-beat: receipts 2026-10-20T03:24:51Z [skip ci]"
+- `sovereign-executor` e80f47d28b — author:fleet-beat[bot]@users.noreply.github.com + committer:fleet-beat[bot]@users.noreply.github.com — "fleet-beat: receipts 2026-10-20T02:24:31Z [skip ci]"
+- `sovereign-executor` 73b9c59c05 — author:fleet-beat[bot]@users.noreply.github.com + committer:fleet-beat[bot]@users.noreply.github.com — "fleet-beat: receipts 2026-10-20T01:28:13Z [skip ci]"
+- `sovereign-executor` 8ac3bfbc56 — author:fleet-beat[bot]@users.noreply.github.com + committer:fleet-beat[bot]@users.noreply.github.com — "fleet-beat: receipts 2026-10-20T00:28:21Z [skip ci]"
+- `sovereign-executor` acb6e03fbf — author:fleet-beat[bot]@users.noreply.github.com + committer:fleet-beat[bot]@users.noreply.github.com — "fleet-beat: receipts 2026-10-19T23:28:36Z [skip ci]"
+- `sovereign-executor` fcf00b5f0f — author:fleet-beat[bot]@users.noreply.github.com + committer:fleet-beat[bot]@users.noreply.github.com — "fleet-beat: receipts 2026-10-19T22:28:34Z [skip ci]"
+- `sovereign-executor` 9c2ade8234 — author:fleet-beat[bot]@users.noreply.github.com + committer:fleet-beat[bot]@users.noreply.github.com — "fleet-beat: receipts 2026-10-19T21:31:49Z [skip ci]"
+- `sovereign-executor` a54ca174ab — author:fleet-beat[bot]@users.noreply.github.com + committer:fleet-beat[bot]@users.noreply.github.com — "fleet-beat: receipts 2026-10-19T20:35:26Z [skip ci]"
+- `sovereign-executor` 453f0675d2 — author:fleet-beat[bot]@users.noreply.github.com + committer:fleet-beat[bot]@users.noreply.github.com — "fleet-beat: receipts 2026-10-19T19:38:22Z [skip ci]"
+- `sovereign-executor` db0e2747a6 — author:fleet-beat[bot]@users.noreply.github.com + committer:fleet-beat[bot]@users.noreply.github.com — "fleet-beat: receipts 2026-10-19T18:38:30Z [skip ci]"
+- `sovereign-executor` f74f8ce371 — author:fleet-beat[bot]@users.noreply.github.com + committer:fleet-beat[bot]@users.noreply.github.com — "fleet-beat: receipts 2026-10-19T17:38:57Z [skip ci]"
+- `sovereign-executor` 20327964bc — author:fleet-beat[bot]@users.noreply.github.com + committer:fleet-beat[bot]@users.noreply.github.com — "fleet-beat: receipts 2026-10-19T16:42:30Z [skip ci]"
+- `sovereign-executor` 5e2952e8af — author:fleet-beat[bot]@users.noreply.github.com + committer:fleet-beat[bot]@users.noreply.github.com — "fleet-beat: receipts 2026-10-19T15:45:16Z [skip ci]"
+- `sovereign-executor` 7da29ea1d4 — author:fleet-beat[bot]@users.noreply.github.com + committer:fleet-beat[bot]@users.noreply.github.com — "fleet-beat: receipts 2026-10-19T14:48:36Z [skip ci]"
 - `Zip` f40c37775b — author:weave-anchor-zero[bot]@users.noreply.github.com + committer:weave-anchor-zero[bot]@users.noreply.github.com — "weave-anchor-zero: 2026-10-20T01:55:33.679Z · cp#1710 · Z Chain 9369 gasPrice 0x0 · att 17"
 - `Zip` 62cdaa104c — author:weave-anchor[bot]@users.noreply.github.com + committer:weave-anchor[bot]@users.noreply.github.com — "weave-anchor: 2026-10-20T01:54:52.490Z · cp#1709 · 1/3 chains · att 1768 · market 0s/0r"
 - `Zip` 6d6f7f709c — author:weave-anchor-zero[bot]@users.noreply.github.com + committer:weave-anchor-zero[bot]@users.noreply.github.com — "weave-anchor-zero: 2026-10-19T22:29:26.251Z · cp#1708 · Z Chain 9369 gasPrice 0x0 · att 17"
 - `Zip` 2009002613 — author:weave-anchor[bot]@users.noreply.github.com + committer:weave-anchor[bot]@users.noreply.github.com — "weave-anchor: 2026-10-19T22:28:43.424Z · cp#1707 · 1/3 chains · att 1766 · market 0s/0r"
-- `Zip` 73e333d829 — author:weave-anchor-zero[bot]@users.noreply.github.com + committer:weave-anchor-zero[bot]@users.noreply.github.com — "weave-anchor-zero: 2026-10-19T22:18:52.019Z · cp#1706 · Z Chain 9369 gasPrice 0x0 · att 17"
-- `Zip` 67e77f5cc1 — author:weave-anchor[bot]@users.noreply.github.com + committer:weave-anchor[bot]@users.noreply.github.com — "weave-anchor: 2026-10-19T22:18:10.235Z · cp#1705 · 1/3 chains · att 1764 · market 0s/0r"
-- `Zip` 3aeecfcc20 — author:weave-anchor-zero[bot]@users.noreply.github.com + committer:weave-anchor-zero[bot]@users.noreply.github.com — "weave-anchor-zero: 2026-10-19T22:16:30.283Z · cp#1704 · Z Chain 9369 gasPrice 0x0 · att 17"
-- `Zip` 78bd1000e5 — author:weave-anchor[bot]@users.noreply.github.com + committer:weave-anchor[bot]@users.noreply.github.com — "weave-anchor: 2026-10-19T22:15:49.275Z · cp#1703 · 1/3 chains · att 1762 · market 0s/0r"
-- `Zip` 45d983996a — author:weave-anchor-zero[bot]@users.noreply.github.com + committer:weave-anchor-zero[bot]@users.noreply.github.com — "weave-anchor-zero: 2026-10-19T21:12:53.309Z · cp#1702 · Z Chain 9369 gasPrice 0x0 · att 17"
-- `Zip` 2714d3b6d1 — author:weave-anchor[bot]@users.noreply.github.com + committer:weave-anchor[bot]@users.noreply.github.com — "weave-anchor: 2026-10-19T21:12:11.575Z · cp#1701 · 1/3 chains · att 1760 · market 0s/0r"
-- `Zip` a50fe21736 — author:weave-anchor-zero[bot]@users.noreply.github.com + committer:weave-anchor-zero[bot]@users.noreply.github.com — "weave-anchor-zero: 2026-10-19T21:11:36.096Z · cp#1700 · Z Chain 9369 gasPrice 0x0 · att 17"
-- `Zip` fcef69cc2d — author:weave-anchor[bot]@users.noreply.github.com + committer:weave-anchor[bot]@users.noreply.github.com — "weave-anchor: 2026-10-19T21:10:54.920Z · cp#1699 · 1/3 chains · att 1758 · market 0s/0r"
-- `Zip` a197245c9e — author:weave-heart[bot]@users.noreply.github.com + committer:weave-heart[bot]@users.noreply.github.com — "weave-heart: beat 2026-10-19T21:10:27.698Z · seq 1757 · 1756 att · 1756/1756 sig · market "
-- `Zip` bbf163f4e4 — author:weave-anchor-zero[bot]@users.noreply.github.com + committer:weave-anchor-zero[bot]@users.noreply.github.com — "weave-anchor-zero: 2026-10-19T17:35:11.982Z · cp#1695 · Z Chain 9369 gasPrice 0x0 · att 17"
-- `Zip` 83870106d4 — author:weave-anchor[bot]@users.noreply.github.com + committer:weave-anchor[bot]@users.noreply.github.com — "weave-anchor: 2026-10-19T17:34:30.851Z · cp#1694 · 1/3 chains · att 1753 · market 0s/0r"
-- `Zip` 424e586b08 — author:weave-anchor-zero[bot]@users.noreply.github.com + committer:weave-anchor-zero[bot]@users.noreply.github.com — "weave-anchor-zero: 2026-10-19T10:55:38.659Z · cp#1693 · Z Chain 9369 gasPrice 0x0 · att 17"
-- `Zip` 8a36d3824d — author:weave-anchor[bot]@users.noreply.github.com + committer:weave-anchor[bot]@users.noreply.github.com — "weave-anchor: 2026-10-19T10:54:56.811Z · cp#1692 · 1/3 chains · att 1751 · market 0s/0r"
 
 ## דולגו בכנות
 - sanbox — commits API 409
