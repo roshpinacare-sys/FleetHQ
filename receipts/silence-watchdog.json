@@ -1,42 +1,42 @@
 {
  "schema": "silence.watchdog/1",
- "at": "2026-10-20T16:54:33.621Z",
+ "at": "2026-10-20T19:10:52.186Z",
  "scope": "actions",
  "voices": [
   {
    "name": "origin/FleetHQ",
-   "lastActivity": "2026-10-20T16:53:56.000Z",
-   "ageMin": 1,
+   "lastActivity": "2026-10-20T19:01:03.000Z",
+   "ageMin": 10,
    "maxSilenceMin": 240,
    "verdict": "alive",
    "detail": {
-    "subject": "claims-triage: decisions ledger 2026-10-20T16:53Z [skip ci]"
+    "subject": "decide: sovereign decision cycle (SOV-POLICY/1) — sense/decide/record,"
    }
   },
   {
    "name": "origin/Domain",
-   "lastActivity": "2026-10-20T16:54:31.000Z",
-   "ageMin": 0,
-   "maxSilenceMin": 240,
-   "verdict": "alive",
-   "detail": {
-    "subject": "grid-sentinel: live grid matrix + aliveness enforcement 2026-10-20T16:"
-   }
-  },
-  {
-   "name": "origin/Console",
-   "lastActivity": "2026-10-20T16:53:45.000Z",
+   "lastActivity": "2026-10-20T19:09:35.000Z",
    "ageMin": 1,
    "maxSilenceMin": 240,
    "verdict": "alive",
    "detail": {
-    "subject": "pacemaker receipt: 2026-10-20T16:53:45Z"
+    "subject": "moment-watch: NEUTRAL · steem-edge 22bps · 2026-10-20T19:09:34Z [skip "
+   }
+  },
+  {
+   "name": "origin/Console",
+   "lastActivity": "2026-10-20T19:10:36.000Z",
+   "ageMin": 0,
+   "maxSilenceMin": 240,
+   "verdict": "alive",
+   "detail": {
+    "subject": "pacemaker receipt: 2026-10-20T19:10:36Z"
    }
   },
   {
    "name": "divergence/FleetHQ",
    "lastActivity": "2026-10-20T15:24:16.000Z",
-   "ageMin": 90,
+   "ageMin": 227,
    "maxSilenceMin": 75,
    "verdict": "SILENT-ALARM",
    "detail": {
@@ -48,7 +48,7 @@
   {
    "name": "divergence/Domain",
    "lastActivity": "2026-10-20T15:24:16.000Z",
-   "ageMin": 90,
+   "ageMin": 227,
    "maxSilenceMin": 75,
    "verdict": "SILENT-ALARM",
    "detail": {
@@ -60,7 +60,7 @@
   {
    "name": "divergence/Console",
    "lastActivity": "2026-10-20T15:24:16.000Z",
-   "ageMin": 90,
+   "ageMin": 227,
    "maxSilenceMin": 75,
    "verdict": "SILENT-ALARM",
    "detail": {
@@ -72,9 +72,9 @@
   {
    "name": "sandbox-ledger (via git)",
    "lastActivity": "2026-10-20T15:27:56.765Z",
-   "ageMin": 87,
+   "ageMin": 223,
    "maxSilenceMin": 180,
-   "verdict": "alive",
+   "verdict": "SILENT-ALARM",
    "detail": {
     "localSummary": "2 ALARM(S): port/fleethq:3002: DOWN (:3002) · roster: unresolved — no FLEET_ROST"
    }
@@ -82,7 +82,7 @@
   {
    "name": "pages/money",
    "lastActivity": "2026-10-16T20:33:07.509Z",
-   "ageMin": 5541,
+   "ageMin": 5678,
    "maxSilenceMin": 240,
    "verdict": "SILENT-ALARM",
    "detail": {
@@ -91,22 +91,23 @@
   },
   {
    "name": "pages/site-audit",
-   "lastActivity": "2026-10-20T15:10:23.864Z",
-   "ageMin": 104,
+   "lastActivity": "2026-10-20T18:29:36.488Z",
+   "ageMin": 41,
    "maxSilenceMin": 360,
    "verdict": "alive",
    "detail": {
-    "verdict": "findings:12",
-    "at": "2026-10-20T15:10:23.864Z"
+    "verdict": "findings:13",
+    "at": "2026-10-20T18:29:36.488Z"
    }
   }
  ],
  "alarms": [
-  "divergence/FleetHQ: silent 90min (limit 75)",
-  "divergence/Domain: silent 90min (limit 75)",
-  "divergence/Console: silent 90min (limit 75)",
-  "pages/money: silent 5541min (limit 240)",
-  "pages/site-audit: LIVE SITE BROKEN (12 findings at 2026-10-20T15:10:23.864Z)"
+  "divergence/FleetHQ: silent 227min (limit 75)",
+  "divergence/Domain: silent 227min (limit 75)",
+  "divergence/Console: silent 227min (limit 75)",
+  "sandbox-ledger (via git): silent 223min (limit 180)",
+  "pages/money: silent 5678min (limit 240)",
+  "pages/site-audit: LIVE SITE BROKEN (13 findings at 2026-10-20T18:29:36.488Z)"
  ],
- "summary": "5 ALARM(S): divergence/FleetHQ: silent 90min (limit 75) · divergence/Domain: silent 90min (limit 75) · divergence/Console: silent 90min (limit 75) · pages/money: silent 5541min (limit 240) · pages/site-audit: LIVE SITE BROKEN (12 findings at 2026-10-20T15:10:23.864Z)"
+ "summary": "6 ALARM(S): divergence/FleetHQ: silent 227min (limit 75) · divergence/Domain: silent 227min (limit 75) · divergence/Console: silent 227min (limit 75) · sandbox-ledger (via git): silent 223min (limit 180) · pages/money: silent 5678min (limit 240) · pages/site-audit: LIVE SITE BROKEN (13 findings at 2026-10-20T18:29:36.488Z)"
 }
