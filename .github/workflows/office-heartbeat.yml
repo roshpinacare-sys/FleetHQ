@@ -1,0 +1,238 @@
+# office-heartbeat — Fleet HQ never goes silent again.
+#
+# Owner directive (trace 1a12…c565): "המשרד בfleet חשוב מאוד — הוא חייב
+# לשרת את הרשת והריבונות, לשפר את עצמו פלאים ולעבוד תמיד, וגם להעלות אותו
+# לדף לשיווק." This workflow is that law, executed:
+#   · every 2 hours a real crew shift boots (live mode — keyless brains +
+#     GitHub Models via the built-in token; brain-chain failover is built-in)
+#   · the office works on the Domain books, self-schedules, self-resolves
+#   · office memory/journal/tasks persist back INTO Domain (git = the body)
+#   · a captured office-state JSON lands in FleetHQ → the public Domain page
+#     renders the office LIVE (marketing that never goes stale)
+#
+# Honesty law: the workflow commits only what the office actually wrote.
+# No shift happened → NO-CHANGE is reported, nothing is faked.
+
+name: office-heartbeat
+
+on:
+  schedule:
+    # R58 (owner directive: "לא רואים עבודה ממש במשרד" — the office must be
+    # SEEN working, not just be working): the state snapshot the room eats is
+    # only as fresh as the last shift. Hourly shifts left the public room
+    # showing a frozen idle crew for 45+ minutes of every hour (measured:
+    # capturedAt 34min old at 16:08Z). Cadence raised to every 15 minutes —
+    # the shift engine itself stays idempotent (NO-CHANGE is honest silence,
+    # not an error), and GitHub schedule-skip is outlived by 4 offsets/hour.
+    - cron: '9,24,39,54 * * * *'
+    - cron: '13 */2 * * *'
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+  models: read
+
+concurrency:
+  group: office-heartbeat
+  cancel-in-progress: false
+
+jobs:
+  shift:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: checkout FleetHQ (office code)
+        uses: actions/checkout@v5
+
+      - name: setup bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: clone Domain (the books — with persistence rights)
+        env:
+          GIT_PAT: ${{ secrets.OFFICE_GIT_PAT }}
+        run: |
+          # R-fix 2026-10-16: the auto-seal once committed runtime files into this path —
+          # clone refuses a non-empty dir. Guard: clear it, always (belt over .gitignore suspenders).
+          rm -rf mini-services/agent-hq/Domain
+          if [ -n "$GIT_PAT" ]; then
+            git clone --depth 5 "https://x-access-token:${GIT_PAT}@github.com/roshpinacare-sys/Domain.git" mini-services/agent-hq/Domain
+          else
+            echo "::warning::OFFICE_GIT_PAT not set — cloning public Domain; persistence push will be skipped (honest no-write)"
+            git clone --depth 5 "https://github.com/roshpinacare-sys/Domain.git" mini-services/agent-hq/Domain
+          fi
+
+      - name: install dependencies (root + agent-hq)
+        run: |
+          bun install
+          cd mini-services/agent-hq && bun install
+
+      - name: boot the office (live crew, bounded shift)
+        env:
+          GITHUB_MODELS_TOKEN: ${{ github.token }}
+          AGENT_HQ_FLEET_DIR: ${{ github.workspace }}
+          # R53 vault-wiring (owner law: the system must USE its vault, never
+          # re-demand keys it already holds — census-verified slots, sealed):
+          NVIDIA_API_KEY: ${{ secrets.NVIDIA_API_KEY }}
+          NVIDIA_BASE_URL: ${{ secrets.NVIDIA_BASE_URL }}
+          NVIDIA_MODELS: ${{ secrets.NVIDIA_MODELS }}
+          # R53 vault-wiring #2 (additive 2nd NIM key → independent nvidia-nim-2 brain):
+          NVIDIA_API_KEY_2: ${{ secrets.NVIDIA_API_KEY_2 }}
+          NVIDIA_BASE_URL_2: ${{ secrets.NVIDIA_BASE_URL_2 }}
+          NVIDIA_MODELS_2: ${{ secrets.NVIDIA_MODELS_2 }}
+          TAVILY_API_KEY_1: ${{ secrets.TAVILY_API_KEY_1 }}
+          TAVILY_API_KEY_2: ${{ secrets.TAVILY_API_KEY_2 }}
+          JINA_API_KEY: ${{ secrets.JINA_API_KEY }}
+        run: |
+          cd mini-services/agent-hq
+          [ -f .env ] || cp .env.example .env
+          AGENT_HQ_PORT=3010 AGENT_HQ_MODE=live nohup bash run-office.sh > /tmp/office-boot.log 2>&1 &
+          echo $! > /tmp/office.pid
+          echo "office pid: $(cat /tmp/office.pid)"
+          sleep 50   # patrol arms itself 40s after boot (anti-fixation operator)
+
+      - name: capture office state (early)
+        run: bun tools/office-state-capture.ts 3010 /tmp/office-state-early.json 90000
+
+      - name: let the crew work
+        run: |
+          sleep 300
+          if ! kill -0 "$(cat /tmp/office.pid)" 2>/dev/null; then
+            echo "::warning::foreman process exited early — boot log:"; tail -40 /tmp/office-boot.log
+          fi
+
+      - name: capture office state (final)
+        run: bun tools/office-state-capture.ts 3010 /tmp/office-state-final.json 30000
+
+      - name: stop the shift
+        run: |
+          kill "$(cat /tmp/office.pid)" 2>/dev/null || true
+          sleep 3
+          pkill -f "bun run index.ts" 2>/dev/null || true
+
+      - name: persist office memory into Domain (git = the body)
+        env:
+          GIT_PAT: ${{ secrets.OFFICE_GIT_PAT }}
+        run: |
+          cd mini-services/agent-hq/Domain
+          git config user.name  "roshpinacare-sys"
+          git config user.email "326012154+roshpinacare-sys@users.noreply.github.com"
+          # whitelist only what the office actually writes (never the PID lock)
+          for f in agents/office-memory.json agents/office-tasks.json agents/office-events.jsonl; do
+            [ -f "$f" ] && git add "$f"
+          done
+          if git diff --cached --quiet; then
+            echo "NO-CHANGE: office wrote nothing new into the books this shift (honest)"
+          else
+            if [ -z "$GIT_PAT" ]; then echo "SKIP-PUSH: no PAT secret — changes stay local (honest)"; exit 0; fi
+            # self-heal (המסילה-השנייה): aborts ONLY — לעולם לא reset --hard כאן:
+            # ה-clone הטרי מחזיק את כתבי-המשמרת של הצוות (measured exit-1 book-loss @ 02:00Z).
+            git rebase --abort 2>/dev/null || true; git merge --abort 2>/dev/null || true
+            # [R41 race-safe] המשרד-עצמו רץ-ברקע ומתעסק-באינדקס — commit עלול-למצוא
+            # "nothing to commit" בין-diff-ל-commit. זה-מצב-כן-ושקט, לא-כשל (מקור-אימיילי-כשל-מיותרים).
+            if ! git commit -m "office-heartbeat: crew shift persisted — memory/journal/tasks [skip ci]" >/tmp/r41-commit.err 2>&1; then
+              if grep -q "nothing to commit" /tmp/r41-commit.err 2>/dev/null; then
+                echo "NO-CHANGE (race-safe): staged set vanished between diff and commit — honest nothing-to-persist"
+                exit 0
+              fi
+              cat /tmp/r41-commit.err; exit 1
+            fi
+            git -c rebase.autoStash=true pull --rebase -q origin main || true
+            ok=0
+            for i in 1 2 3 4 5 6 7 8; do
+              git rebase --abort 2>/dev/null || true
+              git merge --abort 2>/dev/null || true
+              if git -c rebase.autoStash=true pull --rebase -X theirs -q origin main && git push -q origin main; then ok=1; echo "PUBLISHED (attempt $i): office memory committed"; break; fi
+              sleep $((5 + RANDOM % 11))
+            done
+            git rebase --abort 2>/dev/null || true
+            [ "$ok" = "1" ] || echo "named terminal: publish-deferred — book kept on disk, next heartbeat re-lands it (anti-storm law §5)"
+          fi
+
+      - name: publish office state into FleetHQ (the page eats this)
+        run: |
+          mkdir -p office/state
+          cp /tmp/office-state-final.json office/state/office-state.json
+          tail -60 /tmp/office-boot.log > office/state/last-boot.log 2>/dev/null || true
+          # fleet mirror written by the office itself (AGENT_HQ_FLEET_DIR)
+          [ -f receipts/office-state-mirror.json ] && echo "mirror: present" || echo "mirror: absent (demo-mode honest)"
+          git config user.name  "roshpinacare-sys"
+          git config user.email "326012154+roshpinacare-sys@users.noreply.github.com"
+          git add office/state/ receipts/office-state-mirror.json 2>/dev/null || true
+          if git diff --cached --quiet; then
+            echo "NO-CHANGE: nothing new to publish"
+          else
+            # [R41 race-safe] כמו-השלב-הקודם: commit-ריק-במירוץ = שקט-כן, לא-אדום
+            if ! git commit -m "office-heartbeat: public office state captured [skip ci]" 2>/tmp/r41-commit2.err; then
+              if grep -q "nothing to commit" /tmp/r41-commit2.err 2>/dev/null; then
+                echo "NO-CHANGE (race-safe): nothing-to-publish after race"
+                exit 0
+              fi
+              cat /tmp/r41-commit2.err; exit 1
+            fi
+            git -c rebase.autoStash=true pull --rebase -q origin main || true
+            ok=0
+            for i in 1 2 3 4 5 6 7 8; do
+              git rebase --abort 2>/dev/null || true
+              git merge --abort 2>/dev/null || true
+              if git -c rebase.autoStash=true pull --rebase -X theirs -q origin main && git push -q origin main; then ok=1; echo "PUBLISHED (attempt $i): office state live"; break; fi
+              sleep $((5 + RANDOM % 11))
+            done
+            git rebase --abort 2>/dev/null || true
+            [ "$ok" = "1" ] || echo "named terminal: publish-deferred — book kept on disk, next heartbeat re-lands it (anti-storm law §5)"
+          fi
+
+      - name: build + commit office-knowledge.json (measured roster/shifts/lessons/retro/recruitment book — T23-B)
+        run: |
+          node tools/office-knowledge.mjs || echo "::warning::office-knowledge degraded — the degraded book still lands (honest)"
+          [ -f office/state/office-knowledge.json ] && cat office/state/office-knowledge.json
+          git config user.name  "roshpinacare-sys"
+          git config user.email "326012154+roshpinacare-sys@users.noreply.github.com"
+          git add office/state/office-knowledge.json
+          if git diff --cached --quiet; then
+            echo "NO-CHANGE: office-knowledge.json already current (honest)"
+          else
+            # aborts ONLY — never reset --hard after git add (measured exit-1 book-loss @ 02:00Z)
+            git rebase --abort 2>/dev/null || true; git merge --abort 2>/dev/null || true
+            git commit -m "office-heartbeat: office-knowledge.json refreshed (measured) [skip ci]"
+            git -c rebase.autoStash=true pull --rebase -q origin main || true
+            ok=0
+            for i in 1 2 3 4 5 6 7 8; do
+              git rebase --abort 2>/dev/null || true
+              git merge --abort 2>/dev/null || true
+              if git -c rebase.autoStash=true pull --rebase -X theirs -q origin main && git push -q origin main; then ok=1; echo "PUBLISHED (attempt $i): office-knowledge.json live"; break; fi
+              sleep $((5 + RANDOM % 11))
+            done
+            git rebase --abort 2>/dev/null || true
+            [ "$ok" = "1" ] || echo "named terminal: publish-deferred — book kept on disk, next heartbeat re-lands it (anti-storm law §5)"
+          fi
+          # READBACK VERIFY — the published book must be reachable on origin;
+          # byte-exact OR a strictly newer sibling book (fleet race) both pass.
+          sleep 5
+          if curl -sf "https://raw.githubusercontent.com/${GITHUB_REPOSITORY}/main/office/state/office-knowledge.json" -o /tmp/kb-readback.json; then
+            if cmp -s office/state/office-knowledge.json /tmp/kb-readback.json; then
+              echo "READBACK-VERIFY: MATCH — office-knowledge.json is live and byte-exact"
+            else
+              python3 -c "import json;d=json.load(open('/tmp/kb-readback.json'));assert d.get('schema')=='office-knowledge/1' and d.get('generatedAt')>=json.load(open('office/state/office-knowledge.json')).get('generatedAt');print('READBACK-VERIFY: newer sibling book live, generatedAt', d.get('generatedAt'))"
+            fi
+          else
+            # T-77 alignment: a lost publish race is a designed-for condition —
+            # the missing book on origin IS the alarm (next heartbeat re-lands it);
+            # the other two steps already speak the named-terminal language.
+            echo "named terminal: readback-unreachable — publish-deferred, next heartbeat re-lands the book (anti-storm law §5)"; exit 0
+          fi
+
+      - name: shift summary
+        run: |
+          {
+            echo "## Office heartbeat — crew shift"
+            echo ""
+            echo "| measure | value |"
+            echo "|---|---|"
+            echo "| captured at | $(python3 -c "import json;print(json.load(open('/tmp/office-state-final.json'))['capturedAt'])") |"
+            echo "| backend | $(python3 -c "import json;print(json.load(open('/tmp/office-state-final.json'))['backend'])") |"
+            echo "| agents on desks | $(python3 -c "import json;print(len(json.load(open('/tmp/office-state-final.json'))['agents']))") |"
+            echo "| tasks on wall | $(python3 -c "import json;s=json.load(open('/tmp/office-state-final.json'));print(', '.join(f\"{t['id']}:{t['status']}\" for t in s['tasks'][:6]) or 'none')") |"
+            echo "| events | $(python3 -c "import json;print(json.load(open('/tmp/office-state-final.json'))['counts'])") |"
+          } >> "$GITHUB_STEP_SUMMARY"

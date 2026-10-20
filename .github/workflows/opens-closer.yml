@@ -1,0 +1,91 @@
+# opens-closer.yml — T-61: המרפא העצמי של הצי. GitHub מפיל ריצות מתוכננות (נמדד: office-heartbeat ו-beacon נשתקו אחרי 19:26-19:34Z
+# בעוד value-scan ירה תקין) — אז לא סומכים על תזמון בלבד: כל 30 דק' נמדדת טריות המצבות keyless, מה שנפל מעל SLA מוער
+# (workflow_dispatch באותו ריפו — GITHUB_TOKEN הוא repo-scoped על-פי-עיצוב ונשאר כזה), ומה שחוצה-ריפו מוער דרך CROSS_REVIVE_PAT
+# (T-63 D1: כתב-הרשאה שהועבר מהבעלים לריבונות — סוד ב-FleetHQ, אף-פעם לא נרשם). כנות: נפילה מוצגת כנפילה, לעולם לא ממולאת.
+name: opens-closer
+
+on:
+  schedule:
+    - cron: "7,37 * * * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: opens-closer
+  cancel-in-progress: false
+
+jobs:
+  closer:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45 # self-relay sleeps up to 30 min before self-kick
+    steps:
+      - name: Checkout (full history — needed for delta check)
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Measure freshness, revive what fell (keyless, honest)
+        env:
+          CROSS_REVIVE_PAT: ${{ secrets.CROSS_REVIVE_PAT }}
+          GITHUB_TOKEN: ${{ github.token }}
+        run: node tools/opens-closer.mjs
+
+      - name: Commit ledger only when meaningful (no-noise law)
+        run: |
+          DECISION=$(node -e "console.log(require('./office/state/opens-closer.json').commitDecision)")
+          if [ "$DECISION" != "commit" ]; then
+            echo "no-delta: ledger unchanged in meaning — discarding local write"
+            git checkout -- office/state/opens-closer.json
+            exit 0
+          fi
+          git config user.name "roshpinacare-sys"
+          git config user.email "326012154+roshpinacare-sys@users.noreply.github.com"
+          git add office/state/opens-closer.json
+          if git diff --cached --quiet; then echo "no-delta: nothing to commit"; exit 0; fi
+          git commit -m "opens-closer: measured freshness ledger + revival dispatches [skip ci]"
+          ok=0
+          for i in 1 2 3; do
+            if git push -q origin main; then ok=1; echo "PUSH-OK attempt $i"; break; fi
+            echo "push attempt $i failed — rebase and retry"
+            # 3-a: never retry while wedged — an aborted rebase left unmerged files kills every later attempt
+            git rebase --abort 2>/dev/null || true
+            git pull --rebase -X theirs --autostash -q origin main || { git rebase --abort 2>/dev/null || true; sleep 3; continue; }
+            sleep 3
+          done
+          if [ "$ok" != "1" ]; then echo "PUSH-FAILED after retries"; exit 1; fi
+
+      - name: self-relay (the healer keeps itself alive — recursion-gap closure, T-72)
+        if: success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -eu
+          now=$(date +%s)
+          next=$(( (now / 1800 + 1) * 1800 ))
+          wait=$(( next - now ))
+          [ "$wait" -gt 0 ] || wait=60
+          echo "relay: sleeping ${wait}s until next half-hour boundary"
+          sleep "$wait"
+          code=$(curl -s -o /tmp/relay.out -w '%{http_code}' -X POST \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            -H "User-Agent: opens-closer-relay" \
+            https://api.github.com/repos/roshpinacare-sys/FleetHQ/actions/workflows/opens-closer.yml/dispatches \
+            -d '{"ref":"main"}')
+          echo "relay: next tick dispatched http=${code}"; cat /tmp/relay.out || true
+          [ "$code" = "204" ] || { echo "named terminal: relay-dispatch-failed"; exit 1; }
+
+      - name: Honest job summary
+        if: always()
+        run: |
+          {
+            echo "## opens-closer — measured freshness + self-healing"
+            if [ -f office/state/opens-closer.json ]; then
+              node -e "const j=require('./office/state/opens-closer.json');console.log('- generatedAt:',j.generatedAt);console.log('- verdict:',j.verdictHe);console.log('- metrics:',JSON.stringify(j.metrics));for(const c of (j.checks||[]))console.log('- '+c.key+': age='+c.ageMin+'min (SLA '+c.slaMin+') stale='+c.stale+' dispatched='+c.dispatched+' '+String(c.dispatchStatus||''));for(const a of (j.ownerActions||[]))console.log('- OWNER-ACTION:',a)"
+            else
+              echo "- ledger MISSING — the check failed; nothing published (honest fallback, never fake)"
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"

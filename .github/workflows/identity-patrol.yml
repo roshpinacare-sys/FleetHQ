@@ -1,0 +1,65 @@
+# identity-patrol (FleetHQ) — DECISIONS #10 enforcement for the WHOLE estate
+#
+# WHY (T-77, owner-trace 1a1374bc626866c9 "אני רק מקבל באימייל חסימות כל כמה דק"):
+# the org spend limit (billing wall) kills every private-repo Actions job at
+# startup with ZERO steps (measured 2026-10-13: Sandbox 99/100 failures,
+# saos-dex 82/100, Zip/Project-files/Saosmartwallet/roshpina — all zero-step;
+# every push = one guaranteed red email, all day). The in-repo guards there are
+# covenanted `if: false` (steem precedent). THIS workflow is the replacement:
+# free public minutes · API-based · covers ALL repos (private included via
+# OFFICE_GIT_PAT) · fail-loud ONLY on real findings · honest receipt every run.
+name: identity-patrol
+
+on:
+  schedule:
+    - cron: "13,43 * * * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: identity-patrol
+  cancel-in-progress: false
+
+jobs:
+  patrol:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v5
+        with: { fetch-depth: 1 }
+
+      - uses: actions/setup-node@v5
+        with: { node-version: 22 }
+
+      - name: Patrol all repos for DECISIONS #10 identity law (API, private included)
+        env:
+          PAT: ${{ secrets.OFFICE_GIT_PAT }}
+        run: node tools/identity-patrol.mjs
+
+      - name: Publish receipt (append-safe, FF-only, race-proof)
+        if: always()   # publish even on VIOLATION — the finding IS the receipt
+        run: |
+          set -euo pipefail
+          git config user.name  "roshpinacare-sys"
+          git config user.email "326012154+roshpinacare-sys@users.noreply.github.com"
+          git add receipts/identity-patrol.json receipts/identity-patrol.md
+          if git diff --cached --quiet; then
+            echo "no receipt change — honest skip"
+            exit 0
+          fi
+          git commit -m "identity-patrol receipt: $(date -u +%Y-%m-%dT%H:%M:%SZ) [skip ci]"
+          OK=0
+          for i in 1 2 3 4 5; do
+            git pull --rebase -X theirs --autostash -q origin main 2>/dev/null || true
+            if git push -q origin main 2>/dev/null; then OK=1; break; fi
+            sleep 5
+          done
+          if [ "$OK" = "1" ]; then
+            echo "receipt pushed"
+          else
+            echo "push lost the race after retries — receipt survives in the run log"
+          fi
+          # a lost push is NOT a failure (anti-flood law: exit 0, evidence lives here)
+          exit 0

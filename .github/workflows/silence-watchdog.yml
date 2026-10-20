@@ -1,0 +1,42 @@
+# silence-watchdog.yml — the alarm channel that survives the sandbox.
+#
+# The local silence-ledger measures the estate from inside the box; when the
+# box dies (3 wipes on 2026-10-12) nothing speaks. THIS workflow runs on
+# GitHub Actions, measures PUBLIC truth (origin commits, the sandbox voice
+# heard through git, live Pages receipts), and speaks through GitHub Issues
+# — GITHUB_TOKEN only, zero secrets, zero sandbox dependency. Owner sees
+# alarms by email — TRANSITION-ONLY (Anti-Storm Law §2, trace 1a1374da43d52c39):
+# the issue is written only when a voice changes state; the state file
+# state/silence-watchdog/state.json is committed every run [skip ci] and its
+# commit timestamp at origin is the meta-voice: if it stops advancing every
+# ~15min, the watchdog itself is dead — that too is an alarm.
+name: silence-watchdog
+
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency:
+  group: silence-watchdog
+  cancel-in-progress: false
+
+jobs:
+  watch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          # full history — the divergence voice proves "stuck for >1h" from the
+          # git history of receipts/push-queue.json; a shallow checkout would
+          # report persistence-unknown forever
+          fetch-depth: 0
+      - name: Measure every visible voice + alarm through Issues
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node tools/silence-watchdog.mjs
