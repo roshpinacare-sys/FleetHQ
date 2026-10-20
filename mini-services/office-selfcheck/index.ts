@@ -108,16 +108,31 @@ function spawnDetached(cmd: string, args: string[], cwd: string, logFile: string
   return child.pid ?? -1;
 }
 
+function memAvailableKb(): number {
+  try {
+    const m = fs.readFileSync("/proc/meminfo", "utf8");
+    const hit = /^MemAvailable:\s+(\d+) kB/m.exec(m);
+    return hit ? parseInt(hit[1], 10) : -1;
+  } catch { return -1; }
+}
+
 async function ensureApp(): Promise<BootInfo> {
   if (await httpOk(`http://localhost:${APP_PORT}/api/fleet-health`))
     return { wasUp: true, spawned: false };
+  /* gal-94·mem-gate (measured twice): booting this 500-900MB app while the box
+     is starved makes the OOM killer execute the SOVEREIGN SPINE instead (console
+     3050 died twice mid-compile). Gate: only boot when >= 2.5GB truly free.
+     Honest receipt, no fake success — the spine outranks the office. */
+  const avail = memAvailableKb();
+  if (avail >= 0 && avail < 2_500_000)
+    return { wasUp: false, spawned: false, note: `mem-gate: ${avail}kB available < 2.5GB — spine outranks office, skipping boot` };
   // self-heal: the office app needs its install tree too
   if (!existsSync(join(FLEETHQ, "node_modules"))) {
     const inst = sh(BUN, ["install", "--frozen-lockfile"], FLEETHQ, 300_000);
     if (inst.code !== 0)
       return { wasUp: false, spawned: false, note: `bun install failed: ${inst.out.slice(0, 200)}` };
   }
-  const pid = spawnDetached(BUNX, ["next", "dev", "-p", String(APP_PORT)], FLEETHQ, "/tmp/office-selfcheck-app.log", { NEXT_TELEMETRY_DISABLED: "1" });
+  const pid = spawnDetached(BUNX, ["next", "dev", "-p", String(APP_PORT)], FLEETHQ, "/tmp/office-selfcheck-app.log", { NEXT_TELEMETRY_DISABLED: "1", NODE_OPTIONS: "--max-old-space-size=768" });
   for (let i = 0; i < 30; i++) {
     await new Promise((r) => setTimeout(r, 3000));
     if (await httpOk(`http://localhost:${APP_PORT}/api/fleet-health`))
