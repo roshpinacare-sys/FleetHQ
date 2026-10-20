@@ -1,6 +1,6 @@
 {
  "schema": "saos.sovereign-decisions/1",
- "generatedAt": "2026-10-20T06:00:33.246Z",
+ "generatedAt": "2026-10-20T06:23:08.407Z",
  "policyVersion": "SOV-POLICY/1",
  "principle": "הריבונות מחליטה ומבצעת — הבעלים קבע (trace 1a12…f45d) שהמערכת מקבלת החלטות חכמות בעצמה בצורה הכי מתקדמת שיש; הפניה לבעלים = שלילת הריבונות. כל-החלטה: ראיה-מדודה + אימות-כפול. בעלים = בעלים; ריבונות = הגוף שמחליט.",
  "authority": "advisory",
@@ -22,27 +22,27 @@
  "sense": {
   "gridTruth": {
    "ok": true,
-   "ageMin": 60
-  },
-  "gridHealth": {
-   "ok": true,
-   "ageMin": 149
-  },
-  "openCloser": {
-   "ok": true,
-   "ageMin": 0
+   "ageMin": 83
   },
   "valueScan": {
    "ok": true,
-   "ageMin": 7
+   "ageMin": 29
   },
   "decisionsPrev": {
    "ok": true,
-   "ageMin": 12
+   "ageMin": 23
+  },
+  "openCloser": {
+   "ok": true,
+   "ageMin": 23
+  },
+  "gridHealth": {
+   "ok": true,
+   "ageMin": 7
   },
   "officeState": {
    "ok": true,
-   "ageMin": 70
+   "ageMin": 92
   }
  },
  "decisions": [
@@ -202,40 +202,49 @@
   {
    "id": "auto-fleet-health",
    "area": "operations",
-   "title": "35 workflows אדומים ב-11 ריפואים (מתוך 379) — GridWatch מרפא אוטונומית; סטריקים חוזרים = טריאז' הנדסי",
+   "title": "67 workflows אדומים ב-20 ריפואים (מתוך 382) — GridWatch מרפא אוטונומית; סטריקים חוזרים = טריאז' הנדסי",
    "status": "watch",
    "evidence": {
     "source": "GridWatch/state/fleet-health.json",
-    "measuredAt": "2026-10-20T03:31:37.967Z",
+    "measuredAt": "2026-10-20T06:15:56.823Z",
     "totals": {
      "repos": 45,
-     "public": 17,
-     "private": 28,
-     "workflows": 379,
-     "green": 262,
-     "amber": 82,
-     "red": 35
+     "public": 38,
+     "private": 7,
+     "workflows": 382,
+     "green": 290,
+     "amber": 25,
+     "red": 67
     },
     "billingWorkflows": [],
     "redRepos": [
      "steem",
+     "Autonomy",
+     "Sandbox",
      "Domain",
      "saos-dex",
-     "private-67fc6249",
-     "private-0b071733",
-     "private-2698a44e",
-     "private-6e4c69af",
-     "private-ded40bb0",
-     "private-2c31ddb5",
-     "private-6da17063",
-     "private-780c6b20"
+     "Console",
+     "execution-fabric",
+     "roshpina",
+     "saos-sovereign-foundry",
+     "Adsmarket",
+     "Project-files",
+     "sandbox-private",
+     "Saosmartwallet",
+     "anchor-baseline",
+     "saos-jummper",
+     "Sdk",
+     "Zip",
+     "saos-control-center",
+     "Defi",
+     "saos-sovereign-platform"
     ],
-    "alertCount": 0,
+    "alertCount": 2,
     "remediations": 0
    },
    "law": "ריפוי-עצמי בתוך-מעטפת (הפיך+מדוד בלבד); סטריקים ≥3 לא מנוסים שוב — מנותבים לטריאז' הנדסי",
    "policy": "SOV-POLICY/1",
-   "decidedAt": "2026-10-20T06:00:33.246Z",
+   "decidedAt": "2026-10-20T06:23:08.407Z",
    "by": "sovereign-decider"
   },
   {
@@ -252,7 +261,7 @@
     "selfHeal": "same-repo GITHUB_TOKEN + cross-repo CROSS_REVIVE_PAT (D1)"
    },
    "policy": "SOV-POLICY/1",
-   "decidedAt": "2026-10-20T06:00:33.246Z",
+   "decidedAt": "2026-10-20T06:23:08.407Z",
    "by": "sovereign-decider"
   },
   {
@@ -267,7 +276,7 @@
    },
    "law": "אין דריסת-מסילות: למשרד יש לולאת-רטרו משלו; הריבונות מתעדת ומאמתת, לא לוקחת",
    "policy": "SOV-POLICY/1",
-   "decidedAt": "2026-10-20T06:00:33.246Z",
+   "decidedAt": "2026-10-20T06:23:08.407Z",
    "by": "sovereign-decider"
   }
  ],
