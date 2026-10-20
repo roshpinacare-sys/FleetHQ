@@ -1,0 +1,57 @@
+# self-book (FleetHQ) — ספר-המודעות-העצמית של הרשת
+#
+# WHY (T-77, owner-trace 1a1374bc626866c9): "אני כל הזמן בונה דברים מעדכן ואני
+# שם לב שהרשת לא מודעת אליהם כלל, לא בודקת את עצמה ולא מודעת לעצמה וליכולות
+# הריבוניות האוטונומיות שלה."
+# התשובה: מלאי-מלא-כל-30-דק' (ריפואים-פרטיים-כלול דרך OFFICE_GIT_PAT) + זיהוי-
+# חדשנות (ריפו-חדש / מכונה-חדשה / שורש-השתנה) + מפת-יכולות. git-only — רץ על
+# דקות-ציבוריות-חינמיות, שורד-מחיקת-סנדבוקסים.
+name: self-book
+
+on:
+  schedule:
+    - cron: "17,47 * * * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: self-book
+  cancel-in-progress: false
+
+jobs:
+  book:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v5
+        with: { fetch-depth: 1 }
+
+      - uses: actions/setup-node@v5
+        with: { node-version: 22 }
+
+      - name: Measure the whole estate (no invention, API only)
+        env:
+          PAT: ${{ secrets.OFFICE_GIT_PAT }}
+        run: node tools/self-book.mjs
+
+      - name: Publish self-book (race-proof, honest)
+        run: |
+          set -euo pipefail
+          git config user.name  "roshpinacare-sys"
+          git config user.email "326012154+roshpinacare-sys@users.noreply.github.com"
+          git add agents/self-book.json agents/self-book.md agents/self-book-prev.json
+          if git diff --cached --quiet; then
+            echo "no change — honest skip"
+            exit 0
+          fi
+          git commit -m "self-book: the network's self-portrait $(date -u +%Y-%m-%dT%H:%M:%SZ) [skip ci]"
+          OK=0
+          for i in 1 2 3 4 5; do
+            git pull --rebase -X theirs --autostash -q origin main 2>/dev/null || true
+            if git push -q origin main 2>/dev/null; then OK=1; break; fi
+            sleep 5
+          done
+          echo "push=$OK (a lost push lives in the run log — anti-flood exit 0)"
+          exit 0
