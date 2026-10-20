@@ -1,0 +1,45 @@
+{
+ "id": "CR-0071",
+ "slot": 71,
+ "title": "Fleet Rung 41 — THE MESH MARKET: the fleet trades on our own ledger. The owner demanded a networked arbitrage market for the agents and the soldiers — \"שוק ארביטראז רישתי עבור הסוכנים והחיילים זאת אומרת שנסחר גם פה וגם שם וגם שם\" — a wide volume of REAL trades and profits on our own network, and routers that can take and swap large sums. R39 built the ROUTER (venue graph, honest verdicts), R40 built the CORE (atomic settlement, the real-value vault). R41 builds the DEMAND SIDE: arb-mesh.cjs — the roster (headcorner + the ten soldiers from persona-slots) becomes the market itself on our own DEX. MANDATE LAW (deterministic, zero magic numbers): for every pool-side edge row that clears the inherited FLOOR law (verdict CANDIDATE-FOK), the mesh drafts intents for the whole roster — the operator commands 40% of the row's budget, the soldiers split 60% equally, the row budget is the catalog quote size (~1% of first-hop depth of the input asset). DIRECTION LAW: pool mid > fair ⇒ sell the base into the pool (edge is captured trading TOWARD the fair, never against it). WIRE LAW (the smart-treasury behavior): an agent who cannot cover his mandate is armed by a MESH-WIRE from the treasury's free claims — capped at 10% of free per batch, partial wires shrink the fill, conservation moves claims and never creates them; no capital ⇒ the honest GATED-WIRE verdict, never a fake trade. SETTLEMENT: the mesh writes the intents queue (atomic tmp+rename) and the core settles it in a fresh process (dex-core.cjs settle-intents) — settleIntents in dex-core.cjs v1.1.0: batch-idempotent (processedBatches memo, a replayed batch settles nothing twice), no naked shorts (NAKED-SHORT-REFUSED), dust refused, a fill never above 5% of first-hop depth (DEPTH-CAP), every hop + minOut settle all-or-nothing on simulated copies (a refused minOut leaves pools AND accounts byte-unchanged — the wire is applied only at commit), agent accounts born lazily at first real movement, edge marked honest-or-null (PEG legs 1:1, STEEM/SBD to the CEX-implied fair when the feed is fresh, everything else null — P&L measured, never guessed), pool feeMeter accrues per fill (LP revenue), conservation asserted after every fill, attestation recomputed. Keyed rails are NEVER fired by the keyless mesh (PLAN-KEYED-RAIL rows, the signing desks own those); grid rungs stay PLAN-POOL-GATED-NOT-BROADCAST. SIZE LADDER (the large-sums law): for every live pair, exact BigInt quotes at 0.1%/1%/5% of input-side depth with honest signed slippage — capability measured, not promised. Operator pipe-proof booked on the live ledger: batch MESH-OPERATOR-PIPEPROOF-R41 — headcorner STEEM 5000µ → 4993µ WSTEEM via P1 (MESH-WIRE + AGENT_FILL, conservation OK, attestation d6d5c769bf229029), the queue consumed and cleared by the core (single-writer handoff).",
+ "operator": "Z.ai Code (Domain lane, main orchestrator)",
+ "design": [
+  "arb-mesh.cjs (SAOS-ARB-MESH/1, keyless, STASIS-obeying, fail-soft exit 0): mandates → intents queue → fresh-process settle → honest book + history jsonl",
+  "mandate split: operator 40% (OPERATOR_SHARE_BPS=4000) / soldiers 60%/N, row budget = 1% of first-hop depth (the catalog quote law, R40), dust shares skipped honestly",
+  "direction law: mid > fair ⇒ sell the base; the drift inverts the direction automatically",
+  "dex-core.cjs v1.1.0 settleIntents: roster from persona-slots (sorted), refusals ROSTER-UNKNOWN / BAD-PAIR / DUST / NO-DEPTH / GATED-WIRE-NO-CAPITAL / WIRE-PARTIAL-DUST / NO-ROUTE / HOP-REFUSED / REFUSED-MINOUT, wire ≤ 10% of free treasury per batch (MESH_WIRE_MAX_SHARE_BPS=1000), fill ≤ 5% of first-hop depth (MESH_FILL_MAX_DEPTH_BPS=500), all-or-nothing hop simulation, batch idempotency memo 64",
+  "edge accounting honest-or-null: PEG 1:1, STEEM/SBD to the CEX fair (fresh feed only), else null — the ledger is the P&L source of truth (meshPnl lifetime by agent)",
+  "size ladder: exact BigInt quotes at 0.1%/1%/5% of depth, signed slippage vs mid, per live pool",
+  "gate law respected: keyed rails = PLAN-KEYED-RAIL (never fired keylessly), counter-grids = PLAN-POOL-GATED-NOT-BROADCAST",
+  "E64 in the suite (v1.49.0 → v1.50.0): white-box refusals/wire/atomicity/idempotency/determinism laws + drafting laws + ladder honesty, black-box both selftests fresh-process, real-tree re-derivation of the booked mesh book + the pipe-proof fill — 64/64 GREEN"
+ ],
+ "acceptance": [
+  "roster/dust/naked-short refusals book honest named verdicts; a batch that settles nothing touches nothing (lazy account birth)",
+  "wire-then-fill settles atomically: conservation asserted per fill, feeMeter accrues, attestation recomputes",
+  "batch replay idempotent (booked batch MESH-OPERATOR-PIPEPROOF-R41 replays to zero ops)",
+  "minOut refusal leaves pools AND accounts byte-unchanged (wire deferred to commit)",
+  "mandates re-derive: depth = min over pools holding the input (P1 STEEM side 388775µ), budget = 1% of depth, operator-40/soldiers-60",
+  "size ladder monotone honest slippage (5% rung slips more than the 0.1% rung, out grows super-linearly)",
+  "arb-mesh-cron.yml hourly :07, keyless, [skip ci], rebase-first; suite v1.50.0, 64/64 GREEN"
+ ],
+ "measured": [
+  "operator pipe-proof 2026-10-04T11:07Z: MESH-WIRE 5000µ STEEM (treasury→headcorner) + AGENT_FILL STEEM 5000µ → 4993µ WSTEEM via P1 (edge −7µ marked PEG-1:1, the honest cost; fee floors to 0 at this size — BigInt floor law), conservation OK, attestation d6d5c769bf229029, queue cleared by the core",
+  "first live mesh tick: verdict NO-EDGE (the booked A1 row nets −34.99bps below the 120bps floor — the machinery waits, the floor law protects the P&L), roster 11, ladder honest (P3: 0.1% → −0.59bps, 1% → −1.26bps, 5% → −5bps)",
+  "dex-core selftest 33/33 (22 inherited + 11 mesh); arb-mesh selftest 15/15; suite 64/64 GREEN v1.50.0"
+ ],
+ "status": "ACCEPTED-2026-10-04",
+ "rung": "R41",
+ "suite": "v1.50.0",
+ "evidence": [
+  "agents/arb-mesh.cjs",
+  "agents/arb-mesh.json",
+  "agents/arb-mesh.md",
+  "agents/arb-mesh-history.jsonl",
+  "agents/dex-core.cjs",
+  "agents/dex-core.json",
+  "agents/dex-core-history.jsonl",
+  "agents/dex-intents.json",
+  "agents/evals/run-evals.cjs",
+  ".github/workflows/arb-mesh-cron.yml"
+ ]
+}

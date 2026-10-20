@@ -1,0 +1,218 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   site.css — Console shared mobile layer (Task 14-a, 2026-10-02)
+   ONE shared mobile drawer nav for every page of the ops console. Pages used
+   to duplicate inline navs that broke on phones (owner: "תפריט שבור בסלולר").
+   Palette: the existing dark zinc system — no new hues, no blue/indigo.
+   Everything is scoped under .sw-* to never fight a page's own styles.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── the burger (injected by site.js when a page has no mobile menu) ── */
+.sw-burger{display:none;background:rgba(255,255,255,.04);border:1px solid var(--line,#27272a);
+  color:var(--text,#fafafa);border-radius:999px;width:44px;height:44px;min-width:44px;min-height:44px;
+  cursor:pointer;align-items:center;justify-content:center;padding:0;flex:none}
+.sw-burger svg{width:20px;height:20px;pointer-events:none}
+.sw-burger:focus-visible{outline:2px solid var(--text,#fafafa);outline-offset:2px}
+.sw-burger:active{transform:scale(.96)}
+@media(max-width:900px){.sw-burger{display:inline-flex}}
+
+/* ── the scrim + drawer ── */
+.sw-scrim{position:fixed;inset:0;background:rgba(0,0,0,.62);backdrop-filter:blur(2px);
+  opacity:0;pointer-events:none;transition:opacity .22s ease;z-index:2147483000}
+.sw-scrim[data-open="1"]{opacity:1;pointer-events:auto}
+.sw-drawer{position:fixed;top:0;inset-inline-end:0;height:100dvh;width:min(85vw,360px);
+  background:var(--sw-bg,#0c0c0e);color:var(--text,#fafafa);border-inline-start:1px solid var(--line,#27272a);
+  box-shadow:-18px 0 50px rgba(0,0,0,.5);z-index:2147483001;overflow-y:auto;overscroll-behavior:contain;
+  transform:translateX(100%);transition:transform .24s ease;
+  padding:14px 14px calc(18px + env(safe-area-inset-bottom,0px)) 14px;
+  padding-top:calc(14px + env(safe-area-inset-top,0px))}
+html[dir="rtl"] .sw-drawer{transform:translateX(-100%)}
+/* the open state must BEAT the rtl hidden rule (same shape of selector, later + equal
+   specificity chain) — browser-proven 2026-10-02: RTL pages otherwise never open */
+html[dir="rtl"] .sw-drawer[data-open="1"]{transform:translateX(0)}
+.sw-drawer[data-open="1"]{transform:translateX(0)}
+.sw-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
+.sw-head b{font-size:13px;letter-spacing:.4px;color:var(--faint,#a1a1aa);text-transform:uppercase}
+.sw-close{background:rgba(255,255,255,.04);border:1px solid var(--line,#27272a);color:var(--text,#fafafa);
+  border-radius:999px;width:44px;height:44px;min-width:44px;min-height:44px;cursor:pointer;
+  display:inline-flex;align-items:center;justify-content:center;padding:0}
+.sw-close svg{width:18px;height:18px;pointer-events:none}
+.sw-close:focus-visible{outline:2px solid var(--text,#fafafa);outline-offset:2px}
+.sw-group{font-size:11px;letter-spacing:.8px;text-transform:uppercase;color:var(--faint,#a1a1aa);
+  margin:14px 6px 6px;font-weight:700}
+.sw-group:first-of-type{margin-top:4px}
+.sw-drawer nav a{display:flex;align-items:center;gap:10px;min-height:48px;padding:10px 14px;
+  border-radius:12px;font-size:15px;font-weight:500;color:var(--dim,#d4d4d8);
+  text-decoration:none;border:1px solid transparent}
+.sw-drawer nav a:hover,.sw-drawer nav a:focus-visible{color:var(--text,#fafafa);background:rgba(255,255,255,.06);text-decoration:none;outline:none}
+.sw-drawer nav a:focus-visible{outline:2px solid var(--text,#fafafa);outline-offset:2px}
+.sw-drawer nav a:active{transform:scale(.99)}
+.sw-drawer nav a.on{color:var(--text,#fafafa);background:rgba(255,255,255,.09);border-color:var(--line,#27272a);font-weight:600}
+.sw-drawer nav a svg{width:18px;height:18px;flex:none;opacity:.85}
+/* ── header action buttons (langbtn/backlink/etc.): pages ship ~31px pills —
+   under 44px touch minimum on phones (owner complaint class). Scoped, mobile
+   only, so desktop metrics stay pixel-identical. ── */
+@media(max-width:900px){
+  header .langbtn,header .backlink,header .hd-actions a,header .hd-actions button{
+    min-height:44px;min-width:44px;display:inline-flex;align-items:center;justify-content:center}
+}
+
+@media (prefers-reduced-motion:reduce){
+  .sw-drawer,.sw-scrim{transition:none}
+}
+
+/* ── sticky footer (only when site.js proves a direct-child footer exists):
+   the footer must hug the viewport bottom on short pages and be pushed down
+   naturally on long ones — never float with a gap below. ── */
+body.sw-sticky{min-height:100svh;display:flex;flex-direction:column}
+body.sw-sticky>main{flex:1 0 auto;width:100%}
+/* width:100% restores block-like sizing: a direct-child main that also carries
+   .wrap (margin:0 auto) is a flex item here — without an explicit width it
+   shrink-to-fits its widest table and re-introduces horizontal scroll
+   (browser-proven on truth.html at 390px, 2026-10-02). max-width+auto margins
+   still center it on desktop exactly as the page's own CSS intends. */
+body.sw-sticky>footer{margin-top:auto}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   15-b — ops design-token pass (2026-10-02). ADDITIVE ONLY: every rule here is
+   either zero-specificity (inside :where()) or scoped to .sw-*/.tblscroll, so
+   it can never fight a page's own stylesheet (site.css loads last by design).
+   Palette law holds: zinc + gold only — status hues are semantic, not decor:
+   green = measured pass · amber = waiting on a real, measured cause ·
+   red = rejected/failed. No blue, no indigo, anywhere.
+   ═══════════════════════════════════════════════════════════════════════════ */
+:root{
+  /* status semantics — one meaning per hue, everywhere */
+  --sw-pass:#22c55e;   /* measured OK / registered / green gate */
+  --sw-wait:#eab308;   /* pending on a real cause / amber gate  */
+  --sw-fail:#ef4444;   /* rejected / failed / red gate          */
+  /* type scale (13px base keeps ledgers dense on ops screens) */
+  --sw-fs--1:11px; --sw-fs-0:13px; --sw-fs-1:15px; --sw-fs-2:17px; --sw-fs-3:22px; --sw-fs-4:28px;
+  /* spacing rhythm (4px grid) */
+  --sw-gap-1:4px; --sw-gap-2:8px; --sw-gap-3:12px; --sw-gap-4:16px; --sw-gap-6:24px; --sw-gap-8:32px;
+  /* mono numerics for ledgers; gold focus ring */
+  --sw-mono:ui-monospace,'SF Mono','Cascadia Code','Segoe UI Mono',Menlo,Consolas,monospace;
+  --sw-ring:#f0d060;
+}
+/* semantic status utilities for ops surfaces — use instead of ad-hoc hues */
+.sw-pass{color:var(--sw-pass)}
+.sw-wait{color:var(--sw-wait)}
+.sw-fail{color:var(--sw-fail)}
+/* monospace numerics: ledger digits align in columns on every table site-wide */
+table{font-variant-numeric:tabular-nums}
+td,th{font-variant-numeric:tabular-nums}
+.sw-num{font-family:var(--sw-mono);font-variant-numeric:tabular-nums}
+/* ledger tables inside the .tblscroll wells (index.html, truth.html): faint
+   zebra striping + a sticky header. :where() keeps any page's own tr:hover /
+   th rule winning where it exists — truth.html gains the sticky header it
+   lacked; index.html already ships the same values, so nothing changes. */
+:where(tbody tr:nth-child(even)) td{background:rgba(255,255,255,.014)}
+:where(.tblscroll) thead th{position:sticky;top:0;z-index:1;background:#101013}
+/* one consistent focus ring. :where() = zero specificity: pages that style
+   their own :focus-visible still win; unstyled controls get the gold ring. */
+:where(a,button,input,select,textarea,summary,[tabindex]):focus-visible{
+  outline:2px solid var(--sw-ring);outline-offset:2px}
+/* hover motion: additive transition timing only — pages keep their own hover
+   colors; reduced-motion users get no added motion */
+@media (prefers-reduced-motion:no-preference){
+  :where(a,button,summary){transition:opacity .15s ease,color .15s ease,
+    background-color .15s ease,border-color .15s ease}
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   R65 — brand typography + motion layer (2026-10-06, refero-grade pass)
+   ADDITIVE ONLY, same discipline as 15-b above.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── self-hosted brand typography. Law amendment (DESIGN.md R65): no CDN, no
+   third-party requests — the fonts live in assets/fonts/ like any other repo
+   asset, ~74KB total, font-display swap so text never blocks on them.
+   Heebo = Hebrew-native variable sans (the console's display+UI voice);
+   JetBrains Mono variable = the ledger voice for every numeral and txid. ── */
+@font-face{
+  font-family:'Heebo';font-style:normal;font-weight:100 900;font-display:swap;
+  src:url('fonts/heebo-hebrew-var.woff2') format('woff2');
+  unicode-range:U+0590-05FF,U+200C-2010,U+20AA,U+25CC,U+FB1D-FB4F}
+@font-face{
+  font-family:'Heebo';font-style:normal;font-weight:100 900;font-display:swap;
+  src:url('fonts/heebo-latin-var.woff2') format('woff2');
+  unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{
+  font-family:'JetBrains Mono';font-style:normal;font-weight:100 800;font-display:swap;
+  src:url('fonts/jetbrains-mono-latin-var.woff2') format('woff2');
+  unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+
+/* the brand tokens now resolve to the real fonts; pages that prepend their
+   own names still match, pages that fell back to the old stacks upgrade free */
+:root{--sw-mono:'JetBrains Mono',ui-monospace,'SF Mono','Cascadia Code','Segoe UI Mono',Menlo,Consolas,monospace}
+
+/* ── reading progress: a 2px gold hairline under the header. It is information
+   (how much receipt is left to verify), not decoration. ── */
+.sw-progress{position:fixed;top:0;inset-inline-start:0;height:2px;width:100%;
+  transform:scaleX(0);transform-origin:var(--sw-progress-origin,left);
+  background:linear-gradient(90deg,rgba(212,175,55,.55),#d4af37);
+  z-index:2147483002;pointer-events:none;will-change:transform}
+html[dir="rtl"] .sw-progress{--sw-progress-origin:right}
+@media (prefers-reduced-motion:reduce){.sw-progress{transition:none}}
+
+/* header gains a hairline shadow once the page scrolls (injected class) —
+   separates the glass header from content the way a physical console does */
+.sw-scrolled header.site,header.site.sw-scrolled{
+  box-shadow:0 1px 0 var(--line,.09),0 8px 28px rgba(0,0,0,.42)}
+
+/* ── proof tables: the wall of receipts gets tactile rows. :where() keeps
+   every page's own hover rule winning where it exists. ── */
+@media (prefers-reduced-motion:no-preference){
+  :where(tbody tr){transition:background-color .16s ease}
+}
+:where(tbody tr:hover) td{background:rgba(255,255,255,.028)}
+
+/* ── live-land shimmer for pending numerals: an honest "measuring" state
+   replaces the dead "..." (opt-in: site.js adds .sw-pend while a placeholder
+   is still showing). Reduced-motion keeps the static dots. ── */
+.sw-pend{color:var(--faint,#71717a)}
+@media (prefers-reduced-motion:no-preference){
+  .sw-pend{animation:sw-pulse-dim 1.6s ease-in-out infinite}
+  @keyframes sw-pulse-dim{0%,100%{opacity:.45}50%{opacity:1}}
+}
+
+/* ═══ R66 · proportion & hygiene laws (shared layer) ═══
+   Law 1 — nothing may push a page wider than the viewport:
+   long tokens (tx hashes, addresses, URLs, EVM calldata) must wrap
+   inside prose instead of stretching the document. */
+main :is(p, li, td, th, dd, dt, figcaption, blockquote, h1, h2, h3, h4,
+        .note, .what, .ours, .claim, .lede, .src, .sub, .d, .b, .sec-note) {
+  overflow-wrap: break-word;
+}
+main :is(code, kbd, samp, a, b, strong) { overflow-wrap: anywhere; }
+
+/* Law 2 — measure discipline: prose lines stop running edge-to-edge on
+   wide screens. 70ch is the classic readable measure (~60-75 glyphs);
+   tables, headers and nav are untouched. */
+@media (min-width: 1024px) {
+  main :is(p, li, blockquote, .what, .ours, .claim, .note, .lede, .src, .sub, .d, .b, .payload, .opsafe, .sec-note) {
+    max-width: 70ch;
+  }
+}
+
+/* Law 3 — footer text links get a real touch target via pad+negative-margin
+   (zero layout shift; structural button links keep their own padding). */
+footer :is(a):not(.btn):not([class*="pill"]) { display:inline-block; padding:8px 6px; margin:-8px -6px; }
+
+/* Law 4 — data tables scroll, never crush: tables with 4+ columns keep their
+   proportions and slide in a scroller on small screens instead of squeezing
+   into one-word-per-line columns. Narrow tables (<4 cols) wrap as before;
+   inline min-width overrides (wallet feed) still win. */
+@media (max-width: 760px) {
+  main table:has(tr > :nth-child(4)) {
+    display: block; overflow-x: auto; -webkit-overflow-scrolling: touch;
+  }
+  main table:has(tr > :nth-child(4)) :is(td, th) { min-width: 150px; }
+}
+/* Law 5 — hub header pills stay compact on small screens; below 421px they
+   step aside for the shared drawer (which carries the same links). */
+@media (max-width: 560px) {
+  header.top .lnk { font-size: 12px; padding: 8px 10px; white-space: nowrap; }
+}
+@media (max-width: 420px) {
+  header.top .lnk { display: none; }
+}

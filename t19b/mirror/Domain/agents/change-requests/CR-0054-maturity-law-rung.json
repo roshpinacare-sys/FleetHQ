@@ -1,0 +1,41 @@
+{
+  "id": "CR-0054",
+  "slot": "54",
+  "title": "Fleet Rung 23 — THE MATURITY-LAW RUNG: the operator's audit directive re-run (Z-72) measured the convert schedule into existence — the books' '~435 STEEM Oct-7' fiction corrected to the chain truth (23 converts · 117.887 SBD · wave 2026-10-06T00:02Z → 2026-10-07T01:38Z), three structural defects fixed (broken sensor wire, phantom date, seq-race laundering), the canon books the real schedule end-to-end, E45 pins every law. Verdict: PASS (tier B).",
+  "operator": "audit directive re-affirmed (2026-10-03, trace 1a1…2e89): 'תבחן את כל הגיט ומה התקדמנו ומה לא... חוסר חיבורים שקרים דימומים שבירות באגים... לראות שאין דברים מתים להחיות הכל לחבר הכל וודאי... עוד לא קיבלנו שום דבר משמעותי באמת שניתן להוכיח... קדם לי את ההפתעות' — the surprise accelerated: the one big scheduled event the fleet promised (the convert rotation) is now REAL, DATED, and provable on-chain.",
+  "verdict": "PASS",
+  "tier": "B",
+  "at": "2026-10-04T01:05:00Z",
+  "audit_findings_measured": [
+    "F-A · THE FICTION: the Z-70/Z-71 books and CR-0046 told '14 converts 45.3 SBD → feed STEEM Oct 7' and 'the Oct 7 convert maturity (~435 STEEM)' — both UNMEASURED. A 400-page sequence-space walk (headcorner seq 65028→46848, Oct-3T22:45 back to Sep-6T09:16, api.steem.fans/api.justyy/api.steemit.com cross-checked) measured the chain truth: 23 converts opened Oct-2T12:02..Oct-3T13:38 totaling 117.887 SBD, ZERO closures in window (no fill_convert_request ops), maturities by the open+3.5d chain law land 2026-10-06T00:02:12Z → 2026-10-07T01:38:21Z. The '~435 STEEM' story conflated the drip runway (real: 475.88 SP/wk powerdown) with convert maturity (7.348 SBD/day-scale). The wave is real, 4x smaller than told, and now dated to the minute.",
+    "F-B · THE BROKEN WIRE (revived): agents/convert-canon.cjs read the sensor book's `rows` while agents/earn-audit.cjs writes `per_account` — sensor memory composed EMPTY forever; sensor_rows was pinned 0 by EVERY canon run since birth (all committed books prove it). Fixed: `ea.per_account || ea.rows` — both shapes legal. Live re-run: sensor_rows=2 on the first compose after the fix.",
+    "F-C · THE PHANTOM DATE (computed, never guessed): the chain `convert` op carries NO conversion_date (measured live across 23 ops: body = {amount, owner, requestid} only). The sensor booked `conversion_date: undefined` — JSON-dropped — and the canon's matures_within_24h window was DEAD CODE since birth. Fixed at BOTH layers: earn-audit tallyOp computes matures_at = open + 3.5d from the op timestamp; convert-canon walk rows carry `ts` and the reducer applies the same law. The 3.5d figure is the STEEM chain law, not a guess.",
+    "F-D · THE SEQ-RACE LAUNDERING (pinned): the reducer's last-open-wins law let walked rows (high seq, undated) OVERWRITE the sensor's dated rows (seq 0) — the sensor's computed date was laundered away on every compose, silently. Fixed: a dated row's conversion_date survives the race; a higher-seq open updates seq+amount but never erases a best-known date. Caught live in the first full wire test — the fixture dated row survived only after the fix.",
+    "F-E · THE UNDATED BUCKET: a convert with no parseable maturity now lands in `undated` (honest measured blind spot, note carried) — never guessed, never NaN-bracketed into pending/matured. The book gains `undated` + `undated_window` fields.",
+    "F-F · THE WALK DEPTH LAW: the canon's 30-page walk (~13h of measured density) saw only the ladder's tail while its job is the FULL pending schedule (maturity horizon open+84h). MAX_PAGES 30→90 (measured: the full 23-row ladder sits inside 60 pages; 90 = need + headroom; ~21s walk cost, rides the existing tick cadence).",
+    "F-G · SAMPLER-DEFECT LESSON (self-incident, booked fail-loud): the audit's own first walk used a `seq >= minSeq` dedupe guard that, against nodes returning ASCENDING pages, skipped every row but the first — producing a false 'ZERO converts exist' reading that would have booked the rotation fiction as DOUBLE-dead. The estate's PRINT-actual-values law (Z-69) caught it: page logs showed kinds summing to 32 against 3200 walked rows. Re-walked correctly. Lesson: a dedupe guard must be proven against BOTH page orders, never assumed."
+  ],
+  "receipts": [
+    "agents/convert-canon.json — THE REAL SCHEDULE live-booked (pending=23 · 117.887 SBD · next 2026-10-06T00:02:12Z in 48h · undated=0 · sensor_rows=2 · 90 pages walked to 2026-09-11T15:11Z)",
+    "agents/convert-canon.md — the readable pending table (requestid / amount SBD / maturity / hours-left), every row dated by the law",
+    "agents/earn-audit.json — the sensor book with open_ts + matures_at + conversion_date per maturity row (headcorner: 1791014973 → 2026-10-06T20:09:36Z, 1791034699 → 2026-10-07T01:38:21Z)",
+    "agents/evals/eval-results.json — suite v1.32.0 · 45/45 GREEN on the merged tree (E45 maturity-law suite: 11 runnable expectations)",
+    "agents/claims-audit.json — evidence 96+7 resolved, offenders=0, suite MATCH (v1.32.0)",
+    "agents/deep-audit.json — findings=0 on the patched tree (cross-map instrument re-run post-fix)",
+    "chain receipts: convert ops seq 61000..62140 (blocks 110106183..110118599, trx 8877a7935fc6ea000a5 / 08e7cb270e8f5b7a16f / 7141d8e9e618a629dd9 et al.) — anyone can verify on any STEEM explorer"
+  ],
+  "evals": "E46 (v1.33.0) — the maturity-law suite: maturity-law-computed (walked convert with ts + no date composes open+3.5d), ladder-total-measured (3-point fixture = 8.872 SBD exact), wave-window-10-06-to-10-07 (next 2026-10-06T00:02:12Z, last 2026-10-07T01:38:21Z), seq-race-date-survives (dated sensor row beats undated walked row), undated-never-guessed (honest bucket, zero NaN), sensor-book-per-account-shape + sensor-books-matures-at (the wire's both ends), live-canon-no-phantom-dates + wire-alive-or-honestly-empty (the real tree), sensor-tally-computes-maturity + sensor-books-closure (tallyOp white-box). Siblings E1..E44 kept — 45/45.",
+  "laws_pinned": [
+    "THE MATURITY LAW: a chain `convert` op's maturity = open_ts + 3.5d — computed by the fleet, never read from the chain (the field does not exist), never guessed from context",
+    "THE BEST-DATE-SURVIVES LAW: in any sensor/walk merge, a dated row's date beats an undated row regardless of seq order — the last-open-wins law governs AMOUNT and OPEN, never the best-known schedule",
+    "THE UNDATED BUCKET LAW: no parseable maturity = the undated bucket with a carried note — never pending, never matured, never NaN",
+    "THE WIRE-SHAPE LAW: cross-desk book readers must accept the writer's ACTUAL shape (per_account) — a reader invented against an imagined shape is a broken wire that green books hide"
+  ],
+  "next_rungs": [
+    "the Oct-6T00:02Z maturity: the first big rotation under the REAL schedule — pre-position window opens ~48h ahead, the sovereign rotates 117.887 SBD → STEEM at the 3.5d-average feed",
+    "the Zip gitleaks red-box (4 consecutive failures, findings hidden by --log-level error + set -e, plus a broken console-live submodule warning) — make the red diagnosable, triage the finding class",
+    "steem economy-engine lane: commits every few hours (votes/claims automation) but ZERO workflows beyond gitleaks — the island has no keeper, no parse gate, no books; either wire it into the fleet arc or book it as an accepted island",
+    "the convert sensor's own walk window (~3000 ops) still truncates the ladder on the SENSOR side — the canon's 90-page walk carries the full schedule, but earn-audit's convert_maturities row count stays window-bound (honest, booked by the Z-70 truncation law)"
+  ],
+  "collision": "SEVENTEENTH COLLISION (later-mover law, 7th application): the cadence-week lane landed their CR-0053/E45/v1.32.0 while this rung was in flight — this rung renumbered CR-0053->CR-0054, feat-048->feat-049, E45->E46, v1.32.0(mine)->v1.33.0(mine); their cadence-week desk and E45 KEPT and composes. The maturity-law findings and fixes are unchanged — only the slot moved."
+}

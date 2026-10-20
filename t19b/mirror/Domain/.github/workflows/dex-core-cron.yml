@@ -1,0 +1,55 @@
+#
+# conservation identity, the rebalance FLOOR law on our own pool, the pool-side
+#
+# rebase-first push (parallel runtimes are real).
+
+name: dex-core
+
+on:
+  schedule:
+    - cron: '18 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: dex-core
+  cancel-in-progress: false
+
+jobs:
+  exchange-core:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: exchange-core selftest (fresh process, zero network — settle math judges itself first)
+        run: node agents/dex-core.cjs selftest
+
+      - name: exchange-core tick (custody probe + settle + routes + arb + grids + attestation)
+        run: node agents/dex-core.cjs status
+
+      - name: commit exchange-core books
+        run: |
+          git config user.name "saos-dex-core"
+          git config user.email "dex-core@fleet.local"
+          node agents/redact-telemetry.mjs agents/dex-core.json
+          git add agents/dex-core.json agents/dex-core.md agents/dex-core-history.jsonl
+          if git diff --cached --quiet; then
+            echo "no book delta — quiet tick"
+          else
+            git commit -m "dex-core: exchange-core tick $(date -u +%Y-%m-%dT%H:%M:%SZ) [skip ci]"
+            for i in 1 2 3; do
+              git -c rebase.autoStash=true pull --rebase origin main && git push origin HEAD:main && break
+              echo "rebase-push retry $i"; sleep $((i * 5))
+            done
+          fi

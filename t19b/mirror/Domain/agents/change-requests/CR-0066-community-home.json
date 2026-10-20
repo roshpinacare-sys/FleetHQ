@@ -1,0 +1,43 @@
+{
+ "id": "CR-0066",
+ "slot": 66,
+ "title": "Fleet Rung 36 — THE COMMUNITY HOME: the fleet's dedicated Steem community is founded on measured ground truth (the PromoSteem ceremony read off the live chain before a line of code), funded from the sovereignty's own idle MM capital (never from the owner), with a full key ceremony, RC-first delegation, and the internal-first doctrine written into the house description.",
+ "operator": "owner directive (2026-10-04, Hebrew): 'יש לנסות לפתוח לנו קהילה יעודית בסטים או אם יש גם ברשתות האחרות' — open a dedicated community on Steem; combined with the standing internal-first law ('בנתיים אנחנו עובדים רק עם עצמנו') and the self-funding law ('אין יותר נשאר בידיים שלי... המערכת ממנת את עצמה').",
+ "design": {
+  "measured_ground_truth": {
+   "creation_ceremony": "hive-153176 (PromoSteem) history read live: op 0 account_create {creator:'arie.steem', fee:'3.000 STEEM', new_account_name:'hive-153176', single-key auths} signed with the creator's ACTIVE key; op 1 custom_json id='community' [\"setRole\",{community,account,role:'admin'}] signed with the COMMUNITY account's own POSTING key (the creator generated all four keys and then acted AS the community); op 2 [\"updateProps\",{community,props:{title,about}}] same signature.",
+   "readback_surfaces": "bridge.get_community {name,observer} -> {title,about,description,lang,is_nsfw,subscribers,...}; bridge.list_subscribers {community} -> [[account,role,title,joined]]; bridge.list_community_roles {community,last,limit} -> [[account,role,title]] with the community account itself as the implicit 'owner' row.",
+   "type_law": "condenser Community.js Role.parseType reads name[5] as the community TYPE digit; journal-type communities (open member posting) carry '1' as the first digit: /^hive-1\\d{5}$/.",
+   "account_creation_fee": "chainProps measured live: 3.000 STEEM — the community fee IS the account creation fee; no separate fee-bearing community op exists in the measured flow."
+  },
+  "queries": {
+   "Q36_what_does_creation_actually_require": "Probe-first answered it: account_create (3 STEEM, active key) then community customs signed by the community's own posting key — setRole admin for headcorner, updateProps for identity, setRole member for the ten soldiers. No third-party service, no 'steem' service account needed: the sovereignty holds the active key (R33 vault) and generates the four community keys itself.",
+   "Q37_where_do_3_STEEM_come_from_without_new_funds": "THE FUNDING LAW: liquid is usually ~0 because the heart deploys everything into the MM ladder. The desk cancels the own STEEM sell order FARTHEST from the market (the idlest depth — least likely to fill, least useful), one-cancel coverage preferred, at most 2 cancels per run, SBD orders never touched. The freed liquid funds the fee; the heart re-plans its ladder from the freed remainder at its next 600s tick. Fallback (no viable order): wait for the powerdown inflow (476 SP/week from 2026-10-10) — the same law funds the fee the day liquid covers it, so the create mode is idempotent and honest in both worlds.",
+   "Q38_what_name_and_identity": "TYPE LAW: /^hive-1\\d{5}$/ (journal type). Candidates probed live against get_accounts; the first free one is taken deterministically. Identity: 'The Clubhouse' — matching the saos clubhouse-tag law from R35 (the fleet's internal feed), in English to match the fleet's content language, with a props gate that machine-checks the owner's robotic tells (em-dashes, probe/test words) against the house's own name, about and description — the house is born clean.",
+   "Q39_who_holds_power_inside": "headcorner 'admin' (the measured creator pattern; the community account itself is the implicit owner row), the ten soldiers 'member' (posting rights inside the house). The community account's owner/active keys are generated, stored in the local vault (600 perms, outside every repo) and NEVER used — cold. Only the community posting key signs customs, exactly like the measured ceremony. headcorner's active key signs only account_create, delegate_vesting_shares and funding cancels.",
+   "Q40_how_does_a_zero_SP_account_act": "RC FIRST: a fresh account has no RC, and even setRole costs some. The SP delegation (50 SP from headcorner) lands BEFORE the first community custom_json. It is booked as the community RC reserve — a reserve line in the sovereign math, not an eleventh soldier share; the R35 equal-share law ((own - powerdown - reserve)/10) is untouched.",
+   "Q41_what_stays_honest_in_CI": "Three modes: probe (keyless measurement), create (LIVE-gated by COMMUNITY_LIVE=1 + vault presence, double-creation forbidden by the vault sentinel), status (keyless read-back that refreshes the book and answers COMMUNITY-ABSENT with full honesty when nothing exists). E59 asserts structure, not luck: when the book carries a community, the chain read-back must confirm it (title, roles >= 11, subscribers >= 11, received SP). The create run's txids are the owner-facing evidence; secrets never leave the vault; secret-scan stays 0."
+  }
+ },
+ "acceptance": {
+  "must": [
+   "creation op shapes byte-match the measured ground truth (account_create with measured fee, community customs signed by community posting)",
+   "FUNDING LAW pure + honest: farthest-STEEM-sell-first, one-cancel coverage preferred, cap 2, SBD orders untouched, armed verdict when liquid suffices",
+   "TYPE LAW enforced; name candidates probed live; deterministic pick of the first free",
+   "props gate rejects em-dashes/probe-words in the identity and passes the real identity",
+   "key ceremony: 256-bit random master, four keys to the 600-perm vault only, zero secrets in repo, secret-scan 0",
+   "ORPHAN LAW (measured): vault lands the moment the account exists, before any op that can fail",
+   "RC-first with chain-truth sizing: attempt the 50 SP law target, shrink once to the chain's measured available (never guessed), never below the measured min_delegation (1 SP)",
+   "read-back chain confirmation: bridge.get_community title + list_community_roles >= 11 + list_subscribers >= 11",
+   "suite v1.44.0 -> v1.45.0, 59/59 GREEN, claims offenders 0, rebase-first push, GitHub API verified"
+  ]
+ },
+ "appendix_measured_live": {
+  "orphan_lesson": "hive-177701 was created 2026-10-04T06:04:48 (fee 3.000 STEEM burned) but the create run crashed on the delegation step BEFORE the vault save — the four keys lived only in process memory and are unrecoverable (recovery_account=headcorner still requires the lost recent owner key to complete recover_account). The account stands orphaned with zero assets. Cost: 3.000 STEEM. Law purchased: saveVault fires the moment the account read-back confirms — before delegation, before customs.",
+  "min_delegation": "chain assertion measured live: op.vesting_shares >= min_delegation = 1613175924 raw vests (about 1.0 SP at the measured ratio).",
+  "chain_truth_reservation": "headcorner's delegable vesting is NOT (own - delegated - to_withdraw + withdrawn) by naive display math — the chain reserves the remaining withdraw schedule its own way: measured available at 06:08 = 16907284716 raw vests = 16907.28 display vests = about 10.48 SP. The create desk therefore attempts the law target and sizes the delegation from the chain's own assertion, never from a local formula.",
+  "wire_law_confirmed": "condenser_api.broadcast_transaction_synchronous takes the signed tx OBJECT directly (params: [signed], not [[signed]]); broadcast results carry no txid — signature-prefix hints are booked (market-exec convention) and read-backs are the binding proof."
+ },
+ "createdAt": "2026-10-04T05:55:00Z",
+ "createdBy": "Z.ai Code (Domain lane)"
+}

@@ -1,0 +1,23 @@
+{
+  "id": "CR-0004",
+  "from": "Z-40 wave (orchestrator, emergence.ai adoption)",
+  "tier": "B",
+  "opened_at": "2026-10-03T00:30:00Z",
+  "proposes": "Adopt the Emergence World research's hardest finding as fleet machinery: Season-2's stress tests proved 'detection did not ensure containment — systems could recognize threats while still interacting with adversarial content, writing it into their own persistent memory, and acting on it up to 46 hours later', and Season-1 proved 'collapse has no warning shot — monitor-and-intervene is too slow'. The fleet already detects (harness-audit judge, 28 checks) and already blocks (command-guard, fail-closed). What was MISSING is the PROOF that detection fires at the first mechanical signal on the exact fault classes their worlds died of. This CR wires: (1) agents/collapse-drill.cjs v1.0.0 — fault-injection drill: clean-tree baseline must be green, then four mechanical faults injected one-at-a-time into throwaway git-archive trees (F1 registry row corruption -> check #25, F2 guard neutered -> check #27, F3 book stamps stripped -> books-fresh check, F4 ToS-forbidden rail flipped LIVE -> check #28); each fault must be CAUGHT by the fresh-process judge or the drill verdict is GAP; receipts booked; (2) eval E13 pins the receipts (fresh, complete, verdict CONTAINMENT-PROVEN); (3) harness-audit v1.5.0 check #29 watches the drill receipts on schedule; (4) recruit.yml runs the drill in CI and persists its receipts; (5) sovereignty.md v1.0.3 sec 4.3 — RESILIENCE laws (detection!=containment, drills-required, memory-immunity, anti-conformity); (6) AGENTS.md: resilience rule + repair of the dangling scripts/command-guard.sh reference (Z-39 finding that was documented but never applied to the file) to the governing agents/command-guard.cjs.",
+  "rationale": "Emergence World ran 8 worlds x 16 days x ~850k LLM calls and NO world achieved full resilience across their three stress events; their failure classes map 1:1 onto fault classes we can inject mechanically. A judge that has never been proven RED is a decoration. This CR converts their 46-hour containment failure into our 4-fault same-run detection proof: every fault is caught inside the same audit run that would ship it. Also closes the one dangling enforcement reference left from Z-39's cross-agent audit (documented in CLAIMS, never written to the file — a detection-without-containment instance inside our own stack, which is exactly the S2 lesson).",
+  "risk": "Low: the drill runs on throwaway copies (git archive to os.tmpdir()), touches zero real files, keyless, fail-soft exit 0; the real tree is only ever read. Baseline gate keeps attribution honest (a RED baseline books BASELINE-RED verdict instead of false credit). Main risk = drill passing while the real tree diverges — closed by running the drill against git archive HEAD (the committed truth, not local dirt).",
+  "rollback": "git revert the drill + eval hunk + audit-check hunk + recruit.yml step + sovereignty/AGENTS edits; receipts file is data and can be deleted. No books or signing lanes touched.",
+  "verdict": "PASS",
+  "judged_by": "harness-audit v1.6.0 (fresh-process run on the PARALLEL-CONVERGED tree 2026-10-03: 33 PASS / 0 WARN / 0 FAIL; check #29 'collapse drill containment-proof' PASS: verdict CONTAINMENT-PROVEN, caught 4/4, baseline green, receipts fresh at the converged head; evals E1-E14 PASS in a 14/14 suite — E13 fate-defense FWI is Task 22's parallel landing on the same operator wave, my collapse-drill eval renumbered E13->E14, zero duplication after dedupe; drill receipts: F1 registry-corruption -> check #25, F2 guard-neutered -> check #27, F3 book-stamps-stripped -> books-fresh, F4 forbidden-rail-live -> check #28, each ~90ms)",
+  "judged_at": "2026-10-03T00:55:00Z",
+  "receipts": [
+    "agents/collapse-drill.cjs",
+    "agents/receipts/collapse-drill-receipt.json",
+    "agents/collapse-drill.json",
+    "agents/evals/run-evals.cjs",
+    "agents/harness-audit.cjs",
+    "agents/emergence-autopsy.md",
+    "agents/sovereignty.md",
+    "AGENTS.md"
+  ]
+}

@@ -1,0 +1,49 @@
+#
+#
+
+name: line-agreement
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '19 */2 * * *'
+permissions:
+  contents: write
+
+concurrency:
+  group: line-agreement
+  cancel-in-progress: false
+
+jobs:
+  agreement:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Ledger-vs-chain agreement gate
+        run: node agents/line-agreement.mjs
+
+      - name: Publish the agreement book (a red verdict is committed first, then the run fails)
+        if: always()
+        run: |
+          git config user.name "line-agreement"
+          git config user.email "line-agreement@users.noreply.github.com"
+          git add weave/agreement.json
+          if ! git diff --cached --quiet; then
+            VERDICT="$(node -e 'try{const d=require("./weave/agreement.json");process.stdout.write(d.verdict||"none")}catch{process.stdout.write("none")}')"
+            MIS="$(node -e 'try{const d=require("./weave/agreement.json");process.stdout.write(String(d.mismatches))}catch{process.stdout.write("?")}')"
+            git commit -m "line-agreement: ${VERDICT} · ${MIS} mismatches · $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+            for i in 1 2 3; do
+              if git pull --rebase origin main && git push; then break; fi
+              echo "push race, retry ${i}"; sleep 8
+            done
+          else
+            echo "no agreement change to publish"
+          fi

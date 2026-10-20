@@ -1,0 +1,50 @@
+{
+  "format": "saos-fee-doctrine/1",
+  "law": "ONE FLEET, MANY VENUES, ONE DOCTRINE BOOK: every venue keeps its own fee constants and every cross-venue route prices each leg by the venue it stands on. The cross-layer C1 check no longer reads two different FEE_BPS as un-arbitrated drift — it reads THIS book. Drift verdict returns the day this book's numbers stop matching the measured sources, or a venue changes its doctrine without a row here.",
+  "arbitrationRule": "price-each-venue-by-its-own-doctrine — a route leg on the internal DEX charges kernel FEE_BPS, a leg on the EVM hub charges SAOSExchange FEE_BPS, the chains-side internal markets charge zero trade fee and keep the market-grid spacing floor as the maker economics guard. No leg may quote another venue's fee.",
+  "venues": [
+    {
+      "id": "saos-dex-kernel",
+      "layer": "L1 saos-dex/src/kernel.ts",
+      "feeBpsSource": 30,
+      "feeBpsSourceNote": "per-swap input fee; TREASURY_CUT_PCT of it routes to the fleet treasury",
+      "treasuryCutPct": 30,
+      "measuredRoundTripBps": { "marginalFeeOnly": 60, "at01": 90, "at1": 445 }
+    },
+    {
+      "id": "saos-exchange-evm",
+      "layer": "L2 platform/contracts/SAOSExchange.sol",
+      "feeBpsSource": 20,
+      "feeBpsSourceNote": "per-swap input fee; POT_SHARE_BPS of it routes to the protocol pot",
+      "potShareBps": 10,
+      "swapCapBps": 500,
+      "measuredRoundTripBps": { "marginalFeeOnly": 40, "at01": 70, "at1": 426 }
+    },
+    {
+      "id": "chains-internal-markets",
+      "layer": "L0 Domain market-grid (STEEM/HIVE internal markets)",
+      "feeBpsSource": 0,
+      "feeBpsSourceNote": "the chains charge zero trade fee; the 40bps spacing floor is maker economics, not a fee",
+      "spacingFloorBps": 40,
+      "measuredRoundTripBps": { "marginalFeeOnly": 0, "at01": 0, "at1": 0 }
+    },
+    {      "id": "hive-engine-sidechain",
+      "layer": "L0.5 Hive-Engine sidechain DEX (market contract on api.hive-engine.com/rpc/contracts)",
+      "feeBpsSource": 0,
+      "feeBpsSourceNote": "PER-TOKEN law: the market fee is each token's own marketFeePercentage in the tokens contract (absent = 0). Measured live 2026-10-04: the whole basket BEE/WAIV/SWAP.DOGE/SWAP.LTC/CENT reads ABSENT → zero per-token market fee. market-grid v1.2.0 re-measures the live per-token fee on every run and books it — if a token enables a fee, its venue is priced by the measured number, not by this row.",
+      "measuredRoundTripBps": { "marginalFeeOnly": 0, "at01": 0, "at1": 0 }
+    },
+    {
+      "id": "blurt-internal-market",
+      "layer": "L0 Blurt chain internal market (condenser_api on api.blurt.world)",
+      "feeBpsSource": 0,
+      "feeBpsSourceNote": "Blurt chains charge zero trade fee like the Steem/Hive internal markets. SURFACE DARK at registration (measured 2026-10-04: no blurt node answered condenser_api.get_ticker from the estate) — market-grid v1.2.0 probes it every run (fail-loud); the desk books the darkness honestly until a node answers, then the venue prices itself at 0 bps.",
+      "measuredRoundTripBps": { "marginalFeeOnly": 0, "at01": 0, "at1": 0 }
+    }
+  ],
+  "whyNotOneNumber": "kernel 30bps funds the DEX treasury cut (30%); SAOSExchange 20bps funds the EVM pot (10bps) — the two venues have different treasuries and different settlement layers. Forcing one number would either starve a treasury or overcharge a venue. The law is per-venue pricing with a documented book, not forced equality.",
+  "registeredAt": "2026-10-03T22:30:00Z",
+  "extendedAt": "2026-10-04T03:10:00Z",
+  "extendedBy": "CR-0061 tape-venues rung (fleet Rung 31 — the venue expansion: Hive-Engine per-token fees measured, Blurt probe-first)",
+  "registeredBy": "CR-0051 resurrection rung (operator: audit directive — missing connections, fee arbitration)"
+}

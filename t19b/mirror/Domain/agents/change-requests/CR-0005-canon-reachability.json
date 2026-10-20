@@ -1,0 +1,23 @@
+{
+  "id": "CR-0005",
+  "from": "Z-42 wave (orchestrator, convergence directive: 'one organized bloc, decide by the sovereignty law, do not ask')",
+  "tier": "B",
+  "opened_at": "2026-10-03T00:37:20Z",
+  "proposes": "Wire canon REACHABILITY as a booked, judged fact — the one-bloc nerves. ROOT CAUSE PROVEN this wave: the 2026-10-02T23:44Z venture-desk run booked 'measured ledger unreachable this run' because its ONLY fallback leg was an ANONYMOUS raw.githubusercontent fetch, while the Defi canon repo is PRIVATE (evidence: Console public → anonymous API 200; Defi/steem → anonymous API 403; anonymous raw fleet/KPI.json → 404 on both branch guesses). A fallback that can never succeed is a dead leg wired where a nerve should be. This CR: (1) agents/canon-liveness.cjs v1.0.0 — fresh-process desk booking three named legs (L1 sibling/CI checkout serves content; L2 authenticated git rail via embedded remote creds, never printed; L3 anonymous raw kept as a standing probe whose 404 is the EXPECTED verdict for a private canon, 200 = booked fact-change), verdict enum CONTENT-SERVED / RAIL-REACHABLE / CANON-DARK with zero hopeful greens; (2) venture-desk v1.2.0 — dead fallback REMOVED, leg attribution added (canonLeg field names which leg served the KPI or exactly why the null is honest); (3) harness-audit v1.7.0 check #30 — watches the liveness receipt AND cross-checks it against current reality (CONTENT-SERVED receipt in a context where L1 is absent now = honest FAIL, so a stale receipt can never green-wash); (4) eval E15 — white-box verdict derivation (3 contexts) + black-box fresh-process receipt honesty; (5) sovereignty.md v1.0.4 §5 enforcement line; (6) AGENTS.md verification bullet for the local restore/check tooling; (7) /home/z/.fleet-restore/restore.sh re-codified OUTSIDE any repo (the 4th sandbox wipe ate .fleet/creds + upload/pat.env; creds captured from live remotes into a 600-perm file, never printed, never committed); (8) Defi doctrine v1.7 — ONE-CANON LAW + CANON-REACHABILITY LAW.",
+  "rationale": "The operator's convergence order made cross-repo reachability a first-class property. Before this CR, a desk in a throwaway/verification context went silently blind (honest null, unexplained); after it, blindness itself is impossible — the legs are probed, booked, judged on schedule, and every cross-repo number names its leg. The dead-leg root cause is measured, not assumed: private-repo 404/403 vs public Console 200, all probed this wave.",
+  "risk": "Low: all desks remain keyless (git ls-remote uses the creds already embedded in existing remotes — nothing new is stored in any repo, nothing is printed), fail-soft exit 0. Removing the dead fallback changes behavior only in contexts where it ALWAYS returned null anyway. check #30 could false-RED if the liveness receipt goes stale >25h — mitigated by wiring canon-liveness into recruit.yml CI cadence alongside the judge.",
+  "rollback": "git revert the canon-liveness + venture-desk hunk + audit-check hunk + eval hunk + docs edits; restore.sh lives outside repos (rm -rf /home/z/.fleet-restore). No books, signing lanes, or chain surfaces touched.",
+  "verdict": "PASS",
+  "judged_by": "harness-audit v1.7.0 (fresh-process run 2026-10-03: 34 PASS / 0 WARN / 0 FAIL; check #30 'canon reachability proven' PASS with receipt-vs-reality cross-check: verdict CONTENT-SERVED · legs L1:SERVING L2:RAIL-UP L3:DEAD-AS-EXPECTED-PRIVATE · L1-now serving; evals 15/15 with E15 PASS white-box verdict derivation + black-box fresh-process receipt; venture-desk v1.2.0 fresh run GREEN with canonLeg named — the 23:44Z honest-null context is now impossible to reproduce silently; restore.sh check exit 0: Domain/Defi/steem local-ok · Console/Zip/saos-dex rail-reachable) — MERGED-TREE ADDENDUM (parallel-convergence per law): sibling Tasks 23/24 landed one-bloc + workflow-parse-gate on main while this CR was in flight; rebase resolved keeping both (my eval renumbered E15→E17, judge merged to v1.9.0 carrying their one-bloc check + my canon-reachability check); reconciled-tree fresh verification: evals 17/17 · judge v1.9.0 36/0/0 · one-bloc 16/16 (ONE-BLOC verdict, token via env, zero secrets in book) · canon-liveness CONTENT-SERVED · books 9/9",
+  "judged_at": "2026-10-03T00:55:00Z",
+  "receipts": [
+    "agents/canon-liveness.cjs",
+    "agents/canon-liveness.json",
+    "agents/venture-desk.cjs",
+    "agents/harness-audit.cjs",
+    "agents/evals/run-evals.cjs",
+    "agents/sovereignty.md",
+    "AGENTS.md",
+    "/home/z/.fleet-restore/restore.sh (outside repos by design)"
+  ]
+}

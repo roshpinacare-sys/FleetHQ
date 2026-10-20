@@ -1,0 +1,1317 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>מפקדת הצי — המפקדה החיה (3D buildless · אפס-CDN · חדר אחד)</title>
+<meta name="description" content="המשרד התלת-ממדי החי של הריבונות — צוות מפרקים שהולך ויושב ועובד, קיר-משימות + פקודות-עבודה אמיתיות, במת-פיקוד (מה פתוח/מה נדרש/מה המוצר/מה הפוטנציאל/מה נותן ערך), אמת-מכונה (שומר-השלמות), שערי-עולמות ושער-המוצר, עולם-עסקים וגינת-מטאפורה. מוזן מ-9 פידים אמיתיים — ביניהם קטלוג-המוצרים החי. אפס נתונים פיקטיביים, אפס תלות CDN." />
+<style>
+  :root{
+    --bg:#ddd6c8; --surface:#171310; --surface2:#221c16; --line:#3a3128;
+    --ink:#f3ede2; --ink2:#c9bfae; --ink3:#948a79;
+    --ok:#2fae63; --warn:#d9a13b; --err:#d95c4a; --sleep:#7f8ea3; --coffee:#a1794f;
+    --accent:#e0a458;
+  }
+  *{box-sizing:border-box} html,body{margin:0;height:100%;overflow:hidden;background:var(--bg)}
+  body{font-family:system-ui,-apple-system,"Segoe UI","Noto Sans Hebrew",Arial,sans-serif;color:var(--ink)}
+  #app{position:fixed;inset:0}
+  canvas{display:block}
+  .hud{position:fixed;z-index:10;pointer-events:none}
+  .hud *{pointer-events:auto}
+  #topbar{top:0;right:0;left:0;display:flex;flex-wrap:wrap;gap:6px;align-items:center;
+    padding:8px 12px;padding-top:max(8px,env(safe-area-inset-top));
+    background:linear-gradient(180deg,rgba(23,19,16,.88),rgba(23,19,16,0));}
+  .chip{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;
+    background:var(--surface2);border:1px solid var(--line);border-radius:999px;padding:4px 10px;color:var(--ink2)}
+  .chip b{color:var(--ink)}
+  .dot{width:8px;height:8px;border-radius:50%;background:var(--ok);box-shadow:0 0 8px var(--ok)}
+  .dot.pulse{animation:pulse 1.6s infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+  .chip .val{font-variant-numeric:tabular-nums}
+  #title{font-size:14px;font-weight:800;letter-spacing:.2px;color:var(--ink);margin-left:4px}
+  #subtitle{font-size:11px;color:var(--ink3)}
+  #viewbar{bottom:14px;left:50%;transform:translateX(-50%);display:flex;gap:6px;flex-wrap:wrap;justify-content:center;
+    padding-bottom:env(safe-area-inset-bottom)}
+  .vbtn{font-size:12px;font-weight:700;color:var(--ink2);background:rgba(34,28,22,.92);
+    border:1px solid var(--line);border-radius:10px;padding:7px 12px;cursor:pointer;transition:.15s}
+  .vbtn:hover{color:var(--ink);border-color:var(--accent)}
+  .vbtn.active{background:var(--accent);color:#191410;border-color:var(--accent)}
+  .vsep{width:1px;background:var(--line);margin:2px 4px}
+  #legend{bottom:14px;right:12px;display:flex;flex-direction:column;gap:4px;font-size:11px;color:var(--ink2);
+    background:rgba(23,19,16,.82);border:1px solid var(--line);border-radius:12px;padding:8px 10px;max-width:220px}
+  #legend .row{display:flex;align-items:center;gap:6px}
+  #legend .sw{width:9px;height:9px;border-radius:3px}
+  #card{top:64px;left:12px;width:250px;display:none;background:rgba(23,19,16,.95);border:1px solid var(--line);
+    border-radius:14px;padding:12px 14px;box-shadow:0 8px 30px rgba(0,0,0,.35)}
+  #card h3{margin:0 0 2px;font-size:15px}
+  #card .desk{font-size:12px;color:var(--ink2);margin-bottom:8px}
+  #card .kv{display:flex;justify-content:space-between;font-size:12px;padding:3px 0;border-top:1px dashed var(--line)}
+  #card .kv span:first-child{color:var(--ink3)}
+  #card .act{font-size:12px;color:var(--ink2);margin-top:8px;line-height:1.5}
+  #card .x{position:absolute;top:6px;left:8px;background:none;border:none;color:var(--ink3);cursor:pointer;font-size:15px}
+  #feeds{top:52px;right:12px;display:flex;flex-direction:column;gap:4px;font-size:11px}
+  #feeds .f{display:flex;gap:6px;align-items:center;background:rgba(23,19,16,.85);border:1px solid var(--line);
+    border-radius:8px;padding:3px 8px;color:var(--ink2)}
+  #feeds .f b{color:var(--ink);font-weight:700}
+  /* ===== פאנל-פיקוד ===== */
+  #cmd{top:0;bottom:0;left:0;width:340px;display:none;flex-direction:column;gap:8px;overflow-y:auto;
+    background:rgba(20,16,12,.96);border-left:1px solid var(--line);padding:14px 14px 24px;z-index:20;
+    padding-top:max(14px,env(safe-area-inset-top))}
+  #cmd h2{font-size:15px;margin:2px 0 2px;display:flex;align-items:center;gap:8px}
+  #cmd h2 .x{margin-inline-start:auto;background:none;border:1px solid var(--line);border-radius:8px;color:var(--ink2);
+    cursor:pointer;font-size:12px;padding:3px 9px}
+  #cmd h2 .x:hover{color:var(--ink);border-color:var(--accent)}
+  #cmd .sec{border:1px solid var(--line);border-radius:12px;padding:9px 11px;background:var(--surface2)}
+  #cmd .sec h3{margin:0 0 6px;font-size:12.5px;color:var(--accent);letter-spacing:.3px}
+  #cmd .kv{display:flex;justify-content:space-between;font-size:12px;padding:2.5px 0;color:var(--ink2)}
+  #cmd .kv b{color:var(--ink);font-variant-numeric:tabular-nums}
+  #cmd .li{font-size:11.5px;color:var(--ink2);line-height:1.55;padding:4px 0;border-top:1px dashed var(--line)}
+  #cmd .li:first-of-type{border-top:0}
+  #cmd .tag{display:inline-block;font-size:10px;font-weight:800;border-radius:6px;padding:1px 6px;margin-inline-start:6px;vertical-align:1px}
+  .tag.filled{background:rgba(47,174,99,.16);color:var(--ok);border:1px solid rgba(47,174,99,.4)}
+  .tag.proposed{background:rgba(217,161,59,.14);color:var(--warn);border:1px solid rgba(217,161,59,.4)}
+  .tag.pass{background:rgba(47,174,99,.16);color:var(--ok);border:1px solid rgba(47,174,99,.4)}
+  .tag.stale{background:rgba(217,161,59,.14);color:var(--warn);border:1px solid rgba(217,161,59,.4)}
+  .tag.down{background:rgba(217,92,74,.14);color:var(--err);border:1px solid rgba(217,92,74,.4)}
+  #cmd .verify{font-size:10.5px;color:var(--ink3);line-height:1.5}
+  #cmd .verify a{color:var(--ink2);text-decoration:none;border-bottom:1px dotted var(--ink3);word-break:break-all}
+  #cmd .verify a:hover{color:var(--accent)}
+  #cmd .note{font-size:11px;color:var(--ink3);line-height:1.6}
+  #worldflash{position:fixed;inset:0;background:#0d0b09;opacity:0;pointer-events:none;transition:opacity .18s;z-index:30}
+  #threshold{position:fixed;inset:0;display:none;place-items:center;z-index:40;pointer-events:none;opacity:0;transition:opacity .85s;
+    background:radial-gradient(ellipse at center, rgba(20,16,12,.55), rgba(13,11,9,.97))}
+  #threshold .inner{text-align:center;padding:24px}
+  #th-text{font-size:clamp(22px,4.4vw,40px);font-weight:800;color:var(--ink);text-shadow:0 2px 18px rgba(0,0,0,.6);line-height:1.5}
+  #th-dest{margin-top:14px;font-size:14px;font-weight:700;color:var(--accent);letter-spacing:.4px}
+  #brand{position:fixed;bottom:14px;left:12px;z-index:9;font-size:11px;color:var(--ink3)}
+  #brand a{color:var(--ink2);text-decoration:none;border-bottom:1px dotted var(--ink3)}
+  #nolink{position:fixed;inset:0;display:none;place-items:center;background:rgba(23,19,16,.9);z-index:50;text-align:center;padding:24px}
+  #nolink .box{max-width:420px;border:1px solid var(--line);border-radius:16px;padding:24px;background:var(--surface2)}
+  #nolink h2{margin:0 0 8px;font-size:17px;color:var(--err)}
+  #nolink p{margin:0;font-size:13px;color:var(--ink2);line-height:1.7}
+  #glfail{position:fixed;inset:0;display:none;place-items:center;background:var(--surface);z-index:60;text-align:center;padding:24px}
+  #glfail .box{max-width:440px}
+  #glfail h2{color:var(--err);font-size:17px;margin:0 0 8px}
+  #glfail p{color:var(--ink2);font-size:13px;line-height:1.7;margin:0}
+  @media (max-width:820px){
+    #feeds{display:none} #legend{display:none} #card{width:210px}
+    #cmd{width:100%;top:auto;height:62vh;border-left:0;border-top:1px solid var(--line);border-radius:16px 16px 0 0}
+    #subtitle{display:none}
+  }
+</style>
+<script type="importmap">
+{ "imports": { "three": "./vendor/three.module.min.js" } }
+</script>
+</head>
+<body>
+<div id="app"></div>
+
+<div class="hud" id="topbar">
+  <span id="title">מפקדת הצי — המפקדה החיה</span>
+  <span class="chip"><span class="dot pulse" id="verdict-dot"></span><b id="verdict">טוען…</b></span>
+  <span class="chip">צוות <b class="val" id="crew-count">—</b></span>
+  <span class="chip">משימות <b class="val" id="tasks-count">—</b></span>
+  <span class="chip">ספרים <b class="val" id="books-count">—</b></span>
+  <span class="chip">משמרות <b class="val" id="shifts">—</b></span>
+  <span class="chip">הון <b class="val" id="capital">—</b></span>
+  <span class="chip" id="truth-chip" title="שומר-השלמות — אימות-מכונה של קבלות-האמת בכל-הריפואים (Sandbox ops/integrity)"><span class="dot" id="truth-dot" style="background:var(--sleep)"></span>אמת <b class="val" id="truth-val">—</b></span>
+  <span class="chip" title="קטלוג-המוצרים החי — מהתיאור למעשה (Domain/marketing)">מוצרים <b class="val" id="products-count">—</b></span>
+  <span class="chip"><b class="val" id="clock">—</b></span>
+  <button class="chip" id="cmd-btn" style="cursor:pointer">🧭 פיקוד</button>
+  <a class="chip" href="../worlds/" title="עולם עסקים + עולם מקביל מטפורי — רינדור חי מהפידים האמיתיים">🌌 עולמות ←</a>
+  <span id="subtitle">נתונים אמיתיים בלבד · 9 פידים · אפס-CDN · אמת-הכול בעצמך</span>
+</div>
+
+<div class="hud" id="feeds">
+  <div class="f"><span class="dot" id="fd-foreman"></span>פורמן <b id="fd-foreman-v">—</b></div>
+  <div class="f"><span class="dot" id="fd-pulse"></span>דופק <b id="fd-pulse-v">—</b></div>
+  <div class="f"><span class="dot" id="fd-live"></span>ספרים <b id="fd-live-v">—</b></div>
+  <div class="f"><span class="dot" id="fd-grid"></span>הון <b id="fd-grid-v">—</b></div>
+  <div class="f"><span class="dot" id="fd-recruit"></span>גיוס <b id="fd-recruit-v">—</b></div>
+  <div class="f"><span class="dot" id="fd-ventures"></span>מיזמים <b id="fd-ventures-v">—</b></div>
+  <div class="f"><span class="dot" id="fd-orders"></span>פקודות <b id="fd-orders-v">—</b></div>
+  <div class="f"><span class="dot" id="fd-integrity"></span>שלמות <b id="fd-integrity-v">—</b></div>
+  <div class="f"><span class="dot" id="fd-products"></span>מוצר <b id="fd-products-v">—</b></div>
+</div>
+
+<div class="hud" id="legend"></div>
+
+<div class="hud" id="card">
+  <button class="x" id="card-x" aria-label="סגור">✕</button>
+  <h3 id="c-name">—</h3>
+  <div class="desk" id="c-desk">—</div>
+  <div class="kv"><span>מצב</span><b id="c-state">—</b></div>
+  <div class="kv"><span>תנועה</span><b id="c-motion">—</b></div>
+  <div class="kv"><span>מאז</span><b id="c-since">—</b></div>
+  <div class="kv"><span>קרדיטים</span><b id="c-credits">—</b></div>
+  <div class="kv"><span>משימה</span><b id="c-task">—</b></div>
+  <div class="act" id="c-activity"></div>
+</div>
+
+<div class="hud" id="cmd">
+  <h2>🧭 מרכז-הפיקוד הריבוני <button class="x" id="cmd-x">סגור</button></h2>
+  <div class="sec" id="cmd-open"><h3>מה פתוח? — תפקידים וגיוס</h3><div class="note">טוען מפיד הגיוס…</div></div>
+  <div class="sec" id="cmd-orders"><h3>מה נדרש עכשיו? — פקודות-עבודה</h3><div class="note">טוען ממנוע-הצמיחה…</div></div>
+  <div class="sec" id="cmd-products"><h3>מה המוצר? — ההצעה החיה</h3><div class="note">טוען את קטלוג-המוצרים…</div></div>
+  <div class="sec" id="cmd-truth"><h3>אמת-מכונה — שומר-השלמות</h3><div class="note">טוען חותם-שלמות…</div></div>
+  <div class="sec" id="cmd-potential"><h3>מה הפוטנציאל? — מיזמים ומסילות</h3><div class="note">טוען מפיד המיזמים…</div></div>
+  <div class="sec" id="cmd-value"><h3>מה נותן ערך עכשיו? — יעדים ולקחים</h3><div class="note">טוען מפיד המשרד החי…</div></div>
+  <div class="sec" id="cmd-progress"><h3>מה ההתקדמות? — מדדים חיים</h3><div class="note">טוען…</div></div>
+  <div class="sec" id="cmd-verify"><h3>אמת-הכול בעצמך — מקורות האמת</h3><div class="verify">טוען…</div></div>
+</div>
+
+<div class="hud" id="viewbar">
+  <button class="vbtn active" id="w-office">🏢 משרד</button>
+  <button class="vbtn" id="w-biz">🏛️ עסקים</button>
+  <button class="vbtn" id="w-garden">🌿 גינה</button>
+  <span class="vsep"></span>
+  <button class="vbtn" data-v="0">פנורמה</button>
+  <button class="vbtn" data-v="1">מעל הכתף</button>
+  <button class="vbtn" data-v="2">קיר-המשימות</button>
+  <button class="vbtn" data-v="3">פינת הקפה</button>
+  <button class="vbtn" data-v="4">במת-הפיקוד</button>
+  <button class="vbtn" data-v="5">🚪 שערים</button>
+  <button class="vbtn" id="daynight">🌙/☀️</button>
+</div>
+
+<div id="worldflash"></div>
+
+<div id="threshold"><div class="inner"><div id="th-text"></div><div id="th-dest"></div></div></div>
+
+<div id="brand">ריבונות אוטונומית · <a href="../../">← רשת חיה</a> · <a href="../../">המשרד</a> · מפקדת-ריבונות · אפס-CDN</div>
+
+<div id="nolink"><div class="box"><h2>אין חיבור לפידים</h2>
+  <p>החדר מציג נתונים אמיתיים בלבד — וכרגע אף מקור לא עונה. אין נתוני-דמה במערכת הזו, מעולם. ניסיון חוזר אוטומטי כל 30 שניות.</p>
+</div></div>
+
+<div id="glfail"><div class="box"><h2>הדפדפן לא מאפשר WebGL</h2>
+  <p>החדר התלת-ממדי דורש WebGL. הפאנלים החיים ממשיכים לעבוד ב<a href="../../">עמוד הרשת החיה</a>.</p>
+</div></div>
+
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from './vendor/OrbitControls.js';
+
+/* ============ הגדרות-אמת (8 פידים · אפס-CDN) ============ */
+const GITHUB_PAGES = 'https://roshpinacare-sys.github.io/Domain/';
+const rel = p => (location.protocol==='file:' || location.hostname.includes('githubusercontent'))
+  ? (GITHUB_PAGES + p.replace(/^(\.\.\/)+/,'')) : p;
+const FEEDS = {
+  foreman: 'https://raw.githubusercontent.com/roshpinacare-sys/FleetHQ/main/office/state/office-state.json',
+  pulse:   rel('../../office/data.json'),
+  live:    rel('../../agents/office-live.json'),
+  grid:    rel('../../agents/grid-truth.json'),
+  recruit: rel('../../agents/recruitment.json'),
+  ventures:rel('../../agents/ventures.json'),
+  orders:  'https://raw.githubusercontent.com/roshpinacare-sys/Sandbox/main/ops/office/work-orders.json',
+  integrity:'https://raw.githubusercontent.com/roshpinacare-sys/Sandbox/main/ops/integrity/verdict.json',
+  products: rel('../../marketing/products.json'),
+};
+const POLL_MS = 45000, RETRY_MS = 30000;
+const FRESH_MIN = { foreman:130, pulse:30, live:150, grid:95, recruit:1600, ventures:1600, orders:35, integrity:95, products:2880 };
+const FEED_HE   = { foreman:'פורמן', pulse:'דופק', live:'ספרים', grid:'הון', recruit:'גיוס', ventures:'מיזמים', orders:'פקודות', integrity:'שלמות', products:'מוצר' };
+const STATE_COLOR = { working:0x2fae63, idle:0xd9a13b, error:0xd95c4a, asleep:0x7f8ea3, coffee:0xa1794f };
+const STATE_HE = { working:'עובד', idle:'פנוי', error:'תקלה', asleep:'ישן', coffee:'הפסקת קפה' };
+const nf = new Intl.NumberFormat('en-US');
+const isLite = matchMedia('(max-width: 820px)').matches || (navigator.hardwareConcurrency ?? 8) <= 4;
+
+/* ============ מצב-עולם ============ */
+const W = { agents:new Map(), books:[], verdict:'UNKNOWN', feeds:{}, shifts:0, night:false, ready:false,
+            sel:null, t0:performance.now(), world:'office', tasks:[], taskCounts:{}, goals:[], lesson:'',
+            stasis:null, roles:[], ventures:[], venturesCounts:{}, treasury:null, arteries:{}, runtime:null,
+            workOrders:[], integrity:null, gates:[],
+            podPanel:0, podAt:0 };
+
+/* ============ STASIS — תצוגת-אמת (R30, trace 1a12d295c7da9241) ============ */
+function stasisLabel(s){
+  if(!s) return '';
+  if(!s.active) return '🔓 מסילות-הון פתוחות (בלם מוסר)';
+  if(s.mode==='staged'){
+    const al=(s.allow||[]).map(x=>String(x).toLowerCase());
+    if(al.includes('general') && al.length>=7) return '🔓 כל-המסילות פתוחות · בלם-חירום חמוש (R30)';
+    if(al.length) return '🔓 '+al.length+' מסילות פתוחות · בלם חמוש';
+    return '🔓 מסילות מדורגות · בלם חמוש';
+  }
+  return '🔒 מסילות-הון נעולות (בלם מלא)';
+}
+function applyStasisGate(){
+  const s = W.stasis; if(!s || !W.gateSign) return;
+  let open = false;
+  if(!s.active) open = true;
+  else if(s.mode==='staged'){
+    const al=(s.allow||[]).map(x=>String(x).toLowerCase());
+    open = al.includes('general') && al.length>=7;
+  }
+  if(W.stasisLock) W.stasisLock.visible = !open;
+  if(W.stasisShackle) W.stasisShackle.visible = !open;
+  W.gateSign.material.map.dispose();
+  W.gateSign.material = textSprite(open? ['STASIS — נפתח לפי מילת-בעלים','כל-המסילות פתוחות · הבלם חמוש (R30)'] : ['STASIS — ממתין-בעלים','מסילות-הון נעולות לפי הוראת בעלים'], open? '#2fae63' : '#d9a13b', 880,160).material;
+}
+
+/* ============ בסיס ============ */
+let renderer, scene, camera, controls, raycaster, pointer;
+const dynamics = [];
+let sun, hemi;
+
+function initGL(){
+  try{
+    renderer = new THREE.WebGLRenderer({ antialias:!isLite, powerPreference:'high-performance' });
+  }catch(e){ document.getElementById('glfail').style.display='grid'; throw e; }
+  renderer.setPixelRatio(Math.min(devicePixelRatio, isLite?1.2:1.75));
+  renderer.setSize(innerWidth, innerHeight);
+  renderer.shadowMap.enabled = !isLite;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.12;
+  document.getElementById('app').appendChild(renderer.domElement);
+
+  scene = new THREE.Scene();
+  scene.background = new THREE.Color('#ddd6c8');
+  scene.fog = new THREE.Fog('#ddd6c8', 26, 62);
+  camera = new THREE.PerspectiveCamera(50, innerWidth/innerHeight, .1, 80);
+  camera.position.set(7.5, 4.2, 9.8);
+
+  controls = new OrbitControls(camera, renderer.domElement);
+  controls.enableDamping = true; controls.dampingFactor = .08;
+  controls.maxPolarAngle = Math.PI/2 - .04;
+  controls.minDistance = 3; controls.maxDistance = 26;
+  controls.target.set(0, .8, -.4);
+
+  raycaster = new THREE.Raycaster(); pointer = new THREE.Vector2();
+  buildWorlds();
+  buildStaticLight();
+  renderer.domElement.addEventListener('pointerdown', onDown);
+  renderer.domElement.addEventListener('pointerup', onUp);
+  addEventListener('resize', onResize);
+  document.addEventListener('visibilitychange', ()=>{ if(!document.hidden) renderer.setAnimationLoop(loop); else renderer.setAnimationLoop(null); });
+  renderer.setAnimationLoop(loop);
+}
+
+/* ============ חומרים בסיסיים ============ */
+function mat(c, r=.85, m=0){ return new THREE.MeshStandardMaterial({color:c, roughness:r, metalness:m}); }
+function box(w,h,d,c,x,y,z,ry=0,parent=scene,shadow=true){
+  const m = new THREE.Mesh(new THREE.BoxGeometry(w,h,d), mat(c));
+  m.position.set(x,y,z); m.rotation.y = ry;
+  if(shadow && !isLite){ m.castShadow = true; m.receiveShadow = true; }
+  parent.add(m); return m;
+}
+function textSprite(lines, accent='#e0a458', w=512, h=128){
+  const cv = document.createElement('canvas'); cv.width=w; cv.height=h;
+  const ctx = cv.getContext('2d');
+  ctx.fillStyle = 'rgba(20,16,12,.78)';
+  const r=18; ctx.beginPath(); ctx.roundRect(2,2,w-4,h-4,r); ctx.fill();
+  ctx.strokeStyle = accent; ctx.lineWidth=3; ctx.stroke();
+  ctx.fillStyle='#f3ede2'; ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.font = `600 ${lines.length>1?38:46}px system-ui, Arial`;
+  lines.forEach((ln,i)=> ctx.fillText(ln, w/2, h*(i+1)/(lines.length+1)+6));
+  const t = new THREE.CanvasTexture(cv); t.colorSpace = THREE.SRGBColorSpace;
+  const sp = new THREE.Sprite(new THREE.SpriteMaterial({map:t, depthTest:false}));
+  sp.renderOrder = 5; return sp;
+}
+
+/* ============ שלושה עולמות ============ */
+let gOffice, gBiz, gGarden;
+
+function buildWorlds(){
+  gOffice = new THREE.Group(); gBiz = new THREE.Group(); gGarden = new THREE.Group();
+  scene.add(gOffice, gBiz, gGarden);
+  gBiz.visible = false; gGarden.visible = false;
+  buildRoom(gOffice);
+  buildBusiness(gBiz);
+  buildGarden(gGarden);
+}
+
+/* ============ עולם-המשרד ============ */
+function buildRoom(P){
+  // רצפה
+  const floor = new THREE.Mesh(new THREE.PlaneGeometry(20,13), mat(0xe8ddcc,.95));
+  floor.rotation.x = -Math.PI/2; floor.receiveShadow = !isLite; P.add(floor);
+  box(8.5,.02,5.5,0xc9b8a0,0,.011,0,0,P); // שטיח
+  // קירות
+  box(20,3.6,.25,0xefe7da,0,1.8,-5.5,0,P);   // אחורי
+  box(.25,3.6,13,0xefe7da,-9.9,1.8,0,0,P);   // שמאלי
+  box(.25,3.6,13,0xefe7da, 9.9,1.8,0,0,P);   // ימני
+  // קורות-תקרה
+  for(let i=0;i<5;i++) box(20,.22,.5,0xd9cdb9,0,3.55,-4.2+i*2.1,0,P);
+  // חלונות (קיר-אחורי) — שמש-ביום, ירח-בלילה
+  W.windows = [];
+  for(let i=-1;i<=1;i++){
+    const g = new THREE.Group(); g.position.set(i*5.4, 2.1, -5.36);
+    box(3.4,1.9,.06,0x9aa7b5,0,0,0,0,g,false);
+    const sky = new THREE.Mesh(new THREE.PlaneGeometry(3.2,1.7),
+      new THREE.MeshBasicMaterial({color:0xdfe9f3}));
+    sky.position.z = .045; g.add(sky); W.windows.push(sky);
+    P.add(g);
+    box(3.6,.12,.3,0xd9cdb9,i*5.4,1.1,-5.32,0,P); box(3.6,.12,.3,0xd9cdb9,i*5.4,3.1,-5.32,0,P);
+  }
+  // קיר-המשימות (kanban אמיתי) — קיר-ימני
+  const board = box(.08,1.9,3.6,0x2f3a4a,9.75,1.9,0,0,P);
+  W.boardMesh = board;
+  // ספרייה (קיר-שמאלי) — 13 ספרים חיים
+  W.bookSpines = [];
+  const shelfX = -9.75;
+  for(let s=0;s<4;s++){
+    box(.5,.05,4.2,0xb98d5f,shelfX,0.9+s*.62,0,0,P);
+    for(let b=0;b<4;b++){
+      const idx = s*4+b; if(idx>=13) break;
+      const spine = box(.3,.4,.16,0x9aa0a6,shelfX+.05,1.12+s*.62,-1.5+b*.42,0,P,false);
+      W.bookSpines.push(spine);
+    }
+  }
+  // שולחנות 2 שורות
+  W.desks = [];
+  const dx = [-6,-2,2,6, -4,2], dz = [-2.6,-2.6,-2.6,-2.6, 2.6,2.6];
+  for(let i=0;i<6;i++){
+    const g = new THREE.Group(); g.position.set(dx[i],0,dz[i]);
+    box(1.7,.07,.85,0xb98d5f,0,.74,0,0,g);
+    [[-.75,-.32],[.75,-.32],[-.75,.32],[.75,.32]].forEach(([lx,lz])=> box(.07,.74,.07,0x8a6a45,lx,.37,lz,0,g));
+    // מסך — אמיסיב לפי מצב-חי
+    const scr = new THREE.Mesh(new THREE.PlaneGeometry(.95,.55),
+      new THREE.MeshStandardMaterial({color:0x22262c, emissive:0xd9a13b, emissiveIntensity:.8, roughness:.4}));
+    scr.position.set(0,1.22,-.12); scr.rotation.y = Math.PI; g.add(scr);
+    box(.08,.28,.08,0x5c4a33,0,.9,-.12,0,g);
+    // כיסא
+    box(.5,.06,.5,0x6b573d,0,.46,.75,0,g); box(.5,.55,.06,0x6b573d,0,.78,1.0,0,g);
+    // מנורה
+    box(.16,.03,.16,0x444444,.6,.78,.2,0,g,false);
+    const bulb = new THREE.Mesh(new THREE.SphereGeometry(.05), new THREE.MeshBasicMaterial({color:0xffe3ad}));
+    bulb.position.set(.6,.86,.2); g.add(bulb);
+    let pl = null;
+    if(!isLite && i<3){ pl = new THREE.PointLight(0xffd9a0, 0, 3.2, 2); pl.position.set(.6,1.05,.2); P.add(pl); }
+    W.desks.push({g, scr, lamp:pl, bulb, dx:dx[i], dz:dz[i]});
+    P.add(g);
+  }
+  // פינת-קפה
+  const ck = new THREE.Group(); ck.position.set(7.6,0,3.9);
+  box(1.1,.9,.7,0x8a6a45,0,.45,0,0,ck);
+  box(.5,.55,.45,0x33383f,-.15,1.18,0,0,ck);
+  const cm = new THREE.Mesh(new THREE.PlaneGeometry(.3,.2), new THREE.MeshBasicMaterial({color:0xff9d5c}));
+  cm.position.set(-.15,1.2,.24); cm.rotation.y=Math.PI; ck.add(cm);
+  P.add(ck);
+  // צמחים
+  if(!isLite) [[-8.9,4.6],[8.9,-4.4]].forEach(([x,z])=>{
+    const g = new THREE.Group(); g.position.set(x,0,z);
+    box(.4,.5,.4,0x9c6b4b,0,.25,0,0,g);
+    const leaf = new THREE.Mesh(new THREE.ConeGeometry(.55,1.3,7), mat(0x4d7a4f,.9));
+    leaf.position.y = 1.15; leaf.castShadow = true; g.add(leaf); P.add(g);
+  });
+  // ===== במת-הפיקוד (דרום-מערב) — המסך ששואל כל-הזמן: מה פתוח/פוטנציאל/ערך/התקדמות =====
+  const pod = new THREE.Group(); pod.position.set(-4.6,0,4.6);
+  box(.9,1.1,.6,0x6b573d,0,.55,0,0,pod);                      // דוכן
+  box(.3,1.1,.3,0x5c4a33,-1.0,1.7,.6,0,pod); box(.3,1.1,.3,0x5c4a33,1.0,1.7,.6,0,pod); // עמודי-תמיכה (מאחורי-המסך)
+  const scrCv = document.createElement('canvas'); scrCv.width=1024; scrCv.height=576;
+  W.podCanvas = scrCv; W.podTex = new THREE.CanvasTexture(scrCv); W.podTex.colorSpace = THREE.SRGBColorSpace;
+  const podScr = new THREE.Mesh(new THREE.PlaneGeometry(2.7,1.52),
+    new THREE.MeshBasicMaterial({map:W.podTex}));
+  podScr.position.set(0,2.35,0); podScr.rotation.y = Math.PI;  // פונה לחדר
+  pod.add(podScr);
+  box(2.9,.1,.15,0x3a3128,0,3.2,0,0,pod); box(2.9,.1,.15,0x3a3128,0,1.5,0,0,pod);
+  P.add(pod);
+  drawPodium();
+  // ===== שערי-העולמות — מעבר אמיתי בין החדרים החיים (אין שכפול — היעד הוא החדר עצמו) =====
+  const GATES = [
+    {x:-8.2, z:5.5, color:0x7fb4a0, he:'עיר-הריפואים', sub:'מה שהצי בונה — כעיר חיה', dest:'../worlds/',
+     aph:'כל-עיר נבנית מפגישות אמת — עבור בשער וראה בעצמך'},
+    {x:-0.4, z:5.75, color:0x9db86a, he:'חדר-הצמיחה', sub:'הפוטנציאל נמדד, לא מדומיין', dest:'../growth/',
+     aph:'צמיחה אמיתית מתחילה במדידה כנה — גם כשהיא מציגה אדום'},
+    {x:6.6,  z:5.45, color:0xc9a15e, he:'חדר-המוצר', sub:'מהתיאור למעשה — ההצעה החיה', dest:'../../marketing/',
+     aph:'מה שמתואר — נעשה. עבור בשער וראה את המוצר חי'},
+  ];
+  for(const gd of GATES){
+    const g = new THREE.Group(); g.position.set(gd.x,0,gd.z);
+    box(.22,2.5,.22,0x6b573d,-1.15,1.25,0,0,g); box(.22,2.5,.22,0x6b573d,1.15,1.25,0,0,g);
+    box(2.7,.24,.3,0x6b573d,0,2.55,0,0,g);
+    const portal = new THREE.Mesh(new THREE.PlaneGeometry(1.9,2.4),
+      new THREE.MeshBasicMaterial({color:gd.color, transparent:true, opacity:.22, side:THREE.DoubleSide}));
+    portal.position.y = 1.22; g.add(portal);
+    const sign = textSprite([gd.he, gd.sub], '#'+gd.color.toString(16).padStart(6,'0'), 760,160);
+    sign.scale.set(3.4,.72,1); sign.position.y = 3.15; g.add(sign);
+    P.add(g);
+    W.gates.push({...gd, portal, sign, phase:Math.random()*Math.PI*2});
+  }
+}
+
+/* ============ עולם-העסקים (מהאמת הכלכלית המדודה) ============ */
+function buildBusiness(P){
+  const floor = new THREE.Mesh(new THREE.PlaneGeometry(26,17), mat(0x2b2a33,.95));
+  floor.rotation.x = -Math.PI/2; floor.position.y = -.01; floor.receiveShadow = !isLite; P.add(floor);
+  // רשת-רצפה
+  const grid = new THREE.GridHelper(26, 26, 0x4a4658, 0x37343f); grid.position.y = .01; P.add(grid);
+  // 3 מגדלי-שרשרת — גובה ∝ log(כוח-אפקטיבי) · נתוני grid-truth בלבד
+  W.towers = [];
+  const defs = [
+    {id:'steem', he:'STEEM',  c:0x5aa7a0, x:-6},
+    {id:'hive',  he:'HIVE',   c:0xd97a3a, x:0},
+    {id:'blurt', he:'BLURT',  c:0x7a86d9, x:6},
+  ];
+  for(const d of defs){
+    const g = new THREE.Group(); g.position.set(d.x,0,0);
+    const tw = new THREE.Mesh(new THREE.BoxGeometry(2.1,1,2.1),
+      new THREE.MeshStandardMaterial({color:d.c, roughness:.55, emissive:d.c, emissiveIntensity:.12}));
+    tw.position.y = .5; tw.castShadow = !isLite; g.add(tw);
+    const base = new THREE.Mesh(new THREE.RingGeometry(1.5,1.8,36),
+      new THREE.MeshBasicMaterial({color:d.c, transparent:true, opacity:.5, side:THREE.DoubleSide}));
+    base.rotation.x = -Math.PI/2; base.position.y = .03; g.add(base);
+    const sign = textSprite([d.he, 'טוען אמת…'], '#'+d.c.toString(16).padStart(6,'0'), 640, 160);
+    sign.scale.set(3.2,.8,1); sign.position.y = 5.4; g.add(sign);
+    P.add(g);
+    W.towers.push({def:d, g, tw, sign, h:1});
+  }
+  // משואות-עורקים (wallet/grid/fleet/tick + ריצת-ריבונות)
+  W.beacons = [];
+  const bdefs = [
+    {id:'wallet', he:'ארנק', x:-4.5, z:-5.5}, {id:'grid', he:'גריד-אמת', x:-1.5, z:-5.5},
+    {id:'fleet', he:'צי', x:1.5, z:-5.5}, {id:'tick', he:'טיק', x:4.5, z:-5.5},
+    {id:'runtime', he:'ריצת-ריבונות', x:0, z:5.5},
+  ];
+  for(const b of bdefs){
+    box(.5,1.4,.5,0x3a3a45,b.x,.7,b.z,0,P);
+    const bulb = new THREE.Mesh(new THREE.SphereGeometry(.22,14,10),
+      new THREE.MeshStandardMaterial({color:0x555555, emissive:0x555555, emissiveIntensity:.9}));
+    bulb.position.set(b.x,1.62,b.z); P.add(bulb);
+    const sign = textSprite([b.he,'—'], '#948a79', 512,128);
+    sign.scale.set(2.2,.55,1); sign.position.set(b.x,2.25,b.z); P.add(sign);
+    W.beacons.push({id:b.id, bulb, sign});
+  }
+  const cap = textSprite(['עולם-העסקים — כל-מגדל נמדד מ-grid-truth · אפס אומדן'], '#e0a458', 1024,110);
+  cap.scale.set(7.5,.8,1); cap.position.set(0,.5,-7.2); P.add(cap);
+}
+
+/* ============ גינת-המטאפורה (מה שהם עושים — כצמיחה) ============ */
+function buildGarden(P){
+  const floor = new THREE.Mesh(new THREE.PlaneGeometry(26,17), mat(0x7a9a6a,.95));
+  floor.rotation.x = -Math.PI/2; floor.position.y = -.01; floor.receiveShadow = !isLite; P.add(floor);
+  // 6 עצי-עובדים — גובה ∝ קרדיטים אמיתיים
+  W.trees = [];
+  for(let i=0;i<6;i++){
+    const x = -6.25 + (i%3)*6.25, z = (i<3? -2.8 : 2.2);
+    const g = new THREE.Group(); g.position.set(x,0,z);
+    const trunk = new THREE.Mesh(new THREE.CylinderGeometry(.09,.14,1.1,7), mat(0x8a6a45,.9));
+    trunk.position.y = .55; trunk.castShadow = !isLite; g.add(trunk);
+    const crown = new THREE.Mesh(new THREE.IcosahedronGeometry(.75,1), mat(0x4d7a4f,.9));
+    crown.position.y = 1.55; crown.castShadow = !isLite; g.add(crown);
+    const sign = textSprite(['—','0 קרדיטים'], '#2fae63', 512,128);
+    sign.scale.set(2.1,.53,1); sign.position.y = 2.6; g.add(sign);
+    P.add(g);
+    W.trees.push({g, crown, trunk, sign, targetH:1});
+  }
+  // 13 ערוגות-ספרים — ירוק-כשטרי, אפור-כשישן (אמת מהספרייה)
+  W.beds = [];
+  for(let i=0;i<13;i++){
+    const x = -7.2 + (i%7)*2.4, z = 5.6 + Math.floor(i/7)*1.5;
+    const g = new THREE.Group(); g.position.set(x,0,z);
+    box(.8,.18,.6,0x9c6b4b,0,.09,0,0,g,false);
+    const st = new THREE.Mesh(new THREE.CylinderGeometry(.02,.02,.3,5), mat(0x6b8a5a,.9));
+    st.position.y = .33; g.add(st);
+    const fl = new THREE.Mesh(new THREE.SphereGeometry(.11,8,6), mat(0x9aa0a6,.6));
+    fl.position.y = .5; g.add(fl);
+    P.add(g);
+    W.beds.push({fl, fresh:null});
+  }
+  // שער-ה-STASIS — האמת החיה: נעול/פתוח לפי מצב-הבלם האמיתי (R30: מילת-הבעלים פתחה הכל)
+  const gate = new THREE.Group(); gate.position.set(0,0,-7);
+  box(.28,2.6,.28,0xc9a13b,-1.6,1.3,0,0,gate); box(.28,2.6,.28,0xc9a13b,1.6,1.3,0,0,gate);
+  box(3.5,.3,.22,0xc9a13b,0,2.5,0,0,gate);
+  const lock = new THREE.Mesh(new THREE.BoxGeometry(.42,.36,.18), mat(0xd95c4a,.5,.4));
+  lock.position.set(0,1.35,0); gate.add(lock);
+  const sh = new THREE.Mesh(new THREE.TorusGeometry(.12,.045,8,18), mat(0xd95c4a,.5,.4));
+  sh.position.set(0,1.6,0); gate.add(sh);
+  W.stasisLock = lock; W.stasisShackle = sh;
+  W.gateSign = textSprite(['STASIS — ממתין-בעלים','מסילות-הון נעולות לפי הוראת בעלים'], '#d9a13b', 880,160);
+  W.gateSign.scale.set(4.6,1.05,1); W.gateSign.position.set(0,3.4,0); gate.add(W.gateSign);
+  P.add(gate);
+  // ענן-הלקח — הלמידה מזינה את הגינה
+  const cloud = new THREE.Group(); cloud.position.set(0,5.6,-3);
+  for(let i=0;i<5;i++){
+    const s = new THREE.Mesh(new THREE.SphereGeometry(.5+Math.random()*.3,10,8),
+      new THREE.MeshStandardMaterial({color:0xf5f2ea, roughness:1, transparent:true, opacity:.85}));
+    s.position.set((i-2)*.62, (i%2)*.18, 0); cloud.add(s);
+  }
+  W.cloud = cloud; P.add(cloud);
+  W.cloudSign = textSprite(['לקח-המשמרת','—'], '#9db4d8', 900,150);
+  W.cloudSign.scale.set(4.4,1.0,1); W.cloudSign.position.set(0,6.6,-3); P.add(W.cloudSign);
+}
+
+/* ============ אור ============ */
+function buildStaticLight(){
+  hemi = new THREE.HemisphereLight(0xfff6e8, 0xcbbfae, .8); scene.add(hemi);
+  sun = new THREE.DirectionalLight(0xfff2dd, 2.1);
+  sun.position.set(6,9,-4);
+  if(!isLite){ sun.castShadow = true; sun.shadow.mapSize.set(1024,1024);
+    Object.assign(sun.shadow.camera,{left:-14,right:14,top:11,bottom:-9,far:45}); }
+  scene.add(sun);
+  const fill = new THREE.DirectionalLight(0xdfe8ff,.35); fill.position.set(-6,5,8); scene.add(fill);
+}
+
+/* ============ צוות מפרקים — הולך, יושב, מקליד, כותב על-הלוח, שותה קפה ============ */
+function limb(parent, len, r, color, px,py,pz){
+  const g = new THREE.Group(); g.position.set(px,py,pz); parent.add(g);
+  const m = new THREE.Mesh(new THREE.CapsuleGeometry(r, Math.max(.02,len-2*r), 3, 8), mat(color,.7));
+  m.position.y = -len/2; g.add(m); return g;
+}
+function buildAgent(id, deskHe, credits){
+  const g = new THREE.Group();
+  const C_BODY = 0x5f6c7b, C_PANTS = 0x4a5361, C_SKIN = 0xe8c39e;
+  // אגן + גו + ראש
+  const pelvis = new THREE.Mesh(new THREE.BoxGeometry(.30,.16,.18), mat(C_PANTS,.75));
+  pelvis.position.y = .92; g.add(pelvis);
+  const torso = new THREE.Mesh(new THREE.CapsuleGeometry(.155,.30,4,10), mat(C_BODY,.72));
+  torso.position.y = 1.22; g.add(torso);
+  const head = new THREE.Mesh(new THREE.SphereGeometry(.115,16,12), mat(C_SKIN,.65));
+  head.position.y = 1.52; g.add(head);
+  // זרועות (כתף→מרפק→יד)
+  const armL = limb(g, .27, .048, C_BODY,  .21, 1.40, 0);
+  const armR = limb(g, .27, .048, C_BODY, -.21, 1.40, 0);
+  const foreL = limb(armL, .25, .042, C_SKIN, 0, -.27, 0);
+  const foreR = limb(armR, .25, .042, C_SKIN, 0, -.27, 0);
+  // רגליים (ירך→ברך→רגל)
+  const legL = limb(g, .40, .058, C_PANTS,  .095, .88, 0);
+  const legR = limb(g, .40, .058, C_PANTS, -.095, .88, 0);
+  const shinL = limb(legL, .38, .05, C_PANTS, 0, -.40, 0);
+  const shinR = limb(legR, .38, .05, C_PANTS, 0, -.40, 0);
+  if(!isLite){ [torso,head,pelvis].forEach(m=> m.castShadow = true); }
+  // טבעת-מצב + שם + בועת-פעילות
+  const ring = new THREE.Mesh(new THREE.RingGeometry(.34,.42,32),
+    new THREE.MeshBasicMaterial({color:0xd9a13b, transparent:true, opacity:.65, side:THREE.DoubleSide}));
+  ring.rotation.x = -Math.PI/2; ring.position.y = .02; g.add(ring);
+  const name = textSprite([id, `${credits??0} קרדיטים`]); name.scale.set(1.5,.375,1); name.position.y = 1.98; g.add(name);
+  const act = textSprite(['…'], '#d9a13b', 640, 128); act.scale.set(1.9,.38,1); act.position.y = 2.34; act.visible = false; g.add(act);
+  const A = {id, g, torso, head, ring, name, act,
+    armL, armR, foreL, foreR, legL, legR, shinL, shinR,
+    state:'idle', station:'desk', deskIndex:0, deskHe, credits,
+    motion:'stand', phase:Math.random()*Math.PI*2,
+    target:null, faceY:Math.PI, since:null, taskId:'', activity:''};
+  agentGroups.set(id, A); gOffice.add(g); return A;
+}
+const agentGroups = new Map();
+
+const DESKS = [[-6,-2.6],[-2,-2.6],[2,-2.6],[6,-2.6],[-4,2.6],[2,2.6]];
+function stationSpot(A){
+  // תחנות אמת מהפורמן: desk (יושב-על-כיסא) | wall (עומד-מול-הלוח) | coffee (עומד-בפינת-הקפה)
+  if(A.station==='wall'){
+    const i = A.deskIndex ?? 0;
+    return {p:new THREE.Vector3(8.9,0,-1.4+((i*0.9)%3.4)), ry:Math.PI/2};  // פונה ללוח (+X)
+  }
+  if(A.station==='coffee') return {p:new THREE.Vector3(7.6,0,3.0), ry:0}; // פונה למכונה (+Z)
+  const i = A.deskIndex ?? [...agentGroups.values()].indexOf(A);
+  const d = DESKS[i % DESKS.length];
+  return {p:new THREE.Vector3(d[0], 0, d[1]+0.75), ry:Math.PI};            // על-הכיסא, פונה-למסך
+}
+function setStation(A){
+  const s = stationSpot(A);
+  if(!A.target || A.target.distanceTo(s.p) > .08){
+    A.target = s.p.clone(); A.faceY = s.ry;
+    if(A.g.position.distanceTo(s.p) > .14) A.motion = 'walk';
+  }
+}
+function refreshAgents(){
+  // איחוד: roster-מהספרים (תיאור-תפקיד+קרדיטים) ⊕ מצב-מהפורמן
+  for(const A of agentGroups.values()) A.__seen = false;
+  const mk = (id, deskHe, credits, deskIndex)=>{ const A = buildAgent(id,deskHe,credits);
+    A.deskIndex = deskIndex;
+    // כניסה-ראשונה: כולם נכנסים מהדלת (דרום) והולכים לתחנה
+    A.g.position.set((Math.random()*6-3), 0, 6.1); A.motion='walk'; setStation(A); return A; };
+  (W.roster||[]).forEach((c,i)=>{ 
+    const A = agentGroups.get(c.id) || mk(c.id, c.desk||'—', c.credits, i);
+    A.deskHe = c.desk||A.deskHe; A.credits = c.credits??A.credits; A.__seen = true; });
+  for(const [id,st] of (W.stateAgents||new Map())){
+    let A = agentGroups.get(id);
+    if(!A){ A = mk(id, 'מהפורמן', 0, agentGroups.size); }
+    A.__seen = true;
+    A.state = st.state||'idle'; A.activity = st.activity||''; A.station = st.station||'desk';
+    A.since = st.since; A.taskId = st.taskId||''; A.takingWO = null; // אמת-הפורמן מאפסת נטילה — dispatch יחליט מחדש
+    setStation(A);
+  }
+  for(const [id,A] of agentGroups) if(!A.__seen){ scene.remove(A.g); agentGroups.delete(id); }
+  dispatchOrders(); // פסיכולוגיית-חדר: כשיש פקודות אמת — מישהו קם והולך לקחת אותן
+  // צבעים/מסכים/מנורות לפי מצב-חי
+  for(const A of agentGroups.values()){
+    const col = STATE_COLOR[A.state] ?? STATE_COLOR.idle;
+    A.ring.material.color.setHex(col);
+    const d = W.desks[A.deskIndex ?? 0];
+    if(A.station==='desk' && d){
+      d.scr.material.emissive.setHex(col);
+      if(d.lamp) d.lamp.intensity = (A.state==='working'||A.state==='error') ? (W.night?2.4:1.1) : 0;
+      d.bulb.material.color.setHex((A.state==='working'||A.state==='error')?0xffe3ad:0x777777);
+    }
+    if(A.activity && A.activity.trim()){ A.act.visible = true;
+      const t = A.activity.length>34 ? A.activity.slice(0,33)+'…' : A.activity;
+      A.act.material.map.dispose(); const sp = textSprite([t], '#'+col.toString(16).padStart(6,'0'), 640,128);
+      A.act.material = sp.material; A.act.scale.set(1.9,.38,1);
+    } else A.act.visible = false;
+  }
+  // לגנדה
+  const counts = {};
+  for(const A of agentGroups.values()) counts[A.state] = (counts[A.state]||0)+1;
+  document.getElementById('legend').innerHTML = Object.entries(counts).map(([s,n])=>
+    `<div class="row"><span class="sw" style="background:#${(STATE_COLOR[s]??0xd9a13b).toString(16).padStart(6,'0')}"></span>${STATE_HE[s]??s} · ${n}</div>`).join('')
+    || '<div class="row">אין צוות בפיד</div>';
+  document.getElementById('crew-count').textContent = agentGroups.size || '—';
+  // ספרים: טרי/ישן אמיתי — גם בספרייה וגם בגינה
+  if(W.books?.length){
+    W.bookSpines.forEach((sp,i)=>{ const b = W.books[i]; if(!b) return;
+      sp.material.color.setHex(b.fresh?0x2fae63:0x9aa0a6); });
+    document.getElementById('books-count').textContent = `${W.books.filter(b=>b.fresh).length}/${W.books.length}`;
+    W.beds.forEach((bed,i)=>{ const b = W.books[i];
+      const fresh = b? !!b.fresh : null;
+      bed.fl.material.color.setHex(fresh? 0x8fd48f : (fresh===false? 0x9aa0a6 : 0x777777));
+      bed.fresh = fresh; });
+  }
+  // גינה: עצי-עובדים לפי קרדיטים אמיתיים + שלט-ענן-הלקח
+  if(W.lesson && W.cloudSign){
+    W.cloudSign.material.map.dispose();
+    W.cloudSign.material = textSprite(['לקח-המשמרת', W.lesson.length>44? W.lesson.slice(0,43)+'…' : W.lesson], '#9db4d8', 900,150).material;
+  }
+  let ti = 0;
+  for(const A of agentGroups.values()){
+    const T = W.trees[ti++]; if(!T) break;
+    const cr = A.credits ?? 0;
+    T.targetH = 1 + Math.min(1.4, cr/100);
+    T.sign.material.map.dispose();
+    T.sign.material = textSprite([A.id, `${nf.format(cr)} קרדיטים`], '#2fae63', 512,128).material;
+  }
+  drawKanban(); drawPodium(); renderCommand();
+}
+
+/* ============ חיווט פיקוד→ביצוע: פקודות-עבודה אמת → תנועת-צוות ============ */
+function dispatchOrders(){
+  const ords = W.workOrders||[];
+  if(!ords.length){ for(const A of agentGroups.values()) A.takingWO = null; return; }
+  const taken = [...agentGroups.values()].find(A=>A.takingWO);
+  if(taken) return;
+  const cand = [...agentGroups.values()].filter(A=>A.station==='desk');
+  if(!cand.length) return;
+  const A = cand[Math.floor(Date.now()/60000) % cand.length]; // יציב בתוך דקה, מתחלף בין דקות
+  const o = ords[Math.floor(Date.now()/120000) % ords.length];
+  A.takingWO = o.id||'?';
+  A.station = 'wall';
+  const act = `נוטל פקודה: ${A.takingWO} · ${o.title||''}`;
+  A.activity = act.length>34? act.slice(0,33)+'…' : act;
+  setStation(A);
+}
+
+/* ============ אנימציית-צוות ============ */
+function animateAgent(A, t, dt){
+  // הליכה אמיתית אל התחנה — ואז יציבה חיה לפי מצב
+  if(A.motion==='walk' && A.target){
+    const dir = A.target.clone().sub(A.g.position); dir.y = 0;
+    const dist = dir.length();
+    if(dist < .12){ A.motion = 'pose'; A.g.position.copy(A.target); }
+    else{
+      dir.normalize();
+      const speed = 1.15;
+      A.g.position.addScaledVector(dir, Math.min(dist, speed*dt));
+      const wantY = Math.atan2(dir.x, dir.z);
+      let dy = wantY - A.g.rotation.y;
+      while(dy> Math.PI) dy-=Math.PI*2; while(dy<-Math.PI) dy+=Math.PI*2;
+      A.g.rotation.y += dy*Math.min(1, dt*8);
+      const ph = t*7.2 + A.phase;
+      A.legL.rotation.x =  Math.sin(ph)*.55; A.legR.rotation.x = -Math.sin(ph)*.55;
+      A.shinL.rotation.x = Math.max(0, -Math.sin(ph-.7))*.75;
+      A.shinR.rotation.x = Math.max(0,  Math.sin(ph-.7))*.75;
+      A.armL.rotation.x = -Math.sin(ph)*.42; A.armR.rotation.x =  Math.sin(ph)*.42;
+      A.armL.rotation.z += (0 - A.armL.rotation.z)*.2; A.armR.rotation.z += (0 - A.armR.rotation.z)*.2;
+      A.foreL.rotation.x = -.25; A.foreR.rotation.x = -.25;
+      A.g.position.y += ((Math.abs(Math.cos(ph))*.035) - A.g.position.y)*.3;
+      A.torso.rotation.x = .07; A.head.rotation.x = .03;
+      return;
+    }
+  }
+  // יציבות-חיות לפי תחנה ומצב
+  const sit = A.motion==='pose' && A.station==='desk';
+  const breathe = Math.sin(t*1.6+A.phase);
+  if(sit){
+    // ישיבה על הכיסא: אגן נמוך, ירכיים קדימה, שוקיים למטה
+    A.g.position.lerp(new THREE.Vector3(A.target.x, 0, A.target.z), .12);
+    const ry = A.faceY;
+    let dy = ry - A.g.rotation.y;
+    while(dy>Math.PI) dy-=Math.PI*2; while(dy<-Math.PI) dy+=Math.PI*2;
+    A.g.rotation.y += dy*.12;
+    A.legL.rotation.x += (-1.42 - A.legL.rotation.x)*.12;
+    A.legR.rotation.x += (-1.42 - A.legR.rotation.x)*.12;
+    A.shinL.rotation.x += (1.32 - A.shinL.rotation.x)*.12;
+    A.shinR.rotation.x += (1.32 - A.shinR.rotation.x)*.12;
+    A.armL.rotation.x += (-.62 - A.armL.rotation.x)*.12;
+    A.armR.rotation.x += (-.62 - A.armR.rotation.x)*.12;
+    A.armL.rotation.z += (0 - A.armL.rotation.z)*.12; A.armR.rotation.z += (0 - A.armR.rotation.z)*.12;
+    A.foreL.rotation.x += (-.65 - A.foreL.rotation.x)*.12;
+    A.foreR.rotation.x += (-.65 - A.foreR.rotation.x)*.12;
+    A.g.position.y += ((-.40 + breathe*.006) - A.g.position.y)*.12; // על-הכיסא: ירכיים ~0.48
+    A.torso.rotation.x += (.10 - A.torso.rotation.x)*.12;
+    if(A.state==='working'){ // הקלדה
+      const k = Math.sin(t*10+A.phase), k2 = Math.sin(t*10+A.phase+2.1);
+      A.foreL.rotation.x = -.65 + k*.09; A.foreR.rotation.x = -.65 + k2*.09;
+      A.head.rotation.x = .16 + Math.sin(t*.9+A.phase)*.03;
+    } else if(A.state==='asleep'){ A.head.rotation.x = .42; }
+    else A.head.rotation.x += ((breathe*.04) - A.head.rotation.x)*.06;
+  } else {
+    // עמידה: ליד הלוח / קפה / פנוי
+    if(A.target) A.g.position.lerp(new THREE.Vector3(A.target.x, 0, A.target.z), .12);
+    const ry = A.faceY;
+    let dy = ry - A.g.rotation.y;
+    while(dy>Math.PI) dy-=Math.PI*2; while(dy<-Math.PI) dy+=Math.PI*2;
+    A.g.rotation.y += dy*.12;
+    A.legL.rotation.x += (0.03 - A.legL.rotation.x)*.12;
+    A.legR.rotation.x += (-.03 - A.legR.rotation.x)*.12;
+    A.shinL.rotation.x += (.06 - A.shinL.rotation.x)*.12;
+    A.shinR.rotation.x += (.06 - A.shinR.rotation.x)*.12;
+    A.g.position.y += ((0 + Math.abs(breathe)*.012) - A.g.position.y)*.15;
+    A.torso.rotation.x += (.02 - A.torso.rotation.x)*.1;
+    if(A.station==='wall' && A.state!=='idle'){ // כותב-על-הלוח
+      A.armR.rotation.x += (-1.85 - A.armR.rotation.x)*.1;
+      A.foreR.rotation.x += (-.35 - A.foreR.rotation.x)*.1;
+      A.armR.rotation.z += (-.15 - A.armR.rotation.z)*.1;
+      A.foreR.rotation.x += Math.sin(t*6+A.phase)*.06;
+      A.armL.rotation.x += (-.25 - A.armL.rotation.x)*.1; A.foreL.rotation.x += (-.3 - A.foreL.rotation.x)*.1;
+    } else if(A.station==='coffee'){ // לגימת-קפה מתמשכת
+      const sip = (Math.sin(t*.9+A.phase)>.3);
+      A.armR.rotation.x += (sip? -1.55 : -.2 - Math.sin(t*1.1)*.08 - A.armR.rotation.x)*.08;
+      A.foreR.rotation.x += (sip? -1.7 : -.5 - A.foreR.rotation.x)*.08;
+      A.armR.rotation.z += (0 - A.armR.rotation.z)*.1;
+      A.armL.rotation.x += (-.15 - A.armL.rotation.x)*.1; A.foreL.rotation.x += (-.35 - A.foreL.rotation.x)*.1;
+      if(sip) A.head.rotation.x = .12;
+    } else { // עמידה-פנויה + העברת-משקל
+      const shift = Math.sin(t*.5+A.phase)*.022;
+      A.armL.rotation.x += (-.12 + shift - A.armL.rotation.x)*.06;
+      A.armR.rotation.x += (-.12 - shift - A.armR.rotation.x)*.06;
+      A.armL.rotation.z += (0 - A.armL.rotation.z)*.1; A.armR.rotation.z += (0 - A.armR.rotation.z)*.1;
+      A.foreL.rotation.x += (-.3 - A.foreL.rotation.x)*.08; A.foreR.rotation.x += (-.3 - A.foreR.rotation.x)*.08;
+      A.head.rotation.x += ((breathe*.03) - A.head.rotation.x)*.06;
+    }
+  }
+  if(A.state==='error') A.ring.material.opacity = .4+.4*Math.abs(Math.sin(t*5));
+  else A.ring.material.opacity = .65;
+}
+
+/* ============ קיר-המשימות: kanban אמיתי מהפורמן ============ */
+const KAN_HE = { todo:'לביצוע', doing:'בביצוע', done:'בוצע', blocked:'חסום', other:'אחר' };
+const KAN_COL = { todo:'#d9a13b', doing:'#e0a458', done:'#2fae63', blocked:'#d95c4a', other:'#948a79' };
+function drawKanban(){
+  if(!W.tasks && !W.workOrders) return;
+  const cols = { todo:[], doing:[], done:[], blocked:[], other:[] };
+  for(const t of (W.tasks||[])){ (cols[t.status] ?? cols.other).push(t); }
+  W.taskCounts = Object.fromEntries(Object.entries(cols).map(([k,v])=>[k,v.length]));
+  const tot = (W.tasks||[]).length;
+  document.getElementById('tasks-count').textContent = tot? `${cols.done.length}/${tot}` : '—';
+  const cv = document.createElement('canvas'); cv.width=1280; cv.height=640;
+  const c = cv.getContext('2d');
+  c.fillStyle='#26303e'; c.fillRect(0,0,1280,640);
+  c.fillStyle='#f3ede2'; c.font='700 30px system-ui,Arial'; c.textAlign='center';
+  c.fillText('קיר-המשימות — אמת מהפורמן + מנוע-הצמיחה', 640, 42);
+  const cw = 236, x0 = 26, y0 = 66, ch = 556;
+  const names = ['todo','doing','done','blocked'];
+  names.forEach((k,ci)=>{
+    const x = x0 + ci*(cw+10);
+    c.fillStyle = 'rgba(255,255,255,.05)'; c.fillRect(x, y0, cw, ch);
+    c.fillStyle = KAN_COL[k]; c.fillRect(x, y0, cw, 44);
+    c.fillStyle = '#191410'; c.font='800 22px system-ui,Arial'; c.textAlign='center';
+    c.fillText(`${KAN_HE[k]} · ${cols[k].length}`, x+cw/2, y0+30);
+    c.textAlign = 'right';
+    cols[k].slice(0,8).forEach((t,i)=>{
+      const yy = y0 + 60 + i*60;
+      c.fillStyle = 'rgba(255,255,255,.10)'; c.fillRect(x+6, yy, cw-12, 52);
+      c.fillStyle = '#f3ede2'; c.font='600 16px system-ui,Arial';
+      let title = t.title||t.description||t.id||'?';
+      if(title.length>30) title = title.slice(0,29)+'…';
+      c.fillText(title, x+cw-14, yy+21, cw-24);
+      c.fillStyle = '#c9bfae'; c.font='500 13px system-ui,Arial';
+      c.fillText(t.assignee? ('↳ '+t.assignee) : '↳ ללא-משויך', x+cw-14, yy+41, cw-24);
+    });
+    if(cols[k].length>8){ c.fillStyle='#948a79'; c.font='600 14px system-ui,Arial';
+      c.fillText(`+ ${cols[k].length-8} נוספות`, x+cw/2, y0+60+8*60+8); }
+  });
+  // עמודה 5 — פקודות-עבודה אמת ממנוע-הצמיחה (zai-code-5) · צרכן מוצהר
+  const ox = x0 + 4*(cw+10), ow = 244;
+  const ords = W.workOrders||[];
+  c.fillStyle = 'rgba(217,92,74,.07)'; c.fillRect(ox, y0, ow, ch);
+  c.fillStyle = KAN_COL.blocked; c.fillRect(ox, y0, ow, 44);
+  c.fillStyle = '#191410'; c.font='800 22px system-ui,Arial'; c.textAlign='center';
+  c.fillText(`פקודות · ${ords.length}`, ox+ow/2, y0+30);
+  c.textAlign = 'right';
+  ords.slice(0,8).forEach((o,i)=>{
+    const yy = y0 + 60 + i*60;
+    c.fillStyle = 'rgba(217,92,74,.14)'; c.fillRect(ox+6, yy, ow-12, 52);
+    c.fillStyle = '#ffd9d0'; c.font='800 15px system-ui,Arial';
+    let oid = `${o.priority||'P?'} · ${o.id||'?'}`;
+    if(oid.length>26) oid = oid.slice(0,25)+'…';
+    c.fillText(oid, ox+ow-14, yy+20, ow-24);
+    c.fillStyle = '#f3ede2'; c.font='600 15px system-ui,Arial';
+    let ot = o.title||'—'; if(ot.length>30) ot = ot.slice(0,29)+'…';
+    c.fillText(ot, ox+ow-14, yy+41, ow-24);
+  });
+  if(ords.length>8){ c.fillStyle='#d9a13b'; c.font='600 14px system-ui,Arial';
+    c.fillText(`+ ${ords.length-8} נוספות`, ox+ow/2, y0+60+8*60+8); }
+  else if(!ords.length){ c.fillStyle='#948a79'; c.font='600 14px system-ui,Arial';
+    c.fillText(W.feeds.orders?.ok? 'המנוע מדד — אין פתוחות' : 'פיד נפל — לא נמציא', ox+ow/2, y0+80); }
+  const tex = new THREE.CanvasTexture(cv); tex.colorSpace = THREE.SRGBColorSpace;
+  const pl = new THREE.Mesh(new THREE.PlaneGeometry(3.4,1.7), new THREE.MeshBasicMaterial({map:tex}));
+  pl.position.set(9.7,1.9,0); pl.rotation.y = -Math.PI/2;
+  const old = W.kanbanMesh; W.kanbanMesh = pl; gOffice.add(pl);
+  if(old){ old.parent?.remove(old); old.material.map.dispose(); old.material.dispose(); old.geometry.dispose(); }
+}
+
+/* ============ במת-הפיקוד: השאלות שנשאלות כל-הזמן ============ */
+const POD_PANELS = ['open','required','product','potential','value','progress'];
+const POD_HE = { open:'מה פתוח?', required:'מה נדרש עכשיו?', product:'מה המוצר?', potential:'מה הפוטנציאל?', value:'מה נותן ערך עכשיו?', progress:'מה ההתקדמות?' };
+function drawPodium(){
+  if(!W.podCanvas) return;
+  const c = W.podCanvas.getContext('2d');
+  const kind = POD_PANELS[W.podPanel % POD_PANELS.length];
+  c.fillStyle='#14100c'; c.fillRect(0,0,1024,576);
+  c.strokeStyle='#3a3128'; c.lineWidth=6; c.strokeRect(6,6,1012,564);
+  c.fillStyle='#e0a458'; c.font='800 46px system-ui,Arial'; c.textAlign='right';
+  c.fillText(POD_HE[kind], 984, 78);
+  c.fillStyle='#948a79'; c.font='600 22px system-ui,Arial';
+  c.fillText('במת-הפיקוד הריבוני · אמת בלבד', 984, 112);
+  c.textAlign='right'; c.font='600 27px system-ui,Arial';
+  let lines = [];
+  if(kind==='open'){
+    if(!W.roles?.length){ lines = W.feeds.recruit?.ok? ['אין תפקידים פתוחים כרגע בפיד הגיוס'] : ['פיד-הגיוס נפל — אמת בעצמך בפאנל הפיקוד']; }
+    else{
+      const filled = W.roles.filter(r=>r.status==='FILLED').length;
+      lines = [`תפקידים: ${W.roles.length} · מאוישים ${filled} · מוצעים ${W.roles.length-filled}`];
+      W.roles.slice(0,4).forEach(r=>{
+        const he = r.title?.he || r.title?.en || r.id || '?';
+        lines.push(`${r.status==='FILLED'?'✅':'🟡'} ${he} — ${(r.status==='FILLED'?'מאויש':'ממתין-מימוש')}`);
+      });
+    }
+  } else if(kind==='required'){
+    const ords = W.workOrders||[];
+    if(!ords.length) lines = [W.feeds.orders?.ok? 'אין פקודות-עבודה פתוחות — המנוע מדד ואישר' : 'פיד-הפקודות נפל — אמת בעצמך'];
+    else{
+      lines = [`פקודות-עבודה פתוחות: ${ords.length} (מנוע-הצמיחה, מדידה-עצמית)`];
+      ords.slice(0,4).forEach(o=> lines.push(`🔴 ${o.priority||'P?'} ${o.id||'?'} — ${(o.title||'').slice(0,52)}`));
+      const acc = ords[0]?.acceptance; if(acc) lines.push(`קבלה: ${acc.slice(0,58)}`);
+    }
+    if(W.integrity) lines.push(`שלמות-האמת: ${W.integrity.overall} · ממצאים ${W.integrity.summary?.findings??'—'}`);
+  } else if(kind==='potential'){
+    lines = [];
+    if(W.venturesCounts && Object.keys(W.venturesCounts).length)
+      lines.push('מיזמים: ' + Object.entries(W.venturesCounts).map(([k,v])=>`${k}=${v}`).join(' · '));
+    else lines.push(W.feeds.ventures?.ok? 'מיזמים: אין רשומות בפיד' : 'פיד-המיזמים נפל — אמת בעצמך');
+    if(W.stasis) lines.push('STASIS ' + stasisLabel(W.stasis));
+    if(W.treasury) lines.push(`הון-מדוד: STEEM ${nf.format(Math.round(W.treasury.steem?.effective_power||0))} SP · HIVE ${nf.format(Math.round(W.treasury.hive?.effective_power||0))} HP`);
+  } else if(kind==='value'){
+    lines = [];
+    (W.goals||[]).slice(0,3).forEach(g=> lines.push('🎯 ' + (g.length>62? g.slice(0,61)+'…' : g)));
+    if(W.lesson) lines.push('💡 ' + (W.lesson.length>62? W.lesson.slice(0,61)+'…' : W.lesson));
+    if(!lines.length) lines = [W.feeds.live?.ok? 'אין יעדים בפיד' : 'פיד-המשרד נפל — אמת בעצמך'];
+  } else if(kind==='product'){
+    const ps = W.products||[];
+    if(!ps.length) lines = [W.feeds.products?.ok? 'הקטלוג נטען — רגע' : 'פיד-המוצר נפל — אמת בעצמך בפאנל הפיקוד'];
+    else{
+      lines = [`ההצעה החיה: ${ps.length} מוצרים · מהתיאור למעשה`];
+      ps.slice(0,4).forEach(p=>{
+        const st = (p.status||'').includes('live')? '🟢' : '🟡';
+        lines.push(`${st} ${p.nameHe||p.id} — ${p.statusHe||p.status||'?'}`);
+      });
+      if(ps.length>4) lines.push(`…ועוד ${ps.length-4} בקטלוג`);
+      lines.push('שער-המוצר ← הקטלוג החי עם קיר-קבלות');
+    }
+  } else {
+    const tc = W.taskCounts, tot = W.tasks.length;
+    lines = [];
+    if(tot) lines.push(`משימות: ${tot} · בוצעו ${tc.done} · בביצוע ${tc.doing} · חסומות ${tc.blocked} · ממתינות ${tc.todo}`);
+    lines.push(`משמרות: ${W.shifts||'—'} · ספרים-טריים: ${(W.books||[]).filter(b=>b.fresh).length}/${(W.books||[]).length||'—'}`);
+    let credits = 0; for(const A of agentGroups.values()) credits += (A.credits??0);
+    lines.push(`צוות: ${agentGroups.size} עובדים · ${nf.format(credits)} קרדיטים כנים`);
+    lines.push(`דופק: ${W.verdict} · עולם: ${W.world}`);
+  }
+  lines.slice(0,10).forEach((ln,i)=> c.fillText(ln, 984, 168 + i*44));
+  // חץ-מחזור
+  c.fillStyle='#5c5346'; c.font='600 20px system-ui,Arial'; c.textAlign='left';
+  c.fillText(`↻ ${POD_HE[POD_PANELS[(W.podPanel+1)%POD_PANELS.length]]} בעוד ${Math.max(1,6-Math.floor((performance.now()-W.podAt)/1000))} ש׳`, 40, 546);
+  W.podTex.needsUpdate = true;
+}
+if(!W.podAt) W.podAt = performance.now();
+
+/* ============ פידים ============ */
+async function jget(url, ms=8000){
+  const ac = new AbortController(); const to = setTimeout(()=>ac.abort(), ms);
+  try{ const r = await fetch(url, {signal:ac.signal, cache:'no-store'});
+       if(!r.ok) throw new Error('HTTP '+r.status); return await r.json(); }
+  finally{ clearTimeout(to); }
+}
+function ageMin(iso){ return iso? Math.max(0, Math.round((Date.now()-Date.parse(iso))/60000)) : null; }
+function setFeed(id, ok, note){
+  const dot = document.getElementById('fd-'+id), v = document.getElementById('fd-'+id+'-v');
+  if(dot){
+    let col = ok? 'var(--ok)':'var(--err)';
+    if(ok && note && note.includes('ישן')) col = 'var(--warn)';
+    dot.style.background = col; dot.style.boxShadow = col==='var(--ok)'? '0 0 8px var(--ok)':'none';
+  }
+  if(v) v.textContent = note;
+  W.feeds[id] = {ok, note};
+}
+function feedNote(iso, freshMin){
+  const a = ageMin(iso);
+  if(a==null) return '?';
+  return a<=freshMin? `${a} ד׳` : `ישן ${a} ד׳`;
+}
+async function poll(){
+  let any = false;
+  try{ const s = await jget(FEEDS.foreman);
+    const m = new Map();
+    (s.agents||[]).forEach(a=> m.set(a.id, a));
+    W.stateAgents = m;
+    W.tasks = Array.isArray(s.tasks)? s.tasks : (W.tasks||[]);
+    W.foremanAt = s.capturedAt;
+    setFeed('foreman', true, feedNote(s.capturedAt, FRESH_MIN.foreman)); any = true;
+  }catch{ setFeed('foreman', false, 'נפל'); }
+  try{ const p = await jget(FEEDS.pulse);
+    W.verdict = p.verdict||'UNKNOWN'; W.pulseChecks = p.verdictChecks||[];
+    W.arteries = p.arteries||{}; W.runtime = p.runtime||null;
+    const v = document.getElementById('verdict'); v.textContent = W.verdict;
+    document.getElementById('verdict-dot').style.background = W.verdict==='ALIVE'?'var(--ok)': W.verdict==='AGING'?'var(--warn)':'var(--err)';
+    setFeed('pulse', true, feedNote(p.generatedAt, FRESH_MIN.pulse)); any = true;
+  }catch{ setFeed('pulse', false, 'נפל');
+    const v=document.getElementById('verdict'); v.textContent='אין-דופק';
+    document.getElementById('verdict-dot').style.background='var(--err)'; }
+  try{ const l = await jget(FEEDS.live);
+    W.roster = l?.crew?.workers || []; if(l?.crew?.lead) W.roster = [l.crew.lead, ...W.roster];
+    W.books = l?.books?.list || []; W.shifts = l?.shifts?.total ?? 0;
+    W.goals = l?.nextGoals || []; W.lesson = l?.lesson || ''; W.stasis = l?.stasis || null;
+    applyStasisGate();
+    document.getElementById('shifts').textContent = W.shifts || '—';
+    setFeed('live', true, feedNote(l.generatedAt, FRESH_MIN.live)); any = true;
+  }catch{ setFeed('live', false, 'נפל'); }
+  try{ const g = await jget(FEEDS.grid);
+    W.treasury = g?.totals || null; W.gridAt = g?.generatedAt;
+    if(W.treasury){
+      const st = Math.round(W.treasury.steem?.effective_power||0);
+      const hv = Math.round(W.treasury.hive?.effective_power||0);
+      document.getElementById('capital').textContent = `${nf.format(st)} SP · ${nf.format(hv)} HP`;
+    }
+    setFeed('grid', true, feedNote(g.generatedAt, FRESH_MIN.grid)); any = true;
+    updateTowers();
+  }catch{ setFeed('grid', false, 'נפל'); }
+  try{ const r = await jget(FEEDS.recruit);
+    W.roles = r?.roles || []; W.recruitAt = r?.at;
+    setFeed('recruit', true, feedNote(r.at, FRESH_MIN.recruit)); any = true;
+  }catch{ setFeed('recruit', false, 'נפל'); }
+  try{ const vv = await jget(FEEDS.ventures);
+    W.ventures = vv?.ventures || []; W.venturesCounts = vv?.counts || {};
+    setFeed('ventures', true, feedNote(vv.at, FRESH_MIN.ventures)); any = true;
+  }catch{ setFeed('ventures', false, 'נפל'); }
+  try{ const pr = await jget(FEEDS.products);
+    W.products = pr?.products || []; W.productsMeta = pr||{};
+    const pc = document.getElementById('products-count'); if(pc) pc.textContent = W.products.length || '—';
+    setFeed('products', true, feedNote(pr.generatedAt, FRESH_MIN.products)); any = true;
+  }catch{ setFeed('products', false, 'נפל'); }
+  try{ const wo = await jget(FEEDS.orders);
+    W.workOrders = Array.isArray(wo)? wo : [];
+    setFeed('orders', true, `${W.workOrders.length} פתוחות`); any = true;
+  }catch{ setFeed('orders', false, 'נפל'); }
+  try{ const iv = await jget(FEEDS.integrity);
+    W.integrity = iv;
+    const ov = iv.overall||'?';
+    const tv = document.getElementById('truth-val');
+    tv.textContent = ov==='PASS'? 'תקין' : ov==='PASS_WITH_ALERTS'? 'התראות' : ov==='FAIL'? 'נפגם' : ov;
+    document.getElementById('truth-dot').style.background =
+      ov==='PASS'? 'var(--ok)' : ov==='PASS_WITH_ALERTS'? 'var(--warn)' : 'var(--err)';
+    setFeed('integrity', true, feedNote(iv.at, FRESH_MIN.integrity)); any = true;
+  }catch{ setFeed('integrity', false, 'נפל'); }
+  refreshAgents(); updateBeacons(); renderCommand();
+  document.getElementById('nolink').style.display = any? 'none':'grid';
+  setTimeout(poll, any? POLL_MS : RETRY_MS);
+}
+
+/* ============ עדכוני-עולמות ============ */
+function updateTowers(){
+  if(!W.treasury || !W.towers) return;
+  const log = n => Math.log10(1+Math.max(0,n));
+  const maxL = log(150000);
+  for(const T of W.towers){
+    const d = T.def;
+    const raw = W.treasury[d.id]||{};
+    const power = raw.effective_power||0, liquid = raw.liquid||0;
+    T.targetH = 1.2 + (log(power)/maxL)*7.4;
+    const he2 = d.id==='blurt'
+      ? [d.he, `${nf.format(+power.toFixed(2))} BP`, `${nf.format(Math.round(liquid))} נזיל`]
+      : [d.he, `${nf.format(Math.round(power))} ${d.id==='hive'?'HP':'SP'}`, `${nf.format(Math.round(liquid))} נזיל`];
+    T.sign.material.map.dispose();
+    T.sign.material = textSprite(he2, '#'+d.c.toString(16).padStart(6,'0'), 640,190).material;
+    T.sign.scale.set(3.4,1.0,1);
+  }
+}
+function updateBeacons(){
+  if(!W.beacons) return;
+  const src = { ...W.arteries };
+  if(W.runtime) src.runtime = { overall: (W.runtime.lastSuccessAgeMin??999)<180? 'PASS':'STALE', ageMin: W.runtime.lastSuccessAgeMin };
+  for(const B of W.beacons){
+    const a = src[B.id];
+    const col = !a? 0x777777 : (a.overall==='PASS'? 0x2fae63 : a.overall==='STALE'? 0xd9a13b : 0xd95c4a);
+    B.bulb.material.color.setHex(col); B.bulb.material.emissive.setHex(col);
+    const age = a?.ageMin!=null? `${a.ageMin} ד׳` : '—';
+    B.sign.material.map.dispose();
+    B.sign.material = textSprite([B.id==='runtime'?'ריצת-ריבונות':B.id, `${a?.overall??'—'} · ${age}`],
+      '#'+col.toString(16).padStart(6,'0'), 512,128).material;
+  }
+}
+
+/* ============ פאנל-פיקוד (DOM) ============ */
+function tagEl(status){
+  const cls = status==='FILLED'||status==='PASS'? 'filled' : status==='STALE'? 'stale' : status==='PROPOSED'? 'proposed' : 'down';
+  const he = {FILLED:'מאויש', PROPOSED:'מוצע', PASS:'תקין', STALE:'ישן', FAIL:'נפל'}[status] || status;
+  return `<span class="tag ${cls}">${he}</span>`;
+}
+function renderCommand(){
+  // מה פתוח — גיוס
+  const elOpen = document.querySelector('#cmd-open .note') || document.getElementById('cmd-open');
+  if(W.roles?.length){
+    const filled = W.roles.filter(r=>r.status==='FILLED').length;
+    document.getElementById('cmd-open').innerHTML = `<h3>מה פתוח? — תפקידים וגיוס</h3>
+      <div class="kv"><span>סה״כ תפקידים שנפתחו מפערי-חיים אמיתיים</span><b>${W.roles.length} (מאוישים ${filled})</b></div>` +
+      W.roles.slice(0,5).map(r=>`<div class="li"><b>${r.title?.he||r.title?.en||r.id||'?'}</b>${tagEl(r.status||'PROPOSED')}
+        <div>${(r.contract||'').slice(0,120)}${(r.contract||'').length>120?'…':''}</div></div>`).join('');
+  } else {
+    document.getElementById('cmd-open').innerHTML = `<h3>מה פתוח? — תפקידים וגיוס</h3>
+      <div class="note">${W.feeds.recruit?.ok? 'הפיד חי — אין תפקידים רשומים כרגע.' : 'פיד-הגיוס נפל — אין נתונים, ולא נמציא.'}</div>`;
+  }
+  // מה הפוטנציאל — מיזמים + stasis + הון
+  let pot = '';
+  if(W.venturesCounts && Object.keys(W.venturesCounts).length)
+    pot += `<div class="kv"><span>מיזמים (Z-31)</span><b>${Object.entries(W.venturesCounts).map(([k,v])=>`${k}=${v}`).join(' · ')}</b></div>`;
+  else pot += `<div class="note">${W.feeds.ventures?.ok? 'הפיד חי — אין מיזמים רשומים כרגע.' : 'פיד-המיזמים נפל — אין נתונים, ולא נמציא.'}</div>`;
+  if(W.stasis) pot += `<div class="li"><b>STASIS: ${stasisLabel(W.stasis)}</b> — ${W.stasis.note||''}</div>`;
+  if(W.treasury) pot += `<div class="li">הון-מדוד (grid-truth): STEEM <b>${nf.format(Math.round(W.treasury.steem?.effective_power||0))} SP</b> + ${nf.format(Math.round(W.treasury.steem?.liquid||0))} נזיל · HIVE <b>${nf.format(Math.round(W.treasury.hive?.effective_power||0))} HP</b> + ${nf.format(Math.round(W.treasury.hive?.liquid||0))} נזיל · BLURT ${Math.round(W.treasury.blurt?.liquid||0)} נזיל</div>`;
+  document.getElementById('cmd-potential').innerHTML = `<h3>מה הפוטנציאל? — מיזמים ומסילות</h3>` + pot;
+  // מה נותן ערך — יעדים + לקח + עורקים
+  let val = '';
+  (W.goals||[]).forEach(g=> val += `<div class="li">🎯 ${g}</div>`);
+  if(W.lesson) val += `<div class="li">💡 ${W.lesson}</div>`;
+  if(!val) val = `<div class="note">${W.feeds.live?.ok? 'אין יעדים בפיד כרגע.' : 'פיד-המשרד החי נפל — אין נתונים, ולא נמציא.'}</div>`;
+  const arts = Object.entries(W.arteries||{});
+  if(arts.length) val += `<div class="li">${arts.map(([k,a])=>`${k} ${tagEl(a.overall||'FAIL')}`).join(' ')}</div>`;
+  document.getElementById('cmd-value').innerHTML = `<h3>מה נותן ערך עכשיו? — יעדים ולקחים</h3>` + val;
+  // מה ההתקדמות — מדדים
+  const tc = W.taskCounts||{}, tot = (W.tasks||[]).length;
+  let credits = 0; for(const A of agentGroups.values()) credits += (A.credits??0);
+  document.getElementById('cmd-progress').innerHTML = `<h3>מה ההתקדמות? — מדדים חיים</h3>
+    <div class="kv"><span>משימות (מהפורמן)</span><b>${tot? `${tc.done}/${tot} בוצעו · ${tc.doing} בביצוע · ${tc.blocked} חסומות` : '—'}</b></div>
+    <div class="kv"><span>משמרות-צוות</span><b>${W.shifts||'—'}</b></div>
+    <div class="kv"><span>ספרים-טריים</span><b>${(W.books||[]).filter(b=>b.fresh).length}/${(W.books||[]).length||'—'}</b></div>
+    <div class="kv"><span>צוות · קרדיטים כנים</span><b>${agentGroups.size} · ${nf.format(credits)}</b></div>
+    <div class="kv"><span>דופק-הרשת</span><b>${W.verdict}</b></div>`;
+  // מה נדרש — פקודות-עבודה (צרכן מוצהר של מנוע-הצמיחה zai-code-5)
+  const ords = W.workOrders||[];
+  let ordHtml = '';
+  if(ords.length){
+    ordHtml = ords.slice(0,6).map(o=>`<div class="li"><b>${o.id||'?'}</b> <span class="tag down">${o.priority||'P?'}</span> ${o.title||''}
+      <div>למה: ${o.why||'—'}</div><div>קבלה: ${o.acceptance||'—'}</div></div>`).join('');
+  } else {
+    ordHtml = `<div class="note">${W.feeds.orders?.ok? 'המנוע מדד — אין פקודות פתוחות כרגע.' : 'פיד-הפקודות נפל — אין נתונים, ולא נמציא.'}</div>`;
+  }
+  ordHtml += `<div class="note" style="margin-top:6px">מקור: Sandbox ops/office/work-orders.json — מנוע office-growth סורק ומודד כל-6-דקות; החדר הזה צרכן מוצהר, לא מפיק.</div>`;
+  document.getElementById('cmd-orders').innerHTML = `<h3>מה נדרש עכשיו? — פקודות-עבודה אמת</h3>` + ordHtml;
+  // מה המוצר — ההצעה החיה (קטלוג T-60, קבלות אמת)
+  const ps = W.products||[];
+  let prodHtml = '';
+  if(!ps.length) prodHtml = `<div class="note">${W.feeds.products?.ok? 'הקטלוג נטען…' : 'פיד-המוצר נפל — אמת בעצמך: <a href="../../marketing/" target="_blank" rel="noreferrer">הקטלוג החי</a>'}</div>`;
+  else{
+    prodHtml = ps.map(p=>{
+      const ms = (p.measured||[]).slice(0,2).map(m=>`${m.label}=${m.value}`).join(' · ');
+      const lnk = (p.links||[])[0];
+      return `<div class="li"><b>${p.nameHe||p.id}</b> <span class="tag filled">${p.statusHe||p.status||'?'}</span><div>${p.whatHe||''}</div>${ms?`<div style="opacity:.75">${ms}</div>`:''}${lnk?`<div><a href="${lnk}" target="_blank" rel="noreferrer">ראיה ומסירה ↗</a></div>`:''}</div>`;
+    }).join('');
+    prodHtml += `<div class="note"><a href="../../marketing/" target="_blank" rel="noreferrer">הקטלוג המלא עם קיר-הקבלות ←</a></div>`;
+  }
+  document.getElementById('cmd-products').innerHTML = `<h3>מה המוצר? — ההצעה החיה (מהתיאור למעשה)</h3>` + prodHtml;
+  // אמת-מכונה — שומר-השלמות (zai-code-3 G-series) — כל-דגל = ראיה-מדידה-עם-מקור
+  let truthHtml = '';
+  const iv = W.integrity;
+  if(iv){
+    const cnts = iv.summary?.counts||{};
+    truthHtml += `<div class="kv"><span>מצב-שלמות</span><b>${iv.overall||'?'}</b></div>`;
+    truthHtml += `<div class="kv"><span>מקורות-אמת / אומתו</span><b>${iv.summary?.sources??'—'} / ${iv.summary?.verified??'—'}</b></div>`;
+    truthHtml += `<div class="kv"><span>ממצאים</span><b>${iv.summary?.findings??0} (${Object.entries(cnts).map(([k,v])=>`${k}=${v}`).join(' · ')||'—'})</b></div>`;
+    (iv.findings||[]).slice(0,6).forEach(f=>{
+      truthHtml += `<div class="li"><b>${f.severity||'?'} · ${f.law||'?'}</b> — ${f.where||'?'}<div>${(f.detail||'').slice(0,110)}</div></div>`;
+    });
+    if(iv.provenance?.runUrl) truthHtml += `<div class="li">ראיה: <a href="${iv.provenance.runUrl}" target="_blank" rel="noreferrer">ריצת-אימות ${iv.provenance.runId||''}</a></div>`;
+  } else {
+    truthHtml = `<div class="note">${W.feeds.integrity?.ok? 'אין ממצאים בחותם.' : 'פיד-השלמות נפל — לא נמציא מצב-שלמות.'}</div>`;
+  }
+  document.getElementById('cmd-truth').innerHTML = `<h3>אמת-מכונה — שומר-השלמות (G-series)</h3>` + truthHtml;
+  // אמת-הכול בעצמך
+  const rows = Object.entries(FEEDS).map(([id,url])=>{
+    const f = W.feeds[id]||{};
+    return `<div class="li">${FEED_HE[id]}: ${f.ok? '✅':'❌'} ${f.note||'—'} · <a href="${url}" target="_blank" rel="noreferrer">${url.replace('https://','')}</a></div>`;
+  }).join('');
+  document.getElementById('cmd-verify').innerHTML = `<h3>אמת-הכול בעצמך — מקורות האמת</h3><div class="verify">${rows}
+    <div class="note" style="margin-top:6px">כל-מספר בחדר הזה מגיע מהקישורים למעלה. לא נסמוך על כלום — לא אפילו על עצמנו. פתחו, בדקו, שפטו.</div></div>`;
+}
+document.getElementById('cmd-btn').onclick = ()=>{ const c=document.getElementById('cmd'); c.style.display = c.style.display==='flex'? 'none':'flex'; renderCommand(); };
+document.getElementById('cmd-x').onclick = ()=>{ document.getElementById('cmd').style.display='none'; };
+
+/* ============ אינטראקציה ============ */
+let downXY = null;
+function onDown(e){ downXY = [e.clientX, e.clientY]; }
+function onUp(e){
+  if(!downXY) return;
+  const dx = e.clientX-downXY[0], dy = e.clientY-downXY[1]; downXY = null;
+  if(dx*dx+dy*dy > 36) return; // זה היה גרירה
+  pointer.set((e.clientX/innerWidth)*2-1, -(e.clientY/innerHeight)*2+1);
+  raycaster.setFromCamera(pointer, camera);
+  // שערים קודם — המעבר בין-העולמות הוא הפעולה הראשונה בחשיבותה
+  const ghits = raycaster.intersectObjects((W.gates||[]).map(gd=>gd.portal));
+  if(ghits.length){
+    for(const gd of W.gates) if(gd.portal===ghits[0].object) return enterGate(gd);
+  }
+  const hits = raycaster.intersectObjects([...agentGroups.values()].map(A=>A.torso));
+  if(hits.length){
+    for(const [id,A] of agentGroups) if(A.torso===hits[0].object) return showCard(A);
+  }
+  hideCard();
+}
+function showCard(A){
+  W.sel = A;
+  document.getElementById('card').style.display = 'block';
+  document.getElementById('c-name').textContent = A.id;
+  document.getElementById('c-desk').textContent = A.deskHe||'—';
+  document.getElementById('c-state').textContent = (STATE_HE[A.state]??A.state) + (A.station?` · תחנה: ${A.station}`:'');
+  document.getElementById('c-motion').textContent = A.motion==='walk'? 'הולך לתחנה' : (A.station==='desk'? 'יושב על הכיסא' : 'עומד');
+  document.getElementById('c-since').textContent = A.since? `${Math.max(0,Math.round((Date.now()-A.since)/60000))} ד׳` : '—';
+  document.getElementById('c-credits').textContent = A.credits??'—';
+  document.getElementById('c-task').textContent = A.taskId||'—';
+  document.getElementById('c-activity').textContent = A.activity||'';
+}
+function hideCard(){ document.getElementById('card').style.display='none'; W.sel=null; }
+document.getElementById('card-x').onclick = hideCard;
+
+/* ============ מעבר-סף: פסיכולוגיית-מעבר בין-העולמות ============ */
+function enterGate(gd){
+  const ov = document.getElementById('threshold');
+  document.getElementById('th-text').textContent = gd.aph||'';
+  document.getElementById('th-dest').textContent = `עובר אל: ${gd.he} — ${gd.dest}`;
+  ov.style.display = 'grid';
+  requestAnimationFrame(()=>{ ov.style.opacity = 1; });
+  // המצלמה הולכת אל-הסף יחד עם העובר — הגוף מוביל, המבט משתנה
+  tween = {p0:camera.position.clone(), t0:controls.target.clone(),
+           p1:new THREE.Vector3(gd.x, 1.5, gd.z+2.9), t1:new THREE.Vector3(gd.x, 1.35, gd.z), s:performance.now()};
+  setTimeout(()=>{ location.href = gd.dest; }, 1450);
+}
+
+/* נקודות-תצפית (לפי-עולם) */
+const VIEWS = {
+  office: [
+    {p:[7.5,4.2,9.8], t:[0,.8,-.4]},
+    {p:[-5.2,2.1,1.6], t:[2,1,-2]},
+    {p:[4.6,2.4,4.6],  t:[9.4,1.8,0]},
+    {p:[3.4,1.9,7.4],  t:[7.6,1,3.9]},
+    {p:[-4.6,2.9,1.2], t:[-4.6,2.3,4.6]},
+    {p:[0,2.7,10.2],  t:[0,1.5,5.5]},
+  ],
+  biz:    [{p:[11.5,8.5,13.5], t:[0,2.8,0]}, {p:[-7,3.5,8], t:[-6,2.5,0]}, {p:[0,4.5,10], t:[0,2,0]}, {p:[6,3,8], t:[6,2.5,0]}, {p:[0,10,2], t:[0,0,0]}],
+  garden: [{p:[-11,7,11], t:[0,1.4,0]}, {p:[0,3.5,9], t:[0,1.6,-2.8]}, {p:[7,4.5,7], t:[0,1.8,5.6]}, {p:[0,4,-10.5], t:[0,1.6,-7]}, {p:[0,8.5,0], t:[0,0.5,0]}],
+};
+let tween = null;
+function goView(i){
+  const list = VIEWS[W.world] || VIEWS.office;
+  const v = list[i % list.length];
+  tween = {p0:camera.position.clone(), t0:controls.target.clone(),
+           p1:new THREE.Vector3(...v.p), t1:new THREE.Vector3(...v.t), s:performance.now()};
+}
+document.querySelectorAll('.vbtn[data-v]').forEach(b=> b.onclick = ()=>{
+  document.querySelectorAll('.vbtn[data-v]').forEach(x=>x.classList.remove('active')); b.classList.add('active');
+  goView(+b.dataset.v);
+});
+document.getElementById('daynight').onclick = ()=>{ W.night = !W.night; applyDayNight(); };
+function applyDayNight(){
+  const k = W.night?1:0;
+  scene.background.lerpColors(new THREE.Color('#ddd6c8'), new THREE.Color('#1d232e'), k);
+  scene.fog.color.copy(scene.background);
+  (W.windows||[]).forEach(w=> w.material.color.lerpColors(new THREE.Color(0xdfe9f3), new THREE.Color(0x35415a), k));
+  hemi.intensity = .8 - .55*k;
+  sun.intensity = 2.1 - 1.9*k;
+  sun.color.lerpColors(new THREE.Color(0xfff2dd), new THREE.Color(0x9db4d8), k);
+}
+
+/* מעבר-עולמות */
+const WORLD_HE = { office:'משרד', biz:'עסקים', garden:'גינה' };
+function setWorld(w){
+  if(W.world===w) return;
+  const flash = document.getElementById('worldflash');
+  flash.style.opacity = .85;
+  setTimeout(()=>{
+    W.world = w;
+    gOffice.visible = (w==='office'); gBiz.visible = (w==='biz'); gGarden.visible = (w==='garden');
+    document.querySelectorAll('[id^="w-"]').forEach(x=>x.classList.remove('active'));
+    document.getElementById('w-'+w).classList.add('active');
+    goView(0);
+    flash.style.opacity = 0;
+    drawPodium();
+  }, 190);
+}
+document.getElementById('w-office').onclick = ()=>setWorld('office');
+document.getElementById('w-biz').onclick = ()=>setWorld('biz');
+document.getElementById('w-garden').onclick = ()=>setWorld('garden');
+
+/* ============ לופ ============ */
+const clock3 = new THREE.Clock();
+function loop(){
+  const dt = Math.min(.05, clock3.getDelta()), t = performance.now()/1000;
+  // שמש-נודדת לאט
+  if(!W.night){ const a = .18*Math.sin((t-W.t0/1000)/60); sun.position.set(6*Math.cos(a), 9, -4 + 3*Math.sin(a)); }
+  // מחזור-במת-הפיקוד כל 6 שניות
+  if(performance.now()-W.podAt > 6000){ W.podPanel = (W.podPanel+1)%POD_PANELS.length; W.podAt = performance.now(); drawPodium(); }
+  // צוות
+  for(const A of agentGroups.values()) animateAgent(A, t, dt);
+  // עולם-עסקים: מגדלים צומחים אל האמת
+  for(const T of (W.towers||[])){ if(T.targetH){
+    const cur = T.tw.scale.y, want = T.targetH;
+    const next = cur + (want-cur)*.04;
+    T.tw.scale.y = next; T.tw.position.y = next/2;
+    T.sign.position.y = next + 1.15;
+  }}
+  // גינה: עצים צומחים + ענן נושם
+  for(const Tr of (W.trees||[])){ if(Tr.targetH){
+    const cur = Tr.crown.scale.x, want = Tr.targetH;
+    const next = cur + (want-cur)*.03;
+    Tr.crown.scale.setScalar(next); Tr.crown.position.y = 1.35 + next*.25;
+    Tr.trunk.scale.y = .7 + next*.3; Tr.trunk.position.y = .55*(.7+next*.3);
+  }}
+  if(W.cloud){ W.cloud.position.x = Math.sin(t*.14)*1.4; W.cloud.position.y = 5.6 + Math.sin(t*.4)*.12; }
+  // שערים נושמים — הסף מזמין
+  for(const gd of (W.gates||[])){ gd.portal.material.opacity = .16 + Math.abs(Math.sin(t*.8+gd.phase))*.16; }
+  if(tween){
+    const k = Math.min(1,(performance.now()-tween.s)/1200), e = 1-Math.pow(1-k,3);
+    camera.position.lerpVectors(tween.p0, tween.p1, e);
+    controls.target.lerpVectors(tween.t0, tween.t1, e);
+    if(k>=1) tween = null;
+  }
+  controls.update();
+  renderer.render(scene, camera);
+  if(!W.ready && renderer.info.render.calls > 6){
+    W.ready = true;
+    window.__office3d = { ready:true, version:'command', world:W.world, crewMode:'jointed',
+      agents:agentGroups.size, feeds:W.feeds, verdict:W.verdict, lite:isLite,
+      tasks:{...W.taskCounts}, goals:(W.goals||[]).length,
+      orders:(W.workOrders||[]).length, integrity:W.integrity?.overall||null, gates:(W.gates||[]).length,
+      roles:{filled:(W.roles||[]).filter(r=>r.status==='FILLED').length, total:(W.roles||[]).length},
+      treasury:W.treasury? {steem:Math.round(W.treasury.steem?.effective_power||0), hive:Math.round(W.treasury.hive?.effective_power||0)} : null };
+    console.info('[office3d-command] ready — drawCalls', renderer.info.render.calls);
+    setInterval(()=>{ const h = window.__office3d; if(!h) return;
+      h.agents=agentGroups.size; h.verdict=W.verdict; h.feeds=W.feeds; h.world=W.world;
+      h.tasks={...W.taskCounts}; h.goals=(W.goals||[]).length;
+      h.orders=(W.workOrders||[]).length; h.integrity=W.integrity?.overall||null; h.gates=(W.gates||[]).length;
+      h.roles={filled:(W.roles||[]).filter(r=>r.status==='FILLED').length, total:(W.roles||[]).length};
+      h.treasury = W.treasury? {steem:Math.round(W.treasury.steem?.effective_power||0), hive:Math.round(W.treasury.hive?.effective_power||0)} : null;
+    }, 5000);
+  }
+}
+function onResize(){
+  camera.aspect = innerWidth/innerHeight; camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth, innerHeight);
+}
+
+/* שעון-ירושלים */
+setInterval(()=>{ try{
+  document.getElementById('clock').textContent =
+    new Intl.DateTimeFormat('he-IL',{timeZone:'Asia/Jerusalem',hour:'2-digit',minute:'2-digit'}).format(new Date());
+}catch{} }, 1000);
+
+initGL(); refreshAgents(); poll();
+</script>
+</body>
+</html>

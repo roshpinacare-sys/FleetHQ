@@ -1,0 +1,193 @@
+name: token-forge
+
+# הפטיש-הריבוני-לטוקנים — מארח-ציבורי (Domain) · session-11 · הוראת-בעלים B-①:
+# "פתחתי לך טוקנים האמת לא מינימליים שיהיה לשימוש תמידי — תמצא איך לנתב את זה נכון ולהפעיל"
+# למה כאן: steem (המארח-הפרטי) כלוא-מאחורי-קיר-חיוב (3-ריצות-נמדדו-0-שלבים 2026-10-11 20:58-21:08Z),
+# וסוד-אינו-קריא-דרך-REST — רק-workflow-שרץ-בתוך-הריפו-יכול-להשתמש-בו.
+# Domain ציבורי = Actions חינמי-ללא-הגבלה, ו-MAIN_KEY+ZIP_PAT נמצאים-כאן-בסודות (הוספו-על-ידי-הבעלים).
+# probe — מודד סוד-מקור (login/סוג/תפוגה/מכסה — מטא-דאטה-בלבד, אפס-ערכים G9) וכותב-פסק-דין-לגיט
+# route — מנתב את סוד-המקור (libsodium sealed-box) לסודות-יעד בשם-זהה + מצית-watchdog
+# G3: קריאות-מעטות · G9: אף-ערך-סוד-לא-נדפס-לעולם · אמת-עצמית: הטוקן-קורא-/user-בעצמו
+# אח-תאום: Sandbox/.github/workflows/token-forge.yml (אותה-מכונה, מפת-סודות-אחרת)
+
+on:
+  schedule:
+    - cron: "20 6 * * 0"
+  workflow_dispatch:
+    inputs:
+      secret_name:
+        description: MAIN_KEY | ZIP_PAT (empty = probe whole map)
+        required: false
+        default: ""
+      mode:
+        description: probe | route
+        required: false
+        default: probe
+      targets:
+        description: route only — JSON array ["repo:SECRET_NAME",...] (empty = Sandbox+saos-runtime+FleetHQ same-name)
+        required: false
+        default: ""
+
+permissions:
+  contents: write
+
+concurrency:
+  group: token-forge
+  cancel-in-progress: false
+
+jobs:
+  forge:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Measure source secret(s) — metadata only
+        env:
+          SRC_MAIN_KEY: ${{ secrets.MAIN_KEY }}
+          SRC_ZIP_PAT: ${{ secrets.ZIP_PAT }}
+          WANT: ${{ inputs.secret_name }}
+        run: |
+          set -euo pipefail
+          : > /tmp/probe.tsv
+          measure() {
+            local name="$1" pat="$2" loud="$3"
+            pat=$(printf '%s' "${pat}" | awk '{print $1}' | tr -d '[:space:][:cntrl:]')  # a GitHub token never contains whitespace — take first field (handles paste-with-newline or multi-token paste)
+            if [ -z "${pat}" ]; then
+              printf '%s\tMISSING\t-\t-\t-\t-\t-\n' "${name}" >> /tmp/probe.tsv
+              [ "${loud}" = "1" ] && echo "::error::${name} secret missing in Domain — add it in repo Settings→Secrets→Actions"
+              return 0
+            fi
+            local code login exp scopes rem days type
+            code=$(curl -s -o /tmp/user.json -D /tmp/h.txt -w '%{http_code}' \
+              -H "Authorization: token ${pat}" https://api.github.com/user) || code=000
+            if [ "${code}" != "200" ]; then
+              printf '%s\tDEAD\tHTTP-%s\t-\t-\t-\t-\n' "${name}" "${code}" >> /tmp/probe.tsv
+              echo "::error::${name} dead or unauthorized (HTTP ${code}) — הטוקן-מת = האזעקה-עצמה"
+              return 0
+            fi
+            login=$(python3 -c "import json;print(json.load(open('/tmp/user.json')).get('login',''))")
+            exp=$(grep -i '^github-authentication-token-expiration:' /tmp/h.txt | cut -d' ' -f2- | tr -d '\r' || true)
+            scopes=$(grep -i '^x-oauth-scopes:' /tmp/h.txt | cut -d' ' -f2- | tr -d '\r' || true)
+            rem=$(grep -i '^x-ratelimit-remaining:' /tmp/h.txt | cut -d' ' -f2- | tr -d '\r')
+            if [ -z "${exp}" ]; then
+              days=9999; type="non-expiring"; [ -n "${scopes}" ] && type="classic-non-expiring"
+            else
+              days=$(( ( $(date -u -d "${exp}" +%s) - $(date -u +%s) ) / 86400 ))
+              type="fine-grained"; [ -n "${scopes}" ] && type="classic"
+            fi
+            printf '%s\tALIVE\t%s\t%s\t%s\t%s\t%s\n' "${name}" "${type}" "${exp:-non-expiring}" "${days}" "${rem}" "${login}" >> /tmp/probe.tsv
+            echo "### ${name}" >> "$GITHUB_STEP_SUMMARY"
+            echo "- login: \`${login}\` · type: \`${type}\` · expires: \`${exp:-non-expiring}\` · days left: \`${days}\` · rate: \`${rem}\`" >> "$GITHUB_STEP_SUMMARY"
+          }
+          if [ -n "${WANT}" ]; then
+            case "${WANT}" in
+              MAIN_KEY) measure MAIN_KEY "${SRC_MAIN_KEY}" 1;;
+              ZIP_PAT)  measure ZIP_PAT  "${SRC_ZIP_PAT}"  1;;
+              *) echo "::error::${WANT} not in SRC_MAP — add one SRC_* env line to token-forge.yml, commit, then dispatch again"; exit 1;;
+            esac
+          else
+            measure MAIN_KEY "${SRC_MAIN_KEY}" 0
+            measure ZIP_PAT  "${SRC_ZIP_PAT}"  0
+          fi
+
+      - name: Route source token to target repos (sealed-box) + wake watchdog
+        if: inputs.mode == 'route'
+        env:
+          SRC_NAME: ${{ inputs.secret_name }}
+          SRC_MAIN_KEY: ${{ secrets.MAIN_KEY }}
+          SRC_ZIP_PAT: ${{ secrets.ZIP_PAT }}
+          TARGETS: ${{ inputs.targets }}
+        run: |
+          set -euo pipefail
+          python3 -m pip install --quiet pynacl
+          python3 - <<'PY'
+          import base64, json, os, urllib.request
+          name = os.environ["SRC_NAME"]
+          val = os.environ.get("SRC_" + name, "")
+          val = val.split()[0] if val.split() else val  # canonical: first whitespace field of RAW value (token never contains whitespace)
+          def api(method, url, tok, payload=None):
+              data = json.dumps(payload).encode() if payload is not None else None
+              r = urllib.request.Request(url, data=data, method=method)
+              r.add_header("Authorization", f"Bearer {tok}")
+              r.add_header("Accept", "application/vnd.github+json")
+              if data: r.add_header("Content-Type", "application/json")
+              try:
+                  with urllib.request.urlopen(r) as resp:
+                      body = resp.read()
+                  return resp.status, (json.loads(body) if body else {})
+              except urllib.error.HTTPError as e:
+                  return e.code, e.read().decode()[:200]
+          results = []
+          if not val:
+              print(f"::error::secret {name} is empty in Domain — nothing to route")
+              json.dump({"routed": False, "results": results}, open("/tmp/forge-result.json", "w"))
+              raise SystemExit(1)
+          st, u = api("GET", "https://api.github.com/user", val)
+          if st != 200:
+              print(f"::error::source token {name} failed self-check (HTTP {st}) — not routing a dead token")
+              json.dump({"routed": False, "results": results}, open("/tmp/forge-result.json", "w"))
+              raise SystemExit(1)
+          targets = json.loads(os.environ["TARGETS"]) if os.environ["TARGETS"].strip() else [f"{r}:{name}" for r in ("Sandbox", "saos-runtime", "FleetHQ")]
+          for t in targets:
+              repo, sname = t.split(":", 1)
+              st, pk = api("GET", f"https://api.github.com/repos/roshpinacare-sys/{repo}/actions/secrets/public-key", val)
+              if st != 200:
+                  results.append(f"{t}=FAIL-HTTP{st}")
+                  print(f"::warning::{t}: public-key fetch failed (HTTP {st}) — הטוקן-חסר-הרשאה-על-{repo}")
+                  continue
+              from nacl import encoding, public as nacl_public
+              key = nacl_public.PublicKey(pk["key"].encode(), encoding.Base64Encoder())
+              sealed = nacl_public.SealedBox(key).encrypt(val.encode())
+              st2, _ = api("PUT", f"https://api.github.com/repos/roshpinacare-sys/{repo}/actions/secrets/{sname}", val,
+                           {"encrypted_value": base64.b64encode(sealed).decode(), "key_id": pk["key_id"]})
+              results.append(f"{t}={'OK' if st2 in (201, 204) else 'FAIL-HTTP' + str(st2)}")
+              print(f"{t}: {'OK' if st2 in (201, 204) else 'FAIL-HTTP' + str(st2)}")
+          st3, _ = api("POST", "https://api.github.com/repos/roshpinacare-sys/Sandbox/actions/workflows/token-watchdog.yml/dispatches", val, {"ref": "main"})
+          results.append(f"fire:Sandbox:token-watchdog.yml={'OK' if st3 == 204 else 'FAIL-HTTP' + str(st3)}")
+          print(f"fire Sandbox:token-watchdog.yml: {'OK' if st3 == 204 else 'FAIL-HTTP' + str(st3)}")
+          json.dump({"routed": True, "results": results}, open("/tmp/forge-result.json", "w"))
+          PY
+
+      - name: Publish verdict to git (ops/token-forge-verdicts.md — metadata only)
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          MODE: ${{ inputs.mode || 'probe-weekly' }}
+          WANT: ${{ inputs.secret_name }}
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import base64, json, os, urllib.request
+          from datetime import datetime, timezone
+          token = os.environ["GH_TOKEN"]; repo = os.environ["GITHUB_REPOSITORY"]
+          path = "ops/token-forge-verdicts.md"
+          now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+          probe = [l.rstrip("\n") for l in open("/tmp/probe.tsv") if l.strip()]
+          routed = ""
+          try:
+              fr = json.load(open("/tmp/forge-result.json"))
+              routed = " | routed=" + str(fr.get("routed")) + " " + ",".join(fr.get("results", []))
+          except Exception:
+              pass
+          line = f"{now} | mode={os.environ.get('MODE','probe')} | want={os.environ.get('WANT','ALL') or 'ALL'} | " + " ; ".join(" ".join(p.split("\t")) for p in probe) + routed
+          header = ("# TOKEN-FORGE-VERDICTS (Domain) · פסקי-דין-מדודים (מטא-דאטה-בלבד — G9) · token-forge.yml\n"
+                    "# מארח-ציבורי: MAIN_KEY+ZIP_PAT של-הבעלים נמדדים-ומנותבים-מכאן (steem=כלוא-חיוב)\n")
+          req = urllib.request.Request(f"https://api.github.com/repos/{repo}/contents/{path}",
+                                       headers={"Authorization": f"Bearer {token}", "Accept": "application/vnd.github+json"})
+          old = ""; sha = None
+          try:
+              with urllib.request.urlopen(req) as r:
+                  d = json.loads(r.read()); old = base64.b64decode(d["content"]).decode(); sha = d["sha"]
+          except Exception:
+              pass
+          keep = (old if old else header).rstrip("\n").split("\n")
+          head = [l for l in keep if l.startswith("#")]
+          hist = [l for l in keep if not l.startswith("#")]
+          hist = (hist + [line])[-300:]
+          new = "\n".join(head + [""] + hist) + "\n"
+          data = {"message": "token-forge: verdict (metadata only) [ci]", "content": base64.b64encode(new.encode()).decode()}
+          if sha: data["sha"] = sha
+          req = urllib.request.Request(f"https://api.github.com/repos/{repo}/contents/{path}",
+                                       data=json.dumps(data).encode(), method="PUT",
+                                       headers={"Authorization": f"Bearer {token}", "Content-Type": "application/json", "Accept": "application/vnd.github+json"})
+          with urllib.request.urlopen(req) as r:
+              print("verdict committed:", json.loads(r.read())["commit"]["sha"])
+          PY

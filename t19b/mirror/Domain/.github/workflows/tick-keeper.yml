@@ -1,0 +1,69 @@
+#
+#
+#
+#
+
+name: tick-keeper
+
+on:
+  workflow_dispatch: {}
+permissions:
+  contents: write
+
+concurrency:
+  group: tick-keeper
+  cancel-in-progress: false
+
+jobs:
+  keep:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: STASIS gate (mechanical, FATE-DEFENSE law #1)
+        id: brake
+        run: |
+          if [ -f agents/STASIS.json ]; then
+            ST=$(node -p "JSON.parse(require('fs').readFileSync('agents/STASIS.json','utf8')).active===true")
+          else
+            ST=false
+          fi
+          echo "active=$ST" >> "$GITHUB_OUTPUT"
+          if [ "$ST" = "true" ]; then
+            echo "STASIS-HALT tick-keeper · the breaker is active — the healer obeys too"
+          fi
+
+      - name: keep (measure the arc, re-fire stale desks)
+        if: steps.brake.outputs.active != 'true'
+        env:
+          KEEPER_GH_TOKEN: ${{ secrets.SA_KEEPER_DISPATCH_TOKEN }}
+          KEEPER_REPO: ${{ github.repository }}
+        run: node agents/tick-keeper.cjs
+
+      - name: publish receipts (append-only, [skip ci], rebase-push twin idiom)
+        if: always()
+        continue-on-error: true
+        run: |
+          git config user.name "saos-tick-keeper"
+          git config user.email "keeper@saos.local"
+          for p in agents/tick-keeper.json agents/tick-keeper.md; do
+            [ -e "$p" ] && git add "$p" || true
+          done
+          if git diff --cached --quiet; then
+            echo "no keeper changes"
+          else
+            git commit -m "tick-keeper: arc heartbeat [skip ci]" || exit 0
+            for i in 1 2 3; do
+              git pull --rebase --autostash origin main && git push origin HEAD:main && break
+              echo "publish retry $i failed — re-pulling"; sleep 5
+            done
+          fi

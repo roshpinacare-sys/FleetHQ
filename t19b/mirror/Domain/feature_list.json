@@ -1,0 +1,878 @@
+{
+ "features": [
+  {
+   "id": "feat-001",
+   "name": "Autonomous economy engine",
+   "description": "Daily on-chain curation + self-votes + claims across steem/hive/blurt, keyless in Domain, seal opened only in-runner, receipts as proof",
+   "dependencies": [],
+   "status": "done",
+   "evidence": "economy-engine.yml + scripts/economy-engine.mjs; real runs 37009336549/37067532580 SUCCESS with chain txid read-back (cbb4bc69… block 110099406)"
+  },
+  {
+   "id": "feat-002",
+   "name": "Harness judge node (five subsystems)",
+   "description": "Fresh-context checker node auditing instructions/state/verification/scope/lifecycle + anchors, on a schedule, fail-soft",
+   "dependencies": [],
+   "status": "done",
+   "evidence": "agents/harness-audit.cjs → harness-audit.json/md; adopted from walkinglabs/learn-harness-engineering (Z-35), extended Task 19 (role→worker wiring + loop primitives)"
+  },
+  {
+   "id": "feat-003",
+   "name": "Books pulse (machine state layer)",
+   "description": "Live measurement books stamp themselves (at/updated) and stay fresh <48h; freshness audited by the judge node",
+   "dependencies": [
+    "feat-002"
+   ],
+   "status": "done",
+   "evidence": "9/9 live books exist; learning-ledger stamping fixed in Task 19 (measure-learn.cjs now stamps at/updated)"
+  },
+  {
+   "id": "feat-004",
+   "name": "Weave core anchor cadence",
+   "description": "Hourly anchor ping (sandbox-independent) + anchor-execute lines keep saos.weave.core.v1 on chain",
+   "dependencies": [],
+   "status": "done",
+   "evidence": "weave-anchor-ping.yml hourly + weave-anchor-lines.yml; core trx 9b377210393fdec1 2026-10-02T21:42Z"
+  },
+  {
+   "id": "feat-005",
+   "name": "Army role→worker wiring (audited)",
+   "description": "Every FILLED role in recruitment.json must name a worker artifact that exists on disk; the judge node measures the hands",
+   "dependencies": [
+    "feat-002"
+   ],
+   "status": "done",
+   "evidence": "harness-audit.cjs graph check 'every FILLED role names a reachable worker artifact' — Task 19"
+  },
+  {
+   "id": "feat-006",
+   "name": "LHE harness protocol adoption (this repo)",
+   "description": "walkinglabs/learn-harness-engineering minimal harness: AGENTS.md protocol + feature_list.json + progress.md + session-handoff.md + init.sh",
+   "dependencies": [
+    "feat-002",
+    "feat-003"
+   ],
+   "status": "done",
+   "evidence": "Task 19 — validator run on this repo post-adoption; scores recorded in the Task 19 worklog section"
+  },
+  {
+   "id": "feat-007",
+   "name": "Daily revenue > 1 cent (owner KPI)",
+   "description": "Realized chain income (curation + author + claims) maturing above $0.01/day, receipts-provable",
+   "dependencies": [
+    "feat-001"
+   ],
+   "status": "open",
+   "evidence": "v3 engine run-rate 0.02–0.06 SBD/day maturing over 7 days; needs days of receipts to show realized >1¢ — SP compounding + daily quality posts are the levers"
+  },
+  {
+   "id": "feat-008",
+   "name": "Role-prompt registry (prompts.chat adoption)",
+   "description": "Declarative role-voice registry in prompts.chat CSV schema (act,prompt,for_devs,type,contributor) + ${Var:default} binding + loader role-prompts.cjs; sovereignty: role behavior is versioned data, a fresh worker adopts a fleet role by loading one row",
+   "dependencies": [
+    "feat-002",
+    "feat-005"
+   ],
+   "status": "done",
+   "evidence": "ADOPTION LANDED VIA THE PARALLEL Z-37 CHARTER REGISTRY (superset): agents/role-registry.csv (act,file,ci,mission,signs,tier,books,owner,status — roles-as-data with enforcement) + sovereignty.md (tier A/B/C + CR flow) + harness-audit v1.2.0 sovereignty checks. My interim role-prompts.csv/cjs (prompts.chat raw schema + ${Var} loader) retired SUPERSEDED-BY; the loader pattern + FILLED-roles completeness idea live on in the charter registry checks."
+  },
+  {
+   "id": "feat-009",
+   "name": "Destructive-command guard (dcg adoption)",
+   "description": "Mechanical tier-C enforcement adopted from Dicklesworthstone/destructive_command_guard: banned shapes (force-push, reset --hard, clean -x, estate rm -rf, DROP, migrate reset) blocked pre-execution with doctrine reasons + safer tips; data-position context detection; heredoc scanning; STRICT mode for supply-chain; 13-case selftest wired into init.sh + harness-audit",
+   "dependencies": [
+    "feat-002",
+    "feat-008"
+   ],
+   "status": "done",
+   "evidence": "ADOPTION LANDED VIA THE PARALLEL Z-38 FLEET-NATIVE GUARD (superset): agents/command-guard.cjs (whitelist-first, DEFAULT-ALLOW, explain/scan/hook modes, decision ledger command-guard.json, evals E7-E9) + my init.sh battery driving it (DENY on force-push/reset --hard/estate rm -rf; allow on rebase law + data-position). My interim scripts/command-guard.sh retired SUPERSEDED-BY; the workflow shape-scan idea lives in their scan mode."
+  },
+  {
+   "id": "feat-010",
+   "name": "FATE-DEFENSE (Emergence World adoption)",
+   "description": "Owner directive: study what happened to world.emergence.ai (arXiv 2606.08367 platform + 2609.17320 stress-testing; 5+8 agent worlds, total collapses, injection/misinformation/memory-breach events, 'collapse has no warning shot') and engineer+prove the defenses. Delivered: (1) STASIS mechanical circuit breaker — economy engine obeys agents/STASIS.json BEFORE any seal/broadcast (STASIS-HALT healthy no-op, exit 0; selftest-proven both states, wired into init.sh fails-fast battery); (2) FWI scorecard agents/fleet-indicators.cjs — nine sovereign indicators (our AWI mirror) each COMPUTED from a named artifact (ANTI-GOODHART law), first verdict THRIVING 9/9 GROW; (3) three laws codified in FATE-DEFENSE.md: STASIS + PROVENANCE QUARANTINE (external content is data, never auto-doctrine) + ANTI-GOODHART (claim without artifact is not a value); (4) judge-node wiring: harness-audit v1.4.0 fate-defense check (31 PASS/0 WARN/0 FAIL) + eval E10 (10/10).",
+   "dependencies": [
+    "feat-001",
+    "feat-008",
+    "feat-009"
+   ],
+   "status": "done",
+   "evidence": "FATE-DEFENSE.md + agents/fleet-indicators.{cjs,json,md} + agents/STASIS.json + scripts/economy-engine.mjs stasis gate + harness-audit 31/0/0 + evals E10 10/10 + init.sh STASIS-HALT proof"
+  },
+  {
+   "id": "feat-011",
+   "name": "Skill library (claude-skills adoption, Task 20 residual closed)",
+   "description": "Owner directive lineage: Task 20 asked for a prompts.chat prompt library (recruitment roles / desk system / mini-services); Task 25 evaluated owner-pointed alirezarezvani/claude-skills (MIT, 27.3k stars) as the format backbone; Task 27 landed it. agents/skill-library/ = SKILL-AUTHORING-STANDARD.md adapted from upstream and house-hardened (Evidence Artifact mandatory per ANTI-GOODHART, tier declaration per SOVEREIGNTY LAW, no silent scope, renumbering doctrine, bilingual header) + THIRD-PARTY-NOTICES.md pinning mirror sha 19392f7a + 6 packages (fleet-push-protocol, fleet-desk-operator, recruitment-interviewer, mini-services-engineer, worker-onboarding, fleet-skill-author). Mechanical enforcement: agents/skill-library-gate.cjs v1.0.0 (zero-dep, require-safe, books skill-library.json/md) + harness-audit verification check (v1.11.0) + eval E19 (run-evals v1.9.0) + role-registry row + CR-0006 (tier B, PASS).",
+   "dependencies": [
+    "feat-008",
+    "feat-009"
+   ],
+   "status": "done",
+   "evidence": "agents/skill-library/{SKILL-AUTHORING-STANDARD.md,THIRD-PARTY-NOTICES.md,skills/*/SKILL.md x6} + agents/skill-library-gate.cjs GREEN 6/0 + agents/skill-library.{json,md} + harness-audit check + evals E19 + agents/role-registry.csv row + CR-0006 + /home/z/reference-mirrors/claude-skills @19392f7a"
+  },
+  {
+   "id": "feat-012",
+   "name": "Authority Map doctrine + strix security lineage (Task 29)",
+   "description": "Owner constitutional statement (2026-10-03) encoded: 'we have sovereignty — everything is subject to the sovereignty's decision; only for the wallet am I an authority.' Encoded as the Authority Map in fleet-desk-operator v1.1.0 (wallet=owner authority / everything else=sovereignty-decided / owner-held possessions=possession-gated, not authority-gated) + SKILL-AUTHORING-STANDARD.md tier-C redefinition (C = WALLET-OR-POSSESSION-LOCK, exists only for those two domains). Same wave adopts the usestrix/strix security lineage (Apache-2.0, 66.2k stars, eval Task 28): house package skills/security-strix-operator (authorization boundary: estate assets only; honest feasibility — no Docker in sandbox, cloud=wallet) + THIRD-PARTY-NOTICES.md section 3 + skill-library-gate.cjs v1.1.0 second lineage pin (strix sha 99c0711 + Apache-2.0 mechanically enforced) + eval E21 + judge v1.13.0 doctrine-anchor check + CR-0008 (tier B, PASS).",
+   "dependencies": [
+    "feat-011"
+   ],
+   "status": "done",
+   "evidence": "agents/skill-library/skills/desk-operator/SKILL.md (Authority Map, v1.1.0) + agents/skill-library/SKILL-AUTHORING-STANDARD.md (tier-C rewrite) + agents/skill-library/skills/security-strix-operator/SKILL.md + THIRD-PARTY-NOTICES.md section 3 + agents/skill-library-gate.cjs v1.1.0 GREEN 7/0 + agents/skill-library.{json,md} + evals E21 (run-evals v1.11.0, 21/21) + harness-audit v1.13.0 doctrine-anchor check + CR-0008 + /home/z/reference-mirrors/strix @99c0711"
+  },
+  {
+   "id": "feat-013",
+   "name": "Agentic-orchestration lineage: google/ax (Task 31)",
+   "description": "Owner directive 'תבחן את זה גם ויישם מה שניתן וראוי' (https://github.com/google/ax) executed as an evaluation + same-wave adoption under the Authority Map (wallet=owner, rest=sovereignty). google/ax = Google's open agentic orchestration runtime (Apache-2.0, Go, 12,921 stars, created 2026-03-30, push 2026-09-27; Task/Workspace/Model manifests on Agent Substrate over K8s). Feasibility booked honestly: control plane needs K8s cluster + Agent Substrate + ko + registry -> BLOCKED in this sandbox (no Docker/K8s) and any cluster = paid infra = wallet/possession domain (owner). Adopted at zero cost: house package skills/orchestration-ax-operator (feasibility table + doctrine-parallel table mapping AX mechanics to estate laws: immutability->append-only ledgers, up-front RFC1123 validation->PR-time gates, WorkspaceReady->Ready conditions->MEASURABLE-to-DASHBOARD, requests/limits->budget guards, suspend/resume->honest checkpoints, secretKey refs->PAT law, skills.registries->the skill library itself) + THIRD-PARTY-NOTICES.md section 4 + skill-library-gate.cjs v1.2.0 third lineage pin (ax sha ac23328 mechanically enforced) + evals E22 strip-restore + judge v1.14.0 dual-lineage doctrine anchor + CR-0010.",
+   "dependencies": [
+    "feat-012"
+   ],
+   "status": "done",
+   "evidence": "agents/skill-library/skills/orchestration-ax-operator/SKILL.md + THIRD-PARTY-NOTICES.md section 4 (sha ac23328, full API sha ac2332829f22360ff97b0ba34d94dd0dd782f17e) + agents/skill-library-gate.cjs v1.2.0 GREEN 8/0 + agents/skill-library.{json,md} + evals E22 (run-evals v1.12.0, 22/22) + harness-audit v1.14.0 doctrine anchor (strix+ax) + CR-0010 + /home/z/reference-mirrors/ax @ac23328"
+  },
+  {
+   "id": "feat-014",
+   "name": "Applied-AI pattern reference, consult-only (Task 32)",
+   "description": "Owner directive 'תראה זה יכול לעזור' (Sumanth077/Hands-On-AI-Engineering, 3,832 stars) executed as evaluation + consult-only adoption under the Authority Map. HONESTY FINDING: upstream claims MIT (badge + section) but LICENSE file is 404 / API null at mirror sha da0091d6 → treated as ALL RIGHTS RESERVED, zero-copy posture, ideas only. Crown finding: upstream's nl_data_analyst_agent implements Jev three-point decision review (input clarity; pre-execution relevance with runtime-bound authoritative inputs — the model under review cannot rewrite what is reviewed; post-answer grounding → unverified-draft flag) with the estate's own honesty rules as working code: fail-open WITH visible reviewer notes, reviewer-only (never grants authority), inconclusive ≠ blocking, approval denied → no retry. Adopted: house package skills/applied-ai-patterns-operator (Jev gate → laya-decision reviewer wiring per Task 30's candidate wave + pattern catalog mapped to estate lanes + feasibility table routing paid-API legs to the zero-marginal stack with the wallet stop) + THIRD-PARTY-NOTICES.md section 5 (license-mismatch finding + why no gate pin) + bare-blobless mirror @ da0091d6 (184K, disk-honest). Gate stays v1.2.0; evals 23/23; judge v1.14.0.",
+   "dependencies": [
+    "feat-013"
+   ],
+   "status": "done",
+   "evidence": "agents/skill-library/skills/applied-ai-patterns-operator/SKILL.md + THIRD-PARTY-NOTICES.md section 5 + CR-0011 + /home/z/reference-mirrors/hae-mirror.git @ da0091d6452e18dae9fd3119a194019f35306d27 (bare-blobless 184K) + LICENSE-404 proof (contents API 404, 2026-10-03) + gate GREEN 9/0 + evals 23/23 unique + judge 40/1/0"
+  },
+  {
+   "id": "feat-015",
+   "name": "Minimal-agent doctrine lineage: SWE-agent/mini-swe-agent (Task 33)",
+   "description": "Owner directive 'תראה מה עם זה' (https://github.com/swe-agent/mini-swe-agent, 8,165 stars) executed as evaluation + same-wave adoption under the Authority Map. MIT verified IN-FILE at mirror sha 04d809c (Copyright (c) 2025 Kilian A. Lieret and Carlos E. Jimenez) — full pin ceremony unlike Task 32's consult-only. Adopted doctrine as reference in house package #10 swe-mini-operator: bash-as-the-only-tool, stateless per-action execution (process-group kill on timeout), linear append-only history (trajectory == messages), exceptions-as-control-flow carrying messages (never swallowed), hard step/cost/wall-time limits as first-class config (upstream default cost_limit=3.0), format-error circuit breaker with billed-cost honesty, StrictUndefined templates, explicit submit signal, save-every-step checkpoints, AGENTS.md test law (no unasked mocking; every test targets a failure point) — third-party validation of ANTI-GOODHART. NOT taken: upstream runtime (litellm paid keys = wallet) and containerized env legs = wallet/possession. Headline metrics booked as upstream claims.",
+   "dependencies": [
+    "feat-014"
+   ],
+   "status": "done",
+   "evidence": "CR-0012 PASS; mirror /home/z/reference-mirrors/mini-swe-agent @ 04d809ceab9df28f9adaed044884180159172930; skill-library-gate.cjs v1.3.0 fourth lineage pin GREEN (10 packages / 0 offenders); evals v1.13.0 E24 strip-restore; harness-audit v1.15.0 quad-lineage doctrine anchor; THIRD-PARTY-NOTICES.md §6 MIT attribution; init.sh DOMAIN-INIT-OK"
+  },
+  {
+   "id": "feat-016",
+   "name": "AI-review-surface doctrine, consult-only (Task 34)",
+   "description": "Owner directive 'מה לגבי זה' (https://github.com/vercel-labs/openreview, 1,697 stars — self-hosted AI code review bot by Vercel Labs) executed as evaluation + consult-only adoption under the Authority Map. LICENSE-MISMATCH FINDING (second occurrence of the Task 32 pattern): README claims MIT but NO LICENSE file exists (API license: null) at mirror sha 672deb2 → ALL RIGHTS RESERVED, zero-copy, no gate pin. Dormancy booked: last push 2026-03-06 (7 months), beta disclaimer. Crown doctrine restated originally in house package #11 ai-review-operator: authority pre-flight before any push with named refusal reasons (archived/permissions/branch-restrictions — the Authority Map as working code); reviewer-only separation of powers (reaction-gated application); the autonomy gradient (mechanical fixes auto, judgment = suggestion); on-demand @mention triggers; uncommitted-changes honesty before commit-and-push; progressive skill loading (descriptions as router, body on demand); per-skill skills-lock.json hash pattern (booked as zero-cost candidate: hash lockbook for our packages via a future judged CR). Wallet legs (Vercel Sandbox/Workflow, Upstash, Anthropic key, GitHub App private key) named and left at the line.",
+   "dependencies": [
+    "feat-015"
+   ],
+   "status": "done",
+   "evidence": "CR-0013 PASS; mirror /home/z/reference-mirrors/openreview @ 672deb21e70e471e0536d5ad7a67c14b8359e97e; skill-library-gate.cjs v1.3.0 GREEN 11 packages / 0 offenders (no pin — consult-only); evals v1.13.0 24/24; judge v1.15.0 40/1/0; THIRD-PARTY-NOTICES.md §7; init.sh DOMAIN-INIT-OK"
+  },
+  {
+   "id": "feat-017",
+   "name": "Frugal-routing doctrine lineage, AGPL pinned (Task 35)",
+   "description": "Owner directive 'תראה מה עם זה' (https://github.com/Alishahryar1/free-claude-code, 56,409 stars — local proxy connecting coding agents to OpenAI-compatible providers, 59 provider integrations / 11 harnesses, Python 3.14, 392 files / 67,669 LOC) executed as evaluation + same-wave doctrine adoption under the Authority Map. LICENSE VERIFIED IN-FILE: AGPL-3.0-only (34,108-byte standard AGPL v3 text, SPDX header, Copyright (c) 2026 Ali Khokhar) — repo API NOASSERTION overridden by reading the file (Task 33 rule: the file is the truth), unlike Task 34's unbacked MIT claim → full pin ritual. FIRST NON-PERMISSIVE LINEAGE PIN: sha 03aca36 certifies STUDY PROVENANCE, zero-copy only; code incorporation = AGPL §13 obligations = owner-gated. Crown doctrine in house package #12 frugal-router-operator: never spend a model call on mechanical work (optimization_handlers.py local fast-paths: quota probes/prefix/titles/suggestions/filepaths + RTK terminal-output filtering); StrictSlidingWindowLimiter guarantee stated in docstring; admission budgets independent of client lifetime, one protection budget per provider; classified failures with named remedies; authorized request/stream recovery from history; SSRF egress guard with DNS-rebinding pinning; reviewable installers; exact pins (==3.14.7, ==1.0.14); harness capability preservation; ToS-friendliness as enforced design. Security sweep clean: 0 suspicious patterns, 0 own telemetry. Wallet legs named and left at the line: running FCC needs user-supplied provider keys (possession = OWNER) and is redundant (desk model leg = z-ai SDK); headline claims booked as upstream claims.",
+   "dependencies": [
+    "feat-016"
+   ],
+   "status": "done",
+   "evidence": "CR-0014 PASS; mirror /home/z/reference-mirrors/free-claude-code @ 03aca36eb3b9f2bf07805b1c39ec4d61f6f740c1; skill-library-gate.cjs v1.4.0 GREEN 12 packages / 0 offenders (fifth pin + AGPL check); evals v1.14.0 25/25 (E25 strip-restore); judge v1.16.0 40/1/0 (five-lineage anchor); THIRD-PARTY-NOTICES.md §8; init.sh DOMAIN-INIT-OK"
+  },
+  {
+   "id": "feat-018",
+   "name": "Five-repo sweep: lineage constitution five→ten pins (Task 36)",
+   "description": "Owner five-repo listicle directive evaluated repo-by-repo under the Authority Map: trailhq/Graft (MIT in-file; owner link NanoNets/Graft redirects — org move booked; doctrine: hook-over-note, correction→persistent-rule memory, blast-radius-before-action → frugal-router-operator v1.1.0), msitarzewski/agency-agents (MIT in-file; roles-as-data at scale + catalog-as-machine-checked-source-of-truth with CI build failure on catalog-vs-disk drift → new house package #14 agency-catalog-operator; mirror shows 319 division-level agent files vs README's 232 — counts drift, sha is the truth), DeusData/codebase-memory-mcp (MIT in-file; index-once-query-forever, query-the-book-not-the-files, pure-C no-runtime-no-key, VirusTotal/SLSA3 supply chain → new house package #13 codebase-graph-operator), calesthio/OpenMontage (AGPL-3.0 in-file; stage-gated creative pipeline doctrine; pinned reference, no house package — scope discipline), stablyai/orca (MIT in-file; worktree-per-agent isolation + lineage pruning + one tracking surface → pinned reference booking). Library grows 11→14 packages; gate v1.5.0 enforces ten lineage pins; evals v1.15.0 E26 strip-restores all five new pins; judge v1.17.0 anchors the ten-lineage constitution. ALL five upstream runtimes UNINSTALLED: doctrine-only adoption, zero upstream code copied; runtime legs (npm install, native binary + MCP config writes, agent-dir bulk install, GPU render + video keys, Electron desktop) named and left at the line as possession/wallet-gated. Headline metrics (4x cheaper, 120x fewer tokens, 232 agents, 100x builders) booked as upstream claims. Disk-honesty: wave freed 1.6GB regenerable caches (huggingface/node-gyp) after 'No space left on device' to complete keyless depth-50 mirrors.",
+   "dependencies": [
+    "feat-017"
+   ],
+   "status": "done",
+   "evidence": "CR-0016 PASS; mirrors @ fe30ead/d3f71c4/96c3f41c/08e2151/843607b1 (all in-file license verified); gate v1.5.0 GREEN 14/0 (ten pins); evals v1.15.0 26/26 (E26 ×5 strip-restore); judge v1.17.0 40/1/0 (nine anchors true); notices §9-§13; init.sh DOMAIN-INIT-OK"
+  },
+  {
+   "id": "feat-019",
+   "name": "Ground-truth audit + one-bloc token-mode proposal (Task 37)",
+   "description": "Owner directive: measure git ground truth without trusting prior claims. FRESH MEASUREMENTS (all live, Task 37): authenticated API sweep 16/16 repos reachable (the standing 'authWall 14' is a keyless-probe artifact — one-bloc.cjs reads token from process.env only while the credential lives in a file, so tokenReach was structurally always 0); post-pull local==remote 16/16 (zero divergence, zero loss); 0 open PRs; Domain CI 11,316 runs all recent success; sovereignty: single user account (no org), collaborators = owner only, PAT lacks Administration scope (branch protection unverifiable by desk = owner-gated); one-shot token-mode one-bloc run: reached=16/16 authWall=0 tokenReach=14 synced=15/16; judge re-run: 41 PASS / 0 WARN / 0 FAIL — first fully-clean verdict in estate history, the sole delta being the reach WARN. DELIVERABLE: CR-0017 (tier B PASS) proposing the permanent init.sh export wiring (token into env only, never printed/committed, keyless-first preserved, rollback = one line). Implementable potentials booked in worklog: branch-protection verification (owner action), PAT rotation cadence (owner), skills-lock hash lockbook (CR candidate), zai-openai-shim integration legs (parallel CR-0015 already landed), disk housekeeping (91%).",
+   "dependencies": [
+    "feat-018"
+   ],
+   "status": "done",
+   "evidence": "CR-0017 PASS; fresh sweep receipts in worklog Task 37; one-bloc token-mode one-shot JSON at 2026-10-03T05:36:36Z; judge 41/0/0 measured; init.sh DOMAIN-INIT-OK"
+  },
+  {
+   "id": "feat-020",
+   "title": "Fleet Rung 3: parallel mini-swe wave over isolated git worktrees (CR-0020)",
+   "description": "orca's N agents x N worktrees x 1 tracker pattern landed live: 2 concurrent mini-swe-agent 2.4.6 instances on detached Domain worktrees over the CR-0015 keyless shim, env -i scrubbed, cost-limit armed, both exit 0 with distinct create/append receipts, interleaved keystone log, isolation proven ('?? wave/' only), worktrees pruned zero-residue. Sandbox-reset rebuilds booked: shim service recreated from CR spec, mirror re-cloned at pinned sha 04d809c, pip install -e 2.4.6.",
+   "status": "done",
+   "dependencies": [
+    "feat-018",
+    "feat-019"
+   ],
+   "evidence": "CR-0020 PASS (renumbered from CR-0019 — collision with the sibling swe-guard CR-0019, bc63c59; later mover renumbers); live receipts (EXIT1=0 EXIT2=0; RUNG3-WT1-OK / RUNG3-WT2-OK; shim interleave msgs=2,2,4,4; git status ?? wave/ only x2); rebuild receipts (shim from CR spec, mirror sha 04d809c == notices §6, mini 2.4.6); PROBE-LANE orca row QUEUED→LANDED + mini row Rung 3"
+  },
+  {
+   "id": "feat-021",
+   "title": "Fleet Rung 4: guarded parallel waves — swe-guard in the execution path × wave shape (CR-0021)",
+   "description": "Composed sibling CR-0019 (GuardedLocalEnvironment in execution path) with CR-0020 (parallel worktree wave): 2 concurrent guarded mini-swe 2.4.6 instances per wave, 2 waves, exits 0 ×4, per-instance trajectories via -o (CR-0020 overwrite finding closed), deny ledger unchanged on benign traffic, guard smoke receipts (allow 0 / scope-deny 126 / secret-deny 126), worktrees pruned zero-residue. Findings booked: -c agent.output_path does not merge (use -o); wave tasks must be idempotent or wave-scoped.",
+   "status": "done",
+   "dependencies": [
+    "feat-018",
+    "feat-019",
+    "feat-020"
+   ],
+   "evidence": "CR-0021 PASS; guard smoke (rc 0/126/126 + JSONL x2); waves: exits 0 ×2 ×2, RUNG4-WT1-OK / RUNG4-WT2-OK ×2; trajectories traj-gwt1.json + traj-gwt2.json distinct; deny ledger 2→2; PROBE-LANE mini row + Rung 4"
+  },
+  {
+   "id": "feat-022",
+   "title": "Fleet Rung 5: Graft context-economy multiplier — telemetry dark by four gates, paired multiplier measured (CR-0022)",
+   "description": "Adopted NanoNets/Graft @ pin fe30ead (MIT, already in the ten-pin constitution) built FROM SOURCE (BAKED_KEY empty → telemetry module inert) + DO_NOT_TRACK=1 before first run. Base graph on Domain worktree: 69 files, 686 nodes, 1524 edges, 2.97s, $0. graft ask hit #1 exact on the fleet's own GuardedLocalEnvironment (guard_env.py:L61-L104). Paired mini-swe guarded runs over the CR-0015 shim: baseline 7 api_calls vs graft-context 3 api_calls (-57% model turns, same correct receipt). Deep pass over the shim partial: 65 per-file summaries served at $0; whole-repo synthesis blocked by z-ai upstream 429 → shim consumers rate-limit law booked (shim 502 fail-loud held; GRAFT_LLM_RETRIES honored); next rung: shim-side retry/backoff queue.",
+   "status": "done",
+   "dependencies": [
+    "feat-020",
+    "feat-021"
+   ],
+   "evidence": "CR-0022 PASS (14 receipts, 5 findings); telemetry 4-gate audit (source+dist+self-report+queue: nothing queued, identity never minted); graph 686 nodes/1524 edges; ask hit #1 exact; paired runs traj-g5a (7 calls) / traj-g5b (3 calls); deny ledger 2→2; worktree pruned zero-residue; PROBE-LANE Graft row QUEUED→LANDED"
+  },
+  {
+   "id": "feat-023",
+   "title": "Fleet Rung 2.5 (RESTORED ROW): real reef runtime deployed locally + laya serving proven + KPI triple-oracle restore (CR-0023)",
+   "description": "RESTORED BOOKKEEPING ROW — CR-0023 (sibling lane, renumbered from CR-0021 — third collision) claimed feat-023 in its text but the ledger row was never written; the hole stood through the R6 worklog note and CR-0029 finding #3, and was restored by this lane's bookkeeping pass in CR-0031. Row content restored in substance from the CR text: real reef runtime deployed locally (reef-infra+reef-client from PyPI, reef serve external-provider recipe → the CR-0015 shim, SQLite-first, agent_record rows read back, no GPU/Docker), full record→verify→reward loop closed live; laya serve proven keyless (LAYA_MODELS=english root-cause fix, /v1/systemone 1312ms warm on a real fleet triage, advisory-only: confidence uncalibrated + RSS 2.08GB); KPI triple-oracle restore; independent Graft cross-check confirming CR-0022's -57% paired multiplier.",
+   "status": "done",
+   "dependencies": [
+    "feat-022"
+   ],
+   "evidence": "CR-0023 PASS (sibling lane); row missing from ledger despite being claimed in CR text (hole noted R6, re-noted CR-0029 finding #3); restored by CR-0030 bookkeeping pass with restore marking; PROBE-LANE reef + laya rows carry the full landing detail"
+  },
+  {
+   "id": "feat-024",
+   "title": "Shim v1.1.0 retry/backoff queue — CR-0022 rate-limit law closed, deep concept graph completed over the shim (CR-0026)",
+   "description": "Upgraded the CR-0015 shim with a global upstream gate (max 2 in-flight, FIFO queue), exponential backoff retries (1s..16s cap + jitter, SHIM_MAX_RETRIES env-tunable, default 5) and honest per-event logs; fail-loud preserved on exhaustion. Receipts: 6-burst smoke 6/6 HTTP 200 with queued+retry log lines; mini-swe guarded run Submitted 3 api_calls through the queue; graft deep build over the shim exited rc=0 and the whole-repo concept synthesis that 502'd twice in Rung 5 MATERIALIZED (18 provenance-traced concept nodes; graft ask returns concept-tier hits); 851 transient 429s absorbed across two deep runs; ambient sandbox-IP 429 storm booked as the binding capacity constraint (matches sibling CR-0023 independent finding).",
+   "status": "done",
+   "dependencies": [
+    "feat-020",
+    "feat-022"
+   ],
+   "evidence": "CR-0026 PASS (renumbered from CR-0024 — fourth collision, see renumber_note) (8 receipts, 5 findings); burst 6/6 200 + queued wait_ms=696 + retry backoff_ms=1046; G6-SHIM-QUEUE-OK via mini-swe; deep rc=0 with 18 concept nodes + concept-tier ask hits; retry 8/8 ladder receipt; /health v1.1.0 additive fields; worktree pruned zero-residue"
+  },
+  {
+   "id": "feat-025",
+   "title": "Fleet Rung 7: codebase-memory-mcp structural code intelligence — built from source at the constitution pin, MCP surface proven hostless, paired multiplier -50% (CR-0029)",
+   "description": "Adopted DeusData/codebase-memory-mcp @ pin 96c3f41c (MIT, already in the ten-pin constitution — no new pin, gate stays v1.5.0) built FROM SOURCE (300MB ELF, 162 tree-sitter grammars embedded, zero runtime deps; NO release binary, NO installer — install/uninstall writes 45 agent-config surfaces, refused and booked as a fleet law). Domain knowledge graph: 7437 nodes / 11265 edges / 15 edge types in 9.3s, $0, keyless, DB in ~/.cache (persistence=false default -> zero repo residue). Hit #1 EXACT on the fleet's own GuardedLocalEnvironment (guard_env.py:61-104) — identical fact to Graft's Rung 5 hit (instrument convergence). MCP-host gap answered HOSTLESS: scripted stdio JSON-RPC session lists and serves exactly 17 tools; latency ladder measured honest (one-shot 5.5s -> daemon CLI 2.0s -> warm session 12-15ms; upstream '<1ms' booked as internal claim). Paired mini-swe guarded runs (CR-0022 pattern, booked command shape verbatim): baseline 6 api_calls vs cmm-context 3 (-50% model turns, same correct receipt, N=1 honest); cross-rung: Graft 7->3 (-57%) — both instruments halve exploration; positioning: structural layer first, LLM summary layer second, raw reads last.",
+   "status": "done",
+   "dependencies": [
+    "feat-022",
+    "feat-024"
+   ],
+   "evidence": "CR-0029 PASS (renumbered from CR-0027 — fifth collision, see renumber_note) (14 receipts, 6 findings); source build at pin 96c3f41c (make -f Makefile.cbm cbm); telemetry clean by source audit + DO_NOT_TRACK=1; index 9.3s rc=0, graph census 7437/11265; search_graph hit #1 exact guard_env.py 61-104; stdio MCP 17-tools transcript; latency ladder 5.5s/2.0s/12-15ms; paired runs traj-g7a (6 calls) / traj-g7b (3 calls); deny ledger 2->2; mirror diff -q identical; git status 0/0/0 (zero residue); PROBE-LANE codebase-memory-mcp row QUEUED->LANDED"
+  },
+  {
+   "id": "feat-026",
+   "title": "Fleet Rung 8: fleet MCP host — policy-enforcing HTTP↔stdio bridge over the structural engine, amortized warm calls 7.5-8.6ms, gateway-proven (CR-0031)",
+   "description": "New fleet mini-service mini-services/mcp-host (bun, :3041, bun --hot, own package.json) governing the codebase-memory-mcp engine (Rung 7 / CR-0029 source build). Laws IN CODE: defense in depth (host allowlist belt = faithful analysis-profile copy, 13 read-only tools; engine child spawned with --tool-profile braces), owner-gated config surfaces (install/uninstall never run), human-only boundary widening (CBM_ALLOWED_ROOT on child), deny receipts (JSONL swe-guard pattern), fail-loud JSON-RPC errors, DO_NOT_TRACK=1 propagated. Receipts: /health full payload; tools/list = exactly 13 (write/admin quartet invisible); initialize handshake; tools/call search_graph hit 'Class guard_env.py 61-104' (third independent pass on the same fleet fact after R5 Graft and R7 cli); amortization post-fix: cold 1.807s once, then 7.5-8.6ms per call INCLUDING HTTP with zero re-spawns; deny battery 3/3 receipted (manage_adr, index_repository with /etc path — never reached the engine, resources/list); gateway path-preserving XTransformPort proven end-to-end (tools/call hit one-bloc.cjs:47 through :81); bun --hot survived two live fixes; feat-023 ledger hole closed by the same bookkeeping pass.",
+   "status": "done",
+   "dependencies": [
+    "feat-025",
+    "feat-023"
+   ],
+   "evidence": "CR-0031 PASS (renumbered from CR-0030 — sixth collision, see renumber_note) (10 receipts, 6 findings); deny ledger /tmp/mcp-host-denies.jsonl 3 lines; gateway receipts via :81 XTransformPort; Bun Promise-truth law + per-stream buffer law + stderr-drain law booked; ledger now contiguous feat-022..feat-026"
+  },
+  {
+   "id": "feat-027",
+   "title": "Fleet Rung 9: host-consumer wiring — the fleet consumer contract (agents/cmmq) rides the governed MCP host; policy+receipts in one place; rank-is-not-contract law + mandatory confirmation rung (CR-0032)",
+   "description": "agents/cmmq/cmmq.sh: the in-tree consumer wrapper (curl-only, fail-loud, reads-only) — the ONE client shape for desk scripts and guarded episodes to reach the governed structural layer (CR-0031 host). Proven: episode-internal consumption receipted host-side per call (mini-swe booked-shape episodes, tool-calls at 7-23ms through HTTP); deny battery through the wrapper (rc=1 + JSONL line #4); freshness measured at consumption time (detect_changes caught the rung's own uncommitted wrapper). HONEST paired matrix (N=2 pairs + remedy): turn economy is TASK-SHAPE BOUNDED (single-symbol 6->7, discovery 14->16 — the R5/R7 multipliers bound to large-surface tasks); proven economies = latency (9 structural queries ~0.1s vs ~49.5s one-shot-CLI equivalent) and governance; NEW LAW rank-is-not-contract (semantic hits decoyed one episode to a wrong file, one to the top-ranked span) -> the exploration ladder gains a MANDATORY confirmation rung: query -> confirm against the question's contract -> read only to confirm.",
+   "status": "done",
+   "dependencies": [
+    "feat-026"
+   ],
+   "evidence": "CR-0032; /tmp/g9-traj trajectories + answer files + consoles; host log 55 receipted calls; /tmp/mcp-host-denies.jsonl line #4"
+  },
+  {
+   "id": "feat-028",
+   "title": "Fleet Rung 10 (convergence): market-grid desk — live keyless instrument over the official internal markets (HBD/HIVE, SBD/STEEM, Hive-Engine), measured edge (SBD/STEEM 1.55% ≈ 6x Hive), paper-before-capital law, owner-gated executor preview (CR-0034)",
+   "description": "agents/market-grid.cjs: reads the REAL orderbooks/tickers/tape from the chains' OWN official APIs (api.hive.blog, api.steemit.com condenser_api; api.hive-engine.com JSON-RPC), computes REAL grids (band clamped from 24h change, spacing ≥ 0.4% round-trip floor, feasibility marked per token), records PAPER fills in a labeled append-only ledger, emits 20 prebuilt limit_order_create payloads ALL stamped OWNER-GATED-NOT-BROADCAST (wallet authority stays the owner's). First run: MARKET-GRID-LIVE, 3 markets, 0 errors. Books the full-fleet convergence audit: 2/16 repos local, Defi layer LIVE (8 daemons, trigger mesh 47/47), revenue /bin/bash.0029/day vs burn .2757/day (L0 behind X-1 key-rotation + X-2 capital owner gates), EVM state (SAOSLedger/SAOSExchange 46 tests + one OP anchor proven; ZERO TVM code), vetted SOTA digest (official domains only), and the WHY-SLOW answer: the binding constraint is capital+authority, not code.",
+   "status": "done",
+   "dependencies": [
+    "feat-027"
+   ],
+   "evidence": "CR-0034; agents/market-grid.json/.md + market-grid-paper.jsonl; Defi fleet KPI.json; fills-ledger.json; vetted-source digest in CR-0034 receipts"
+  },
+  {
+   "id": "feat-029",
+   "title": "Fleet Rung 11 (convergence unblock): checkout wave 16/16 repos local, first TRON keyless receipts (2.000002 TRX live via trongrid), grid time-series with measured minute-scale edge drift (CR-0035)",
+   "description": "The REPO-PROXIMITY GAP closed: all 14 missing org repos cloned into the local estate (~880MB, metadata-only receipts, no secret material echoed) — saos-dex grid-heartbeat + platform Foundry contracts + Zip key vault + steem HE ladder now inspectable offline. THREE-LAYER COMPOSITION LAW booked: market-grid (keyless official-surface observer) / saos-dex grid-beat (DEX-side ledger) / steem he_ladder (HE-side executor). market-grid gains an append-only per-invocation history row (pulled-schedule pattern per the LAUNCH-CONTEXT law — no daemons): 2 rows landed, drift measured SBD/STEEM 1.55%->1.34% in ~3 minutes. TRON: observation layer starts (official trongrid read-only, custody box 2.000002 TRX live-confirmed); TVM code honestly still ABSENT (gates on X-1+X-2).",
+   "status": "done",
+   "dependencies": [
+    "feat-028"
+   ],
+   "evidence": "CR-0035; agents/market-grid-history.jsonl; local estate table (16/16); trongrid read-back; saos-dex/platform/Zip/steem head receipts"
+  },
+  {
+   "id": "feat-030",
+   "title": "Fleet Rung 12: SIGNED market executor — first live orderbook trades (6/6 orders standing on the SBD/STEEM internal market, best-ask at placement, idempotency proven live) + EVM convergence doctrine (CR-0036)",
+   "description": "CR-0034 built the keyless grid observer; the operator directive opened the owner gate and this rung claims the signing leg: agents/market-exec.cjs verify-then-sign (derived active WIF byte-checked vs on-chain active_key_auths, DRY_RUN default, caps in code, add-only, stack-idempotent) broadcast 6 limit_order_create2 ops — 4 sells 0.101171-0.102389 (L1 = best ask at placement) + 2 buys 0.099602/0.099206, realized err <= 0.018%, all orderids 1791050734-39 standing via find_limit_orders, liquid moved exactly as planned (4.287->1.581 STEEM, 0.5->0.0 SBD). Wire laws booked: unique orderid (same owner+orderid REPLACES), exchange_rate{base:sell,quote:receive}, object op payloads, find_limit_orders readback. Recon: steem internal market ALIVE (bot ~10 fills/min, 0% fee, no minimum); Hive/HE NO-GO honestly. Doctrine artifact agents/evm-convergence.md: official-sources-only world state (llama/l2beat/EIP-ERC-Safe-x402), top-8 adoptable ideas, honest CANNOT list, anti-goodhart correction of the recon premium claim, why-slow analysis. Evals 28/28 (E28 planner).",
+   "status": "done",
+   "cr": "CR-0036",
+   "landed": "2026-10-03",
+   "evidence": [
+    "agents/market-exec.json run#7",
+    "agents/market-exec.md",
+    "agents/evm-convergence.md",
+    "evals E28"
+   ]
+  },
+  {
+   "id": "feat-031",
+   "title": "Fleet Rung 12 (cross-layer convergence pass): mechanical offline audit across the four grid/market layers — fee-doctrine drift measured (DEX kernel 30bps vs SAOSExchange 20bps), migration law measured (market-grid 40bps floor < 60bps marginal DEX round trip), dust-floor law, geometry ladder, gate/ledger parity, maker-taker-observer triad (CR-0037)",
+   "description": "agents/cross-layer.cjs reads the REAL sources of all four layers from the 16/16-local estate (L0 Domain market-grid.cjs, L1 saos-dex kernel/amm/mm/grid-beat + grid-ledger.json, L2 steem he_ladder.cjs + live_gate, L3 platform SAOSExchange.sol/SAOSLedger.sol + 5 .t.sol), hashes every artifact (sha256 receipts), and runs 7 mechanical checks: C1 fee-model cross-check with REAL integer-floor x*y=k round-trip simulation per size (0.1%/1%/marginal), C2 grid-geometry ladder (20<40<50<200bps nesting), C3 owner-gate parity (owner-gated/honest-disarm/dry-run markers in ALL layers), C4 ledger discipline on real rows (60 paper + 2 history + 73 orders/43 fills), C5 contract receipt (fee/pot/swap-cap constants, zero-fee rail, 78 function-test surface), C6 expiry parity (27d vs STEEM 27d cap), C7 maker/taker/observer triad. Fail-soft, offline, keyless, deterministic. First run: CROSS-LAYER-CONVERGENT 7 checks / 6 PASS / 1 DRIFT / 0 FAIL / 2 findings / 15 receipts.",
+   "status": "done",
+   "dependencies": [
+    "feat-029"
+   ],
+   "evidence": "CR-0037; agents/cross-layer.json/.md"
+  },
+  {
+   "id": "feat-032",
+   "title": "Fleet Rung 13 (cadence wired): market-grid history time-series on Actions cron (23,53 every 30min, keyless, append-only publish with [skip ci]) + STASIS double-gate (scheduler step + desk halts in code BEFORE any read, fresh-process proven) + E29 in the merged suite at 29/29 (CR-0038)",
+   "description": ".github/workflows/market-grid-cron.yml turns the market-grid desk from a hand-run snapshot instrument into a scheduled ~48-rows/day time-series at zero capital/zero secrets/zero authority: the twin publish idiom (add -> diff --cached --quiet -> commit [skip ci] -> pull --rebase -> push HEAD:main, built-in GITHUB_TOKEN), cadence offset from every sibling pulse. STASIS obeyed twice: the scheduler gates tick+publish on agents/STASIS.json, and market-grid.cjs now halts in code before any network byte (exit 0, STASIS-HALT stdout, one labeled MARKET-GRID-HALTED-STASIS history row) — the FATE-DEFENSE law #1 gap closed. The tick step carries continue-on-error because the desk is fail-loud by design (PARTIAL -> exit 1) while a time-series values every honest row. Live: brake proven in fresh process (E29) AND live (flip/restore byte-checked); live ticks PARTIAL (hive transient) + MARKET-GRID-LIVE (3 markets/5 grids/0 errors); drift continues SBD/STEEM 1.5499->1.3385->0.7548 under the sibling live market-exec quoting.",
+   "status": "done",
+   "dependencies": [
+    "feat-031"
+   ],
+   "evidence": "CR-0038; .github/workflows/market-grid-cron.yml; agents/market-grid.cjs STASIS brake; agents/market-grid-history.jsonl 4 rows; run-evals v1.17.0 E29; evals 29/29"
+  },
+  {
+   "id": "feat-033",
+   "title": "Fleet Rung 13 (lane B): the closed cycle loop — fill_order measurement leg (µ-unit average-cost P&L, direction law, replay law) + market-cycle composer + first LIVE autonomous reflex with on-chain readback (CR-0039)",
+   "description": "The internal-market grid gained its measurement leg and its reflex arc: agents/fill-ledger.cjs captures headcorner's fill_order virtual ops with the direction law (ours-as-OPEN sells open_pays / ours-as-CURRENT sells current_pays), average-cost P&L in lossless µ-units over an append-only replay-derived ledger, and emits a recycle suggestion (FUNDED-SELL-SIDE ≥0.5 STEEM / FUNDED-BUY-SIDE ≥0.25 SBD / FILLS-N). agents/market-cycle.cjs composes eyes → decision → hands: fill-ledger (read-only) → decideCycle (pure) → CR-0036 executor child, DRY by default, LIVE only when MARKET_CYCLE_LIVE=1 AND the ledger suggests, pulled-schedule no-daemon, eval-context off-switch for CI. LIVE-FIRED: cycle run #2 armed the executor which broadcast 1/1 (0.377 STEEM → 0.038 SBD @ realized 0.100796, orderid 1791052891, readback price_match TRUE) — the first end-to-end autonomous market reflex with every leg receipted; DRY cycle run #9-#10 proved stack-idempotency adapts to book drift (grid maintenance emergent). E30 guards the direction law, the exact P&L arithmetic (hand-checked +0.0025 SBD fixture), over-inventory blocking, dedupe, thresholds, and the decision law. Tenth-collision renumber: CR-0037→CR-0039, feat-031→feat-033, E29→E30 (sibling took those slots with cross-layer + cadence).",
+   "status": "LIVE",
+   "cr": "CR-0039",
+   "landed": "2026-10-03T19:00:00Z",
+   "evidence": [
+    "agents/fill-ledger.json",
+    "agents/fill-ledger-fills.jsonl",
+    "agents/market-cycle.json",
+    "agents/market-exec.json run #10",
+    "agents/evals/eval-results.json (E30)",
+    "on-chain orderid 1791052891"
+   ]
+  },
+  {
+   "id": "feat-034",
+   "title": "Fleet Rung 14: the fleet census — estate-wide capability/sovereignty/blocker/wiring map, offline+keyless+deterministic over the real 16-repo estate (CR-0040)",
+   "description": "agents/fleet-census.cjs answers מה יש לנו / מה חוסם / ריבונות / חיבור mechanically: 16 lanes x 61 verified capability markers, sovereignty counters (8/43 keyless workflows, STASIS halt-in-code, 5 gated + 21 offline desks, vault ceremony, 5 mesh tests), a blockers registry with live-read evidence (fee-drift 30vs20bps machine-checked, cadence series maturity, migration law, TVM/capital operator-gated), 10/10 composition arcs WIRED, edge series from our own ledgers, 18 sha256 receipts. Determinism law (byte-stable payload) + fail-soft (empty estate honest) + E31 in run-evals v1.19.0; evals 31/31.",
+   "status": "LIVE",
+   "cr": "CR-0040",
+   "landed": "2026-10-03T19:03:48Z",
+   "evidence": [
+    "agents/fleet-census.json",
+    "agents/fleet-census.md",
+    "agents/evals/eval-results.json (E31)",
+    "agents/change-requests/CR-0040-fleet-census.json"
+   ]
+  },
+  {
+   "id": "feat-035",
+   "title": "Fleet Rung 15: the estate map joins the cadence — fleet-census-cron.yml (daily keyless cron, deterministic publish, STASIS double-gate) + the desk-side halt-before-read brake (CR-0041)",
+   "description": ".github/workflows/fleet-census-cron.yml refreshes the CR-0040 fleet census daily at 02:11 UTC, keyless, off the org minute map; publish is deterministic (clean exit on no-drift) with the twin commit idiom; STASIS obeyed twice (scheduler gate + desk-side stasisHalt() halting in code BEFORE any lane read, E32-proven fresh-process). E32 in run-evals v1.20.0 canonizes nine workflow laws + the halt; evals 32/32; parse-gate 44 workflows 0 offenders.",
+   "status": "LIVE",
+   "cr": "CR-0041",
+   "landed": "2026-10-03T19:16:17Z",
+   "evidence": [
+    ".github/workflows/fleet-census-cron.yml",
+    "agents/fleet-census.cjs",
+    "agents/evals/eval-results.json (E32)",
+    "agents/change-requests/CR-0041-census-cadence.json"
+   ]
+  },
+  {
+   "id": "feat-036",
+   "title": "Fleet Rung 16 lane B: flow-catch taker leg (one-sided-tape breaker, price improvement at the bid, proceeds-funded buy ladder) + fill-ledger condenser wire fix capturing 10 real fills + the eyes cadence cron (CR-0042)",
+   "description": "market-exec gains FLOW-CATCH (default OFF, MARKET_EXEC_FLOWCATCH=1): ONE marketable sell joins the resting bid (min = bid×0.999, ≤50% liquid) and fills AT the bid, proceeds fund a stack-aware buy ladder (90% of proceeds, dust discipline, determinism byte-checked; E33). LIVE-FIRED run #13: taker 0.713 STEEM filled at 0.101083, buy 0.052 SBD→0.517 STEEM standing, balances reconciled to the satoshi. fill-ledger wire fix: account_history_api serves empty op bodies on official nodes (measured) → condenser walk with dual-form asset parsing → 10 REAL FILLS captured (0.508 SBD proceeds; our 0.100694 ask lifted by coin-raffle). fill-ledger-cron.yml wires the eyes every 30min keyless (CR-0038 twin idiom, :17/:47, STASIS twice, dedupe-composable).",
+   "status": "LIVE",
+   "cr": "CR-0042",
+   "landed": "2026-10-03T19:35:00Z",
+   "evidence": [
+    "agents/market-exec.json run #13",
+    "agents/fill-ledger.json run #6 + fills.jsonl (10 rows)",
+    "agents/evals/eval-results.json (E33)",
+    ".github/workflows/fill-ledger-cron.yml",
+    "on-chain orderid 1791054505"
+   ]
+  },
+  {
+   "id": "feat-037",
+   "title": "Fleet Rung 16 lane B: the fleet's ERC-8004-shaped agent registry — identity/reputation/validation derived ONLY from canon evidence with recomputable sha256 hashes + the sovereign-convergence doctrine (CR-0042)",
+   "description": "agents/agent-registry.cjs implements the ERC-8004 trust shape (ethereum/ERCs receipt via Z-65-b) over rails we own: Identity (6 fleet desks with agentURI/metadata/keyMode/alive honesty), Reputation (evidence-ONLY — every value from canon rows, feedbackHash = sha256(counted rows) recomputable by the E34 eval), Validation (desk evals E28/E30/E33 as validationRequest/response). Live on real canons: market-exec 62% clean-run (wire-defect history visible honestly), fill-ledger 10 fills, market-cycle 100% clean. Keyless + offline by construction; on-chain register owner-gated when funded. agents/sovereign-convergence.md books the whole-git answer: differentiated stack, top-10 wires (2 landed), measured blockers (binding chain: capital←edge-proof←fills←positioning←armed-loop), custody proposals (threshold multisig via account_auths, no WIF sharing), all research whitelisted (delegate_rc UNVERIFIED).",
+   "status": "LIVE",
+   "cr": "CR-0042",
+   "landed": "2026-10-03T19:35:00Z",
+   "evidence": [
+    "agents/agent-registry.json",
+    "agents/agent-registry.md",
+    "agents/evals/eval-results.json (E34)",
+    "agents/sovereign-convergence.md"
+   ]
+  },
+  {
+   "id": "feat-038",
+   "title": "Fleet Rung 16: the census-delta reader — map-vs-map drift record as the third measurement surface, plus the two live-found perspective laws (single-lane-workspace quarantine + no cross-estate diffs) (CR-0043; renumbered from feat-036 after the eleventh-collision — lane B took feat-036/037 with the wiring wave)",
+   "description": "agents/fleet-delta.cjs diffs two census stable payloads (reusing censusStable/stasisHalt by require) into a structured transition record: lanes/status/caps, sovereignty leaves, blocker (id,status) transitions with live evidence excluded, wiring status, edge growth, from/to fingerprints, estate perspective stamped. Event-ledger law: rows book ONLY on FIRST-DELTA/DRIFT; NO-DRIFT/SKIP days book nothing (composes with the no-noise publish law). Its first live run exposed the R15 CI tick as a 1/16-lane perspective flip (49 fake transitions proven live); fixed by the SINGLE-LANE-WORKSPACE law (CI checkout quarantined to fleet-census.artifact.json, canonical map untouched) and the PERSPECTIVE law (SKIP on cross-estate diffs); the cron delta step now diffs artifact-vs-artifact. E35 in run-evals v1.22.0; evals 35/35 on the merged tree.",
+   "status": "LIVE",
+   "cr": "CR-0043",
+   "landed": "2026-10-03T19:55:00Z",
+   "evidence": [
+    "agents/fleet-delta.cjs",
+    "agents/fleet-census.cjs (single-lane-workspace law)",
+    ".github/workflows/fleet-census-cron.yml (delta step)",
+    "agents/evals/eval-results.json (E35)",
+    "agents/change-requests/CR-0043-census-delta.json"
+   ]
+  },
+  {
+   "id": "feat-039",
+   "title": "Fleet Rung 17: THE SOVEREIGN TRANSFER — the last two operator-held decisions (D1 live-fire, D2 drip pacing) moved into policy-gated sovereignty with the DUAL GATE (sovereign auto-path AND operator overlay) + the 24/7 sovereign tick cron (CR-0044)",
+   "description": "Operator directive 2026-10-03 transferred the decisions sovereign-convergence.md named as operator-held: agents/sovereign-policy.json is the written constitution (delegation receipt verbatim, gate modes sovereign|operator, limits: 900s broadcast gap, 24 fills/day, 48 decisions/day, 0.05 SBD daily-loss stop, 3 consecutive-loss stop, Tier-S size ≤1.25 STEEM, fuel keep-floors, drip posture steady-4w with authority ops OFF). agents/sovereign.cjs is the pure decision core (decideSovereign gate-order law: STASIS-HALT → mode → arming-presence → suggestion → gap → day-caps → loss breakers → fuel floors → Tier-E size → EXECUTE-LIVE; dripPacing; applyReceipt daily rollover; arming is PRESENCE-ONLY — key material never read/logged). agents/sovereign-tick.cjs is the fresh-child orchestrator (measure local canon → decide → route market-cycle LIVE/DRY or park Tier-E in sovereign-pending.json → append-only sovereign-decisions.jsonl + daily state; day-book truth = the LEDGER single source). .github/workflows/sovereign-tick-cron.yml arms the loop 24/7 at :12/:42 (off the whole org minute map, STASIS-braked twice, keyless default books honest DRY receipts, arming = one secret, rebase-push publish [skip ci]). FIRST FULLY SOVEREIGN CYCLE receipted: tick #1 EXECUTE-LIVE → cycle #3 LIVE → market-exec run #14 placed L1 sell 0.388 STEEM→0.039 SBD @ 0.100515, orderid 1791056833, readback found/price_match/matched TRUE, 0 errors; tick #2/#4 GAP-PACING honored (30s/179s < 900s); live defect caught by the fail-loud book (ledger scope) and fixed in-session. E35 in run-evals v1.22.0: gate-order law, breakers as reason codes, drip pacing, applyReceipt rollover, 3 fresh-process black-boxes (keyless DRY, operator-overlay ESCALATE to pending mailbox, STASIS halt-before-read with a garbage ledger).",
+   "status": "LIVE",
+   "evidence": "agents/sovereign-policy.json · agents/sovereign.cjs · agents/sovereign-tick.cjs · agents/sovereign-state.json · agents/sovereign-decisions.jsonl · agents/sovereign-pending.json (Tier-E mailbox) · .github/workflows/sovereign-tick-cron.yml · market-exec run #14 orderid 1791056833 readback matched · E35 evals 33 PASS / 2 environment-bound (E31/E32 census estate clones lost to the sandbox reset, lane/CI green)",
+   "cr": "CR-0044",
+   "landed_at": "2026-10-03T19:50:38.369Z"
+  },
+  {
+   "id": "feat-040",
+   "title": "Fleet Rung 18: THE ACQUISITION — 24/7 cron ARMED (repo secret STEEM_ACTIVE_WIF set via sealed-box API, zero transcript exposure), D2 fuel canon on-chain (drip-canon.cjs mixed-unit law), estate re-cloned 16/16, suite 36/36 (CR-0045)",
+   "description": "Operator directive 2026-10-03 (\"אוקי אז תשיג מה שצריך קדימה תמשיך\") — acquire what is needed: (1) ARMING: the repository secret STEEM_ACTIVE_WIF was created/updated (HTTP 204) by encrypting the local derived-keys vault active WIF with the repo public key (libsodium sealed box, token piped, no material ever on transcript or disk logs); the :12/:42 sovereign-tick cron now materializes the vault presence-only and fires LIVE per sovereign-policy.json — verify-then-sign + caps + band + ADD-ONLY still bind at fire time; secret census verified names-only (13 secrets incl. STEEM/HIVE/BLURT WIFs, EVM_ANCHOR_PK, MAIN_KEY). (2) D2 FUEL CANON: agents/drip-canon.cjs reads the powerdown state keylessly from the chain (condenser primary + justyy cross, 0.5% split-brain guard, atomic write, DRIP_CANON_SKIP eval off-switch) — THE MIXED-UNIT LAW caught and coded: condenser to_withdraw is GESTS (µ-VESTS ÷1e6) while vesting_withdraw_rate is VESTS (live-measured twice: 1903.529118 SP remaining, 475.88228 SP/wk); canon agents/sovereign-drip.json wired into the tick via SOVEREIGN_DRIP_JSON (workflow step + env + publish list) — drip verdict upgraded from NO-DRIP-CANON receipt to measured STEADY (runway 28d >= 14d reserve). (3) ESTATE RESTORED: all 14 lanes lost to the sandbox reset re-cloned (saos-dex, steem, saos-sovereign-platform, Console, Zip, Saosmartwallet, Sdk, Adsmarket, Project-files, anchor-baseline, roshpina, saos-control-center, saos-jummper, saos-sovereign-foundry) — the census is whole again. (4) E36 EXT: mixed-unit white-box fixture at 1 VESTS=1e-4 SP + unit-clamp refuse; suite v1.24.0 — 36/36 GREEN (first fully green suite since the reset; the 2 environment-bound census evals HEALED by the re-clone). (5) LIVE receipts: sovereign tick #6 EXECUTE-LIVE (IN-POLICY, FUNDED-SELL-SIDE 0.921 STEEM, drip STEADY) → market-exec run #18 LIVE authority_ok:true, 6/6 STACK-EXISTS idempotent (zero duplicate orders, fuel held by ADD-ONLY law).",
+   "status": "LIVE",
+   "cr": "CR-0045",
+   "evidence": {
+    "secret_put": 204,
+    "secrets_census": 13,
+    "drip_canon": "agents/sovereign-drip.json",
+    "runway_days": 28,
+    "estate_lanes": 16,
+    "evals": "36/36 v1.24.0",
+    "tick6": "EXECUTE-LIVE drip=STEADY",
+    "exec18": "authority_ok TRUE, 6x STACK-EXISTS, 0 errors"
+   },
+   "at": "2026-10-03T20:20:30.309Z"
+  },
+  {
+   "id": "feat-041",
+   "title": "Fleet Rung 19: THE FROM-NOTHING PROOF — earn-audit.cjs chain-truth income desk (direction-law fill classification), the drip deployment measured op-by-op, the content loop measured DEAD ($0 lifetime), audit cron :07/:37 (CR-0046)",
+   "description": "Operator directive (\"אם היית חכם היית יכול לייצר גם מכלום ... אל תסמוך על הטענות שלך ... זרימה\") — every income claim is now MEASURED against the chain, not trusted: (1) agents/earn-audit.cjs — keyless read-only walks of condenser account_history (fill-ledger walk law: limit-100 cap, backwards pagination, bounded window) tallying per-account: author/curation rewards, claims, fill_vesting_withdraw (drip arrivals), transfers, CONVERTS, and fills classified by THE DIRECTION LAW (ours-as-OPEN: gave open_pays received current_pays; ours-as-CURRENT: gave current_pays; unparseable = honest skip) with feed/global-props USD context; single-writer agents/earn-audit.json+md; EARN_AUDIT_SKIP off-switch; E37 white-box in suite v1.25.0. (2) THE DRIP DEPLOYMENT PROVEN op-by-op (seq 61196): 475.857 STEEM arrived 02:01:27Z and was DEPLOYED the same hour — 51 fills on the day (sold ~525 STEEM → ~52.6 SBD to btsx/droida/quicktrades bids; bought back ~88 STEEM for ~9 SBD), 14 converts (45.3 SBD → STEEM at feed on Oct 7), two-sided grid re-built (asks 0.049-0.106, bids 0.098-0.1004), 466 cancels pacing — the sovereign loop treats the drip as INVENTORY, not savings. (3) THE CONTENT LOOP MEASURED DEAD: 2500+ ops walked, 1421 votes + 56 posts in 7d fleet-wide → author+curation rewards = 0.000 lifetime (soldier accounts ~30 SP = dust rshares; headcorner 4286 SP votes 50% weight into 0.002-SBD dust pools like fatima9/contest) — the weave/curation/blog lanes produce ZERO chain income; this is now a MEASURED fact, not an opinion. (4) RECONCILIATION RESIDUAL booked honestly: quick-tally vs current balances off by ~51 STEEM + ~4 SBD (partial fills × cancels × body-parse variants) — the fill-ledger full-day wire is the named next rung (the ledger, not the audit, is the P&L authority). (5) earn-audit-cron.yml :07/:37 — the proof surface runs 24/7 keyless and pushes its book [skip ci].",
+   "status": "LIVE",
+   "cr": "CR-0046",
+   "evidence": {
+    "drip_op": "seq 61196: 475.857 STEEM deposited 2026-10-03T02:01:27Z",
+    "fills_today": 51,
+    "sold_today": "525.228 STEEM → 52.56 SBD",
+    "converts_today": "14 ops / 45.28 SBD cumulative",
+    "content_loop_7d": "1421 votes + 56 posts → 0.000 rewards (MEASURED DEAD)",
+    "suite": "37/37 v1.25.0",
+    "cron": ":07/:37 keyless"
+   },
+   "at": "2026-10-03T21:02:04.544Z"
+  },
+  {
+   "id": "feat-042",
+   "title": "Fleet Rung 20: THE EDGE OPTIMIZATION — ledger vwapStats (realized sell/buy VWAP authority), the executor BUY-PREMIUM LAW (no buy priced above sellVwap x 0.997), the sovereign BUY-PREMIUM BREAKER, full-day eyes walk, measured leak -2.13% closed structurally (CR-0047)",
+   "description": "Operator directive (\"תמשיך נסה לשפר את זה לייעל משמעותית מאוד\") — the biggest MEASURED inefficiency was the realized edge: the ledger authority now proves it and three layers close it. (1) LEDGER VWAP AUTHORITY: fill-ledger vwapStats (pure, µ-leg sums) — sell VWAP 0.100067 vs buy VWAP 0.102197 = edge -2.1282% on the day window (49 sells / 8 buys); full-day walk (FILL_LEDGER_MAX_PAGES, default 5 -> cron 15) caught 45 NEW fills (57 total) — the Z-68 reconcile residual is EXPLAINED: the 500-op page window was hiding the day churn, not missing money; realized P&L honest -0.178154 SBD + proceeds_unbased 46.511 SBD + 28 unclassified legs; liquid now 3.812 STEEM + 14.706 SBD (the sells returned). (2) EXECUTOR LAW: market-exec DEFAULTS.BUY_EDGE_FLOOR_PCT=0.3 — buildPlan AND buildFlowCatchPlan cap EVERY buy at sellVwap x (1-0.3%), vwap_capped receipts in every plan, below-band caps skip honest (never priced wrong); the ledger is read read-only (single-writer respected). (3) SOVEREIGN BREAKER: decideSovereign BUY-PREMIUM-BREAKER (after BREAKER-CONSEC-LOSS, needs >=3 buys in window) routes PLAN-DRY while the window shows premium > 0.3% — VWAP-capped plans compose as receipts until the ledger heals; sovereign-policy.json limits.max_buy_premium_vs_sell_vwap_pct=0.3 with the law note. (4) LIVE: tick #7 hit DAY-CAPS (57 fills >= 24) — the day is booked by its own pace; E38 white-box 9 expectations (vwapStats exact micro sums 0.100067/0.102198 edge -2.1299 on summed fixture, cap-binds / cap-noop / below-band-skip, flowcatch capped, breaker PLAN-DRY / clean-edge EXECUTE-LIVE / 3-buys minimum) — suite v1.26.0 38/38 GREEN. In-session discipline: 3 fixture mis-assertions fixed by PRINTING the actual values instead of trusting hand arithmetic (the anti-claims law applied to my own tests); the MultiEdit partial-apply tool defect corrupted fill-ledger mid-session -> restored from HEAD -> re-applied via asserted python patch (parse-checked each step).",
+   "status": "LIVE",
+   "cr": "CR-0047",
+   "evidence": {
+    "ledger": "run #15: 57 fills, vwap sell 0.100067 / buy 0.102197, edge -2.1282%",
+    "realized": "-0.178154 SBD costed + 46.511 SBD proceeds_unbased, 28 unclassified",
+    "law": "BUY_EDGE_FLOOR_PCT 0.3 executor-side + max_buy_premium_vs_sell_vwap_pct 0.3 gate-side",
+    "suite": "38/38 v1.26.0",
+    "liquid_now": "3.812 STEEM / 14.706 SBD"
+   },
+   "at": "2026-10-03T21:13:51.601Z"
+  },
+  {
+   "id": "feat-043",
+   "title": "Fleet Rung 19: THE COORDINATION BUS — keyless saos.* custom_json reader (split-brain-guarded head vectors, LIMIT-100 + ghost-filter + watermark-walk laws measured live), RESERVATIONS.jsonl collision leases (reason-code machine, no immortal leases), public coordination proof wire, wired into the fill-ledger cadence (CR-0048; renumbered from CR-0046/feat-041/E37 — the sibling from-nothing lane claimed those slots first on main, later-mover law)",
+   "description": "Convergence §4.3 booking executed. Measured live at open: the bus ALREADY carried traffic (33 saos.weave.core.v1 checkpoints + 4 saos.snapshot.v1 digests on headcorner) with NO reader in the estate. coord-bus.cjs reads it keyless (primary+cross, HEAD-VECTOR fingerprint = window-stable bus state with head content digests — a silent bus books no noise, a same-seq content lie fails the guard), LIMIT-100 law (measured -32801) + operation_filter GHOST law (measured unfiltered on both nodes) + WATERMARK WALK (stops at the previous book lowest head — continuous coverage of a hot account whose limit-order churn slid a fixed window live: 62262->62548 ops in ~15 min), UNREACHABLE honesty (both views dead -> write nothing — defect caught by E39 BEFORE production), STASIS halt-before-read (stasisHalt borrowed from the census desk), COORD_BUS_SKIP/COORD_BUS_FIXTURE eval seams. coord-lease.cjs: append-only RESERVATIONS.jsonl, resolveLeases reducer (stale race rows lose, foreign release no-op), claimDecision GRANT/GRANT-RENEW/TAKEOVER-EXPIRED/REFUSE/REFUSE-NO-TTL, CLI claim/release/list, keyless offline. Wired: coord-bus rides fill-ledger-cron :17/:47 as an independent no-noise publish leg (one chain-read cadence, two lenses, zero extra Actions minutes); public-pulse gains the coordination proof section (bus health + leases + 6 identities from committed books, stamped). E39 run-evals v1.26.0 -> v1.27.0, suite GREEN incl. the black-box append law (only grants write).",
+   "status": "shipped",
+   "rung": "R19",
+   "cr": "CR-0048",
+   "landed_at": "2026-10-03T21:23:50.930Z"
+  },
+  {
+   "id": "feat-044",
+   "title": "Self-healing pulse: tick-keeper re-fires starved desks from their own receipts + ledger-first day-truth (negative realized survives, BREAKER-DAILY-LOSS cannot be silently disarmed)",
+   "status": "LIVE",
+   "evidence": [
+    "measured starvation (keyless GitHub API 2026-10-03): sovereign-tick/earn-audit crons = 0 schedule events since arming (all runs workflow_dispatch); scheduled runs arrive hours late (treasury-route 16:20 slot ran 20:09) — dispatch latency measured 15-30s (21:15:04 dispatch -> 21:15:22 decision)",
+    "agents/tick-keeper.cjs: reads arc receipts (decisions jsonl / earn-audit / fill-ledger) -> keeperDecide pure -> dispatches stale desks via PAT workflow_dispatch (PAT events bypass the GITHUB_TOKEN recursion block) -> books tick-keeper.json/.md, single-writer, STASIS-first, 20m cooldown, fail-soft exit 0",
+    ".github/workflows/tick-keeper.yml: 2,32 (clean minutes, verified zero collisions), STASIS gate, WEAVE_OPS_PAT env-only",
+    "agents/minute-map.json: 14 cron collisions reslotted to 0 across 21 workflows (law: one workflow minute = one machine — collisions multiply the starvation surface)",
+    "ledgerDayTruth defect FIXED: old Math.max(state, ledger) fusion swallowed NEGATIVE realized (losing day read 0.000 SBD -> BREAKER-DAILY-LOSS silently disarmed); ledger row is now the day-book, negative truth reaches the gate",
+    "earn-audit depth: MAX_PAGES 4 -> 30 (400 ops hid the drip on rotation days; ~3000 ops/account now walked, pagesUsed booked honestly)",
+    "suite v1.28.0 on the MERGED tree (with the coordination-bus lane R19): E29/E32 stale fixtures healed to the reslot + E40a (negative realized -178154uSBD survives; ledger wins; state fallback; zeros never NaN) + E40b (stale/fresh/no-receipt/cooldown-20m/per-desk-gaps/arc-registry)",
+    "live: tick #9 PLAN-DRY DAY-CAPS (fills 57 >= 24, day booked, receipts continue); keeper book agents/tick-keeper.json at 21:36:39Z (all three desks fresh)"
+   ],
+   "ts": "2026-10-03T21:51:56.074Z"
+  },
+  {
+   "id": "feat-045",
+   "title": "Fleet Rung 21: THE ROAST RUNG — claims-audit.cjs (the anti-claims instrument): every ledger evidence path mechanically resolved on the tree, CR-slot + suite invariants, the OWNER-LANGUAGE LAW encoded (owner-facing = עברית), the census-cron no-noise comparator (CR-0050; renumbered from CR-0049/feat-044/E40 after the fifteenth collision — the self-healing-pulse lane took those slots)",
+   "description": "Owner directive (\"תעשה לעצמך roast חריף ... בדוק את כל הטענות שלך ... ייעל תקן וודא שפר הכל\") — the ledger itself is now audited by a re-runnable desk. agents/claims-audit.cjs (offline/keyless/deterministic/fail-soft, STASIS-braked by the census desk own stasisHalt): EVIDENCE-EXISTENCE LAW (62 path tokens across 44 feats must resolve — as-given -> agents/ -> .github/workflows/ -> unique basename; 59 resolve, 3 are reason-stamped ALLOWED-CLAIM exceptions: sovereign-pending.json runtime mailbox, traj-gwt1/2.json ephemeral drill artifacts, fills.jsonl ledger shorthand), CR-LEDGER LAW (every cited CR has its file; duplicate slot numbers on disk WARN forever — CR-0008 caught), SUITE-INVARIANT LAW (run-evals version/count vs committed results: MATCH/LAGGING-BOOK/MISMATCH/SKIP, sub-letter ids counted). OWNER-LANGUAGE LAW encoded as data: owner-facing replies are HEBREW (the roast found the lane had written Chinese to the Hebrew owner — a rule not encoded is not a rule). Wired: claims-audit rides fleet-census-cron as an independent leg AND the publish step gained the NO-NOISE COMPARATOR (the roast caught the latent defect that moving at-stamps would have committed daily noise, making the header clean-exit claim a lie — stable payloads are now compared against HEAD, at stripped). E41 in run-evals v1.28.0 -> v1.29.0 on the MERGED tree (the pulse lane E40a/b kept), suite 42/42 GREEN; FIVE auditor tool defects caught in-session by printing actual values (regex .json->.js truncation, evalr catch-double-count 39-as-78, sub-letter ids dropped, mandatory-quantifier count break, Map judged by Object.keys, plus a dot-dir-blind glob) — each fixed and guarded. Roast findings booked in CR-0050: F1 language, F2 stale-state claims (a1f190a vs real a3acd36; feat-035 already CR-0041), F3 environment-conditional claims (ONE-BLOC tokenReach 14-with-token vs 0-keyless DEGRADED, estate still census-16/16), F4 evidence 59/62+3-exceptions, F5 CR-0008 duplicate immutable+WARNed, F6 auditor self-defects fixed.",
+   "status": "LIVE",
+   "cr": "CR-0050",
+   "evidence": {
+    "desk": "agents/claims-audit.cjs",
+    "book": "agents/claims-audit.json + agents/claims-audit.md",
+    "evals": "E41 in run-evals v1.29.0 — 42/42 on the merged tree",
+    "workflow": ".github/workflows/fleet-census-cron.yml (claims leg + no-noise comparator)",
+    "roast": "CR-0050 findings F1-F6"
+   },
+   "at": "2026-10-03T22:25:00.000Z"
+  },
+  {
+   "id": "feat-046",
+   "title": "Fleet Rung 22: THE RESURRECTION RUNG — the estate liveness audit measured dead wires, a starving scheduler, a dying daily desk, and a watchdog whose alarm was silent since day one; everything revived, every fix pinned by E42, and the owner gets THE ONE PROVABLE PAGE",
+   "status": "LIVE",
+   "evidence": [
+    "agents/twin-marker-law.cjs (the marker-side law: domainMarker lands on the Domain side only — evidenceMarkers pure, E42 matrix-guarded)",
+    "agents/twin-audit.mjs evidenceMarkers import + absenceCross null-safe markers — money-console-domain measures evidenceOk TRUE on its own correct state (was false-alarm daily since birth)",
+    "agents/twin-issue-gate.cjs (the alarm rebuilt as a Node desk: buildIssueBody pure + no-backtick liability law + corrupt-marker fail-loud + GH_TOKEN/ZIP_PAT fallback) — wired into .github/workflows/twin-audit.yml gate step (the bash backtick bug 'syntax error near unexpected token done' killed the alarm on its first fire)",
+    "agents/fee-doctrine.json (the registered per-venue fee book: kernel 30bps/treasury-cut-30%, SAOSExchange 20bps/pot-10bps, chains 0-fee + 40bps spacing floor; arbitration rule: price-each-venue-by-its-own-doctrine)",
+    "agents/fee-doctrine-law.cjs feeArbitration pure (governed per-venue pricing = PASS-ARBITRATED, anonymous drift/lying book = DRIFT) + agents/cross-layer.cjs C1 verdict — cross-layer 7 checks / 0 DRIFT / 0 FAIL",
+    ".github/workflows/self-audience.yml commit step rebuilt (git add -A + rebase.autoStash + 3-attempt retry) — root cause measured from run 37144830642 log: unstaged leftovers blocked the rebase, || true swallowed it, push raced and failed, a full day of receipts (9 files, 3181 insertions) died at push 3 scheduled runs in a row",
+    "agents/tick-keeper.cjs THE RESURRECTION ARC: registry 3→9 desks (market-grid-cron.yml, fleet-census-cron.yml, twin-audit.yml, self-audience.yml, public-pulse.yml, audience-analyst.yml) with per-desk max_gap (45m..1560m) + per-desk cooldown_min (60/240m — daily desks retried every 4h, not stormed); keeperDecide purity law (judge the PASSED arc; empty arc = never-born fleet view)",
+    "agents/public-pulse.cjs THE PUBLIC TRUTH SCOPE LAW: truth.day joins the page from agents/fill-ledger.json (last committed walk, DAY scope since 00:00Z, measuredAt stamped) — a day number never laundered into lifetime; composePulse exported + require-guarded (pure-safe for evals)",
+    "agents/owner-proof.cjs + agents/owner-proof.json + agents/owner-proof.md (THE ONE PROVABLE PAGE for the owner, HEBREW surface per the CR-0050 owner-language law): 5 sections — ownership (chain-verifiable treasuries), runway (powerdown drip 475.88 SP/wk, remaining 1903.5 SP, runway 28 days, next 2026-10-10T02:01:27), pnl (lifetime -1.12 SBD + today -0.227 scope-labeled + content measured-dead honesty), autonomy (48 workflows / 43 scheduled / 9-desk keeper arc / STASIS clean), laws (claims WARN 0-offenders suite MATCH, census 16/16) — every number carries {source, measuredAt}, stable payload byte-deterministic, fail-soft",
+    "agents/evals/run-evals.cjs v1.29.0→v1.30.0: E42 resurrection suite 43/43 GREEN (marker orientation matrix, feeArbitration real/missing/lying/equal/missing-sources, gate body builder + no-backticks, arc sanity incl. zero ghost receipts + per-desk cooldown cases, pulse day-scope law, owner-proof black-box + byte-determinism + Hebrew surface); E40b empty-arc assertion made registry-agnostic (the law unchanged — the count was registry-bound)",
+    "Estate liveness census measured via GitHub API 2026-10-03T22:0x (keyless PAT): 48 workflows — fill-ledger-cron 0 runs EVER (dead wire), twin-audit failure (silent alarm), self-audience 3x failure (dying receipts), sovereign-tick/earn-audit/census/market-grid crons 0 scheduled events (scheduler starvation pattern, Z-70 confirmed repo-wide on young crons) — each defect closed or answered by the keeper arc"
+   ]
+  },
+  {
+   "id": "feat-047",
+   "title": "Fleet Rung 22: THE RESURRECTION RUNG (CR-0052) — the estate liveness audit measured dead wires, a starving scheduler, a dying daily desk, and a watchdog whose alarm was silent since day one; everything revived, every fix pinned by E44, and the owner gets THE ONE PROVABLE PAGE",
+   "status": "LIVE",
+   "evidence": [
+    "agents/twin-marker-law.cjs (the marker-side law: domainMarker lands on the Domain side only — evidenceMarkers pure, E44 matrix-guarded)",
+    "agents/twin-audit.mjs evidenceMarkers import + absenceCross null-safe markers — money-console-domain measures evidenceOk TRUE on its own correct state (was false-alarm daily since birth)",
+    "agents/twin-issue-gate.cjs (the alarm rebuilt as a Node desk: buildIssueBody pure + no-backtick liability law + corrupt-marker fail-loud + GH_TOKEN/ZIP_PAT fallback) — wired into .github/workflows/twin-audit.yml gate step (the bash backtick bug 'syntax error near unexpected token done' killed the alarm on its first fire)",
+    "agents/fee-doctrine.json (the registered per-venue fee book: kernel 30bps/treasury-cut-30%, SAOSExchange 20bps/pot-10bps, chains 0-fee + 40bps spacing floor; arbitration rule: price-each-venue-by-its-own-doctrine)",
+    "agents/fee-doctrine-law.cjs feeArbitration pure (governed per-venue pricing = PASS-ARBITRATED, anonymous drift/lying book = DRIFT) + agents/cross-layer.cjs C1 verdict — cross-layer 7 checks / 0 DRIFT / 0 FAIL",
+    ".github/workflows/self-audience.yml commit step rebuilt (git add -A + rebase.autoStash + 3-attempt retry, fail-loud) — root cause measured from run 37144830642 log: unstaged leftovers blocked the rebase, || true swallowed it, push raced and failed, a full day of receipts (9 files, 3181 insertions) died at push 3 scheduled runs in a row; merged with the deep-audit lane's [skip ci] adoption",
+    "agents/tick-keeper.cjs THE RESURRECTION ARC: registry 3→9 desks (market-grid-cron.yml, fleet-census-cron.yml, twin-audit.yml, self-audience.yml, public-pulse.yml, audience-analyst.yml) with per-desk max_gap (45m..1560m) + per-desk cooldown_min (60/240m — daily desks retried every 4h, not stormed); keeperDecide purity law (judge the PASSED arc; empty arc = never-born fleet view); MERGED with the deep-audit lane's Bearer dispatch fix (token-prefix 404 → Bearer 204, their run 37157983852 measured)",
+    "agents/public-pulse.cjs THE PUBLIC TRUTH SCOPE LAW: truth.day joins the page from agents/fill-ledger.json (last committed walk, DAY scope since 00:00Z, measuredAt stamped) — a day number never laundered into lifetime; composePulse exported + require-guarded (pure-safe for evals)",
+    "agents/owner-proof.cjs + agents/owner-proof.json + agents/owner-proof.md (THE ONE PROVABLE PAGE for the owner, HEBREW surface per the CR-0050 owner-language law): 5 sections — ownership (chain-verifiable treasuries), runway (powerdown drip 475.88 SP/wk, remaining 1903.5 SP, runway 28 days, next 2026-10-10T02:01:27), pnl (lifetime -1.12 SBD + today -0.227 scope-labeled + content measured-dead honesty), autonomy (48 workflows / 43 scheduled / 9-desk keeper arc / STASIS clean), laws (claims 0 offenders suite MATCH, census 16/16) — every number carries {source, measuredAt}, stable payload byte-deterministic, fail-soft",
+    "agents/evals/run-evals.cjs v1.30.0→v1.31.0: E44 resurrection suite appended after the deep-audit lane's kept E42/E43 — 45/45 GREEN (marker orientation matrix, feeArbitration real/missing/lying/equal/missing-sources, gate body builder + no-backticks, arc sanity incl. zero ghost receipts + per-desk cooldown cases, pulse day-scope law, owner-proof black-box + byte-determinism + Hebrew surface); E40b empty-arc assertion made registry-agnostic (the law unchanged — the count was registry-bound)",
+    "Estate liveness census measured via GitHub API 2026-10-03T22:0x (keyless PAT): 48 workflows — fill-ledger-cron 0 runs EVER (dead wire), twin-audit failure (silent alarm), self-audience 3x failure (dying receipts), sovereign-tick/earn-audit/census/market-grid crons 0 scheduled events (scheduler starvation pattern, Z-70 confirmed repo-wide on young crons) — each defect closed or answered by the keeper arc"
+   ]
+  },
+  {
+   "id": "feat-048",
+   "title": "Fleet Rung 25: THE CADENCE-WEEK READ (CR-0053) — the first distributional read of the fleet's own time series: market-grid gaps/spreads/routes, delta verdicts and transitions, the artifact-lag honesty number; the booked R17 rung landed now that B2 cleared for real (7 rows >= 5, delta started), gated by an encoded bar and pinned by E45",
+   "status": "LIVE",
+   "evidence": [
+    "agents/cadence-week.cjs (the distributional desk: offline/keyless/deterministic/fail-soft, STASIS-braked by require, B2 bar encoded as data, no-write below the bar)",
+    "agents/cadence-week.json (the first distribution book: verdict CADENCE-WEEK-LIVE, per-market spread stats, gap min/median/max, route frequency, delta verdict split, artifactLagRows)",
+    "agents/cadence-week.md (the HEBREW owner surface — at-free so it can never cause a publish diff)",
+    "agents/evals/run-evals.cjs (v1.32.0, E45: reducers edge-exact, byte-determinism on the real series, black-box no-write + live-fixture laws)",
+    ".github/workflows/fleet-census-cron.yml (the cadence-week leg rides the daily cadence + volatile-list no-noise wiring)",
+    "agents/change-requests/CR-0053-cadence-week.json (the rung's decision record)"
+   ],
+   "cr": "CR-0053"
+  },
+  {
+   "id": "feat-049",
+   "title": "Fleet Rung 23: THE MATURITY-LAW RUNG (CR-0054) — the convert schedule the operator was promised MEASURED INTO EXISTENCE: a deep chain walk proved the books told a fiction (\"~435 STEEM Oct-7\" — chain truth: a 23-row ladder, 117.887 SBD, maturing 2026-10-06T00:02Z → 2026-10-07T01:38Z), three root causes found and fixed (the broken sensor wire, the phantom date, the seq-race date laundering), the canon now books the real wave end-to-end by itself, and every fix is pinned by E45",
+   "status": "LIVE",
+   "evidence": [
+    "agents/earn-audit.cjs (THE SENSOR, healed: tallyOp receives the op timestamp and computes matures_at = open + 3.5d — the chain `convert` op carries NO conversion_date (measured live: body = {amount, owner, requestid} only); booking `undefined` left the 24h pre-position window dead code since birth; open_ts + matures_at + conversion_date all booked per row)",
+    "agents/convert-canon.cjs (THE MEMORY, healed ×3: the wire reads per_account with legacy rows fallback — sensor_rows was pinned 0 by every run since the canon's birth because the canon read `rows` while earn-audit writes `per_account`; the walk pushes the op timestamp and the reducer computes the open+3.5d chain law itself; MAX_PAGES 30→90 — the maturity horizon is open+84h so the walk must reach ~2 days back, measured: the full 23-row ladder sits inside 60 pages)",
+    "agents/convert-canon.cjs convertBook (THE SEQ-RACE LAW: a dated sensor row must survive an undated walked row with a higher seq — the last-open-wins law was LAUNDERING the sensor's computed date away on every compose; plus the undated bucket — a convert with no parseable maturity is never guessed and never NaN-bracketed into pending/matured)",
+    "agents/convert-canon.json (THE REAL SCHEDULE, live-booked: pending=23 · total 117.887 SBD · next maturity 2026-10-06T00:02:12Z in 48h · undated=0 · sensor_rows=2 · pages 90 walked to 2026-09-11T15:11Z — the wave 10-06T00:02:12 → 10-07T01:38:21 measured from chain ops, requestids 1790976163..1791034699)",
+    "agents/evals/eval-results.json (suite v1.33.0, 46/46 GREEN on the merged tree: E46 maturity-law suite added (the cadence-week lane's E45 KEPT) — maturity-law-computed, ladder-total-measured, wave-window-10-06-to-10-07, seq-race-date-survives, undated-never-guessed, sensor-book-per-account-shape, sensor-books-matures-at, live-canon-no-phantom-dates, wire-alive-or-honestly-empty, sensor-tally-computes-maturity, sensor-books-closure; E44 and siblings kept)",
+    "agents/convert-canon.md (the Hebrew-rendered pending table the owner can read — requestid / amount SBD / maturity / hours-left, every row dated by the law)",
+    "feature_list.json (this book, row 49)"
+   ],
+   "cr": "CR-0054",
+   "ownerLanguage": "he",
+   "notes": "HONESTY FIX booked against the fiction: the Z-70/Z-71 books and CR-0046 told \"~435 STEEM Oct-7 rotation\" — unmeasured. Chain truth measured 2026-10-03 by a 400-page sequence-space walk (Oct-3T22:45 back to Sep-6T09:16, sampler defect caught by the PRINT-actual-values law and re-walked correctly): 23 converts opened Oct-2T12:02..Oct-3T13:38, 117.887 SBD total, zero fill_convert_request closures in window (all pending), maturities by the open+3.5d chain law land 2026-10-06T00:02:12Z → 2026-10-07T01:38:21Z. The drip (475.88 SP/wk) remains a separate, real runway line — the two stories were conflated. The pre-position window now has 48h of true lead time to the first maturity. SEVENTEENTH-COLLISION renumber: the cadence-week lane landed feat-048/CR-0053/E45 first — this rung renumbered to feat-049/CR-0054/E46 per the later-mover law; their desk composes."
+  },
+  {
+   "id": "feat-050",
+   "title": "Fleet Rung 26: THE KEYLESS WAVE (CR-0055) — the sovereignty bar moved 11/48 -> 15/48 keyless workflows; four same-repo-only flows (twin-audit, audience-analyst, content-reviewer, public-pulse) converted from inherited ZIP_PAT convention to the built-in github.token; the dead PULSE_URL secret-ref removed (verified unconfigured via the Actions secrets API); the honest line drawn: same-repo = keyless, cross-repo = PAT (capability, stays)",
+   "status": "LIVE",
+   "evidence": [
+    ".github/workflows/twin-audit.yml (checkout github.token, ZIP_PAT env removed from the issue gate — the desk keeps its fail-soft token loop)",
+    ".github/workflows/audience-analyst.yml (checkout github.token, ZIP_PAT env removed from the zero-signal gate)",
+    ".github/workflows/content-reviewer.yml (checkout github.token, ZIP_PAT env removed from the duplication gate)",
+    ".github/workflows/public-pulse.yml (checkout github.token, dead PULSE_URL secret-env removed; the optional hook stays in agents/public-pulse.cjs)",
+    "agents/fleet-census.json (sovereignty recount by the census's own regex: workflowsKeyless 15/48, owner-secret 33)",
+    "agents/evals/run-evals.cjs (v1.34.0, E47: the count bar pinned, zero non-GITHUB_TOKEN refs in the four files, permissions kept, gate fail-soft proven fresh-process)",
+    "agents/change-requests/CR-0055-keyless-wave.json (the rung's decision record)"
+   ],
+   "cr": "CR-0055",
+   "ownerLanguage": "he",
+   "notes": "EIGHTEENTH-COLLISION renumber per the later-mover law: the maturity-law lane landed CR-0054/feat-049/E46/v1.33.0 first (2d9c457) while this wave was in flight — this rung renumbered to CR-0055/feat-050/E47/v1.34.0 on the MERGED tree; their maturity-law desk and E46 compose untouched (they touch no workflow — the sovereignty recount stands on the merged tree)."
+  },
+  {
+   "id": "feat-051",
+   "title": "Fleet Rung 25: THE NAME-PROOF RUNG (CR-0056) — the keeper's first natural dispatch receipts (run 37165106733, my own 204 dispatch) measured the 404 class (legacy bare-name desks 404 while suffixed desks 204 in the same run, same token), the dispatch layer now normalizes and the wire-name floor pins every registry key to a REAL workflow file; the seal-adopt wire revived from the sovereign house history; the estate-wide CI sweep triaged all 16 repos and booked the dormant-backup doctrine",
+   "status": "LIVE",
+   "evidence": [
+    "agents/tick-keeper.cjs (THE SUFFIX LAW: workflowFileOf pure helper exported — the dispatch layer normalizes legacy bare-name registry keys to workflow file names; registry keys stay as-is, they are the arc-book keys pinned by E40b/E44; fail-soft on falsy)",
+    "agents/tick-keeper.json (THE KEEPER'S NATURAL RECEIPT, 2026-10-04T00:29:41Z: decided 4 desks — sovereign-tick 106.4m stale, fill-ledger 104.1m, market-grid 106.6m, audience-analyst never-born; dispatched: market-grid-cron.yml 204 OK, audience-analyst.yml 204 OK, sovereign-tick-cron 404, fill-ledger-cron 404 — the mixed receipt that MEASURED the 404 class; and the loop closed: market-grid(history) tick 2026-10-04T00:29:56Z committed 21s after the 204)",
+    ".github/workflows/grid-trigger-twin.yml (the twin-liveness evidence: 238 runs ever, proving the R75 dormant-backup doctrine — the private steem/saos-dex workflows with 0 successes ever are documented dormant backups, not dead wires: their comments book the decision and the Domain twins carry the load)",
+    "scripts/seal-adopt.mjs (THE SEAL-ADOPT WIRE REVIVED: the r72 Domain workflow pointed at a script that never lived on this tree — measured: 0 commits ever touched the path here, the script lived in the sovereign house history 52bc7ce until the r187 archive pass deleted it; restored intact 237 lines, keyless-safe, parses)",
+    "agents/evals/eval-results.json (suite v1.35.0, 47/47 GREEN on the merged tree: E48 the suffix law + the wire-name floor — workflowFileOf matrix, ARC×file existence over the live tree, seal-adopt existence+invocation+parse, keeper registry shape intact; E47 keyless-wave and siblings KEPT)",
+    "feature_list.json (this book, row 51)"
+   ],
+   "cr": "CR-0056",
+   "ownerLanguage": "he",
+   "notes": "THE ESTATE-WIDE CI SWEEP (16 repos, GitHub API, 2026-10-04T00:26Z): 12/16 green in the recent window; the 4 failing surfaces triaged — (1) foundry CI: ALREADY HEALED by the port-law lane (62c0a74 → both runs success 01:03Z); (2) Domain seal-adopt: the dead wire REVIVED this rung; (3) Project-files gitleaks + Zip gitleaks post-push: ZERO-JOBS failures = the documented Actions-minutes-exhaustion billing class (owner-level decision); (4) Zip weave-anchor-lines: same zero-steps class. THE BORN-DEAD SWEEP (12 repos × every workflow × success-count): exactly 2 never-succeeded workflows — steem/self-audience.yml and saos-dex/grid-trigger.yml — BOTH documented R75 dormant backups whose Domain twins carry the load (self-audience Domain: 9 runs, latest success; grid-trigger-twin Domain: 238 runs). Doctrine verified, not invented."
+  },
+  {
+   "id": "feat-052",
+   "title": "Fleet Rung 27: THE METRONOME AUDIT (CR-0057, renumbered from CR-0056 per the later-mover law — the name-proof lane landed 051/056/E48 first) — the fleet measures its own TIME: GitHub's scheduler stopped firing scheduled events (boundary measured 2026-10-03T20:10:04Z; every schedule added after ~18:36Z never fired; 6 starved / 15 degraded measured live); the instrument: keyless collector + pure deterministic desk (expected-vs-observed slots, PULSE/DEGRADED/STARVED, boundary) + bounded heal (dispatch ≤3 STARVED ∧ keyless cadences — LIVE: 3× HTTP 204, runs registered) + owner dashboard card",
+   "status": "LIVE",
+   "evidence": [
+    "agents/scheduler-collect.cjs (the keyless collector: cron extraction from every workflow file + the scheduled-run census per workflow on the built-in GITHUB_TOKEN, fail-soft per row)",
+    "agents/scheduler-audit.cjs (the pure desk: slot math with 40-min grace, the verdict machine, the repo-wide scheduler boundary, the bounded heal list, atomic at-free Hebrew md)",
+    "agents/scheduler-heal.cjs (the bounded healer: reads the desk's list — never invents — dispatch via GITHUB_TOKEN, receipts printed)",
+    "agents/scheduler-audit.json (the first scheduler book, measured live: verdict SCHEDULER-STARVED, boundary 2026-10-03T20:10:04Z, 6 starved / 15 degraded / heal [earn-audit-cron, fill-ledger-cron, market-grid-cron])",
+    "agents/scheduler-raw.json (the raw evidence: 43 scheduled workflows, per-workflow scheduledRuns, window 24h)",
+    ".github/workflows/fleet-census-cron.yml (the collect -> audit -> heal leg + actions:write + publish/volatile wiring)",
+    "agents/evals/run-evals.cjs (v1.36.0, E49: parser/slots/verdicts edge-exact, black-box fixture with the secret-carrying starved row excluded from the heal, empty law, host wiring pinned)",
+    "agents/change-requests/CR-0057-metronome-audit.json (the rung's decision record)"
+   ],
+   "cr": "CR-0057",
+   "ownerLanguage": "he",
+   "notes": "LIVE HEAL RECEIPT (2026-10-04T00:43Z): the desk listed earn-audit-cron.yml, fill-ledger-cron.yml, market-grid-cron.yml; the healer dispatched all three via the built-in token — HTTP 204 x3 — GitHub registered the runs 00:43:08-11Z. Also booked here: the R26 wave's first keyless CI publish (audience-analyst success on 8d86d12, digest 5e4ca43 published by the workflow). cloud-heart/soldiers-curate confirmed genuine cross-repo PAT users — the CR-0055 line holds. NINETEENTH-COLLISION note: the rebase three-way merge took the name-proof lane's side of run-evals.cjs/feature_list.json inside this lane's own commit; the E32 keyless FAIL on the merged tree exposed the silent loss; re-slotted CR-0057/feat-052/E49 on the merged tree, their suffix-law composes."
+  },
+  {
+   "id": "feat-053",
+   "title": "Fleet Rung 28: THE VOLUME ENGINE (CR-0058) — the owner's market-maker directive gets its instrument: a keyless deterministic STASIS-braked planner that prices every venue by its own fee doctrine, projects volume/net-edge from measured spreads + the measured tape (SBD/STEEM: spread 1.4736%, fee 0, edge 0.7368%, capacity-bound 39.168 SBD/day, net 0.2886→0.5772 SBD/day), partitions the ladder across fleet accounts (j mod N disjoint complete cover, growth table N∈{1,2,3,5}), arms internal soldier-to-soldier flow ONLY at zero round-trip fee — capped 25%, labeled INTERNAL-FLOW, excluded from the VWAP/edge books (poison guard) — and derives the BUY-EDGE ceiling from the realized sell VWAP (0.102→0.1017 live); PLAN-ONLY, the live broadcast path stays market-exec.cjs law",
+   "status": "LIVE",
+   "evidence": [
+    "agents/mm-volume.cjs (the desk: offline/keyless/deterministic/fail-soft, dual STASIS brakes — DIR-local + the borrowed census brake, MMV_SKIP/MMV_DIR seams, atomic book + append-only plan ledger + at-free Hebrew owner surface, require.main guard)",
+    "agents/mm-volume.json (the first book, measured live: verdict MMV-PLAN-LIVE, 2 venues, projections + guards + blockedReasons=[])",
+    "agents/mm-volume.md (the Hebrew owner surface, at-free)",
+    "agents/mm-volume-plan.jsonl (the append-only plan ledger, one row per run)",
+    ".github/workflows/fleet-census-cron.yml (the mm-volume leg after scheduler-heal + publish + volatile no-noise wiring)",
+    "agents/evals/run-evals.cjs (v1.37.0, E50: white-box venueEconomics/partitionLadder/selfFlowPlan/buyEdgeFloor/sellVwapFromRuns edge-exact + black-box fresh-process MMV-PLAN-LIVE, byte-stable payload, STASIS zero-writes, corrupt-inputs honest BLOCKED, host wiring pinned)",
+    "agents/change-requests/CR-0058-volume-engine.json (the rung's decision record: six engineering queries asked and answered in code)"
+   ],
+   "cr": "CR-0058",
+   "ownerLanguage": "he",
+   "notes": "The owner directive 'נהיה השחקנים הכי גדולים של market maker וגריד על הרשתות... גם מסחר בינינו זה טוב... ניקח גם את העמלות של המשתמשים האחרים' — answered with a provable planner, not a promise: the fee-doctrine law prices each venue by its own book (zero-fee chain internal markets vs the saos-dex-kernel 30bps/30% treasury cut where other users' fees ARE our income); internal flow is real volume at zero fee but bounded, labeled, and excluded from the edge books so internal fills can never teach the fleet a fake edge; the fleet today = 1 funded account so the partition holds all 10 rungs and the growth table books the recruit path to N=5. One eval catch in-rung: 0 rungs is no ladder — covers:false fixed in the desk, not in the eval."
+  },
+  {
+   "id": "feat-054",
+   "title": "Fleet Rung 29: THE SHARE LADDER (CR-0059) — 'the biggest market maker' becomes a measured number: market-grid v1.1.0 reads the 24h pond from the chains themselves (condenser get_volume: SBD/STEEM 163.687 SBD, HBD/HIVE 958.712 HBD); mm-volume v1.1.0 computes the fleet's share as a ladder over funded soldiers (SBD/STEEM N=1 → 23.9286%, N=5 → 119.643% SATURATED — the pond caps the capacity ladder), meters REALIZED fills vs projection (124 real fills, 62.781 SBD sold, accuracy 160.2865% — the projection understates reality ~10× on fill notional, now visible), and ships the doctrine map: the six failures that killed the great market makers each answered by a shipped guard; HBD/HIVE joins the plan (share 4.0855%)",
+   "status": "LIVE",
+   "evidence": [
+    "agents/market-grid.cjs (v1.1.0: get_volume per internal market + pure parseVolume + volume24hSbdTerm in the live book + volumeSbdTerm rows in the append-only history)",
+    "agents/mm-volume.cjs (v1.1.0: sharePct/shareLadder with saturates, realized24h window-relative-to-last with µ-exact sums + unclassified honesty + projectionAccuracyPct, doctrineMap 6 failure→guard rows, live-book pricing with history fallback, HBD/HIVE venue)",
+    "agents/mm-volume.json (the book, measured live: shares 23.9286%/4.0855%, realized metering, doctrine)",
+    "agents/mm-volume.md (the Hebrew owner surface with the share ladder + the realized line)",
+    "agents/evals/run-evals.cjs (v1.38.0, E51: parseVolume/sharePct/shareLadder/realized24h/doctrineMap white-box exact + black-box rich/fixture-null/live-tree)",
+    "agents/change-requests/CR-0059-share-ladder.json (the rung's decision record: Q7 the pond, Q8 the truth check, Q9 the doctrine map)"
+   ],
+   "cr": "CR-0059",
+   "ownerLanguage": "he",
+   "notes": "In-rung eval catches (the suite judging its own author again): fillsCount semantics — ALL window rows counted with unclassified booked honestly (never guessed into P&L), avgFill over classified fills only; the fixture's avgSize had to be pinned by a placed row (assumed 0.1 default would have shifted the share); the fallback fixture needed the registry account to avoid the honest default-blocker. Real numbers at first light: one funded soldier = 23.93% of the SBD/STEEM pond; N=5 saturates it."
+  },
+  {
+   "id": "feat-055",
+   "title": "Fleet Rung 30: THE CALIBRATED ENGINE (CR-0060) — 'time of truth' executed on the projection itself: mm-volume v1.2.0 runs the plan on the REAL fill size the ledger measured (calibratedAvgSize: 130 real fills → 0.691 SBD vs the 0.068 planned — lift +916.1765%, projected volume 39.168 → 796.032 SBD/day, conservative net 0.2886 → 2.6516 SBD/day), carries the prior side-by-side with its source (calibration is NEVER a silent rewrite; fallback chain real-fills → exec-runs-planned → law-assumption, every rung labeled), turns the market share into a TIME SERIES read from the desk's own append-only plan ledger (shareSeries: last-K points per venue, sorted, corrupt rows dropped, capK=24), and books the whole thing in a time-born `series` namespace excluded from the byte-stable payload BY LAW; the honest consequence is surfaced: at N=1 the calibrated share crosses 100% — the capacity ladder saturates the measured pond, flagged by saturates, never hidden",
+   "status": "LIVE",
+   "evidence": [
+    "agents/mm-volume.cjs (v1.2.0: calibratedAvgSize µ-exact with prior carried + labeled fallback chain, shareSeries from the plan ledger, book.calibration + book.series, venue rows with avgSizeSource/avgSizePriorSbd, md calibration+series lines)",
+    "agents/mm-volume.json (the book measured live: calibration 0.068→0.691 lift +916.1765%, projVol 796.032 SBD/day, series namespace with planLedgerRows)",
+    "agents/mm-volume.md (the Hebrew owner surface with the calibration + share-time lines)",
+    "agents/evals/run-evals.cjs (v1.39.0, E52: calibration/series white-box exact + black-box pre-seeded ledger + projection-on-real-size 237.024 + byte-stable with series excluded; E50/E51 determinism strips evolved to the time-born law)",
+    "agents/change-requests/CR-0060-volume-calibration.json (the rung's decision record: Q10 the true fill size, Q11 does the share move, Q12 what did calibration change)"
+   ],
+   "cr": "CR-0060",
+   "ownerLanguage": "he",
+   "notes": "The R29 booked next-rung executed: the projection's ~10× understatement (accuracy 160.2865% + real fills 0.703 vs 0.068) is now FIXED BY MEASUREMENT, not by editing the expectation — the desk reads the ledger's µ-precise classified fills and runs on them, with the prior never deleted. The share-as-series makes 'הכי גדולים' a trend line on the owner dashboard from this rung forward. Suite evolution in the open: E50/E51's byte-stability now excludes the time-born namespace (values deterministic, timestamps are the axis)."
+  },
+  {
+   "id": "feat-056",
+   "title": "Fleet Rung 31: THE MEASURED BINDING & THE VENUE EXPANSION (CR-0061) — the second calibration dial anchors the projection in reality (calibratedTape: the fill-ledger's REAL capture rate 0.0861 fpm ≈ 124 fills/day vs the 10 fpm market-tape prior, carried side-by-side labeled; the projection runs on min(tape, capacity, CAPTURE) — the choke is the measured capture, fill-through 21.528% of order capacity, projected volume 796.032 → 85.684 SBD/day on the measured dials), and the venues expand (market-grid v1.2.0 measures each Hive-Engine token's own marketFeePercentage from the tokens contract — the whole basket measured zero-fee — and probes Blurt probe-first fail-loud; fee-doctrine.json grows hive-engine-sidechain + blurt-internal-market rows; mm-volume v1.3.0 prices all five HE venues per-token by their own measured fee row with the volume projection honestly waiting for a sidechain tape, and books Blurt's measured darkness)",
+   "status": "LIVE",
+   "evidence": [
+    "agents/mm-volume.cjs (v1.3.0: calibratedTape + captureTradesDay binding min(tape,capacity,capture) + edgeFromSpread per-token pricing + book.tapeCalibration + HE venue rows + darkSurfaces + projections.captureTradesDay/captureFillThroughPct/heVenuesPriced)",
+    "agents/market-grid.cjs (v1.2.0: per-token marketFeePercentage measured from the tokens contract, probeBlurt probe-first fail-loud, history rows heFees + blurtAlive)",
+    "agents/fee-doctrine.json (two new venue rows: hive-engine-sidechain per-token law measured absent→zero; blurt-internal-market probe-first, dark at registration)",
+    "agents/mm-volume.json + agents/mm-volume.md (the book measured live: tapeCalibration 0.0861 fpm capture 124/day, 5 HE venues priced, blurt dark booked, Hebrew owner surface)",
+    "agents/evals/run-evals.cjs (v1.40.0, E53: calibratedTape/capture-binding/edgeFromSpread white-box exact + black-box HE-per-token + blurt-dark + both-dials projection 0.823 + byte-stable; E52 evolved WITH the desk — the 237.024 capture-null expectation became the both-dials 0.823, written in the eval itself)",
+    "agents/change-requests/CR-0061-tape-venues.json (the rung's decision record: Q13 the true tape rate, Q14 which venues can we price, Q15 the real choke, Q16 growth raising capture without lying)"
+   ],
+   "cr": "CR-0061",
+   "ownerLanguage": "he",
+   "notes": "The R30 booked next-rungs executed together. The 796.032 → 85.684 SBD/day drop is the time-of-truth: the ledger says the choke is OUR capture rate (fill-through of the current posture), not the order capacity — and the capture grows exactly the way the directive says (more rungs × fill-through × funded soldiers × bounded internal flow). The venue expansion prices the sidechain per-token from the chain of record; blurt's darkness is a measurement, not an omission. Suite evolution in the open: E52's expectation evolved WITH the desk, the evolution written in the eval's own text."
+  },
+  {
+   "id": "feat-057",
+   "title": "Fleet Rung 32: THE SIDECHAIN POND (CR-0062) — the venue's own measured 24h volume IS the volume bound: the Hive-Engine projection OPENS on the pond (min(pond, capacity) with the binding NAMED — never a borrowed tape prior), converting SWAP.HIVE ponds to SBD-term by the MEASURED HBD/HIVE internal mid (SBD≈HBD parity carried as a labeled doctrine conversion on every row); market-grid v1.3.0 names the pond per token (metrics.volume → pond24hHive), probes the daily-history contract probe-first fail-loud (measured DARK — not RPC-exposed) and rides mids into the history; mm-volume v1.4.0 grows the pond bound into venueEconomics (validity = tape-or-pond, bounds.pondBoundTradesDay, deterministic tie order), opens the HE share ladder (the ladder is pond-flat — more soldiers do not multiply a small pond) and opens INTERNAL FLOW on the measured zero-fee basket (25% cap, labeled, VWAP-excluded — fee'd WAIV stays honestly blocked FEE-ROUND-TRIP-NONZERO); E54 white-box exact (110.7372, 160→110.56, 99.834 flat, 27.64 cap) + black-box mid-bearing/mid-less fixtures byte-stable + E53's WAIV pin evolved WITH the desk (NO-MEASURED-TAPE-HE → NO-MEASURED-HBD-HIVE-MID, written in the eval, never silent). Live: projVol 85.684 → 1039.955 SBD/day (×12.14 on honest measured bounds), HE pond 960.4816 SBD, HE projected 556.255 SBD/day, internal-flow cap 259.9887 SBD/day, SWAP.LTC capacity-bound.",
+   "status": "implemented",
+   "evidence": [
+    "agents/evals/eval-results.json",
+    "agents/mm-volume.cjs",
+    "agents/market-grid.cjs",
+    "agents/change-requests/CR-0062-sidechain-pond.json",
+    "agents/mm-volume.json"
+   ]
+  },
+  {
+   "id": "feat-058",
+   "title": "Fleet Rung 33: THE SOVEREIGN HANDS & THE P&L VERDICT (CR-0063) — the owner moved the last gate into the sovereignty: market-exec law 11 EDGE-CURE (own buys above sellVwap×0.997 cancelled before planning — the pre-law mine cleared LIVE, txids 2027f3e4c5/1f7385f1c6), fetchOwnOrders side law (for_sale/NAI-resolved), authority-verify before planning; pnl-book.cjs — the realized-P&L verdict desk replaying the append-only ledger through fill-ledger’s own pure core (µ-precise, lifetime + post-law windows, edgeLawHolds judged honestly, pre-basis proceeds never guessed into realized, chain read-back with liquid/locked/free + powerdown inflow); sovereign-trade.cjs + sovereign-trade-loop.sh — the keyed cadence leg (decideTrade: STASIS→vault→mode→cooldown; vault presence-only honesty; child separation; local heartbeat 900s with flock; VAULT-ABSENT-LOCAL zero-children honesty in CI); E55+E56 white/black-box exact, suite v1.41.0 → v1.42.0, 56/56 GREEN. Measured: lifetime realized −0.384998 SBD over 137 fills (the honest leak: buy VWAP 0.102413 vs sell VWAP 0.10017), the cure stops the mine, and every matched post-law cycle earns ≥ +0.3% by construction; powerdown self-funds the ladder (476 SP/week from 2026-10-10).",
+   "status": "implemented",
+   "evidence": [
+    "agents/evals/eval-results.json",
+    "agents/pnl-book.cjs",
+    "agents/sovereign-trade.cjs",
+    "agents/sovereign-trade-loop.sh",
+    "agents/market-exec.cjs",
+    "agents/change-requests/CR-0063-sovereign-hands.json",
+    "agents/pnl-book.json",
+    "agents/sovereign-trade.json"
+   ]
+  },
+  {
+   "id": "feat-059",
+   "title": "Fleet Rung 34: THE FILL-THROUGH EVOLUTION (CR-0064) — the ladder shape evolves with the measured binding (capture, not capacity): market-exec DEFAULTS SELL_LEVELS 4→3 + BUY_LEVELS 2→3 + BUY_SBD 0.25→0.5 (3 sells + 3 buys = exactly MAX_NEW_ORDERS, tripled buy exposure on the freed post-cure capital), the sovereign cadence calibrates to the measured fill rate (~1 fill/12min → heartbeat 600s, LIVE cooldown 10 min), the E28 SBD-cap pin evolved WITH the desk (0.3→0 buys, 1.2→2 buys — never silent), E57 white-box exact (shape, budgets, VWAP cap binds above the evolved ladder, cadence, real-tree ceiling ≤ 6), suite v1.42.0 → v1.43.0, 57/57 GREEN; cures so far: 5 own above-cap buys cancelled live.",
+   "status": "implemented",
+   "evidence": [
+    "agents/evals/eval-results.json",
+    "agents/market-exec.cjs",
+    "agents/sovereign-trade.cjs",
+    "agents/sovereign-trade-loop.sh",
+    "agents/change-requests/CR-0064-fill-through-evolution.json"
+   ]
+  },
+  {
+   "id": "feat-060",
+   "title": "Fleet Rung 35: THE HUMAN CADENCE (CR-0065) — the burst stack is dead, measured on-chain first: 10 posts in one run ~500ms apart, votes in perfect 18-21s cadence in fixed order, follows at exact 3s intervals, all in 2-3 daily windows; one shared wheel of 39 network-meta cards on one shared skeleton with '(measured DATE)' title stamps and the same fleet-stats line in every post; a broken probe post ('probe B') went on-chain AND collected 11 fleet votes. The fix: human-cadence.cjs as the SINGLE publisher — persona-owned UTC windows (persona-slots.json v2, seeded per-day jitter, quiet hours 00:00-04:59, catch-up windows never bursts, max 2 posts per invocation), desk-truth content library (40 hand-written pieces, one shape each, zero shared openers/closers/fleet-stats/title-stamps, 14-day per-soldier cooldown), the PROBE-B LAW (body < 800 chars is invisible to votes/comments/reblogs even inside the fleet), INTERNAL-ONLY engagement (owner directive 2026-10-04, external scope requires CURATE_SCOPE=external), legacy burst stacks defer (soldiers-blog/fleet-social/self-audience/soldiers-curate), head-delegate v2 EQUAL-SHARE law ((own SP - powerdown committed - RC reserve)/10 per soldier, hysteresis band, delegations glide with the powerdown), hourly human-cadence.yml workflow, E58 white+black-box exact, E47 sovereignty bar re-based in the open (49→50 files, 33→34 owner-secret), suite v1.43.0 → v1.44.0, 58/58 GREEN.",
+   "status": "implemented",
+   "evidence": [
+    "agents/human-cadence.cjs",
+    "agents/persona-slots.json",
+    "agents/content-library.json",
+    "agents/human-cadence-status.json",
+    "agents/head-delegate.cjs",
+    "agents/evals/eval-results.json",
+    ".github/workflows/human-cadence.yml",
+    ".github/workflows/self-audience.yml",
+    "agents/change-requests/CR-0065-human-cadence.json"
+   ]
+  },
+  {
+   "id": "feat-061",
+   "title": "Fleet Rung 36: THE COMMUNITY HOME (CR-0066) — the fleet founded its dedicated Steem community on ground truth measured from the live chain BEFORE a line of code (the PromoSteem ceremony: account_create with the measured 3.000 STEEM fee + community customs signed by the community posting key; bridge read-back surfaces probed live). community-founder.cjs: FUNDING LAW (the fee comes from our own idle MM capital — the farthest STEEM sell cancelled first, one-cancel coverage preferred, cap 2, SBD orders never touched, armed when liquid suffices), TYPE LAW (/^hive-1d{5}$/ journal type per condenser Role.parseType), the identity born clean (props gate rejects em-dashes/probe-words — the owner robotic-tell law applies to the house itself), the ORPHAN LAW purchased for 3.000 STEEM (hive-177701 was created but its in-memory keys died with a crashed run before the vault save — the vault now lands the moment the account read-back confirms, before anything that can fail; RESUME law finishes an interrupted ceremony without a second account), RC-first delegation sized to the CHAIN-TRUTH reservation (50 SP target attempted, resized once from the chain assertion to the measured 10 SP available, never guessed; min_delegation measured 1 SP), and the second measured law: hivemind applies updateProps only from an ADMIN signature (headcorner active authority) — setRole flows through the community posting key. LIVE verdict: hive-177702 The Clubhouse — 12 founding roles (headcorner admin + 10 soldier members + the implicit owner row), 10 SP RC confirmed on-chain, title/about live on the bridge, 14 ceremony hints booked, read-back COMMUNITY-LIVE. E59 white+black-box, suite v1.44.0 -> v1.45.0, 59/59 GREEN.",
+   "status": "implemented",
+   "evidence": [
+    "agents/community-founder.cjs",
+    "agents/community-founder.json",
+    "agents/community-founder.md",
+    "agents/change-requests/CR-0066-community-home.json",
+    "agents/evals/eval-results.json",
+    "agents/evals/run-evals.cjs"
+   ],
+   "cr": "CR-0066"
+  },
+  {
+   "id": "feat-062",
+   "title": "Fleet Rung 37: THE COMMUNITY BREATH (CR-0067) — the fleet's life moves inside its own house: human-cadence.cjs v2 (community mode + blog retarget) lands every soldier post INSIDE hive-177702 The Clubhouse (first tag = community, hub tag trailing, gate/PROBE-B law untouched), the join wave is its own staggered lane (subscribeOp byte-matched to the measured ground truth furqanashraf@hive-153176: custom_json id=community posting-only [\"subscribe\",{community}]; subscribePlan founder-first then window-ordered, budget 1/soldier, cap 2/run, read-back truth via bridge.list_subscribers whose ARRAY row shape is parsed), and community-founder.cjs grows the rc mode: the RC top-up desk measures in GESTS units (to_withdraw/withdrawn are micro-vests, /1e6 law), attempts the ABSOLUTE 50 SP target, resizes ONCE from the chain assert truth (available: {\"amount\":...,\"precision\":6} — the parser that demanded a bare closing brace was broken by the measured shape and is fixed), NEVER below the received floor (a top-up must not become a stealth clawback), with honest verdicts RECLAIM-PENDING / TOPUP-HOLD / MODE-DRY / TOPUP-LIVE. LIVE measured 2026-10-04: the chain refused the top-up and reported its truth — available 14,162 vests (8.78 SP) < floor 16,131.75 vests (10 SP) → TOPUP-HOLD, the 10 SP RC stands, the powerdown reclaim (476 SP/week from 2026-10-10) funds the growth, zero new code needed on the day the reclaim arrives. persona-slots.json v3 (community block law-as-data), human-cadence.yml (community mode + hourly rc gate + book commits), E60 in suite v1.46.0 (white-box op bytes + join laws + RC math + real-tree book verdicts), secret-scan 0, CR-0067 Q42-Q46 signed.",
+   "cr": "CR-0067",
+   "evidence": [
+    "agents/human-cadence.cjs",
+    "agents/persona-slots.json",
+    "agents/community-founder.cjs",
+    "agents/change-requests/CR-0067-community-breath.json",
+    ".github/workflows/human-cadence.yml",
+    "agents/community-founder.json",
+    "agents/human-cadence.json",
+    "agents/evals/run-evals.cjs"
+   ]
+  },
+  {
+   "id": "feat-063",
+   "title": "Fleet Rung 38: THE CHAIN PROOF (CR-0068) — the NAME is not the CHAIN. The owner read hive-177702 as a Hive-network home; both bridges were probed live (steemit.com EXISTS id 1979419 / api.hive.blog asserts does-not-exist) and a STEEM-CHAIN badge is now derived on every status run from trivalent legs + the booked fee asset — never from the name, never hardcoded. The Hive second-home desk (owner directive: other networks too) probes keylessly and states its authority truth by name: no Hive key material is held (headcorner hive active pub STM8c9vp3… ≠ the held steem pub), 3.000 HIVE fee vs 0.034 liquid → HOME-ABSENT-UNKEYED, armed-when-keyed. Proof Surface carries the evidence in Hebrew. E61 + suite v1.46.0 → v1.47.0, 61/61 GREEN, secret-scan 0.",
+   "cr": "CR-0068",
+   "evidence": [
+    "agents/community-founder.cjs",
+    "agents/community-founder.json",
+    "agents/community-founder.md",
+    "agents/evals/run-evals.cjs",
+    ".github/workflows/human-cadence.yml"
+   ]
+  },
+  {
+   "id": "feat-064",
+   "title": "Fleet Rung 39: THE SWAP NET (CR-0069) — the DEX learns to route. dex-router.cjs (keyless, STASIS-obeying, fail-soft) measures the whole venue graph hourly: steem/hive internal markets, Hive-Engine wrapped pools (multi-mirror, HE-RPC-DARK booked honestly), the SAOS internal AMM mirror, public CEX reference feeds (Binance/MEXC/HTX) and the inherited Z-27 verdict books. It quotes a 12-route swap catalog with six-branch honest verdicts (LIVE-KEYED / GATED-KEYS / GATED-CAPITAL / C-GATE-OPERATOR / NO-RAIL / INTERNAL-SIM, every gated route names its unlock), runs the arb net with the FLOOR law (net must beat 2x(capture+0.4%) or books BELOW-FLOOR) and the 1.5% peg-drift halt (SWAP.HIVE:SWAP.BTC measured +1.49% under the line), and plans the OPPOSING counter-grids anchored to the CEX-implied fair price with Avellaneda inventory skew (PLAN-OWNER-GATED-NOT-BROADCAST). The desk's first live book caught its own inverted parity (9.48 vs 0.1055 SBD/STEEM) — fixed by measurement and pinned by E62; HBD is refused as an SBD proxy (no readable HBD/USDT leg, the name-is-not-the-asset law). Honest money law: the powerdown drip (2026-10-10, 470.84 SP, x13 weekly) is the booked fuel; no 3-day lock exists in any book. E62 + suite v1.47.0 -> v1.48.0, 62/62 GREEN, secret-scan 0.",
+   "cr": "CR-0069",
+   "evidence": [
+    "agents/dex-router.cjs",
+    "agents/dex-router.json",
+    "agents/dex-router.md",
+    "agents/dex-router-history.jsonl",
+    "agents/change-requests/CR-0069-swap-net.json",
+    "agents/evals/run-evals.cjs",
+    ".github/workflows/dex-router-cron.yml",
+    "agents/fleet-graph.md"
+   ]
+  },
+  {
+   "id": "feat-065",
+   "title": "Fleet Rung 40: THE EXCHANGE CORE (CR-0070) — the DEX settles. dex-core.cjs: an atomic, deterministic, reserve-backed settlement engine on our own ledger. Two invariants, one engine: Uniswap v2 exact CPMM for volatile pairs (fee-on-input, floor to the user) + Curve stableswap A=10 for peg pairs (fee-on-output, the -1 pad). A vault that mints WSTEEM/WSBD only 1:1 against reserve custody, where redeem is ALWAYS honored 1:1 (the real-value law), with the conservation identity custody-reserve-claims-pooled === 0 asserted every tick and an attestation sha256 booked so any node re-verifies. minOut atomicity, deterministic <=3-hop BigInt routing, the rebalance FLOOR law on our own pool (we are our own LVR rebalancer), counter-grids anchored to the pool mid (the opposing grids on OUR side), and the drip-fuel loop: custody deltas book as ops the hour the powerdown lands. E63 + suite v1.48.0 -> v1.49.0, 63/63 GREEN, secret-scan 0.",
+   "cr": "CR-0070",
+   "evidence": [
+    "agents/dex-core.cjs",
+    "agents/dex-core.json",
+    "agents/dex-core.md",
+    "agents/dex-core-history.jsonl",
+    "agents/evals/run-evals.cjs",
+    ".github/workflows/dex-core-cron.yml"
+   ]
+  },
+  {
+   "id": "feat-066",
+   "title": "Fleet Rung 41: THE MESH MARKET (CR-0071) — the fleet trades on our own ledger. The owner demanded a networked arbitrage market for the agents and soldiers (\"שנסחר גם פה וגם שם וגם שם\"), a wide volume of REAL trades and profits on our own network, and routers that can take and swap large sums. arb-mesh.cjs (SAOS-ARB-MESH/1, keyless, STASIS-obeying, fail-soft): the roster (headcorner + the ten soldiers from persona-slots) becomes the demand side of our own DEX. MANDATE LAW deterministic from the books: per pool-side edge row clearing the inherited FLOOR law (CANDIDATE-FOK), the operator commands 40% of the row budget, the soldiers split 60% equally, the budget = 1% of first-hop depth (the catalog quote law). DIRECTION LAW: pool mid > fair ⇒ sell the base into the pool (edge captured trading TOWARD the fair). WIRE LAW (the smart treasury): an agent unable to cover his mandate is armed by a MESH-WIRE from treasury free claims — capped 10% of free per batch, partial wires shrink the fill, conservation moves claims and never creates them; no capital ⇒ honest GATED-WIRE, never a fake trade. SETTLEMENT via dex-core.cjs v1.1.0 settleIntents (fresh process, judge separation): batch-idempotent (replayed batch settles nothing twice), no naked shorts, dust refused, fill ≤ 5% of first-hop depth, every hop + minOut all-or-nothing on simulated copies (a refused minOut leaves pools AND accounts byte-unchanged — the wire applies only at commit), agent accounts born lazily at first real movement, edge marked honest-or-null (PEG 1:1, STEEM/SBD to the CEX fair, else null), pool feeMeter accrues (LP revenue), conservation asserted per fill, attestation recomputed. Keyed rails NEVER fired keylessly (PLAN-KEYED-RAIL); grid rungs stay PLAN-POOL-GATED-NOT-BROADCAST. SIZE LADDER (the large-sums law): exact BigInt quotes at 0.1%/1%/5% of depth with honest signed slippage per live pool. Operator pipe-proof booked on the live ledger: MESH-OPERATOR-PIPEPROOF-R41 — headcorner STEEM 5000µ → 4993µ WSTEEM via P1 (MESH-WIRE + AGENT_FILL, conservation OK, attestation d6d5c769bf229029), queue consumed and cleared single-writer. E64 in the suite (v1.49.0 → v1.50.0): white-box refusals/wire/atomicity/idempotency/determinism + drafting laws + ladder honesty, black-box both selftests fresh-process (dex-core 33/33, arb-mesh 15/15), real-tree re-derivation of the booked mesh book + the pipe-proof fill — 64/64 GREEN. arb-mesh-cron.yml hourly :07, keyless, rebase-first. First live tick: NO-EDGE booked honestly (A1 nets −34.99bps below the 120bps floor — the machinery waits, the P&L is protected); ladder measured P3: 0.1% → −0.59bps, 1% → −1.26bps, 5% → −5bps."
+  },
+  {
+   "id": "feat-067",
+   "title": "Fleet Rung 42: THE MULTI-NETWORK VAULT (CR-0072) — the vault holds what its keys can move and sees every network. The owner demanded a smart thing on our network that holds real coins/tokens of all networks and ours. dex-core.cjs v1.2.0: the CUSTODY-CLASS LAW (MEASURED-KEYED is the only mintable class — STEEM/SBD; OBSERVED-POST-KEYED BLURT; OBSERVED-UNCONTROLLED HIVE/HBD per the R38 law; PLANNED-NO-CLAIM SAOS; OBSERVED-ABSENT honest unknown), keyless multi-network condenser probes booked with node provenance in the OBSERVED registry (the vault sees every network, holds only what its keys can move, upgrades the same tick key material verifies), the ISSUER identity SAOS-DEX-ISSUER/1 (stable recomputable sha256-16 over wrappers+chains+catalog; measured d7ff39690365bfa8) with the mint law (1:1 against MEASURED-KEYED custody only, 25% deterministic genesis law) and per-chain peg-out corridors, the REDEEM law (burn BEFORE payout — in-ledger redeem ALWAYS honored 1:1, chain payout queued to dex/pegout-queue.json with the corridor named: KEYED-DESK for STEEM/SBD, PLAN-PEGOUT-KEYED-OPERATOR for HIVE/HBD/BLURT; keyless code never fires a broadcast; refusals DUST/OVER-MINT/UNKNOWN-WRAPPER/INSUFFICIENT-CLAIM booked), the pool catalog P5-P9 appended by the deterministic reconcile law (P5 WHIVE/HIVE, P6 WHBD/HBD, P7 WBLURT/BLURT pegs, P8 HIVE/STEEM cross-network bridge planned, P9 WSBD/WHBD dollar bridge), and the CROSS-FAIR law (HIVE-per-STEEM = SBD-per-STEEM / HBD-per-HIVE, measured 1.8692; the A2 row honestly banded NO-CUSTODY). E65 in the suite: 65/65 GREEN v1.51.0 (selftest 52/52). Live probes: HIVE 0.034 + 0.003 HBD, BLURT 67.841."
+  },
+  {
+   "id": "feat-068",
+   "title": "Fleet Rung 43: THE INTENT GATES (CR-0073) — the DEX learns cross-chain intents. dex-xc.cjs (SAOS-DEX-XC/1, new) + dex-core.cjs v1.3.0 (settleXcOps): ERC-7683 vocabulary (open → resolve → fill → settle/timeout/refund) over ONE deterministic ledger. DOOR LAW: 8 networks with measured hard-finality clocks and honest bands (EVM 780s, TRON 60s, SOL 13s, STEEM/HIVE 60s, BLURT 63s; KEYED-DESK / PLAN-PEGOUT-KEYED-OPERATOR / PLAN-KEYED-DOOR — the EVM/TRON/SOL doors are PRICED-NEVER-SETTLED until keys verify). ESCROW-IDENTITY LAW: per-intent escrow accounts, escrow-drain idempotency, cross-batch DOUBLE-OPEN defense. QUOTE LAW: floors derive from OUR pools (routeBest BigInt + −0.5% guard), no escrow against nothing. FILL LAW: our pools are the default solver (every intent pays fees to OUR network — the traffic flywheel), P2P roster fillers outbid, chain-dest fills route to the wrapper then the R42 redeem law burns 1:1 and queues the payout to the NAMED corridor (keyless code never broadcasts). BOND LAW (THORChain-adapted 2:1): corridor exposure ≤ 2× custody, else refused byte-unchanged. CLOCK LAW (the HTLC 2:1 interlock): refund unlock = 2 × fill window, refunds WHOLE. SPLIT-FILL LAW: one intent ≤ 5% of first-hop depth. TWO BASE-REPAIRS bought and locked as golden vectors: routeBest reversed-leg law (SBD→STEEM quoted 105µ instead of 9402µ — masked since R40) and poolSwap b-side return transposition (masked by symmetric peg pools). LIVE PIPE-PROOF booked on the real ledger (seq 18→22): 1000µ SBD → our pools P3+P1 → 9358µ WSTEEM → redeem 1:1 → pegout queued KEYED-DESK → confirmed at finality+1s, conservation true at every op. E66 + suite v1.51.0 -> v1.52.0, 66/66 GREEN, secret-scan 0.",
+   "cr": "CR-0073",
+   "evidence": [
+    "agents/dex-xc.cjs",
+    "agents/dex-xc.json",
+    "agents/dex-xc.md",
+    "agents/dex-xc-history.jsonl",
+    "agents/dex-core.cjs",
+    "agents/dex-core.json",
+    "dex/xc-intents.json",
+    "dex/xc-ops.json",
+    "dex/pegout-queue.json",
+    "agents/evals/run-evals.cjs",
+    ".github/workflows/dex-xc-cron.yml",
+    "agents/change-requests/CR-0073-intent-gates.json"
+   ]
+  },
+  {
+   "id": "feat-069",
+   "title": "Fleet Rung 44: THE OPPOSING HANDS (CR-0074) — the counter-grids ARM and the pegout hand proves itself. The owner ordered the opposing grids to stand on our own network — \"אני רוצה לייצר עוד גרידים מתנגדים על הרשת שלנו מצד שני\" (trace 1a10…c3a5, re-confirmed 1a10…c3ed) — and CR-0074 IS the gate as a repo artifact. DEX-CORE v1.4.0: counterGridGate() (the artifact law — present = open, never a boolean), rungSizeLaw() (per-side notional ≤ 2% of depth value marked to the anchor, split across rungs; cap golden 5183µ; GRID_DUST=1000µ floor), rungId() (deterministic sha256-16 idempotent re-arm), armCounterGrids() (PLAN→GATED-ARMED-BROADCAST-READY; TWO-SIDED law — a one-sided grid is a direction bet, REFUSED-ONE-SIDED; GRID-TOO-THIN keeps dust quiet), GRID-ARM ops booked in the append-only ledger, settle stays pure (the gate is a 6th argument — byte-determinism untouched). counter-grid.cjs (SAOS-COUNTER-GRID/1, keyless): publishes the ring — audits every armed grid (ids re-derive, two-sided, sizes uniform), books a sha256-16 payload seal, live verdict GATED-ARMED-BROADCAST-READY armed=2 grids (P1 WSTEEM/STEEM + P3 STEEM/SBD; P2 GRID-TOO-THIN — the dust law working on the real tree) 12 rungs seal 49cad75d7eb83821. pegout-hand.cjs (SAOS-PEGOUT-HAND/1, keyed): the real-value law's second half — DEST-ALLOWLIST LAW (chain payouts fire ONLY to the 15 estate-roster accounts; the live queue's 'treasury' row booked REFUSED-DEST-NOT-ESTATE, never a transfer to a squatter), µ→chain floor law, pure single-writer queue consumption, own transfer serializer BYTE-VERIFIED against steem-js (golden vectors pinned), signed with gate-crypto.js sovereign ECDSA (zero steem-js at runtime). LIVE RAIL PROOF: 0.001 STEEM self-transfer headcorner→headcorner INCLUDED at block 110150252, txid 798b2990d595d58be2f09a25b9096c4202319188, verified in-block — and the debugging bought the SYNCHRONOUS-BROADCAST RECEIPT LAW: broadcast_transaction_synchronous only (a silent accept-and-drop via the plain broadcast was caught live and retracted honestly in the append-only history). arb-mesh gate row now follows the artifact. E67 in the suite (v1.52.0 → v1.53.0, 67/67 GREEN): white-box gate/sizing/arm/allowlist/floor/purity/serializer-golden, black-box both selftests fresh-process, real-tree ring re-derivation + refusal row + synchronous txid. claims feats=69 evidence offenders=0 suite MATCH, secret-scan 0 [skip ci]",
+   "cr": "CR-0074",
+   "evidence": [
+    "agents/dex-core.cjs",
+    "agents/dex-core.json",
+    "agents/dex-core.md",
+    "agents/dex-core-history.jsonl",
+    "agents/counter-grid.cjs",
+    "agents/counter-grid.json",
+    "agents/counter-grid.md",
+    "agents/counter-grid-history.jsonl",
+    "agents/pegout-hand.cjs",
+    "agents/pegout-hand.json",
+    "agents/pegout-hand.md",
+    "agents/pegout-hand-history.jsonl",
+    "dex/pegout-queue.json",
+    "agents/arb-mesh.cjs",
+    "agents/evals/run-evals.cjs",
+    "agents/change-requests/CR-0074-counter-grids.json"
+   ]
+  }
+ ]
+}

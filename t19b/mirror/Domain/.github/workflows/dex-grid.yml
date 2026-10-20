@@ -1,0 +1,190 @@
+#
+#
+# [zai-13a] 2026-10-11 — כנות-AMBER (מדוד, לא לתקן כאן):
+# מסילות-החתימה של-הגריד (הצבות/קהילה/האצלות) נעולות מאחורי STEEM_ACTIVE_WIF — שער-owner G1
+# (WAITING-OWNER: ה-WIF בכספת אינו גוזר את רשות-ה-active החיה; רוטציית-בעלים 10-08).
+# לכן המנוע מפרסם בכנות "0 placed · 0 cancelled" ו-verdict-ענווה — זו הצלחת-הבטיחות, לא כישלון-צינור;
+# הפעלת-המסילה = מילת-owner יחידה: עדכון STEEM_ACTIVE_WIF בכספת-Domain → re-dispatch (ראה GATE-STATUS G1).
+# טריות-הספר עצמו אינה תלויה בזה: grid-pulse ב-Console (חסר-מפתחות, 2×/יום) מפרסם ARMED-LIVE מהשרשרת-הציבורית,
+# והמראה dex-mirror מעתיקה לכאן. אל-תגעו בהיגיון-החתימה/ב-WIF (חוק-ברזל).
+#
+# שקיפות-מדידה 10-11: grid.json נכתב 3× ביום (grid-beat[bot] 10:19/13:40 + grid-pulse[bot] 09:53);
+# ריצות-התאומה ירוקות (38131538209 schedule · 38144052862 dispatch) — ה-AMBER שנמדד ב-20:30Z היה צד-המראה, לא המפיק.
+
+name: dex-grid
+
+on:
+  schedule:
+    # R16-a (2026-10-12, owner mandate trace 1a1…ff11 "תצית תפעיל שלא יהיו חסימות"):
+    # cadence 1→4×/day — 14-a measured 11 stale resting asks behind the market after the
+    # daily-only refresh; the grid re-arms around the live book 4×/day now (maker-only,
+    # brake + key-gate re-checked at every sign). Minutes: :26 slot kept (minute-map free).
+    - cron: "26 3,9,15,21 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: dex-grid-domain-twin
+  cancel-in-progress: false
+
+jobs:
+  grid:
+    runs-on: ubuntu-latest
+    timeout-minutes: 9
+    steps:
+      - name: Checkout the sovereign chain home
+        uses: actions/checkout@v4
+        with:
+          repository: roshpinacare-sys/saos-dex
+          token: ${{ secrets.ZIP_PAT }}
+          fetch-depth: 1
+
+      - name: STASIS gate (mechanical, FATE-DEFENSE law
+        id: brake
+        run: |
+          set -eu
+          S=$(node -e "const s=JSON.parse(require('fs').readFileSync('grids/state/STASIS.json','utf8'));console.log([s.active===true?'true':'false',String(s.mode||'full'),(Array.isArray(s.stagedLanes&&s.stagedLanes.allow)&&s.stagedLanes.allow.map(String).map(x=>x.toLowerCase()).includes('grid'))?'true':'false'].join(' '))")
+          ACTIVE=$(echo "$S" | cut -d' ' -f1); MODE=$(echo "$S" | cut -d' ' -f2); LANE_OK=$(echo "$S" | cut -d' ' -f3)
+          echo "active=$ACTIVE" >> "$GITHUB_OUTPUT"
+          echo "mode=$MODE" >> "$GITHUB_OUTPUT"
+          echo "lane_allowed=$LANE_OK" >> "$GITHUB_OUTPUT"
+          if [ "$ACTIVE" = "true" ] && [ "$MODE" = "staged" ] && [ "$LANE_OK" = "true" ]; then
+            echo "[CAPITAL-GATE] STASIS-STAGED-ALLOW dex-grid twin (lane=grid) · owner directive 2026-10-05 trace 1a1…2391 — staged grid lane open in the saos-dex home; the in-code brake (grids/brake.mjs) re-checks at sign-time"
+          elif [ "$ACTIVE" = "true" ]; then
+            echo "STASIS-HALT dex-grid twin (lane=grid) · the breaker is active (mode=$MODE) — capital lanes obey (limit orders + community leg)"
+          else
+            echo "STASIS-LIFTED dex-grid twin · active=false — full operation (master flag)"
+          fi
+
+      - name: Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Cache bun install
+        uses: actions/cache@v4
+        with:
+          path: ~/.bun/install/cache
+          key: bun-dex-${{ hashFiles('bun.lock') }}
+          restore-keys: bun-dex-
+
+      - name: Install
+        run: bun install --frozen-lockfile
+
+      - name: Prisma client
+        run: bunx prisma generate
+
+      - name: Refuse honestly while the active key awaits the operator
+        env:
+          KEY: ${{ secrets.STEEM_ACTIVE_WIF }}
+        run: |
+          if [ -z "$KEY" ]; then
+            echo "STEEM_ACTIVE_WIF is not set in this repository's vault (Settings > Secrets and variables > Actions)."
+            echo "The grid signs every external order with the active key of @headcorner — without it there is"
+            echo "no placement at all. And running grid-beat keyless would publish a false DISARMED-NO-KEY"
+            echo "verdict while the true state is armed (the key lives in the private saos-dex vault,"
+            echo "which secrets never cross). The machine refuses honestly, touching nothing, until the"
+            echo "operator delivers the key — the same key that armed the grid in the first place."
+            echo "See README - the machine twin."
+            exit 1
+          fi
+
+      - name: Shift guard — the sovereign original owns the grid while it lives
+        id: guard
+        env:
+          GH_TOKEN: ${{ secrets.ZIP_PAT }}
+        run: |
+          set -euo pipefail
+          URL="repos/roshpinacare-sys/saos-dex/actions/workflows/dex-grid.yml/runs?per_page=1"
+          LAST=""
+          for attempt in 1 2; do
+            LAST=$(gh api "$URL" --jq '{created_at: .workflow_runs[0].created_at, conclusion: .workflow_runs[0].conclusion}' 2>/dev/null || true)
+            if [ -n "$LAST" ] && [ "$LAST" != "{}" ] && [ "$LAST" != "null" ]; then break; fi
+            echo "attempt ${attempt}: API unreachable — retrying in 10s"
+            sleep 10
+          done
+          if [ -z "$LAST" ] || [ "$LAST" = "{}" ] || [ "$LAST" = "null" ]; then
+            echo "shift state UNKNOWN (API unreachable after retries) — the twin does not take over blindly"
+            exit 1
+          fi
+          AT=$(printf '%s' "$LAST" | jq -r '.created_at // empty')
+          CC=$(printf '%s' "$LAST" | jq -r '.conclusion // empty')
+          echo "the original's last run: created_at=${AT} conclusion=${CC}"
+          if [ "$CC" = "success" ] && [ -n "$AT" ]; then
+            AGE_S=$(( $(date +%s) - $(date -u -d "$AT" +%s) ))
+            AGE_H=$(( AGE_S / 3600 ))
+            echo "the original's last success: ${AGE_H}h ago"
+            if [ "$AGE_S" -lt 82800 ]; then
+              echo "takeover=0" >> "$GITHUB_OUTPUT"
+              echo "reason=the original is alive (success ${AGE_H}h ago) — the twin verifies only" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+          fi
+          echo "takeover=1" >> "$GITHUB_OUTPUT"
+          echo "reason=the original is not healthy (last: ${CC:-unknown}) — the twin takes over the grid" >> "$GITHUB_OUTPUT"
+
+      - name: Grid (read the live book, mark to live feeds, place if armed, publish)
+        if: (steps.brake.outputs.active != 'true' || steps.brake.outputs.lane_allowed == 'true') && (steps.guard.outputs.takeover == '1' || github.event_name == 'workflow_dispatch')
+        run: bun run grid-beat.ts
+        env:
+          SAOS_RELAY_AGENT_ACCOUNT: headcorner
+          STEEM_ACTIVE_WIF: ${{ secrets.STEEM_ACTIVE_WIF }}
+          HIVE_ACTIVE_WIF: ${{ secrets.HIVE_ACTIVE_WIF }}
+          CONSOLE_TOKEN: ${{ secrets.WEAVE_OPS_PAT }}
+
+      - name: Verify-only (this shift belongs to the living original)
+        if: steps.guard.outputs.takeover != '1' && github.event_name != 'workflow_dispatch'
+        run: |
+          echo "${{ steps.guard.outputs.reason }}"
+          echo "The twin takes over automatically when the original's last success ages past 23h."
+          echo "Nothing was touched — one home, one grid, one book."
+
+      # halted under mode=staged exactly as the owner ordered; only a FULL lift (active=false)
+      - name: Community leg (owner-mandated Steem community — D-024, fail-closed)
+        if: always() && steps.brake.outputs.active == 'false'
+        env:
+          SAOS_RELAY_AGENT_ACCOUNT: headcorner
+          STEEM_ACTIVE_WIF: ${{ secrets.STEEM_ACTIVE_WIF }}
+        run: node grids/community.mjs --execute
+        continue-on-error: true
+
+      - name: Community evidence commit (receipt = commit)
+        if: always()
+        run: |
+          set -u
+          git config user.name "community-leg[bot]"
+          git config user.email "community-leg[bot]@users.noreply.github.com"
+          git add grids/state/community-plan.json 2>/dev/null || true
+          if git diff --cached --quiet; then
+            echo "no community evidence change — clean exit"
+          else
+            git commit -m "community-leg: owner-mandated Steem community evidence $(date -u +%FT%TZ) [skip ci]"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
+
+
+      - name: Delegation leg (owner-mandated SP deployment — staged lane, in-code brake re-checks)
+        if: always()
+        env:
+          SAOS_RELAY_AGENT_ACCOUNT: headcorner
+          STEEM_ACTIVE_WIF: ${{ secrets.STEEM_ACTIVE_WIF }}
+        run: node grids/delegate-plan.mjs --execute
+        continue-on-error: true
+
+      - name: Delegation evidence commit (receipt = commit)
+        if: always()
+        run: |
+          set -u
+          git config user.name "delegations[bot]"
+          git config user.email "delegations[bot]@users.noreply.github.com"
+          git add grids/state/delegation-receipt.jsonl grids/state/events.jsonl 2>/dev/null || true
+          if git diff --cached --quiet; then
+            echo "no delegation evidence change — clean exit"
+          else
+            git commit -m "delegations: owner-mandated SP deployment receipt $(date -u +%FT%TZ) [skip ci]"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi

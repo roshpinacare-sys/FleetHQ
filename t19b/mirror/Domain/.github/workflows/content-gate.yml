@@ -1,0 +1,33 @@
+name: content-gate
+on:
+  schedule: [{cron: '37 6,18 * * *'}]
+  workflow_dispatch: {}
+permissions:
+  contents: write
+concurrency:
+  group: content-gate
+  cancel-in-progress: false
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 1}
+      - uses: actions/setup-node@v4
+        with: {node-version: 20}
+      - name: cadence + duplication gate (read-only chain measurement)
+        run: node agents/content-gate.cjs
+      - name: commit gate book
+        if: always()
+        run: |
+          git config user.name "content-gate[bot]"
+          git config user.email "content-gate[bot]@users.noreply.github.com"
+          git add agents/content-gate-book.md agents/content-gate-state.json
+          if git diff --cached --quiet; then echo "no gate changes"; else
+            for i in 1 2 3; do
+              git -c rebase.autoStash=true pull --rebase origin main >/dev/null 2>&1 || true
+              git commit -m "content-gate: cadence+dup book $(date -u +%Y-%m-%dT%H:%M:%SZ) [skip ci]" >/dev/null 2>&1 && break || sleep 5
+            done
+            git push origin main >/dev/null 2>&1 || true
+          fi

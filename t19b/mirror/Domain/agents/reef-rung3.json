@@ -1,0 +1,106 @@
+{
+  "ok": true,
+  "at": "2026-10-03T15:48:22Z",
+  "agent": "reef-rung3 v1.0.0 (Z-60, CR-0027 — guarded agent-bash episode over reef; the booked Rung-3 condition of CR-0023)",
+  "laws": [
+    "SERVE-WINDOW (per-run serve, finally-kill, verified dead; reuse over duplicate)",
+    "GUARD-IN-PATH (every model bash via in-tree GuardedLocalEnvironment + liveness selftest each run)",
+    "KEYLESS-TIER-B (allowlist-scrubbed episode env; local reef token only)",
+    "FAIL-LOUD (no receipts → no reef report; skips/failures booked honestly)",
+    "RECORD→REWARD (report references every inference receipt it grades)"
+  ],
+  "preflight": {
+    "venvpy": "/tmp/reef-venv/bin/python",
+    "shim_port": 3040
+  },
+  "serve_window": {
+    "started": true,
+    "reused": false,
+    "pid": 8804,
+    "killed": true,
+    "verified_dead": true,
+    "ms": 1507
+  },
+  "episode": {
+    "ok": true,
+    "scenario": "rung3-guarded-agent",
+    "status": "FINAL",
+    "reward": 1,
+    "expected": 493,
+    "file_value": 493,
+    "final_line": 493,
+    "final_matches_file": true,
+    "turns": [
+      {
+        "turn": 1,
+        "receipt": "25ea574deb1241f48380b9c2ef8fa0be",
+        "ms": 1077,
+        "chars": 171,
+        "blocks": 4,
+        "extra_blocks_suppressed": 1
+      },
+      {
+        "turn": 2,
+        "receipt": "1bd93b4a15bc42eab4dd28f5df113cf4",
+        "ms": 890,
+        "chars": 145,
+        "blocks": 1,
+        "extra_blocks_suppressed": 0
+      },
+      {
+        "turn": 3,
+        "receipt": "e1ab8d6093b44f0aa1198a3257d19d90",
+        "ms": 483,
+        "chars": 27,
+        "blocks": 1,
+        "extra_blocks_suppressed": 0
+      },
+      {
+        "turn": 4,
+        "receipt": "86654adc286f4d11810c51cfa00bd61f",
+        "ms": 488,
+        "chars": 11,
+        "blocks": 0,
+        "extra_blocks_suppressed": 0
+      }
+    ],
+    "bash_calls": 3,
+    "guard_denies": 0,
+    "guard_selftest": {
+      "allow_ok": true,
+      "deny_ok": true
+    },
+    "receipts": [
+      "25ea574deb1241f48380b9c2ef8fa0be",
+      "1bd93b4a15bc42eab4dd28f5df113cf4",
+      "e1ab8d6093b44f0aa1198a3257d19d90",
+      "86654adc286f4d11810c51cfa00bd61f"
+    ],
+    "reported": true,
+    "upstream_fail": null,
+    "guard_source": "/home/z/fleet/Domain/agents/swe-guard/guard_env.py",
+    "work": "/tmp/reef-rung3",
+    "ms": 3076,
+    "desk_ms": 3133
+  },
+  "counts": {
+    "receipts": 4,
+    "bash_calls": 3,
+    "guard_denies": 0,
+    "reward": 1
+  },
+  "rows": [
+    {
+      "id": "episode",
+      "status": "EPISODE-COMPLETE",
+      "detail": "status=FINAL reward=1 turns=4 bash=3 denies=0"
+    },
+    {
+      "id": "serve",
+      "status": "SERVE-WINDOW-CLOSED",
+      "detail": "SIGTERM → verified dead, pgrep reef.service = 0 processes"
+    }
+  ],
+  "closed": true,
+  "note": "evidence desk — the causal chain (turn receipts → report references) is readable back from the reef agent-record sqlite (hash(scenario) store file)"
+}

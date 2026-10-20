@@ -1,0 +1,51 @@
+#
+#
+# rebase-first push (parallel runtimes are real).
+
+name: dex-router
+
+on:
+  schedule:
+    - cron: '46 */2 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: dex-router
+  cancel-in-progress: false
+
+jobs:
+  swap-net:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: swap-net tick (venue graph + routes + arb + counter-grids)
+        run: node agents/dex-router.cjs status
+
+      - name: commit swap-net books
+        run: |
+          git config user.name "saos-dex-router"
+          git config user.email "dex-router@fleet.local"
+          node agents/redact-telemetry.mjs agents/dex-router.json
+          git add agents/dex-router.json agents/dex-router.md agents/dex-router-history.jsonl
+          if git diff --cached --quiet; then
+            echo "no book delta — quiet tick"
+          else
+            git commit -m "dex-router: swap-net tick $(date -u +%Y-%m-%dT%H:%M:%SZ) [skip ci]"
+            for i in 1 2 3; do
+              git -c rebase.autoStash=true pull --rebase origin main && git push origin HEAD:main && break
+              echo "rebase-push retry $i"; sleep $((i * 5))
+            done
+          fi

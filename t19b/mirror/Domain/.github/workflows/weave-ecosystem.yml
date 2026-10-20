@@ -1,0 +1,82 @@
+#
+#
+
+name: weave-ecosystem
+
+on:
+  schedule:
+    - cron: '55 6 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: weave-ecosystem-domain-twin
+  cancel-in-progress: false
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout the sovereign home
+        uses: actions/checkout@v4
+        with:
+          repository: roshpinacare-sys/Zip
+          token: ${{ secrets.ZIP_PAT }}
+          fetch-depth: 1
+
+      - name: Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install deps (prisma client for the module graph)
+        run: bun install --no-save
+
+      - name: Prisma client (the scan module imports the db graph)
+        run: bunx prisma generate
+        env:
+          DATABASE_URL: 'file:${{ github.workspace }}/db/custom.db'
+
+      - name: Measure the ecosystem (full dup scan via ops PAT)
+        run: |
+          set -e
+          git remote set-url origin "https://x-access-token:${{ secrets.SBX_FLEET_PAT }}@github.com/roshpinacare-sys/Zip.git"
+          bun scripts/weave-ecosystem.ts --dup-scan --json sovereign/reports/ecosystem-dup-latest.json
+          DUP=$(jq -r '.totals.dupRatio' sovereign/reports/ecosystem-dup-latest.json)
+          REDUNDANT=$(jq -r '.totals.redundantCopies' sovereign/reports/ecosystem-dup-latest.json)
+          MEASURED=$(jq -r '.totals.measured' sovereign/reports/ecosystem-dup-latest.json)
+          echo "dup=$DUP · redundant=$REDUNDANT/$MEASURED (target < 0.2)"
+          if awk "BEGIN{exit !($DUP >= 0.2)}"; then
+            echo "::warning::G6 VIOLATION: dup=$DUP >= 0.2 — the report is committed, the run fails honestly"
+            echo "G6_VIOLATION=1" >> "$GITHUB_ENV"
+          fi
+
+      - name: Commit the measurement beacon (to the sovereign home)
+        run: |
+          set -e
+          git config user.name "weave-ecosystem[bot]"
+          git config user.email "weave-ecosystem[bot]@users.noreply.github.com"
+          git add sovereign/reports/ecosystem-dup-latest.json
+          if git diff --cached --quiet; then
+            echo "no status change — the ecosystem is stable"
+            exit 0
+          fi
+          DUP=$(jq -r '.totals.dupRatio' sovereign/reports/ecosystem-dup-latest.json)
+          git commit -m "weave-ecosystem: $(date -u +%FT%TZ) · dup=$DUP · G6 daily enforcement · domain-twin [skip ci]"
+          for i in 1 2 3; do
+            if git push origin main; then echo "pushed ✓"; exit 0; fi
+            echo "race with the heart (attempt $i) — rebase and retry"
+            git -c rebase.autoStash=true pull --rebase origin main --no-edit || true
+            sleep 15
+          done
+          echo "push failed after 3 honest attempts — the next cycle re-commits the same measurement"
+          exit 1
+
+      - name: Honest red on G6 violation
+        if: env.G6_VIOLATION == '1'
+        run: |
+          echo "❌ G6 violation recorded — see the committed report"
+          exit 1

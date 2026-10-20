@@ -1,0 +1,35 @@
+{
+ "id": "CR-0052",
+ "slot": 52,
+ "title": "Fleet Rung 22 — THE RESURRECTION RUNG: estate liveness audit → dead wires revived, failing desks healed, the starving-scheduler pattern answered by a 9-desk keeper arc, the fee-drift arbitrated by a registered doctrine, and THE ONE PROVABLE PAGE for the owner",
+ "operator": "audit directive (2026-10-03): 'תבחן את כל הגיט ומה התקדמנו ומה לא, איפה החולשות הכי חזקות — חוסר חיבורים, שקרים, דימומים, שבירות, באגים... לראות שאין דברים מתים להחיות הכל לחבר הכל... אני מחכה יותר מדי זמן ועוד לא קיבלנו שום דבר משמעותי באמת שניתן להוכיח'",
+ "verdict": "PASS",
+ "tier": "B",
+ "at": "2026-10-03T22:40:00Z",
+ "audit_findings_measured": [
+  "F1 · DEAD WIRE: fill-ledger-cron.yml — 0 runs EVER (GitHub API total_count=0) despite its :17/:47 cron committed since CR-0042; the fill-ledger book survived only because sibling desks wrote it. ANSWER: keeper arc watches it (45m gap law) + live PAT dispatch proves the workflow itself executes.",
+  "F2 · SCHEDULER STARVATION PATTERN CONFIRMED REPO-WIDE on young crons: sovereign-tick-cron, earn-audit-cron, fleet-census-cron, market-grid-cron = 0 scheduled events ever (event=schedule filter), while old crons (moment-watch 642 runs, web-publish 872) fire fine — GitHub registers new cron entries and does not execute them on this repo (Z-70's measurement now a pattern). ANSWER: the keeper IS the scheduler-of-record for the arc desks until GitHub heals.",
+  "F3 · DYING DAILY DESK: self-audience failed its last 3 scheduled runs at the commit step — root cause read from run 37144830642's log: unstaged measure-step leftovers blocked 'git pull --rebase', the '|| true' swallowed it, and the push raced remote-move and failed; 9 files / 3181 insertions of daily receipts died at push, repeatedly. ANSWER: git add -A + rebase.autoStash + 3-attempt retry (house idiom), fail-loud after 3.",
+  "F4 · SILENT WATCHDOG (double defect): twin-audit's alarm gate was inline bash with node -e JS containing BACKTICKS — bash executed them as command substitution ('syntax error near unexpected token done', exit 2) on its first scheduled fire; AND the gate had been firing on a FALSE premise — twin-audit.mjs demanded the domainMarker evidence on the CONSOLE side too (ev.domainMarker || ev.aMarker), punishing a correctly-differentiated pair. Two defects cancelled into total silence: the alarm could never fire, and had it fired it would have been wrong. ANSWER: agents/twin-marker-law.cjs (marker-side law, E42 matrix) + agents/twin-issue-gate.cjs (Node desk: no quoting tricks, corrupt marker fails loud, both-token fallback honest) wired into the workflow; live re-run measures evidenceOk=true / gateFired=false on the real state.",
+  "F5 · ANONYMOUS FEE DRIFT (cross-layer C1, open since R14): kernel FEE_BPS=30 vs SAOSExchange FEE_BPS=20 had no registered arbitration. ANSWER: agents/fee-doctrine.json (the per-venue book + price-each-venue-by-its-own-doctrine rule) + agents/fee-doctrine-law.cjs (pure): governed pricing = PASS-ARBITRATED, missing/lying book = DRIFT. Cross-layer now 7 checks / 6 PASS / 1 PASS-ARBITRATED / 0 DRIFT / 0 FAIL.",
+  "F6 · PROOF-SURFACE STALENESS: public/pulse.json truth showed a 2026-10-02 snapshot while fresh day-books were committed every 30 minutes. ANSWER: THE PUBLIC TRUTH SCOPE LAW — truth.day joins the page from the fill-ledger's last committed walk, scope-labeled (DAY since 00:00Z), measuredAt stamped; a day number never laundered into lifetime, a lifetime number never hides a day.",
+  "F7 · THE OWNER'S COMPLAINT ANSWERED: 'nothing truly meaningful that can be proven' → agents/owner-proof.cjs composes THE ONE PROVABLE PAGE (owner-proof.json/.md, HEBREW surface): what we own (per-chain, chain-verifiable), the powerdown runway (475.88 SP/wk, 1903.5 SP remaining, 28 days, next 2026-10-10T02:01:27), the honest P&L (lifetime -1.12 SBD, today -0.227, content measured-dead — losses printed, not hidden), the autonomy map (48/43 workflows, 9-desk arc, STASIS clean), and the laws (claims 0 offenders, census 16/16). Every number carries {source, measuredAt}.",
+  "F8 · KEEPER PURITY + WIDENING: keeperDecide now judges the PASSED arc (true purity; empty arc = never-born fleet view), the registry widens 3→9 desks with per-desk staleness AND per-desk cooldown (daily desks retried every 4h, not stormed every 20m). E40b (the sibling's eval) kept — its empty-arc count made registry-agnostic, law unchanged."
+ ],
+ "receipts": [
+  "agents/evals/eval-results.json — suite v1.30.0, 43/43 GREEN (E42 resurrection suite added; siblings' E37-E41 kept)",
+  "agents/claims-audit.json — verdict WARN (4 documented allows, 0 offenders), suite MATCH",
+  "agents/fleet-census.json — 16/16 lanes, caps=61, wiring 10/10",
+  "agents/cross-layer.json — 7 checks, 0 DRIFT, 0 FAIL, C1 PASS-ARBITRATED",
+  "agents/owner-proof.json + agents/owner-proof.md — the one provable page",
+  "public/pulse.json — truth.day scope law live",
+  "twin-audit/report-2026-10-03.json + latest.json — refreshed by the fixed script, gateFired=false on the correct state"
+ ],
+ "evals": "E42 (v1.30.0) — marker orientation matrix, feeArbitration real/missing/lying/equal/missing-sources, alarm body builder + no-backtick liability law, arc sanity (zero ghost receipts, per-desk cooldown), pulse day-scope law, owner-proof black-box + byte-determinism + Hebrew surface",
+ "next": [
+  "watch the keeper re-fire the starved crons on its own cadence (the dispatch receipts book in tick-keeper.json)",
+  "curation/content loop remains measured-dead — the yield question (post-powerdown sustainability) is the next rung's headline",
+  "B1 fee-arbitration ledger enforcement (route pricing per venue) remains open for the market legs"
+ ],
+ "renumberNote": "SIXTEENTH-COLLISION RENUMBER (later-mover law): the deep-audit lane landed CR-0051/feat-046/E42+E43 (their cross-map instrument + the keeper Bearer fix, 3eb3b65) while this rung was in flight — renumbered CR-0051->CR-0052, feat-046->feat-047, my E42->E44, suite v1.30.0(theirs)->v1.31.0(mine, their E42/E43 KEPT + their Bearer dispatch fix merged into the resurrection arc)"
+}

@@ -1,0 +1,314 @@
+[
+  {
+    "coverage_id": "ci%20action%20references::action%20tag%20mutability::ci-estate::supply%20chain",
+    "canonical_refs": {
+      "surface": "ci action references",
+      "boundary": "action tag mutability",
+      "subsystem": "ci-estate",
+      "attack_class": "supply chain"
+    },
+    "surface": "ci action references",
+    "boundary": "action tag mutability",
+    "subsystem": "ci-estate",
+    "attack_class": "supply chain",
+    "starting_paths": [
+      "Domain/.github/workflows",
+      "Defi/.github/workflows",
+      "steem/.github/workflows"
+    ],
+    "ordinary_attack_class_block": "SKILL.md#Core principles",
+    "selected_companion_blocks": [],
+    "excluded_blocks": [],
+    "prior_status": "new",
+    "attempts": [],
+    "wave": 1,
+    "status": "covered",
+    "agent_id": "z47-audit",
+    "reviewed_paths": [
+      "Domain/.github/workflows",
+      "Defi/.github/workflows",
+      "steem/.github/workflows"
+    ],
+    "local_checks": [
+      {
+        "agent_id": "z47-audit",
+        "reviewed_paths": [
+          "Domain/.github/workflows",
+          "Defi/.github/workflows",
+          "steem/.github/workflows"
+        ],
+        "invariant": "Reusable actions should be pinned to immutable SHAs so upstream tag movement cannot alter trusted code.",
+        "method": "source",
+        "result": "95 unpinned tag refs across 41 Domain workflows (checkout/setup-node/upload-artifact @v4); zero SHA pins.",
+        "artifact": null
+      }
+    ],
+    "result_fingerprints": [],
+    "unresolved": []
+  },
+  {
+    "coverage_id": "dependency%20advisories::known-vulnerable%20dependency%20exposure::runtime-next::supply%20chain",
+    "canonical_refs": {
+      "surface": "dependency advisories",
+      "boundary": "known-vulnerable dependency exposure",
+      "subsystem": "runtime-next",
+      "attack_class": "supply chain"
+    },
+    "surface": "dependency advisories",
+    "boundary": "known-vulnerable dependency exposure",
+    "subsystem": "runtime-next",
+    "attack_class": "supply chain",
+    "starting_paths": [
+      "package.json",
+      "bun.lock"
+    ],
+    "ordinary_attack_class_block": "SKILL.md#Core principles",
+    "selected_companion_blocks": [],
+    "excluded_blocks": [],
+    "prior_status": "new",
+    "attempts": [],
+    "wave": 1,
+    "status": "blocked",
+    "agent_id": "z47-audit",
+    "reviewed_paths": [
+      "package.json",
+      "bun.lock"
+    ],
+    "local_checks": [
+      {
+        "agent_id": "z47-audit",
+        "reviewed_paths": [
+          "package.json",
+          "bun.lock"
+        ],
+        "invariant": "Runtime dependencies must be free of known exploitable advisories.",
+        "method": "source",
+        "result": "Majors are current (next ^16.1.1, react ^19, prisma ^6.11.1); one 0.x dep (z-ai-web-dev-sdk ^0.0.18); no advisory-DB cross-check performed in this guidance-mode pass.",
+        "artifact": null
+      }
+    ],
+    "result_fingerprints": [],
+    "unresolved": [
+      "Authoritative advisory-DB cross-check for the resolved bun.lock set (no local CVE database in this runtime)."
+    ]
+  },
+  {
+    "coverage_id": "gateway%20transform%20lane::external-to-loopback%20pivot%20width::runtime-gateway::web%20protocol%20and%20auth",
+    "canonical_refs": {
+      "surface": "gateway transform lane",
+      "boundary": "external-to-loopback pivot width",
+      "subsystem": "runtime-gateway",
+      "attack_class": "web protocol and auth"
+    },
+    "surface": "gateway transform lane",
+    "boundary": "external-to-loopback pivot width",
+    "subsystem": "runtime-gateway",
+    "attack_class": "web protocol and auth",
+    "starting_paths": [
+      "Caddyfile"
+    ],
+    "ordinary_attack_class_block": "SKILL.md#Core principles",
+    "selected_companion_blocks": [],
+    "excluded_blocks": [],
+    "prior_status": "new",
+    "attempts": [],
+    "wave": 1,
+    "status": "covered",
+    "agent_id": "z47-audit",
+    "reviewed_paths": [
+      "Caddyfile"
+    ],
+    "local_checks": [
+      {
+        "agent_id": "z47-audit",
+        "reviewed_paths": [
+          "Caddyfile"
+        ],
+        "invariant": "Any externally reachable proxy lane to loopback services must be restricted to an explicit allowlist of service ports.",
+        "method": "source",
+        "result": "Gateway matches query param XTransformPort=* and reverse-proxies to arbitrary localhost:{port} with no allowlist (lines 2-13); default lane proxies localhost:3000.",
+        "artifact": null
+      }
+    ],
+    "result_fingerprints": [],
+    "unresolved": []
+  },
+  {
+    "coverage_id": "git%20remote%20credentials::credential%20read%20exposure%20from%20repo%20worktree::fleet-git::credential%20exposure",
+    "canonical_refs": {
+      "surface": "git remote credentials",
+      "boundary": "credential read exposure from repo worktree",
+      "subsystem": "fleet-git",
+      "attack_class": "credential exposure"
+    },
+    "surface": "git remote credentials",
+    "boundary": "credential read exposure from repo worktree",
+    "subsystem": "fleet-git",
+    "attack_class": "credential exposure",
+    "starting_paths": [
+      "Domain/.git/config",
+      "Defi/.git/config",
+      "steem/.git/config"
+    ],
+    "ordinary_attack_class_block": "SKILL.md#Core principles",
+    "selected_companion_blocks": [],
+    "excluded_blocks": [],
+    "prior_status": "new",
+    "attempts": [],
+    "wave": 1,
+    "status": "covered",
+    "agent_id": "z47-audit",
+    "reviewed_paths": [
+      "Domain/.git/config",
+      "Defi/.git/config",
+      "steem/.git/config"
+    ],
+    "local_checks": [
+      {
+        "agent_id": "z47-audit",
+        "reviewed_paths": [
+          "Domain/.git/config",
+          "Defi/.git/config",
+          "steem/.git/config"
+        ],
+        "invariant": "Remote credential material must not be readable beyond the owning principal's need.",
+        "method": "source",
+        "result": "All three configs embed a bearer token in the remote URL (line 7 each); file mode measured 664 (group/world read) vs expected 600.",
+        "artifact": null
+      }
+    ],
+    "result_fingerprints": [],
+    "unresolved": []
+  },
+  {
+    "coverage_id": "public%20lane%20runtime%20mode::production%20readiness%20of%20the%20default%20public%20lane::runtime-next::cloud%20and%20deployment",
+    "canonical_refs": {
+      "surface": "public lane runtime mode",
+      "boundary": "production readiness of the default public lane",
+      "subsystem": "runtime-next",
+      "attack_class": "cloud and deployment"
+    },
+    "surface": "public lane runtime mode",
+    "boundary": "production readiness of the default public lane",
+    "subsystem": "runtime-next",
+    "attack_class": "cloud and deployment",
+    "starting_paths": [
+      "package.json"
+    ],
+    "ordinary_attack_class_block": "SKILL.md#Core principles",
+    "selected_companion_blocks": [],
+    "excluded_blocks": [],
+    "prior_status": "new",
+    "attempts": [],
+    "wave": 1,
+    "status": "blocked",
+    "agent_id": "z47-audit",
+    "reviewed_paths": [
+      "package.json"
+    ],
+    "local_checks": [
+      {
+        "agent_id": "z47-audit",
+        "reviewed_paths": [
+          "package.json"
+        ],
+        "invariant": "The externally reachable default lane should serve a production build, not a development server.",
+        "method": "source",
+        "result": "dev script is `next dev -p 3000` with dev.log tee; dev-mode servers expose verbose diagnostics and slower fallbacks; platform policy mandates dev mode \u2014 owner decision required.",
+        "artifact": null
+      }
+    ],
+    "result_fingerprints": [],
+    "unresolved": [
+      "Exact owner-approved policy fact: whether the platform intends dev-mode on the public default lane or a prod build is permitted for this runtime."
+    ]
+  },
+  {
+    "coverage_id": "skill%20library%20trust%20boundary::instruction-versus-data%20separation%20for%20loaded%20skills::runtime-skills::ai%20and%20llm",
+    "canonical_refs": {
+      "surface": "skill library trust boundary",
+      "boundary": "instruction-versus-data separation for loaded skills",
+      "subsystem": "runtime-skills",
+      "attack_class": "ai and llm"
+    },
+    "surface": "skill library trust boundary",
+    "boundary": "instruction-versus-data separation for loaded skills",
+    "subsystem": "runtime-skills",
+    "attack_class": "ai and llm",
+    "starting_paths": [
+      "skills"
+    ],
+    "ordinary_attack_class_block": "SKILL.md#Core principles",
+    "selected_companion_blocks": [],
+    "excluded_blocks": [],
+    "prior_status": "new",
+    "attempts": [],
+    "wave": 1,
+    "status": "covered",
+    "agent_id": "z47-audit",
+    "reviewed_paths": [
+      "skills"
+    ],
+    "local_checks": [
+      {
+        "agent_id": "z47-audit",
+        "reviewed_paths": [
+          "skills"
+        ],
+        "invariant": "Skill and reference content loaded into agent context must be treated as untrusted data, never as instruction, and executable skill scripts must be inventoried.",
+        "method": "source",
+        "result": "66 skill directories, 108 executable scripts under skills/**; no injection-boundary rule (untrusted-data clause) found in runtime conventions (AGENTS.md).",
+        "artifact": null
+      }
+    ],
+    "result_fingerprints": [],
+    "unresolved": []
+  },
+  {
+    "coverage_id": "workflow%20secret%20handling::secret-to-log%20and%20pwn-request%20exposure::ci-estate::supply%20chain",
+    "canonical_refs": {
+      "surface": "workflow secret handling",
+      "boundary": "secret-to-log and pwn-request exposure",
+      "subsystem": "ci-estate",
+      "attack_class": "supply chain"
+    },
+    "surface": "workflow secret handling",
+    "boundary": "secret-to-log and pwn-request exposure",
+    "subsystem": "ci-estate",
+    "attack_class": "supply chain",
+    "starting_paths": [
+      "Domain/.github/workflows",
+      "Defi/.github/workflows",
+      "steem/.github/workflows"
+    ],
+    "ordinary_attack_class_block": "SKILL.md#Core principles",
+    "selected_companion_blocks": [],
+    "excluded_blocks": [],
+    "prior_status": "new",
+    "attempts": [],
+    "wave": 1,
+    "status": "covered",
+    "agent_id": "z47-audit",
+    "reviewed_paths": [
+      "Domain/.github/workflows",
+      "Defi/.github/workflows",
+      "steem/.github/workflows"
+    ],
+    "local_checks": [
+      {
+        "agent_id": "z47-audit",
+        "reviewed_paths": [
+          "Domain/.github/workflows",
+          "Defi/.github/workflows",
+          "steem/.github/workflows"
+        ],
+        "invariant": "Secrets must never be echoed; pull_request_target must not checkout untrusted PR heads with secrets present.",
+        "method": "source",
+        "result": "grep across 47 workflows: zero pull_request_target, zero direct secret echoes; secrets referenced only via ${{ secrets.* }} env blocks.",
+        "artifact": null
+      }
+    ],
+    "result_fingerprints": [],
+    "unresolved": []
+  }
+]

@@ -1,0 +1,75 @@
+{
+ "at": "2026-10-12T12:27:43.246Z",
+ "agent": "reconcile",
+ "canonicalWriters": [
+  {
+   "topic": "capital-balances",
+   "book": "money-ledger.json",
+   "writer": "money-watch",
+   "exists": true,
+   "ageHours": 0
+  },
+  {
+   "topic": "engine-executions",
+   "book": "econ-book.json",
+   "writer": "econ-desk",
+   "exists": true,
+   "ageHours": 0
+  },
+  {
+   "topic": "dex-depth",
+   "book": "dex-book.json",
+   "writer": "dex-book",
+   "exists": true,
+   "ageHours": 0
+  },
+  {
+   "topic": "bridge-verdicts",
+   "book": "bridge-book.json",
+   "writer": "bridge-desk",
+   "exists": true,
+   "ageHours": 0
+  },
+  {
+   "topic": "key-authority",
+   "book": "capability-matrix.json",
+   "writer": "capability-matrix",
+   "exists": true,
+   "ageHours": 0
+  }
+ ],
+ "freshness": [
+  "money-ledger.json:0h",
+  "econ-book.json:0h",
+  "dex-book.json:0h",
+  "bridge-book.json:0h",
+  "capability-matrix.json:0h"
+ ],
+ "drift": [
+  {
+   "book": "money-ledger.json",
+   "check": "references executor account",
+   "verdict": "OK"
+  },
+  {
+   "book": "econ-book.json",
+   "check": "references executor account",
+   "verdict": "OK"
+  },
+  {
+   "book": "econ-book.json",
+   "check": "swapHive vs live",
+   "claimed": 0,
+   "live": 0.03020691,
+   "verdict": "DRIFT",
+   "delta": 0.03020691
+  }
+ ],
+ "live": {
+  "steemLiquid": null,
+  "hiveLiquid": 0.034,
+  "hbd": 0.003,
+  "bee": 0,
+  "swapHive": 0.03020691
+ }
+}

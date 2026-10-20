@@ -1,0 +1,15 @@
+# guard-allowlist.txt — EXPLICIT kill-allowlist for the memory guard (Task 32-b)
+#
+# THE LAW:
+#   * The HARD tier (<400MB available) may SIGTERM ONLY processes whose
+#     full "comm cmdline" contains one of the patterns below — AND that
+#     are NOT in the protected core (hardcoded in mem_profiler.py) —
+#     AND that are provably idle (zero CPU-tick delta over the sample).
+#   * This file ships EMPTY (comments only): by default NOTHING is
+#     killable. Dry-run receipts (GUARDDRAFT) document what WOULD die.
+#   * One pattern per line, '#' starts a comment. Patterns are matched
+#     case-insensitively as substrings.
+#
+# Examples (do NOT enable blindly):
+#   sovereign-guard-test-child
+#   my-stale-worker.py

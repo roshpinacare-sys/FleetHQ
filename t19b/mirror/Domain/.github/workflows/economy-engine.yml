@@ -1,0 +1,87 @@
+#
+#
+#
+
+name: economy-engine
+
+on:
+  schedule:
+    - cron: '31 */3 * * *'
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'dry-run (plan only, no broadcast)? true = dry, false = REAL votes'
+        type: boolean
+        default: true
+      cooldown_hours:
+        description: 'min hours between an account votes (default 10 — Task 17 faster cadence)'
+        type: string
+        default: '10'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: economy-engine
+  cancel-in-progress: false
+
+jobs:
+  cycle:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: checkout Domain (public home — logic only)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: STASIS gate (mechanical, FATE-DEFENSE law
+        id: brake
+        run: |
+          ST=$(node -p "JSON.parse(require('fs').readFileSync('agents/STASIS.json','utf8')).active===true")
+          echo "active=$ST" >> "$GITHUB_OUTPUT"
+          if [ "$ST" = "true" ]; then
+            echo "STASIS-HALT economy-engine · the breaker is active — capital lanes obey (votes + claims)"
+          fi
+
+      - name: checkout private steem (seal custody lives here) — proven org-gitleaks pattern
+        uses: actions/checkout@v4
+        with:
+          repository: roshpinacare-sys/steem
+          ref: main
+          token: ${{ secrets.ZIP_PAT }}
+          path: steem
+          fetch-depth: 0
+
+      - name: git identity for the steem receipt commit
+        run: |
+          git config --global user.name "economy-engine[bot]"
+          git config --global user.email "economy-engine[bot]@users.noreply.github.com"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: install signer lib (steem@0.7.11 — pinned, 14-c doctrine; ecurve/bigi for the blurt leg, Task 16-a)
+        run: npm install --prefix /tmp/steemjs steem@0.7.11 ecurve@1.0.6 bigi@1.4.2 --omit=dev --no-audit --no-fund --loglevel=error
+
+      - name: run the economy engine cycle (seal → auths → candidates → votes → txids → receipt)
+        if: steps.brake.outputs.active != 'true'
+        env:
+          STEEM_DIR: ${{ github.workspace }}/steem
+          STEEMJS_DIR: /tmp/steemjs
+          # COERCION TRAP (15-c fix): type:boolean inputs are real booleans, and GitHub
+          # coerces mixed-type == to numbers (false→0, 'false'→NaN ⇒ never equal), so the
+          # (observed live: run 37009080091). format('{0}', …) stringifies before comparing.
+          DRY_RUN: ${{ github.event_name == 'schedule' && 'false' || (format('{0}', inputs.dry_run) == 'false' && 'false' || 'true') }}
+          PUSH_RECEIPT: 'true'
+          ENGINE_MAX_VOTES: '12'
+          ENGINE_MIN_HOURS_BETWEEN_VOTES: ${{ inputs.cooldown_hours || '10' }}
+          ENGINE_AUTHOR_SUPPORT: 'true'
+        run: node scripts/economy-engine.mjs
+
+      - name: prove the receipt landed in steem (API-verified head is asserted by the caller wave)
+        if: always()
+        run: |
+          echo "steem local HEAD after engine: $(git -C steem rev-parse HEAD)"
+          git -C steem log -1 --format='%H %s' || true

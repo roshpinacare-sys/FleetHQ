@@ -1,0 +1,18 @@
+{
+ "id": "CR-0059",
+ "slot": 59,
+ "title": "Fleet Rung 29 — THE SHARE LADDER (mm-volume v1.1.0 + market-grid v1.1.0): 'the BIGGEST market maker' becomes a MEASURED number instead of a boast. The pond: market-grid now reads condenser get_volume from the chains themselves (SBD/STEEM 24h pond 163.687 SBD, HBD/HIVE 958.712 HBD) and books it into the live book + the append-only history. The share: the fleet's projected daily volume over the measured pond, as a LADDER over funded soldiers — SBD/STEEM: N=1 → 23.9286% (one soldier already holds a quarter of the venue), N=2 → 47.8572%, N=3 → 71.7858%, N=5 → 119.643% (saturates: the pond caps the capacity ladder and the tape becomes the binding — surfaced, never hidden); HBD/HIVE: 4.0855% at N=1. The truth check (Q8): realized24h meters the fill-ledger's REAL fill_order fills over a 24h window that ends at the LAST fill (deterministic from data alone) — 124 real fills measured, 62.781 SBD sold / 24.388 SBD bought, avg fill 0.703 SBD, projection accuracy 160.2865% (the projection UNDERSTATES reality: real fills run ~10× the planned notional — the assumption is now visible and can be re-based). The doctrine map (Q9): the six failures that killed the great market makers (adverse selection, inventory skew, fee drag, self-poison, silent rot, overtrading) each mapped onto the guard this fleet ships WITH the plan. Both venues' economics now flow from the live book (steem spread 1.1677% at measure time, hive 0.1645%).",
+ "operator": "owner directive (2026-10-04, Hebrew, repeat = one full rung): the market-maker volume directive, re-issued — 'להיות השחקנים הכי גדולים... להגיע לווליום הרבה יותר גבוה... תעלה הרבה שאילתות'",
+ "design": {
+   "instruments": [
+     "agents/market-grid.cjs v1.1.0 — +condenser get_volume per internal market, pure parseVolume exported (both chains' response shapes, invalid drops), volume24h + volume24hSbdTerm into the live book, volumeSbdTerm rows into the append-only history",
+     "agents/mm-volume.cjs v1.1.0 — sharePct + shareLadder (N∈{1,2,3,5} with saturates flag), realized24h (window relative to the last fill, µ-exact sums, unclassified counted honestly, avg over classified fills, projectionAccuracyPct), doctrineMap (6 failure→guard rows), both internal venues priced from the live book with history fallback, HBD/HIVE venue joins the plan",
+     "evals E51 (run-evals v1.38.0) — white-box: parseVolume exact over steem/hive naming, sharePct 39.168/163.687=23.9286% + invalid nulls, shareLadder monotonic + saturates, realized24h window-relative-to-last with micro-exact sums + unclassified honesty, doctrineMap=6; black-box: rich fixture (live book + fills) → share/realized/accuracy live + byte-stable payload; enhancement-null fixture → sections null honestly, plan still MMV-PLAN-LIVE; real-tree share measured from the chain itself"
+   ],
+   "measuredFirstLight": "SBD/STEEM: pond 163.687 SBD/24h, fleet share 23.9286% at N=1, ladder to saturation at N=5; realized 124 fills/62.781 SBD sold/accuracy 160.2865%; HBD/HIVE: pond 958.712, share 4.0855%",
+   "honesty": "a share above 100% is booked as SATURATION (the tape caps it), never as a promise; the projection accuracy is >100% and that is shown as-is (reality fatter than the assumption); unclassified fills counted, never guessed into P&L"
+ },
+ "acceptance": "evals 51/51 GREEN v1.38.0 · claims 0 offenders · census 16/16 · secret-scan 0 · share ladder + realized metering live on the owner dashboard",
+ "status": "APPLIED",
+ "at": "2026-10-04T03:30:00Z"
+}

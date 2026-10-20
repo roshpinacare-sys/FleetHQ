@@ -1,0 +1,32 @@
+name: office-feed
+on:
+  schedule: [{cron: '41 3 * * *'}]
+  workflow_dispatch: {}
+permissions:
+  contents: write
+concurrency:
+  group: office-feed
+  cancel-in-progress: false
+jobs:
+  feed:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 1}
+      - uses: actions/setup-node@v4
+        with: {node-version: 20}
+      - name: build merged public office-feed digest (read-only, no secrets)
+        run: node agents/office-feed.mjs
+      - name: commit digest
+        run: |
+          git config user.name "office-feed[bot]"
+          git config user.email "office-feed[bot]@users.noreply.github.com"
+          git add dex/office-feed.json
+          if git diff --cached --quiet; then echo "no feed changes"; else
+            for i in 1 2 3; do
+              git -c rebase.autoStash=true pull --rebase origin main >/dev/null 2>&1 || true
+              git commit -m "office-feed: merged public fleet+chain digest $(date -u +%Y-%m-%dT%H:%M:%SZ) [skip ci]" >/dev/null 2>&1 && break || sleep 5
+            done
+            git push origin main >/dev/null 2>&1 || true
+          fi

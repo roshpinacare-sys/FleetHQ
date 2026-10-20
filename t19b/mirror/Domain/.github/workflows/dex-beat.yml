@@ -1,0 +1,101 @@
+#
+#
+#
+
+name: dex-beat
+
+on:
+  schedule:
+    - cron: '12 */4 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: dex-beat-domain-twin
+  cancel-in-progress: false
+
+jobs:
+  beat:
+    runs-on: ubuntu-latest
+    timeout-minutes: 9
+    steps:
+      - name: Checkout the sovereign chain home
+        uses: actions/checkout@v4
+        with:
+          repository: roshpinacare-sys/saos-dex
+          token: ${{ secrets.ZIP_PAT }}
+          fetch-depth: 1
+
+      - name: Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Cache bun install
+        uses: actions/cache@v4
+        with:
+          path: ~/.bun/install/cache
+          key: bun-dex-${{ hashFiles('bun.lock') }}
+          restore-keys: bun-dex-
+
+      - name: Install
+        run: bun install --frozen-lockfile
+
+      - name: Prisma client
+        run: bunx prisma generate
+
+      - name: Prisma schema push (Roast-65 fix — the BlockHeader corroboration table was added to the schema but db push was never wired into the beat; on a fresh runner the file does not exist and the engine refused to boot)
+        run: bunx prisma db push --skip-generate --accept-data-loss
+        env:
+          DATABASE_URL: 'file:${{ github.workspace }}/db/dex.db'
+
+      - name: Shift guard — the sovereign original owns the book while it lives
+        id: guard
+        env:
+          GH_TOKEN: ${{ secrets.ZIP_PAT }}
+        run: |
+          set -euo pipefail
+          URL="repos/roshpinacare-sys/saos-dex/actions/workflows/dex-beat.yml/runs?per_page=1"
+          LAST=""
+          for attempt in 1 2; do
+            LAST=$(gh api "$URL" --jq '{created_at: .workflow_runs[0].created_at, conclusion: .workflow_runs[0].conclusion}' 2>/dev/null || true)
+            if [ -n "$LAST" ] && [ "$LAST" != "{}" ] && [ "$LAST" != "null" ]; then break; fi
+            echo "attempt ${attempt}: API unreachable — retrying in 10s"
+            sleep 10
+          done
+          if [ -z "$LAST" ] || [ "$LAST" = "{}" ] || [ "$LAST" = "null" ]; then
+            echo "shift state UNKNOWN (API unreachable after retries) — the twin does not take over blindly"
+            exit 1
+          fi
+          AT=$(printf '%s' "$LAST" | jq -r '.created_at // empty')
+          CC=$(printf '%s' "$LAST" | jq -r '.conclusion // empty')
+          echo "the original's last run: created_at=${AT} conclusion=${CC}"
+          if [ "$CC" = "success" ] && [ -n "$AT" ]; then
+            AGE_S=$(( $(date +%s) - $(date -u -d "$AT" +%s) ))
+            AGE_MIN=$(( AGE_S / 60 ))
+            echo "the original's last success: ${AGE_MIN} minutes ago"
+            if [ "$AGE_S" -lt 10800 ]; then
+              echo "takeover=0" >> "$GITHUB_OUTPUT"
+              echo "reason=the original is alive (success ${AGE_MIN} min ago) — the twin verifies only" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+          fi
+          echo "takeover=1" >> "$GITHUB_OUTPUT"
+          echo "reason=the original is not healthy (last: ${CC:-unknown}) — the twin takes over the beat" >> "$GITHUB_OUTPUT"
+
+      - name: Beat (advance the canonical chain, verify claims, credit, publish)
+        if: steps.guard.outputs.takeover == '1' || github.event_name == 'workflow_dispatch'
+        run: bun run cloud-beat.ts
+        env:
+          DATABASE_URL: 'file:${{ github.workspace }}/db/dex.db'
+          CLOUD_TICKS: '480'
+          CONSOLE_TOKEN: ${{ secrets.WEAVE_OPS_PAT }}
+
+      - name: Verify-only (this shift belongs to the living original)
+        if: steps.guard.outputs.takeover != '1' && github.event_name != 'workflow_dispatch'
+        run: |
+          echo "${{ steps.guard.outputs.reason }}"
+          echo "The twin takes over automatically when the original's last success ages past 3h."
+          echo "Nothing was touched — one home, one book, one chain."

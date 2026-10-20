@@ -1,0 +1,82 @@
+#
+# sibling's LAUNCH-CONTEXT law). Until now the history advanced only when a lane happened
+# enough for a real distribution of the internal-market edge.
+#
+#    committed), AND the desk itself halts on the same file (E29 proves the fresh-process
+#    halt). Two independent gates, one law.
+#    laundering, no daemon, no cross-repo forks.
+
+name: market-grid-cron
+
+on:
+  schedule:
+    - cron: '41 */3 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: market-grid-cron
+  cancel-in-progress: false
+
+jobs:
+  tick:
+    runs-on: ubuntu-latest
+    timeout-minutes: 9
+    steps:
+      - name: Checkout this repo (the desk is keyless — official chain surfaces only)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: STASIS brake (FATE-DEFENSE law #1 — staged-aware; measurement lane continues per scope law)
+        id: brake
+        run: |
+          # gate halted on active===true alone — that froze the market time-series Oct-4→Oct-9
+          # (books dark 5 days) DURING a staged re-entry that required observation data.
+          S=$(node -e "const s=JSON.parse(require('fs').readFileSync('agents/STASIS.json','utf8'));const lanes=Array.isArray(s.stagedLanes&&s.stagedLanes.allow)?s.stagedLanes.allow.map(String).map(x=>x.toLowerCase()):[];console.log([s.active===true?'true':'false',String(s.mode||'full'),(s.mode==='staged'&&lanes.includes('grid'))?'true':'false'].join(' '))" 2>/dev/null || echo "false full false")
+          ACTIVE=$(echo "$S" | cut -d' ' -f1); MODE=$(echo "$S" | cut -d' ' -f2); LANE_OK=$(echo "$S" | cut -d' ' -f3)
+          echo "active=$ACTIVE" >> "$GITHUB_OUTPUT"
+          echo "mode=$MODE" >> "$GITHUB_OUTPUT"
+          echo "lane_ok=$LANE_OK" >> "$GITHUB_OUTPUT"
+          if [ "$ACTIVE" = "true" ] && [ "$LANE_OK" = "true" ]; then
+            echo "[STASIS-STAGED-OBSERVE] market-grid-cron · brake armed (mode=$MODE, scope: capital lanes) — the keyless measurement lane continues per scope law; the desk records brakeArmed in every receipt"
+          elif [ "$ACTIVE" = "true" ]; then
+            echo "STASIS-HALT market-grid-cron · breaker active (mode=$MODE, grid lane closed) — healthy no-op, nothing measured, nothing committed"
+          else
+            echo "STASIS-LIFTED market-grid-cron · active=false — full operation"
+          fi
+
+      - name: tick (keyless measurement + one appended history row)
+        if: steps.brake.outputs.active != 'true' || steps.brake.outputs.lane_ok == 'true'
+        run: node agents/market-grid.cjs
+        # The desk is fail-loud by design (PARTIAL -> exit 1) and the time-series values
+        continue-on-error: true
+
+      - name: publish the tick back to the book
+        if: steps.brake.outputs.active != 'true' || steps.brake.outputs.lane_ok == 'true'
+        run: |
+          set -u
+          git config user.name "market-grid-cron[bot]"
+          git config user.email "market-grid-cron[bot]@users.noreply.github.com"
+          node agents/redact-telemetry.mjs agents/market-grid.json || true
+          git add agents/market-grid.json agents/market-grid.md agents/market-grid-paper.jsonl agents/market-grid-history.jsonl 2>/dev/null || true
+          if git diff --cached --quiet; then
+            echo "no book change — clean exit"
+          else
+            git commit -m "market-grid(history): tick $(date -u +%FT%TZ) [skip ci]"
+            git -c rebase.autoStash=true pull --rebase origin main
+            git push origin HEAD:main
+          fi
+
+      - name: Halt receipt (this shift belongs to the breaker)
+        if: steps.brake.outputs.active == 'true' && steps.brake.outputs.lane_ok != 'true'
+        run: |
+          echo "STASIS-HALT market-grid-cron · breaker active — the book stands still by law, not by neglect."
+          echo "Resume only after root-cause + judge-node green (see agents/STASIS.json resumePolicy)."

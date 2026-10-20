@@ -1,0 +1,50 @@
+{
+ "format": "twin-registry-v1",
+ "updatedAt": "2026-10-02T11:20:00Z",
+ "registeredBy": "r147-c domain-power wave",
+ "law": "every near-duplicate public pair carries ONE distinct real function per side, or it is registered pending with an owner. The audit below measures this daily, on the live sites, not on names.",
+ "pairs": [
+  {
+   "id": "money-console-domain",
+   "a": "Console:/money.html",
+   "b": "Domain:/money.html",
+   "baselineJaccard5": 1.0,
+   "baselineMeasuredAt": "2026-10-02T11:14Z (live fetch, r147-c audit)",
+   "differentiated": true,
+   "distinctA": "Console side: operator ops center (BLOC.md law, r144-h); canonical defers to Domain on shared surfaces (14-b). Console-side capability changes are Console-repo work, recorded here as the honest boundary.",
+   "distinctB": "Domain side: PUBLIC PULSE DESK — the only page of the pair that renders public/pulse.json (measured truth / audience resonance / scout market eyes, each number with its own measuredAt; canonical feed: home GET /api/public/pulse, keyless). Distinct capability that did not exist before 2026-10-02.",
+   "evidence": {
+    "domainMarker": "public-pulse",
+    "bookUrl": "public/pulse.json",
+    "bookFormat": "public-pulse-v1",
+    "absenceOnA": "Console/money.html must NOT reference public-pulse (checked every run)"
+   }
+  },
+  {
+   "id": "about-vs-market-index-en",
+   "a": "Domain:/about/index.html",
+   "b": "Domain:/market/index-en.html",
+   "baselineJaccard5": 0.981,
+   "baselineMeasuredAt": "2026-10-02T11:16Z (live fetch, r147-c audit)",
+   "differentiated": true,
+   "distinctA": "about = THE DESKS: the community page — renders about/team.json (11 desks, own briefs, chain-measured stake/voting-power, 48h external engagement). The public face of the people behind the accounts.",
+   "distinctB": "market/index-en = LIVE MARKET DESK: the investor page — renders the mirrored dex books (dex/money.json + dex/watch.json, hourly from the Console truth machines) with honest staleness stamps. Neither capability existed on either page before 2026-10-02 (both pages loaded zero JSON).",
+   "evidence": {
+    "aMarker": "about/team.json",
+    "bMarker": "dex/money.json",
+    "books": ["about/team.json", "dex/money.json", "dex/watch.json"],
+    "absenceCross": "about must NOT load dex/money.json; market/index-en must NOT load about/team.json (checked every run)"
+   }
+  },
+  {
+   "id": "onepager-en-vs-onepager",
+   "a": "Domain:/market/onepager-en.html",
+   "b": "Domain:/onepager/index.html",
+   "baselineJaccard5": 0.9575,
+   "baselineMeasuredAt": "2026-10-02T11:16Z (live fetch, r147-c audit)",
+   "differentiated": false,
+   "status": "REGISTERED-PENDING",
+   "note": "the same one-pager served at two URLs; registered for a later wave, tracked daily, not hidden"
+  }
+ ]
+}

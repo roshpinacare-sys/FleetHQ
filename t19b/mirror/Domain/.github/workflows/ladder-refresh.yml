@@ -1,0 +1,88 @@
+#
+#
+#
+
+name: ladder-refresh
+
+on:
+  schedule:
+    - cron: '52 */4 * * *'
+  workflow_dispatch:
+    inputs:
+      arm:
+        description: 'arm real broadcast? true = allow executor to broadcast under its caps, false = plan-only'
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ladder-refresh
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: checkout Domain (public home — logic only)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: STASIS gate (mechanical, FATE-DEFENSE law #1 — lane-aware staged preflight)
+        id: brake
+        run: |
+          set -eu
+          S=$(node -e "const s=JSON.parse(require('fs').readFileSync('agents/STASIS.json','utf8'));console.log([s.active===true?'true':'false',String(s.mode||'full'),(Array.isArray(s.stagedLanes&&s.stagedLanes.allow)&&s.stagedLanes.allow.map(String).map(x=>x.toLowerCase()).includes('grid'))?'true':'false'].join(' '))")
+          ACTIVE=$(echo "$S" | cut -d' ' -f1); MODE=$(echo "$S" | cut -d' ' -f2); LANE_OK=$(echo "$S" | cut -d' ' -f3)
+          echo "active=$ACTIVE" >> "$GITHUB_OUTPUT"
+          echo "mode=$MODE" >> "$GITHUB_OUTPUT"
+          echo "lane_allowed=$LANE_OK" >> "$GITHUB_OUTPUT"
+          if [ "$ACTIVE" = "true" ] && [ "$MODE" = "staged" ] && [ "$LANE_OK" = "true" ]; then
+            echo "[CAPITAL-GATE] STASIS-STAGED-ALLOW ladder-refresh (lane=grid) · owner directive 2026-10-05 trace 1a1…2391 — staged grid lane open; the in-code gate (capital_gate.cjs) re-checks at sign-time"
+          elif [ "$ACTIVE" = "true" ]; then
+            echo "STASIS-HALT ladder-refresh (lane=grid) · the breaker is active (mode=$MODE) — capital lanes obey (internal-market limit orders)"
+          else
+            echo "STASIS-LIFTED ladder-refresh · active=false — full operation (master flag)"
+          fi
+
+      - name: checkout private steem (seal custody lives here) — proven org-gitleaks pattern
+        uses: actions/checkout@v4
+        with:
+          repository: roshpinacare-sys/steem
+          ref: main
+          token: ${{ secrets.ZIP_PAT }}
+          path: steem
+          fetch-depth: 0
+
+      - name: git identity for the steem receipt commit
+        run: |
+          git config --global user.name "ladder-refresh[bot]"
+          git config --global user.email "ladder-refresh[bot]@users.noreply.github.com"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: install signer lib (steem@0.7.11 — pinned, 14-c doctrine)
+        run: npm install --prefix /tmp/steemjs steem@0.7.11 --omit=dev --no-audit --no-fund --loglevel=error
+
+      - name: run the ladder-refresh cycle (seal → active-key live-verify → executor caps → receipt)
+        if: steps.brake.outputs.active != 'true' || steps.brake.outputs.lane_allowed == 'true'
+        env:
+          STEEM_DIR: ${{ github.workspace }}/steem
+          STEEMJS_DIR: /tmp/steemjs
+          PUSH_RECEIPT: 'true'
+          # COERCION TRAP (15-c fix): type:boolean inputs are real booleans, and GitHub coerces
+          # mixed-type == to numbers (false→0, 'false'→NaN ⇒ never equal) — format('{0}', …)
+          # stringifies before comparing (observed live: economy-engine run 37009080091).
+          LADDER_ARM: ${{ github.event_name == 'schedule' && '1' || (format('{0}', inputs.arm) == 'true' && '1' || '0') }}
+        run: node scripts/ladder-refresh.mjs
+
+      - name: prove the receipt landed in steem (API-verified head is asserted by the caller wave)
+        if: always()
+        run: |
+          echo "steem local HEAD after ladder-refresh: $(git -C steem rev-parse HEAD)"
+          git -C steem log -1 --format='%H %s' || true

@@ -1,0 +1,19 @@
+{
+  "id": "CR-0007",
+  "from": "Task 27 wave (skill-library adoption: alirezarezvani/claude-skills)",
+  "tier": "B",
+  "opened_at": "2026-10-03T02:30:00Z",
+  "proposes": "New capability layer: agents/skill-library/ (SKILL-AUTHORING-STANDARD.md adapted from alirezarezvani/claude-skills MIT @ mirror sha 19392f7a and house-hardened; THIRD-PARTY-NOTICES.md; 6 skill packages: fleet-push-protocol, fleet-desk-operator, recruitment-interviewer, mini-services-engineer, worker-onboarding, fleet-skill-author) + agents/skill-library-gate.cjs v1.0.0 as the merge authority + harness-audit.cjs v1.12.0 verification check (gate module required, scanned>=6, offenders==0) + run-evals.cjs v1.10.0 eval E20 (white-box offender predicate + black-box fresh-process gate proof) + role-registry.csv row skill-library-gate + feature_list.json feat-011.",
+  "rationale": "Closes the Task 20 residual (prompts.chat prompt library: recruitment roles / desk system / mini-services) on the owner-pointed backbone (Task 25 evaluation: 27.3k stars, MIT, actively maintained). Role expertise becomes portable governed DATA with a mechanical standard — the same law-tier as roles-as-data: a rule not enforced in code is not a rule. House hardening goes beyond upstream: every skill must name its Evidence Artifact (ANTI-GOODHART), declare its tier, and claim no scope. NOTE: renumbered from interim CR-0006 — the parallel Z-43 hands-expansion wave claimed CR-0006 first on main; parallel-convergence supersession visible here (E19->E20, judge v1.11.0->v1.12.0, evals v1.9.0->v1.10.0).",
+  "risk": "Standard drift — skills that state but do not pin. Mitigated: the gate refuses missing sections/bad names/non-MIT frontmatter; E19 re-proves the predicate in a fresh process every eval run; judge check re-runs the gate inside every audit.",
+  "rollback": "git revert the wave commit: deletes agents/skill-library/ + gate, restores role-registry.csv (52 rows), feature_list.json (10 features), harness-audit.cjs v1.10.0, run-evals.cjs v1.8.0. Zero chain, money, or CI-workflow surface touched.",
+  "verdict": "PASS",
+  "judged_by": "harness-audit",
+  "judged_at": "2026-10-03T02:05:00Z",
+  "receipts": [
+    "agents/skill-library.json (gate GREEN, 6 packages, offenders 0)",
+    "agents/evals/eval-results.json (E20 PASS; 20/20 total — E19 white-box caught the gate else-if chain bug, fixed v1.0.1 before landing)",
+    "agents/harness-audit.json (v1.12.0: 39 checks, 37 PASS / 1 WARN owner-gated / 0 FAIL, skill-library check PASS)",
+    "init.sh DOMAIN-INIT-OK exit 0 (syntax gate → STASIS proof → guard battery → FWI THRIVING → judge)"
+  ]
+}

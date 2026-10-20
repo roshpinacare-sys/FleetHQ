@@ -1,0 +1,45 @@
+#
+#
+
+name: web-publish
+
+on:
+  schedule:
+    - cron: '53 7 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: web-publish-domain-twin
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout the sovereign home
+        uses: actions/checkout@v4
+        with:
+          repository: roshpinacare-sys/Zip
+          token: ${{ secrets.ZIP_PAT }}
+          fetch-depth: 1
+
+      - name: Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install deps
+        run: bun install --frozen-lockfile --no-save 2>/dev/null || bun install --no-save
+
+      - name: Publish inbox packages to Steem (posting authority, RC-gated)
+        run: bun scripts/web-publish.ts
+        env:
+          WEAVE_STEEM_WIF: ${{ secrets.WEAVE_STEEM_WIF }}
+          WEAVE_STEEM_ACCOUNT: cashmachine
+          WEB_RC_RESERVE: '20000000'
+          WEB_RC_BASE: '65000000'
+          WEB_RC_PER_CHAR: '320000'

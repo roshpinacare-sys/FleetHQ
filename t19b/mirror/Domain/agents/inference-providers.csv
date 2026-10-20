@@ -1,0 +1,16 @@
+provider,endpoint,auth,tos,tos_source,fleet_tier,data_class,status
+aihorde,https://oai.aihorde.net/v1,anon-sentinel-0000000000,OK,freellmapi server v0.2.1 providers/aihorde.ts + ToS table 2026-06 (anonymous use officially supported),A,public-only,LIVE
+ovh,https://oai.endpoints.kepler.ai.cloud.ovh.net/v1,anon-2rpm-per-ip,OK,freellmapi server v0.2.1 providers/index.ts + ToS table 2026-06 (anonymous access documented; breadth tier not throughput),A,public-only,LIVE
+pollinations,https://gen.pollinations.ai/v1,keyless-catalog-401-gen,OK,freellmapi server v0.2.1 providers/pollinations.ts issue #608 (GET /models answers without auth; generation 401s),A,public-only,CATALOG-ONLY
+groq,,keyed,OK,freellmapi ToS table 2026-05 (GroqCloud SA permits customer-application integration),C,public-only,DORMANT
+cerebras,,keyed,OK,freellmapi ToS table 2026-05 (permitted; forbids key resale),C,public-only,DORMANT
+mistral,,keyed,OK,freellmapi ToS table 2026-05 (personal/internal business use allowed),C,public-only,DORMANT
+openrouter,,keyed,OK,freellmapi ToS table 2026-05 (private single-user proxy fine),C,public-only,DORMANT
+zhipu,,keyed,OK,freellmapi ToS table 2026-05 (non-commercial research carve-out),C,public-only,DORMANT
+ollama-cloud,,keyed,OK,freellmapi ToS table 2026-06 (free plan permits cloud-model access),C,public-only,DORMANT
+google-gemini,,keyed,CAUTION,freellmapi ToS table 2026-05 (2026-03 ToS narrows scope; defensible but new clause),C,public-only,DORMANT
+cloudflare-workers-ai,,keyed,AMBIGUOUS,freellmapi ToS table 2026-05 (no anti-proxy clause; general subscription agreement),C,public-only,DORMANT
+nvidia-nim,,keyed,CAUTION,freellmapi ToS table 2026-05 (evaluation-only not production),C,public-only,DORMANT
+github-models,,keyed,CAUTION,freellmapi ToS table 2026-05 (experimentation/prototyping scope),C,public-only,DORMANT
+z-ai,,keyed,CAUTION,freellmapi ToS table 2026-05 (anti-traffic-redirect clause; no explicit personal-use carve-out),C,public-only,DORMANT
+cohere,,keyed,FORBIDDEN,freellmapi ToS table 2026-05 (section 14 forbids personal use),C,none,NEVER

@@ -1,0 +1,100 @@
+# office-pulse-twin — תאומת-הדופק (דפוס grid-trigger-twin, אותו-חוק: בית-אחד · ספר-אחד · שרשרת-אחת)
+#
+# למה: מתזמן-ה-GitHub מפיל משבצות-schedule תחת עומס (נמדד חי 2026-10-12:
+# office-pulse החסיר 7 משבצות רצופות אחרי הצלחה אחת ב-22:59Z, בזמן שתאומות אחרות ירו).
+# התאומה לא משכפלת — היא משמרת: מודדת את בריאות-המקור, ורק כשהמקור מפגר (מעל
+# מכסת-הדופק 35 דק') היא נוטלת את הפעימה באותם-צעדים בדיוק (keyless, same-repo).
+#
+# חוקי-STASIS: מדידה-בלבד + פרסום-ספר — אפס מסילות-הון.
+
+name: office-pulse-twin
+
+on:
+  schedule:
+    - cron: '3,33 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: office-pulse-twin
+  cancel-in-progress: false
+
+jobs:
+  pulse:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout (keyless — same-repo only)
+        uses: actions/checkout@v4
+        with:
+          token: ${{ github.token }}
+          fetch-depth: 1
+
+      - name: Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Shift guard — the living original owns the beat while it is fresh
+        id: guard
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          URL="repos/${GITHUB_REPOSITORY}/actions/workflows/office-pulse.yml/runs?per_page=1"
+          LAST=""
+          for attempt in 1 2; do
+            LAST=$(gh api "$URL" --jq '{created_at: .workflow_runs[0].created_at, conclusion: .workflow_runs[0].conclusion}' 2>/dev/null || true)
+            if [ -n "$LAST" ] && [ "$LAST" != "{}" ] && [ "$LAST" != "null" ]; then break; fi
+            echo "attempt ${attempt}: API unreachable — retrying in 10s"
+            sleep 10
+          done
+          if [ -z "$LAST" ] || [ "$LAST" = "{}" ] || [ "$LAST" = "null" ]; then
+            echo "shift state UNKNOWN (API unreachable) — the twin does not take over blindly"
+            echo "takeover=0" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          AT=$(printf '%s' "$LAST" | jq -r '.created_at // empty')
+          CC=$(printf '%s' "$LAST" | jq -r '.conclusion // empty')
+          echo "the original's last run: created_at=${AT} conclusion=${CC}"
+          if [ "$CC" = "success" ] && [ -n "$AT" ]; then
+            AGE_S=$(( $(date +%s) - $(date -u -d "$AT" +%s) ))
+            AGE_MIN=$(( AGE_S / 60 ))
+            if [ "$AGE_S" -lt 2100 ]; then
+              echo "takeover=0" >> "$GITHUB_OUTPUT"
+              echo "reason=the original is fresh (success ${AGE_MIN} min ago < 35 min cap) — the twin verifies only" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+          fi
+          echo "takeover=1" >> "$GITHUB_OUTPUT"
+          echo "reason=the original's beat is stale (last: ${CC:-unknown}) — the twin takes the pulse" >> "$GITHUB_OUTPUT"
+
+      - name: Measure the office + arteries (fail-marked, never silent)
+        if: steps.guard.outputs.takeover == '1' || github.event_name == 'workflow_dispatch'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: node agents/office-pulse.cjs
+
+      - name: Publish the book
+        if: steps.guard.outputs.takeover == '1' || github.event_name == 'workflow_dispatch'
+        run: |
+          git config user.name "office-pulse-twin-bot"
+          git config user.email "office-pulse-twin-bot@users.noreply.github.com"
+          git add office/data.json
+          if git diff --cached --quiet; then echo "no delta - page data unchanged"; exit 0; fi
+          git commit -m "office window (twin): $(python3 -c "import json;print(json.load(open('office/data.json'))['verdict'])" 2>/dev/null || echo unknown) $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          ok=0
+          for i in 1 2 3; do
+            if git pull --rebase -q origin main && git push -q origin main; then ok=1; echo "PUSH-OK attempt $i"; break; fi
+            echo "push attempt $i failed, retrying"; sleep 3
+          done
+          if [ "$ok" != "1" ]; then echo "PUSH-FAILED"; exit 1; fi
+
+      - name: Verify-only (this shift belongs to the living original)
+        if: steps.guard.outputs.takeover != '1' && github.event_name != 'workflow_dispatch'
+        run: |
+          echo "${{ steps.guard.outputs.reason }}"
+          echo "The twin takes the pulse automatically when the original's last success ages past 35 min."
+          echo "Nothing was touched — one home, one book, one chain."

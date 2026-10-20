@@ -1,0 +1,73 @@
+name: daily-claim
+
+on:
+  schedule:
+    - cron: '42 2 * * *'
+  workflow_dispatch:
+    inputs:
+      dry:
+        description: 'DRY run (no broadcast — honest gate check only)'
+        required: false
+        default: 'false'
+        type: boolean
+
+permissions:
+  contents: read
+
+concurrency:
+  group: daily-claim
+  cancel-in-progress: false
+
+jobs:
+  claim:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Domain
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: STASIS gate (mechanical, FATE-DEFENSE law #1 — lane-aware staged preflight)
+        id: brake
+        run: |
+          set -eu
+          S=$(node -e "const s=JSON.parse(require('fs').readFileSync('agents/STASIS.json','utf8'));console.log([s.active===true?'true':'false',String(s.mode||'full'),(Array.isArray(s.stagedLanes&&s.stagedLanes.allow)&&s.stagedLanes.allow.map(String).map(x=>x.toLowerCase()).includes('claims'))?'true':'false'].join(' '))")
+          ACTIVE=$(echo "$S" | cut -d' ' -f1); MODE=$(echo "$S" | cut -d' ' -f2); LANE_OK=$(echo "$S" | cut -d' ' -f3)
+          echo "active=$ACTIVE" >> "$GITHUB_OUTPUT"
+          echo "mode=$MODE" >> "$GITHUB_OUTPUT"
+          echo "lane_allowed=$LANE_OK" >> "$GITHUB_OUTPUT"
+          if [ "$ACTIVE" = "true" ] && [ "$MODE" = "staged" ] && [ "$LANE_OK" = "true" ]; then
+            echo "[CAPITAL-GATE] STASIS-STAGED-ALLOW daily-claim (lane=claims) · owner directive 2026-10-05 trace 1a1…2391 — staged claims lane open; the in-code gate (capital-gate.cjs) re-checks at sign-time"
+          elif [ "$ACTIVE" = "true" ]; then
+            echo "STASIS-HALT daily-claim (lane=claims) · the breaker is active (mode=$MODE) — capital lanes obey (claims are a capital lane)"
+          else
+            echo "STASIS-LIFTED daily-claim · active=false — full operation (master flag)"
+          fi
+
+      - name: Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Steem client (steem@0.7.11 — the home signing template)
+        run: |
+          npm install --prefix /tmp/steemjs steem@0.7.11 --omit=dev --no-audit --no-fund --loglevel=error
+          echo "module.exports = require('steem');" > /tmp/steemjs/probe.cjs
+
+      - name: Daily claim (posting-only, idempotent, measured)
+        if: steps.brake.outputs.active != 'true' || steps.brake.outputs.lane_allowed == 'true'
+        env:
+          STEEM_POSTING_WIF: ${{ secrets.STEEM_POSTING_WIF }}
+          WEAVE_STEEM_WIF: ${{ secrets.WEAVE_STEEM_WIF }}
+          STEEM_JS_DIR: /tmp/steemjs
+          DAILY_CLAIM_DRY: ${{ inputs.dry && '1' || '' }}
+        run: node agents/daily-claim.mjs
+
+      - name: Upload claim status (evidence)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: daily-claim-status
+          path: daily-claim-status.json
+          retention-days: 30
+          if-no-files-found: ignore

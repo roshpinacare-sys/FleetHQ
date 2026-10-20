@@ -1,0 +1,203 @@
+{
+  "format": "SAOS-CADENCE-WEEK/1",
+  "agent": "cadence-week",
+  "verdict": "CADENCE-WEEK-LIVE",
+  "ownerLanguage": "he",
+  "ownerLanguageRule": "owner-facing replies: עברית (Hebrew) — the owner reads Hebrew; repo/CI artifacts stay English",
+  "sections": {
+    "marketGrid": {
+      "rows": 15,
+      "corruptLines": 0,
+      "verdicts": {
+        "MARKET-GRID-LIVE": 14,
+        "PARTIAL": 1
+      },
+      "window": {
+        "firstAt": "2026-10-03T17:47:32.406Z",
+        "lastAt": "2026-10-04T11:10:32.821Z",
+        "coverageHours": 17.3834
+      },
+      "gaps": {
+        "n": 14,
+        "minGapMin": 0.1,
+        "medianGapMin": 38.6,
+        "maxGapMin": 342.8
+      },
+      "spreads": [
+        {
+          "market": "HBD/HIVE (internal hive)",
+          "n": 14,
+          "min": 0.0028,
+          "max": 0.2376,
+          "last": 0.0028,
+          "mean": 0.1545
+        },
+        {
+          "market": "SBD/STEEM (internal steem)",
+          "n": 15,
+          "min": 0.4343,
+          "max": 4.1761,
+          "last": 4.1761,
+          "mean": 1.8354
+        }
+      ],
+      "routes": [
+        {
+          "route": "BEE",
+          "n": 1,
+          "lastPct": 0.6407
+        },
+        {
+          "route": "CENT",
+          "n": 15,
+          "lastPct": 1.46
+        },
+        {
+          "route": "SWAP.DOGE",
+          "n": 15,
+          "lastPct": 2.0692
+        },
+        {
+          "route": "WAIV",
+          "n": 5,
+          "lastPct": 0.5216
+        }
+      ],
+      "tapeCrossedTotal": 142
+    },
+    "delta": {
+      "rows": 5,
+      "verdicts": {
+        "DRIFT": 4,
+        "FIRST-DELTA": 1
+      },
+      "sovereigntyChangePaths": 14,
+      "blockerTransitions": 0,
+      "estateCommitsLast": {
+        "from": 1,
+        "to": 1
+      }
+    },
+    "artifact": {
+      "historyRowsQuoted": 13,
+      "historyRowsActual": 15,
+      "artifactLagRows": 2,
+      "presentLanes": 1,
+      "totalLanes": 16,
+      "estateCommits": 1,
+      "wiring": [
+        {
+          "id": "cadence-cron",
+          "law": "keyless Actions cron 23,53 * * * * ticks the grid observer",
+          "from": "Domain/.github/workflows/market-grid-cron.yml",
+          "to": [
+            "Domain/agents/market-grid.cjs"
+          ],
+          "status": "WIRED"
+        },
+        {
+          "id": "grid-history",
+          "law": "observer appends one history row per invocation (append-only law)",
+          "from": "Domain/agents/market-grid.cjs",
+          "to": [
+            "Domain/agents/market-grid-history.jsonl"
+          ],
+          "status": "WIRED"
+        },
+        {
+          "id": "stasis-brake",
+          "law": "FATE-DEFENSE #1: an active STASIS halts desks in code before any read/write",
+          "from": "Domain/agents/STASIS.json",
+          "to": [
+            "Domain/agents/market-grid.cjs"
+          ],
+          "status": "WIRED"
+        },
+        {
+          "id": "fill-loop",
+          "law": "eyes -> decision: fill-ledger measurement feeds the cycle composer",
+          "from": "Domain/agents/fill-ledger.cjs",
+          "to": [
+            "Domain/agents/market-cycle.cjs"
+          ],
+          "status": "WIRED"
+        },
+        {
+          "id": "cycle-hands",
+          "law": "decision -> hands: cycle composer arms the verify-then-sign executor",
+          "from": "Domain/agents/market-cycle.cjs",
+          "to": [
+            "Domain/agents/market-exec.cjs"
+          ],
+          "status": "WIRED"
+        },
+        {
+          "id": "cross-layer-lens",
+          "law": "the four-layer lens reads the DEX kernel and the platform exchange",
+          "from": "Domain/agents/cross-layer.cjs",
+          "to": [
+            "saos-dex/audit-package/src/kernel.ts",
+            "saos-sovereign-platform/contracts/mesh/SAOSExchange.sol"
+          ],
+          "status": "BROKEN(saos-dex/audit-package/src/kernel.ts,saos-sovereign-platform/contracts/mesh/SAOSExchange.sol)"
+        },
+        {
+          "id": "dex-grid-ledger",
+          "law": "saos-dex grid heartbeat writes the DEX-side grid ledger",
+          "from": "saos-dex/grid-beat.ts",
+          "to": [
+            "saos-dex/db/grid-ledger.json"
+          ],
+          "status": "BROKEN(saos-dex/grid-beat.ts,saos-dex/db/grid-ledger.json)"
+        },
+        {
+          "id": "he-ladder-gate",
+          "law": "the HE taker ladder is live-gated",
+          "from": "steem/agent/he_ladder.cjs",
+          "to": [
+            "steem/agent/gate-state.json"
+          ],
+          "status": "BROKEN(steem/agent/he_ladder.cjs,steem/agent/gate-state.json)"
+        },
+        {
+          "id": "vault-ceremony",
+          "law": "owner -> vault -> agents key ceremony with its permanent runbook",
+          "from": "Zip/scripts/vault-keyring.mjs",
+          "to": [
+            "Zip/sovereign/vault/README.md"
+          ],
+          "status": "BROKEN(Zip/scripts/vault-keyring.mjs,Zip/sovereign/vault/README.md)"
+        },
+        {
+          "id": "census-map",
+          "law": "this census maps all 16 lanes of the estate",
+          "from": "Domain/agents/fleet-census.cjs",
+          "to": [
+            "Domain",
+            "saos-dex",
+            "steem",
+            "saos-sovereign-platform",
+            "Console",
+            "Defi",
+            "Zip",
+            "Saosmartwallet",
+            "Sdk",
+            "Adsmarket",
+            "Project-files",
+            "anchor-baseline",
+            "roshpina",
+            "saos-control-center",
+            "saos-jummper",
+            "saos-sovereign-foundry"
+          ],
+          "status": "BROKEN(saos-dex,steem,saos-sovereign-platform,Console,Defi,Zip,Saosmartwallet,Sdk,Adsmarket,Project-files,anchor-baseline,roshpina,saos-control-center,saos-jummper,saos-sovereign-foundry)"
+        }
+      ]
+    },
+    "bar": {
+      "marketGridRowsMin": 5,
+      "deltaRowsMin": 1
+    }
+  },
+  "at": "2026-10-04T16:14:25.962Z"
+}

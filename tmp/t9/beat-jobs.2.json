@@ -1,0 +1,145 @@
+{
+  "total_count": 1,
+  "jobs": [
+    {
+      "id": 114500696192,
+      "run_id": 38149801159,
+      "workflow_name": "sovereign-runtime",
+      "head_branch": "main",
+      "run_url": "https://api.github.com/repos/roshpinacare-sys/saos-runtime/actions/runs/38149801159",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOU_0iks8AAAAaqMX4gA",
+      "head_sha": "e115acb02b0296db33c17087eff820b8287714ac",
+      "url": "https://api.github.com/repos/roshpinacare-sys/saos-runtime/actions/jobs/114500696192",
+      "html_url": "https://github.com/roshpinacare-sys/saos-runtime/actions/runs/38149801159/job/114500696192",
+      "status": "in_progress",
+      "conclusion": null,
+      "created_at": "2026-10-11T15:05:05Z",
+      "started_at": "2026-10-11T15:05:07Z",
+      "completed_at": null,
+      "name": "heartbeat",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-11T15:05:08Z",
+          "completed_at": "2026-10-11T15:05:08Z"
+        },
+        {
+          "name": "Clone the private engine tree (vault on main, engine on saos-cockpit)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-11T15:05:08Z",
+          "completed_at": "2026-10-11T15:05:13Z"
+        },
+        {
+          "name": "Run actions/setup-node@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-11T15:05:13Z",
+          "completed_at": "2026-10-11T15:05:14Z"
+        },
+        {
+          "name": "Install engine deps",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-11T15:05:14Z",
+          "completed_at": "2026-10-11T15:05:15Z"
+        },
+        {
+          "name": "Selftest gate (fail-closed — red run = public alarm)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-11T15:05:15Z",
+          "completed_at": "2026-10-11T15:05:15Z"
+        },
+        {
+          "name": "Chain anchor probe (on-chain custody anchor must sit in HEAD lineage)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-11T15:05:15Z",
+          "completed_at": "2026-10-11T15:05:16Z"
+        },
+        {
+          "name": "Arm the posting stream (T-6*** · fail-closed when secret absent)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-10-11T15:05:16Z",
+          "completed_at": "2026-10-11T15:05:16Z"
+        },
+        {
+          "name": "Beat env + posting arming (standing order travels as a repo secret)",
+          "status": "in_progress",
+          "conclusion": null,
+          "number": 8,
+          "started_at": "2026-10-11T15:05:16Z",
+          "completed_at": null
+        },
+        {
+          "name": "TruthRail outcome gate (R3***6-Z · measure the outcome, not the machine)",
+          "status": "pending",
+          "conclusion": null,
+          "number": 9,
+          "started_at": null,
+          "completed_at": null
+        },
+        {
+          "name": "Hyper-grid burst (T-62 · git-native tick revival — bounded, governor-capped, fail-closed arming)",
+          "status": "pending",
+          "conclusion": null,
+          "number": 10,
+          "started_at": null,
+          "completed_at": null
+        },
+        {
+          "name": "Commit state back (FF-only, no force, ever)",
+          "status": "pending",
+          "conclusion": null,
+          "number": 11,
+          "started_at": null,
+          "completed_at": null
+        },
+        {
+          "name": "Summary (verdicts only — this page is public)",
+          "status": "pending",
+          "conclusion": null,
+          "number": 12,
+          "started_at": null,
+          "completed_at": null
+        },
+        {
+          "name": "Operator digest issue (once per UTC day, fail-soft)",
+          "status": "pending",
+          "conclusion": null,
+          "number": 13,
+          "started_at": null,
+          "completed_at": null
+        },
+        {
+          "name": "Post Run actions/setup-node@v4",
+          "status": "pending",
+          "conclusion": null,
+          "number": 26,
+          "started_at": null,
+          "completed_at": null
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/roshpinacare-sys/saos-runtime/check-runs/114500696192",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "runner_id": 1000053221,
+      "runner_name": "GitHub Actions 1000053221",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    }
+  ]
+}

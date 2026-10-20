@@ -1,0 +1,21 @@
+{
+  "id": "CR-0003",
+  "from": "Z-39 wave (orchestrator, freellmapi adoption)",
+  "tier": "B",
+  "opened_at": "2026-10-02T23:05:00Z",
+  "proposes": "Adopt the tashfeenahmed/freellmapi mechanism as the fleet's governed cognitive rail: (1) agents/inference-providers.csv — provider registry as data, 15 rows, every rail with a cited ToS verdict from their May-2026 review (cohere FORBIDDEN = status NEVER; 2 keyless rails LIVE: AI Horde, OVH; 11 keyed rails DORMANT tier C; pollinations CATALOG-ONLY); (2) agents/cognitive-rail.cjs v1.0.0 — catalog/probe/policy desk, keyless GET /models probes only (AI Horde documented sentinel), REACHABLE/AUTH-WALL/DEGRADED/UNREACHABLE honest classification, public-data-only + advisory-only law; (3) evals E10-E12 pin the contract (catalog integrity, probe honesty + fail-soft ghost, FORBIDDEN-enabled-rejected); (4) harness-audit v1.4.0 check #28 watches the registry + ledger + rail evals; (5) recruit.yml runs catalog+probe on CI and persists rail-ledger.json.",
+  "rationale": "The fleet's cognition runs on one operator-gated vendor (fuel monoculture). freellmapi proves pooled free tiers behind a governed gateway are workable — but their own honest Limitations (degrading intelligence through the day, no SLA) forbid treating any free rail as signing-grade. So the adoption is the GOVERNANCE of the rail, not the dependency: registry-gated, ToS-gated, keyless-probe-only, tier-C keys, advisory-only output. Cross-check receipt: every catalog row cites their source (server v0.2.1 providers/*.ts + ToS table); live probes booked AI Horde REACHABLE (30 models) + OVH REACHABLE (24 models) with zero fleet data transmitted.",
+  "risk": "Low: probes are keyless GETs with 15s timeouts, fail-soft exit 0; no signing surface changes; no secrets involved. Main risk = treating a free rail as trustworthy for signing decisions — closed by the advisory-only law (E10-E12 + check #28 + doctrine v1.5).",
+  "rollback": "git revert the cognitive-rail.cjs + inference-providers.csv + evals + audit-check hunk + recruit.yml step; rail-ledger.json is data and can be deleted. No books or signing lanes touched.",
+  "verdict": "PASS",
+  "judged_by": "harness-audit v1.4.0 (fresh-process run 2026-10-02: 31 PASS / 0 WARN / 0 FAIL; check #28 'cognitive rail governed' green: 15 rows, neverLive=0, keyedNotTierC=0, live probe runs booked, railEvals green; evals E10-E12 PASS in a 12/12 suite: catalog integrity total=15/live=2/never=1, probe classification REACHABLE/AUTH-WALL/UNREACHABLE + ghost fail-soft, FORBIDDEN-enabled fixture rejected)",
+  "judged_at": "2026-10-02T23:10:00Z",
+  "receipts": [
+    "agents/cognitive-rail.cjs",
+    "agents/inference-providers.csv",
+    "agents/rail-ledger.json",
+    "agents/evals/run-evals.cjs",
+    "agents/harness-audit.cjs",
+    "agents/sovereignty.md"
+  ]
+}

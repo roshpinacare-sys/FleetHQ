@@ -1,0 +1,36 @@
+{
+ "id": "CR-0055",
+ "slot": 55,
+ "title": "Fleet Rung 26 — THE KEYLESS WAVE (EIGHTEENTH-COLLISION RENUMBER per the later-mover law: the maturity-law lane landed CR-0054/feat-049/E46/v1.33.0 first while this wave was in flight — this rung renumbered to CR-0055/feat-050/E47/v1.34.0 on the merged tree; their desk composes, it touches no workflow): the sovereignty bar moved 11/48 -> 15/48 keyless workflows. Four flows (twin-audit, audience-analyst, content-reviewer, public-pulse) carried owner-secret references while doing ALL of their work on THIS repository — checkout, push, issue creation under declared permissions. There the PAT was convention inherited from a template, never a capability. The wave draws the honest line: same-repo = keyless (github.token), cross-repo = PAT (capability, stays).",
+ "operator": "owner directive (2026-10-04, Hebrew, repeated): 'תבחן את כל הגיט ... לראות שאין דברים מתים להחיות הכל לחבר הכל ... לתת לריבונות גם לפקח ... אני מחכה יותר מדי זמן ועוד לא קיבלנו שום דבר משמעותי באמת שניתן להוכיח. אני עדיין מחכה להפתעות'",
+ "verdict": "PASS",
+ "tier": "B",
+ "at": "2026-10-04T12:00:00Z",
+ "findings_and_answers": [
+  "F1 · CONVENTION-COSTING-SOVEREIGNTY: 37/48 workflows carried owner-secret references; four of them (twin-audit, audience-analyst, content-reviewer, public-pulse) operate exclusively on this repo — the census counted them as owner-secret, inflating the estate's secret surface with zero operational return. ANSWER: converted to the built-in github.token (checkout token + issue-gate env), the ZIP_PAT fallback envs removed; the fail-soft token loops in the desks/gates keep skipping empty tokens, so behavior is unchanged on the happy path and honest (exit 0, recorded line) on failure.",
+  "F2 · DEAD-WEIGHT SECRET REF: public-pulse referenced the PULSE_URL secret-env, but the GitHub Actions secrets API (queried R26, admin PAT, HTTP 200) shows NO PULSE_URL configured on this repo — the reference resolved to an empty string on every run since day one, miscounting the flow as owner-secret while the desk itself is keyless-by-design ('honesty over freshness-faking'). ANSWER: the dead env removed; the optional PULSE_URL hook stays in agents/public-pulse.cjs for a future vars. wiring; the workflow comment documents the finding so the next auditor does not re-add it.",
+  "F3 · THE HONEST LINE IS DRAWN: the remaining 33 owner-secret workflows genuinely need their secrets (cross-repo checkout/push/API: foundry-mesh-tests, proof-pipeline, org-*, dex-beat...; signing/posting WIFs: cloud-pulse, dex-grid, weave-*...). The wave did NOT strip capability — every converted flow was proven same-repo-only before conversion (F1 evidence). ANSWER: sovereignty metric now measures capability, not habit.",
+  "F4 · THE BAR IS NOW PINNED: E47 (v1.34.0) asserts the census's own regex over .github/workflows counts exactly 15 keyless / 33 owner-secret, that the four converted files hold zero non-GITHUB_TOKEN refs, keep their declared permissions, and that twin-issue-gate.cjs still skips empty tokens and exits 0 fresh-process with no marker — the alarm survives without any fallback secret."
+ ],
+ "receipts": [
+  ".github/workflows/twin-audit.yml — checkout github.token, ZIP_PAT env removed from the issue gate (desk keeps its fail-soft token loop)",
+  ".github/workflows/audience-analyst.yml — checkout github.token, ZIP_PAT env removed from the zero-signal gate",
+  ".github/workflows/content-reviewer.yml — checkout github.token, ZIP_PAT env removed from the duplication gate",
+  ".github/workflows/public-pulse.yml — checkout github.token, dead PULSE_URL secret-env removed (feature hook stays in the desk)",
+  "agents/fleet-census.json — sovereignty recount: workflowsKeyless 15 / 48, owner-secret 33 (the census's own regex, unmodified)",
+  "agents/evals/run-evals.cjs v1.34.0 — E47 pins the wave (count bar, zero owner-refs in the four files, permissions kept, gate fail-soft proven)",
+  "GitHub Actions secrets API — 14 secrets configured on this repo (R26 query), PULSE_URL absent: the dead-ref finding"
+ ],
+ "evals": "E47 (v1.34.0) — the keyless wave: census-regex count == 15 over the live dir, the four converted workflows carry zero non-GITHUB_TOKEN secret refs and keep contents:write (+ issues:write where gates exist), public-pulse.cjs still owns the optional PULSE_URL env hook, twin-issue-gate.cjs skips empty tokens (white-box) and exits 0 fresh-process with no marker (black-box)",
+ "next": [
+  "next keyless candidates need engineering, not conversion: a GitHub App (fine-grained, revocable, org-scoped) could replace ZIP_PAT for cross-repo reads — an owner decision (token rotation territory, B-row)",
+  "the cadence-week read matures on its own clock (~100 market-grid rows, B2 law); the weekly distribution read re-runs when the bar clears",
+  "claims-audit/workflow-audit keep auditing the wave's own artifacts on the daily cadence"
+ ],
+ "laws_honored": [
+  "no-write law — no desk wrote a thin book below its bar",
+  "owner-language law — owner-facing replies Hebrew; repo/CI artifacts English",
+  "STASIS brake — checked before every desk run",
+  "anti-claims law (CR-0050) — every evidence path in feat-049 resolves on the tree"
+ ]
+}

@@ -1,0 +1,32 @@
+name: book-audit
+on:
+  schedule: [{cron: '53 * * * *'}]
+  workflow_dispatch: {}
+permissions:
+  contents: write
+concurrency:
+  group: book-audit
+  cancel-in-progress: false
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 1}
+      - uses: actions/setup-node@v4
+        with: {node-version: 20}
+      - name: cross-examine every book claim against the chain (anti-fabrication)
+        run: node agents/book-auditor.cjs
+      - name: commit audit book
+        run: |
+          git config user.name "book-auditor[bot]"
+          git config user.email "book-auditor[bot]@users.noreply.github.com"
+          git add agents/book-audit.md agents/book-audit-state.json
+          if git diff --cached --quiet; then echo "no audit changes"; else
+            for i in 1 2 3; do
+              git -c rebase.autoStash=true pull --rebase origin main >/dev/null 2>&1 || true
+              git commit -m "book-audit: claims cross-examined $(date -u +%Y-%m-%dT%H:%M:%SZ) [skip ci]" >/dev/null 2>&1 && break || sleep 5
+            done
+            git push origin main >/dev/null 2>&1 || true
+          fi

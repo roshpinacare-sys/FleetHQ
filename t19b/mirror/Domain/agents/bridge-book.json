@@ -1,0 +1,85 @@
+{
+  "at": "2026-10-11T23:46:55.731Z",
+  "agent": "bridge-desk",
+  "exchangers": {
+    "godex": {
+      "http": 200,
+      "steem": {
+        "listed": true,
+        "disabled": false,
+        "isActive": true,
+        "minAmount": 2600,
+        "network": "STEEM"
+      },
+      "hive": {
+        "listed": true,
+        "disabled": true,
+        "isActive": false,
+        "minAmount": 2800,
+        "network": "HIVE"
+      },
+      "btc": {
+        "listed": true,
+        "disabled": false,
+        "isActive": true,
+        "minAmount": 0.002,
+        "network": "BTC"
+      }
+    },
+    "blocktrades": {
+      "http": "write EPROTO 801CF1A35B7F0000:error:0A000438:SSL routines:ssl3_read_bytes:tlsv1 alert inte"
+    },
+    "changenow": {
+      "http": 200,
+      "n": 1271,
+      "steem": false,
+      "hive": false
+    },
+    "sideshift": {
+      "http": 200,
+      "n": 202,
+      "steem": false,
+      "hive": false
+    },
+    "exolix": {
+      "http": 200,
+      "steem": false,
+      "hive": false
+    },
+    "letsexchange": {
+      "http": 404
+    },
+    "trocador": {
+      "http": 401
+    },
+    "simpleswap": {
+      "http": 401
+    }
+  },
+  "verdict": {
+    "BTC:STEEM → blocktrades (no-account) → self-custody": {
+      "status": "BLOCKED-FROM-THIS-NETWORK",
+      "detail": "daily CI re-probe; runner IPs may pass where sandbox fails"
+    },
+    "BTC:STEEM → godex (no-account)": {
+      "status": "OPEN",
+      "detail": "godex steem disabled=false, min=2600 STEEM"
+    },
+    "BTC:STEEM/HIVE → MEXC (account exchange)": {
+      "status": "C-GATE-OPERATOR",
+      "detail": "one-time account+API keys unlocks autonomous routing"
+    },
+    "BTC:HIVE → Hive-Engine AMM → SWAP.BTC": {
+      "status": "OPEN-NEEDS-HIVE-CAPITAL",
+      "detail": "SWAP.HIVE:SWAP.BTC pool ~821k HIVE deep (dex-book); we hold the keys; 1.3 HIVE is dust"
+    },
+    "ETH:HIVE → Hive-Engine AMM → SWAP.ETH": {
+      "status": "THIN-POOL",
+      "detail": "SWAP.HIVE:SWAP.ETH pool ~631 HIVE deep: 15%+ impact on 100 HIVE — not routable at size"
+    },
+    "SOL:HIVE → Hive-Engine AMM → SWAP.SOL": {
+      "status": "POOL-DUST",
+      "detail": "SWAP.SOL pool exists but ~94 HIVE deep: ~107% impact on 100 HIVE — present, not usable at size"
+    }
+  }
+}

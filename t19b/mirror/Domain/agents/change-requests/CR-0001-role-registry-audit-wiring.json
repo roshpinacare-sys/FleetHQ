@@ -1,0 +1,18 @@
+{
+  "id": "CR-0001",
+  "from": "Z-37 wave (orchestrator, prompts.chat adoption)",
+  "tier": "B",
+  "opened_at": "2026-10-02T22:30:00Z",
+  "proposes": "Wire agents/role-registry.csv into harness-audit as check #25 (registry integrity: file exists, quote-aware parse, >=1 row, every row's file exists on disk, no duplicate act ids) and add check #26 (change-request ledger integrity: every CR-*.json in agents/change-requests/ has required fields id/from/tier/proposes/verdict; no PENDING older than 7 days). Registry becomes the declarative charter source; judge verifies it on every recruit.yml run.",
+  "rationale": "Sovereignty requires the mandate to be data, not vibes: prompts.chat holds every persona as a CSV row consumed by all surfaces; the fleet equivalent needs the judge to verify registry-file reality on schedule, otherwise the registry detaches from the disk and becomes a story (Goodhart). Check #26 closes the abandoned-proposal hole before the first real CR pile-up.",
+  "risk": "Low: read-only checks on one CSV and one JSON directory; a malformed row would WARN/FAIL the audit honestly (fail-soft preserved via guarded parse). Registry drift is caught, not caused, by this change.",
+  "rollback": "git revert the harness-audit.cjs hunk adding checks 25-26; registry and CR files remain (harmless data).",
+  "verdict": "PASS",
+  "judged_by": "harness-audit v1.2.0 (fresh-process run 2026-10-02: 29 PASS / 0 WARN / 0 FAIL; check #25 verdict '47 rows · cols 9 · dupes 0 · missing files 0', check #26 verdict '1 CRs · malformed 0 · stale-pending 0')",
+  "judged_at": "2026-10-02T22:35:00Z",
+  "receipts": [
+    "agents/role-registry.csv",
+    "agents/sovereignty.md",
+    "agents/harness-audit.cjs"
+  ]
+}

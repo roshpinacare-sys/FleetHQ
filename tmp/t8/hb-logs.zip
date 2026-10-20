@@ -1,0 +1,342 @@
+﻿2026-10-11T13:59:58.9539208Z Current runner version: '2.337.0'
+2026-10-11T13:59:58.9564695Z ##[group]Runner Image Provisioner
+2026-10-11T13:59:58.9565609Z Hosted Compute Agent
+2026-10-11T13:59:58.9566484Z Version: 2026***002.596
+2026-10-11T13:59:58.9567239Z Commit: c3d***2f33***3a95f25***62a***503be624f3b06***7f8c0
+2026-10-11T13:59:58.9568484Z Build Date: 2026-***0-02T22:28:27Z
+2026-10-11T13:59:58.9569502Z Worker ID: {6ed4c***09-0***06-4e2d-ac22-b***c0495230c2}
+2026-10-11T13:59:58.9570356Z Region: westcentralus
+2026-10-11T13:59:58.9571084Z Cloud: Azure
+2026-10-11T13:59:58.9571735Z ##[endgroup]
+2026-10-11T13:59:58.9573532Z ##[group]Operating System
+2026-10-11T13:59:58.9574313Z Ubuntu
+2026-10-11T13:59:58.9574949Z 24.04.5
+2026-10-11T13:59:58.9575581Z LTS
+2026-10-11T13:59:58.9576210Z ##[endgroup]
+2026-10-11T13:59:58.9576899Z ##[group]Runner Image
+2026-10-11T13:59:58.9577662Z Image: ubuntu-24.04
+2026-10-11T13:59:58.9578396Z Version: 2026***004.327.***
+2026-10-11T13:59:58.9579989Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/2026***004.327/images/ubuntu/Ubuntu2404-Readme.md
+2026-10-11T13:59:58.9581758Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F2026***004.327
+2026-10-11T13:59:58.9582868Z ##[endgroup]
+2026-10-11T13:59:58.9584075Z ##[group]GITHUB_TOKEN Permissions
+2026-10-11T13:59:58.9586415Z Contents: read
+2026-10-11T13:59:58.9587113Z Metadata: read
+2026-10-11T13:59:58.9587806Z ##[endgroup]
+2026-10-11T13:59:58.9590197Z Secret source: Actions
+2026-10-11T13:59:58.9591323Z Cache mode: write
+2026-10-11T13:59:58.9592153Z Prepare workflow directory
+2026-10-11T13:59:58.9925951Z Prepare all required actions
+2026-10-11T13:59:58.9973519Z Getting action download info
+2026-10-11T13:59:59.2816221Z Download action repository 'actions/setup-node@v4' (SHA:49933ea5288caeca8642d***e84afbd3f7d6820020)
+2026-10-11T13:59:59.5205311Z Complete job name: heartbeat
+2026-10-11T13:59:59.5921697Z ##[group]Run git clone --filter=blob:none --branch saos-cockpit "https://x-access-token:${GH_PAT}@github.com/roshpinacare-sys/steem.git" engine
+2026-10-11T13:59:59.5923649Z [36;***mgit clone --filter=blob:none --branch saos-cockpit "https://x-access-token:${GH_PAT}@github.com/roshpinacare-sys/steem.git" engine[0m
+2026-10-11T13:59:59.5924822Z [36;***mcd engine[0m
+2026-10-11T13:59:59.5925433Z [36;***mgit config user.name "saos-runtime-ci"[0m
+2026-10-11T13:59:59.5926290Z [36;***mgit config user.email "saos-runtime-ci@users.noreply.github.com"[0m
+2026-10-11T13:59:59.5927511Z [36;***mgit fetch origin main:refs/remotes/origin/main || echo "main fetch skipped (vault revival will report honestly)"[0m
+2026-10-11T13:59:59.5928617Z [36;***mecho "engine @ $(git rev-parse --short HEAD)"[0m
+2026-10-11T13:59:59.6158636Z shell: /usr/bin/bash -e {0}
+2026-10-11T13:59:59.6159712Z env:
+2026-10-11T13:59:59.6160736Z   GH_PAT: ***
+2026-10-11T13:59:59.6161219Z ##[endgroup]
+2026-10-11T13:59:59.6382990Z Cloning into 'engine'...
+2026-10-11T14:00:04.0944624Z Updating files:   0% (***/***79***)
+2026-10-11T14:00:04.0955406Z Updating files:   ***% (***8/***79***)
+2026-10-11T14:00:04.0967075Z Updating files:   2% (36/***79***)
+2026-10-11T14:00:04.0994850Z Updating files:   3% (54/***79***)
+2026-10-11T14:00:04.1012372Z Updating files:   4% (72/***79***)
+2026-10-11T14:00:04.1246150Z Updating files:   5% (90/***79***)
+2026-10-11T14:00:04.1531415Z Updating files:   6% (***08/***79***)
+2026-10-11T14:00:04.1582311Z Updating files:   6% (***24/***79***)
+2026-10-11T14:00:04.1617067Z Updating files:   7% (***26/***79***)
+2026-10-11T14:00:04.2039889Z Updating files:   8% (***44/***79***)
+2026-10-11T14:00:04.2336454Z Updating files:   9% (***62/***79***)
+2026-10-11T14:00:04.2352452Z Updating files:  ***0% (***80/***79***)
+2026-10-11T14:00:04.2373396Z Updating files:  ***% (***98/***79***)
+2026-10-11T14:00:04.2382066Z Updating files:  ***2% (2***5/***79***)
+2026-10-11T14:00:04.2395426Z Updating files:  ***3% (233/***79***)
+2026-10-11T14:00:04.2413754Z Updating files:  ***4% (25***/***79***)
+2026-10-11T14:00:04.2430596Z Updating files:  ***5% (269/***79***)
+2026-10-11T14:00:04.2441557Z Updating files:  ***6% (287/***79***)
+2026-10-11T14:00:04.2453725Z Updating files:  ***7% (305/***79***)
+2026-10-11T14:00:04.2477088Z Updating files:  ***8% (323/***79***)
+2026-10-11T14:00:04.2492201Z Updating files:  ***9% (34***/***79***)
+2026-10-11T14:00:04.2509834Z Updating files:  20% (359/***79***)
+2026-10-11T14:00:04.2675838Z Updating files:  2***% (377/***79***)
+2026-10-11T14:00:04.2684559Z Updating files:  22% (395/***79***)
+2026-10-11T14:00:04.2700130Z Updating files:  23% (4***2/***79***)
+2026-10-11T14:00:04.2751154Z Updating files:  24% (430/***79***)
+2026-10-11T14:00:04.2765728Z Updating files:  25% (448/***79***)
+2026-10-11T14:00:04.2776735Z Updating files:  26% (466/***79***)
+2026-10-11T14:00:04.2807264Z Updating files:  27% (484/***79***)
+2026-10-11T14:00:04.2816206Z Updating files:  28% (502/***79***)
+2026-10-11T14:00:04.2826343Z Updating files:  29% (520/***79***)
+2026-10-11T14:00:04.2837259Z Updating files:  30% (538/***79***)
+2026-10-11T14:00:04.2848958Z Updating files:  3***% (556/***79***)
+2026-10-11T14:00:04.2863238Z Updating files:  32% (574/***79***)
+2026-10-11T14:00:04.2878552Z Updating files:  33% (592/***79***)
+2026-10-11T14:00:04.2894913Z Updating files:  34% (609/***79***)
+2026-10-11T14:00:04.2911815Z Updating files:  35% (627/***79***)
+2026-10-11T14:00:04.2926320Z Updating files:  36% (645/***79***)
+2026-10-11T14:00:04.2951208Z Updating files:  37% (663/***79***)
+2026-10-11T14:00:04.2972468Z Updating files:  38% (68***/***79***)
+2026-10-11T14:00:04.2991055Z Updating files:  39% (699/***79***)
+2026-10-11T14:00:04.3009046Z Updating files:  40% (7***7/***79***)
+2026-10-11T14:00:04.3030261Z Updating files:  4***% (735/***79***)
+2026-10-11T14:00:04.3048011Z Updating files:  42% (753/***79***)
+2026-10-11T14:00:04.3070787Z Updating files:  43% (77***/***79***)
+2026-10-11T14:00:04.3087857Z Updating files:  44% (789/***79***)
+2026-10-11T14:00:04.3105878Z Updating files:  45% (806/***79***)
+2026-10-11T14:00:04.3125786Z Updating files:  46% (824/***79***)
+2026-10-11T14:00:04.3146953Z Updating files:  47% (842/***79***)
+2026-10-11T14:00:04.3163024Z Updating files:  48% (860/***79***)
+2026-10-11T14:00:04.3172874Z Updating files:  49% (878/***79***)
+2026-10-11T14:00:04.3183859Z Updating files:  50% (896/***79***)
+2026-10-11T14:00:04.3193846Z Updating files:  5***% (9***4/***79***)
+2026-10-11T14:00:04.3204143Z Updating files:  52% (932/***79***)
+2026-10-11T14:00:04.3214636Z Updating files:  53% (950/***79***)
+2026-10-11T14:00:04.3224601Z Updating files:  54% (968/***79***)
+2026-10-11T14:00:04.3234065Z Updating files:  55% (986/***79***)
+2026-10-11T14:00:04.3251665Z Updating files:  56% (***003/***79***)
+2026-10-11T14:00:04.3397307Z Updating files:  57% (***02***/***79***)
+2026-10-11T14:00:04.3722965Z Updating files:  58% (***039/***79***)
+2026-10-11T14:00:04.3741390Z Updating files:  59% (***057/***79***)
+2026-10-11T14:00:04.3758223Z Updating files:  60% (***075/***79***)
+2026-10-11T14:00:04.3776107Z Updating files:  6***% (***093/***79***)
+2026-10-11T14:00:04.3934872Z Updating files:  62% (***/***79***)
+2026-10-11T14:00:04.3952594Z Updating files:  63% (***29/***79***)
+2026-10-11T14:00:04.3973144Z Updating files:  64% (***47/***79***)
+2026-10-11T14:00:04.4058664Z Updating files:  65% (***65/***79***)
+2026-10-11T14:00:04.5543591Z Updating files:  66% (***83/***79***)
+2026-10-11T14:00:04.5560982Z Updating files:  67% (***200/***79***)
+2026-10-11T14:00:04.5581847Z Updating files:  68% (***2***8/***79***)
+2026-10-11T14:00:04.5600120Z Updating files:  69% (***236/***79***)
+2026-10-11T14:00:04.5611067Z Updating files:  70% (***254/***79***)
+2026-10-11T14:00:04.5624433Z Updating files:  7***% (***272/***79***)
+2026-10-11T14:00:04.5638115Z Updating files:  72% (***290/***79***)
+2026-10-11T14:00:04.5654795Z Updating files:  73% (***308/***79***)
+2026-10-11T14:00:04.5668837Z Updating files:  74% (***326/***79***)
+2026-10-11T14:00:04.5682195Z Updating files:  75% (***344/***79***)
+2026-10-11T14:00:04.5702032Z Updating files:  76% (***362/***79***)
+2026-10-11T14:00:04.5714781Z Updating files:  77% (***380/***79***)
+2026-10-11T14:00:04.5741900Z Updating files:  78% (***397/***79***)
+2026-10-11T14:00:04.5774150Z Updating files:  79% (***4***5/***79***)
+2026-10-11T14:00:04.5800162Z Updating files:  80% (***433/***79***)
+2026-10-11T14:00:04.5819913Z Updating files:  8***% (***45***/***79***)
+2026-10-11T14:00:04.5831431Z Updating files:  82% (***469/***79***)
+2026-10-11T14:00:04.5842292Z Updating files:  83% (***487/***79***)
+2026-10-11T14:00:04.5862880Z Updating files:  84% (***505/***79***)
+2026-10-11T14:00:04.5875307Z Updating files:  85% (***523/***79***)
+2026-10-11T14:00:04.5892032Z Updating files:  86% (***54***/***79***)
+2026-10-11T14:00:04.5913871Z Updating files:  87% (***559/***79***)
+2026-10-11T14:00:04.5932497Z Updating files:  88% (***577/***79***)
+2026-10-11T14:00:04.5946710Z Updating files:  89% (***594/***79***)
+2026-10-11T14:00:04.5961395Z Updating files:  90% (***6***2/***79***)
+2026-10-11T14:00:04.6214455Z Updating files:  9***% (***630/***79***)
+2026-10-11T14:00:04.6238063Z Updating files:  92% (***648/***79***)
+2026-10-11T14:00:04.6253137Z Updating files:  93% (***666/***79***)
+2026-10-11T14:00:04.6269093Z Updating files:  94% (***684/***79***)
+2026-10-11T14:00:04.6280053Z Updating files:  95% (***702/***79***)
+2026-10-11T14:00:04.6291423Z Updating files:  96% (***720/***79***)
+2026-10-11T14:00:04.6299444Z Updating files:  97% (***738/***79***)
+2026-10-11T14:00:04.6308199Z Updating files:  98% (***756/***79***)
+2026-10-11T14:00:04.6324602Z Updating files:  99% (***774/***79***)
+2026-10-11T14:00:04.6325306Z Updating files: ***00% (***79***/***79***)
+2026-10-11T14:00:04.6325946Z Updating files: ***00% (***79***/***79***), done.
+2026-10-11T14:00:05.0190230Z engine @ b9a7***d02
+2026-10-11T14:00:05.0387679Z ##[group]Run actions/setup-node@v4
+2026-10-11T14:00:05.0388095Z with:
+2026-10-11T14:00:05.0388384Z   node-version: 22
+2026-10-11T14:00:05.0388678Z   always-auth: false
+2026-10-11T14:00:05.0388982Z   check-latest: false
+2026-10-11T14:00:05.0392062Z   token: ***
+2026-10-11T14:00:05.0392416Z ##[endgroup]
+2026-10-11T14:00:05.1823720Z Found in cache @ /opt/hostedtoolcache/node/22.23.3/x64
+2026-10-11T14:00:05.1827348Z (node:2294) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-10-11T14:00:05.1828365Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-10-11T14:00:05.1830872Z ##[group]Environment details
+2026-10-11T14:00:07.8206513Z node: v22.23.3
+2026-10-11T14:00:07.8207256Z npm: ***0.9.9
+2026-10-11T14:00:07.8207610Z yarn: ***.22.22
+2026-10-11T14:00:07.8208974Z ##[endgroup]
+2026-10-11T14:00:07.8384833Z ##[group]Run npm i --no-save @noble/hashes@^***.5.0 @noble/secp256k***@^2.2.3 --silent
+2026-10-11T14:00:07.8385484Z [36;***mnpm i --no-save @noble/hashes@^***.5.0 @noble/secp256k***@^2.2.3 --silent[0m
+2026-10-11T14:00:07.8505000Z shell: /usr/bin/bash -e {0}
+2026-10-11T14:00:07.8505321Z ##[endgroup]
+2026-10-11T14:00:10.0257493Z ##[group]Run node selftest.mjs
+2026-10-11T14:00:10.0257848Z [36;***mnode selftest.mjs[0m
+2026-10-11T14:00:10.0331472Z shell: /usr/bin/bash -e {0}
+2026-10-11T14:00:10.0331766Z ##[endgroup]
+2026-10-11T14:00:10.4254487Z {"ev":"saos.llm_chain.started","purpose":"selftest","candidates":["c***-throws-429","c2-valid"]}
+2026-10-11T14:00:10.4256345Z {"ev":"saos.llm_chain.candidate_failed","purpose":"selftest","candidate":"c***-throws-429","errorClass":"rate-limit"}
+2026-10-11T14:00:10.4270687Z {"ev":"saos.llm_chain.selected","purpose":"selftest","selected":"c2-valid","ms":2}
+2026-10-11T14:00:10.4300446Z {"ev":"saos.llm_chain.started","purpose":"selftest","candidates":["c***","c2"]}
+2026-10-11T14:00:10.4347467Z (node:234***) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///home/runner/work/saos-runtime/saos-runtime/engine/src/lib/llm-chain.ts is not specified and it doesn't parse as CommonJS.
+2026-10-11T14:00:10.4349854Z {"ev":"saos.llm_chain.candidate_failed","purpose":"selftest","candidate":"c***","errorClass":"rate-limit"}
+2026-10-11T14:00:10.4351338Z Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+2026-10-11T14:00:10.4353247Z To eliminate this warning, add "type": "module" to /home/runner/work/saos-runtime/saos-runtime/engine/package.json.
+2026-10-11T14:00:10.4354482Z (Use `node --trace-warnings ...` to show where the warning was created)
+2026-10-11T14:00:10.4355647Z {"ev":"saos.llm_chain.candidate_failed","purpose":"selftest","candidate":"c2","errorClass":"timeout"}
+2026-10-11T14:00:10.4356848Z {"ev":"saos.llm_chain.exhausted","purpose":"selftest","errorClass":"timeout","ms":0}
+2026-10-11T14:00:10.4357982Z {"ev":"saos.llm_chain.started","purpose":"selftest","candidates":["c***-invalid","c2-valid"]}
+2026-10-11T14:00:10.4359451Z {"ev":"saos.llm_chain.candidate_failed","purpose":"selftest","candidate":"c***-invalid","errorClass":"invalid"}
+2026-10-11T14:00:10.4360651Z {"ev":"saos.llm_chain.selected","purpose":"selftest","selected":"c2-valid","ms":3}
+2026-10-11T14:00:10.4361690Z {"ev":"saos.llm_chain.started","purpose":"selftest","candidates":["c***","c2-echo","c3"]}
+2026-10-11T14:00:10.4362647Z {"ev":"saos.llm_chain.unsatisfied_merge","purpose":"selftest","candidate":"c***"}
+2026-10-11T14:00:10.4363403Z {"ev":"saos.llm_chain.candidate_failed","purpose":"selftest","candidate":"c2-echo","errorClass":"duplicate"}
+2026-10-11T14:00:10.4364094Z {"ev":"saos.llm_chain.unsatisfied_merge","purpose":"selftest","candidate":"c3"}
+2026-10-11T14:00:10.4364751Z {"ev":"saos.llm_chain.selected","purpose":"selftest","selected":"merged-partial","ms":0}
+2026-10-11T14:00:10.4365410Z {"ev":"saos.llm_chain.started","purpose":"selftest","candidates":["c***-good","c2-never"]}
+2026-10-11T14:00:10.4366080Z {"ev":"saos.llm_chain.selected","purpose":"selftest","selected":"c***-good","ms":***}
+2026-10-11T14:00:10.4366725Z {"ev":"saos.llm_chain.started","purpose":"selftest","candidates":["c***-two","c2-topup"]}
+2026-10-11T14:00:10.4367445Z {"ev":"saos.llm_chain.unsatisfied_merge","purpose":"selftest","candidate":"c***-two"}
+2026-10-11T14:00:10.4368120Z {"ev":"saos.llm_chain.unsatisfied_merge","purpose":"selftest","candidate":"c2-topup"}
+2026-10-11T14:00:10.4368807Z {"ev":"saos.llm_chain.selected","purpose":"selftest","selected":"merged-partial","ms":***}
+2026-10-11T14:00:10.4400008Z {"ev":"saos.llm_chain.started","purpose":"selftest","candidates":["counter"]}
+2026-10-11T14:00:10.4401215Z {"ev":"saos.llm_chain.selected","purpose":"selftest","selected":"counter","ms":0}
+2026-10-11T14:00:10.4402250Z {"ev":"saos.llm_chain.fastpath_hit","purpose":"selftest","ms":0,"tokensSaved":7}
+2026-10-11T14:00:10.4403607Z {"ev":"saos.llm_chain.started","purpose":"drill","candidates":["drill-forced-fail","drill-provider-***t","drill-local-echo"]}
+2026-10-11T14:00:10.4405126Z {"ev":"saos.llm_chain.candidate_failed","purpose":"drill","candidate":"drill-forced-fail","errorClass":"unknown"}
+2026-10-11T14:00:10.4406797Z {"ev":"saos.llm_chain.selected","purpose":"drill","selected":"drill-provider-***t","ms":0}
+2026-10-11T14:00:11.0015416Z 
+2026-10-11T14:00:11.0015940Z SELFTEST ***265/***265 PASS
+2026-10-11T14:00:11.0117177Z ##[group]Run node scripts/chain-anchor-probe.mjs || {
+2026-10-11T14:00:11.0117625Z [36;***mnode scripts/chain-anchor-probe.mjs || {[0m
+2026-10-11T14:00:11.0118057Z [36;***m  echo "first probe failed — one retry (public nodes wobble)"[0m
+2026-10-11T14:00:11.0118452Z [36;***m  sleep ***0[0m
+2026-10-11T14:00:11.0118751Z [36;***m  node scripts/chain-anchor-probe.mjs[0m
+2026-10-11T14:00:11.0119060Z [36;***m}[0m
+2026-10-11T14:00:11.0188714Z shell: /usr/bin/bash -e {0}
+2026-10-11T14:00:11.0188994Z ##[endgroup]
+2026-10-11T14:00:12.6806576Z {
+2026-10-11T14:00:12.6807144Z   "head": "b9a7***d02645f773b76570037043a43c9ca04e0cd",
+2026-10-11T14:00:12.6807537Z   "anchor": {
+2026-10-11T14:00:12.6807911Z     "tip": "22c93660b***b***28b***3b72e5556fb794728dc85fb5",
+2026-10-11T14:00:12.6808295Z     "block": ***03480***,
+2026-10-11T14:00:12.6808650Z     "at": "2026-***0-***T***3:34:02.344Z"
+2026-10-11T14:00:12.6808961Z   },
+2026-10-11T14:00:12.6809200Z   "anchored": true,
+2026-10-11T14:00:12.6810094Z   "drift": false
+2026-10-11T14:00:12.6810322Z }
+2026-10-11T14:00:12.6921538Z ##[group]Run mkdir -p .secrets
+2026-10-11T14:00:12.6921914Z [36;***mmkdir -p .secrets[0m
+2026-10-11T14:00:12.6922218Z [36;***mif [ -n "$CI_SOCIAL_ARMED" ]; then[0m
+2026-10-11T14:00:12.6922625Z [36;***m  printf '%s' "$CI_SOCIAL_ARMED" > .secrets/social-armed.json[0m
+2026-10-11T14:00:12.6923041Z [36;***m  chmod 600 .secrets/social-armed.json[0m
+2026-10-11T14:00:12.6923435Z [36;***m  echo "posting stream armed (standing order present)"[0m
+2026-10-11T14:00:12.6923809Z [36;***melse[0m
+2026-10-11T14:00:12.6924280Z [36;***m  echo "CI_SOCIAL_ARMED secret absent — the stream stays fail-closed (LIVE-REFUSED-NOT-ARMED), by law"[0m
+2026-10-11T14:00:12.6924804Z [36;***mfi[0m
+2026-10-11T14:00:12.6994819Z shell: /usr/bin/bash -e {0}
+2026-10-11T14:00:12.6995112Z env:
+2026-10-11T14:00:12.6996505Z   CI_SOCIAL_ARMED: ***
+2026-10-11T14:00:12.6996767Z ##[endgroup]
+2026-10-11T14:00:12.7109915Z posting stream armed (standing order present)
+2026-10-11T14:00:12.7140449Z ##[group]Run node ci-cycle.mjs
+2026-10-11T14:00:12.7140773Z [36;***mnode ci-cycle.mjs[0m
+2026-10-11T14:00:12.7203214Z shell: /usr/bin/bash -e {0}
+2026-10-11T14:00:12.7203502Z env:
+2026-10-11T14:00:12.7203729Z   SAOS_OFFLINE: ***
+2026-10-11T14:00:12.7203983Z   SAOS_CI_SKIP_MASTER: ***
+2026-10-11T14:00:12.7204397Z   CI_ADOPT_WIF_POSTING: ***
+2026-10-11T14:00:12.7204815Z   CI_ADOPT_WIF_ACTIVE: ***
+2026-10-11T14:00:12.7205082Z   CI_DELEGATION_ARMED: ***
+2026-10-11T14:00:12.7206493Z   CI_SOCIAL_ARMED: ***
+2026-10-11T14:00:12.7206739Z ##[endgroup]
+2026-10-11T14:05:52.7733778Z CI-HEARTBEAT {"at":"2026-***0-***T***4:00:***2.785Z","custody":"***4/***4","social":"SOCIAL-EXECUTED","socialExecuted":2,"content":"BRIDGE-DOWN","contentSource":null,"post":"BROADCAST-FAILED","postAccount":"tov","postPermlink":"tension-is-everything-what-knots-taught-2026***0***-059d***6df","dex":"STANDBY","dexReason":"engine-alive","digest":"DIGEST-READY","digestTitle":"Digest 8 nodes and buffer","blurt":"BLURT-BODIES-LIVE","blurtLive":***2,"delegation":"ADOPT-REFUSED","delegationOps":0,"delegationSp":0}
+2026-10-11T14:05:52.7834425Z ##[group]Run node mini-services/saos-engine/truthrail-outcome.mjs
+2026-10-11T14:05:52.7834944Z [36;***mnode mini-services/saos-engine/truthrail-outcome.mjs[0m
+2026-10-11T14:05:52.7903457Z shell: /usr/bin/bash -e {0}
+2026-10-11T14:05:52.7903752Z ##[endgroup]
+2026-10-11T14:05:54.8338719Z TRUTHRAIL-VERDICT {"verdict":"PASS","armed":true,"posts24h":***9,"outsideVotes":***}
+2026-10-11T14:05:54.8439118Z ##[group]Run git add -A mini-services/saos-engine/state mini-services/saos-engine/content/sent
+2026-10-11T14:05:54.8440094Z [36;***mgit add -A mini-services/saos-engine/state mini-services/saos-engine/content/sent[0m
+2026-10-11T14:05:54.8440585Z [36;***mif git diff --cached --quiet; then[0m
+2026-10-11T14:05:54.8441013Z [36;***m  echo "no state changes this heartbeat"[0m
+2026-10-11T14:05:54.8441391Z [36;***melse[0m
+2026-10-11T14:05:54.8441803Z [36;***m  git commit -m "SAOS-runtime-ci: heartbeat state (offline conversation + content) [ci]"[0m
+2026-10-11T14:05:54.8442274Z [36;***m  ok=0[0m
+2026-10-11T14:05:54.8442512Z [36;***m  for i in *** 2 3; do[0m
+2026-10-11T14:05:54.8442859Z [36;***m    if git push origin saos-cockpit; then ok=***; break; fi[0m
+2026-10-11T14:05:54.8443359Z [36;***m    echo "push raced with the sandbox custodian — fetch + rebase, retry $i"[0m
+2026-10-11T14:05:54.8443808Z [36;***m    git fetch origin saos-cockpit[0m
+2026-10-11T14:05:54.8444226Z [36;***m    git rebase origin/saos-cockpit || git rebase --abort[0m
+2026-10-11T14:05:54.8444592Z [36;***m    sleep $((i * 5))[0m
+2026-10-11T14:05:54.8444855Z [36;***m  done[0m
+2026-10-11T14:05:54.8445206Z [36;***m  [ "$ok" = "***" ] || { echo "state push-back failed after 3 retries"; exit ***; }[0m
+2026-10-11T14:05:54.8445605Z [36;***mfi[0m
+2026-10-11T14:05:54.8512984Z shell: /usr/bin/bash -e {0}
+2026-10-11T14:05:54.8513270Z ##[endgroup]
+2026-10-11T14:05:55.3499991Z [saos-cockpit 46***ae5e8] SAOS-runtime-ci: heartbeat state (offline conversation + content) [ci]
+2026-10-11T14:05:55.3501756Z  20 files changed, 436 insertions(+), ***726 deletions(-)
+2026-10-11T14:05:55.3508531Z  create mode ***00644 mini-services/saos-engine/state/delegation-ledger.jsonl
+2026-10-11T14:05:55.3520598Z  create mode ***00644 mini-services/saos-engine/state/truthrail.json
+2026-10-11T14:05:56.8467689Z To https://github.com/roshpinacare-sys/steem.git
+2026-10-11T14:05:56.8468535Z    b9a7***d02..46***ae5e8  saos-cockpit -> saos-cockpit
+2026-10-11T14:05:56.8544230Z ##[group]Run {
+2026-10-11T14:05:56.8544518Z [36;***m{[0m
+2026-10-11T14:05:56.8544763Z [36;***m  echo "## SAOS sovereign heartbeat"[0m
+2026-10-11T14:05:56.8545080Z [36;***m  echo ""[0m
+2026-10-11T14:05:56.8545345Z [36;***m  echo "- time: $(date -u +%FT%TZ)"[0m
+2026-10-11T14:05:56.8545716Z [36;***m  if [ -f state/ci-last-heartbeat.json ]; then[0m
+2026-10-11T14:05:56.8548158Z [36;***m    node -e 'const d=require("./state/ci-last-heartbeat.json");console.log("- custody: "+d.custody);console.log("- social: "+d.social+" (executed "+d.socialExecuted+")");console.log("- content: "+d.content+" (source "+d.contentSource+")");console.log("- digest: "+(d.digest ?? "n/a")+" ("+(d.digestTitle ?? "n/a")+")");console.log("- post: "+d.post+" ("+(d.postAccount ?? "n/a")+")");console.log("- blurt: "+(d.blurt ?? "n/a")+" (live "+(d.blurtLive ?? "?")+")");console.log("- delegation: "+(d.delegation ?? "n/a")+" (ops "+(d.delegationOps ?? 0)+", "+(d.delegationSp ?? 0)+" SP)");console.log("- dex: "+d.dex+" ("+(d.dexReason ?? "n/a")+")");console.log("- truthrail: "+(d.truthrail ?? "n/a")+" (posts24h "+(d.truthrailPosts24h ?? "?")+", outside "+(d.truthrailOutsideVotes ?? "?")+")");'[0m
+2026-10-11T14:05:56.8550633Z [36;***m  else[0m
+2026-10-11T14:05:56.8550990Z [36;***m    echo "- heartbeat state file missing (a step failed — see logs)"[0m
+2026-10-11T14:05:56.8551410Z [36;***m  fi[0m
+2026-10-11T14:05:56.8551651Z [36;***m} >> "$GITHUB_STEP_SUMMARY"[0m
+2026-10-11T14:05:56.8622530Z shell: /usr/bin/bash -e {0}
+2026-10-11T14:05:56.8622832Z ##[endgroup]
+2026-10-11T14:05:56.9131167Z ##[group]Run node - <<'EOF'
+2026-10-11T14:05:56.9131835Z [36;***mnode - <<'EOF'[0m
+2026-10-11T14:05:56.9132281Z [36;***mconst fs = require("node:fs");[0m
+2026-10-11T14:05:56.9132897Z [36;***mconst day = new Date().toISOString().slice(0, ***0);[0m
+2026-10-11T14:05:56.9133480Z [36;***mconst title = `SAOS daily digest ${day}`;[0m
+2026-10-11T14:05:56.9134220Z [36;***mconst H = { "Authorization": `token ${process.env.GH_PAT}`, "Accept": "application/vnd.github+json" };[0m
+2026-10-11T14:05:56.9134969Z [36;***m(async () => {[0m
+2026-10-11T14:05:56.9135378Z [36;***m  try {[0m
+2026-10-11T14:05:56.9136218Z [36;***m    const q = await fetch("https://api.github.com/search/issues?q=" + encodeURIComponent(`repo:roshpinacare-sys/steem in:title "${title}"`), { headers: H });[0m
+2026-10-11T14:05:56.9137106Z [36;***m    const s = await q.json();[0m
+2026-10-11T14:05:56.9137887Z [36;***m    if ((s.total_count ?? 0) > 0) { console.log("digest already issued for", day); return; }[0m
+2026-10-11T14:05:56.9138540Z [36;***m    let hb = {};[0m
+2026-10-11T14:05:56.9139114Z [36;***m    try { hb = JSON.parse(fs.readFileSync("state/ci-last-heartbeat.json", "utf8")); } catch {}[0m
+2026-10-11T14:05:56.9140155Z [36;***m    const lines = [[0m
+2026-10-11T14:05:56.9140696Z [36;***m      "## SAOS daily truth (measured, not promised)",[0m
+2026-10-11T14:05:56.9141149Z [36;***m      "",[0m
+2026-10-11T14:05:56.9141663Z [36;***m      `- custody: ${hb.custody ?? "?"}`,[0m
+2026-10-11T14:05:56.9142212Z [36;***m      `- social: ${hb.social ?? "?"} (executed ${hb.socialExecuted ?? 0})`,[0m
+2026-10-11T14:05:56.9142931Z [36;***m      `- content: ${hb.content ?? "?"} (source ${hb.contentSource ?? "?"})`,[0m
+2026-10-11T14:05:56.9143622Z [36;***m      `- digest: ${hb.digest ?? "?"} (${hb.digestTitle ?? "no title"})`,[0m
+2026-10-11T14:05:56.9144246Z [36;***m      `- post: ${hb.post ?? "?"} (${hb.postAccount ?? "n/a"})`,[0m
+2026-10-11T14:05:56.9145048Z [36;***m      `- blurt: ${hb.blurt ?? "?"} (live ${hb.blurtLive ?? "?"})`,[0m
+2026-10-11T14:05:56.9145869Z [36;***m      `- delegation: ${hb.delegation ?? "?"} (ops ${hb.delegationOps ?? 0}, ${hb.delegationSp ?? 0} SP)`,[0m
+2026-10-11T14:05:56.9146534Z [36;***m      `- dex: ${hb.dex ?? "?"} (${hb.dexReason ?? "n/a"})`,[0m
+2026-10-11T14:05:56.9147365Z [36;***m      `- truthrail: ${hb.truthrail ?? "?"} (posts24h ${hb.truthrailPosts24h ?? "?"}, outside votes ${hb.truthrailOutsideVotes ?? "?"})`,[0m
+2026-10-11T14:05:56.9148127Z [36;***m      "",[0m
+2026-10-11T14:05:56.9148518Z [36;***m      "## Open operator decisions (P0 first)",[0m
+2026-10-11T14:05:56.9149116Z [36;***m      "",[0m
+2026-10-11T14:05:56.9150611Z [36;***m      "***. **P0 SECURITY (owner-only)**: rotate the GitHub PAT and rotate chain keys. Verified 2026-***0-***: the vault wrap derives its key as sha256(PAT) (vaultlib.sh:9) and legacy seals use the credential itself — anyone holding the PAT can open the vault. The PAT has passed through at least two agent sandboxes.",[0m
+2026-10-11T14:05:56.9152396Z [36;***m      "2. **Blurt spend**: the R254 operator pause stands. Bodies are now visible every beat (R3***3, read-only); spend needs an explicit re-arm order.",[0m
+2026-10-11T14:05:56.9153655Z [36;***m      "3. **Delegation (R3***4, armed)**: floors ***00 SP publishers / 20 SP soldiers, run cap ***200 SP, treasury keep 2800 SP, reversible 7-day, ledgered in state/delegation-ledger.jsonl.",[0m
+2026-10-11T14:05:56.9154640Z [36;***m      "",[0m
+2026-10-11T14:05:56.9155326Z [36;***m      "_Automated operator digest — once per day, fail-soft. Evidence: engine state files committed in this repo._",[0m
+2026-10-11T14:05:56.9156082Z [36;***m    ];[0m
+2026-10-11T14:05:56.9156630Z [36;***m    const r = await fetch("https://api.github.com/repos/roshpinacare-sys/steem/issues", {[0m
+2026-10-11T14:05:56.9157477Z [36;***m      method: "POST", headers: { ...H, "content-type": "application/json" },[0m
+2026-10-11T14:05:56.9158299Z [36;***m      body: JSON.stringify({ title, body: lines.join("\n") }),[0m
+2026-10-11T14:05:56.9158874Z [36;***m    });[0m
+2026-10-11T14:05:56.9159496Z [36;***m    console.log("digest issue:", r.status);[0m
+2026-10-11T14:05:56.9160133Z [36;***m  } catch (e) { console.log("digest issue failed (fail-soft):", String(e).slice(0, ***20)); }[0m
+2026-10-11T14:05:56.9160840Z [36;***m})();[0m
+2026-10-11T14:05:56.9161190Z [36;***mEOF[0m
+2026-10-11T14:05:56.9228159Z shell: /usr/bin/bash -e {0}
+2026-10-11T14:05:56.9228557Z env:
+2026-10-11T14:05:56.9229492Z   GH_PAT: ***
+2026-10-11T14:05:56.9229858Z ##[endgroup]
+2026-10-11T14:05:57.8949075Z digest issue: 20***
+2026-10-11T14:05:57.9129042Z Post job cleanup.
+2026-10-11T14:05:58.0345806Z (node:2548) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-10-11T14:05:58.0346645Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-10-11T14:05:58.0503394Z Cleaning up orphan processes
+2026-10-11T14:05:58.0883981Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/setup-node@v4. For more information see: https://github.blog/changelog/2025-09-***9-deprecation-of-node-20-on-github-actions-runners/

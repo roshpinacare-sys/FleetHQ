@@ -1,0 +1,62 @@
+{
+ "id": "CR-0051",
+ "title": "THE DEEP AUDIT \u2014 the cross-map instrument that judges the estate's connections, lies, bleeds, and dead weight; plus the maturity canon (the Oct-7 rotation instrument)",
+ "ts": "2026-10-03T22:20:00Z",
+ "tier": "B",
+ "operator_directive": "\u05ea\u05d1\u05d7\u05df \u05d0\u05ea \u05db\u05dc \u05d4\u05d2\u05d9\u05d8... \u05d7\u05d5\u05e1\u05e8 \u05d7\u05d9\u05d1\u05d5\u05e8\u05d9\u05dd \u05e9\u05e7\u05e8\u05d9\u05dd \u05d3\u05d9\u05de\u05d5\u05de\u05d9\u05dd \u05e9\u05d1\u05d9\u05e8\u05d5\u05ea \u05d1\u05d0\u05d2\u05d9\u05dd... \u05dc\u05e8\u05d0\u05d5\u05ea \u05e9\u05d0\u05d9\u05df \u05d3\u05d1\u05e8\u05d9\u05dd \u05de\u05ea\u05d9\u05dd \u05dc\u05d4\u05d7\u05d9\u05d5\u05ea \u05d4\u05db\u05dc \u05dc\u05d7\u05d1\u05e8 \u05d4\u05db\u05dc \u05d5\u05d5\u05d3\u05d0\u05d9 \u2014 Z-71",
+ "verdict": "PASS",
+ "the_instrument": [
+  "agents/deep-audit.cjs \u2014 THE CROSS-MAP AUDITOR: the estate had census (lanes), parse-gate (YAML shape), one-bloc (convergence), workflow-audit (twins) \u2014 but nobody measured workflow\u2194agent\u2194book\u2194cadence\u2194publish-law as ONE graph. Nine finding kinds: F1 broken-refs, F2 dead-agents (name-mention graph), F3 ghost-secrets (only with a name census \u2014 never guessed), F4 stale-books vs REAL cadence, F5 collisions, F6 recursion (push without [skip ci]), F7 capital-path STASIS gaps, F8 map-vs-estate drift, F9 dead-crons. Pure core exported (E41), STASIS halt-before-write, single-writer, fail-soft, require.main guard."
+ ],
+ "findings_measured_and_fixed": [
+  {
+   "kind": "F6 recursion",
+   "found": "19 workflows pushing to main with no [skip ci] \u2014 with 5 push-triggered workflows in the estate (agent-verify/bootstrap-pages/foundry-mesh-tests/gitleaks/treasury-route) each publish re-triggered CI",
+   "fixed": "all 19 commit lines patched with [skip ci] (18 + weave-mirror caught on the follow-up run)"
+  },
+  {
+   "kind": "F7 stasis-gaps",
+   "found": "treasury-route.yml + self-audience.yml invoke capital-path desks (fleet-claim moves money) with NO STASIS gate \u2014 the breaker could not halt them",
+   "fixed": "mechanical STASIS gate steps added to both (E16-lineage idiom)"
+  },
+  {
+   "kind": "F8 map drift",
+   "found": "minute-map.json disagreed with 3 files (dex-grid, org-selftests, recruit) \u2014 a lie by staleness",
+   "fixed": "map repaired to the files (files are the operational truth); deep-audit keeps watching this class forever"
+  },
+  {
+   "kind": "F2 dead weight",
+   "found": "liquidity-desk.cjs \u2014 zero references estate-wide (measured twice: once by the narrower graph that produced false-deads on sovereign/market desks \u2014 the desk fixed its own false positive before booking anyone dead)",
+   "fixed": "tombstoned to agents/retired/ with TOMBSTONE.md (superseded by treasury-desk + market-exec band law + drip-canon; revival path documented)"
+  },
+  {
+   "kind": "F4 bleed",
+   "found": "market-grid-cron: 0 schedule events since creation (1 manual run) \u2014 the SAME GitHub scheduler starvation the keeper was built for, now hitting a capital desk",
+   "fixed": "market-grid joined the tick-keeper ARC (120m gap law; its own gates bind at fire time) \u2014 the keeper re-fires it on infra"
+  },
+  {
+   "kind": "REAL BUG (eval-caught)",
+   "found": "convert-canon reducer: an earlier fill_convert_request could close a LATER re-open of the same requestid (seq-guard missing)",
+   "fixed": "seq-guard added (fill must be after the open it closes) \u2014 E42 pins it forever"
+  }
+ ],
+ "the_maturity_canon": [
+  "agents/convert-canon.cjs \u2014 THE OCT-7 INSTRUMENT: get_convert_requests measured GHOST on both nodes (removed from modern steemd); the head churns ~30+ ops/min so no walk reaches 3.5 days back \u2014 the churn wall is a measured law",
+  "ARCHITECTURE: earn-audit is the SENSOR (now books every convert op's {requestid, amount_sbd, conversion_date} while the op is fresh \u2014 the half-blind tally that discarded maturity dates is fixed); convert-canon is the MEMORY (composes the pending schedule from sensor rows + its own fresh descending walk; order-safe two-pass reducer; 24h pre-position window for the sovereign)",
+  "HONEST BLIND SPOT BOOKED: the Oct-1 convert batch (14 \u00d7 45.3 SBD, fills expected Oct 7) opened BEFORE the sensor field existed \u2014 no booked dates, never guessed; their FILLS will be caught fresh by earn-audit + the fresh walk on maturity day (fills arrive at the head)",
+  "WIRED: sovereign-tick-cron carries the convert-canon step + publish list (zero new Actions minutes \u2014 \u05d4\u05ea\u05d9\u05d9\u05e2\u05dc \u05dc\u05de\u05e7\u05e1\u05d9\u05de\u05d5\u05dd)"
+ ],
+ "eval_discipline": [
+  "suite v1.28.0 \u2192 v1.29.0 = 43/43 GREEN on the merged tree",
+  "E41: every finding kind proven on fixtures + the auditor's OWN two in-session bugs regression-pinned (mention-graph false-deads; the 60m cadence floor that false-flagged daily desks) + a clean estate books ZERO findings",
+  "E42: open\u2192pending math, closure, order-safety (fill-before-open), re-open law (last open wins, eval-caught the seq-guard bug), 24h window, honest empties",
+  "E40b fixtures healed to the grown arc registry (market-grid joined) \u2014 fixtures follow the registry, never a count"
+ ],
+ "remaining_finding": "F4 market-grid stale book \u2014 RESOLVES ON INFRA when the keeper dispatches it with the armed token (measured mechanics, booked at the next keeper run)",
+ "receipts": {
+  "audit_run": "agents/deep-audit.json \u2014 48 workflows, 58 agents, findings 36 \u2192 4 \u2192 1 as the fixes landed (every step re-measured, never assumed)",
+  "suite": "v1.29.0, counts {pass:43, fail:0}",
+  "parse_gate": "GREEN 48 workflows 0 offenders after every workflow edit"
+ },
+ "renumber_note": "SIXTEENTH-COLLISION RENUMBER (later-mover law): the roast lane landed CR-0050/feat-045/E41 claims-audit (v1.29.0) while this rung was in flight \u2014 this rung renumbered CR-0050->CR-0051, feat-045->feat-046, E41/E42->E42/E43, v1.29.0->v1.30.0; their claims-audit is KEPT (E41) and composes"
+}

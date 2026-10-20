@@ -1,0 +1,29 @@
+{
+ "id": "CR-0053",
+ "slot": 53,
+ "title": "Fleet Rung 25 — THE CADENCE-WEEK READ: the first distributional read of the fleet's own time series. The series were only ever appended (market-grid ~30-min, delta on transition, census daily); a ledger never read back is a diary, not an instrument. B2 cleared for real (7 market-grid rows >= 5, delta series started) and the booked R17 rung is now LANDED",
+ "operator": "owner directive (2026-10-04, Hebrew): 'תבחן את כל הגיט ומה התקדמנו ומה לא איפה החולשות הכי חזקות שלנו בגיט חוסר חיבורים שקרים דימומים שבירות באגים צריך לסדר הכל היטב נרחב ... אני מחכה יותר מדי זמן ועוד לא קיבלנו שום דבר משמעותי באמת שניתן להוכיח. אני עדיין מחכה להפתעות'",
+ "verdict": "PASS",
+ "tier": "B",
+ "at": "2026-10-04T00:00:00Z",
+ "findings_and_answers": [
+  "F1 · DIARY-NOT-INSTRUMENT: three live series (market-grid-history.jsonl, fleet-delta.jsonl, fleet-census.artifact.json) were only ever WRITTEN; no desk ever READ them back as distributions. ANSWER: agents/cadence-week.cjs — the distributional read (per-market spread n/min/max/last/mean, inter-row gap min/median/max minutes, feasible-route frequency, delta verdict split + sovereignty/blocker transition counts, tapeCrossed totals).",
+  "F2 · THE B2 BAR WAS NEVER ENCODED: 'first cadence-week read once B2 clears (~5 rows + census series)' lived only in rung notes — a bar not encoded is not a bar. ANSWER: BAR = { marketGridRowsMin: 5, deltaRowsMin: 1 } as data in the desk, edge-exact in E45 (computeVerdict 4/0→INSUFFICIENT, 5/0→INSUFFICIENT, 5/1→LIVE).",
+  "F3 · THE ARTIFACT LAGS ITS OWN LEDGER: the latest census artifact quoted historyRows=6 while the ledger held 7 — the honesty number artifactLagRows now measured on every cadence read (live first read: lag=1).",
+  "F4 · NO-WRITE LAW BELOW THE BAR: a desk that cannot reach its own bar stays silent rather than publishing a thin book — INSUFFICIENT-SERIES writes NOTHING, proven fresh-process on a fixture dir (E45 black-box), composed with the no-noise publish law (cadence-week.json added to the volatile comparator list).",
+  "F5 · WIRED ON THE DAILY CADENCE: cadence-week rides fleet-census-cron as an independent leg (after claims-audit), zero extra Actions minutes, its books join the publish step."
+ ],
+ "receipts": [
+  "agents/cadence-week.cjs — the distributional desk (offline/keyless/deterministic/fail-soft, STASIS-braked by require, CADENCE_WEEK_SKIP + CADENCE_WEEK_DIR seams)",
+  "agents/cadence-week.json + agents/cadence-week.md — the first distribution book (verdict CADENCE-WEEK-LIVE, HEBREW owner surface, at-free md)",
+  "agents/evals/run-evals.cjs v1.32.0 — E45 (45/45 GREEN): reducers edge-exact, B2 bar encoded, byte-determinism on the real series, black-box no-write + live fixture laws",
+  ".github/workflows/fleet-census-cron.yml — the cadence-week leg + publish/volatile wiring"
+ ],
+ "evals": "E45 (v1.32.0) — parseJsonl fail-soft, gapMinutes exact min/median/max (bad dates dropped), spreadDistributions sorted exact stats, feasibleRoutes NAME:pct% parsing, verdictCounts sorted, deltaSummary transition counting, computeVerdict B2-bar edges, artifactLag honesty, composeBook byte-determinism, renderMd Hebrew, black-box no-write-below-bar + live-fixture numbers",
+ "next": [
+  "the cadence-week book re-measures on every daily census tick — the distribution series itself starts accumulating (week-over-week reads when market-grid crosses ~100 rows)",
+  "keyless-workflow migration wave continues (11/48 done — each migration compounds autonomy)",
+  "TVM/capital stay operator-gated (B4/B5); B1 fee arbitration stays operator-gated"
+ ],
+ "laws_honored": ["STASIS halt-before-read (same brake by require)", "no-noise publish (volatile list)", "owner-language he", "single-writer atomic books", "fail-soft exit 0", "append-only ledgers untouched"]
+}

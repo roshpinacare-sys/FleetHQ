@@ -1,0 +1,69 @@
+{
+  "schema": "office-knowledge/1",
+  "generatedAt": "2026-10-20T14:07:01.350Z",
+  "roster": {
+    "crew": 6,
+    "workers": 5,
+    "lead": "aluf",
+    "ids": [
+      "aluf",
+      "gal",
+      "erez",
+      "tamar",
+      "shachar",
+      "yarden"
+    ],
+    "source": "measured from mini-services/agent-hq/src/cast.ts (CREW — 1 lead + 5 workers)",
+    "note": "counts.agent in office-state.json is a socket-EVENT counter for the capture window (tools/office-state-capture.ts bumps it on every 'agent' state-change event) — NOT a headcount",
+    "error": null
+  },
+  "shifts": {
+    "todayCount": 9,
+    "lastShiftAt": "2026-10-20T12:07:34.825Z",
+    "lastShiftTitle": "משמרת-עורק #149 נפתחה (deterministic-keyless, STASIS-safe) — ראש-משמרת: tamar",
+    "cumulative": 149,
+    "source": "measured from Domain agents/office-events.jsonl (append-only journal, kind=shift-start, git-committed) + Domain agents/office-memory.json (cumulative)",
+    "error": null
+  },
+  "lessons": {
+    "count": 53,
+    "latest": [
+      {
+        "at": "2026-10-20T06:40:04.726Z",
+        "title": "scribe 50 — wallet 24h verdicts: {\"PASS\":20} · failing laws: {}"
+      },
+      {
+        "at": "2026-10-20T08:21:23.477Z",
+        "title": "scribe 51 — wallet 24h verdicts: {\"PASS\":19} · failing laws: {}"
+      },
+      {
+        "at": "2026-10-20T08:24:32.603Z",
+        "title": "scribe 52 — wallet 24h verdicts: {\"PASS\":19} · failing laws: {}"
+      },
+      {
+        "at": "2026-10-20T11:30:24.396Z",
+        "title": "scribe 53 — wallet 24h verdicts: {\"PASS\":18} · failing laws: {}"
+      },
+      {
+        "at": "2026-10-20T13:27:41.828Z",
+        "title": "scribe 54 — wallet 24h verdicts: {\"PASS\":20} · failing laws: {}"
+      }
+    ],
+    "source": "measured from Autonomy ops/lessons/ledger.md ('## scribe #N' headers)",
+    "cadence": "artery-scribe.yml: daily cron 03:05Z + repository_dispatch scribe-tick",
+    "error": null
+  },
+  "retro": {
+    "at": "2026-10-20T04:37:04.021Z",
+    "path": "office/RETRO-LATEST.md",
+    "cadence": "office-retro.yml weekly Thursday 07:43 UTC",
+    "error": null
+  },
+  "recruitment": {
+    "rolesNeeded": 106,
+    "staffed": 0,
+    "generatedAt": "2026-10-20T13:50:42.270Z",
+    "note": "HONEST: office-recruit emits rolesNeeded SIGNALS only. Zero hiring receipts exist under receipts/; the crew law is cast.ts and it never changed. Recruits are wanted-roles, not staff.",
+    "error": null
+  }
+}

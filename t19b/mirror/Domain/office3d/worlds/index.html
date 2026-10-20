@@ -1,0 +1,535 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>חדר העולמות — ריבונות ברינדור חי (עסקים · מקביל · משרד)</title>
+<meta name="description" content="עולם עסקים ועולם מקביל מטפורי — רינדור חי של מה שהריבונות באמת עושה, מוזן רק מפידים אמיתיים. אפס נתונים פיקטיביים." />
+<style>
+  :root{
+    --bg:#14110d; --surface:#1d1813; --surface2:#26201a; --line:#3d342a;
+    --ink:#f3ede2; --ink2:#c9bfae; --ink3:#8f8574;
+    --ok:#2fae63; --warn:#d9a13b; --err:#d95c4a; --sleep:#7f8ea3;
+    --accent:#e0a458; --biz:#d9b36c; --para:#8ea6c3;
+  }
+  *{box-sizing:border-box} html,body{margin:0;height:100%;overflow:hidden;background:var(--bg)}
+  body{font-family:system-ui,-apple-system,"Segoe UI","Noto Sans Hebrew",Arial,sans-serif;color:var(--ink)}
+  #app{position:fixed;inset:0} canvas{display:block}
+  .hud{position:fixed;z-index:10;pointer-events:none} .hud *{pointer-events:auto}
+  #topbar{top:0;right:0;left:0;display:flex;flex-wrap:wrap;gap:6px;align-items:center;
+    padding:8px 12px;padding-top:max(8px,env(safe-area-inset-top));
+    background:linear-gradient(180deg,rgba(20,17,13,.92),rgba(20,17,13,0));}
+  .chip{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;
+    background:var(--surface2);border:1px solid var(--line);border-radius:999px;padding:4px 10px;color:var(--ink2);
+    text-decoration:none}
+  .chip b{color:var(--ink)} .chip .val{font-variant-numeric:tabular-nums}
+  .dot{width:8px;height:8px;border-radius:50%;background:var(--ink3);box-shadow:0 0 8px transparent}
+  .dot.ok{background:var(--ok);box-shadow:0 0 8px var(--ok)} .dot.warn{background:var(--warn);box-shadow:0 0 8px var(--warn)}
+  .dot.err{background:var(--err);box-shadow:0 0 8px var(--err)} .dot.pulse{animation:pulse 1.6s infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+  #title{font-size:14px;font-weight:800;letter-spacing:.2px}
+  #subtitle{font-size:11px;color:var(--ink3)}
+  #viewbar{bottom:14px;left:50%;transform:translateX(-50%);display:flex;gap:6px;flex-wrap:wrap;justify-content:center;
+    padding-bottom:env(safe-area-inset-bottom)}
+  .vbtn{font-size:12px;font-weight:700;color:var(--ink2);background:rgba(29,24,19,.94);
+    border:1px solid var(--line);border-radius:10px;padding:8px 14px;cursor:pointer;transition:.15s;min-height:32px}
+  .vbtn:hover{color:var(--ink);border-color:var(--accent)} .vbtn.active{background:var(--accent);color:#191410;border-color:var(--accent)}
+  .vbtn.active.biz{background:var(--biz)} .vbtn.active.para{background:var(--para)}
+  #legend{bottom:14px;right:12px;display:flex;flex-direction:column;gap:4px;font-size:11px;color:var(--ink2);
+    background:rgba(20,17,13,.85);border:1px solid var(--line);border-radius:12px;padding:8px 10px;max-width:230px}
+  #legend .row{display:flex;align-items:center;gap:6px} #legend .sw{width:9px;height:9px;border-radius:3px;flex:0 0 auto}
+  #card{top:64px;left:12px;width:262px;display:none;background:rgba(29,24,19,.96);border:1px solid var(--line);
+    border-radius:14px;padding:12px 14px;box-shadow:0 8px 30px rgba(0,0,0,.4)}
+  #card h3{margin:0 0 2px;font-size:15px} #card .sub{font-size:12px;color:var(--ink2);margin-bottom:8px}
+  #card .kv{display:flex;justify-content:space-between;gap:8px;font-size:12px;padding:3px 0;border-top:1px dashed var(--line)}
+  #card .kv span:first-child{color:var(--ink3)} #card .note{font-size:11px;color:var(--ink3);margin-top:8px;line-height:1.6}
+  #card .x{position:absolute;top:6px;left:8px;background:none;border:none;color:var(--ink3);cursor:pointer;font-size:15px}
+  #feeds{top:52px;right:12px;display:flex;flex-direction:column;gap:4px;font-size:11px}
+  #feeds .f{display:flex;gap:6px;align-items:center;background:rgba(20,17,13,.85);border:1px solid var(--line);
+    border-radius:8px;padding:3px 8px;color:var(--ink2)} #feeds .f b{color:var(--ink);font-weight:700}
+  #nolink{position:fixed;inset:0;display:none;place-items:center;background:rgba(20,17,13,.92);z-index:50;text-align:center;padding:24px}
+  #nolink .box{max-width:440px;border:1px solid var(--line);border-radius:16px;padding:24px;background:var(--surface2)}
+  #selftest{position:fixed;bottom:60px;left:12px;z-index:40;display:none;max-width:340px;max-height:45vh;overflow:auto;
+    background:rgba(29,24,19,.97);border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-size:11px;
+    color:var(--ink2);font-family:ui-monospace,Menlo,monospace;direction:ltr;text-align:left;white-space:pre-wrap}
+  /* משרד (DOM world) */
+  #world-office{position:fixed;inset:0;overflow-y:auto;padding:70px 16px 90px;display:none}
+  .kgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;max-width:860px;margin:0 auto 14px}
+  .kpi{background:var(--surface2);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+  .kpi .n{font-size:26px;font-weight:800;font-variant-numeric:tabular-nums} .kpi .l{font-size:11px;color:var(--ink3)}
+  .links{max-width:860px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+  .biglink{display:flex;flex-direction:column;gap:4px;background:var(--surface2);border:1px solid var(--line);
+    border-radius:14px;padding:14px 16px;text-decoration:none;color:var(--ink);transition:.15s}
+  .biglink:hover{border-color:var(--accent);transform:translateY(-1px)}
+  .biglink b{font-size:14px} .biglink span{font-size:11px;color:var(--ink3);line-height:1.6}
+  .motto{max-width:860px;margin:16px auto 0;font-size:11px;color:var(--ink3);text-align:center;line-height:1.8}
+  @media (max-width:560px){ #legend{display:none} #card{width:calc(100vw - 24px)} }
+</style>
+</head>
+<body>
+<div id="app"><canvas id="cv" role="img" aria-label="רינדור חי של עולם העסקים והעולם המקביל של הריבונות"></canvas></div>
+
+<div id="world-office" class="hud" style="pointer-events:auto">
+  <div class="kgrid" id="kgrid"></div>
+  <div class="links">
+    <a class="biglink" href="../v2/"><b>החדר המוביל v2.5 — עולם-ההון והגן</b><span>צוות מפרקים חי, קיר-משימות, מגדלי STEEM/HIVE/BLURT, גן עובדים, פודיום השאלות הריבוניות</span></a>
+    <a class="biglink" href="https://roshpinacare-sys.github.io/FleetHQ/office3d/"><b>המשרד האינטראקטיבי (FleetHQ)</b><span>סיור קולנועי בחדר הצוות — נבנה מהיומן האמיתי של הפורמן</span></a>
+    <a class="biglink" href="https://roshpinacare-sys.github.io/FleetHQ/potential.html"><b>לוח הפוטנציאל והגיוס</b><span>מה פתוח, מה הערך הצפוי, אילו תפקידים מגויסים — הכל נמדד</span></a>
+    <a class="biglink" href="https://roshpinacare-sys.github.io/FleetHQ/"><b>דיג'סט הצי</b><span>החלון היומי של המשרד — נמדד בזמן רינדור</span></a>
+    <a class="biglink" href="../../index.html"><b>השער הראשי</b><span>הוויטרינה — המשרד נפתח ראשון</span></a>
+  </div>
+  <p class="motto">כל ערך בחדר הזה נמדד מהפידים האמיתיים עם חותמת-זמן — מה שלא נמדד מוצג כ"לא נמדד", לעולם לא ירוק מזויף.</p>
+</div>
+
+<header id="topbar" class="hud">
+  <span id="title">חדר העולמות</span>
+  <span id="subtitle" class="chip" style="border:none;background:none;padding:0">רינדור חי · משלים את עולם-ההון של v2.5 · אפס זיופים</span>
+  <span class="chip"><span class="dot pulse" id="fd-dot"></span><b id="fd-count">—</b> פידים</span>
+  <a class="chip" href="../v2/">חדר v2 ←</a>
+  <a class="chip" href="../../index.html">שער ראשי ←</a>
+</header>
+
+<div id="feeds" class="hud"></div>
+
+<div id="card" class="hud">
+  <button class="x" id="card-x" aria-label="סגירה">✕</button>
+  <h3 id="card-h">—</h3><div class="sub" id="card-sub"></div><div id="card-body"></div>
+  <div class="note" id="card-note"></div>
+</div>
+
+<div id="legend" class="hud"></div>
+
+<nav id="viewbar" class="hud" aria-label="בחירת עולם">
+  <button class="vbtn active" data-w="office">🏛️ המשרד</button>
+  <button class="vbtn biz" data-w="biz">🏙️ עיר הריפואים</button>
+  <button class="vbtn para" data-w="para">🌌 העולם המקביל</button>
+</nav>
+
+<div id="selftest"></div>
+<div id="nolink" class="hud"><div class="box">
+  <h2 style="margin:0 0 8px;font-size:17px;color:var(--err)">הפידים לא נגישים מכאן</h2>
+  <p style="margin:0;font-size:13px;color:var(--ink2);line-height:1.7" id="nolink-p"></p>
+</div></div>
+
+<script>
+"use strict";
+/* ─────────────────────────────────────────────────────────────────────
+   חדר העולמות — buildless, zero-deps, RTL.
+   חוקי אמת: כל מה שמוצג נמדד מפיד אמיתי עם חותמת זמן; unknown נשאר unknown;
+   אין CDN, אין מפתחות, אין נתונים פיקטיביים. ?selftest=1 מציג פסק-דין עצמי.
+   ───────────────────────────────────────────────────────────────────── */
+var FEEDS = [
+  { id:"digest", name:"דיג'סט הצי (FleetHQ/Pages)", url:"https://roshpinacare-sys.github.io/FleetHQ/digest.json" },
+  { id:"state",  name:"מצב המשרד (office-state)",   url:"https://raw.githubusercontent.com/roshpinacare-sys/FleetHQ/main/office/state/office-state.json" },
+  { id:"flow",   name:"מפת הזרימה (Sandbox/flow)",  url:"https://raw.githubusercontent.com/roshpinacare-sys/Sandbox/main/ops/flow/flow-map.json" },
+  { id:"live",   name:"אש המשרד (same-origin live)", url:"../../agents/office-live.json" },
+  { id:"pot",    name:"לוח הפוטנציאל (potential)",  url:"https://roshpinacare-sys.github.io/FleetHQ/potential.json" }
+];
+var S = { feeds:{}, world:"office", t0:Date.now(), hover:null, sel:null, errors:[], ready:false };
+var cv=document.getElementById("cv"), ctx=cv.getContext("2d");
+var DPR=Math.min(window.devicePixelRatio||1,1.5);
+
+/* ── feeds ── */
+function fetchFeed(f){
+  var ctl = ("AbortController" in window)? new AbortController() : null;
+  var to = ctl? setTimeout(function(){ctl.abort();},15000) : null;
+  return fetch(f.url, ctl?{signal:ctl.signal}:{})
+    .then(function(r){ if(!r.ok) throw new Error("HTTP "+r.status); return r.json(); })
+    .then(function(j){ clearTimeout(to); f.ok=true; f.at=Date.now(); f.data=j; f.err=null; })
+    .catch(function(e){ clearTimeout(to); f.ok=false; f.err=(e&&e.message)||"fetch failed"; f.at=Date.now(); S.errors.push(f.id+":"+f.err); });
+}
+function fd(id){ for(var i=0;i<FEEDS.length;i++) if(FEEDS[i].id===id) return FEEDS[i]; return null; }
+function fdata(id){ var f=fd(id); return (f&&f.ok)? f.data : null; }
+function fmtAgo(ts){ if(!ts) return "—"; var m=Math.round((Date.now()-ts)/60000);
+  if(m<2) return "עכשיו"; if(m<120) return m+" דק׳"; var h=Math.round(m/60); if(h<48) return h+" שע׳"; return Math.round(h/24)+" ימ׳"; }
+function hoursSince(iso){ if(!iso) return null; var t=Date.parse(iso); if(isNaN(t)) return null; return (Date.now()-t)/36e5; }
+function ageTxt(h){ if(h==null) return "—"; if(h<1) return Math.max(1,Math.round(h*60))+" דק׳"; if(h<48) return h.toFixed(1)+" שע׳"; return Math.round(h/24)+" ימ׳"; }
+
+/* ── HUD ── */
+function renderFeedsHud(){
+  var el=document.getElementById("feeds"); el.innerHTML="";
+  var okN=0;
+  FEEDS.forEach(function(f){
+    if(f.ok) okN++;
+    var d=document.createElement("div"); d.className="f";
+    var dot=f.ok?'<span class="dot ok"></span>':'<span class="dot err"></span>';
+    var extra=f.ok?("נשלף "+fmtAgo(f.at)):(f.err||"…");
+    d.innerHTML=dot+"<b>"+f.name+"</b><span>"+extra+"</span>";
+    d.title=f.url; el.appendChild(d);
+  });
+  document.getElementById("fd-count").textContent=okN+"/"+FEEDS.length;
+  document.getElementById("fd-dot").className="dot pulse "+(okN?"ok":"err");
+}
+function legend(items){
+  var el=document.getElementById("legend"); el.innerHTML="";
+  items.forEach(function(it){
+    var r=document.createElement("div"); r.className="row";
+    r.innerHTML='<span class="sw" style="background:'+it.c+'"></span><span>'+it.t+"</span>";
+    el.appendChild(r);
+  });
+}
+
+/* ── measured synthesis (no invention) ── */
+function synth(){
+  var dig=fdata("digest"), st=fdata("state"), fl=fdata("flow"), lv=fdata("live"), pot=fdata("pot");
+  var o={};
+  o.repos = (dig && dig.repos) ? dig.repos.slice() : null;                    // measured
+  o.fleet = dig ? dig.fleet : null;
+  o.agents = (st && st.agents) ? st.agents.slice() : null;
+  o.stateMeta = st ? {capturedAt:st.capturedAt, backend:st.backend, statusHe:st.statusHe} : null;
+  o.orphans = (fl && fl.orphans) ? fl.orphans : null;
+  o.ghosts  = (fl && fl.ghosts) ? fl.ghosts : null;
+  o.stale   = (fl && fl.stale) ? fl.stale : null;
+  o.alerts  = (fl && fl.alerts) ? fl.alerts : null;
+  o.flowAt  = fl ? fl.generatedAt : null;
+  o.crew = lv && lv.crew ? lv.crew : null;
+  o.shifts = lv && lv.shifts ? lv.shifts : null;
+  o.liveAt = lv ? lv.generatedAt : null;
+  o.pot = pot; // may be null until first publish — shown honestly
+  var theater=0, ghostOpen=0;
+  if(o.alerts) o.alerts.forEach(function(a){ if(String(a.law||"").indexOf("content-divergence")>=0) theater++; });
+  if(o.stale) theater+=o.stale.length;
+  if(o.ghosts) o.ghosts.forEach(function(g){
+    // re-verify the ONE known public ghost target live — measured, not assumed
+    if(/FleetHQ:digest\.json$/.test(g.target||"")) ghostOpen += (fd("digest").ok?0:1);
+  });
+  o.theaterCount=theater; o.ghostOpenCount=ghostOpen;
+  var liveEdges=null;
+  if(pot && pot.fleetGraph) { liveEdges=pot.fleetGraph.live; }
+  o.liveEdges=liveEdges;
+  return o;
+}
+
+/* ── worlds ── */
+var W = { biz:{}, para:{} };
+
+function poly(pts,c){ ctx.fillStyle=c; ctx.beginPath(); ctx.moveTo(pts[0][0],pts[0][1]);
+  for(var i=1;i<pts.length;i++) ctx.lineTo(pts[i][0],pts[i][1]); ctx.closePath(); ctx.fill(); }
+
+function drawBiz(o,t){
+  var w=cv.width/DPR,h=cv.height/DPR;
+  var sky=ctx.createLinearGradient(0,0,0,h);
+  sky.addColorStop(0,"#2a2318"); sky.addColorStop(.55,"#3d3120"); sky.addColorStop(1,"#4a3a24");
+  ctx.fillStyle=sky; ctx.fillRect(0,0,w,h);
+  ctx.fillStyle="rgba(224,164,88,.85)"; ctx.beginPath(); ctx.arc(w*.80,h*.13,18,0,7); ctx.fill();
+  ctx.fillStyle="rgba(224,164,88,.07)"; ctx.beginPath(); ctx.arc(w*.80,h*.13,38,0,7); ctx.fill();
+  var cx=w/2, cy=h*.28, tw=110, th=54;
+  var repos=(o.repos||[]).slice(0,12);
+  var cols=Math.min(5,Math.max(3,Math.ceil(Math.sqrt(repos.length||1))));
+  var boxes=[], orphanBoxes=[], craneBoxes=[];
+  function iso(x,y,z){ return {x:cx+(x-y)*tw/2, y:cy+(x+y)*th/2 - z}; }
+  function building(gx,gy,ht,bodyC,sideC,topC,litP){
+    var a=iso(gx,gy,0), b=iso(gx,gy+1,0), d=iso(gx+1,gy,0);
+    var a2=iso(gx,gy,ht), b2=iso(gx,gy+1,ht), c2=iso(gx+1,gy+1,ht), d2=iso(gx+1,gy,ht);
+    poly([[a.x,a.y],[d.x,d.y],[d2.x,d2.y],[a2.x,a2.y]], sideC);
+    poly([[a.x,a.y],[b.x,b.y],[b2.x,b2.y],[a2.x,a2.y]], bodyC);
+    poly([[a2.x,a2.y],[b2.x,b2.y],[c2.x,c2.y],[d2.x,d2.y]], topC);
+    var rows=Math.max(1,Math.floor(ht/16)), wc=3;
+    for(var r=0;r<rows;r++) for(var cix=0;cix<wc;cix++){
+      var lit=((r*7+cix*13+gx*5)%10) < (litP?7:2);
+      if(!lit) continue;
+      var fx=a.x+(b.x-a.x)*(0.18+cix*0.28), fy=a.y+(b.y-a.y)*(0.18+cix*0.28)-14-r*15;
+      if(fy<=a2.y+4) continue;
+      var flick=Math.sin(t/700+r+cix+gx)>0.94;
+      ctx.fillStyle=flick?"rgba(255,236,190,.95)":"rgba(255,220,150,.75)";
+      ctx.fillRect(fx-2,fy-3,4,5);
+    }
+    var bx=Math.min(a.x,b.x,a2.x,b2.x)-6, by=a2.y-6;
+    var bw=Math.abs(d.x-a.x)+12, bh=(a.y-by)+10;
+    return {x:bx,y:by,w:bw,h:bh};
+  }
+  poly([iso(-0.4,-0.4,0),iso(cols+0.4,-0.4,0),iso(cols+0.4,cols+0.4,0),iso(-0.4,cols+0.4,0)],"rgba(0,0,0,.28)");
+  if(repos.length){
+    repos.sort(function(a,b){ var ca=(typeof a.commits7d==="number")?a.commits7d:0, cb=(typeof b.commits7d==="number")?b.commits7d:0; return cb-ca; });
+    var plates=[];
+    repos.forEach(function(rp,i){
+      var gx=i%cols, gy=Math.floor(i/cols);
+      var commits=(typeof rp.commits7d==="number")? rp.commits7d : ((rp.commits7d&&rp.commits7d.value)||0);
+      var ht=12+Math.min(commits,100)*0.72;
+      var v=(rp.lastRun&&rp.lastRun.conclusion)||(rp.lastRun&&rp.lastRun.status)||null;
+      var ok=v==="success", run=v==="in_progress", bad=(v&&v!=="success"&&v!=="in_progress");
+      var body= ok?"#3a5c46" : run?"#5c5133" : bad?"#5c3630" : "#4a4238";
+      var side= ok?"#2c4636" : run?"#453d26" : bad?"#452a25" : "#36302a";
+      var top = ok?"#4d7558" : run?"#6e6140" : bad?"#74483f" : "#5a5045";
+      var age=hoursSince(rp.pushedAt);
+      var litP= age!=null && age<48;
+      var bb=building(gx,gy,ht,body,side,top,litP);
+      boxes.push({b:bb,rp:rp});
+      plates.push({x:(iso(gx,gy,0).x+iso(gx+1,gy+1,0).x)/2, y:iso(gx,gy,0).y+12, name:rp.name, bb:bb, fresh:(age!=null&&age<6)});
+    });
+    // name plates drawn LAST so nothing covers them
+    plates.forEach(function(pl){
+      ctx.fillStyle="rgba(243,237,226,.95)"; ctx.font="700 10px system-ui"; ctx.textAlign="center";
+      ctx.fillText(pl.name, pl.x, pl.y);
+      if(pl.fresh){ ctx.strokeStyle="rgba(47,174,99,.5)"; ctx.lineWidth=2;
+        ctx.strokeRect(pl.bb.x,pl.bb.y,pl.bb.w,pl.bb.h); ctx.lineWidth=1; }
+    });
+  } else {
+    ctx.fillStyle="rgba(243,237,226,.85)"; ctx.font="600 14px system-ui"; ctx.textAlign="center";
+    ctx.fillText("אין מדידת ריפואים — digest לא נשלף (לא נמדד)", w/2, h/2);
+  }
+  // cranes = queued edges (future under construction)
+  var cranes=[];
+  if(o.pot && o.pot.fleetGraph && o.pot.fleetGraph.queuedEdges) cranes=o.pot.fleetGraph.queuedEdges;
+  cranes.slice(0,4).forEach(function(e,i){
+    var gx=cols+0.7, gy=0.4+i*1.3;
+    var p=iso(gx,gy,0);
+    ctx.strokeStyle="rgba(224,164,88,.85)"; ctx.lineWidth=2;
+    ctx.beginPath(); ctx.moveTo(p.x,p.y); ctx.lineTo(p.x,p.y-46); ctx.lineTo(p.x+22,p.y-38); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(p.x,p.y-46); ctx.lineTo(p.x-14,p.y-38); ctx.stroke();
+    ctx.fillStyle="rgba(224,164,88,.9)"; ctx.beginPath(); ctx.arc(p.x,p.y-46,3,0,7); ctx.fill();
+    craneBoxes.push({b:{x:p.x-16,y:p.y-52,w:44,h:60},e:e});
+  });
+  ctx.lineWidth=1;
+  // orphan sheds — the debt, visible
+  if(o.orphans){
+    o.orphans.slice(0,7).forEach(function(or,i){
+      var gx=(i%4)*1.3+0.2, gy=cols+1.7+Math.floor(i/4)*1.15;
+      var a=iso(gx,gy,0), b=iso(gx,gy+0.8,0), c=iso(gx+0.8,gy+0.8,0), d=iso(gx+0.8,gy,0);
+      var a2=iso(gx,gy,14), b2=iso(gx,gy+0.8,14), c2=iso(gx+0.8,gy+0.8,14), d2=iso(gx+0.8,gy,14);
+      poly([[a.x,a.y],[d.x,d.y],[d2.x,d2.y],[a2.x,a2.y]],"#463832");
+      poly([[a.x,a.y],[b.x,b.y],[b2.x,b2.y],[a2.x,a2.y]],"#3a2f2a");
+      poly([[a2.x,a2.y],[b2.x,b2.y],[c2.x,c2.y],[d2.x,d2.y]],"#55453d");
+      ctx.strokeStyle="rgba(217,92,74,.8)";
+      for(var k=0;k<3;k++){ ctx.beginPath(); ctx.moveTo(a.x+3+k*7, a.y-4-k*4); ctx.lineTo(a.x+9+k*7, a.y-8-k*4); ctx.stroke(); }
+      var key=(or.key||"").split(":").pop()||or.key;
+      ctx.fillStyle="rgba(217,92,74,.95)"; ctx.font="600 9px system-ui"; ctx.textAlign="center";
+      ctx.fillText(key, (a.x+c.x)/2, a.y+11);
+      orphanBoxes.push({b:{x:(a.x+c.x)/2-42,y:a.y-24,w:84,h:38},orphan:{key:key}});
+    });
+  }
+  // theater notice board
+  if(o.theaterCount){
+    var p=iso(-0.6,cols*0.5,0);
+    ctx.fillStyle="rgba(217,161,59,.14)"; ctx.strokeStyle="rgba(217,161,59,.8)";
+    ctx.fillRect(p.x-46,p.y-40,92,40); ctx.strokeRect(p.x-46,p.y-40,92,40);
+    ctx.fillStyle="rgba(243,237,226,.95)"; ctx.font="700 10px system-ui"; ctx.textAlign="center";
+    ctx.fillText("תיאטרון-קומיטים נמדד: "+o.theaterCount, p.x, p.y-24);
+    ctx.fillStyle="rgba(201,191,174,.9)"; ctx.font="9px system-ui";
+    ctx.fillText("תוכן ישן בקומיט חדש — ליין dex", p.x, p.y-11);
+  }
+  function hit(boxes2,mx,my){ for(var i=boxes2.length-1;i>=0;i--){ var b=boxes2[i].b;
+    if(mx>=b.x&&mx<=b.x+b.w&&my>=b.y&&my<=b.y+b.h) return boxes2[i]; } return null; }
+  W.biz.hit=function(mx,my){ return hit(craneBoxes,mx,my)||hit(orphanBoxes,mx,my)||hit(boxes,mx,my); };
+  ctx.fillStyle="rgba(243,237,226,.75)"; ctx.font="600 11px system-ui"; ctx.textAlign="right";
+  var cap=(o.fleet?("ריפואים נמדדו: "+o.fleet.reposSeen+" · ציבוריים: "+o.fleet.publicCount):"ריפואים: לא נמדד");
+  cap += "  ·  מקור: digest.json"+(o.repos?(" ("+fmtAgo(fd("digest").at)+")"):"");
+  ctx.fillText(cap, w-14, h-46);
+}
+
+function drawPara(o,t){
+  var w=cv.width/DPR,h=cv.height/DPR;
+  var sky=ctx.createLinearGradient(0,0,0,h);
+  sky.addColorStop(0,"#0b0e16"); sky.addColorStop(.6,"#131a26"); sky.addColorStop(1,"#1a2130");
+  ctx.fillStyle=sky; ctx.fillRect(0,0,w,h);
+  for(var i=0;i<90;i++){ var sx=(i*167.3)%w, sy=(i*97.7)%(h*.55);
+    var tw2=.4+.6*Math.abs(Math.sin(t/1600+i)); ctx.fillStyle="rgba(220,230,255,"+(tw2*.55)+")";
+    ctx.fillRect(sx,sy,1.4,1.4); }
+  var live=o.liveEdges; var spires= live==null? 6 : Math.max(3,Math.min(14,live));
+  for(var s2=0;s2<spires;s2++){
+    var bx=30+ (s2%4)*34, bh=60+((s2*53)%70), by=h*.62-bh;
+    ctx.fillStyle="#232c3d"; ctx.fillRect(bx,by,22,bh);
+    var lit= s2 < spires-1;
+    ctx.fillStyle=lit?"rgba(224,180,110,.85)":"rgba(224,180,110,.25)";
+    for(var wy=0;wy<Math.floor(bh/16);wy++) ctx.fillRect(bx+5+(wy%2)*8, by+8+wy*15, 5,7);
+    if(lit){ ctx.fillStyle="rgba(224,180,110,.06)"; ctx.fillRect(bx-14,by-14,50,bh+20); }
+  }
+  ctx.fillStyle="rgba(201,191,174,.9)"; ctx.font="700 11px system-ui"; ctx.textAlign="left";
+  ctx.fillText("עיר הערך — קשתות חיות נמדדו: "+(live==null?"לא נמדד":live), 18, h*.62+18);
+  ctx.fillStyle="#0f1420"; ctx.fillRect(0,h*.62,w,h*.38);
+  ctx.strokeStyle="rgba(142,166,195,.25)"; ctx.setLineDash([10,8]);
+  ctx.beginPath(); ctx.moveTo(w-20,h*.8); ctx.lineTo(120,h*.74); ctx.stroke(); ctx.setLineDash([]);
+  // broken bridge over a chasm — repaired if the ghost target verified reachable NOW
+  var chX=w*.52, repaired=(o.ghostOpenCount===0 && fd("digest").ok);
+  var chasm= o.ghosts && o.ghosts.length;
+  if(chasm){
+    ctx.fillStyle="#080a10"; ctx.beginPath();
+    ctx.moveTo(chX-40,h*.78); ctx.lineTo(chX+40,h*.78); ctx.lineTo(chX+26,h*.92); ctx.lineTo(chX-26,h*.92); ctx.closePath(); ctx.fill();
+    ctx.strokeStyle="rgba(217,92,74,.35)"; ctx.lineWidth=1.5;
+    ctx.beginPath(); ctx.moveTo(chX-40,h*.78); ctx.lineTo(chX+40,h*.78); ctx.stroke();
+    ctx.strokeStyle="rgba(217,92,74,.9)"; ctx.lineWidth=2;
+    if(repaired){
+      for(var pl=0;pl<5;pl++){ var px2=chX-34+pl*17, py2=h*.78-2+pl*1.5;
+        ctx.beginPath(); ctx.moveTo(px2,py2); ctx.lineTo(px2+15,py2+1.5); ctx.stroke(); }
+      ctx.lineWidth=1; ctx.fillStyle="rgba(47,174,99,.95)"; ctx.font="700 10px system-ui"; ctx.textAlign="center";
+      ctx.fillText("הגשר חודש ואומת — digest.json נשלף חי", chX, h*.72);
+    } else {
+      ctx.beginPath(); ctx.moveTo(chX-34,h*.78); ctx.lineTo(chX-10,h*.815); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(chX+34,h*.78); ctx.lineTo(chX+8,h*.83); ctx.stroke();
+      ctx.lineWidth=1; ctx.fillStyle="rgba(217,92,74,.95)"; ctx.font="700 10px system-ui"; ctx.textAlign="center";
+      ctx.fillText("תהום רפאים — צרכן על מפיק מת ("+((o.ghosts&&o.ghosts.length)||0)+")", chX, h*.72);
+    }
+  }
+  var mir=o.theaterCount||0;
+  for(var m2=0;m2<Math.min(mir,4);m2++){
+    var mx2=w*(.30+m2*.09), my2=h*.76+((m2%2)*14);
+    var shimmer=.10+.08*Math.sin(t/500+m2);
+    ctx.fillStyle="rgba(217,161,59,"+shimmer+")";
+    ctx.beginPath(); ctx.ellipse(mx2,my2,34,10,0,0,7); ctx.fill();
+    ctx.fillStyle="rgba(217,161,59,.85)"; ctx.font="9px system-ui"; ctx.textAlign="center";
+    ctx.fillText("מיראז׳ — תיאטרון קומיטים", mx2, my2-14);
+  }
+  // campfire = same-origin office-live crew (closes the no-consumer flag)
+  var fp={x:w-70,y:h*.8};
+  ctx.fillStyle="rgba(224,164,88,.10)"; ctx.beginPath(); ctx.arc(fp.x,fp.y-8,44+Math.sin(t/300)*3,0,7); ctx.fill();
+  for(var f2=0;f2<5;f2++){ var fh=10+8*Math.abs(Math.sin(t/240+f2*1.7));
+    ctx.fillStyle="rgba(224,"+(150+f2*14)+",88,"+(0.85-f2*0.14)+")";
+    ctx.beginPath(); ctx.ellipse(fp.x,fp.y-fh/2,7-f2,fh/1.6,0,0,7); ctx.fill(); }
+  ctx.strokeStyle="#5a4632"; ctx.lineWidth=3;
+  ctx.beginPath(); ctx.moveTo(fp.x-12,fp.y+2); ctx.lineTo(fp.x+12,fp.y-4); ctx.stroke(); ctx.lineWidth=1;
+  var crewTxt = o.crew? ("אש המשרד (same-origin) — משמרות נמדדו: "+((o.shifts&&o.shifts.total)||"—")) : "אש המשרד: לא נמדדה";
+  ctx.fillStyle="rgba(243,237,226,.9)"; ctx.font="700 10px system-ui"; ctx.textAlign="center";
+  ctx.fillText(crewTxt, fp.x, fp.y+18);
+  W.para.fire={x:fp.x-40,y:fp.y-40,w:80,h:70,live:o.liveAt};
+  // caravan of agents (real states from office-state)
+  var ags=o.agents||[]; W.para.bearers=[];
+  ags.slice(0,12).forEach(function(a,i){
+    var prog=0.12+ (i/Math.max(1,Math.min(ags.length,12)))*0.5;
+    var x=w*(1-prog)-w*0.04, y=h*.78 - i*9;
+    var bob=Math.sin(t/650+i*1.3)*2.5;
+    var col= a.state==="ok"||a.state==="working"||a.state==="idle" ? "47,174,99"
+           : a.state==="error" ? "217,92,74" : a.state==="sleep" ? "127,142,163" : "217,161,59";
+    ctx.fillStyle="rgba(24,20,16,.95)"; ctx.beginPath(); ctx.arc(x,y+bob-22,7,0,7); ctx.fill();
+    ctx.fillRect(x-5,y+bob-17,10,13);
+    var flick = a.state==="error" ? (Math.sin(t/120+i)>0? .95:.35) : .9;
+    ctx.fillStyle="rgba("+col+","+flick+")";
+    ctx.beginPath(); ctx.arc(x-11,y+bob-13,4.6,0,7); ctx.fill();
+    ctx.fillStyle="rgba("+col+",.10)"; ctx.beginPath(); ctx.arc(x-11,y+bob-13,17,0,7); ctx.fill();
+    W.para.bearers.push({x:x-20,y:y+bob-38,w:44,h:52,a:a});
+  });
+  if(!ags.length){ ctx.fillStyle="rgba(243,237,226,.8)"; ctx.font="600 13px system-ui"; ctx.textAlign="center";
+    ctx.fillText("השיירה לא נמדדה — office-state לא נשלף", w/2, h*.4); }
+  ctx.fillStyle="rgba(201,191,174,.8)"; ctx.font="600 11px system-ui"; ctx.textAlign="right";
+  var prog2=(o.stateMeta?("מצב פורמן: "+o.stateMeta.backend+" · "+fmtAgo(Date.parse(o.stateMeta.capturedAt||0))):"מצב פורמן: לא נמדד");
+  prog2+=" · פתוח נמדד: "+((o.orphans&&o.orphans.length)||0)+" יתומים · "+mir+" תיאטרון";
+  ctx.fillText(prog2, w-14, h-46);
+  W.para.hit=function(mx,my){
+    var arr=W.para.bearers||[];
+    for(var i=arr.length-1;i>=0;i--){ var b=arr[i]; if(mx>=b.x&&mx<=b.x+b.w&&my>=b.y&&my<=b.y+b.h) return {bearer:b.a}; }
+    var F=W.para.fire; if(F&&mx>=F.x&&mx<=F.x+F.w&&my>=F.y&&my<=F.y+F.h) return {fire:F};
+    return null;
+  };
+}
+
+/* ── card ── */
+function showCard(title,sub,rows,note){
+  document.getElementById("card-h").textContent=title;
+  document.getElementById("card-sub").textContent=sub||"";
+  var b=document.getElementById("card-body"); b.innerHTML="";
+  (rows||[]).forEach(function(r){ var d=document.createElement("div"); d.className="kv";
+    var s1=document.createElement("span"); s1.textContent=r[0];
+    var s2=document.createElement("span"); s2.textContent=r[1]; s2.style.fontVariantNumeric="tabular-nums";
+    d.appendChild(s1); d.appendChild(s2); b.appendChild(d); });
+  document.getElementById("card-note").textContent=note||"";
+  document.getElementById("card").style.display="block";
+}
+document.getElementById("card-x").addEventListener("click",function(){ document.getElementById("card").style.display="none"; S.sel=null; });
+
+/* ── world switch ── */
+function setWorld(w){
+  S.world=w; S.sel=null; document.getElementById("card").style.display="none";
+  document.querySelectorAll(".vbtn").forEach(function(b){ b.classList.toggle("active", b.dataset.w===w); });
+  document.getElementById("world-office").style.display=(w==="office")?"block":"none";
+  document.getElementById("legend").style.display=(w==="office")?"none":"flex";
+  if(w==="office"){ legend([]); }
+  if(w==="biz"){ legend([{c:"#4d7558",t:"CI עבר — חלונות דולקים"},{c:"#6e6140",t:"ריצה בעבודה"},{c:"#74483f",t:"CI נכשל"},{c:"#55453d",t:"יתום נמדד — ללא קורא"},{c:"#e0a458",t:"עגורן = קשת בתור"}]); }
+  if(w==="para"){ legend([{c:"#2fae63",t:"סוכן חי/עובד"},{c:"#d95c4a",t:"סוכן בתקלה"},{c:"#7f8ea3",t:"ישן"},{c:"#d9a13b",t:"מיראז׳ = תיאטרון נמדד"},{c:"#e0b46e",t:"עיר הערך = קשתות חיות"}]); }
+}
+document.querySelectorAll(".vbtn").forEach(function(b){ b.addEventListener("click",function(){ setWorld(b.dataset.w); }); });
+
+/* ── render loop ── */
+function frame(){
+  var t=Date.now();
+  if(!document.hidden && S.world!=="office"){
+    ctx.setTransform(DPR,0,0,DPR,0,0);
+    ctx.clearRect(0,0,cv.width,cv.height);
+    var o=synth();
+    if(S.world==="biz") drawBiz(o,t); else drawPara(o,t);
+  }
+  requestAnimationFrame(frame);
+}
+
+/* ── office KPIs (DOM) ── */
+function renderOffice(){
+  var o=synth(), g=document.getElementById("kgrid"); g.innerHTML="";
+  function kpi(n,l){ var d=document.createElement("div"); d.className="kpi";
+    d.innerHTML='<div class="n">'+n+'</div><div class="l">'+l+"</div>"; g.appendChild(d); }
+  kpi(o.fleet? o.fleet.reposSeen : "—", "ריפואים נמדדו (digest)");
+  kpi(o.agents? o.agents.length : "—", "אנשי צוות במשרד (office-state)");
+  kpi(o.shifts&&o.shifts.total!=null? o.shifts.total : "—", "משמרות משורטקות (same-origin live)");
+  kpi((o.orphans&&o.orphans.length)||0, "יתומים פתוחים (flow-map)");
+  kpi(o.theaterCount, "תיאטרון-קומיטים נמדד");
+  kpi(o.liveEdges!=null? o.liveEdges : "—", "קשתות חיות (FLEET-GRAPH)");
+}
+
+/* ── pointer ── */
+function xy(e){ var r=cv.getBoundingClientRect();
+  var p=(e.touches&&e.touches[0])||e; return {x:(p.clientX-r.left), y:(p.clientY-r.top)}; }
+cv.addEventListener("pointerdown",function(e){
+  if(S.world==="office") return; var h=W[S.world].hit&&W[S.world].hit(xy(e).x,xy(e).y); if(!h) return;
+  if(h.rp){
+    var age=hoursSince(h.rp.pushedAt), lr=h.rp.lastRun||{};
+    var c7=(typeof h.rp.commits7d==="number")? h.rp.commits7d : ((h.rp.commits7d&&h.rp.commits7d.value)||0);
+    showCard(h.rp.name, h.rp.description||"ריפו ציבורי — נמדד מ-digest.json", [
+      ["דחיפות 7 ימים", c7+" קומיטים"],
+      ["נדחף לפני", ageTxt(age)],
+      ["CI אחרון", (lr.conclusion||lr.status||"לא נמדד")],
+      ["בזמן", lr.at? fmtAgo(Date.parse(lr.at)) : "—"]
+    ], "מקור: FleetHQ/digest.json · נשלף "+fmtAgo(fd("digest").at));
+  } else if(h.orphan){
+    showCard("יתום נמדד — "+h.orphan.key, "ספר ללא קורא חי — חוב פתוח של הרשת", [
+      ["מסלול", "Domain/dex"],
+      ["אפשרויות", "חיבור צרכן · או פרישה מתועדת"]
+    ], "מקור: Sandbox/ops/flow/flow-map.json · נשלף "+fmtAgo(fd("flow").at));
+  } else if(h.e){
+    showCard("עגורן — קשת בתור", h.e.artifact||"", [
+      ["מ־", h.e.from], ["אל־", h.e.to], ["מצב", h.e.status||"queued"],
+      ["עדות", h.e.evidence||"—"]
+    ], "מקור: FleetHQ/GOVERNANCE/FLEET-GRAPH.json דרך לוח הפוטנציאל");
+  } else if(h.bearer){
+    showCard("נושא פנס — "+h.a.id, h.a.activity||"", [
+      ["מצב", h.a.state], ["תחנה", h.a.station||"—"],
+      ["משימה", h.a.taskId||"—"],
+      ["מאז", h.a.since? fmtAgo(h.a.since):"—"]
+    ], "מקור: FleetHQ/office/state/office-state.json — היומן האמיתי של הפורמן");
+  } else if(h.fire){
+    var lv=fdata("live")||{};
+    showCard("אש המשרד", "צריכת same-origin — agents/office-live.json (דגל 'צרכן-חסר' נסגר)", [
+      ["משמרות", (lv.shifts&&lv.shifts.total)||"—"],
+      ["ריצות עורק", (lv.shifts&&lv.shifts.arteryRuns)!=null? (lv.shifts.arteryRuns):"—"],
+      ["אירועי יומן", (lv.shifts&&lv.shifts.journalEvents)!=null? (lv.shifts.journalEvents):"—"],
+      ["נוצר", lv.generatedAt? fmtAgo(Date.parse(lv.generatedAt)):"—"]
+    ], "הפיד נשלף מאותו מקור (Domain) — ללא חציית מקורות");
+  }
+});
+
+/* ── resize ── */
+function resize(){ DPR=Math.min(window.devicePixelRatio||1,1.5);
+  cv.width=Math.floor(innerWidth*DPR); cv.height=Math.floor(innerHeight*DPR);
+  cv.style.width=innerWidth+"px"; cv.style.height=innerHeight+"px"; }
+addEventListener("resize",resize); resize();
+
+/* ── selftest + boot ── */
+function selftest(){
+  var el=document.getElementById("selftest"); el.style.display="block";
+  var o=synth();
+  var lines=FEEDS.map(function(f){ return (f.ok?"PASS":"FAIL")+" "+f.id+" "+(f.ok?("ok "+fmtAgo(f.at)):(f.err||"")); });
+  lines.push("synth.repos="+(o.repos?o.repos.length:"null"));
+  lines.push("synth.agents="+(o.agents?o.agents.length:"null"));
+  lines.push("synth.orphans="+(o.orphans?o.orphans.length:"null"));
+  lines.push("synth.theater="+o.theaterCount+" ghostOpen="+o.ghostOpenCount);
+  lines.push("world="+S.world+" canvasOK="+(!!ctx));
+  el.textContent="SELFTEST\n"+lines.join("\n");
+  return {feeds:FEEDS.map(function(f){return {id:f.id,ok:!!f.ok,err:f.err||null};}), world:S.world, errors:S.errors};
+}
+window.__worldsSelftest = selftest;
+window.__worldsReady = Promise.all(FEEDS.map(fetchFeed)).then(function(){
+  renderFeedsHud(); renderOffice();
+  if(/[?&]selftest=1/.test(location.search)) selftest();
+  return selftest();
+});
+setInterval(renderFeedsHud, 60000);
+setWorld("office"); frame();
+</script>
+</body>
+</html>

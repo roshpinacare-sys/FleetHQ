@@ -1,0 +1,22 @@
+{
+  "id": "CR-0015",
+  "from": "sovereign desk (operator directive 'תמשיך' executing the standing recommendation after probe lane Z-48..Z-55 convergence)",
+  "tier": "B",
+  "opened_at": "2026-10-03T05:15:58Z",
+  "proposes": "Land the CONVERGENT BUILD ITEM: a minimal OpenAI-compatible HTTP shim over the fleet's keyless z-ai-web-dev-sdk backend (mini-services/zai-openai-shim, bun, port 3040, this workspace's runtime mirror). Surface: GET /health, GET /v1/models (serves model id 'z-ai'), POST /v1/chat/completions (non-streaming JSON + stream:true SSE). This single item unlocks every queued runtime in the probe lane canon: mini-swe-agent (litellm base_url), reef Rung 2, laya serving, free-claude-code custom provider (README:211).",
+  "rationale": "Probe lane independently validated the same keystone from five directions: mini-swe-agent speaks litellm/OpenAI-compatible (Z-52); free-claude-code accepts arbitrary custom providers with base_url+optional key (Z-54, README:211); reef Rung 2 explicitly deferred on this adapter (Z-48/CR-0009); laya serving expects an OpenAI-compatible endpoint (Z-50); the social-feed batch added the multiplier and parallelism shapes (Z-55). The shim is ~250 lines of HTTP mapping with no keys, no provider accounts, and no bash execution — pure protocol translation over an already-proven keyless SDK (Z-50 evidence class). System/developer messages ride the SDK's assistant role per SDK guidance; usage tokens are honest estimates (~4 chars/token, labeled); streaming delivers identical text as SSE chunks.",
+  "risk": "Low. Zero upstream code copied (hand-written mapping, no license exposure). No wallet, no credentials, no paid legs: the SDK is keyless in-backend; HIVE/Blurt keys stay outside the service by law (documented in the service README). The shim executes no commands — harness-side bash remains behind command-guard per the strix lesson (Z-52 canon condition). Failure mode is a 502 upstream_error mapping, never a partial silent result. Port 3040 is dedicated and gateway-reachable via the XTransformPort lane.",
+  "rollback": "Stop the mini-service and delete mini-services/zai-openai-shim/ in the workspace mirror; revert this CR file and the registry row. No Domain doctrine code depends on the shim — consumers are all QUEUED runtimes that simply remain locked without it.",
+  "verdict": "PASS — tier B (infrastructure build in the workspace runtime mirror; no wallet, no credentials, no upstream code, no license contamination). LIVE VERIFICATION RECEIPTS (verify-then-sign, real curl, 2026-10-03T05:15Z): GET /health → {status:ok, cr:CR-0015, law:keyless tier B}; GET /v1/models → {object:list, data:[{id:z-ai}]}; POST /v1/chat/completions non-stream → HTTP 200 chat.completion, choices[0].message.content='Ready', finish_reason=stop, usage estimate returned; POST stream:true → SSE chunks chat.completion.chunk with terminal finish_reason=stop + data:[DONE]. Service log booked both requests (msgs/stream/out_chars).",
+  "judged_by": "harness-audit v1.15.0 + evals v1.13.0 (25/25) + live curl receipts",
+  "judged_at": "2026-10-03T05:15:58Z",
+  "receipts": [
+    "live: curl GET /health → {\"status\":\"ok\",\"service\":\"zai-openai-shim\",\"port\":3040,\"sdk\":\"z-ai-web-dev-sdk\",\"cr\":\"CR-0015\"}",
+    "live: curl GET /v1/models → {\"object\":\"list\",\"data\":[{\"id\":\"z-ai\",\"object\":\"model\",\"owned_by\":\"zai-openai-shim\"}]}",
+    "live: curl POST /v1/chat/completions (non-stream) → 200 {\"id\":\"chatcmpl-e6eb71c2-...\",\"object\":\"chat.completion\",\"model\":\"z-ai\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"Ready\"},\"finish_reason\":\"stop\"}],\"usage\":{...}}",
+    "live: curl POST /v1/chat/completions (stream:true) → SSE data: chat.completion.chunk(delta) ... finish_reason=stop ... data:[DONE]",
+    "service log: '[zai-openai-shim] POST /v1/chat/completions model=z-ai msgs=2 stream=false out_chars=5' and 'msgs=1 stream=true out_chars=6'",
+    "law receipt: README.md of the service documents the keyless/no-bash/no-fleet-credentials law; zero HIVE/Blurt surface touched",
+    "convergence receipt: Domain agents/security-audit/PROBE-LANE.md rows Z-48..Z-55 (mini-swe-agent, reef, laya, free-claude-code, Graft, codebase-memory-mcp, orca) all name this keystone"
+  ]
+}

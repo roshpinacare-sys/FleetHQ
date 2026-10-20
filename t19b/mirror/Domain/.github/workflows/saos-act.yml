@@ -1,0 +1,78 @@
+#
+# The endless loop, killed: the sandbox dies ~5x/day; the private repo's
+#
+# What happens here (every 2h + manual):
+#
+
+name: saos-act
+
+on:
+  schedule:
+    - cron: '11 */2 * * *'
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+concurrency:
+  group: saos-act
+  cancel-in-progress: false
+
+jobs:
+  act:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout the law repo (saos-cockpit)
+        uses: actions/checkout@v4
+        with:
+          repository: roshpinacare-sys/steem
+          ref: saos-cockpit
+          token: ${{ secrets.ZIP_PAT }}
+          fetch-depth: 0
+
+      - name: Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install engine deps
+        working-directory: mini-services/saos-engine
+        run: bun install --frozen-lockfile || npm i --no-save @noble/hashes @noble/secp256k1
+
+      - name: Selftest gate (fail-closed — red selftest = no run)
+        working-directory: mini-services/saos-engine
+        run: bun selftest.mjs
+
+      - name: Chain-judged adoption → engine cycle → custody anchor → bus
+        working-directory: mini-services/saos-engine
+        env:
+          SAOS_ACCOUNT: headcorner
+          CI_HEADCORNER_CRED: ${{ secrets.HEADCORNER_CRED }}
+          CI_MAIN_KEY: ${{ secrets.MAIN_KEY }}
+          CI_STEEM_POSTING_WIF: ${{ secrets.STEEM_POSTING_WIF }}
+          CI_STEEM_ACTIVE_WIF: ${{ secrets.STEEM_ACTIVE_WIF }}
+          CI_SA_HEAD_ACTIVE: ${{ secrets.SA_HEAD_ACTIVE }}
+          CI_WEAVE_STEEM_WIF: ${{ secrets.WEAVE_STEEM_WIF }}
+        run: bun ci-act.mjs
+
+      - name: Persist engine state back to the law repo (FF law, no force)
+        if: always()
+        run: |
+          git config user.name "saos-ci-bot"
+          git config user.email "saos-ci-bot@users.noreply.github.com"
+          git fetch origin saos-cockpit
+          BEHIND=$(git rev-list --count HEAD..origin/saos-cockpit)
+          if [ "$BEHIND" != "0" ]; then
+            echo "remote advanced ($BEHIND ahead) — rebasing state persistence onto it (lawful reconcile, never force)"
+            git stash push --include-untracked -m "ci-state-persist" || true
+            git rebase origin/saos-cockpit || git rebase --abort
+            git stash pop || true
+          fi
+          git add mini-services/saos-engine/state
+          if git diff --cached --quiet; then
+            echo "no state changes to persist — honest no-op"
+          else
+            git commit -m "saos-ci: engine state persistence (public-minutes runner; FF law)"
+            git push origin saos-cockpit && echo "STATE-PERSISTED" || echo "PUSH-REFUSED-HONEST-FAIL (state already on chain + logs)"
+          fi

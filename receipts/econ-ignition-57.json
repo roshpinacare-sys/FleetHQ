@@ -1,0 +1,18 @@
+{
+  "kind": "econ.ignition/1",
+  "at": "2026-10-16T08:53:00Z",
+  "owner_directive": "thousands of transactions per day, internal, zero external dependency — start now, try and fail and fix",
+  "engine": {
+    "file": "Domain:agents/econ-engine.cjs",
+    "law": "every tx evidence-anchored (worldbeat event / robot-labor commit / mesh batch); zero synthetic; per-source watermarks; sha16-chained append-only ledger",
+    "venues": {"office-world payroll": 720, "robot-labor settlement": 820, "compute-meter": 23},
+    "measured": {"tx_24h": 1563, "mwu_24h": 1135750, "participants": 47}
+  },
+  "layers": [
+    "resident loop 120s (estate Domain, PID 19306)",
+    "books pipeline: domain-sync commits+pushes agents/ every 600s (vault-law pure)",
+    "cloud workflow econ-engine.yml every 20min"
+  ],
+  "pushed": "Domain ab72cad3",
+  "honesty": "exactly-once verified: second pass minted=0; no network, no keys, no invented numbers"
+}

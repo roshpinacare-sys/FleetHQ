@@ -1,0 +1,79 @@
+#
+#
+# attention — but it now measures the truth directly instead of knocking on a
+
+name: weave-anchor-ping
+
+on:
+  schedule:
+    - cron: '6 18 * * *'
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'anchor mode forwarded to the twin weave-anchor-lines (auto/dry/verify-only)'
+        required: false
+        default: 'auto'
+        type: choice
+        options:
+          - auto
+          - dry
+          - verify-only
+      recover:
+        description: 'recovery txid forwarded to the twin (0x…64hex), empty = none'
+        required: false
+        type: string
+      fresh_h:
+        description: 'freshness window in hours for the verdict (default 3.5)'
+        required: false
+        default: '3.5'
+        type: string
+
+permissions:
+  contents: read
+  actions: write
+
+concurrency:
+  group: weave-anchor-ping
+  cancel-in-progress: false
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Nudge the live twin (public minutes — the machine that can actually run)
+        run: |
+          MODE="${{ inputs.mode || 'auto' }}"
+          ARGS=(-f "mode=$MODE")
+          if [ -n "${{ inputs.recover }}" ]; then ARGS+=(-f "recover=${{ inputs.recover }}"); fi
+          CODE=$(gh workflow run weave-anchor-lines.yml --repo roshpinacare-sys/Domain --ref main "${ARGS[@]}" 2>&1; echo "rc=$?")
+          echo "$CODE"
+          if echo "$CODE" | grep -q "rc=0"; then
+            echo "nudge=dispatched mode=$MODE"
+          else
+            echo "nudge=FAILED (the twin could not be dispatched — freshness verdict below is the honest judge)"
+          fi
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+      - name: Freshness verdict — red only if the anchor chain is truly stale
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          FRESH_H="${{ inputs.fresh_h || '3.5' }}"
+          # exists" (measured 2026-10-06 — false reds from bare `curl -s` while
+          # verdict — never mistaken for staleness). Still red either way.
+          if ! CREATED=$(gh api "repos/roshpinacare-sys/Domain/actions/workflows/weave-anchor-lines.yml/runs?status=success&per_page=1" --jq '.workflow_runs[0].created_at // ""' 2>/tmp/ping-api.err); then
+            echo "API-ERROR (inconclusive — the freshness judge could not read the twin, this is NOT a staleness verdict): $(cat /tmp/ping-api.err)"; exit 1
+          fi
+          if [ -z "$CREATED" ]; then
+            echo "no successful anchor-lines run found — the chain is unattended"; exit 1
+          fi
+          # killed the step and faked a red verdict (the real root cause of the
+          MIN=$(awk -v h="$FRESH_H" 'BEGIN{printf "%d", h*60+0.5}')
+          CUT=$(date -u -d "$MIN minutes ago" +%Y-%m-%dT%H:%M:%SZ) || { echo "VERDICT-ERROR (inconclusive — CUT could not be computed)"; exit 1; }
+          echo "last-success=$CREATED · window=$FRESH_H h=$MIN min (older than $CUT = stale)"
+          if [[ "$CREATED" < "$CUT" ]]; then
+            echo "STALE — the anchor chain needs attention (no green twin run inside the window)"; exit 1
+          fi
+          echo "FRESH — the twin anchored inside the window; the line is attended"

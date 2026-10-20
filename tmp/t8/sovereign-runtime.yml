@@ -1,0 +1,236 @@
+# SAOS RUNTIME — the sovereign heartbeat that outlives any sandbox (R244/R245, R280).
+#
+# WHY THIS REPO IS PUBLIC: public repositories get unlimited free Actions
+# minutes; the private engine tree is cloned AT RUNTIME via the GH_PAT
+# secret and never lands in this tree. This file is the only public
+# artifact. No key material, no state, no account anything lives HERE
+# (the role-scoped WIFs in repo secrets are chain-judged at adoption).
+#
+# WHAT ONE HEARTBEAT DOES (every cycle, fail-closed at every gate):
+#   1. clone the PRIVATE engine tree (branch saos-cockpit + fetch main
+#      — the git-vault credentials live on main) — blob-filtered partial
+#      clone: full commit lineage for the chain-anchor probe, blobs on
+#      demand (R280);
+#   2. SELFTEST GATE — deterministic vectors; any failure = red run
+#      (public alarm), nothing is broadcast;
+#   3. CHAIN ANCHOR PROBE (R280, folded in from the private-repo
+#      sovereign-cycle which is quota-dead by billing wall) — the latest
+#      saos-git-custody-v1 anchor on the chain must sit in HEAD's lineage,
+#      else the run goes red (drift alarm);
+#   4. CI HEARTBEAT — the offline intelligence pack converses on-chain
+#      with the soldier fleet (comments, replies, community, deepens,
+#      mutual votes under hard caps and the R274/R275 clone guards);
+#   5. DEX TAKEOVER (R245, operator order 2026-10-07 "no action is
+#      sovereign on the sandbox"): when the sandbox's custodian anchor
+#      goes STALE, this runner adopts the master's ACTIVE authority from
+#      the CI_ADOPT_WIF_ACTIVE secret (chain-judged) and runs ONE full
+#      engine cycle — trading, converts, the economy — until the sandbox
+#      returns. A fresh anchor = STANDBY (never races the local engine);
+#   6. state is committed back to the private tree (FF-only, no force).
+#
+# THE PULSE (R280): GitHub's scheduler degrades frequent crons to
+# multi-hour gaps (measured 2026-10-08: 30-min cron ran every ~7.5h).
+# So the heartbeat carries its own clock — after every run (success OR
+# failure), a pulse job waits 15 minutes and dispatches the next
+# heartbeat itself. Deterministic ~20-25 min cadence, independent of the
+# scheduler. The hourly cron remains as a self-healing backstop: if the
+# pulse chain ever dies, the backstop relaunches it. The network keeps
+# its own time; no sandbox, no operator, no scheduler whims.
+#
+# THE SANDBOX-DISTRUST LAW, HONORED: this workflow is the proof that the
+# organism lives on GitHub infrastructure — wipe the sandbox, the fleet
+# keeps talking AND the market keeps trading.
+
+name: sovereign-runtime
+
+on:
+  schedule:
+    - cron: "23 * * * *"   # hourly backstop — revives the pulse chain if it ever dies
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+concurrency:
+  group: sovereign-runtime
+  cancel-in-progress: false
+
+jobs:
+  heartbeat:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Clone the private engine tree (vault on main, engine on saos-cockpit)
+        env:
+          GH_PAT: ${{ secrets.GH_PAT }}
+        run: |
+          git clone --filter=blob:none --branch saos-cockpit "https://x-access-token:${GH_PAT}@github.com/roshpinacare-sys/steem.git" engine
+          cd engine
+          git config user.name "saos-runtime-ci"
+          git config user.email "saos-runtime-ci@users.noreply.github.com"
+          git fetch origin main:refs/remotes/origin/main || echo "main fetch skipped (vault revival will report honestly)"
+          echo "engine @ $(git rev-parse --short HEAD)"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install engine deps
+        working-directory: engine/mini-services/saos-engine
+        run: npm i --no-save @noble/hashes@^1.5.0 @noble/secp256k1@^2.2.3 --silent
+
+      - name: Selftest gate (fail-closed — red run = public alarm)
+        working-directory: engine/mini-services/saos-engine
+        run: node selftest.mjs
+
+      - name: Chain anchor probe (on-chain custody anchor must sit in HEAD lineage)
+        working-directory: engine
+        run: |
+          node scripts/chain-anchor-probe.mjs || {
+            echo "first probe failed — one retry (public nodes wobble)"
+            sleep 10
+            node scripts/chain-anchor-probe.mjs
+          }
+
+      # R315 FIX (2026-10-11, measured root cause of LIVE-REFUSED-NOT-ARMED
+      # forever): the armed file MUST exist BEFORE the beat runs — the old step
+      # order wrote it AFTER ci-cycle.mjs, and the tree is re-cloned every run,
+      # so the post step could never see it. Arming first, beat second.
+      - name: Arm the posting stream (T-61 · fail-closed when secret absent)
+        working-directory: engine
+        run: |
+          mkdir -p .secrets
+          if [ -n "$CI_SOCIAL_ARMED" ]; then
+            printf '%s' "$CI_SOCIAL_ARMED" > .secrets/social-armed.json
+            chmod 600 .secrets/social-armed.json
+            echo "posting stream armed (standing order present)"
+          else
+            echo "CI_SOCIAL_ARMED secret absent — the stream stays fail-closed (LIVE-REFUSED-NOT-ARMED), by law"
+          fi
+        env:
+          CI_SOCIAL_ARMED: ${{ secrets.CI_SOCIAL_ARMED }}
+
+      - name: Beat env + posting arming (standing order travels as a repo secret)
+        working-directory: engine/mini-services/saos-engine
+        run: node ci-cycle.mjs
+        env:
+          SAOS_OFFLINE: "1"
+          SAOS_CI_SKIP_MASTER: "1"
+          CI_ADOPT_WIF_POSTING: ${{ secrets.CI_ADOPT_WIF_POSTING }}
+          CI_ADOPT_WIF_ACTIVE: ${{ secrets.CI_ADOPT_WIF_ACTIVE }}
+          CI_DELEGATION_ARMED: ${{ secrets.CI_DELEGATION_ARMED }}
+          CI_SOCIAL_ARMED: ${{ secrets.CI_SOCIAL_ARMED }}
+
+      # R316-Z · TRUTHRAIL OUTCOME GATE — measures the OUTCOME on the live
+      # chain, not the machine. RED (fail run) only when the stream is armed
+      # and starving: armed + zero fleet posts in 24h after a healthy RPC
+      # round = the machine failed at its one job (the "green≠working"
+      # disease). Closed-loop (0 outside votes) is WARN, never red: outside
+      # votes depend on the world, not the machine. Writes
+      # state/truthrail.json + merges truthrail* fields into
+      # ci-last-heartbeat.json so the digest + summary inherit them.
+      - name: TruthRail outcome gate (R316-Z · measure the outcome, not the machine)
+        if: always()
+        working-directory: engine
+        run: node mini-services/saos-engine/truthrail-outcome.mjs
+
+      - name: Commit state back (FF-only, no force, ever)
+        working-directory: engine
+        run: |
+          git add -A mini-services/saos-engine/state mini-services/saos-engine/content/sent
+          if git diff --cached --quiet; then
+            echo "no state changes this heartbeat"
+          else
+            git commit -m "SAOS-runtime-ci: heartbeat state (offline conversation + content) [ci]"
+            ok=0
+            for i in 1 2 3; do
+              if git push origin saos-cockpit; then ok=1; break; fi
+              echo "push raced with the sandbox custodian — fetch + rebase, retry $i"
+              git fetch origin saos-cockpit
+              git rebase origin/saos-cockpit || git rebase --abort
+              sleep $((i * 5))
+            done
+            [ "$ok" = "1" ] || { echo "state push-back failed after 3 retries"; exit 1; }
+          fi
+
+      - name: Summary (verdicts only — this page is public)
+        if: always()
+        working-directory: engine/mini-services/saos-engine
+        run: |
+          {
+            echo "## SAOS sovereign heartbeat"
+            echo ""
+            echo "- time: $(date -u +%FT%TZ)"
+            if [ -f state/ci-last-heartbeat.json ]; then
+              node -e 'const d=require("./state/ci-last-heartbeat.json");console.log("- custody: "+d.custody);console.log("- social: "+d.social+" (executed "+d.socialExecuted+")");console.log("- content: "+d.content+" (source "+d.contentSource+")");console.log("- digest: "+(d.digest ?? "n/a")+" ("+(d.digestTitle ?? "n/a")+")");console.log("- post: "+d.post+" ("+(d.postAccount ?? "n/a")+")");console.log("- blurt: "+(d.blurt ?? "n/a")+" (live "+(d.blurtLive ?? "?")+")");console.log("- delegation: "+(d.delegation ?? "n/a")+" (ops "+(d.delegationOps ?? 0)+", "+(d.delegationSp ?? 0)+" SP)");console.log("- dex: "+d.dex+" ("+(d.dexReason ?? "n/a")+")");console.log("- truthrail: "+(d.truthrail ?? "n/a")+" (posts24h "+(d.truthrailPosts24h ?? "?")+", outside "+(d.truthrailOutsideVotes ?? "?")+")");'
+            else
+              echo "- heartbeat state file missing (a step failed — see logs)"
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Operator digest issue (once per UTC day, fail-soft)
+        if: always()
+        working-directory: engine/mini-services/saos-engine
+        env:
+          GH_PAT: ${{ secrets.GH_PAT }}
+        run: |
+          node - <<'EOF'
+          const fs = require("node:fs");
+          const day = new Date().toISOString().slice(0, 10);
+          const title = `SAOS daily digest ${day}`;
+          const H = { "Authorization": `token ${process.env.GH_PAT}`, "Accept": "application/vnd.github+json" };
+          (async () => {
+            try {
+              const q = await fetch("https://api.github.com/search/issues?q=" + encodeURIComponent(`repo:roshpinacare-sys/steem in:title "${title}"`), { headers: H });
+              const s = await q.json();
+              if ((s.total_count ?? 0) > 0) { console.log("digest already issued for", day); return; }
+              let hb = {};
+              try { hb = JSON.parse(fs.readFileSync("state/ci-last-heartbeat.json", "utf8")); } catch {}
+              const lines = [
+                "## SAOS daily truth (measured, not promised)",
+                "",
+                `- custody: ${hb.custody ?? "?"}`,
+                `- social: ${hb.social ?? "?"} (executed ${hb.socialExecuted ?? 0})`,
+                `- content: ${hb.content ?? "?"} (source ${hb.contentSource ?? "?"})`,
+                `- digest: ${hb.digest ?? "?"} (${hb.digestTitle ?? "no title"})`,
+                `- post: ${hb.post ?? "?"} (${hb.postAccount ?? "n/a"})`,
+                `- blurt: ${hb.blurt ?? "?"} (live ${hb.blurtLive ?? "?"})`,
+                `- delegation: ${hb.delegation ?? "?"} (ops ${hb.delegationOps ?? 0}, ${hb.delegationSp ?? 0} SP)`,
+                `- dex: ${hb.dex ?? "?"} (${hb.dexReason ?? "n/a"})`,
+                `- truthrail: ${hb.truthrail ?? "?"} (posts24h ${hb.truthrailPosts24h ?? "?"}, outside votes ${hb.truthrailOutsideVotes ?? "?"})`,
+                "",
+                "## Open operator decisions (P0 first)",
+                "",
+                "1. **P0 SECURITY (owner-only)**: rotate the GitHub PAT and rotate chain keys. Verified 2026-10-11: the vault wrap derives its key as sha256(PAT) (vaultlib.sh:9) and legacy seals use the credential itself — anyone holding the PAT can open the vault. The PAT has passed through at least two agent sandboxes.",
+                "2. **Blurt spend**: the R254 operator pause stands. Bodies are now visible every beat (R313, read-only); spend needs an explicit re-arm order.",
+                "3. **Delegation (R314, armed)**: floors 100 SP publishers / 20 SP soldiers, run cap 1200 SP, treasury keep 2800 SP, reversible 7-day, ledgered in state/delegation-ledger.jsonl.",
+                "",
+                "_Automated operator digest — once per day, fail-soft. Evidence: engine state files committed in this repo._",
+              ];
+              const r = await fetch("https://api.github.com/repos/roshpinacare-sys/steem/issues", {
+                method: "POST", headers: { ...H, "content-type": "application/json" },
+                body: JSON.stringify({ title, body: lines.join("\n") }),
+              });
+              console.log("digest issue:", r.status);
+            } catch (e) { console.log("digest issue failed (fail-soft):", String(e).slice(0, 120)); }
+          })();
+          EOF
+
+  pulse:
+    needs: heartbeat
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - name: Deterministic pulse — self-reschedule the next heartbeat
+        env:
+          GH_PAT: ${{ secrets.GH_PAT }}
+        run: |
+          sleep 900
+          code=$(curl -s -o /tmp/dispatch.out -w "%{http_code}" -X POST \
+            -H "Authorization: token ${GH_PAT}" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/roshpinacare-sys/saos-runtime/actions/workflows/sovereign-runtime.yml/dispatches" \
+            -d '{"ref":"main"}')
+          echo "dispatch http:$code"
+          [ "$code" = "204" ] || { cat /tmp/dispatch.out; exit 1; }

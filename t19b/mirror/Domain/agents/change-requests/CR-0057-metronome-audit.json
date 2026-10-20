@@ -1,0 +1,39 @@
+{
+ "id": "CR-0057",
+ "slot": 57,
+ "title": "Fleet Rung 27 — THE METRONOME AUDIT [NINETEENTH-COLLISION RENUMBER per the later-mover law: the name-proof lane landed CR-0056/feat-051/E48/v1.35.0 first (51f6b05) and the rebase three-way merge of run-evals.cjs/feature_list.json silently took their side inside this lane's own commit — the eval suite caught the loss (E32 keyless FAIL) and the rung was re-slotted on the merged tree; their suffix-law composes, it guards the keeper's registry names while this rung guards the scheduler's time]. THE FLEET MEASURES ITS OWN TIME: GitHub's scheduler stopped firing scheduled events on this repo — the last scheduled run observed anywhere was 2026-10-03T20:10:04Z; every schedule added after ~18:36Z has ZERO scheduled runs ever (fill-ledger-cron, market-grid-cron, fleet-census-cron, sovereign-tick-cron, earn-audit-cron, tick-keeper — all alive only via keeper-arc hand-dispatches), and the old 30-min grid-trigger-twin schedule degraded to sparse drops (14:32:05Z -> 18:36:46Z gap of 8 slots). A cadence the fleet cannot see is a cadence that can rot silently. The rung builds the instrument: collect (keyless) -> measure (pure deterministic desk) -> heal (bounded dispatch) -> surface (owner dashboard).",
+ "operator": "owner directive (2026-10-04, Hebrew, repeated): 'תבחן את כל הגיט ... לראות שאין דברים מתים להחיות הכל ... לתת לריבונות גם לפקח ... אני מחכה יותר מדי זמן ועוד לא קיבלנו שום דבר משמעותי באמת שניתן להוכיח. אני עדיין מחכה להפתעות'",
+ "verdict": "PASS",
+ "tier": "B",
+ "at": "2026-10-04T01:00:00Z",
+ "findings_and_answers": [
+  "F1 · THE INVISIBLE CADENCE: the estate books held zero scheduler health data — the R27 audit had to query the Actions API by hand (43 scheduled workflows, 2 dispatch-only survivors among the young crons). ANSWER: agents/scheduler-collect.cjs (keyless I/O on the built-in GITHUB_TOKEN: cron extraction from every workflow file + the scheduled-run census per workflow, fail-soft per row, window = 24h) feeds agents/scheduler-audit.cjs (pure, deterministic, fail-soft, STASIS-braked): expected-vs-observed slots with a 40-min grace, PULSE/DEGRADED/STARVED/UNMEASURED verdict machine, the repo-wide scheduler boundary (lastScheduledAt max), and the bounded heal list. Wired as an independent leg on fleet-census-cron (the estate-audit cadence) with publish + volatile no-noise wiring.",
+  "F2 · THE MEASURED STARVATION (first book, live): verdict SCHEDULER-STARVED — 6 starved (zero scheduled runs in window while expected > 0), 15 degraded (missed >= 3), 1 unmeasured (API error — measured nothing, invented nothing), boundary 2026-10-03T20:10:04Z. Every number {cron, expected, observed, lastScheduledAt}. The platform's side cannot be fixed from here; it can now be SEEN every day, honestly.",
+  "F3 · THE SELF-HEALING FLEET IS THE KEYLESS FLEET: the heal list composes the R26 wave with the R27 instrument — heal candidates = STARVED ∧ keyless (the census's own owner-secret regex over the file) ∧ not-host ∧ not-keeper, cap 3 encoded as data. LIVE PROOF (2026-10-04T00:43Z): the desk listed earn-audit-cron.yml, fill-ledger-cron.yml, market-grid-cron.yml; scheduler-heal.cjs dispatched all three via the built-in token — HTTP 204 x3 — and GitHub registered the runs at 00:43:08-00:43:11Z. Secret-carrying starved legs (e.g. sovereign-tick-cron) are EXCLUDED by law — they stay owner/keeper territory. E49 pins the composition law fresh-process on a fixture where a starved secret-carrying workflow must be skipped.",
+  "F4 · THE R26 WAVE PROVEN IN CI (receipt booked here): audience-analyst ran at 2026-10-04T00:29:44Z on head 8d86d12 (the converted code) — SUCCESS, and the digest commit 5e4ca43 was published by the workflow itself via the built-in github.token: the first keyless CI publish of the wave. cloud-heart/soldiers-curate were audited as remaining WEAVE_OPS_PAT users and CONFIRMED genuine cross-repo (checkout steem) — the honest line from CR-0055 holds.",
+  "F5 · THE SUITE CAUGHT ITS OWN AUTHOR (twice this rung, booked honestly): (a) a scope leak — the E49 block referenced a helper defined inside an earlier eval's try-block; the ReferenceError was swallowed by an inner catch and booked as a plain FAIL until traced; (b) a window-math error (a cron slot counted outside its window). Both fixed. And the rebase merge silently took the name-proof lane's side of run-evals.cjs/feature_list.json inside this lane's own commit — the E32 keyless FAIL on the merged tree exposed it. The eval discipline is the only thing standing between a rung and a fiction."
+ ],
+ "receipts": [
+  "agents/scheduler-collect.cjs — the keyless collector (cron extraction + scheduled-run census, fail-soft, SAOS-SCHEDULER-RAW/1)",
+  "agents/scheduler-audit.cjs — the pure desk (slot math with 40-min grace, verdict machine, boundary, heal list, atomic at-free Hebrew md)",
+  "agents/scheduler-heal.cjs — the bounded healer (reads the desk's list, never invents, dispatch via GITHUB_TOKEN, receipts printed)",
+  "agents/scheduler-raw.json + agents/scheduler-audit.json (+ .md) — the first scheduler books, measured live (verdict SCHEDULER-STARVED, boundary 2026-10-03T20:10:04Z, 6 starved / 15 degraded)",
+  ".github/workflows/fleet-census-cron.yml — the collect -> audit -> heal leg + actions:write + publish/volatile wiring",
+  "agents/evals/run-evals.cjs v1.36.0 — E49 (49/49 GREEN): parser/slots/verdicts edge-exact, black-box fixture with a secret-carrying starved row excluded from the heal, empty law, host wiring pinned; E32's keyless law aligned to the census-canonical definition (the rebase had silently reverted it)",
+  "GitHub Actions API (R27 live) — heal dispatches HTTP 204 x3, runs registered 00:43:08-11Z; audience-analyst keyless run success on 8d86d12 with the 5e4ca43 publish"
+ ],
+ "evals": "E49 (v1.36.0) — parseCron edge-exact (minutes/hour-lists/hour-steps, every invalid form null), slotsIn exact on known windows with the grace cut, verdictFor UNMEASURED/STARVED/DEGRADED/PULSE edge-exact, composeBook byte-deterministic with the keyless-only heal composition law, boundary = max lastScheduledAt, Hebrew at-free md, black-box rich fixture (4 rows incl. secret-carrying starved) + corrupt-raw EMPTY law, host wiring pinned",
+ "next": [
+  "watch the boundary: if the next daily books show the platform scheduler recovered, the heal goes quiet by design (empty candidates — nothing to fire); if the starvation deepens, the book proves it to the platform's face",
+  "the heal cap (3) and the grace (40 min) are encoded as data — retune only with a measured reason",
+  "B2 maturity (~100 market-grid rows) and the weekly cadence read remain on their own clock; TVM/capital/fee-arbitration stay operator-gated (B1/B4/B5)"
+ ],
+ "laws_honored": [
+  "no-write law — the desk books an honest EMPTY when it measured nothing, never invents starvation from an API error (runs:null = UNMEASURED)",
+  "owner-language law — owner-facing replies Hebrew; repo/CI artifacts English",
+  "STASIS brake — checked before every desk run; the dispatched workflows re-check it in code",
+  "anti-claims law (CR-0050) — every evidence path in feat-052 resolves on the tree",
+  "keyless law — the whole instrument runs on the built-in GITHUB_TOKEN; zero owner secrets",
+  "later-mover law — the slot collision re-slotted to CR-0057/feat-052/E49 on the merged tree; the name-proof lane's CR-0056/feat-051/E48 KEPT and composes"
+ ]
+}

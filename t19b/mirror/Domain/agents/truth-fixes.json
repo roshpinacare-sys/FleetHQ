@@ -1,0 +1,33 @@
+{
+  "what": "r145-c truth corrections — exact-substring edits applied to published network content (same permlink = Steem edit). Templates are filled from LIVE truth at fix time; if a truth source is unreachable the fix is SKIPPED (nothing faked, honest skip).",
+  "doctrine": "verify-then-sign · read-back after broadcast · zero secrets in output · every fix carries its measured source",
+  "fixes": [
+    {
+      "id": "FIX-1-ladder-revday",
+      "author": "headcorner",
+      "permlink": "saos-ladder-20261001",
+      "find": "- real revenue/day: **$0.0052** — method: mission book usdPerDay7dAvg (/api/mission → sovereign/income/daily-*.json) — הכנסה ממומשת בלבד (תיקון D-012 · r132)",
+      "replace": "- real revenue/day: **${{usdPerDay}}** — method: mission book usdPerDay7dAvg (/api/mission → sovereign/income/daily-*.json), re-measured at correction time (was published as $0.0052 on 2026-10-01; the live book now reads ${{usdPerDayLive}}) — הכנסה ממומשת בלבד (תיקון D-012 · r132)",
+      "truth": { "usdPerDay": true, "usdPerDayLive": true },
+      "wrongBecause": "presented as measured-today; live book /api/mission read $0.00412/day at correction time (26% drift from the published $0.0052)"
+    },
+    {
+      "id": "FIX-2-ladder-fills",
+      "author": "headcorner",
+      "permlink": "saos-ladder-20261001",
+      "find": "  · lifetime external grid fills: $0.055606 (cumulative, not a rate)",
+      "replace": "  · lifetime realized grid PnL: ${{realizedUsd}} ({{realizedSbd}} SBD, cumulative, not a rate — measured FIFO on real chain fills, {{trips}} closed trips; not profitable at closes yet. Corrected 2026-10-01: an earlier line claimed +$0.0556, which contradicted the measured ledger)",
+      "truth": { "realizedSbd": true, "realizedUsd": true, "trips": true },
+      "wrongBecause": "positive cumulative claim +$0.055606 contradicts the measured realized PnL (FIFO over real fill_order ops): -0.7203 USD / -1.118787 SBD across 65 trips (/api/economy/pnl)"
+    },
+    {
+      "id": "FIX-3-daily-revday",
+      "author": "headcorner",
+      "permlink": "saos-daily-20261001",
+      "find": "- **Real revenue/day: $0.0052** — method: mission book usdPerDay7dAvg (/api/mission → sovereign/income/daily-*.json) — הכנסה ממומשת בלבד (תיקון D-012 · r132)",
+      "replace": "- **Real revenue/day: ${{usdPerDay}}** — method: mission book usdPerDay7dAvg (/api/mission → sovereign/income/daily-*.json), re-measured at correction time (was published as $0.0052 on 2026-10-01; the live book now reads ${{usdPerDayLive}}) — הכנסה ממומשת בלבד (תיקון D-012 · r132)",
+      "truth": { "usdPerDay": true, "usdPerDayLive": true },
+      "wrongBecause": "same stale measured-today figure as FIX-1 (live /api/mission: $0.00412/day at correction time)"
+    }
+  ]
+}

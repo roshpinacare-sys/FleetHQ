@@ -1,0 +1,28 @@
+{
+ "id": "CR-0041",
+ "from": "census-cadence (R15)",
+ "tier": "B",
+ "opened_at": "2026-10-03T19:16:17Z",
+ "proposes": "THE ESTATE MAP JOINS THE CADENCE — .github/workflows/fleet-census-cron.yml: the CR-0040 fleet census (16-lane capability/sovereignty/blocker/wiring map) refreshes itself DAILY on Actions cron 11 2 * * * (off the whole org minute map — the :00/:30 dex pulse, :9/:39 twins, :23/:53 grid ticks, the 03:xx-06:xx daily block), keyless (zero secrets.* — the desk reads the LOCAL estate only, publish rides the built-in GITHUB_TOKEN contents:write), concurrency guard + timeout 9min, workflow_dispatch escape hatch, deterministic publish (the desk stable payload is byte-identical for the same tree per the E31 law — if nothing drifted the publish books a clean exit, NO noise commits), [skip ci] + pull --rebase push idiom — STASIS OBEYED TWICE (two independent gates, one law): the scheduler gates census+publish on agents/STASIS.json (healthy no-op receipt) AND the desk now halts in code BEFORE any lane read (stasisHalt(): estate-Domain STASIS first, repo STASIS fallback; active=true -> verdict=STASIS-HALT book with NO inventory section — zero reads beyond the breaker file, exit 0) — E32 in run-evals v1.19.0 -> v1.20.0: nine workflow laws regexed (daily-cron, dispatch, stasis-gate, gated-steps, concurrency, keyless-negative, skip-ci, rebase-push, timeout) + desk-brake-in-code marker + white-box stasisHalt() normal path + fresh-process sandbox with an ACTIVE breaker proving halt-before-read (no inventory section) + shared-book restore on the real estate (16/16 lanes, no verdict) — evals 32/32, parse-gate GREEN 44 workflows 0 offenders.",
+ "rationale": "CR-0040 booked census-cron wiring as the next rung: an estate map that only refreshes by hand can rot silently; on the daily cron the sovereignty/blocker drift record becomes append-only self-updating evidence — the map cannot lie about its own freshness",
+ "risk": "low — read-only desk, no network, no secrets; the only write is its own book through the standard twin publish idiom",
+ "verdict": "PASS — workflow landed with nine laws, desk-side brake landed in code, fresh-process halt proven, evals 32/32, parse-gate 44/44",
+ "judged_by": "self + run-evals v1.20.0 (E32) + workflow-parse-gate + full-chain gates",
+ "judged_at": "2026-10-03T19:16:17Z",
+ "receipts": [
+  ".github/workflows/fleet-census-cron.yml",
+  "agents/fleet-census.cjs (stasisHalt brake)",
+  "agents/evals/eval-results.json (E32)",
+  "agents/fleet-census.json (restored real-estate book)"
+ ],
+ "findings": [
+  "the map now has a freshness clock: drift between two daily refreshes IS the sovereignty/blocker delta record",
+  "determinism turns the cadence into a diff instrument — any byte change in the stable payload is a real estate change, never timestamp noise",
+  "STASIS is now double-gated on BOTH cadence desks (market-grid 30-min + census daily) — the FATE-DEFENSE surface is uniform"
+ ],
+ "refs": [
+  "CR-0038 (the 30-min cadence precedent + twin idiom)",
+  "CR-0040 (the census desk)",
+  "feat-035"
+ ]
+}

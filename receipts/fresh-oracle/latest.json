@@ -1,0 +1,116 @@
+{
+ "schema": "fleet.fresh-oracle/1",
+ "at": "2026-10-20T15:27:56.395Z",
+ "law": "FRESH only if sha256(live bytes) == sha256(committed deploy-ref bytes) AND no ops doc MISSING; DRIFT=RED (200-with-different-bytes); UNREACHABLE=UNKNOWN (network, retried once, reason kept); ops-doc age rows are honest amber (MISSING alone flips exit) — never faked green",
+ "results": [
+  {
+   "name": "FleetHQ window",
+   "liveUrl": "https://roshpinacare-sys.github.io/FleetHQ/",
+   "source": "FleetHQ@office-pages:index.html",
+   "liveStatus": 200,
+   "committedStatus": 200,
+   "liveError": null,
+   "committedError": null,
+   "liveSha16": "76a877ca4489d3b0",
+   "committedSha16": "76a877ca4489d3b0",
+   "liveBytes": 49457,
+   "verdict": "MATCH"
+  },
+  {
+   "name": "FleetHQ potential board",
+   "liveUrl": "https://roshpinacare-sys.github.io/FleetHQ/potential.html",
+   "source": "FleetHQ@office-pages:potential.html",
+   "liveStatus": 200,
+   "committedStatus": 200,
+   "liveError": null,
+   "committedError": null,
+   "liveSha16": "37bb71e4be79d38f",
+   "committedSha16": "37bb71e4be79d38f",
+   "liveBytes": 18161,
+   "verdict": "MATCH"
+  },
+  {
+   "name": "FleetHQ potential data",
+   "liveUrl": "https://roshpinacare-sys.github.io/FleetHQ/potential.json",
+   "source": "FleetHQ@office-pages:potential.json",
+   "liveStatus": 200,
+   "committedStatus": 200,
+   "liveError": null,
+   "committedError": null,
+   "liveSha16": "1b8d3cd1aa7ec19e",
+   "committedSha16": "1b8d3cd1aa7ec19e",
+   "liveBytes": 25072,
+   "verdict": "MATCH"
+  },
+  {
+   "name": "Domain window",
+   "liveUrl": "https://roshpinacare-sys.github.io/Domain/",
+   "source": "Domain@main:index.html",
+   "liveStatus": 200,
+   "committedStatus": 200,
+   "liveError": null,
+   "committedError": null,
+   "liveSha16": "8ab6fb0dbe4a906b",
+   "committedSha16": "8ab6fb0dbe4a906b",
+   "liveBytes": 25693,
+   "verdict": "MATCH"
+  },
+  {
+   "name": "Domain worlds room",
+   "liveUrl": "https://roshpinacare-sys.github.io/Domain/office3d/",
+   "source": "Domain@main:office3d/index.html",
+   "liveStatus": 200,
+   "committedStatus": 200,
+   "liveError": null,
+   "committedError": null,
+   "liveSha16": "4c4e2fe08895a107",
+   "committedSha16": "4c4e2fe08895a107",
+   "liveBytes": 919,
+   "verdict": "MATCH"
+  },
+  {
+   "name": "Domain product catalog",
+   "liveUrl": "https://roshpinacare-sys.github.io/Domain/marketing/",
+   "source": "Domain@main:marketing/index.html",
+   "liveStatus": 200,
+   "committedStatus": 200,
+   "liveError": null,
+   "committedError": null,
+   "liveSha16": "c55cb843e48778d6",
+   "committedSha16": "c55cb843e48778d6",
+   "liveBytes": 24756,
+   "verdict": "MATCH"
+  },
+  {
+   "name": "Domain product data",
+   "liveUrl": "https://roshpinacare-sys.github.io/Domain/marketing/products.json",
+   "source": "Domain@main:marketing/products.json",
+   "liveStatus": 200,
+   "committedStatus": 200,
+   "liveError": null,
+   "committedError": null,
+   "liveSha16": "29c86bb7375ea520",
+   "committedSha16": "29c86bb7375ea520",
+   "liveBytes": 7678,
+   "verdict": "MATCH"
+  }
+ ],
+ "opsDocs": [
+  {
+   "name": "OPS-DOCS-SCAN",
+   "verdict": "UNREACHABLE",
+   "error": "contents API HTTP 403"
+  }
+ ],
+ "summary": {
+  "checked": 7,
+  "match": 7,
+  "drift": 0,
+  "missing": 0,
+  "unreachable": 0,
+  "opsDocsMissing": 0,
+  "opsDocsStale": 0,
+  "verdict": "FRESH"
+ },
+ "method": "https GET live URL + raw.githubusercontent deploy ref → sha256-16 byte equality"
+}
