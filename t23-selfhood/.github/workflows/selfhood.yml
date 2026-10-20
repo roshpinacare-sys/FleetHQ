@@ -1,0 +1,45 @@
+# SELFHOOD — עצמיות-הרשת · כל-20-דקות על דקות-ציבוריות (חינם, בלי-תקרה)
+# הרשת סורקת את-עצמה: מה-הבעלים-בנה (DISCOVERY), מה-היא-יודעת-לעשות-בפועל
+# (CAPABILITIES), ופניות-אל-המפעיל מוכרעות-על-ידי-האוטונומיה-עצמה (CLAIMS+BRAIN).
+# fail-closed: אין-מוח → הכרעות-רישום-כנות בלבד. אפס-סודות-בפלטים (redact בקוד).
+name: selfhood
+
+on:
+  schedule:
+    - cron: "7/20 * * * *"
+  workflow_dispatch:
+    inputs:
+      note:
+        description: "סיבת-ההרצה (רישום-בלבד)"
+        required: false
+        default: "manual"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: selfhood
+  cancel-in-progress: false
+
+jobs:
+  selfhood:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      SBX_FLEET_PAT: ${{ secrets.SBX_FLEET_PAT }}
+      SBX_AI_CONFIG: ${{ secrets.SBX_AI_CONFIG }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run selfhood cycle (discovery → capabilities → claims → commit+verify)
+        run: node ops/selfhood/selfhood.mjs
+
+      - name: Loud verify marker (reads REMOTE truth, not the stale checkout)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          git fetch -q origin main
+          CHECK=$(git show origin/main:state/selfhood/self-check.json)
+          echo "$CHECK" | grep -q '"allVerified": true' || { echo "FATAL: קריאה-חזרה-נכשלה (remote self-check)"; echo "$CHECK" | head -5; exit 1; }
+          echo "$CHECK" | node -e "let s='';process.stdin.on('data',d=>s+=d).on('end',()=>{const j=JSON.parse(s);console.log('selfhood verified:',j.at,'| discoveries:',j.discoveries,'| claims:',j.claimsProcessed,'| brain-chain:',((j.brain&&j.brain.chain)||[]).join('+')||'deterministic-only');});"

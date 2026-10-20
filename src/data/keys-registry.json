@@ -1,0 +1,390 @@
+{
+  "schema": "keys.registry/1",
+  "generatedAt": "2026-10-14T00:22:00Z",
+  "generatedBy": "zai-code-t24 (main lane)",
+  "title": "מחסן-המפתחות של הרשת — מלאי-אמת אחד לכל-המערכת",
+  "law": [
+    "איסור-דרישה-עיוורת: כל-רכיב-שדורש-מפתח חייב לבדוק את המלאי הזה קודם — אסור לדרוש מפתח שכבר-קיים, ואסור להעמיד-פנים שמפתח קיים בלי קבלה",
+    "איסור-טענה-ללא-קבלה: כל-רשומת-מפתח נושאת קבלה — מזהה-טרנזקציה, מדידת-שרשרת, ריצת-CI או אימות-קריאה-חוזרת",
+    "איסור-חומר-גלמי: כאן לעולם אין חומר-מפתח גלמי — רק מחלקות, כתובות-פומביות, מקומות-חתימה וקבלות",
+    "מקור-אמת: גיט בלבד. הסנדבוקס זמני; הרישום הקנוני חי ב-Autonomy/state/keys ומאומץ-משם",
+    " WAVE0: details redacted from public repo; canonical inventory moved to roshpinacare-sys/ops-control (private)"
+  ],
+  "statusClasses": {
+    "LIVE": "מפתח-מאומת-מול-שרשרת/שירות ועובד בפועל (קבלה-חיה)",
+    "SEALED": "קיים-בכספת-גיט, סגור במעטפת; נפתח-רק-דרך מעטפת-עם-בעל-סיסמה מתועד",
+    "BURNED": "נחשף/הוצא-מכלל-שימוש; שימוש-נוסף בו הוא-הפרה",
+    "MISSING-OWNER": "לא-קיים בשום-גיט (נבדק-שלילה) — רק הבעלים יכול לספק",
+    "DEGRADED": "העותק-המקומי-בסנדבוקס מת/נמחק; העותק-הענני חי"
+  },
+  "keys": [
+    {
+      "id": "owner-posting-steem",
+      "chain": "STEEM",
+      "account": "[REDACTED-wave0]",
+      "role": "posting",
+      "status": "LIVE",
+      "pubPrefix": "[REDACTED-wave0]",
+      "where": "[REDACTED-wave0]",
+      "fit": "[REDACTED-wave0]",
+      "receipt": "[REDACTED-wave0]",
+      "uses": [
+        "שער-הבעלים/כניסה-למשרד",
+        "צ'אט-המנהל",
+        "אימות-זהות-בעלים"
+      ]
+    },
+    {
+      "id": "headcorner-active-steem",
+      "chain": "STEEM",
+      "account": "[REDACTED-wave0]",
+      "role": "active",
+      "status": "LIVE",
+      "pubPrefix": "[REDACTED-wave0]",
+      "where": "[REDACTED-wave0]",
+      "fit": "[REDACTED-wave0]",
+      "receipt": "[REDACTED-wave0]",
+      "uses": [
+        "מסילת-ההאצלה (Domain treasury-arm.yml)",
+        "פעולות-חשבון",
+        "אימוץ-מפתחות-חדשים-בשרשרת"
+      ]
+    },
+    {
+      "id": "operators-steem-gen2",
+      "chain": "STEEM",
+      "account": "[REDACTED-wave0]",
+      "role": "owner+active+posting",
+      "status": "LIVE",
+      "pubPrefix": "[REDACTED-wave0]",
+      "where": "[REDACTED-wave0]",
+      "fit": "[REDACTED-wave0]",
+      "receipt": "[REDACTED-wave0]",
+      "uses": [
+        "פוסטים-חברתיים",
+        "מדידת-רצפות-ל-13-מפעילים",
+        "יעדי-האצלה"
+      ]
+    },
+    {
+      "id": "hcsoldier-4-5-6-steem",
+      "chain": "STEEM",
+      "account": "[REDACTED-wave0]",
+      "role": "owner בלבד",
+      "status": "SEALED",
+      "pubPrefix": "[REDACTED-wave0]",
+      "where": "[REDACTED-wave0]",
+      "fit": "[REDACTED-wave0]",
+      "receipt": "[REDACTED-wave0]",
+      "uses": [
+        "עתודה-חברתית"
+      ]
+    },
+    {
+      "id": "blurt-army-gen2",
+      "chain": "BLURT",
+      "account": "[REDACTED-wave0]",
+      "role": "active+posting+memo",
+      "status": "LIVE",
+      "pubPrefix": "[REDACTED-wave0]",
+      "where": "[REDACTED-wave0]",
+      "fit": "[REDACTED-wave0]",
+      "receipt": "[REDACTED-wave0]",
+      "uses": [
+        "פרסום-בלורט",
+        "החייאה-חברתית"
+      ]
+    },
+    {
+      "id": "fleet-head-rot3-steem",
+      "chain": "STEEM",
+      "account": "[REDACTED-wave0]",
+      "role": "GEN-2→ROT3",
+      "status": "LIVE",
+      "pubPrefix": "[REDACTED-wave0]",
+      "where": "[REDACTED-wave0]",
+      "fit": "[REDACTED-wave0]",
+      "receipt": "[REDACTED-wave0]",
+      "uses": [
+        "מפתח-ראש-מוסב-ומנוקה-מחשיפה"
+      ]
+    },
+    {
+      "id": "evm-identities-12",
+      "chain": "EVM",
+      "account": "[REDACTED-wave0]",
+      "role": "כתובות+מפתחות",
+      "status": "SEALED",
+      "pubPrefix": "[REDACTED-wave0]",
+      "where": "[REDACTED-wave0]",
+      "fit": "[REDACTED-wave0]",
+      "receipt": "[REDACTED-wave0]",
+      "uses": [
+        "עתודה-EVM — חסר-דלק, לא-חסר-מפתח"
+      ]
+    },
+    {
+      "id": "tron-mnemonics",
+      "chain": "TRON",
+      "account": "[REDACTED-wave0]",
+      "role": "mnemonic",
+      "status": "SEALED",
+      "pubPrefix": "[REDACTED-wave0]",
+      "where": "[REDACTED-wave0]",
+      "fit": "[REDACTED-wave0]",
+      "receipt": "[REDACTED-wave0]",
+      "uses": [
+        "עתודה-TRON"
+      ]
+    },
+    {
+      "id": "z-ai-brain-config",
+      "chain": "שירות",
+      "account": "[REDACTED-wave0]",
+      "role": "config",
+      "status": "DEGRADED",
+      "pubPrefix": "[REDACTED-wave0]",
+      "where": "[REDACTED-wave0]",
+      "fit": "[REDACTED-wave0]",
+      "receipt": "[REDACTED-wave0]",
+      "uses": [
+        "מוח-סוכן-מקומי",
+        "שרשרת-מוח z-ai→GROQ→GEMINI (fail-closed)"
+      ]
+    },
+    {
+      "id": "groq-gemini-key",
+      "chain": "שירות",
+      "account": "[REDACTED-wave0]",
+      "role": "מוח-ענן",
+      "status": "MISSING-OWNER",
+      "pubPrefix": "[REDACTED-wave0]",
+      "where": "[REDACTED-wave0]",
+      "fit": "[REDACTED-wave0]",
+      "receipt": "[REDACTED-wave0]",
+      "uses": [
+        "המוח מדבר-מהענן — שדרוג-הכרעות-הריבונות"
+      ]
+    },
+    {
+      "id": "github-pat",
+      "chain": "שירות",
+      "account": "[REDACTED-wave0]",
+      "role": "גישת-גיטאהב",
+      "status": "LIVE",
+      "pubPrefix": "[REDACTED-wave0]",
+      "where": "[REDACTED-wave0]",
+      "fit": "[REDACTED-wave0]",
+      "receipt": "[REDACTED-wave0]",
+      "uses": [
+        "כתיבה-לכל-הריפו מהסנדבוקס ומהענן"
+      ]
+    },
+    {
+      "id": "owner-hive",
+      "chain": "HIVE",
+      "account": "[REDACTED-wave0]",
+      "role": "בעלים",
+      "status": "MISSING-OWNER",
+      "pubPrefix": "[REDACTED-wave0]",
+      "where": "[REDACTED-wave0]",
+      "fit": "[REDACTED-wave0]",
+      "receipt": "[REDACTED-wave0]",
+      "uses": [
+        "אוצרת-HIVE (OBSERVED-UNCONTROLLED 0.034+0.003 HBD עד-אז)"
+      ]
+    },
+    {
+      "id": "cex-operator-keys",
+      "chain": "CEX",
+      "account": "[REDACTED-wave0]",
+      "role": "מסחר-אמיתי",
+      "status": "MISSING-OWNER",
+      "pubPrefix": "[REDACTED-wave0]",
+      "where": "[REDACTED-wave0]",
+      "fit": "[REDACTED-wave0]",
+      "receipt": "[REDACTED-wave0]",
+      "uses": [
+        "מסילת-נזילות-אמיתית (Round 7)"
+      ]
+    }
+  ],
+  "vaults": [
+    {
+      "id": "keys-zip-2026-09-10",
+      "generation": "GEN-1",
+      "status": "BURNED-WRAP",
+      "sha256": "[REDACTED-wave0]",
+      "note": "[REDACTED-wave0]"
+    },
+    {
+      "id": "keys-zip-2026-10-07",
+      "generation": "לא-נפתח",
+      "status": "SEALED",
+      "sha256": "[REDACTED-wave0]",
+      "note": "[REDACTED-wave0]"
+    },
+    {
+      "id": "keys-zip-2026-10-08-ROT4",
+      "generation": "R245-ROT2",
+      "status": "SEALED-OPENABLE",
+      "sha256": "[REDACTED-wave0]",
+      "note": "[REDACTED-wave0]"
+    },
+    {
+      "id": "backup-2026-09-09",
+      "generation": "tar",
+      "status": "SEALED-OPENABLE",
+      "sha256": "[REDACTED-wave0]",
+      "note": "[REDACTED-wave0]"
+    },
+    {
+      "id": "older-generations",
+      "generation": "5-דורות-ישנים",
+      "status": "SEALED",
+      "sha256": "[REDACTED-wave0]",
+      "note": "[REDACTED-wave0]"
+    }
+  ],
+  "secrets": [
+    {
+      "repo": "saos-runtime",
+      "names": [
+        "CI_ADOPT_WIF_ACTIVE",
+        "CI_ADOPT_WIF_POSTING",
+        "CI_DELEGATION_ARMED",
+        "CI_SOCIAL_ARMED",
+        "GH_PAT"
+      ],
+      "note": "רשימת-שמות-בלבד (T11) — הערכים אצל-גיטהאב, לא-קריאים-בכוונה"
+    },
+    {
+      "repo": "GridWatch",
+      "names": [
+        "GH_PAT"
+      ],
+      "note": "מוזרק-ספריית-אטום"
+    },
+    {
+      "repo": "ops-intake",
+      "names": [
+        "GH_PAT"
+      ],
+      "note": "מוזרק-ספריית-אטום"
+    },
+    {
+      "repo": "ops-forge",
+      "names": [
+        "GH_PAT"
+      ],
+      "note": "מוזרק-ספריית-אטום"
+    },
+    {
+      "repo": "Autonomy",
+      "names": [
+        "SBX_AI_CONFIG"
+      ],
+      "note": "עותק-מוצפן-של-קונפיג-המוח (libsodium)"
+    },
+    {
+      "repo": "Domain",
+      "names": [
+        "סודות-WIF-פר-שרשרת (שמות-לא-מפורסמים-מדיניות)"
+      ],
+      "note": "מסילת-ההאצלה treasury-arm.yml"
+    }
+  ],
+  "demands": [
+    {
+      "id": "D1",
+      "component": "שער-הבעלים + צ'אט-מנהל (כניסה)",
+      "needs": "owner-posting-steem",
+      "state": "SATISFIED",
+      "how": "קובץ-בעלים קיים-מקומית; KEY-FIT-CONFIRMED מול-השרשרת"
+    },
+    {
+      "id": "D2",
+      "component": "פידי-אמת מריפו-פרטי (gh-truth/network-self/world-broadcast)",
+      "needs": "github-pat עותק-מקומי",
+      "state": "SATISFIED",
+      "how": "אסימון-הסשן חי (אומת 200 ב-00:16Z); בנוסף חוק-מקור-כפול: ריפו-ציבורי=אנונימי-raw — האיבר-נראה גם-בלי-אסימון"
+    },
+    {
+      "id": "D3",
+      "component": "כתיבת-פניות/קבלות לגיט מהאפליקציה (network-claim, owner-chat)",
+      "needs": "github-pat עותק-מקומי",
+      "state": "SATISFIED",
+      "how": "אסימון-חי + אימוץ-בוצע: REGISTRY.json+keys-awareness+workflow נדחפו-ל-Autonomy עם קריאה-חוזרת (e1862991/d11b3f21/b4c44576→46933b8b); המחזור-ירוק 38489434103"
+    },
+    {
+      "id": "D4",
+      "component": "מסילת-ההאצלה (Domain treasury-arm.yml, ענן)",
+      "needs": "headcorner-active-steem",
+      "state": "SATISFIED-CLOUD",
+      "how": "סוד-חי; נשק-עם-חיכוך-ARM; fail-closed על-חוסר-התאמה"
+    },
+    {
+      "id": "D5",
+      "component": "blurt-revival (ענן)",
+      "needs": "blurt-army-gen2",
+      "state": "SATISFIED-CLOUD",
+      "how": "ריצות-ירוקות רציפות"
+    },
+    {
+      "id": "D6",
+      "component": "מוח-ההכרעות מהענן (selfhood)",
+      "needs": "groq-gemini-key",
+      "state": "MISSING-OWNER",
+      "how": "המנוע-הדטרמיניסטי-v1 מכריע-בכנות; שדרוג = סוד-אחד"
+    },
+    {
+      "id": "D7",
+      "component": "פעולות-אוצרת-HIVE",
+      "needs": "owner-hive",
+      "state": "MISSING-OWNER",
+      "how": "— הוכח-שלילה"
+    },
+    {
+      "id": "D8",
+      "component": "מסחר-CEX אמיתי (R7-R9)",
+      "needs": "cex-operator-keys",
+      "state": "MISSING-OWNER",
+      "how": "—"
+    },
+    {
+      "id": "D9",
+      "component": "עטיפה-מחדש של 5 דורות-כספת-ישנים",
+      "needs": "סיסמאות-מעטפת",
+      "state": "MISSING-KNOWLEDGE",
+      "how": "פער-ידע-בעלים; החוק-החדש: ROTATION-LAW"
+    },
+    {
+      "id": "D10",
+      "component": "פעולות-EVM",
+      "needs": "דלק-גז (לא מפתח!)",
+      "state": "MISSING-FUEL",
+      "how": "מפתחות-קיימים; הלב-מורעב 3.674e-7 ETH"
+    },
+    {
+      "id": "D11",
+      "component": "מוח-סוכן מקומי (סנדבוקס)",
+      "needs": "z-ai-brain-config",
+      "state": "SATISFIED-SANDBOX",
+      "how": "/etc/.z-ai-config חי"
+    }
+  ],
+  "ownerGaps": [
+    "סוד-מוח-אחד (GROQ_API_KEY או GEMINI_API_KEY) → ההכרעות מדברות-מהענן",
+    "owner-hive (+alt) → אוצרת-HIVE עוברת OBSERVED-UNCONTROLLED→KEYED",
+    "מפתחות-CEX (R7-R9) → מסילת-נזילות-אמיתית",
+    "סיסמאות-מעטפת ל-5 דורות-ישנים (או החלטה-רוטציה-להשמדה)",
+    "דלק-גז ל-EVM (לא מפתח — דלק)"
+  ],
+  "adoption": {
+    "canonicalTarget": "Autonomy/state/keys/REGISTRY.json",
+    "stagedBundle": "t24/keys-cloud/ (מוכן-לאימוץ-ענן — ראה readyPrompt)",
+    "sandboxCopy": "src/data/keys-registry.json (האפליקציה קוראת קודם-ענן, נופלת-לעותק-מקומי)",
+    "selfhoodIntegration": "מחזור-selfhood מוסיף מדידת-מפתחות: demands-מול-מלאי + אזהרה על כל-רכיב-שדורש-מפתח-שלא-במלאי",
+    "status": "EXECUTED-2026-10-14: Autonomy/state/keys/REGISTRY.json חי; מחזור-selfhood מפרסם state/selfhood/keys.json כל-20-דק"
+  }
+}

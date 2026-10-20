@@ -1,0 +1,43 @@
+{
+  "protocol": "SAOS-MCP-TOOLS/1",
+  "transport": "issue-label (git-native): open an issue on roshpinacare-sys/FleetHQ with label 'mcp-invoke' and a JSON body {\"tool\": \"<name>\", \"args\": {…}}; the sovereign-harness flight executes whitelisted tools and answers in-thread with label 'mcp-done'. HTTP adapter staged (see GOVERNANCE/sovereign-stack.md).",
+  "auth": "issue author must be a collaborator/owner of the repo; the router answers only whitelisted READ tools",
+  "tools": [
+    {
+      "name": "sovereign_get_state",
+      "description": "The network STATE book (selfscan): per-repo/workflow green/red/disabled/stale, push freshness, new capabilities.",
+      "inputSchema": { "type": "object", "properties": {} },
+      "source": "network/STATE.json"
+    },
+    {
+      "name": "sovereign_get_scores",
+      "description": "Layer-3 run scores: healthy/watch/flaky/critical classification per workflow, bounded window success rates.",
+      "inputSchema": { "type": "object", "properties": {} },
+      "source": "sovereign/stack/runtime/scores.json"
+    },
+    {
+      "name": "sovereign_get_policy_verdicts",
+      "description": "Layer-2 policy gate verdicts on the live capital books (xc intents + dex tape), incl. STASIS state.",
+      "inputSchema": { "type": "object", "properties": {} },
+      "source": "sovereign/stack/policy/verdicts.json"
+    },
+    {
+      "name": "sovereign_validate_policy",
+      "description": "Run the policy engine selftest (12 vectors) and return the current hard rulebook.",
+      "inputSchema": { "type": "object", "properties": {} },
+      "source": "sovereign/stack/policy/policy.json + policy-engine.mjs --selftest"
+    },
+    {
+      "name": "sovereign_list_claims",
+      "description": "The deduped claims registry (ops/claims): open/resolved signatures, kinds, first/last seen.",
+      "inputSchema": { "type": "object", "properties": { "limit": { "type": "number" } } },
+      "source": "ops/claims/*.json"
+    },
+    {
+      "name": "sovereign_get_identity_root",
+      "description": "Layer-1 ERC-8004 identity root: registered agents, pre-mint ids, identityRoot hash, EIP-712 anchor intent.",
+      "inputSchema": { "type": "object", "properties": {} },
+      "source": "sovereign/stack/identity/identity-root.json"
+    }
+  ]
+}

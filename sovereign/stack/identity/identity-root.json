@@ -1,0 +1,150 @@
+{
+  "protocol": "SAOS-AGENT-IDENTITY/1 (EIP-8004 registration-v1 shaped)",
+  "generatedAt": "2026-10-20T14:40:31.609Z",
+  "runUrl": "https://github.com/roshpinacare-sys/FleetHQ/actions/runs/39441365842",
+  "identityRoot": "0x604b26e001cff168f38129d4455ff1382b86ef1ab2acb6ba61b77c7b52554489",
+  "agentCount": 5,
+  "validAgents": 5,
+  "violations": 0,
+  "agents": [
+    {
+      "agent": "dex-sweep-agent",
+      "name": "dex-sweep-agent",
+      "active": true,
+      "deploymentStatus": "staged",
+      "agentRegistry": "eip155:10:staged-deployment",
+      "preMintAgentId": "0x44fe808000b202e992da9c2cf4b9a8fd23acb7d4",
+      "identityHash": "44fe808000b202e992da9c2cf4b9a8fd23acb7d4c32fff074bd460ccaf6c3a5a",
+      "capabilities": [
+        "capital-sweep",
+        "xc-intents",
+        "market-read"
+      ],
+      "policyRef": "sovereign/stack/policy/policy.json#capital",
+      "runtimeRef": "github://roshpinacare-sys/Domain/.github/workflows/dex-beat.yml",
+      "services": [
+        "A2A",
+        "web",
+        "MCP"
+      ]
+    },
+    {
+      "agent": "network-immune-system",
+      "name": "network-immune-system",
+      "active": true,
+      "deploymentStatus": "staged",
+      "agentRegistry": "eip155:10:staged-deployment",
+      "preMintAgentId": "0x65f8d60497a2a8ee73e7cef9a6553b72901902aa",
+      "identityHash": "65f8d60497a2a8ee73e7cef9a6553b72901902aa41bbf57314ba78ff5daa2d36",
+      "capabilities": [
+        "measurement",
+        "claims-registry",
+        "quarantine",
+        "cross-repo-dispatch"
+      ],
+      "policyRef": "sovereign/stack/policy/policy.json#autonomy",
+      "runtimeRef": "github://roshpinacare-sys/FleetHQ/assets/sovereign/",
+      "services": [
+        "A2A",
+        "web",
+        "MCP"
+      ]
+    },
+    {
+      "agent": "office-writers",
+      "name": "office-writers",
+      "active": true,
+      "deploymentStatus": "staged",
+      "agentRegistry": "eip155:10:staged-deployment",
+      "preMintAgentId": "0x3274dc4ed03d6dab7aa0c79516e482133d5bdee5",
+      "identityHash": "3274dc4ed03d6dab7aa0c79516e482133d5bdee5c8c451b5a5d1aadcb44a0772",
+      "capabilities": [
+        "office-window",
+        "publish-pages",
+        "measurement"
+      ],
+      "policyRef": "sovereign/stack/policy/policy.json#autonomy",
+      "runtimeRef": "github://roshpinacare-sys/Domain/.github/workflows/office-pulse.yml",
+      "services": [
+        "web",
+        "A2A"
+      ]
+    },
+    {
+      "agent": "sovereign-decider",
+      "name": "sovereign-decider",
+      "active": true,
+      "deploymentStatus": "staged",
+      "agentRegistry": "eip155:10:staged-deployment",
+      "preMintAgentId": "0x1e8bda7e134532c987aee9944dda43221c91cfe9",
+      "identityHash": "1e8bda7e134532c987aee9944dda43221c91cfe9a6487b49f95b31a7af7abab7",
+      "capabilities": [
+        "decision-ladder",
+        "evidence-anchoring",
+        "measurement"
+      ],
+      "policyRef": "sovereign/stack/policy/policy.json#autonomy",
+      "runtimeRef": "github://roshpinacare-sys/FleetHQ/.github/workflows/sovereign-decider.yml",
+      "services": [
+        "A2A",
+        "MCP"
+      ]
+    },
+    {
+      "agent": "sovereign-harness",
+      "name": "sovereign-harness",
+      "active": true,
+      "deploymentStatus": "staged",
+      "agentRegistry": "eip155:10:staged-deployment",
+      "preMintAgentId": "0x0bab3bb5aa222bbb5dc46b4f1f02fcb50f41c7d8",
+      "identityHash": "0bab3bb5aa222bbb5dc46b4f1f02fcb50f41c7d8643381632a0ed4bee343a11d",
+      "capabilities": [
+        "run-scoring",
+        "self-heal-proposals",
+        "mcp-router",
+        "measurement"
+      ],
+      "policyRef": "sovereign/stack/policy/policy.json#autonomy",
+      "runtimeRef": "github://roshpinacare-sys/FleetHQ/.github/workflows/sovereign-harness.yml",
+      "services": [
+        "MCP",
+        "A2A"
+      ]
+    }
+  ],
+  "eip712": {
+    "domain": {
+      "name": "SAOS AgentIdentity",
+      "version": "1",
+      "chainId": 10
+    },
+    "primaryType": "AgentIdentityRoot",
+    "types": {
+      "AgentIdentityRoot": [
+        {
+          "name": "identityRoot",
+          "type": "bytes32"
+        },
+        {
+          "name": "agentCount",
+          "type": "uint256"
+        },
+        {
+          "name": "generatedAt",
+          "type": "string"
+        }
+      ]
+    },
+    "message": {
+      "identityRoot": "0x604b26e001cff168f38129d4455ff1382b86ef1ab2acb6ba61b77c7b52554489",
+      "agentCount": "5",
+      "generatedAt": "2026-10-20T14:40:31.609Z"
+    },
+    "note": "anchoring path: Domain proof-pipeline -> anchor-execute (Optimism). Full ERC-721 IdentityRegistry mint staged on a funded deployer (ref: erc-8004/erc-8004-contracts IdentityRegistryUpgradeable.sol)."
+  },
+  "deployment": {
+    "status": "staged",
+    "reference": "erc-8004/erc-8004-contracts#IdentityRegistryUpgradeable",
+    "anchorRail": "Domain proof-pipeline -> anchor-execute (Optimism, proven 2026-10-13)"
+  }
+}
