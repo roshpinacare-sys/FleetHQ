@@ -1,6 +1,6 @@
 {
  "schema": "saos.sovereign-decisions/1",
- "generatedAt": "2026-10-21T13:04:52.906Z",
+ "generatedAt": "2026-10-21T13:25:42.982Z",
  "policyVersion": "SOV-POLICY/1",
  "principle": "הריבונות מחליטה ומבצעת — הבעלים קבע (trace 1a12…f45d) שהמערכת מקבלת החלטות חכמות בעצמה בצורה הכי מתקדמת שיש; הפניה לבעלים = שלילת הריבונות. כל-החלטה: ראיה-מדודה + אימות-כפול. בעלים = בעלים; ריבונות = הגוף שמחליט.",
  "authority": "advisory",
@@ -20,29 +20,29 @@
   ]
  },
  "sense": {
-  "gridHealth": {
-   "ok": true,
-   "ageMin": 59
-  },
-  "valueScan": {
-   "ok": true,
-   "ageMin": 0
-  },
   "gridTruth": {
    "ok": true,
-   "ageMin": 130
-  },
-  "openCloser": {
-   "ok": true,
-   "ageMin": 34
-  },
-  "decisionsPrev": {
-   "ok": true,
-   "ageMin": 16
+   "ageMin": 150
   },
   "officeState": {
    "ok": true,
-   "ageMin": 11
+   "ageMin": 17
+  },
+  "openCloser": {
+   "ok": true,
+   "ageMin": 55
+  },
+  "valueScan": {
+   "ok": true,
+   "ageMin": 21
+  },
+  "decisionsPrev": {
+   "ok": true,
+   "ageMin": 21
+  },
+  "gridHealth": {
+   "ok": true,
+   "ageMin": 10
   }
  },
  "decisions": [
@@ -206,33 +206,33 @@
    "status": "watch",
    "evidence": {
     "source": "GridWatch/state/fleet-health.json",
-    "measuredAt": "2026-10-21T12:05:28.855Z",
+    "measuredAt": "2026-10-21T13:16:03.889Z",
     "totals": {
      "repos": 46,
      "public": 38,
      "private": 8,
      "workflows": 390,
-     "green": 350,
-     "amber": 16,
+     "green": 338,
+     "amber": 28,
      "red": 24
     },
     "billingWorkflows": [],
     "redRepos": [
-     "Domain",
      "Sandbox",
+     "Domain",
+     "saos-dex",
      "steem",
      "roshpina",
-     "saos-dex",
-     "execution-fabric",
      "Zip",
+     "execution-fabric",
      "saos-sovereign-foundry"
     ],
-    "alertCount": 1,
+    "alertCount": 0,
     "remediations": 0
    },
    "law": "ריפוי-עצמי בתוך-מעטפת (הפיך+מדוד בלבד); סטריקים ≥3 לא מנוסים שוב — מנותבים לטריאז' הנדסי",
    "policy": "SOV-POLICY/1",
-   "decidedAt": "2026-10-21T13:04:52.906Z",
+   "decidedAt": "2026-10-21T13:25:42.982Z",
    "by": "sovereign-decider"
   },
   {
@@ -249,7 +249,7 @@
     "selfHeal": "same-repo GITHUB_TOKEN + cross-repo CROSS_REVIVE_PAT (D1)"
    },
    "policy": "SOV-POLICY/1",
-   "decidedAt": "2026-10-21T13:04:52.906Z",
+   "decidedAt": "2026-10-21T13:25:42.982Z",
    "by": "sovereign-decider"
   },
   {
@@ -259,12 +259,12 @@
    "status": "clear",
    "evidence": {
     "source": "office-state.json",
-    "capturedAt": "2026-10-21T12:53:44.804Z",
+    "capturedAt": "2026-10-21T13:08:44.784Z",
     "tasks": "n/a"
    },
    "law": "אין דריסת-מסילות: למשרד יש לולאת-רטרו משלו; הריבונות מתעדת ומאמתת, לא לוקחת",
    "policy": "SOV-POLICY/1",
-   "decidedAt": "2026-10-21T13:04:52.906Z",
+   "decidedAt": "2026-10-21T13:25:42.982Z",
    "by": "sovereign-decider"
   }
  ],
