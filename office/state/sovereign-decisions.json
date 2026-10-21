@@ -1,6 +1,6 @@
 {
  "schema": "saos.sovereign-decisions/1",
- "generatedAt": "2026-10-21T07:30:58.571Z",
+ "generatedAt": "2026-10-21T08:02:17.705Z",
  "policyVersion": "SOV-POLICY/1",
  "principle": "הריבונות מחליטה ומבצעת — הבעלים קבע (trace 1a12…f45d) שהמערכת מקבלת החלטות חכמות בעצמה בצורה הכי מתקדמת שיש; הפניה לבעלים = שלילת הריבונות. כל-החלטה: ראיה-מדודה + אימות-כפול. בעלים = בעלים; ריבונות = הגוף שמחליט.",
  "authority": "advisory",
@@ -22,27 +22,27 @@
  "sense": {
   "openCloser": {
    "ok": true,
-   "ageMin": 31
+   "ageMin": 32
   },
   "officeState": {
    "ok": true,
-   "ageMin": 39
-  },
-  "decisionsPrev": {
-   "ok": true,
-   "ageMin": 21
+   "ageMin": 18
   },
   "valueScan": {
    "ok": true,
-   "ageMin": 140
+   "ageMin": 171
+  },
+  "decisionsPrev": {
+   "ok": true,
+   "ageMin": 31
   },
   "gridTruth": {
    "ok": true,
-   "ageMin": 60
+   "ageMin": 14
   },
   "gridHealth": {
    "ok": true,
-   "ageMin": 3
+   "ageMin": 34
   }
  },
  "decisions": [
@@ -232,24 +232,24 @@
    },
    "law": "ריפוי-עצמי בתוך-מעטפת (הפיך+מדוד בלבד); סטריקים ≥3 לא מנוסים שוב — מנותבים לטריאז' הנדסי",
    "policy": "SOV-POLICY/1",
-   "decidedAt": "2026-10-21T07:30:58.571Z",
+   "decidedAt": "2026-10-21T08:02:17.705Z",
    "by": "sovereign-decider"
   },
   {
    "id": "auto-freshness",
    "area": "operations",
-   "title": "טריות הצי: 4 נפלו מעל SLA (beacon 118דק>SLA100, value-scan 109דק>SLA90, recruit 2683דק>SLA1660, ventures 2683דק>SLA1660) ",
+   "title": "טריות הצי: 3 נפלו מעל SLA (value-scan 139דק>SLA90, recruit 2713דק>SLA1660, ventures 2713דק>SLA1660) — הוערו: value-scan",
    "status": "watch",
    "evidence": {
     "source": "FleetHQ/office/state/opens-closer.json",
     "metrics": {
-     "staleCount": 4,
-     "dispatchedCount": 2
+     "staleCount": 3,
+     "dispatchedCount": 1
     },
     "selfHeal": "same-repo GITHUB_TOKEN + cross-repo CROSS_REVIVE_PAT (D1)"
    },
    "policy": "SOV-POLICY/1",
-   "decidedAt": "2026-10-21T07:30:58.571Z",
+   "decidedAt": "2026-10-21T08:02:17.705Z",
    "by": "sovereign-decider"
   },
   {
@@ -259,12 +259,12 @@
    "status": "clear",
    "evidence": {
     "source": "office-state.json",
-    "capturedAt": "2026-10-21T06:51:37.546Z",
+    "capturedAt": "2026-10-21T07:44:37.312Z",
     "tasks": "n/a"
    },
    "law": "אין דריסת-מסילות: למשרד יש לולאת-רטרו משלו; הריבונות מתעדת ומאמתת, לא לוקחת",
    "policy": "SOV-POLICY/1",
-   "decidedAt": "2026-10-21T07:30:58.571Z",
+   "decidedAt": "2026-10-21T08:02:17.705Z",
    "by": "sovereign-decider"
   }
  ],
