@@ -1,42 +1,42 @@
 {
  "schema": "silence.watchdog/1",
- "at": "2026-10-21T21:42:48.253Z",
+ "at": "2026-10-21T23:28:56.919Z",
  "scope": "actions",
  "voices": [
   {
    "name": "origin/FleetHQ",
-   "lastActivity": "2026-10-21T21:30:28.000Z",
-   "ageMin": 12,
-   "maxSilenceMin": 240,
-   "verdict": "alive",
-   "detail": {
-    "subject": "pacemaker receipt: 2026-10-21T21:30:22Z"
-   }
-  },
-  {
-   "name": "origin/Domain",
-   "lastActivity": "2026-10-21T21:38:41.000Z",
-   "ageMin": 4,
-   "maxSilenceMin": 240,
-   "verdict": "alive",
-   "detail": {
-    "subject": "office-worldbeat: advance the persistent world"
-   }
-  },
-  {
-   "name": "origin/Console",
-   "lastActivity": "2026-10-21T21:42:36.000Z",
+   "lastActivity": "2026-10-21T23:28:45.000Z",
    "ageMin": 0,
    "maxSilenceMin": 240,
    "verdict": "alive",
    "detail": {
-    "subject": "pacemaker receipt: 2026-10-21T21:42:36Z"
+    "subject": "self-book: the network's self-portrait 2026-10-21T23:28:44Z [skip ci]"
+   }
+  },
+  {
+   "name": "origin/Domain",
+   "lastActivity": "2026-10-21T23:28:40.000Z",
+   "ageMin": 0,
+   "maxSilenceMin": 240,
+   "verdict": "alive",
+   "detail": {
+    "subject": "stale-watchdog: artifact ages measured, writers re-fired [skip ci]"
+   }
+  },
+  {
+   "name": "origin/Console",
+   "lastActivity": "2026-10-21T23:28:34.000Z",
+   "ageMin": 0,
+   "maxSilenceMin": 240,
+   "verdict": "alive",
+   "detail": {
+    "subject": "line-agreement: AGREE · 0 mismatches · 2026-10-21T23:28:34Z"
    }
   },
   {
    "name": "divergence/FleetHQ",
    "lastActivity": "2026-10-21T17:39:08.000Z",
-   "ageMin": 244,
+   "ageMin": 350,
    "maxSilenceMin": 75,
    "verdict": "SILENT-ALARM",
    "detail": {
@@ -48,7 +48,7 @@
   {
    "name": "divergence/Domain",
    "lastActivity": "2026-10-21T17:39:08.000Z",
-   "ageMin": 244,
+   "ageMin": 350,
    "maxSilenceMin": 75,
    "verdict": "SILENT-ALARM",
    "detail": {
@@ -60,7 +60,7 @@
   {
    "name": "divergence/Console",
    "lastActivity": "2026-10-21T17:39:08.000Z",
-   "ageMin": 244,
+   "ageMin": 350,
    "maxSilenceMin": 75,
    "verdict": "SILENT-ALARM",
    "detail": {
@@ -72,7 +72,7 @@
   {
    "name": "sandbox-ledger (via git)",
    "lastActivity": "2026-10-21T18:00:58.667Z",
-   "ageMin": 222,
+   "ageMin": 328,
    "maxSilenceMin": 180,
    "verdict": "SILENT-ALARM",
    "detail": {
@@ -82,31 +82,31 @@
   {
    "name": "pages/money",
    "lastActivity": "2026-10-21T18:48:39.136Z",
-   "ageMin": 174,
+   "ageMin": 280,
    "maxSilenceMin": 240,
-   "verdict": "alive",
+   "verdict": "SILENT-ALARM",
    "detail": {
     "url": "dex/money.json"
    }
   },
   {
    "name": "pages/site-audit",
-   "lastActivity": "2026-10-21T20:12:33.310Z",
-   "ageMin": 90,
+   "lastActivity": "2026-10-21T22:44:15.996Z",
+   "ageMin": 45,
    "maxSilenceMin": 360,
    "verdict": "alive",
    "detail": {
-    "verdict": "findings:4",
-    "at": "2026-10-21T20:12:33.310Z"
+    "verdict": "unknown",
+    "at": "2026-10-21T22:44:15.996Z"
    }
   }
  ],
  "alarms": [
-  "divergence/FleetHQ: silent 244min (limit 75)",
-  "divergence/Domain: silent 244min (limit 75)",
-  "divergence/Console: silent 244min (limit 75)",
-  "sandbox-ledger (via git): silent 222min (limit 180)",
-  "pages/site-audit: LIVE SITE BROKEN (4 findings at 2026-10-21T20:12:33.310Z)"
+  "divergence/FleetHQ: silent 350min (limit 75)",
+  "divergence/Domain: silent 350min (limit 75)",
+  "divergence/Console: silent 350min (limit 75)",
+  "sandbox-ledger (via git): silent 328min (limit 180)",
+  "pages/money: silent 280min (limit 240)"
  ],
- "summary": "5 ALARM(S): divergence/FleetHQ: silent 244min (limit 75) · divergence/Domain: silent 244min (limit 75) · divergence/Console: silent 244min (limit 75) · sandbox-ledger (via git): silent 222min (limit 180) · pages/site-audit: LIVE SITE BROKEN (4 findings at 2026-10-21T20:12:33.310Z)"
+ "summary": "5 ALARM(S): divergence/FleetHQ: silent 350min (limit 75) · divergence/Domain: silent 350min (limit 75) · divergence/Console: silent 350min (limit 75) · sandbox-ledger (via git): silent 328min (limit 180) · pages/money: silent 280min (limit 240)"
 }
