@@ -1,44 +1,44 @@
 {
  "schema": "silence.watchdog/1",
- "at": "2026-10-21T12:24:06.751Z",
+ "at": "2026-10-21T14:43:58.886Z",
  "scope": "actions",
  "voices": [
   {
    "name": "origin/FleetHQ",
-   "lastActivity": "2026-10-21T12:23:59.000Z",
+   "lastActivity": "2026-10-21T14:43:56.000Z",
    "ageMin": 0,
    "maxSilenceMin": 240,
    "verdict": "alive",
    "detail": {
-    "subject": "pacemaker receipt: 2026-10-21T12:23:59Z"
+    "subject": "pacemaker receipt: 2026-10-21T14:43:56Z"
    }
   },
   {
    "name": "origin/Domain",
-   "lastActivity": "2026-10-21T12:22:53.000Z",
-   "ageMin": 1,
-   "maxSilenceMin": 240,
-   "verdict": "alive",
-   "detail": {
-    "subject": "office-worldbeat: advance the persistent world"
-   }
-  },
-  {
-   "name": "origin/Console",
-   "lastActivity": "2026-10-21T12:21:52.000Z",
+   "lastActivity": "2026-10-21T14:41:43.000Z",
    "ageMin": 2,
    "maxSilenceMin": 240,
    "verdict": "alive",
    "detail": {
-    "subject": "pacemaker receipt: 2026-10-21T12:21:52Z"
+    "subject": "mirror-from-console: 2026-10-21T14:41:43Z · truth outputs mirrored fro"
+   }
+  },
+  {
+   "name": "origin/Console",
+   "lastActivity": "2026-10-21T14:33:41.000Z",
+   "ageMin": 10,
+   "maxSilenceMin": 240,
+   "verdict": "alive",
+   "detail": {
+    "subject": "grid-beat: 6 placed (steem 6 / hive 0) · 9 cancelled · 2026-10-21T14:3"
    }
   },
   {
    "name": "divergence/FleetHQ",
-   "lastActivity": "2026-10-21T12:09:15.000Z",
-   "ageMin": 15,
+   "lastActivity": "2026-10-21T13:24:45.000Z",
+   "ageMin": 79,
    "maxSilenceMin": 75,
-   "verdict": "alive",
+   "verdict": "SILENT-ALARM",
    "detail": {
     "source": "push-queue-receipt (via git)",
     "ahead": 0,
@@ -47,10 +47,10 @@
   },
   {
    "name": "divergence/Domain",
-   "lastActivity": "2026-10-21T12:09:15.000Z",
-   "ageMin": 15,
+   "lastActivity": "2026-10-21T13:24:45.000Z",
+   "ageMin": 79,
    "maxSilenceMin": 75,
-   "verdict": "alive",
+   "verdict": "SILENT-ALARM",
    "detail": {
     "source": "push-queue-receipt (via git)",
     "ahead": 0,
@@ -59,10 +59,10 @@
   },
   {
    "name": "divergence/Console",
-   "lastActivity": "2026-10-21T12:09:15.000Z",
-   "ageMin": 15,
+   "lastActivity": "2026-10-21T13:24:45.000Z",
+   "ageMin": 79,
    "maxSilenceMin": 75,
-   "verdict": "alive",
+   "verdict": "SILENT-ALARM",
    "detail": {
     "source": "push-queue-receipt (via git)",
     "ahead": 0,
@@ -72,7 +72,7 @@
   {
    "name": "sandbox-ledger (via git)",
    "lastActivity": "2026-10-20T15:27:56.765Z",
-   "ageMin": 1256,
+   "ageMin": 1396,
    "maxSilenceMin": 180,
    "verdict": "SILENT-ALARM",
    "detail": {
@@ -81,30 +81,32 @@
   },
   {
    "name": "pages/money",
-   "lastActivity": "2026-10-21T08:03:39.287Z",
-   "ageMin": 260,
+   "lastActivity": "2026-10-21T14:00:26.318Z",
+   "ageMin": 44,
    "maxSilenceMin": 240,
-   "verdict": "SILENT-ALARM",
+   "verdict": "alive",
    "detail": {
     "url": "dex/money.json"
    }
   },
   {
    "name": "pages/site-audit",
-   "lastActivity": "2026-10-21T12:12:29.766Z",
-   "ageMin": 12,
+   "lastActivity": "2026-10-21T13:54:53.338Z",
+   "ageMin": 49,
    "maxSilenceMin": 360,
    "verdict": "alive",
    "detail": {
     "verdict": "findings:4",
-    "at": "2026-10-21T12:12:29.766Z"
+    "at": "2026-10-21T13:54:53.338Z"
    }
   }
  ],
  "alarms": [
-  "sandbox-ledger (via git): silent 1256min (limit 180)",
-  "pages/money: silent 260min (limit 240)",
-  "pages/site-audit: LIVE SITE BROKEN (4 findings at 2026-10-21T12:12:29.766Z)"
+  "divergence/FleetHQ: silent 79min (limit 75)",
+  "divergence/Domain: silent 79min (limit 75)",
+  "divergence/Console: silent 79min (limit 75)",
+  "sandbox-ledger (via git): silent 1396min (limit 180)",
+  "pages/site-audit: LIVE SITE BROKEN (4 findings at 2026-10-21T13:54:53.338Z)"
  ],
- "summary": "3 ALARM(S): sandbox-ledger (via git): silent 1256min (limit 180) · pages/money: silent 260min (limit 240) · pages/site-audit: LIVE SITE BROKEN (4 findings at 2026-10-21T12:12:29.766Z)"
+ "summary": "5 ALARM(S): divergence/FleetHQ: silent 79min (limit 75) · divergence/Domain: silent 79min (limit 75) · divergence/Console: silent 79min (limit 75) · sandbox-ledger (via git): silent 1396min (limit 180) · pages/site-audit: LIVE SITE BROKEN (4 findings at 2026-10-21T13:54:53.338Z)"
 }
