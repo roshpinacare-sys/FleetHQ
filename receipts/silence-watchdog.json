@@ -1,54 +1,54 @@
 {
  "schema": "silence.watchdog/1",
- "at": "2026-10-21T02:25:34.394Z",
+ "at": "2026-10-21T06:37:36.168Z",
  "scope": "actions",
  "voices": [
   {
    "name": "origin/FleetHQ",
-   "lastActivity": "2026-10-21T02:25:26.000Z",
+   "lastActivity": "2026-10-21T06:37:15.000Z",
    "ageMin": 0,
    "maxSilenceMin": 240,
    "verdict": "alive",
    "detail": {
-    "subject": "office-ci receipt: build pass, types pass [skip ci]"
+    "subject": "pacemaker receipt: 2026-10-21T06:37:15Z"
    }
   },
   {
    "name": "origin/Domain",
-   "lastActivity": "2026-10-21T02:24:04.000Z",
-   "ageMin": 2,
+   "lastActivity": "2026-10-21T06:37:31.000Z",
+   "ageMin": 0,
    "maxSilenceMin": 240,
    "verdict": "alive",
    "detail": {
-    "subject": "office-worldbeat: advance the persistent world"
+    "subject": "mirror-from-console: 2026-10-21T06:37:31Z · truth outputs mirrored fro"
    }
   },
   {
    "name": "origin/Console",
-   "lastActivity": "2026-10-21T02:22:56.000Z",
-   "ageMin": 3,
+   "lastActivity": "2026-10-21T06:37:37.000Z",
+   "ageMin": 0,
    "maxSilenceMin": 240,
    "verdict": "alive",
    "detail": {
-    "subject": "saos-fold: live book republished · stateRoot unknown · 2026-10-21T02:2"
+    "subject": "truth-gate: 2026-10-21T06:37:37Z · ALL-GREEN"
    }
   },
   {
    "name": "divergence/FleetHQ",
-   "lastActivity": "2026-10-21T02:24:27.000Z",
-   "ageMin": 1,
+   "lastActivity": "2026-10-21T06:24:27.000Z",
+   "ageMin": 13,
    "maxSilenceMin": 75,
    "verdict": "alive",
    "detail": {
     "source": "push-queue-receipt (via git)",
-    "ahead": 1,
-    "behind": 2
+    "ahead": 0,
+    "behind": 0
    }
   },
   {
    "name": "divergence/Domain",
-   "lastActivity": "2026-10-21T02:24:27.000Z",
-   "ageMin": 1,
+   "lastActivity": "2026-10-21T06:24:27.000Z",
+   "ageMin": 13,
    "maxSilenceMin": 75,
    "verdict": "alive",
    "detail": {
@@ -59,20 +59,20 @@
   },
   {
    "name": "divergence/Console",
-   "lastActivity": "2026-10-21T02:24:27.000Z",
-   "ageMin": 1,
+   "lastActivity": "2026-10-21T06:24:27.000Z",
+   "ageMin": 13,
    "maxSilenceMin": 75,
    "verdict": "alive",
    "detail": {
     "source": "push-queue-receipt (via git)",
     "ahead": 0,
-    "behind": 3
+    "behind": 0
    }
   },
   {
    "name": "sandbox-ledger (via git)",
    "lastActivity": "2026-10-20T15:27:56.765Z",
-   "ageMin": 658,
+   "ageMin": 910,
    "maxSilenceMin": 180,
    "verdict": "SILENT-ALARM",
    "detail": {
@@ -81,30 +81,29 @@
   },
   {
    "name": "pages/money",
-   "lastActivity": "2026-10-16T20:33:07.509Z",
-   "ageMin": 6112,
+   "lastActivity": "2026-10-21T06:04:46.043Z",
+   "ageMin": 33,
    "maxSilenceMin": 240,
-   "verdict": "SILENT-ALARM",
+   "verdict": "alive",
    "detail": {
     "url": "dex/money.json"
    }
   },
   {
    "name": "pages/site-audit",
-   "lastActivity": "2026-10-21T01:38:39.543Z",
-   "ageMin": 47,
+   "lastActivity": "2026-10-21T06:24:15.340Z",
+   "ageMin": 13,
    "maxSilenceMin": 360,
    "verdict": "alive",
    "detail": {
-    "verdict": "findings:13",
-    "at": "2026-10-21T01:38:39.543Z"
+    "verdict": "findings:2",
+    "at": "2026-10-21T06:24:15.340Z"
    }
   }
  ],
  "alarms": [
-  "sandbox-ledger (via git): silent 658min (limit 180)",
-  "pages/money: silent 6112min (limit 240)",
-  "pages/site-audit: LIVE SITE BROKEN (13 findings at 2026-10-21T01:38:39.543Z)"
+  "sandbox-ledger (via git): silent 910min (limit 180)",
+  "pages/site-audit: LIVE SITE BROKEN (2 findings at 2026-10-21T06:24:15.340Z)"
  ],
- "summary": "3 ALARM(S): sandbox-ledger (via git): silent 658min (limit 180) · pages/money: silent 6112min (limit 240) · pages/site-audit: LIVE SITE BROKEN (13 findings at 2026-10-21T01:38:39.543Z)"
+ "summary": "2 ALARM(S): sandbox-ledger (via git): silent 910min (limit 180) · pages/site-audit: LIVE SITE BROKEN (2 findings at 2026-10-21T06:24:15.340Z)"
 }
