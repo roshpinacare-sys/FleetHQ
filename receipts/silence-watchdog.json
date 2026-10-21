@@ -1,44 +1,44 @@
 {
  "schema": "silence.watchdog/1",
- "at": "2026-10-21T06:37:36.168Z",
+ "at": "2026-10-21T11:42:55.267Z",
  "scope": "actions",
  "voices": [
   {
    "name": "origin/FleetHQ",
-   "lastActivity": "2026-10-21T06:37:15.000Z",
+   "lastActivity": "2026-10-21T11:42:51.000Z",
    "ageMin": 0,
    "maxSilenceMin": 240,
    "verdict": "alive",
    "detail": {
-    "subject": "pacemaker receipt: 2026-10-21T06:37:15Z"
+    "subject": "self-book: the network's self-portrait 2026-10-21T11:42:50Z [skip ci]"
    }
   },
   {
    "name": "origin/Domain",
-   "lastActivity": "2026-10-21T06:37:31.000Z",
-   "ageMin": 0,
+   "lastActivity": "2026-10-21T11:41:47.000Z",
+   "ageMin": 1,
    "maxSilenceMin": 240,
    "verdict": "alive",
    "detail": {
-    "subject": "mirror-from-console: 2026-10-21T06:37:31Z · truth outputs mirrored fro"
+    "subject": "site-audit: FAIL 2026-10-21T11:41:46Z [skip ci]"
    }
   },
   {
    "name": "origin/Console",
-   "lastActivity": "2026-10-21T06:37:37.000Z",
-   "ageMin": 0,
+   "lastActivity": "2026-10-21T11:39:16.000Z",
+   "ageMin": 4,
    "maxSilenceMin": 240,
    "verdict": "alive",
    "detail": {
-    "subject": "truth-gate: 2026-10-21T06:37:37Z · ALL-GREEN"
+    "subject": "saos-fold push-race cure: house pull-rebase-retry law at the writer (p"
    }
   },
   {
    "name": "divergence/FleetHQ",
-   "lastActivity": "2026-10-21T06:24:27.000Z",
-   "ageMin": 13,
+   "lastActivity": "2026-10-21T08:54:28.000Z",
+   "ageMin": 168,
    "maxSilenceMin": 75,
-   "verdict": "alive",
+   "verdict": "SILENT-ALARM",
    "detail": {
     "source": "push-queue-receipt (via git)",
     "ahead": 0,
@@ -47,10 +47,10 @@
   },
   {
    "name": "divergence/Domain",
-   "lastActivity": "2026-10-21T06:24:27.000Z",
-   "ageMin": 13,
+   "lastActivity": "2026-10-21T08:54:28.000Z",
+   "ageMin": 168,
    "maxSilenceMin": 75,
-   "verdict": "alive",
+   "verdict": "SILENT-ALARM",
    "detail": {
     "source": "push-queue-receipt (via git)",
     "ahead": 0,
@@ -59,10 +59,10 @@
   },
   {
    "name": "divergence/Console",
-   "lastActivity": "2026-10-21T06:24:27.000Z",
-   "ageMin": 13,
+   "lastActivity": "2026-10-21T08:54:28.000Z",
+   "ageMin": 168,
    "maxSilenceMin": 75,
-   "verdict": "alive",
+   "verdict": "SILENT-ALARM",
    "detail": {
     "source": "push-queue-receipt (via git)",
     "ahead": 0,
@@ -72,7 +72,7 @@
   {
    "name": "sandbox-ledger (via git)",
    "lastActivity": "2026-10-20T15:27:56.765Z",
-   "ageMin": 910,
+   "ageMin": 1215,
    "maxSilenceMin": 180,
    "verdict": "SILENT-ALARM",
    "detail": {
@@ -81,8 +81,8 @@
   },
   {
    "name": "pages/money",
-   "lastActivity": "2026-10-21T06:04:46.043Z",
-   "ageMin": 33,
+   "lastActivity": "2026-10-21T08:03:39.287Z",
+   "ageMin": 219,
    "maxSilenceMin": 240,
    "verdict": "alive",
    "detail": {
@@ -91,19 +91,22 @@
   },
   {
    "name": "pages/site-audit",
-   "lastActivity": "2026-10-21T06:24:15.340Z",
-   "ageMin": 13,
+   "lastActivity": "2026-10-21T11:40:29.265Z",
+   "ageMin": 2,
    "maxSilenceMin": 360,
    "verdict": "alive",
    "detail": {
-    "verdict": "findings:2",
-    "at": "2026-10-21T06:24:15.340Z"
+    "verdict": "findings:4",
+    "at": "2026-10-21T11:40:29.265Z"
    }
   }
  ],
  "alarms": [
-  "sandbox-ledger (via git): silent 910min (limit 180)",
-  "pages/site-audit: LIVE SITE BROKEN (2 findings at 2026-10-21T06:24:15.340Z)"
+  "divergence/FleetHQ: silent 168min (limit 75)",
+  "divergence/Domain: silent 168min (limit 75)",
+  "divergence/Console: silent 168min (limit 75)",
+  "sandbox-ledger (via git): silent 1215min (limit 180)",
+  "pages/site-audit: LIVE SITE BROKEN (4 findings at 2026-10-21T11:40:29.265Z)"
  ],
- "summary": "2 ALARM(S): sandbox-ledger (via git): silent 910min (limit 180) · pages/site-audit: LIVE SITE BROKEN (2 findings at 2026-10-21T06:24:15.340Z)"
+ "summary": "5 ALARM(S): divergence/FleetHQ: silent 168min (limit 75) · divergence/Domain: silent 168min (limit 75) · divergence/Console: silent 168min (limit 75) · sandbox-ledger (via git): silent 1215min (limit 180) · pages/site-audit: LIVE SITE BROKEN (4 findings at 2026-10-21T11:40:29.265Z)"
 }
