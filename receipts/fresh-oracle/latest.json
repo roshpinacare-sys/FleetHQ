@@ -1,6 +1,6 @@
 {
  "schema": "fleet.fresh-oracle/1",
- "at": "2026-10-21T12:31:40.050Z",
+ "at": "2026-10-21T17:44:09.842Z",
  "law": "FRESH only if sha256(live bytes) == sha256(committed deploy-ref bytes) AND no ops doc MISSING; DRIFT=RED (200-with-different-bytes); UNREACHABLE=UNKNOWN (network, retried once, reason kept); ops-doc age rows are honest amber (MISSING alone flips exit) — never faked green",
  "results": [
   {
@@ -11,9 +11,9 @@
    "committedStatus": 200,
    "liveError": null,
    "committedError": null,
-   "liveSha16": "87e7eb5be96b8cba",
-   "committedSha16": "87e7eb5be96b8cba",
-   "liveBytes": 49134,
+   "liveSha16": "93f35731e823137b",
+   "committedSha16": "93f35731e823137b",
+   "liveBytes": 49160,
    "verdict": "MATCH"
   },
   {
@@ -24,9 +24,9 @@
    "committedStatus": 200,
    "liveError": null,
    "committedError": null,
-   "liveSha16": "deddf271de13e865",
-   "committedSha16": "deddf271de13e865",
-   "liveBytes": 15620,
+   "liveSha16": "0d1d4257f71b6e62",
+   "committedSha16": "0d1d4257f71b6e62",
+   "liveBytes": 15624,
    "verdict": "MATCH"
   },
   {
@@ -37,9 +37,9 @@
    "committedStatus": 200,
    "liveError": null,
    "committedError": null,
-   "liveSha16": "c08cadc3ab0cf0f6",
-   "committedSha16": "c08cadc3ab0cf0f6",
-   "liveBytes": 21467,
+   "liveSha16": "7f6856bfded42c2c",
+   "committedSha16": "7f6856bfded42c2c",
+   "liveBytes": 21471,
    "verdict": "MATCH"
   },
   {
@@ -50,9 +50,9 @@
    "committedStatus": 200,
    "liveError": null,
    "committedError": null,
-   "liveSha16": "e521391105c74837",
-   "committedSha16": "e521391105c74837",
-   "liveBytes": 33290,
+   "liveSha16": "1233342c6b9be8cb",
+   "committedSha16": "1233342c6b9be8cb",
+   "liveBytes": 33462,
    "verdict": "MATCH"
   },
   {
@@ -111,7 +111,7 @@
    "sha16": "19120f352c4aa28b",
    "rawStatus": 200,
    "lastCommitAt": "2026-10-12T13:00:25Z",
-   "ageDays": 8,
+   "ageDays": 9,
    "verdict": "AGING"
   },
   {
@@ -120,7 +120,7 @@
    "sha16": "65b03d355f807de7",
    "rawStatus": 200,
    "lastCommitAt": "2026-10-12T13:00:25Z",
-   "ageDays": 8,
+   "ageDays": 9,
    "verdict": "AGING"
   },
   {
@@ -129,7 +129,7 @@
    "sha16": "08e151942faf95bf",
    "rawStatus": 200,
    "lastCommitAt": "2026-10-12T12:53:19Z",
-   "ageDays": 8,
+   "ageDays": 9,
    "verdict": "AGING"
   },
   {
@@ -147,7 +147,7 @@
    "sha16": "6be0baa467056fa4",
    "rawStatus": 200,
    "lastCommitAt": "2026-10-12T12:53:19Z",
-   "ageDays": 8,
+   "ageDays": 9,
    "verdict": "AGING"
   }
  ],
