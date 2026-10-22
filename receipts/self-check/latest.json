@@ -1,12 +1,12 @@
 {
- "at": "2026-10-22T01:22:58.938Z",
- "finishedAt": "2026-10-22T01:23:15.956Z",
+ "at": "2026-10-22T01:52:53.949Z",
+ "finishedAt": "2026-10-22T01:53:08.591Z",
  "checks": {
   "boot": {
    "app": {
     "wasUp": false,
     "spawned": false,
-    "note": "mem-gate: 1252436kB available < 2.5GB — spine outranks office, skipping boot"
+    "note": "mem-gate: 1348596kB available < 2.5GB — spine outranks office, skipping boot"
    },
    "foreman": {
     "wasUp": true,
@@ -21,7 +21,7 @@
   "connectivity": {
    "exit": 0,
    "verdictHe": "נמדדו 12 קבצי-קוד יתומים ו-3 ארטיפקטים ללא צרכן",
-   "sha16": "f3cc6919cce758a9"
+   "sha16": "83dfe3796ae0e0e4"
   },
   "freshOracle": {
    "exit": 0,
@@ -29,8 +29,8 @@
   },
   "silence": {
    "exit": 2,
-   "summary": "8 ALARM(S): port/fleethq:3002: DOWN (:3002) · port/recruit: DOWN (:3041) · beat/money-watch: no data (cannot prove alive) · beat/dex-mirror: no data (cannot prove alive) · beat/grid-pulse: no data (cannot prove alive) · beat/office-ci-lite: no data (cannot prove alive) · beat/office-heartbeat: no data (cannot prove alive) · roster: unresolved — no FLEET_ROSTER_MAP in env/estate/.env.local and no local map file; post voices unmeasurable",
-   "alarms": 8
+   "summary": "6 ALARM(S): port/fleethq:3002: DOWN (:3002) · port/recruit: DOWN (:3041) · beat/money-watch: no data (cannot prove alive) · beat/grid-pulse: no data (cannot prove alive) · beat/office-ci-lite: no data (cannot prove alive) · roster: unresolved — no FLEET_ROSTER_MAP in env/estate/.env.local and no local map file; post voices unmeasurable",
+   "alarms": 6
   },
   "gitHealth": {
    "exit": 0,
@@ -39,21 +39,21 @@
      "name": "Console",
      "attached": true,
      "ahead": 0,
-     "behind": 0,
+     "behind": 3,
      "fsck": "ok"
     },
     {
      "name": "Domain",
      "attached": true,
-     "ahead": 3,
-     "behind": 14,
+     "ahead": 0,
+     "behind": 0,
      "fsck": "ok"
     },
     {
      "name": "FleetHQ",
      "attached": true,
-     "ahead": 2,
-     "behind": 0,
+     "ahead": 0,
+     "behind": 4,
      "fsck": "ok"
     }
    ]
