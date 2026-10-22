@@ -1,42 +1,42 @@
 {
  "schema": "silence.watchdog/1",
- "at": "2026-10-22T03:58:48.075Z",
+ "at": "2026-10-22T05:52:32.749Z",
  "scope": "actions",
  "voices": [
   {
    "name": "origin/FleetHQ",
-   "lastActivity": "2026-10-22T03:58:39.000Z",
+   "lastActivity": "2026-10-22T05:52:22.000Z",
    "ageMin": 0,
    "maxSilenceMin": 240,
    "verdict": "alive",
    "detail": {
-    "subject": "self-book: the network's self-portrait 2026-10-22T03:58:38Z [skip ci]"
+    "subject": "pacemaker receipt: 2026-10-22T05:52:22Z"
    }
   },
   {
    "name": "origin/Domain",
-   "lastActivity": "2026-10-22T03:58:39.000Z",
-   "ageMin": 0,
+   "lastActivity": "2026-10-22T05:51:18.000Z",
+   "ageMin": 1,
    "maxSilenceMin": 240,
    "verdict": "alive",
    "detail": {
-    "subject": "dex-activation: ignition tick 2026-10-22T03:58:39Z [skip ci]"
+    "subject": "office-worldbeat: advance the persistent world"
    }
   },
   {
    "name": "origin/Console",
-   "lastActivity": "2026-10-22T03:32:34.000Z",
-   "ageMin": 26,
+   "lastActivity": "2026-10-22T05:52:16.000Z",
+   "ageMin": 0,
    "maxSilenceMin": 240,
    "verdict": "alive",
    "detail": {
-    "subject": "dex-beat: h1161104 · claimed0 · Σ14305 credits · 2026-10-22T03:32Z"
+    "subject": "pacemaker receipt: 2026-10-22T05:52:16Z"
    }
   },
   {
    "name": "divergence/FleetHQ",
-   "lastActivity": "2026-10-22T03:09:43.000Z",
-   "ageMin": 49,
+   "lastActivity": "2026-10-22T04:39:41.000Z",
+   "ageMin": 73,
    "maxSilenceMin": 75,
    "verdict": "alive",
    "detail": {
@@ -47,8 +47,8 @@
   },
   {
    "name": "divergence/Domain",
-   "lastActivity": "2026-10-22T03:09:43.000Z",
-   "ageMin": 49,
+   "lastActivity": "2026-10-22T04:39:41.000Z",
+   "ageMin": 73,
    "maxSilenceMin": 75,
    "verdict": "alive",
    "detail": {
@@ -59,8 +59,8 @@
   },
   {
    "name": "divergence/Console",
-   "lastActivity": "2026-10-22T03:09:43.000Z",
-   "ageMin": 49,
+   "lastActivity": "2026-10-22T04:39:41.000Z",
+   "ageMin": 73,
    "maxSilenceMin": 75,
    "verdict": "alive",
    "detail": {
@@ -71,38 +71,38 @@
   },
   {
    "name": "sandbox-ledger (via git)",
-   "lastActivity": "2026-10-22T03:58:25.443Z",
-   "ageMin": 0,
+   "lastActivity": "2026-10-22T05:45:54.078Z",
+   "ageMin": 7,
    "maxSilenceMin": 180,
    "verdict": "alive",
    "detail": {
-    "localSummary": ""
+    "localSummary": "4 ALARM(S): port/console:3000: DOWN (:3000) · port/recruit: DOWN (:3041) · beat/"
    }
   },
   {
    "name": "pages/money",
-   "lastActivity": "2026-10-21T23:30:38.506Z",
-   "ageMin": 268,
+   "lastActivity": "2026-10-22T05:10:52.202Z",
+   "ageMin": 42,
    "maxSilenceMin": 240,
-   "verdict": "SILENT-ALARM",
+   "verdict": "alive",
    "detail": {
     "url": "dex/money.json"
    }
   },
   {
    "name": "pages/site-audit",
-   "lastActivity": "2026-10-22T02:55:01.692Z",
-   "ageMin": 64,
+   "lastActivity": "2026-10-22T05:26:24.484Z",
+   "ageMin": 26,
    "maxSilenceMin": 360,
    "verdict": "alive",
    "detail": {
-    "verdict": "unknown",
-    "at": "2026-10-22T02:55:01.692Z"
+    "verdict": "findings:2",
+    "at": "2026-10-22T05:26:24.484Z"
    }
   }
  ],
  "alarms": [
-  "pages/money: silent 268min (limit 240)"
+  "pages/site-audit: LIVE SITE BROKEN (2 findings at 2026-10-22T05:26:24.484Z)"
  ],
- "summary": "1 ALARM(S): pages/money: silent 268min (limit 240)"
+ "summary": "1 ALARM(S): pages/site-audit: LIVE SITE BROKEN (2 findings at 2026-10-22T05:26:24.484Z)"
 }
