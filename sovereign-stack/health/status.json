@@ -1,5 +1,5 @@
 {
- "ts": "2026-10-22T07:15:02Z",
+ "ts": "2026-10-22T07:25:14Z",
  "timeout_ms": 90000,
  "all_ok": false,
  "accounts": {
@@ -20,43 +20,43 @@
    "name": "nextjs-control",
    "url": "http://localhost:3000/",
    "method": "GET",
-   "status": 200,
-   "latency_ms": 9423,
-   "verdict": "DEGRADED",
-   "detail": "latency=9423ms"
+   "status": null,
+   "latency_ms": 2221,
+   "verdict": "DOWN",
+   "detail": "ConnectionResetError: [Errno 104] Connection reset by peer"
   },
   {
    "name": "llm7-free",
    "url": "https://api.llm7.io/v1/models",
    "method": "GET",
    "status": 200,
-   "latency_ms": 449,
+   "latency_ms": 262,
    "verdict": "OK",
-   "detail": "status=200 latency=449ms"
+   "detail": "status=200 latency=262ms"
   },
   {
    "name": "eth-mainnet-rpc",
    "url": "https://eth.drpc.org",
    "method": "POST",
    "status": 200,
-   "latency_ms": 81,
+   "latency_ms": 62,
    "verdict": "OK",
-   "detail": "status=200 latency=81ms"
+   "detail": "status=200 latency=62ms"
   },
   {
    "name": "zero-rail-rpc",
    "url": "https://rpc.zero.tech",
    "method": "POST",
    "status": 200,
-   "latency_ms": 635,
+   "latency_ms": 664,
    "verdict": "OK",
-   "detail": "status=200 latency=635ms"
+   "detail": "status=200 latency=664ms"
   }
  ],
  "mem": {
-  "state": "OK",
-  "mem_available_mb": 1165.2,
+  "state": "LOW-MEM",
+  "mem_available_mb": 393.7,
   "mem_total_mb": 4041.6
  },
- "sha256": "1801a50564a0a6f91d12244d8ccb249b830c95a83993ad1772a1f1dcd233ab3a"
+ "sha256": "3607812533f343ed7586af30f73fd9ba90555d43398aeb87fa4b05816fe38379"
 }
