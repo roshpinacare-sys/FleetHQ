@@ -1,6 +1,6 @@
 {
  "schema": "fleet.fresh-oracle/1",
- "at": "2026-10-22T10:21:20.970Z",
+ "at": "2026-10-22T15:28:17.348Z",
  "law": "FRESH only if sha256(live bytes) == sha256(committed deploy-ref bytes) AND no ops doc MISSING; DRIFT=RED (200-with-different-bytes); UNREACHABLE=UNKNOWN (network, retried once, reason kept); ops-doc age rows are honest amber (MISSING alone flips exit) — never faked green",
  "results": [
   {
@@ -11,9 +11,9 @@
    "committedStatus": 200,
    "liveError": null,
    "committedError": null,
-   "liveSha16": "5d70b8e081a1de73",
-   "committedSha16": "5d70b8e081a1de73",
-   "liveBytes": 49511,
+   "liveSha16": "4433ea62565eb79c",
+   "committedSha16": "4433ea62565eb79c",
+   "liveBytes": 50056,
    "verdict": "MATCH"
   },
   {
@@ -24,9 +24,9 @@
    "committedStatus": 200,
    "liveError": null,
    "committedError": null,
-   "liveSha16": "4f61f30d420c9f9b",
-   "committedSha16": "4f61f30d420c9f9b",
-   "liveBytes": 16623,
+   "liveSha16": "46fb8f1597b5e2f1",
+   "committedSha16": "46fb8f1597b5e2f1",
+   "liveBytes": 16592,
    "verdict": "MATCH"
   },
   {
@@ -37,9 +37,9 @@
    "committedStatus": 200,
    "liveError": null,
    "committedError": null,
-   "liveSha16": "1604dc39423887ae",
-   "committedSha16": "1604dc39423887ae",
-   "liveBytes": 22768,
+   "liveSha16": "55365028cbc73d04",
+   "committedSha16": "55365028cbc73d04",
+   "liveBytes": 22737,
    "verdict": "MATCH"
   },
   {
@@ -111,7 +111,7 @@
    "sha16": "19120f352c4aa28b",
    "rawStatus": 200,
    "lastCommitAt": "2026-10-12T13:00:25Z",
-   "ageDays": 9,
+   "ageDays": 10,
    "verdict": "AGING"
   },
   {
@@ -120,7 +120,7 @@
    "sha16": "65b03d355f807de7",
    "rawStatus": 200,
    "lastCommitAt": "2026-10-12T13:00:25Z",
-   "ageDays": 9,
+   "ageDays": 10,
    "verdict": "AGING"
   },
   {
@@ -129,7 +129,7 @@
    "sha16": "08e151942faf95bf",
    "rawStatus": 200,
    "lastCommitAt": "2026-10-12T12:53:19Z",
-   "ageDays": 9,
+   "ageDays": 10,
    "verdict": "AGING"
   },
   {
@@ -147,7 +147,7 @@
    "sha16": "6be0baa467056fa4",
    "rawStatus": 200,
    "lastCommitAt": "2026-10-12T12:53:19Z",
-   "ageDays": 9,
+   "ageDays": 10,
    "verdict": "AGING"
   }
  ],
