@@ -76,6 +76,17 @@ if [ -s "$OFFICE/upload/pat.env" ]; then
     gh[pousr]_*|github_pat_*) [ -n "$t" ] && hunt_candidates+=("$t") ;;
   esac
 fi
+# 33 (2026-10-22, cycle-26 live measurement): pat.env measured DEAD (401 on
+# api.github.com/user) and Tt.txt missing — the drain push-failed for
+# Domain/FleetHQ/Sandbox while a LIVE token sat in the office upload vault
+# (upload/גיטראש.txt, git-ignored in the office repo, validated 200). The
+# walk law now ends with this source; same shape check, same silence.
+if [ -s "$OFFICE/upload/גיטראש.txt" ]; then
+  t="$(head -1 "$OFFICE/upload/גיטראש.txt" | tr -d '[:space:]')"
+  case "$t" in
+    gh[pousr]_*|github_pat_*) [ -n "$t" ] && hunt_candidates+=("$t") ;;
+  esac
+fi
 
 code=000
 PAT=""
