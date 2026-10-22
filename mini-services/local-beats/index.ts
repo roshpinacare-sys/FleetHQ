@@ -527,17 +527,31 @@ const mark = (name: string, key: string) => {
 // operator. Honest verdicts to the log; a non-204 is a REJECTION, never silence.
 const GRID_TOKEN_PATHS = ["/home/z/my-project/upload/גיטראש.txt"];
 function gridDispatch() {
+  // multi-writer guard (task-20 measured live 01:31-01:43Z): 3+ sandboxes each
+  // dispatch their own dex-grid and each grid-beat kills the others' orders as
+  // "zombies" (ledger/chain war, churn prefixes 1500000xx/2100000xx vs 20261022xx).
+  // The beat therefore only fires when the original's last dex-grid success is
+  // STALE (>3h) — one refresh per shift-window, no pile-ups.
   let token = "";
   for (const p of GRID_TOKEN_PATHS) {
     try { const t = readFileSync(p, "utf8").trim(); if (t.length >= 30) { token = t; break; } } catch { /* next candidate */ }
   }
   if (!token) { log("grid-dispatch: no dispatch token found — fail-loud skip (grid refresh will age until the twin takeover)"); return; }
-  fetch("https://api.github.com/repos/roshpinacare-sys/saos-dex/actions/workflows/dex-grid.yml/dispatches", {
-    method: "POST",
+  fetch("https://api.github.com/repos/roshpinacare-sys/saos-dex/actions/workflows/dex-grid.yml/runs?per_page=1", {
     headers: { "Authorization": `token ${token}`, "Accept": "application/vnd.github+json" },
-    body: JSON.stringify({ ref: "main" }),
-  }).then(r => {
-    log(`grid-dispatch: HTTP ${r.status} ${r.status === 204 ? "ACCEPTED — dex-grid running (original stays alive)" : "REJECTED — inspect token/scope"}`);
+  }).then(r => r.json()).then((j: { workflow_runs?: Array<{ created_at?: string; conclusion?: string }> }) => {
+    const last = j.workflow_runs?.[0];
+    if (last?.conclusion === "success" && last.created_at) {
+      const ageMin = (Date.now() - new Date(last.created_at).getTime()) / 60000;
+      if (ageMin < 180) { log(`grid-dispatch: SKIP — original alive (success ${Math.round(ageMin)}min ago, ${last.created_at}) — no pile-up`); return; }
+    }
+    return fetch("https://api.github.com/repos/roshpinacare-sys/saos-dex/actions/workflows/dex-grid.yml/dispatches", {
+      method: "POST",
+      headers: { "Authorization": `token ${token}`, "Accept": "application/vnd.github+json" },
+      body: JSON.stringify({ ref: "main" }),
+    }).then(r => {
+      log(`grid-dispatch: HTTP ${r.status} ${r.status === 204 ? "ACCEPTED — dex-grid running (original stays alive)" : "REJECTED — inspect token/scope"}`);
+    });
   }).catch(e => { log(`grid-dispatch: FAIL ${e instanceof Error ? e.message : String(e)}`); });
 }
 
