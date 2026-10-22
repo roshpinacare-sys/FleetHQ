@@ -1,11 +1,11 @@
 # מחזור-השיפור-העצמי — המהדורה האחרונה (RETRO-LATEST)
 
-> 2026-10-22 13:35 UTC · office-retro (zai-11d · E1-deed zai-13c) · SAOS-OFFICE-RETRO/1 · ארבעה-שלבים: חקר → זיקוק → תכנון → ביצוע
+> 2026-10-22 14:01 UTC · office-retro (zai-11d · E1-deed zai-13c) · SAOS-OFFICE-RETRO/1 · ארבעה-שלבים: חקר → זיקוק → תכנון → ביצוע
 
 ## 1 · חקר (מה נמדד)
 
-- **רישום-האוטובוס**: live-zip — registry חי מ-private-7 raw (200, 280ms)
-- **הדיג'סט שלנו**: חי · generatedAt 2026-10-22 12:53 UTC (0.7h) · repos 40 · grid: ARMED-LIVE · hive: ARMED-WAITING
+- **רישום-האוטובוס**: live-zip — registry חי מ-private-7 raw (200, 291ms)
+- **הדיג'סט שלנו**: חי · generatedAt 2026-10-22 12:53 UTC (1.1h) · repos 40 · grid: ARMED-LIVE · hive: ARMED-WAITING
 - **צווי-עבודה (work-orders)**: 2 פתוחים · 0 נפתרו · P1 פתוחים: 2 (live-sandbox-raw)
 - **רווחיות (profit-oracle, zai-14c — המשרד לומד-רווחיות)**: verdict=FLAT · delta=0% מול-המדידה-הקודמת · שווי-נקי=455.32 SBD-equiv · grid=EDGE-NEGATIVE-GRID-HOLD · at=2026-10-11 23:52 UTC
 - **ממצאי-המחקר**: לא-נמדדו — לא-נמצא קובץ-ממצאים מ-9 הימים האחרונים (2026-10-22, 2026-10-21, 2026-10-20, 2026-10-19, 2026-10-18, 2026-10-17, 2026-10-16, 2026-10-15, 2026-10-14) (כנה)
@@ -14,30 +14,30 @@
 
 | id | מצב | גיל(שע׳) | HTTP | טריות | סיבה |
 |----|-----|----------|------|-------|------|
-| fleethq-digest | 🟢 green | 0.7 | 200 | 2026-10-22T12:53:33.005Z | עודכן לפני 1h |
-| domain-dex-grid | 🟢 green | 4.5 | 200 | 2026-10-22T09:04:06.715Z | עודכן לפני 5h |
-| domain-dex-world | 🟢 green | 0.9 | 200 | 2026-10-22T12:39:56.963Z | עודכן לפני 1h |
-| domain-dex-deposits | 🟢 green | 8.5 | 200 | 2026-10-22T05:06:45.263Z | עודכן לפני 8h |
-| domain-office-feed | 🟢 green | 4.7 | 200 | 2026-10-22T08:54:58.877Z | עודכן לפני 5h |
-| domain-office-data | 🟢 green | 0.4 | 200 | 2026-10-22T13:12:29.054Z | עודכן לפני 0h |
-| domain-grid-truth | 🟢 green | 1.3 | 200 | 2026-10-22T12:17:57.168Z | עודכן לפני 1h |
+| fleethq-digest | 🟢 green | 1.1 | 200 | 2026-10-22T12:53:33.005Z | עודכן לפני 1h |
+| domain-dex-grid | 🟢 green | 1.2 | 200 | 2026-10-22T12:52:24.049Z | עודכן לפני 1h |
+| domain-dex-world | 🟢 green | 0.4 | 200 | 2026-10-22T13:39:19.101Z | עודכן לפני 0h |
+| domain-dex-deposits | 🟢 green | 8.9 | 200 | 2026-10-22T05:06:45.263Z | עודכן לפני 9h |
+| domain-office-feed | 🟢 green | 5.1 | 200 | 2026-10-22T08:54:58.877Z | עודכן לפני 5h |
+| domain-office-data | 🟢 green | 0.8 | 200 | 2026-10-22T13:12:29.054Z | עודכן לפני 1h |
+| domain-grid-truth | 🟢 green | 1.7 | 200 | 2026-10-22T12:17:57.168Z | עודכן לפני 2h |
 | sandbox-probe-hive | 🔴 red | — | 404 | — | לא-נמצא ב-2 תאריכים אחרונים (2026-10-22, 2026-10-21) |
 | sandbox-probe-blurt | 🔴 red | — | 404 | — | לא-נמצא ב-2 תאריכים אחרונים (2026-10-22, 2026-10-21) |
 | sandbox-research-findings | 🔴 red | — | 404 | — | לא-נמצא ב-9 תאריכים אחרונים (2026-10-22, 2026-10-21, 2026-10-20, 2026-10-19, 20… |
-| sandbox-flow-map | 🟢 green | 0.6 | 200 | 2026-10-22T12:56:48.159Z | עודכן לפני 1h |
-| sandbox-lessons-ledger | 🟢 green | 3.2 | 200 | 2026-10-22T10:24:25.042Z | עודכן לפני 3h |
-| domain-status | 🟢 green | 0.2 | 200 | 2026-10-22T13:22:16.478Z | עודכן לפני 0h |
-| console-dex-grid | 🟢 green | 0.7 | 200 | 2026-10-22T12:52:24.049Z | עודכן לפני 1h |
-| console-dex-world | 🟢 green | 0.7 | 200 | 2026-10-22T12:55:13.638Z | עודכן לפני 1h |
+| sandbox-flow-map | 🟢 green | 1.1 | 200 | 2026-10-22T12:56:48.159Z | עודכן לפני 1h |
+| sandbox-lessons-ledger | 🟢 green | 3.6 | 200 | 2026-10-22T10:24:25.042Z | עודכן לפני 4h |
+| domain-status | 🟢 green | 0.7 | 200 | 2026-10-22T13:22:16.478Z | עודכן לפני 1h |
+| console-dex-grid | 🟢 green | 1.2 | 200 | 2026-10-22T12:52:24.049Z | עודכן לפני 1h |
+| console-dex-world | 🟢 green | 0.4 | 200 | 2026-10-22T13:39:19.101Z | עודכן לפני 0h |
 | console-mirror-status | ⚪️ grey | — | 404 | — | private-raw — ה-token בסביבה אינו-מוסמך לריפו זה (לא-ידוע, כנה) |
-| sandbox-profit-oracle | 🟡 amber | 253.7 | 200 | 2026-10-11T23:52:50.902Z | מיושן: 254h מעל החוק (24h) |
+| sandbox-profit-oracle | 🟡 amber | 254.2 | 200 | 2026-10-11T23:52:50.902Z | מיושן: 254h מעל החוק (24h) |
 
 ספירה: 12 green · 1 amber · 3 red · 1 grey
 
 ### E1 spread-regime — ההצעה-העצמית הראשונה הפכה מעשה (builtin-e1-spread-regime · zai-13c)
 
 ```
-SPREAD-REGIME: value=0bps · delta=-93.50 vs 93.5 · מקור-בן-4.5h · PASS (tightened) — הפיזור הצטמצם — נזילות-צד-הגריד משתפרת
+SPREAD-REGIME: value=0bps · delta=-93.50 vs 93.5 · מקור-בן-1.2h · PASS (tightened) — הפיזור הצטמצם — נזילות-צד-הגריד משתפרת
 ```
 
 - חוק-המשטר: spread < 93.5bps = tightened (PASS) · > = loosened (HOLD) · מקור מיושן >24h = STALE כנה במקום פסק-חי. הרגל-הנמדדת: book.spreadBps (STEEM) מ-dex/grid.json — אותו-פיד שהאוטובוס מודד. read-only/verify/doc-only בלבד · ההצעה שהפכה מעשה: PROPOSALS/2026-10-11-research-e1-spread-regime.md
@@ -96,4 +96,4 @@ SPREAD-REGIME: value=0bps · delta=-93.50 vs 93.5 · מקור-בן-4.5h · PASS 
 חוק: המחזור **לעולם** לא מבצע MACHINE-PREP/OWNER-WORD, לא משדר, לא חותם, לא נוגע בכסף/מפתחות/STASIS. תופעות-הלוואי שלו — קבצי-המסילה שלו בלבד.
 
 ---
-*[owner-directive] · המשרד מתאמן לחשוב, בלוח-זמנים, לנצח · ISO 2026-10-22T13:35:37.426Z*
+*[owner-directive] · המשרד מתאמן לחשוב, בלוח-זמנים, לנצח · ISO 2026-10-22T14:01:55.123Z*

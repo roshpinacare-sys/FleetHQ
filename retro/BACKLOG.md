@@ -1,13 +1,13 @@
 # תיק-העבודות של המשרד (BACKLOG)
 
-> מחזור-השיפור-העצמי · office/retro.mjs · SAOS-OFFICE-RETRO/1 · 2026-10-22 13:35 UTC · [owner-directive]
+> מחזור-השיפור-העצמי · office/retro.mjs · SAOS-OFFICE-RETRO/1 · 2026-10-22 14:01 UTC · [owner-directive]
 
 ## סיכום נמדד
 
 - **אוטובוס**: 12 green · 1 amber · 3 red · 1 grey (רישום: live-zip)
 - **שערי-בעלים**: 8 WAITING-OWNER
 - **מחקר**: לא-נמדד (כנה)
-- **E1 spread-regime (built-in)**: SPREAD-REGIME: value=0bps · delta=-93.50 vs 93.5 · מקור-בן-4.5h · PASS (tightened) — הפיזור הצטמצם — נזילות-צד-הגריד משתפרת
+- **E1 spread-regime (built-in)**: SPREAD-REGIME: value=0bps · delta=-93.50 vs 93.5 · מקור-בן-1.2h · PASS (tightened) — הפיזור הצטמצם — נזילות-צד-הגריד משתפרת
 - **צווי-עבודה (work-orders)**: 2 פתוחים · 0 נפתרו · P1 פתוחים: 2
 - **רווחיות (profit-oracle)**: verdict=FLAT · delta=0% מול-המדידה-הקודמת · שווי-נקי=455.32 SBD-equiv · grid=EDGE-NEGATIVE-GRID-HOLD · at=2026-10-11 23:52 UTC
 - **פריטים**: 16 (SAFE 1 · MACHINE-PREP 7 · OWNER-WORD 8)
@@ -57,4 +57,4 @@
 - כנות: לא-ידוע נשאר לא-ידוע; פיד אדום מודפס אדום
 
 ---
-*נוצר אוטומטית על-ידי המשרד · SAOS-OFFICE-RETRO/1 · אפס-סודות (סרוק fail-closed) · ISO 2026-10-22T13:35:37.426Z*
+*נוצר אוטומטית על-ידי המשרד · SAOS-OFFICE-RETRO/1 · אפס-סודות (סרוק fail-closed) · ISO 2026-10-22T14:01:55.123Z*

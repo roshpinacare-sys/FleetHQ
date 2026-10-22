@@ -2,11 +2,11 @@
 
 - **מזהה**: `research-feed-unavailable` · **מחלקת-סיכון**: SAFE (בטוח) · **דבר-בעלים**: לא
 - **מקור**: sandbox-research-findings · **ערך/מאמץ**: 3/1
-- **נוצר**: 2026-10-22 13:35 UTC על-ידי office/retro.mjs (office-retro (zai-11d · E1-deed zai-13c)) · SAOS-OFFICE-RETRO/1
+- **נוצר**: 2026-10-22 14:01 UTC על-ידי office/retro.mjs (office-retro (zai-11d · E1-deed zai-13c)) · SAOS-OFFICE-RETRO/1
 
 ## הקשר נמדד (מה-חקר)
 
-- אוטובוס: 12 green · 1 amber · 3 red · 1 grey — מקור-רישום: live-zip (registry חי מ-private-7 raw (200, 280ms))
+- אוטובוס: 12 green · 1 amber · 3 red · 1 grey — מקור-רישום: live-zip (registry חי מ-private-7 raw (200, 291ms))
   - sandbox-probe-hive: red — לא-נמצא ב-2 תאריכים אחרונים (2026-10-22, 2026-10-21)
   - sandbox-probe-blurt: red — לא-נמצא ב-2 תאריכים אחרונים (2026-10-22, 2026-10-21)
   - sandbox-research-findings: red — לא-נמצא ב-9 תאריכים אחרונים (2026-10-22, 2026-10-21, 2026-10-20, 2026-10-19, 2026-10-18, 2026-10-17, 2026-10-16, 2026-10-15, 2026-10-14)
