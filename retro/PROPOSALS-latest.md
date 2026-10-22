@@ -2,20 +2,19 @@
 
 - **מזהה**: `research-feed-unavailable` · **מחלקת-סיכון**: SAFE (בטוח) · **דבר-בעלים**: לא
 - **מקור**: sandbox-research-findings · **ערך/מאמץ**: 3/1
-- **נוצר**: 2026-10-22 13:11 UTC על-ידי office/retro.mjs (office-retro (zai-11d · E1-deed zai-13c)) · SAOS-OFFICE-RETRO/1
+- **נוצר**: 2026-10-22 13:35 UTC על-ידי office/retro.mjs (office-retro (zai-11d · E1-deed zai-13c)) · SAOS-OFFICE-RETRO/1
 
 ## הקשר נמדד (מה-חקר)
 
-- אוטובוס: 11 green · 1 amber · 4 red · 1 grey — מקור-רישום: live-zip (registry חי מ-private-7 raw (200, 480ms))
-  - fleethq-digest: red — HTTP 404
+- אוטובוס: 12 green · 1 amber · 3 red · 1 grey — מקור-רישום: live-zip (registry חי מ-private-7 raw (200, 280ms))
   - sandbox-probe-hive: red — לא-נמצא ב-2 תאריכים אחרונים (2026-10-22, 2026-10-21)
   - sandbox-probe-blurt: red — לא-נמצא ב-2 תאריכים אחרונים (2026-10-22, 2026-10-21)
   - sandbox-research-findings: red — לא-נמצא ב-9 תאריכים אחרונים (2026-10-22, 2026-10-21, 2026-10-20, 2026-10-19, 2026-10-18, 2026-10-17, 2026-10-16, 2026-10-15, 2026-10-14)
   - console-mirror-status: grey — private-raw — ה-token בסביבה אינו-מוסמך לריפו זה (לא-ידוע, כנה)
-  - sandbox-profit-oracle: amber — מיושן: 253h מעל החוק (24h)
+  - sandbox-profit-oracle: amber — מיושן: 254h מעל החוק (24h)
 - מחקר: לא-נמדד — לא-נמצא קובץ-ממצאים מ-9 הימים האחרונים (2026-10-22, 2026-10-21, 2026-10-20, 2026-10-19, 2026-10-18, 2026-10-17, 2026-10-16, 2026-10-15, 2026-10-14)
 - שערים: gate-01-steem-active-wif-domain=MEASURED-NOT-IN-MACHINE · treasury-ladder ignition live (owner delivery still opens head book), gate-02-actions-billing=WAITING-OWNER, gate-03-r11-rotation-9-soldiers=WAITING-OWNER, gate-04-private-16-recovery-meta=MACHINE-READY, gate-05-stasis-convert=WAITING-OWNER, gate-06-stasis-transfers=WAITING-OWNER, gate-07-stasis-votes=WAITING-OWNER, gate-08-stasis-delegations=DISSOLVED, gate-09-blurt-ignition=WAITING-OWNER, gate-10-private-4-vault-db=WAITING-OWNER, gate-11-saos-agents-distribution=WAITING-OWNER
-- דיג'סט: digest.json לא-נגיש מה-Pages (404)
+- דיג'סט: חי מ-2026-10-22 12:53 UTC
 
 ## תוכנית (צעדים)
 
