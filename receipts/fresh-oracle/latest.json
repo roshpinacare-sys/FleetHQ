@@ -1,6 +1,6 @@
 {
  "schema": "fleet.fresh-oracle/1",
- "at": "2026-10-22T00:03:38.731Z",
+ "at": "2026-10-22T01:23:06.968Z",
  "law": "FRESH only if sha256(live bytes) == sha256(committed deploy-ref bytes) AND no ops doc MISSING; DRIFT=RED (200-with-different-bytes); UNREACHABLE=UNKNOWN (network, retried once, reason kept); ops-doc age rows are honest amber (MISSING alone flips exit) — never faked green",
  "results": [
   {
@@ -11,9 +11,9 @@
    "committedStatus": 200,
    "liveError": null,
    "committedError": null,
-   "liveSha16": "f9a9304945675f45",
-   "committedSha16": "f9a9304945675f45",
-   "liveBytes": 49149,
+   "liveSha16": "962b6f4a1350e8ba",
+   "committedSha16": "962b6f4a1350e8ba",
+   "liveBytes": 49523,
    "verdict": "MATCH"
   },
   {
@@ -24,9 +24,9 @@
    "committedStatus": 200,
    "liveError": null,
    "committedError": null,
-   "liveSha16": "2d79269b09088a01",
-   "committedSha16": "2d79269b09088a01",
-   "liveBytes": 16632,
+   "liveSha16": "4f61f30d420c9f9b",
+   "committedSha16": "4f61f30d420c9f9b",
+   "liveBytes": 16623,
    "verdict": "MATCH"
   },
   {
@@ -37,9 +37,9 @@
    "committedStatus": 200,
    "liveError": null,
    "committedError": null,
-   "liveSha16": "dbf7093ccc95afef",
-   "committedSha16": "dbf7093ccc95afef",
-   "liveBytes": 22777,
+   "liveSha16": "1604dc39423887ae",
+   "committedSha16": "1604dc39423887ae",
+   "liveBytes": 22768,
    "verdict": "MATCH"
   },
   {
@@ -97,58 +97,9 @@
  ],
  "opsDocs": [
   {
-   "name": "FLOW-PLAN",
-   "file": "FLOW-PLAN-2026-10-11.md",
-   "sha16": "e355a31da97053ae",
-   "rawStatus": 200,
-   "lastCommitAt": "2026-10-11T20:29:07Z",
-   "ageDays": 10,
-   "verdict": "AGING"
-  },
-  {
-   "name": "GROWTH-PLAN",
-   "file": "GROWTH-PLAN-2026-10-11.md",
-   "sha16": "19120f352c4aa28b",
-   "rawStatus": 200,
-   "lastCommitAt": "2026-10-12T13:00:25Z",
-   "ageDays": 9,
-   "verdict": "AGING"
-  },
-  {
-   "name": "OWNER-P0",
-   "file": "OWNER-P0-2026-10-11.md",
-   "sha16": "65b03d355f807de7",
-   "rawStatus": 200,
-   "lastCommitAt": "2026-10-12T13:00:25Z",
-   "ageDays": 9,
-   "verdict": "AGING"
-  },
-  {
-   "name": "RESUME-PACKET",
-   "file": "RESUME-PACKET.md",
-   "sha16": "08e151942faf95bf",
-   "rawStatus": 200,
-   "lastCommitAt": "2026-10-12T12:53:19Z",
-   "ageDays": 9,
-   "verdict": "AGING"
-  },
-  {
-   "name": "TOKEN-TRUTH",
-   "file": "TOKEN-TRUTH.md",
-   "sha16": "9b481dc448dde386",
-   "rawStatus": 200,
-   "lastCommitAt": "2026-10-11T21:40:47Z",
-   "ageDays": 10,
-   "verdict": "AGING"
-  },
-  {
-   "name": "ESTATE-TRUTH",
-   "file": "ESTATE-TRUTH-2026-10-11.md",
-   "sha16": "6be0baa467056fa4",
-   "rawStatus": 200,
-   "lastCommitAt": "2026-10-12T12:53:19Z",
-   "ageDays": 9,
-   "verdict": "AGING"
+   "name": "OPS-DOCS-SCAN",
+   "verdict": "UNREACHABLE",
+   "error": "contents API HTTP 403"
   }
  ],
  "summary": {
