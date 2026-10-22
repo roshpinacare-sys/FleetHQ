@@ -1,47 +1,47 @@
 {
  "schema": "silence.ledger/1",
- "at": "2026-10-22T01:23:07.051Z",
+ "at": "2026-10-22T01:53:00.266Z",
  "voices": [
   {
    "name": "repo/FleetHQ",
    "kind": "repo",
-   "lastActivity": "2026-10-22T01:18:52.000Z",
-   "ageMin": 4,
+   "lastActivity": "2026-10-22T01:47:45.000Z",
+   "ageMin": 5,
    "maxSilenceMin": 180,
    "verdict": "alive",
    "detail": {
-    "subject": "vault-seal [auto-economy]: 1 files — אטימה-חוזרת, כלום לא מת עם הסנדבוקס",
-    "divergence": "ahead:2 behind:0"
+    "subject": "pacemaker receipt: 2026-10-22T01:47:38Z",
+    "divergence": "ahead:0 behind:4"
    }
   },
   {
    "name": "repo/Domain",
    "kind": "repo",
-   "lastActivity": "2026-10-22T01:15:47.000Z",
-   "ageMin": 7,
+   "lastActivity": "2026-10-22T01:50:32.000Z",
+   "ageMin": 2,
    "maxSilenceMin": 180,
    "verdict": "alive",
    "detail": {
-    "subject": "vault-seal [auto-economy]: 11 files — אטימה-חוזרת, כלום לא מת עם הסנדבוקס",
-    "divergence": "ahead:3 behind:14"
+    "subject": "dex-xc: intent-gates tick 2026-10-22T01:50:25Z [skip ci]",
+    "divergence": "in-sync"
    }
   },
   {
    "name": "repo/Console",
    "kind": "repo",
-   "lastActivity": "2026-10-22T01:07:42.000Z",
-   "ageMin": 15,
+   "lastActivity": "2026-10-22T01:32:23.000Z",
+   "ageMin": 21,
    "maxSilenceMin": 180,
    "verdict": "alive",
    "detail": {
-    "subject": "dex-beat: h1149236 · claimed0 · Σ14306 credits · 2026-10-22T01:07Z",
-    "divergence": "in-sync"
+    "subject": "grid-beat: 5 placed (steem 5 / hive 0) · 12 cancelled · 2026-10-22T01:32Z",
+    "divergence": "ahead:0 behind:3"
    }
   },
   {
    "name": "port/console:3000",
    "kind": "service",
-   "lastActivity": "2026-10-22T01:23:07.051Z",
+   "lastActivity": "2026-10-22T01:53:00.266Z",
    "ageMin": 0,
    "maxSilenceMin": 0,
    "verdict": "alive"
@@ -57,7 +57,7 @@
   {
    "name": "port/foreman",
    "kind": "service",
-   "lastActivity": "2026-10-22T01:23:07.051Z",
+   "lastActivity": "2026-10-22T01:53:00.266Z",
    "ageMin": 0,
    "maxSilenceMin": 0,
    "verdict": "alive"
@@ -65,7 +65,7 @@
   {
    "name": "port/gateway",
    "kind": "service",
-   "lastActivity": "2026-10-22T01:23:07.051Z",
+   "lastActivity": "2026-10-22T01:53:00.266Z",
    "ageMin": 0,
    "maxSilenceMin": 0,
    "verdict": "alive"
@@ -73,7 +73,7 @@
   {
    "name": "port/selfcheck",
    "kind": "service",
-   "lastActivity": "2026-10-22T01:23:07.051Z",
+   "lastActivity": "2026-10-22T01:53:00.266Z",
    "ageMin": 0,
    "maxSilenceMin": 0,
    "verdict": "alive"
@@ -89,7 +89,7 @@
   {
    "name": "port/boot-verifier",
    "kind": "service",
-   "lastActivity": "2026-10-22T01:23:07.051Z",
+   "lastActivity": "2026-10-22T01:53:00.266Z",
    "ageMin": 0,
    "maxSilenceMin": 0,
    "verdict": "alive"
@@ -105,10 +105,10 @@
   {
    "name": "beat/dex-mirror",
    "kind": "beat",
-   "lastActivity": null,
-   "ageMin": null,
+   "lastActivity": "2026-10-22T01:52:57.886Z",
+   "ageMin": 0,
    "maxSilenceMin": 70,
-   "verdict": "no-data"
+   "verdict": "alive"
   },
   {
    "name": "beat/grid-pulse",
@@ -129,10 +129,10 @@
   {
    "name": "beat/office-heartbeat",
    "kind": "beat",
-   "lastActivity": null,
-   "ageMin": null,
+   "lastActivity": "2026-10-22T01:38:36.755Z",
+   "ageMin": 14,
    "maxSilenceMin": 130,
-   "verdict": "no-data"
+   "verdict": "alive"
   },
   {
    "name": "post/steem/acct-00",
@@ -249,11 +249,9 @@
   "port/fleethq:3002: DOWN (:3002)",
   "port/recruit: DOWN (:3041)",
   "beat/money-watch: no data (cannot prove alive)",
-  "beat/dex-mirror: no data (cannot prove alive)",
   "beat/grid-pulse: no data (cannot prove alive)",
   "beat/office-ci-lite: no data (cannot prove alive)",
-  "beat/office-heartbeat: no data (cannot prove alive)",
   "roster: unresolved — no FLEET_ROSTER_MAP in env/estate/.env.local and no local map file; post voices unmeasurable"
  ],
- "summary": "8 ALARM(S): port/fleethq:3002: DOWN (:3002) · port/recruit: DOWN (:3041) · beat/money-watch: no data (cannot prove alive) · beat/dex-mirror: no data (cannot prove alive) · beat/grid-pulse: no data (cannot prove alive) · beat/office-ci-lite: no data (cannot prove alive) · beat/office-heartbeat: no data (cannot prove alive) · roster: unresolved — no FLEET_ROSTER_MAP in env/estate/.env.local and no local map file; post voices unmeasurable"
+ "summary": "6 ALARM(S): port/fleethq:3002: DOWN (:3002) · port/recruit: DOWN (:3041) · beat/money-watch: no data (cannot prove alive) · beat/grid-pulse: no data (cannot prove alive) · beat/office-ci-lite: no data (cannot prove alive) · roster: unresolved — no FLEET_ROSTER_MAP in env/estate/.env.local and no local map file; post voices unmeasurable"
 }
