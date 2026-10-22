@@ -1,68 +1,68 @@
 {
  "schema": "silence.watchdog/1",
- "at": "2026-10-22T13:06:47.588Z",
+ "at": "2026-10-22T16:45:22.478Z",
  "scope": "actions",
  "voices": [
   {
    "name": "origin/FleetHQ",
-   "lastActivity": "2026-10-22T13:06:23.000Z",
+   "lastActivity": "2026-10-22T16:45:05.000Z",
    "ageMin": 0,
    "maxSilenceMin": 240,
    "verdict": "alive",
    "detail": {
-    "subject": "vault-seal [auto-economy]: 1 files — אטימה-חוזרת, כלום לא מת עם הסנדבו"
+    "subject": "pacemaker receipt: 2026-10-22T16:45:04Z"
    }
   },
   {
    "name": "origin/Domain",
-   "lastActivity": "2026-10-22T13:04:24.000Z",
-   "ageMin": 2,
+   "lastActivity": "2026-10-22T16:45:01.000Z",
+   "ageMin": 0,
    "maxSilenceMin": 240,
    "verdict": "alive",
    "detail": {
-    "subject": "swallow-watch branch-guard (wave 19.73, trace 1a163b10c3de4db9): the c"
+    "subject": "builder: PULSE_SNAPSHOT+RECEIPTS_LEDGER — דופק חי + משטחי-מוצר מתחדשים"
    }
   },
   {
    "name": "origin/Console",
-   "lastActivity": "2026-10-22T13:05:33.000Z",
+   "lastActivity": "2026-10-22T16:44:16.000Z",
    "ageMin": 1,
    "maxSilenceMin": 240,
    "verdict": "alive",
    "detail": {
-    "subject": "truth-gate G64: dedup against the PUBLISHED artifact, not the runs-lis"
+    "subject": "pacemaker receipt: 2026-10-22T16:44:16Z"
    }
   },
   {
    "name": "divergence/FleetHQ",
-   "lastActivity": "2026-10-22T12:39:57.000Z",
-   "ageMin": 27,
+   "lastActivity": "2026-10-22T15:24:40.000Z",
+   "ageMin": 81,
    "maxSilenceMin": 75,
-   "verdict": "alive",
+   "verdict": "SILENT-ALARM",
    "detail": {
     "source": "push-queue-receipt (via git)",
-    "ahead": 3,
+    "ahead": 0,
     "behind": 0
    }
   },
   {
    "name": "divergence/Domain",
-   "lastActivity": "2026-10-22T12:39:57.000Z",
-   "ageMin": 27,
+   "lastActivity": "2026-10-22T15:24:40.000Z",
+   "ageMin": 81,
    "maxSilenceMin": 75,
-   "verdict": "alive",
+   "verdict": "SILENT-ALARM",
    "detail": {
     "source": "push-queue-receipt (via git)",
-    "ahead": 1,
-    "behind": 0
+    "ahead": 0,
+    "behind": 1
    }
   },
   {
    "name": "divergence/Console",
-   "lastActivity": "2026-10-22T12:39:57.000Z",
-   "ageMin": 27,
+   "lastActivity": "2026-10-22T15:24:40.000Z",
+   "ageMin": 81,
    "maxSilenceMin": 75,
-   "verdict": "alive",
+   "verdict": "SILENT-ALARM",
    "detail": {
     "source": "push-queue-receipt (via git)",
     "ahead": 0,
@@ -71,8 +71,8 @@
   },
   {
    "name": "sandbox-ledger (via git)",
-   "lastActivity": "2026-10-22T13:05:45.921Z",
-   "ageMin": 1,
+   "lastActivity": "2026-10-22T16:35:44.127Z",
+   "ageMin": 10,
    "maxSilenceMin": 180,
    "verdict": "alive",
    "detail": {
@@ -82,25 +82,30 @@
   {
    "name": "pages/money",
    "lastActivity": "2026-10-22T12:13:25.745Z",
-   "ageMin": 53,
+   "ageMin": 272,
    "maxSilenceMin": 240,
-   "verdict": "alive",
+   "verdict": "SILENT-ALARM",
    "detail": {
     "url": "dex/money.json"
    }
   },
   {
    "name": "pages/site-audit",
-   "lastActivity": "2026-10-22T11:09:01.382Z",
-   "ageMin": 118,
+   "lastActivity": "2026-10-22T15:25:15.368Z",
+   "ageMin": 80,
    "maxSilenceMin": 360,
    "verdict": "alive",
    "detail": {
     "verdict": "unknown",
-    "at": "2026-10-22T11:09:01.382Z"
+    "at": "2026-10-22T15:25:15.368Z"
    }
   }
  ],
- "alarms": [],
- "summary": "ALL VISIBLE VOICES ALIVE"
+ "alarms": [
+  "divergence/FleetHQ: silent 81min (limit 75)",
+  "divergence/Domain: silent 81min (limit 75)",
+  "divergence/Console: silent 81min (limit 75)",
+  "pages/money: silent 272min (limit 240)"
+ ],
+ "summary": "4 ALARM(S): divergence/FleetHQ: silent 81min (limit 75) · divergence/Domain: silent 81min (limit 75) · divergence/Console: silent 81min (limit 75) · pages/money: silent 272min (limit 240)"
 }
