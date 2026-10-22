@@ -1,6 +1,6 @@
 {
  "schema": "saos.sovereign-decisions/1",
- "generatedAt": "2026-10-22T16:18:42.447Z",
+ "generatedAt": "2026-10-22T16:44:48.914Z",
  "policyVersion": "SOV-POLICY/1",
  "principle": "הריבונות מחליטה ומבצעת — הבעלים קבע (trace 1a12…f45d) שהמערכת מקבלת החלטות חכמות בעצמה בצורה הכי מתקדמת שיש; הפניה לבעלים = שלילת הריבונות. כל-החלטה: ראיה-מדודה + אימות-כפול. בעלים = בעלים; ריבונות = הגוף שמחליט.",
  "authority": "advisory",
@@ -20,29 +20,29 @@
   ]
  },
  "sense": {
-  "officeState": {
-   "ok": true,
-   "ageMin": 55
-  },
-  "openCloser": {
-   "ok": true,
-   "ageMin": 18
-  },
-  "decisionsPrev": {
-   "ok": true,
-   "ageMin": 30
-  },
-  "gridHealth": {
-   "ok": true,
-   "ageMin": 34
-  },
   "gridTruth": {
    "ok": true,
-   "ageMin": 18
+   "ageMin": 44
   },
   "valueScan": {
    "ok": true,
-   "ageMin": 48
+   "ageMin": 74
+  },
+  "officeState": {
+   "ok": true,
+   "ageMin": 81
+  },
+  "decisionsPrev": {
+   "ok": true,
+   "ageMin": 26
+  },
+  "gridHealth": {
+   "ok": true,
+   "ageMin": 16
+  },
+  "openCloser": {
+   "ok": true,
+   "ageMin": 14
   }
  },
  "decisions": [
@@ -222,56 +222,56 @@
   {
    "id": "auto-fleet-health",
    "area": "operations",
-   "title": "29 workflows אדומים ב-10 ריפואים (מתוך 407) — GridWatch מרפא אוטונומית; סטריקים חוזרים = טריאז' הנדסי",
+   "title": "28 workflows אדומים ב-10 ריפואים (מתוך 409) — GridWatch מרפא אוטונומית; סטריקים חוזרים = טריאז' הנדסי",
    "status": "watch",
    "evidence": {
     "source": "GridWatch/state/fleet-health.json",
-    "measuredAt": "2026-10-22T15:45:08.040Z",
+    "measuredAt": "2026-10-22T16:29:11.338Z",
     "totals": {
      "repos": 48,
      "public": 40,
      "private": 8,
-     "workflows": 407,
-     "green": 359,
-     "amber": 19,
-     "red": 29
+     "workflows": 409,
+     "green": 365,
+     "amber": 16,
+     "red": 28
     },
     "billingWorkflows": [],
     "redRepos": [
+     "Domain",
      "steem",
      "fleet-economy",
-     "Domain",
      "FleetHQ",
      "Autonomy",
+     "Sandbox",
      "saos-dex",
      "roshpina",
-     "Sandbox",
      "Zip",
      "saos-sovereign-foundry"
     ],
-    "alertCount": 1,
+    "alertCount": 0,
     "remediations": 0
    },
    "law": "ריפוי-עצמי בתוך-מעטפת (הפיך+מדוד בלבד); סטריקים ≥3 לא מנוסים שוב — מנותבים לטריאז' הנדסי",
    "policy": "SOV-POLICY/1",
-   "decidedAt": "2026-10-22T16:18:42.447Z",
+   "decidedAt": "2026-10-22T16:44:48.914Z",
    "by": "sovereign-decider"
   },
   {
    "id": "auto-freshness",
    "area": "operations",
-   "title": "טריות הצי: 3 נפלו מעל SLA (grid 129דק>SLA125, recruit 4663דק>SLA1660, ventures 4663דק>SLA1660) — הוערו: grid",
+   "title": "טריות הצי: 2 נפלו מעל SLA (recruit 4693דק>SLA1660, ventures 4693דק>SLA1660) — הוערו: אין",
    "status": "watch",
    "evidence": {
     "source": "FleetHQ/office/state/opens-closer.json",
     "metrics": {
-     "staleCount": 3,
-     "dispatchedCount": 1
+     "staleCount": 2,
+     "dispatchedCount": 0
     },
     "selfHeal": "same-repo GITHUB_TOKEN + cross-repo CROSS_REVIVE_PAT (D1)"
    },
    "policy": "SOV-POLICY/1",
-   "decidedAt": "2026-10-22T16:18:42.447Z",
+   "decidedAt": "2026-10-22T16:44:48.914Z",
    "by": "sovereign-decider"
   },
   {
@@ -286,7 +286,7 @@
    },
    "law": "אין דריסת-מסילות: למשרד יש לולאת-רטרו משלו; הריבונות מתעדת ומאמתת, לא לוקחת",
    "policy": "SOV-POLICY/1",
-   "decidedAt": "2026-10-22T16:18:42.447Z",
+   "decidedAt": "2026-10-22T16:44:48.914Z",
    "by": "sovereign-decider"
   }
  ],
