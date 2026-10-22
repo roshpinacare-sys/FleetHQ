@@ -2,7 +2,7 @@
   "protocol": "SAOS-OFFICE-RETRO/1",
   "lane": "office-retro (zai-11d · E1-deed zai-13c)",
   "ownerMandate": "[owner-directive]",
-  "generatedAt": "2026-10-15T12:51:56.812Z",
+  "generatedAt": "2026-10-22T13:11:26.746Z",
   "laws": [
     "retro לא משדר, לא חותם, לא נוגע בכסף/מפתחות/STASIS",
     "תופעות-לוואי: קבצי-המסילה שלו בלבד (office/*)",
@@ -12,57 +12,51 @@
     "כנות: לא-ידוע נשאר לא-ידוע; פיד אדום מודפס אדום"
   ],
   "registry": {
-    "source": "fallback-embedded",
-    "note": "registry לא-נגיש: HTTP 404 (private-7 פרטי — גם עם-token נדחה) — משתמש ב-snapshot מוטמע (11-c @ 2026-10-11T20:35:00Z)",
-    "feedCount": 16,
-    "fallbackSnapshotOf": "sovereign/bus-registry.json @ 686e0d00 (zai-11c, מקור-פרטי — השם אינו נמנה, 7-b)"
+    "source": "live-zip",
+    "note": "registry חי מ-private-7 raw (200, 480ms)",
+    "feedCount": 17,
+    "fallbackSnapshotOf": null
   },
   "digest": {
-    "source": "pages",
-    "note": "digest.json חי (200)",
-    "generatedAt": "2026-10-15T12:09:41.171Z",
-    "ageHours": 0.7,
-    "reposSeen": 14,
-    "degradedEarly": false,
-    "gridVerdict": "ARMED-WAITING",
-    "hiveVerdict": "ARMED-WAITING",
-    "errors": 3
+    "source": "unavailable",
+    "note": "digest.json לא-נגיש מה-Pages (404)",
+    "generatedAt": null
   },
   "findings": {
     "found": false,
-    "note": "לא-נמצא קובץ-ממצאים מ-9 הימים האחרונים (2026-10-15, 2026-10-14, 2026-10-13, 2026-10-12, 2026-10-11, 2026-10-10, 2026-10-09, 2026-10-08, 2026-10-07)"
+    "note": "לא-נמצא קובץ-ממצאים מ-9 הימים האחרונים (2026-10-22, 2026-10-21, 2026-10-20, 2026-10-19, 2026-10-18, 2026-10-17, 2026-10-16, 2026-10-15, 2026-10-14)"
   },
   "bus": {
-    "at": "2026-10-15T12:51:56.812Z",
+    "at": "2026-10-22T13:11:26.746Z",
     "counts": {
-      "green": 10,
-      "amber": 0,
-      "red": 5,
+      "green": 11,
+      "amber": 1,
+      "red": 4,
       "grey": 1
     },
     "feeds": [
       {
         "id": "fleethq-digest",
-        "status": "green",
-        "ageHours": 0.7,
-        "httpStatus": 200
+        "status": "red",
+        "ageHours": null,
+        "httpStatus": 404
       },
       {
         "id": "domain-dex-grid",
         "status": "green",
-        "ageHours": 4.4,
+        "ageHours": 4.1,
         "httpStatus": 200
       },
       {
         "id": "domain-dex-world",
         "status": "green",
-        "ageHours": 0.8,
+        "ageHours": 0.5,
         "httpStatus": 200
       },
       {
         "id": "domain-dex-deposits",
         "status": "green",
-        "ageHours": 7.9,
+        "ageHours": 8.1,
         "httpStatus": 200
       },
       {
@@ -74,13 +68,13 @@
       {
         "id": "domain-office-data",
         "status": "green",
-        "ageHours": 0.6,
+        "ageHours": 0.3,
         "httpStatus": 200
       },
       {
         "id": "domain-grid-truth",
         "status": "green",
-        "ageHours": 1.4,
+        "ageHours": 0.9,
         "httpStatus": 200
       },
       {
@@ -103,32 +97,32 @@
       },
       {
         "id": "sandbox-flow-map",
-        "status": "red",
-        "ageHours": null,
-        "httpStatus": 404
+        "status": "green",
+        "ageHours": 0.2,
+        "httpStatus": 200
       },
       {
         "id": "sandbox-lessons-ledger",
-        "status": "red",
-        "ageHours": null,
-        "httpStatus": 404
+        "status": "green",
+        "ageHours": 2.8,
+        "httpStatus": 200
       },
       {
         "id": "domain-status",
         "status": "green",
-        "ageHours": 0.1,
+        "ageHours": 2.8,
         "httpStatus": 200
       },
       {
         "id": "console-dex-grid",
         "status": "green",
-        "ageHours": 4.4,
+        "ageHours": 0.3,
         "httpStatus": 200
       },
       {
         "id": "console-dex-world",
         "status": "green",
-        "ageHours": 0.8,
+        "ageHours": 0.3,
         "httpStatus": 200
       },
       {
@@ -136,44 +130,101 @@
         "status": "grey",
         "ageHours": null,
         "httpStatus": 404
+      },
+      {
+        "id": "sandbox-profit-oracle",
+        "status": "amber",
+        "ageHours": 253.3,
+        "httpStatus": 200
       }
     ]
   },
   "e1": {
     "builtin": "builtin-e1-spread-regime",
-    "value": 200,
-    "deltaBps": 106.5,
-    "ageHours": 4.4,
-    "publishedAt": "2026-10-15T08:29:53.445Z",
-    "verdict": "HOLD",
-    "direction": "loosened",
+    "value": 0,
+    "deltaBps": -93.5,
+    "ageHours": 4.1,
+    "publishedAt": "2026-10-22T09:04:06.715Z",
+    "verdict": "PASS",
+    "direction": "tightened",
     "source": "live-pages",
-    "block": "SPREAD-REGIME: value=200bps · delta=+106.50 vs 93.5 · מקור-בן-4.4h · HOLD (loosened) — הפיזור התרחב — לעקוב בלבד (verify/doc-only)"
+    "block": "SPREAD-REGIME: value=0bps · delta=-93.50 vs 93.5 · מקור-בן-4.1h · PASS (tightened) — הפיזור הצטמצם — נזילות-צד-הגריד משתפרת"
   },
   "profit": {
-    "unavailable": true,
-    "source": "unavailable",
-    "note": "profit-oracle לא-נגיש (HTTP 404) — כנה, לא-מדומה (14b עשוי שלא להיות באוויר עדיין)",
-    "netWorthSbdEquiv": null,
-    "deltaVsPriorPct": null,
-    "verdict": null,
-    "gridVerdict": null,
-    "at": null
+    "unavailable": false,
+    "source": "live-sandbox-raw",
+    "note": "profit-oracle חי (200, at 2026-10-11 23:52 UTC) — המשרד לומד-רווחיות",
+    "netWorthSbdEquiv": 455.32,
+    "deltaVsPriorPct": 0,
+    "verdict": "FLAT",
+    "gridVerdict": "EDGE-NEGATIVE-GRID-HOLD",
+    "at": "2026-10-11T23:52:50.902Z"
   },
   "workOrders": {
-    "source": "unavailable",
-    "note": "work-orders לא-נגיש (HTTP 404) — הצווים-המוצהרים של הצי לא-ידועים כעת (כנה, לא-מדומה)",
-    "counts": null
+    "source": "live-sandbox-raw",
+    "note": "work-orders חי (200, 89ms) — 2 פתוחים · 0 נפתרו · P1 פתוחים: 2",
+    "counts": {
+      "total": 2,
+      "open": 2,
+      "resolved": 0,
+      "openP1": 2
+    }
   },
   "gates": {
-    "source": "unavailable",
-    "note": "GATE-STATUS לא-נגיש (HTTP 404) — מצבי-השערים לא-ידועים כעת (מקור-פרטי; כנה, לא-מדומה)"
+    "source": "live-zip",
+    "generatedAt": "2026-10-12T03:40:00Z",
+    "gates": [
+      {
+        "id": "gate-01-steem-active-wif-domain",
+        "state": "MEASURED-NOT-IN-MACHINE · treasury-ladder ignition live (owner delivery still opens head book)"
+      },
+      {
+        "id": "gate-02-actions-billing",
+        "state": "WAITING-OWNER"
+      },
+      {
+        "id": "gate-03-r11-rotation-9-soldiers",
+        "state": "WAITING-OWNER"
+      },
+      {
+        "id": "gate-04-private-16-recovery-meta",
+        "state": "MACHINE-READY"
+      },
+      {
+        "id": "gate-05-stasis-convert",
+        "state": "WAITING-OWNER"
+      },
+      {
+        "id": "gate-06-stasis-transfers",
+        "state": "WAITING-OWNER"
+      },
+      {
+        "id": "gate-07-stasis-votes",
+        "state": "WAITING-OWNER"
+      },
+      {
+        "id": "gate-08-stasis-delegations",
+        "state": "DISSOLVED"
+      },
+      {
+        "id": "gate-09-blurt-ignition",
+        "state": "WAITING-OWNER"
+      },
+      {
+        "id": "gate-10-private-4-vault-db",
+        "state": "WAITING-OWNER"
+      },
+      {
+        "id": "gate-11-saos-agents-distribution",
+        "state": "WAITING-OWNER"
+      }
+    ]
   },
   "items": [
     {
       "id": "research-feed-unavailable",
       "source": "sandbox-research-findings",
-      "title": "רכבת-המחקר לא-נמדדה: לא-נמצא קובץ-ממצאים מ-9 הימים האחרונים (2026-10-15, 2026-10-14, 2026-10-13, 2026-10-12, 2026-10-11, 2026-10-10, 2026-10-09, 2026-10-08, 2026-10-07) — לבדוק את הפיד השבועי",
+      "title": "רכבת-המחקר לא-נמדדה: לא-נמצא קובץ-ממצאים מ-9 הימים האחרונים (2026-10-22, 2026-10-21, 2026-10-20, 2026-10-19, 2026-10-18, 2026-10-17, 2026-10-16, 2026-10-15, 2026-10-14) — לבדוק את הפיד השבועי",
       "riskClass": "SAFE",
       "value": 3,
       "effort": 1,
@@ -182,24 +233,9 @@
       "executableBy": "next-retro"
     },
     {
-      "id": "bus-sandbox-flow-map",
+      "id": "bus-fleethq-digest",
       "source": "bus-registry (A)",
-      "title": "פיד אדום: sandbox-flow-map — HTTP 404",
-      "riskClass": "MACHINE-PREP",
-      "value": 7,
-      "effort": 1,
-      "ownerWordRequired": false,
-      "status": "OPEN",
-      "executableBy": "next-retro",
-      "detail": {
-        "ageHours": null,
-        "httpStatus": 404
-      }
-    },
-    {
-      "id": "bus-sandbox-lessons-ledger",
-      "source": "bus-registry (A)",
-      "title": "פיד אדום: sandbox-lessons-ledger — HTTP 404",
+      "title": "פיד אדום: fleethq-digest — HTTP 404",
       "riskClass": "MACHINE-PREP",
       "value": 7,
       "effort": 1,
@@ -214,7 +250,7 @@
     {
       "id": "bus-sandbox-probe-blurt",
       "source": "bus-registry (A)",
-      "title": "פיד אדום: sandbox-probe-blurt — לא-נמצא ב-2 תאריכים אחרונים (2026-10-15, 2026-10-14)",
+      "title": "פיד אדום: sandbox-probe-blurt — לא-נמצא ב-2 תאריכים אחרונים (2026-10-22, 2026-10-21)",
       "riskClass": "MACHINE-PREP",
       "value": 7,
       "effort": 1,
@@ -229,7 +265,7 @@
     {
       "id": "bus-sandbox-probe-hive",
       "source": "bus-registry (A)",
-      "title": "פיד אדום: sandbox-probe-hive — לא-נמצא ב-2 תאריכים אחרונים (2026-10-15, 2026-10-14)",
+      "title": "פיד אדום: sandbox-probe-hive — לא-נמצא ב-2 תאריכים אחרונים (2026-10-22, 2026-10-21)",
       "riskClass": "MACHINE-PREP",
       "value": 7,
       "effort": 1,
@@ -244,7 +280,7 @@
     {
       "id": "bus-sandbox-research-findings",
       "source": "bus-registry (A)",
-      "title": "פיד אדום: sandbox-research-findings — לא-נמצא ב-9 תאריכים אחרונים (2026-10-15, 2026-10-14, 2026-10-13, 2026-10-12, 2026-10-11, 2026-10-10, 2026-10-09, 2026-10-08, 2026-10-07)",
+      "title": "פיד אדום: sandbox-research-findings — לא-נמצא ב-9 תאריכים אחרונים (2026-10-22, 2026-10-21, 2026-10-20, 2026-10-19, 2026-10-18, 2026-10-17, 2026-10-16, 2026-10-15, 2026-10-14)",
       "riskClass": "MACHINE-PREP",
       "value": 7,
       "effort": 1,
@@ -255,6 +291,190 @@
         "ageHours": null,
         "httpStatus": 404
       }
+    },
+    {
+      "id": "gate-04-private-16-recovery-meta",
+      "source": "GATE-STATUS",
+      "title": "private-16 vault-chain/recovery-meta.json",
+      "riskClass": "MACHINE-PREP",
+      "value": 8.5,
+      "effort": 2,
+      "ownerWordRequired": true,
+      "proposal": {
+        "kind": "gate",
+        "ref": "sovereign/GATE-STATUS.json#gate-04-private-16-recovery-meta"
+      },
+      "status": "OPEN",
+      "executableBy": "owner-after-prep"
+    },
+    {
+      "id": "bus-sandbox-profit-oracle",
+      "source": "bus-registry (A)",
+      "title": "פיד מיושן: sandbox-profit-oracle — מיושן: 253h מעל החוק (24h)",
+      "riskClass": "MACHINE-PREP",
+      "value": 4,
+      "effort": 1,
+      "ownerWordRequired": false,
+      "status": "OPEN",
+      "executableBy": "next-retro",
+      "detail": {
+        "ageHours": 253.3,
+        "httpStatus": 200
+      }
+    },
+    {
+      "id": "WO-Sandbox-reds",
+      "source": "work-orders.json (Sandbox raw)",
+      "title": "רפא 3 ריצות-אדומות (48ש) ב-Sandbox",
+      "riskClass": "MACHINE-PREP",
+      "value": 7,
+      "effort": 2,
+      "ownerWordRequired": false,
+      "status": "OPEN",
+      "executableBy": "owner-after-prep",
+      "detail": {
+        "area": "Sandbox",
+        "priority": "P1",
+        "why": "ריצות-אדומות-חוזרות = עורק-שקט-שנפל — הכל-חייב-לפעול",
+        "acceptance": "ריצה-ירוקה-מלאה + שורת-שורש-בפנקס ops/AGENT-LEDGER.md"
+      }
+    },
+    {
+      "id": "WO-saos-runtime-reds",
+      "source": "work-orders.json (Sandbox raw)",
+      "title": "רפא 3 ריצות-אדומות (48ש) ב-saos-runtime",
+      "riskClass": "MACHINE-PREP",
+      "value": 7,
+      "effort": 2,
+      "ownerWordRequired": false,
+      "status": "OPEN",
+      "executableBy": "owner-after-prep",
+      "detail": {
+        "area": "saos-runtime",
+        "priority": "P1",
+        "why": "ריצות-אדומות-חוזרות = עורק-שקט-שנפל — הכל-חייב-לפעול",
+        "acceptance": "ריצה-ירוקה-מלאה + שורת-שורש-בפנקס ops/AGENT-LEDGER.md"
+      }
+    },
+    {
+      "id": "gate-02-actions-billing",
+      "source": "GATE-STATUS",
+      "title": "חיוב-Actions",
+      "riskClass": "OWNER-WORD",
+      "value": 9.5,
+      "effort": 1,
+      "ownerWordRequired": true,
+      "proposal": {
+        "kind": "gate",
+        "ref": "sovereign/GATE-STATUS.json#gate-02-actions-billing"
+      },
+      "status": "OPEN",
+      "executableBy": "owner-only"
+    },
+    {
+      "id": "gate-03-r11-rotation-9-soldiers",
+      "source": "GATE-STATUS",
+      "title": "סבבת-מפתות R11 + 9-חיילים tx_missing_owner_auth (acct-01, acct-02, acct-03…",
+      "riskClass": "OWNER-WORD",
+      "value": 9,
+      "effort": 1,
+      "ownerWordRequired": true,
+      "proposal": {
+        "kind": "gate",
+        "ref": "sovereign/GATE-STATUS.json#gate-03-r11-rotation-9-soldiers"
+      },
+      "status": "OPEN",
+      "executableBy": "owner-only"
+    },
+    {
+      "id": "gate-05-stasis-convert",
+      "source": "GATE-STATUS",
+      "title": "STASIS-lane convert",
+      "riskClass": "OWNER-WORD",
+      "value": 8,
+      "effort": 1,
+      "ownerWordRequired": true,
+      "proposal": {
+        "kind": "gate",
+        "ref": "sovereign/GATE-STATUS.json#gate-05-stasis-convert"
+      },
+      "status": "OPEN",
+      "executableBy": "owner-only"
+    },
+    {
+      "id": "gate-06-stasis-transfers",
+      "source": "GATE-STATUS",
+      "title": "STASIS-lane transfers",
+      "riskClass": "OWNER-WORD",
+      "value": 7.5,
+      "effort": 1,
+      "ownerWordRequired": true,
+      "proposal": {
+        "kind": "gate",
+        "ref": "sovereign/GATE-STATUS.json#gate-06-stasis-transfers"
+      },
+      "status": "OPEN",
+      "executableBy": "owner-only"
+    },
+    {
+      "id": "gate-07-stasis-votes",
+      "source": "GATE-STATUS",
+      "title": "STASIS-lane votes",
+      "riskClass": "OWNER-WORD",
+      "value": 7,
+      "effort": 1,
+      "ownerWordRequired": true,
+      "proposal": {
+        "kind": "gate",
+        "ref": "sovereign/GATE-STATUS.json#gate-07-stasis-votes"
+      },
+      "status": "OPEN",
+      "executableBy": "owner-only"
+    },
+    {
+      "id": "gate-09-blurt-ignition",
+      "source": "GATE-STATUS",
+      "title": "Blurt",
+      "riskClass": "OWNER-WORD",
+      "value": 6,
+      "effort": 1,
+      "ownerWordRequired": true,
+      "proposal": {
+        "kind": "gate",
+        "ref": "sovereign/GATE-STATUS.json#gate-09-blurt-ignition"
+      },
+      "status": "OPEN",
+      "executableBy": "owner-only"
+    },
+    {
+      "id": "gate-10-private-4-vault-db",
+      "source": "GATE-STATUS",
+      "title": "private-4",
+      "riskClass": "OWNER-WORD",
+      "value": 5.5,
+      "effort": 1,
+      "ownerWordRequired": true,
+      "proposal": {
+        "kind": "gate",
+        "ref": "sovereign/GATE-STATUS.json#gate-10-private-4-vault-db"
+      },
+      "status": "OPEN",
+      "executableBy": "owner-only"
+    },
+    {
+      "id": "gate-11-saos-agents-distribution",
+      "source": "GATE-STATUS",
+      "title": "saos-agents",
+      "riskClass": "OWNER-WORD",
+      "value": 5,
+      "effort": 1,
+      "ownerWordRequired": true,
+      "proposal": {
+        "kind": "gate",
+        "ref": "sovereign/GATE-STATUS.json#gate-11-saos-agents-distribution"
+      },
+      "status": "OPEN",
+      "executableBy": "owner-only"
     }
   ],
   "executed": [
@@ -280,7 +500,7 @@
     }
   ],
   "proposal": {
-    "file": "2026-10-15-research-feed-unavailable.md",
+    "file": "2026-10-22-research-feed-unavailable.md",
     "item": "research-feed-unavailable"
   }
 }

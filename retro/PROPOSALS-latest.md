@@ -1,21 +1,21 @@
-# הצעה: רכבת-המחקר לא-נמדדה: לא-נמצא קובץ-ממצאים מ-9 הימים האחרונים (2026-10-15, 2026-10-14, 2026-10-13, 2026-10-12, 2026-10-11, 2026-10-10, 2026-10-09, 2026-10-08, 2026-10-07) — לבדוק את הפיד השבועי
+# הצעה: רכבת-המחקר לא-נמדדה: לא-נמצא קובץ-ממצאים מ-9 הימים האחרונים (2026-10-22, 2026-10-21, 2026-10-20, 2026-10-19, 2026-10-18, 2026-10-17, 2026-10-16, 2026-10-15, 2026-10-14) — לבדוק את הפיד השבועי
 
 - **מזהה**: `research-feed-unavailable` · **מחלקת-סיכון**: SAFE (בטוח) · **דבר-בעלים**: לא
 - **מקור**: sandbox-research-findings · **ערך/מאמץ**: 3/1
-- **נוצר**: 2026-10-15 12:51 UTC על-ידי office/retro.mjs (office-retro (zai-11d · E1-deed zai-13c)) · SAOS-OFFICE-RETRO/1
+- **נוצר**: 2026-10-22 13:11 UTC על-ידי office/retro.mjs (office-retro (zai-11d · E1-deed zai-13c)) · SAOS-OFFICE-RETRO/1
 
 ## הקשר נמדד (מה-חקר)
 
-- אוטובוס: 10 green · 0 amber · 5 red · 1 grey — מקור-רישום: fallback-embedded (registry לא-נגיש: HTTP 404 (private-7 פרטי — גם עם-token נדחה) — משתמש ב-snapshot מוטמע (…)
-  - sandbox-probe-hive: red — לא-נמצא ב-2 תאריכים אחרונים (2026-10-15, 2026-10-14)
-  - sandbox-probe-blurt: red — לא-נמצא ב-2 תאריכים אחרונים (2026-10-15, 2026-10-14)
-  - sandbox-research-findings: red — לא-נמצא ב-9 תאריכים אחרונים (2026-10-15, 2026-10-14, 2026-10-13, 2026-10-12, 2026-10-11, 2026-10-10, 2026-10-09, 2026-10-08, 2026-10-07)
-  - sandbox-flow-map: red — HTTP 404
-  - sandbox-lessons-ledger: red — HTTP 404
+- אוטובוס: 11 green · 1 amber · 4 red · 1 grey — מקור-רישום: live-zip (registry חי מ-private-7 raw (200, 480ms))
+  - fleethq-digest: red — HTTP 404
+  - sandbox-probe-hive: red — לא-נמצא ב-2 תאריכים אחרונים (2026-10-22, 2026-10-21)
+  - sandbox-probe-blurt: red — לא-נמצא ב-2 תאריכים אחרונים (2026-10-22, 2026-10-21)
+  - sandbox-research-findings: red — לא-נמצא ב-9 תאריכים אחרונים (2026-10-22, 2026-10-21, 2026-10-20, 2026-10-19, 2026-10-18, 2026-10-17, 2026-10-16, 2026-10-15, 2026-10-14)
   - console-mirror-status: grey — private-raw — ה-token בסביבה אינו-מוסמך לריפו זה (לא-ידוע, כנה)
-- מחקר: לא-נמדד — לא-נמצא קובץ-ממצאים מ-9 הימים האחרונים (2026-10-15, 2026-10-14, 2026-10-13, 2026-10-12, 2026-10-11, 2026-10-10, 2026-10-09, 2026-10-08, 2026-10-07)
-- שערים: GATE-STATUS לא-נגיש (HTTP 404) — מצבי-השערים לא-ידועים כעת (מקור-פרטי; כנה, לא-מדומה)
-- דיג'סט: חי מ-2026-10-15 12:09 UTC
+  - sandbox-profit-oracle: amber — מיושן: 253h מעל החוק (24h)
+- מחקר: לא-נמדד — לא-נמצא קובץ-ממצאים מ-9 הימים האחרונים (2026-10-22, 2026-10-21, 2026-10-20, 2026-10-19, 2026-10-18, 2026-10-17, 2026-10-16, 2026-10-15, 2026-10-14)
+- שערים: gate-01-steem-active-wif-domain=MEASURED-NOT-IN-MACHINE · treasury-ladder ignition live (owner delivery still opens head book), gate-02-actions-billing=WAITING-OWNER, gate-03-r11-rotation-9-soldiers=WAITING-OWNER, gate-04-private-16-recovery-meta=MACHINE-READY, gate-05-stasis-convert=WAITING-OWNER, gate-06-stasis-transfers=WAITING-OWNER, gate-07-stasis-votes=WAITING-OWNER, gate-08-stasis-delegations=DISSOLVED, gate-09-blurt-ignition=WAITING-OWNER, gate-10-private-4-vault-db=WAITING-OWNER, gate-11-saos-agents-distribution=WAITING-OWNER
+- דיג'סט: digest.json לא-נגיש מה-Pages (404)
 
 ## תוכנית (צעדים)
 
