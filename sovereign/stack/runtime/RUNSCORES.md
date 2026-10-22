@@ -1,17 +1,17 @@
 # RUNSCORES — the harness scoring book
 
-- generatedAt: `2026-10-22T19:59:02.937Z`
-- STATE book age: 42min · api fetches: 8
-- counts: {"unknown":16,"healthy":151,"flaky":4,"critical":3,"watch":1}
+- generatedAt: `2026-10-22T20:49:32.903Z`
+- STATE book age: 93min · api fetches: 8
+- counts: {"unknown":16,"healthy":151,"flaky":3,"critical":4,"watch":1}
 
 | repo | workflow | class | lastConcl | lastRun |
 |---|---|---|---|---|
 | Domain | exposure-gate | critical | failure | 2026-10-22T18:34:28Z |
+| Domain | treasury-route | critical | failure | 2026-10-22T18:33:07Z |
 | Console | agents-watch | critical | cancelled | 2026-10-22T17:38:26Z |
 | Autonomy | selfhood | critical | cancelled | 2026-10-22T17:39:48Z |
 | FleetHQ | office-retro | flaky | failure | 2026-10-22T14:01:08Z |
 | Domain | fill-ledger-cron | flaky | failure | 2026-10-22T18:38:13Z |
-| Domain | treasury-route | flaky | failure | 2026-10-22T18:33:07Z |
 | Domain | estate-scrub | flaky | failure | 2026-10-22T17:12:00Z |
 | FleetHQ | runtime-pacemaker | healthy | success | 2026-10-22T19:14:29Z |
 | FleetHQ | self-book | healthy | success | 2026-10-22T19:06:53Z |
