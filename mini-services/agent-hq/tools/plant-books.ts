@@ -503,3 +503,50 @@ write('agents/scheduler-audit.json', {
 });
 
 console.log('[plant-books] done — all 22 books carry a real, measured heartbeat.');
+
+// ---- agents/execution-metrics.json — book #23: the execution-ledger freshness feed -----
+// Written for Domain/execution.html (owner directive, trace 1a1620ac9ca0c0f9): the pages
+// showed "ongoing activity" without done/not-done status. This book carries the MEASURED
+// side (worklog size, latest cycle, house heads) — the curated side lives in
+// Domain/execution-state.json, hand-renewed by every agent round.
+let worklogMetrics: Record<string, unknown> = { note: 'giant worklog unreadable at plant time' };
+for (const wl of ['/home/z/my-project/worklog.md', path.join(path.dirname(ROOT), 'my-project', 'worklog.md')]) {
+  try {
+    const txt = fs.readFileSync(wl, 'utf8');
+    const ids = [...txt.matchAll(/^Task ID:\s*(.+)$/gm)].map((m) => m[1].trim());
+    const head = execSync(`git -C /home/z/my-project log -1 --format='%h %cI' 2>/dev/null`, { shell: '/bin/bash', timeout: 4000 })
+      .toString().trim().split(' ');
+    worklogMetrics = {
+      path: wl,
+      recorded_cycles: ids.length,
+      latest_task_id: ids[ids.length - 1] ?? null,
+      giant_head: head[0] ?? null,
+      giant_head_at: head[1] ?? null,
+    };
+    break;
+  } catch { /* try next path, then honest note */ }
+}
+try {
+  const giantGit = (args: string) => execSync(`git -C /home/z/my-project ${args} 2>/dev/null`, { shell: '/bin/bash', timeout: 4000 }).toString().trim();
+  const dexGit = (args: string) => execSync(`git -C /home/z/work/saos-dex ${args} 2>/dev/null`, { shell: '/bin/bash', timeout: 4000 }).toString().trim();
+  write('agents/execution-metrics.json', {
+    at: NOW,
+    ok: true,
+    schema: 'execution-metrics/1',
+    law: 'measured side only — no curated content, no invented numbers',
+    worklog: worklogMetrics,
+    houses: {
+      giant: { head: giantGit('log -1 --format=%h'), dirty: giantGit('status --porcelain').split('\n').filter(Boolean).length },
+      saos_dex: { head: dexGit('log -1 --format=%h'), dirty: dexGit('status --porcelain').split('\n').filter(Boolean).length },
+      fleet_hq: { head: execSync('git -C /home/z/estate/FleetHQ log -1 --format=%h 2>/dev/null', { shell: '/bin/bash', timeout: 4000 }).toString().trim() },
+    },
+    feeds: {
+      external_profit_public: 'saos-dex:grids/state/external-profit-public.json (workflow external-profit-publish, every 2h)',
+      execution_ledger: 'Domain:execution-state.json (curated, agent-renewed per round)',
+      execution_page: 'Domain:execution.html (stale banner >48h by law)',
+    },
+  });
+  console.log('[plant-books] + agents/execution-metrics.json (book #23, execution-ledger feed)');
+} catch (e) {
+  console.error('[plant-books] execution-metrics honest-skip:', String(e).slice(0, 120));
+}
