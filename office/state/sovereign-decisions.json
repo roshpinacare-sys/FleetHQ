@@ -106,10 +106,19 @@
    "id": "D3b",
    "area": "custody",
    "title": "escrow של PERSONAS_KEY לכספת",
-   "status": "armed-conditional",
+   "status": "released → escrow-blocked-by-wall (routing)",
    "decidedAt": "2026-10-12T00:29:25.281Z",
    "trigger": "חלון-הkeeper הבא של Domain — הערך חי כסוד Domain (write-only בעיצוב); המסילה הבעלים-על-יודע מייצאת ואוטמת ל-vault ה-GEN-2",
-   "law": "לא מזויף: אין-קריאה-חזרה של סודות GitHub — ה-escrow מתבצע רק מהמקום שבו הערך נגיש לגיטימית"
+   "law": "לא מזויף: אין-קריאה-חזרה של סודות GitHub — ה-escrow מתבצע רק מהמקום שבו הערך נגיש לגיטימית",
+   "releasedAt": "2026-10-22T08:50:00.000Z",
+   "ownerOrder": "1a1620a81bc92505 + 1a1629d9b4a681a1 (שחרר השעיות, בצע הכל)",
+   "measured": {
+    "platformWall": "any workflow referencing secrets.PERSONAS_KEY → startup_failure (bisected ×7 dispatches; secret unusable since creation 2026-10-11; discriminated env-name vs secret-reference)",
+    "candidates": "persona-store resolve order exhausted: MAIN_KEY + WEAVE_SEAL_PASSPHRASE recovered via escrow lanes and measured — neither opens the T3 seal; 16 vault-held candidates + 4 wraps checked",
+    "delivered": "escrow lane PROVEN end-to-end (Domain vault-transfer ECDH dual-recipient + Zip WSP lane + local unseal chain); MAIN_KEY(=WSP, measured identical) double-sealed into vault-home custody-intake; recipient keypair vault-home-1 anchored (CUSTODY-LEDGER c369ea6)",
+    "doctrineImpact": "sealed T3 doctrine is legacy — superseded by R255 in-code canon (personas.mjs); zero operational impact"
+   },
+   "routing": "owner per law 9: recreate the PERSONAS_KEY secret (delete+recreate) or supply the value → one dispatch closes the escrow (step ready); SLOT doc: vault-home custody-intake/personas.SLOT.md"
   },
   {
    "id": "D4",
@@ -152,7 +161,7 @@
    "from": "N2",
    "area": "economics",
    "title": "החלטת-המימון D-023 — escrow ≥1 SBD",
-   "status": "armed-conditional → mandate issued",
+   "status": "released → armed-awaiting-funding (measured)",
    "decidedAt": "2026-10-12T00:29:25.281Z",
    "reasoning": "ההחלטה עצמה (לא ההפניה): D-023 מאושר — ה-escrow (≥1 SBD על מסילת-ה-convert, התשואה המוגדרת-ביותר: edge +40.8% נמדד) יבוצע על-ידי מסילת-ה-convert של saos-dex (המסילות פתוחות לפי הבעלים trace 1a12…9241 — FULL LIFT). החוכמה: ה-escrow הוא ב-SBD (נמדד: 91.195 ≥ 1 — זמין) ואינו מעמיק את חריגת-רצפת-ה-STEEM (55.2 < 90); ההוצאה מתוזמנת עם סעיפי-שמירה, והריבונות לא חותמת על-השרשרת מחוץ למסילה-החמושה שלה.",
    "measured": {
@@ -169,7 +178,18 @@
      "מדידת-רצפה חוזרת אחרי-ביצוע"
     ],
     "laneProtocol": "SAOS-GRID-PARAMS/1 + STASIS brake obeys — אפס דריסת-מסילות"
-   }
+   },
+   "releasedAt": "2026-10-22T08:50:00.000Z",
+   "ownerOrder": "1a1620a81bc92505 + 1a1629d9b4a681a1 (שחרר השעיות, בצע הכל)",
+   "measuredNow": {
+    "liquidSbd": 0.568,
+    "atDecision": 91.195,
+    "whereWent": "T-91 redeploy ladder consumed the SBD into the buy-book (pnl: 161 fills, 166.055 SBD → 1631.838 STEEM) + power-up (SP 6.74M VESTS) — open orders now 0, savings 0",
+    "precondition": "liquid SBD 0.568 < CONVERT_MIN_SBD 1 + reserve 0.5 → planConvert would verdict HOLD dust-or-capped even if edge armed; zero fake execution, zero rail override (STASIS obeys)",
+    "edgeNow": "edgeBps=0 (feed 0.104081 vs parity) — below-enter-band per convert-plan.json",
+    "floorRecheck": "STEEM 93.295 > 90 floor (recovered above floor since decision measured 55.2)"
+   },
+   "armLive": "mandate injected as lane law: first convert fires automatically when liquid SBD ≥ 1.5 AND edge ≥ enter-band (150bps), bounded ≤1 SBD, receipt to dex/pnl-desk + decisions ledger + floor re-measure — per D-023 guards, zero drift"
   },
   {
    "id": "D1-watch",
