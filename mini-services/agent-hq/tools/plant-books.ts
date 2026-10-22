@@ -517,7 +517,8 @@ for (const wl of ['/home/z/my-project/worklog.md', path.join(path.dirname(ROOT),
     const head = execSync(`git -C /home/z/my-project log -1 --format='%h %cI' 2>/dev/null`, { shell: '/bin/bash', timeout: 4000 })
       .toString().trim().split(' ');
     worklogMetrics = {
-      path: wl,
+      // public-surface law (wave 19.68): host paths never published — lane-relative ref only
+      path: 'worklog.md (operator-side mount; host path withheld per public-surface law — wave 19.68)',
       recorded_cycles: ids.length,
       latest_task_id: ids[ids.length - 1] ?? null,
       giant_head: head[0] ?? null,
