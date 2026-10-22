@@ -1,13 +1,12 @@
 {
- "at": "2026-10-20T12:03:43.517Z",
- "finishedAt": "2026-10-20T12:04:37.660Z",
+ "at": "2026-10-22T01:22:58.938Z",
+ "finishedAt": "2026-10-22T01:23:15.956Z",
  "checks": {
   "boot": {
    "app": {
     "wasUp": false,
-    "spawned": true,
-    "pid": 13801,
-    "note": "office app booted by selfcheck (it must always work)"
+    "spawned": false,
+    "note": "mem-gate: 1252436kB available < 2.5GB — spine outranks office, skipping boot"
    },
    "foreman": {
     "wasUp": true,
@@ -17,12 +16,12 @@
   "security": {
    "exit": 1,
    "verdict": "RED",
-   "detail": "SECURITY-REGRESSION: 1 FAILURE(S) (76/77)"
+   "detail": "SECURITY-REGRESSION: 3 FAILURE(S) (70/73)"
   },
   "connectivity": {
    "exit": 0,
    "verdictHe": "נמדדו 12 קבצי-קוד יתומים ו-3 ארטיפקטים ללא צרכן",
-   "sha16": "a3b711849c803d46"
+   "sha16": "f3cc6919cce758a9"
   },
   "freshOracle": {
    "exit": 0,
@@ -30,8 +29,8 @@
   },
   "silence": {
    "exit": 2,
-   "summary": "6 ALARM(S): beat/money-watch: no data (cannot prove alive) · beat/dex-mirror: no data (cannot prove alive) · beat/grid-pulse: no data (cannot prove alive) · beat/office-ci-lite: no data (cannot prove alive) · beat/office-heartbeat: no data (cannot prove alive) · roster: unresolved — no FLEET_ROSTER_MAP in env/estate/.env.local and no local map file; post voices unmeasurable",
-   "alarms": 6
+   "summary": "8 ALARM(S): port/fleethq:3002: DOWN (:3002) · port/recruit: DOWN (:3041) · beat/money-watch: no data (cannot prove alive) · beat/dex-mirror: no data (cannot prove alive) · beat/grid-pulse: no data (cannot prove alive) · beat/office-ci-lite: no data (cannot prove alive) · beat/office-heartbeat: no data (cannot prove alive) · roster: unresolved — no FLEET_ROSTER_MAP in env/estate/.env.local and no local map file; post voices unmeasurable",
+   "alarms": 8
   },
   "gitHealth": {
    "exit": 0,
@@ -46,14 +45,14 @@
     {
      "name": "Domain",
      "attached": true,
-     "ahead": 0,
-     "behind": 0,
+     "ahead": 3,
+     "behind": 14,
      "fsck": "ok"
     },
     {
      "name": "FleetHQ",
      "attached": true,
-     "ahead": 0,
+     "ahead": 2,
      "behind": 0,
      "fsck": "ok"
     }
