@@ -522,6 +522,25 @@ const mark = (name: string, key: string) => {
   try { writeFileSync(STATE, JSON.stringify(lastKey)); } catch { /* best-effort: in-memory mark still holds for this process */ }
 };
 
+// grid-dispatch (task-20): dispatch the private saos-dex dex-grid workflow so
+// the ORIGINAL grid keeps its daily atomic refresh cadence without a manual
+// operator. Honest verdicts to the log; a non-204 is a REJECTION, never silence.
+const GRID_TOKEN_PATHS = ["/home/z/my-project/upload/גיטראש.txt"];
+function gridDispatch() {
+  let token = "";
+  for (const p of GRID_TOKEN_PATHS) {
+    try { const t = readFileSync(p, "utf8").trim(); if (t.length >= 30) { token = t; break; } } catch { /* next candidate */ }
+  }
+  if (!token) { log("grid-dispatch: no dispatch token found — fail-loud skip (grid refresh will age until the twin takeover)"); return; }
+  fetch("https://api.github.com/repos/roshpinacare-sys/saos-dex/actions/workflows/dex-grid.yml/dispatches", {
+    method: "POST",
+    headers: { "Authorization": `token ${token}`, "Accept": "application/vnd.github+json" },
+    body: JSON.stringify({ ref: "main" }),
+  }).then(r => {
+    log(`grid-dispatch: HTTP ${r.status} ${r.status === 204 ? "ACCEPTED — dex-grid running (original stays alive)" : "REJECTED — inspect token/scope"}`);
+  }).catch(e => { log(`grid-dispatch: FAIL ${e instanceof Error ? e.message : String(e)}`); });
+}
+
 function tick() {
   const d = now();
   const mi = d.getUTCMinutes(), ho = d.getUTCHours();
@@ -551,6 +570,15 @@ function tick() {
   if (mi === 21) { const k = keyOf(d, "h"); if (!fired("sbx-tick", k)) { mark("sbx-tick", k); runSandbox("sbx-tick", "engine/sovereign-tick.mjs", 3); } }
   if (mi === 40) { const k = keyOf(d, "h"); if (!fired("sbx-wallet", k)) { mark("sbx-wallet", k); runSandbox("sbx-wallet", "engine/wallet-verify.mjs", 9); } }
   if (mi === 25 && ho % 2 === 0) { const k = keyOf(d, "h"); if (!fired("sbx-fleet", k)) { mark("sbx-fleet", k); runSandbox("sbx-fleet", "engine/fleet-verify.mjs", 14); } }
+  // ---- grid-dispatch (task-20, 2026-10-22): the private saos-dex dex-grid is
+  // dispatch-only since R75 (no schedule) — without a dispatcher the external
+  // grid orders drift stale for up to 23h until the Domain twin takes over,
+  // and the ORIGINAL should own its grid (shift-guard). Dispatch every 4h at
+  // :47 (02:47/06:47/…/22:47 UTC ≈ 6 runs/day × ~2min ≈ 12 private minutes/day —
+  // far under the old cadences that burned 1,440/month). The twin's 23h
+  // takeover stays the safety net; this beat keeps the original alive BEFORE
+  // the handoff is ever needed. Token read at runtime only (no secret in git).
+  if (mi === 47 && ho % 4 === 2) { const k = keyOf(d, "h"); if (!fired("grid-dispatch", k)) { mark("grid-dispatch", k); gridDispatch(); } }
   // ---- canonical-chain sealer (Task 7, 2026-10-16): the econ engine (sandbox
   // Domain submodule) mints ~40k tx/h (~20MB/h). Without an in-submodule seal
   // the ledger grows uncommitted (the GH001 race vector that killed pushes
