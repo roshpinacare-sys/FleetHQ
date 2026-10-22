@@ -1,16 +1,16 @@
 # RUNSCORES — the harness scoring book
 
-- generatedAt: `2026-10-22T10:58:50.959Z`
-- STATE book age: 43min · api fetches: 5
-- counts: {"unknown":10,"healthy":130,"critical":4,"flaky":1}
+- generatedAt: `2026-10-22T12:27:32.174Z`
+- STATE book age: 132min · api fetches: 5
+- counts: {"unknown":10,"healthy":130,"critical":5}
 
 | repo | workflow | class | lastConcl | lastRun |
 |---|---|---|---|---|
 | Console | agents-watch | critical | cancelled | 2026-10-22T05:22:34Z |
+| Autonomy | artery-participation | critical | failure | 2026-10-22T10:02:24Z |
 | Autonomy | artery-decision-truth | critical | failure | 2026-10-22T10:02:22Z |
 | Autonomy | value-scan | critical | failure | 2026-10-22T10:02:20Z |
 | Autonomy | fleet-yield | critical | failure | 2026-10-22T07:24:52Z |
-| Autonomy | artery-participation | flaky | failure | 2026-10-22T10:02:24Z |
 | FleetHQ | runtime-pacemaker | healthy | success | 2026-10-22T10:13:48Z |
 | FleetHQ | self-book | healthy | success | 2026-10-22T10:13:34Z |
 | FleetHQ | sovereign-decider | healthy | success | 2026-10-22T10:13:13Z |
