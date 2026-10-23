@@ -1,6 +1,6 @@
 {
  "schema": "fleet.fresh-oracle/1",
- "at": "2026-10-23T11:56:58.715Z",
+ "at": "2026-10-23T16:35:04.805Z",
  "law": "FRESH only if sha256(live bytes) == sha256(committed deploy-ref bytes) AND no ops doc MISSING; DRIFT=RED (200-with-different-bytes); UNREACHABLE=UNKNOWN (network, retried once, reason kept); ops-doc age rows are honest amber (MISSING alone flips exit) — never faked green",
  "results": [
   {
@@ -11,10 +11,10 @@
    "committedStatus": 200,
    "liveError": null,
    "committedError": null,
-   "liveSha16": "4433ea62565eb79c",
-   "committedSha16": "1d034461d444bd68",
-   "liveBytes": 50056,
-   "verdict": "DRIFT"
+   "liveSha16": "399f7e09f2a2babe",
+   "committedSha16": "399f7e09f2a2babe",
+   "liveBytes": 49914,
+   "verdict": "MATCH"
   },
   {
    "name": "FleetHQ potential board",
@@ -24,10 +24,10 @@
    "committedStatus": 200,
    "liveError": null,
    "committedError": null,
-   "liveSha16": "46fb8f1597b5e2f1",
-   "committedSha16": "6f6725d6a84dc452",
-   "liveBytes": 16592,
-   "verdict": "DRIFT"
+   "liveSha16": "cc9b53fdc755ed15",
+   "committedSha16": "cc9b53fdc755ed15",
+   "liveBytes": 16651,
+   "verdict": "MATCH"
   },
   {
    "name": "FleetHQ potential data",
@@ -37,10 +37,10 @@
    "committedStatus": 200,
    "liveError": null,
    "committedError": null,
-   "liveSha16": "55365028cbc73d04",
-   "committedSha16": "d356071f783205ad",
-   "liveBytes": 22737,
-   "verdict": "DRIFT"
+   "liveSha16": "6a6842d58d55ac90",
+   "committedSha16": "6a6842d58d55ac90",
+   "liveBytes": 22796,
+   "verdict": "MATCH"
   },
   {
    "name": "Domain window",
@@ -111,7 +111,7 @@
    "sha16": "19120f352c4aa28b",
    "rawStatus": 200,
    "lastCommitAt": "2026-10-12T13:00:25Z",
-   "ageDays": 10,
+   "ageDays": 11,
    "verdict": "AGING"
   },
   {
@@ -120,7 +120,7 @@
    "sha16": "65b03d355f807de7",
    "rawStatus": 200,
    "lastCommitAt": "2026-10-12T13:00:25Z",
-   "ageDays": 10,
+   "ageDays": 11,
    "verdict": "AGING"
   },
   {
@@ -129,7 +129,7 @@
    "sha16": "08e151942faf95bf",
    "rawStatus": 200,
    "lastCommitAt": "2026-10-12T12:53:19Z",
-   "ageDays": 10,
+   "ageDays": 11,
    "verdict": "AGING"
   },
   {
@@ -147,19 +147,19 @@
    "sha16": "6be0baa467056fa4",
    "rawStatus": 200,
    "lastCommitAt": "2026-10-12T12:53:19Z",
-   "ageDays": 10,
+   "ageDays": 11,
    "verdict": "AGING"
   }
  ],
  "summary": {
   "checked": 7,
-  "match": 4,
-  "drift": 3,
+  "match": 7,
+  "drift": 0,
   "missing": 0,
   "unreachable": 0,
   "opsDocsMissing": 0,
   "opsDocsStale": 0,
-  "verdict": "STALE-OR-BROKEN"
+  "verdict": "FRESH"
  },
  "method": "https GET live URL + raw.githubusercontent deploy ref → sha256-16 byte equality"
 }
