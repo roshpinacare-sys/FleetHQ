@@ -1,61 +1,25 @@
 {
   "protocol": "SAOS-SKILLS/1 (aeon aeon.yml equivalent)",
-  "generatedAt": "2026-10-23T07:39:02.625Z",
+  "generatedAt": "2026-10-23T10:31:55.454Z",
   "strategy": "sovereign/stack/runtime/STRATEGY.md",
   "skills": [
-    {
-      "name": "sovereign-selfscan",
-      "repo": "FleetHQ",
-      "schedule": "cron-managed",
-      "mode": "write",
-      "health": "unknown",
-      "lastConcl": "—",
-      "lastRun": "2026-10-23T07:36:03Z"
-    },
-    {
-      "name": "sovereign-decider",
-      "repo": "FleetHQ",
-      "schedule": "cron-managed",
-      "mode": "write",
-      "health": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T07:33:11Z"
-    },
-    {
-      "name": "value-scan",
-      "repo": "FleetHQ",
-      "schedule": "cron-managed",
-      "mode": "write",
-      "health": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T07:32:26Z"
-    },
     {
       "name": "runtime-pacemaker",
       "repo": "FleetHQ",
       "schedule": "cron-managed",
       "mode": "read-only",
-      "health": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T07:30:06Z"
-    },
-    {
-      "name": "opens-closer",
-      "repo": "FleetHQ",
-      "schedule": "cron-managed",
-      "mode": "read-only",
       "health": "unknown",
       "lastConcl": "—",
-      "lastRun": "2026-10-23T07:30:01Z"
+      "lastRun": "2026-10-23T09:51:37Z"
     },
     {
-      "name": "office-heartbeat",
+      "name": "sovereign-harness",
       "repo": "FleetHQ",
       "schedule": "cron-managed",
       "mode": "write",
       "health": "unknown",
       "lastConcl": "—",
-      "lastRun": "2026-10-23T07:29:46Z"
+      "lastRun": "2026-10-23T09:51:05Z"
     },
     {
       "name": "self-book",
@@ -64,7 +28,7 @@
       "mode": "read-only",
       "health": "healthy",
       "lastConcl": "success",
-      "lastRun": "2026-10-23T07:24:18Z"
+      "lastRun": "2026-10-23T09:51:04Z"
     },
     {
       "name": "claims-triage",
@@ -73,7 +37,34 @@
       "mode": "write",
       "health": "healthy",
       "lastConcl": "success",
-      "lastRun": "2026-10-23T07:21:25Z"
+      "lastRun": "2026-10-23T09:51:02Z"
+    },
+    {
+      "name": "sovereign-selfscan",
+      "repo": "FleetHQ",
+      "schedule": "cron-managed",
+      "mode": "write",
+      "health": "unknown",
+      "lastConcl": "—",
+      "lastRun": "2026-10-23T09:51:01Z"
+    },
+    {
+      "name": "sovereign-decider",
+      "repo": "FleetHQ",
+      "schedule": "cron-managed",
+      "mode": "write",
+      "health": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T09:50:14Z"
+    },
+    {
+      "name": "opens-closer",
+      "repo": "FleetHQ",
+      "schedule": "cron-managed",
+      "mode": "read-only",
+      "health": "unknown",
+      "lastConcl": "—",
+      "lastRun": "2026-10-23T09:50:12Z"
     },
     {
       "name": "silence-watchdog",
@@ -82,25 +73,25 @@
       "mode": "read-only",
       "health": "healthy",
       "lastConcl": "success",
-      "lastRun": "2026-10-23T06:57:18Z"
+      "lastRun": "2026-10-23T09:43:47Z"
     },
     {
-      "name": "sovereign-identity",
+      "name": "value-scan",
       "repo": "FleetHQ",
       "schedule": "cron-managed",
       "mode": "write",
       "health": "healthy",
       "lastConcl": "success",
-      "lastRun": "2026-10-23T06:32:34Z"
+      "lastRun": "2026-10-23T09:19:55Z"
     },
     {
-      "name": "sovereign-policy-gate",
+      "name": "office-ci",
       "repo": "FleetHQ",
       "schedule": "cron-managed",
-      "mode": "write",
+      "mode": "read-only",
       "health": "healthy",
       "lastConcl": "success",
-      "lastRun": "2026-10-23T06:28:36Z"
+      "lastRun": "2026-10-23T09:18:24Z"
     },
     {
       "name": "identity-patrol",
@@ -109,7 +100,34 @@
       "mode": "write",
       "health": "healthy",
       "lastConcl": "success",
-      "lastRun": "2026-10-23T06:28:26Z"
+      "lastRun": "2026-10-23T09:00:19Z"
+    },
+    {
+      "name": "sovereign-policy-gate",
+      "repo": "FleetHQ",
+      "schedule": "cron-managed",
+      "mode": "write",
+      "health": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T09:00:18Z"
+    },
+    {
+      "name": "sovereign-identity",
+      "repo": "FleetHQ",
+      "schedule": "cron-managed",
+      "mode": "write",
+      "health": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T07:58:03Z"
+    },
+    {
+      "name": "office-heartbeat",
+      "repo": "FleetHQ",
+      "schedule": "cron-managed",
+      "mode": "write",
+      "health": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T07:29:46Z"
     },
     {
       "name": "fresh-oracle",
@@ -121,67 +139,58 @@
       "lastRun": "2026-10-23T06:08:07Z"
     },
     {
-      "name": "sovereign-harness",
-      "repo": "FleetHQ",
+      "name": "pulse-bake",
+      "repo": "Domain",
       "schedule": "cron-managed",
       "mode": "write",
+      "health": "unknown",
+      "lastConcl": "—",
+      "lastRun": "2026-10-23T09:51:37Z"
+    },
+    {
+      "name": "public-pulse",
+      "repo": "Domain",
+      "schedule": "cron-managed",
+      "mode": "write",
+      "health": "unknown",
+      "lastConcl": "—",
+      "lastRun": "2026-10-23T09:51:36Z"
+    },
+    {
+      "name": "pf-artery-keeper",
+      "repo": "Domain",
+      "schedule": "cron-managed",
+      "mode": "read-only",
+      "health": "unknown",
+      "lastConcl": "—",
+      "lastRun": "2026-10-23T09:51:35Z"
+    },
+    {
+      "name": "office-artery",
+      "repo": "Domain",
+      "schedule": "cron-managed",
+      "mode": "read-only",
+      "health": "unknown",
+      "lastConcl": "—",
+      "lastRun": "2026-10-23T09:51:34Z"
+    },
+    {
+      "name": "arb-mesh",
+      "repo": "Domain",
+      "schedule": "cron-managed",
+      "mode": "read-only",
+      "health": "unknown",
+      "lastConcl": "—",
+      "lastRun": "2026-10-23T09:51:33Z"
+    },
+    {
+      "name": "agent9-fleet-truth",
+      "repo": "Domain",
+      "schedule": "cron-managed",
+      "mode": "read-only",
       "health": "healthy",
       "lastConcl": "success",
-      "lastRun": "2026-10-23T05:23:39Z"
-    },
-    {
-      "name": "office-window",
-      "repo": "FleetHQ",
-      "schedule": "cron-managed",
-      "mode": "write",
-      "health": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T00:04:55Z"
-    },
-    {
-      "name": "bidi-guardian",
-      "repo": "Domain",
-      "schedule": "cron-managed",
-      "mode": "read-only",
-      "health": "unknown",
-      "lastConcl": "—",
-      "lastRun": "2026-10-23T07:36:16Z"
-    },
-    {
-      "name": "pages-deploy",
-      "repo": "Domain",
-      "schedule": "cron-managed",
-      "mode": "read-only",
-      "health": "unknown",
-      "lastConcl": "—",
-      "lastRun": "2026-10-23T07:36:16Z"
-    },
-    {
-      "name": "site-link-audit",
-      "repo": "Domain",
-      "schedule": "cron-managed",
-      "mode": "read-only",
-      "health": "unknown",
-      "lastConcl": "—",
-      "lastRun": "2026-10-23T07:36:16Z"
-    },
-    {
-      "name": "exposure-gate",
-      "repo": "Domain",
-      "schedule": "cron-managed",
-      "mode": "read-only",
-      "health": "unknown",
-      "lastConcl": "—",
-      "lastRun": "2026-10-23T07:36:16Z"
-    },
-    {
-      "name": "identity-guard",
-      "repo": "Domain",
-      "schedule": "cron-managed",
-      "mode": "write",
-      "health": "unknown",
-      "lastConcl": "—",
-      "lastRun": "2026-10-23T07:36:16Z"
+      "lastRun": "2026-10-23T09:50:14Z"
     },
     {
       "name": "grid-sentinel",
@@ -190,7 +199,7 @@
       "mode": "read-only",
       "health": "unknown",
       "lastConcl": "—",
-      "lastRun": "2026-10-23T07:35:40Z"
+      "lastRun": "2026-10-23T09:50:07Z"
     },
     {
       "name": "office-worldbeat",
@@ -199,34 +208,7 @@
       "mode": "write",
       "health": "unknown",
       "lastConcl": "—",
-      "lastRun": "2026-10-23T07:32:21Z"
-    },
-    {
-      "name": "stale-watchdog",
-      "repo": "Domain",
-      "schedule": "cron-managed",
-      "mode": "read-only",
-      "health": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T07:32:09Z"
-    },
-    {
-      "name": "dex-mirror",
-      "repo": "Domain",
-      "schedule": "cron-managed",
-      "mode": "read-only",
-      "health": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T07:30:46Z"
-    },
-    {
-      "name": "dex-beat",
-      "repo": "Domain",
-      "schedule": "cron-managed",
-      "mode": "write",
-      "health": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T07:30:00Z"
+      "lastRun": "2026-10-23T09:48:00Z"
     },
     {
       "name": "dex-grid",
@@ -235,25 +217,25 @@
       "mode": "read-only",
       "health": "unknown",
       "lastConcl": "—",
-      "lastRun": "2026-10-23T07:29:01Z"
+      "lastRun": "2026-10-23T09:44:05Z"
     },
     {
-      "name": "office-pulse",
-      "repo": "Domain",
-      "schedule": "cron-managed",
-      "mode": "write",
-      "health": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T07:28:11Z"
-    },
-    {
-      "name": "moment-watch",
+      "name": "weave-anchor-lines",
       "repo": "Domain",
       "schedule": "cron-managed",
       "mode": "read-only",
       "health": "healthy",
       "lastConcl": "success",
-      "lastRun": "2026-10-23T07:25:49Z"
+      "lastRun": "2026-10-23T09:40:02Z"
+    },
+    {
+      "name": "social-audit",
+      "repo": "Domain",
+      "schedule": "cron-managed",
+      "mode": "read-only",
+      "health": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T09:39:39Z"
     },
     {
       "name": "treasury-route",
@@ -262,7 +244,7 @@
       "mode": "read-only",
       "health": "critical",
       "lastConcl": "failure",
-      "lastRun": "2026-10-23T07:25:22Z"
+      "lastRun": "2026-10-23T09:38:49Z"
     },
     {
       "name": "pages-quality-gate",
@@ -271,7 +253,457 @@
       "mode": "read-only",
       "health": "healthy",
       "lastConcl": "success",
-      "lastRun": "2026-10-23T07:25:21Z"
+      "lastRun": "2026-10-23T09:38:48Z"
+    },
+    {
+      "name": "weave-heart",
+      "repo": "Domain",
+      "schedule": "cron-managed",
+      "mode": "read-only",
+      "health": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T09:38:46Z"
+    },
+    {
+      "name": "moment-watch",
+      "repo": "Domain",
+      "schedule": "cron-managed",
+      "mode": "read-only",
+      "health": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T09:38:40Z"
+    },
+    {
+      "name": "stale-watchdog",
+      "repo": "Domain",
+      "schedule": "cron-managed",
+      "mode": "read-only",
+      "health": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T09:37:38Z"
+    },
+    {
+      "name": "fleet-heartbeat",
+      "repo": "Domain",
+      "schedule": "cron-managed",
+      "mode": "write",
+      "health": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T09:37:37Z"
+    },
+    {
+      "name": "fill-ledger-cron",
+      "repo": "Domain",
+      "schedule": "cron-managed",
+      "mode": "write",
+      "health": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T09:37:36Z"
+    },
+    {
+      "name": "sovereign-tick-cron",
+      "repo": "Domain",
+      "schedule": "cron-managed",
+      "mode": "read-only",
+      "health": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T09:37:35Z"
+    },
+    {
+      "name": "weave-mirror",
+      "repo": "Domain",
+      "schedule": "cron-managed",
+      "mode": "read-only",
+      "health": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T09:37:33Z"
+    },
+    {
+      "name": "tick-keeper",
+      "repo": "Domain",
+      "schedule": "cron-managed",
+      "mode": "read-only",
+      "health": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T09:37:03Z"
+    },
+    {
+      "name": "fleet-census-cron",
+      "repo": "Domain",
+      "schedule": "cron-managed",
+      "mode": "read-only",
+      "health": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T09:37:01Z"
+    },
+    {
+      "name": "dex-core",
+      "repo": "Domain",
+      "schedule": "cron-managed",
+      "mode": "read-only",
+      "health": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T09:36:59Z"
+    },
+    {
+      "name": "artery-integrity-twin",
+      "repo": "Domain",
+      "schedule": "cron-managed",
+      "mode": "read-only",
+      "health": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T09:36:58Z"
+    },
+    {
+      "name": "sandbox-arteries",
+      "repo": "Domain",
+      "schedule": "cron-managed",
+      "mode": "read-only",
+      "health": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T09:35:15Z"
+    },
+    {
+      "name": "network-census",
+      "repo": "Domain",
+      "schedule": "cron-managed",
+      "mode": "read-only",
+      "health": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T09:34:06Z"
+    },
+    {
+      "name": "office-pulse",
+      "repo": "Domain",
+      "schedule": "cron-managed",
+      "mode": "write",
+      "health": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T09:34:00Z"
+    },
+    {
+      "name": "recruit",
+      "repo": "Domain",
+      "schedule": "cron-managed",
+      "mode": "read-only",
+      "health": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T09:33:54Z"
+    },
+    {
+      "name": "sovereign-decider-twin",
+      "repo": "Domain",
+      "schedule": "cron-managed",
+      "mode": "write",
+      "health": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T09:33:47Z"
+    },
+    {
+      "name": "proof-pipeline",
+      "repo": "Domain",
+      "schedule": "cron-managed",
+      "mode": "read-only",
+      "health": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T09:33:30Z"
+    },
+    {
+      "name": "products-feed",
+      "repo": "Domain",
+      "schedule": "cron-managed",
+      "mode": "read-only",
+      "health": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T09:26:20Z"
+    },
+    {
+      "name": "treasury-arm",
+      "repo": "Domain",
+      "schedule": "cron-managed",
+      "mode": "read-only",
+      "health": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T09:17:11Z"
+    },
+    {
+      "name": "exposure-gate",
+      "repo": "Domain",
+      "schedule": "cron-managed",
+      "mode": "read-only",
+      "health": "critical",
+      "lastConcl": "failure",
+      "lastRun": "2026-10-23T09:12:54Z"
+    },
+    {
+      "name": "pages-deploy",
+      "repo": "Domain",
+      "schedule": "cron-managed",
+      "mode": "read-only",
+      "health": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T09:12:54Z"
+    },
+    {
+      "name": "identity-guard",
+      "repo": "Domain",
+      "schedule": "cron-managed",
+      "mode": "write",
+      "health": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T09:12:54Z"
+    },
+    {
+      "name": "bidi-guardian",
+      "repo": "Domain",
+      "schedule": "cron-managed",
+      "mode": "read-only",
+      "health": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T09:12:54Z"
+    },
+    {
+      "name": "site-link-audit",
+      "repo": "Domain",
+      "schedule": "cron-managed",
+      "mode": "read-only",
+      "health": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T09:12:53Z"
+    },
+    {
+      "name": "dex-xc",
+      "repo": "Domain",
+      "schedule": "cron-managed",
+      "mode": "read-only",
+      "health": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T09:07:34Z"
+    },
+    {
+      "name": "dex-activation",
+      "repo": "Domain",
+      "schedule": "cron-managed",
+      "mode": "read-only",
+      "health": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T09:00:22Z"
+    },
+    {
+      "name": "market-grid-cron",
+      "repo": "Domain",
+      "schedule": "cron-managed",
+      "mode": "read-only",
+      "health": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T08:53:07Z"
+    },
+    {
+      "name": "hive-beat-t21",
+      "repo": "Domain",
+      "schedule": "cron-managed",
+      "mode": "write",
+      "health": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T08:53:06Z"
+    },
+    {
+      "name": "earn-audit-cron",
+      "repo": "Domain",
+      "schedule": "cron-managed",
+      "mode": "read-only",
+      "health": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T08:53:05Z"
+    },
+    {
+      "name": "office-feed",
+      "repo": "Domain",
+      "schedule": "cron-managed",
+      "mode": "read-only",
+      "health": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T08:49:43Z"
+    },
+    {
+      "name": "cognition-beat",
+      "repo": "Domain",
+      "schedule": "cron-managed",
+      "mode": "write",
+      "health": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T08:38:24Z"
+    },
+    {
+      "name": "office-pulse-twin",
+      "repo": "Domain",
+      "schedule": "cron-managed",
+      "mode": "write",
+      "health": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T08:37:07Z"
+    },
+    {
+      "name": "grid-doctor",
+      "repo": "Domain",
+      "schedule": "cron-managed",
+      "mode": "read-only",
+      "health": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T08:30:24Z"
+    },
+    {
+      "name": "human-cadence",
+      "repo": "Domain",
+      "schedule": "cron-managed",
+      "mode": "read-only",
+      "health": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T08:23:40Z"
+    },
+    {
+      "name": "cloud-pulse",
+      "repo": "Domain",
+      "schedule": "cron-managed",
+      "mode": "write",
+      "health": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T08:09:04Z"
+    },
+    {
+      "name": "operator-console",
+      "repo": "Domain",
+      "schedule": "cron-managed",
+      "mode": "read-only",
+      "health": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T08:07:32Z"
+    },
+    {
+      "name": "dex-mirror",
+      "repo": "Domain",
+      "schedule": "cron-managed",
+      "mode": "read-only",
+      "health": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T07:58:04Z"
+    },
+    {
+      "name": "dex-watchdog",
+      "repo": "Domain",
+      "schedule": "cron-managed",
+      "mode": "read-only",
+      "health": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T07:57:15Z"
+    },
+    {
+      "name": "dex-router",
+      "repo": "Domain",
+      "schedule": "cron-managed",
+      "mode": "read-only",
+      "health": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T07:57:13Z"
+    },
+    {
+      "name": "daily-claim",
+      "repo": "Domain",
+      "schedule": "cron-managed",
+      "mode": "read-only",
+      "health": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T07:56:00Z"
+    },
+    {
+      "name": "dex-beat",
+      "repo": "Domain",
+      "schedule": "cron-managed",
+      "mode": "write",
+      "health": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T07:55:43Z"
+    },
+    {
+      "name": "agent9-truth-watchdog",
+      "repo": "Domain",
+      "schedule": "cron-managed",
+      "mode": "read-only",
+      "health": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T07:54:20Z"
+    },
+    {
+      "name": "agent-verify",
+      "repo": "Domain",
+      "schedule": "cron-managed",
+      "mode": "read-only",
+      "health": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T07:53:19Z"
+    },
+    {
+      "name": "autonomy-guardian",
+      "repo": "Domain",
+      "schedule": "cron-managed",
+      "mode": "read-only",
+      "health": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T07:46:02Z"
+    },
+    {
+      "name": "public-loops-bake",
+      "repo": "Domain",
+      "schedule": "cron-managed",
+      "mode": "read-only",
+      "health": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T07:43:00Z"
+    },
+    {
+      "name": "grid-trigger-twin",
+      "repo": "Domain",
+      "schedule": "cron-managed",
+      "mode": "read-only",
+      "health": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T07:42:57Z"
+    },
+    {
+      "name": "sovereign-pulse",
+      "repo": "Domain",
+      "schedule": "cron-managed",
+      "mode": "write",
+      "health": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T07:42:04Z"
+    },
+    {
+      "name": "audience-analyst",
+      "repo": "Domain",
+      "schedule": "cron-managed",
+      "mode": "read-only",
+      "health": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T07:41:17Z"
+    },
+    {
+      "name": "self-audience",
+      "repo": "Domain",
+      "schedule": "cron-managed",
+      "mode": "read-only",
+      "health": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T07:41:16Z"
+    },
+    {
+      "name": "office-orders-twin",
+      "repo": "Domain",
+      "schedule": "cron-managed",
+      "mode": "read-only",
+      "health": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T07:38:38Z"
     },
     {
       "name": "saos-act",
@@ -283,96 +715,6 @@
       "lastRun": "2026-10-23T07:22:56Z"
     },
     {
-      "name": "dex-xc",
-      "repo": "Domain",
-      "schedule": "cron-managed",
-      "mode": "read-only",
-      "health": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T07:22:39Z"
-    },
-    {
-      "name": "market-grid-cron",
-      "repo": "Domain",
-      "schedule": "cron-managed",
-      "mode": "read-only",
-      "health": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T07:22:35Z"
-    },
-    {
-      "name": "hive-beat-t21",
-      "repo": "Domain",
-      "schedule": "cron-managed",
-      "mode": "write",
-      "health": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T07:22:34Z"
-    },
-    {
-      "name": "fleet-heartbeat",
-      "repo": "Domain",
-      "schedule": "cron-managed",
-      "mode": "write",
-      "health": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T07:22:33Z"
-    },
-    {
-      "name": "earn-audit-cron",
-      "repo": "Domain",
-      "schedule": "cron-managed",
-      "mode": "read-only",
-      "health": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T07:22:32Z"
-    },
-    {
-      "name": "dex-core",
-      "repo": "Domain",
-      "schedule": "cron-managed",
-      "mode": "read-only",
-      "health": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T07:22:31Z"
-    },
-    {
-      "name": "network-census",
-      "repo": "Domain",
-      "schedule": "cron-managed",
-      "mode": "read-only",
-      "health": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T07:20:26Z"
-    },
-    {
-      "name": "office-pulse-twin",
-      "repo": "Domain",
-      "schedule": "cron-managed",
-      "mode": "write",
-      "health": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T07:19:44Z"
-    },
-    {
-      "name": "dex-watchdog",
-      "repo": "Domain",
-      "schedule": "cron-managed",
-      "mode": "read-only",
-      "health": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T07:13:57Z"
-    },
-    {
-      "name": "agent9-fleet-truth",
-      "repo": "Domain",
-      "schedule": "cron-managed",
-      "mode": "read-only",
-      "health": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T07:10:26Z"
-    },
-    {
       "name": "estate-scrub",
       "repo": "Domain",
       "schedule": "cron-managed",
@@ -382,328 +724,13 @@
       "lastRun": "2026-10-23T07:07:49Z"
     },
     {
-      "name": "fill-ledger-cron",
-      "repo": "Domain",
-      "schedule": "cron-managed",
-      "mode": "write",
-      "health": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T07:07:35Z"
-    },
-    {
-      "name": "cognition-beat",
-      "repo": "Domain",
-      "schedule": "cron-managed",
-      "mode": "write",
-      "health": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T07:07:34Z"
-    },
-    {
-      "name": "dex-activation",
-      "repo": "Domain",
-      "schedule": "cron-managed",
-      "mode": "read-only",
-      "health": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T06:57:23Z"
-    },
-    {
-      "name": "human-cadence",
-      "repo": "Domain",
-      "schedule": "cron-managed",
-      "mode": "read-only",
-      "health": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T06:52:58Z"
-    },
-    {
-      "name": "office-orders-twin",
-      "repo": "Domain",
-      "schedule": "cron-managed",
-      "mode": "read-only",
-      "health": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T06:49:51Z"
-    },
-    {
-      "name": "pf-artery-keeper",
-      "repo": "Domain",
-      "schedule": "cron-managed",
-      "mode": "read-only",
-      "health": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T06:38:32Z"
-    },
-    {
-      "name": "office-artery",
-      "repo": "Domain",
-      "schedule": "cron-managed",
-      "mode": "read-only",
-      "health": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T06:38:31Z"
-    },
-    {
-      "name": "cloud-pulse",
-      "repo": "Domain",
-      "schedule": "cron-managed",
-      "mode": "write",
-      "health": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T06:38:30Z"
-    },
-    {
-      "name": "book-audit",
-      "repo": "Domain",
-      "schedule": "cron-managed",
-      "mode": "read-only",
-      "health": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T06:35:24Z"
-    },
-    {
-      "name": "mirror-from-console",
-      "repo": "Domain",
-      "schedule": "cron-managed",
-      "mode": "read-only",
-      "health": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T06:32:50Z"
-    },
-    {
-      "name": "books-revival-t28",
-      "repo": "Domain",
-      "schedule": "cron-managed",
-      "mode": "read-only",
-      "health": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T06:32:10Z"
-    },
-    {
-      "name": "econ-engine",
-      "repo": "Domain",
-      "schedule": "cron-managed",
-      "mode": "read-only",
-      "health": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T06:28:27Z"
-    },
-    {
-      "name": "weave-mirror",
-      "repo": "Domain",
-      "schedule": "cron-managed",
-      "mode": "read-only",
-      "health": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T06:22:14Z"
-    },
-    {
-      "name": "sovereign-pulse",
-      "repo": "Domain",
-      "schedule": "cron-managed",
-      "mode": "write",
-      "health": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T06:09:27Z"
-    },
-    {
-      "name": "dex-router",
-      "repo": "Domain",
-      "schedule": "cron-managed",
-      "mode": "read-only",
-      "health": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T06:09:25Z"
-    },
-    {
-      "name": "grid-doctor",
-      "repo": "Domain",
-      "schedule": "cron-managed",
-      "mode": "read-only",
-      "health": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T06:04:53Z"
-    },
-    {
-      "name": "published-ledger",
-      "repo": "Domain",
-      "schedule": "cron-managed",
-      "mode": "write",
-      "health": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T05:58:52Z"
-    },
-    {
-      "name": "artery-integrity-twin",
-      "repo": "Domain",
-      "schedule": "cron-managed",
-      "mode": "read-only",
-      "health": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T05:54:55Z"
-    },
-    {
-      "name": "daily-digest",
-      "repo": "Domain",
-      "schedule": "cron-managed",
-      "mode": "read-only",
-      "health": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T05:43:51Z"
-    },
-    {
-      "name": "public-pulse",
-      "repo": "Domain",
-      "schedule": "cron-managed",
-      "mode": "write",
-      "health": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T05:40:25Z"
-    },
-    {
-      "name": "fleet-census-cron",
-      "repo": "Domain",
-      "schedule": "cron-managed",
-      "mode": "read-only",
-      "health": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T05:40:24Z"
-    },
-    {
-      "name": "arb-mesh",
-      "repo": "Domain",
-      "schedule": "cron-managed",
-      "mode": "read-only",
-      "health": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T05:40:21Z"
-    },
-    {
-      "name": "ladder-refresh",
-      "repo": "Domain",
-      "schedule": "cron-managed",
-      "mode": "read-only",
-      "health": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T05:26:38Z"
-    },
-    {
-      "name": "tick-keeper",
-      "repo": "Domain",
-      "schedule": "cron-managed",
-      "mode": "read-only",
-      "health": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T05:26:01Z"
-    },
-    {
-      "name": "pulse-bake",
-      "repo": "Domain",
-      "schedule": "cron-managed",
-      "mode": "write",
-      "health": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T05:19:12Z"
-    },
-    {
-      "name": "swallow-watch",
-      "repo": "Domain",
-      "schedule": "cron-managed",
-      "mode": "read-only",
-      "health": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T05:19:12Z"
-    },
-    {
-      "name": "sovereign-tick-cron",
-      "repo": "Domain",
-      "schedule": "cron-managed",
-      "mode": "read-only",
-      "health": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T05:11:21Z"
-    },
-    {
-      "name": "economy-engine",
-      "repo": "Domain",
-      "schedule": "cron-managed",
-      "mode": "read-only",
-      "health": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T05:09:48Z"
-    },
-    {
-      "name": "weave-anchor-lines",
-      "repo": "Domain",
-      "schedule": "cron-managed",
-      "mode": "read-only",
-      "health": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T05:08:17Z"
-    },
-    {
-      "name": "weave-heart",
-      "repo": "Domain",
-      "schedule": "cron-managed",
-      "mode": "read-only",
-      "health": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T05:05:44Z"
-    },
-    {
-      "name": "press-bake",
-      "repo": "Domain",
-      "schedule": "cron-managed",
-      "mode": "read-only",
-      "health": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T04:47:16Z"
-    },
-    {
-      "name": "voice-artery",
-      "repo": "Domain",
-      "schedule": "cron-managed",
-      "mode": "read-only",
-      "health": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T04:41:26Z"
-    },
-    {
-      "name": "sovereign-decider-twin",
-      "repo": "Domain",
-      "schedule": "cron-managed",
-      "mode": "write",
-      "health": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T04:40:12Z"
-    },
-    {
-      "name": "anchor-execute",
-      "repo": "Domain",
-      "schedule": "cron-managed",
-      "mode": "read-only",
-      "health": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T04:34:18Z"
-    },
-    {
-      "name": "sandbox-arteries",
-      "repo": "Domain",
-      "schedule": "cron-managed",
-      "mode": "read-only",
-      "health": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T04:33:11Z"
-    },
-    {
       "name": "runtime-pacemaker",
       "repo": "Console",
       "schedule": "cron-managed",
       "mode": "read-only",
       "health": "healthy",
       "lastConcl": "success",
-      "lastRun": "2026-10-23T07:33:03Z"
+      "lastRun": "2026-10-23T09:49:09Z"
     },
     {
       "name": "truth-gate",
@@ -712,7 +739,7 @@
       "mode": "read-only",
       "health": "healthy",
       "lastConcl": "success",
-      "lastRun": "2026-10-23T07:31:10Z"
+      "lastRun": "2026-10-23T09:47:37Z"
     },
     {
       "name": "pages-deploy",
@@ -721,7 +748,7 @@
       "mode": "read-only",
       "health": "healthy",
       "lastConcl": "success",
-      "lastRun": "2026-10-23T07:30:07Z"
+      "lastRun": "2026-10-23T09:45:03Z"
     },
     {
       "name": "identity-guard",
@@ -730,7 +757,97 @@
       "mode": "write",
       "health": "healthy",
       "lastConcl": "success",
-      "lastRun": "2026-10-23T07:30:07Z"
+      "lastRun": "2026-10-23T09:45:03Z"
+    },
+    {
+      "name": "estate-scrub",
+      "repo": "Console",
+      "schedule": "cron-managed",
+      "mode": "read-only",
+      "health": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T09:36:54Z"
+    },
+    {
+      "name": "giants-beat",
+      "repo": "Console",
+      "schedule": "cron-managed",
+      "mode": "write",
+      "health": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T09:07:35Z"
+    },
+    {
+      "name": "grid-pulse",
+      "repo": "Console",
+      "schedule": "cron-managed",
+      "mode": "write",
+      "health": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T08:27:18Z"
+    },
+    {
+      "name": "swallow-watch",
+      "repo": "Console",
+      "schedule": "cron-managed",
+      "mode": "read-only",
+      "health": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T07:58:13Z"
+    },
+    {
+      "name": "chain-vitals",
+      "repo": "Console",
+      "schedule": "cron-managed",
+      "mode": "read-only",
+      "health": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T07:58:08Z"
+    },
+    {
+      "name": "agents-watch",
+      "repo": "Console",
+      "schedule": "cron-managed",
+      "mode": "read-only",
+      "health": "critical",
+      "lastConcl": "cancelled",
+      "lastRun": "2026-10-23T07:56:34Z"
+    },
+    {
+      "name": "console-publish",
+      "repo": "Console",
+      "schedule": "cron-managed",
+      "mode": "write",
+      "health": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T07:55:34Z"
+    },
+    {
+      "name": "money-watch",
+      "repo": "Console",
+      "schedule": "cron-managed",
+      "mode": "read-only",
+      "health": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T07:48:48Z"
+    },
+    {
+      "name": "dex-watch",
+      "repo": "Console",
+      "schedule": "cron-managed",
+      "mode": "read-only",
+      "health": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T07:46:14Z"
+    },
+    {
+      "name": "line-agreement",
+      "repo": "Console",
+      "schedule": "cron-managed",
+      "mode": "read-only",
+      "health": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T07:40:06Z"
     },
     {
       "name": "weave-census",
@@ -742,24 +859,6 @@
       "lastRun": "2026-10-23T07:20:38Z"
     },
     {
-      "name": "giants-beat",
-      "repo": "Console",
-      "schedule": "cron-managed",
-      "mode": "write",
-      "health": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T07:07:33Z"
-    },
-    {
-      "name": "grid-pulse",
-      "repo": "Console",
-      "schedule": "cron-managed",
-      "mode": "write",
-      "health": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T06:24:02Z"
-    },
-    {
       "name": "saos-fold",
       "repo": "Console",
       "schedule": "cron-managed",
@@ -769,40 +868,13 @@
       "lastRun": "2026-10-23T06:01:44Z"
     },
     {
-      "name": "agent-verify",
-      "repo": "Console",
-      "schedule": "cron-managed",
-      "mode": "read-only",
-      "health": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T05:28:18Z"
-    },
-    {
-      "name": "trigger-mesh",
-      "repo": "Console",
-      "schedule": "cron-managed",
-      "mode": "read-only",
-      "health": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T05:18:52Z"
-    },
-    {
-      "name": "estate-scrub",
-      "repo": "Console",
-      "schedule": "cron-managed",
-      "mode": "read-only",
-      "health": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T04:32:44Z"
-    },
-    {
-      "name": "army-ladder",
+      "name": "sovereign-pulse",
       "repo": "saos-runtime",
       "schedule": "cron-managed",
-      "mode": "read-only",
-      "health": "unknown",
-      "lastConcl": "—",
-      "lastRun": "2026-10-23T07:32:13Z"
+      "mode": "write",
+      "health": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T09:36:07Z"
     },
     {
       "name": "sovereign-runtime",
@@ -811,7 +883,16 @@
       "mode": "read-only",
       "health": "unknown",
       "lastConcl": "—",
-      "lastRun": "2026-10-23T07:19:07Z"
+      "lastRun": "2026-10-23T09:27:11Z"
+    },
+    {
+      "name": "army-ladder",
+      "repo": "saos-runtime",
+      "schedule": "cron-managed",
+      "mode": "read-only",
+      "health": "unknown",
+      "lastConcl": "—",
+      "lastRun": "2026-10-23T09:25:53Z"
     },
     {
       "name": "grid-watchdog",
@@ -820,7 +901,16 @@
       "mode": "read-only",
       "health": "healthy",
       "lastConcl": "success",
-      "lastRun": "2026-10-23T06:56:51Z"
+      "lastRun": "2026-10-23T09:25:10Z"
+    },
+    {
+      "name": "fee-engine",
+      "repo": "saos-runtime",
+      "schedule": "cron-managed",
+      "mode": "read-only",
+      "health": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T09:25:08Z"
     },
     {
       "name": "dex-beat",
@@ -829,7 +919,79 @@
       "mode": "write",
       "health": "unknown",
       "lastConcl": "—",
-      "lastRun": "2026-10-23T06:54:30Z"
+      "lastRun": "2026-10-23T08:54:31Z"
+    },
+    {
+      "name": "treasury-ladder",
+      "repo": "saos-runtime",
+      "schedule": "cron-managed",
+      "mode": "read-only",
+      "health": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T08:51:26Z"
+    },
+    {
+      "name": "custody-recover",
+      "repo": "saos-runtime",
+      "schedule": "cron-managed",
+      "mode": "read-only",
+      "health": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T08:48:38Z"
+    },
+    {
+      "name": "agent-9-vault-sync",
+      "repo": "saos-runtime",
+      "schedule": "cron-managed",
+      "mode": "read-only",
+      "health": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T08:43:53Z"
+    },
+    {
+      "name": "signing-health (runtime-host)",
+      "repo": "saos-runtime",
+      "schedule": "cron-managed",
+      "mode": "read-only",
+      "health": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T07:56:03Z"
+    },
+    {
+      "name": "organ-guardian",
+      "repo": "saos-runtime",
+      "schedule": "cron-managed",
+      "mode": "read-only",
+      "health": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T07:54:17Z"
+    },
+    {
+      "name": "steem-hand-revival",
+      "repo": "saos-runtime",
+      "schedule": "cron-managed",
+      "mode": "read-only",
+      "health": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T07:47:00Z"
+    },
+    {
+      "name": "blurt-revival",
+      "repo": "saos-runtime",
+      "schedule": "cron-managed",
+      "mode": "read-only",
+      "health": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T07:44:06Z"
+    },
+    {
+      "name": "arb-grid",
+      "repo": "saos-runtime",
+      "schedule": "cron-managed",
+      "mode": "read-only",
+      "health": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T07:41:24Z"
     },
     {
       "name": "builder-catchup",
@@ -839,15 +1001,6 @@
       "health": "healthy",
       "lastConcl": "success",
       "lastRun": "2026-10-23T06:32:52Z"
-    },
-    {
-      "name": "sovereign-pulse",
-      "repo": "saos-runtime",
-      "schedule": "cron-managed",
-      "mode": "write",
-      "health": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T06:02:21Z"
     },
     {
       "name": "system-map",
@@ -895,15 +1048,6 @@
       "lastRun": "2026-10-23T05:03:22Z"
     },
     {
-      "name": "fee-engine",
-      "repo": "saos-runtime",
-      "schedule": "cron-managed",
-      "mode": "read-only",
-      "health": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T04:59:59Z"
-    },
-    {
       "name": "sovereign-builder",
       "repo": "saos-runtime",
       "schedule": "cron-managed",
@@ -913,103 +1057,31 @@
       "lastRun": "2026-10-23T04:56:38Z"
     },
     {
-      "name": "arb-grid",
-      "repo": "saos-runtime",
-      "schedule": "cron-managed",
-      "mode": "read-only",
-      "health": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T02:10:50Z"
-    },
-    {
-      "name": "signing-health (runtime-host)",
-      "repo": "saos-runtime",
-      "schedule": "cron-managed",
-      "mode": "read-only",
-      "health": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T01:57:52Z"
-    },
-    {
-      "name": "organ-guardian",
-      "repo": "saos-runtime",
-      "schedule": "cron-managed",
-      "mode": "read-only",
-      "health": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T01:52:29Z"
-    },
-    {
-      "name": "blurt-revival",
-      "repo": "saos-runtime",
-      "schedule": "cron-managed",
-      "mode": "read-only",
-      "health": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T01:40:26Z"
-    },
-    {
-      "name": "steem-hand-revival",
-      "repo": "saos-runtime",
-      "schedule": "cron-managed",
-      "mode": "read-only",
-      "health": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T00:46:14Z"
-    },
-    {
-      "name": "treasury-ladder",
-      "repo": "saos-runtime",
-      "schedule": "cron-managed",
-      "mode": "read-only",
-      "health": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T00:11:57Z"
-    },
-    {
-      "name": "custody-recover",
-      "repo": "saos-runtime",
-      "schedule": "cron-managed",
-      "mode": "read-only",
-      "health": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-22T16:19:05Z"
-    },
-    {
-      "name": "operator-triage",
-      "repo": "saos-runtime",
-      "schedule": "cron-managed",
-      "mode": "write",
-      "health": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-22T16:18:52Z"
-    },
-    {
-      "name": "directive-now",
-      "repo": "saos-runtime",
-      "schedule": "cron-managed",
-      "mode": "read-only",
-      "health": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-22T15:23:54Z"
-    },
-    {
-      "name": "artery-builder",
-      "repo": "Autonomy",
-      "schedule": "cron-managed",
-      "mode": "read-only",
-      "health": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T07:35:51Z"
-    },
-    {
-      "name": "artery-pacer",
+      "name": "verifier (truth & quality)",
       "repo": "Autonomy",
       "schedule": "cron-managed",
       "mode": "read-only",
       "health": "unknown",
       "lastConcl": "—",
-      "lastRun": "2026-10-23T07:34:41Z"
+      "lastRun": "2026-10-23T09:52:08Z"
+    },
+    {
+      "name": "artery-catchup",
+      "repo": "Autonomy",
+      "schedule": "cron-managed",
+      "mode": "read-only",
+      "health": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T09:47:24Z"
+    },
+    {
+      "name": "identity-guard",
+      "repo": "Autonomy",
+      "schedule": "cron-managed",
+      "mode": "write",
+      "health": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T09:47:24Z"
     },
     {
       "name": "sovereign-tick",
@@ -1018,7 +1090,70 @@
       "mode": "read-only",
       "health": "healthy",
       "lastConcl": "success",
-      "lastRun": "2026-10-23T07:32:44Z"
+      "lastRun": "2026-10-23T09:47:24Z"
+    },
+    {
+      "name": "artery-grid",
+      "repo": "Autonomy",
+      "schedule": "cron-managed",
+      "mode": "read-only",
+      "health": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T09:46:28Z"
+    },
+    {
+      "name": "value-scan",
+      "repo": "Autonomy",
+      "schedule": "cron-managed",
+      "mode": "write",
+      "health": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T09:46:27Z"
+    },
+    {
+      "name": "federation",
+      "repo": "Autonomy",
+      "schedule": "cron-managed",
+      "mode": "read-only",
+      "health": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T09:46:26Z"
+    },
+    {
+      "name": "artery-watch",
+      "repo": "Autonomy",
+      "schedule": "cron-managed",
+      "mode": "read-only",
+      "health": "unknown",
+      "lastConcl": "—",
+      "lastRun": "2026-10-23T09:46:24Z"
+    },
+    {
+      "name": "sovereign-state",
+      "repo": "Autonomy",
+      "schedule": "cron-managed",
+      "mode": "read-only",
+      "health": "unknown",
+      "lastConcl": "—",
+      "lastRun": "2026-10-23T09:46:22Z"
+    },
+    {
+      "name": "network-awareness",
+      "repo": "Autonomy",
+      "schedule": "cron-managed",
+      "mode": "read-only",
+      "health": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T09:44:28Z"
+    },
+    {
+      "name": "floating-builds",
+      "repo": "Autonomy",
+      "schedule": "cron-managed",
+      "mode": "read-only",
+      "health": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T09:44:28Z"
     },
     {
       "name": "artery-participation",
@@ -1027,7 +1162,250 @@
       "mode": "read-only",
       "health": "healthy",
       "lastConcl": "success",
-      "lastRun": "2026-10-23T07:32:33Z"
+      "lastRun": "2026-10-23T09:43:42Z"
+    },
+    {
+      "name": "artery-selfheal",
+      "repo": "Autonomy",
+      "schedule": "cron-managed",
+      "mode": "read-only",
+      "health": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T09:41:45Z"
+    },
+    {
+      "name": "artery-pacer",
+      "repo": "Autonomy",
+      "schedule": "cron-managed",
+      "mode": "read-only",
+      "health": "unknown",
+      "lastConcl": "—",
+      "lastRun": "2026-10-23T09:38:47Z"
+    },
+    {
+      "name": "selfhood",
+      "repo": "Autonomy",
+      "schedule": "cron-managed",
+      "mode": "read-only",
+      "health": "unknown",
+      "lastConcl": "—",
+      "lastRun": "2026-10-23T09:37:41Z"
+    },
+    {
+      "name": "fleet-heal",
+      "repo": "Autonomy",
+      "schedule": "cron-managed",
+      "mode": "read-only",
+      "health": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T09:16:31Z"
+    },
+    {
+      "name": "artery-builder",
+      "repo": "Autonomy",
+      "schedule": "cron-managed",
+      "mode": "read-only",
+      "health": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T09:12:33Z"
+    },
+    {
+      "name": "artery-fleet",
+      "repo": "Autonomy",
+      "schedule": "cron-managed",
+      "mode": "read-only",
+      "health": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T09:12:32Z"
+    },
+    {
+      "name": "artery-wallet",
+      "repo": "Autonomy",
+      "schedule": "cron-managed",
+      "mode": "read-only",
+      "health": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T09:12:31Z"
+    },
+    {
+      "name": "artery-decision-truth",
+      "repo": "Autonomy",
+      "schedule": "cron-managed",
+      "mode": "read-only",
+      "health": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T09:12:30Z"
+    },
+    {
+      "name": "contract-check",
+      "repo": "Autonomy",
+      "schedule": "cron-managed",
+      "mode": "read-only",
+      "health": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T09:00:13Z"
+    },
+    {
+      "name": "agent-9-vault-sync",
+      "repo": "Autonomy",
+      "schedule": "cron-managed",
+      "mode": "read-only",
+      "health": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T08:51:18Z"
+    },
+    {
+      "name": "estate-relay",
+      "repo": "Autonomy",
+      "schedule": "cron-managed",
+      "mode": "read-only",
+      "health": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T08:51:08Z"
+    },
+    {
+      "name": "artery-growth",
+      "repo": "Autonomy",
+      "schedule": "cron-managed",
+      "mode": "read-only",
+      "health": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T08:38:27Z"
+    },
+    {
+      "name": "artery-scribe",
+      "repo": "Autonomy",
+      "schedule": "cron-managed",
+      "mode": "read-only",
+      "health": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T08:26:27Z"
+    },
+    {
+      "name": "artery-treasury-consolidate",
+      "repo": "Autonomy",
+      "schedule": "cron-managed",
+      "mode": "read-only",
+      "health": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T08:23:38Z"
+    },
+    {
+      "name": "artery-defi",
+      "repo": "Autonomy",
+      "schedule": "cron-managed",
+      "mode": "read-only",
+      "health": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T08:23:37Z"
+    },
+    {
+      "name": "artery-desk",
+      "repo": "Autonomy",
+      "schedule": "cron-managed",
+      "mode": "read-only",
+      "health": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T07:55:21Z"
+    },
+    {
+      "name": "artery-autotrade-hedge-gate",
+      "repo": "Autonomy",
+      "schedule": "cron-managed",
+      "mode": "read-only",
+      "health": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T07:54:33Z"
+    },
+    {
+      "name": "artery-treasury",
+      "repo": "Autonomy",
+      "schedule": "cron-managed",
+      "mode": "read-only",
+      "health": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T07:52:13Z"
+    },
+    {
+      "name": "agent-9-clock-guard",
+      "repo": "Autonomy",
+      "schedule": "cron-managed",
+      "mode": "read-only",
+      "health": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T07:48:07Z"
+    },
+    {
+      "name": "compute-rearm",
+      "repo": "Autonomy",
+      "schedule": "cron-managed",
+      "mode": "read-only",
+      "health": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T07:43:19Z"
+    },
+    {
+      "name": "operator-routing",
+      "repo": "Autonomy",
+      "schedule": "cron-managed",
+      "mode": "read-only",
+      "health": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T07:43:16Z"
+    },
+    {
+      "name": "artery-integrity",
+      "repo": "Autonomy",
+      "schedule": "cron-managed",
+      "mode": "read-only",
+      "health": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T07:42:49Z"
+    },
+    {
+      "name": "estate-vault",
+      "repo": "Autonomy",
+      "schedule": "cron-managed",
+      "mode": "read-only",
+      "health": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T07:40:21Z"
+    },
+    {
+      "name": "artery-treasury-floor-watch",
+      "repo": "Autonomy",
+      "schedule": "cron-managed",
+      "mode": "read-only",
+      "health": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T07:37:49Z"
+    },
+    {
+      "name": "artery-scout",
+      "repo": "Autonomy",
+      "schedule": "cron-managed",
+      "mode": "read-only",
+      "health": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T07:37:26Z"
+    },
+    {
+      "name": "artery-flow",
+      "repo": "Autonomy",
+      "schedule": "cron-managed",
+      "mode": "read-only",
+      "health": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T07:37:25Z"
+    },
+    {
+      "name": "artery-fixedfloat",
+      "repo": "Autonomy",
+      "schedule": "cron-managed",
+      "mode": "read-only",
+      "health": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T07:37:24Z"
     },
     {
       "name": "world-evolver",
@@ -1039,60 +1417,6 @@
       "lastRun": "2026-10-23T07:32:03Z"
     },
     {
-      "name": "sovereign-state",
-      "repo": "Autonomy",
-      "schedule": "cron-managed",
-      "mode": "read-only",
-      "health": "unknown",
-      "lastConcl": "—",
-      "lastRun": "2026-10-23T07:31:43Z"
-    },
-    {
-      "name": "artery-catchup",
-      "repo": "Autonomy",
-      "schedule": "cron-managed",
-      "mode": "read-only",
-      "health": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T07:31:21Z"
-    },
-    {
-      "name": "identity-guard",
-      "repo": "Autonomy",
-      "schedule": "cron-managed",
-      "mode": "write",
-      "health": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T07:31:21Z"
-    },
-    {
-      "name": "artery-decision-truth",
-      "repo": "Autonomy",
-      "schedule": "cron-managed",
-      "mode": "read-only",
-      "health": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T07:31:07Z"
-    },
-    {
-      "name": "network-awareness",
-      "repo": "Autonomy",
-      "schedule": "cron-managed",
-      "mode": "read-only",
-      "health": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T07:29:37Z"
-    },
-    {
-      "name": "floating-builds",
-      "repo": "Autonomy",
-      "schedule": "cron-managed",
-      "mode": "read-only",
-      "health": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T07:29:37Z"
-    },
-    {
       "name": "fleet-yield",
       "repo": "Autonomy",
       "schedule": "cron-managed",
@@ -1100,87 +1424,6 @@
       "health": "healthy",
       "lastConcl": "success",
       "lastRun": "2026-10-23T07:24:30Z"
-    },
-    {
-      "name": "verifier (truth & quality)",
-      "repo": "Autonomy",
-      "schedule": "cron-managed",
-      "mode": "read-only",
-      "health": "unknown",
-      "lastConcl": "—",
-      "lastRun": "2026-10-23T07:23:26Z"
-    },
-    {
-      "name": "agent-9-clock-guard",
-      "repo": "Autonomy",
-      "schedule": "cron-managed",
-      "mode": "read-only",
-      "health": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T07:23:04Z"
-    },
-    {
-      "name": "fleet-heal",
-      "repo": "Autonomy",
-      "schedule": "cron-managed",
-      "mode": "read-only",
-      "health": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T07:22:50Z"
-    },
-    {
-      "name": "artery-integrity",
-      "repo": "Autonomy",
-      "schedule": "cron-managed",
-      "mode": "read-only",
-      "health": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T07:21:59Z"
-    },
-    {
-      "name": "artery-grid",
-      "repo": "Autonomy",
-      "schedule": "cron-managed",
-      "mode": "read-only",
-      "health": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T07:21:58Z"
-    },
-    {
-      "name": "artery-watch",
-      "repo": "Autonomy",
-      "schedule": "cron-managed",
-      "mode": "read-only",
-      "health": "unknown",
-      "lastConcl": "—",
-      "lastRun": "2026-10-23T07:21:56Z"
-    },
-    {
-      "name": "federation",
-      "repo": "Autonomy",
-      "schedule": "cron-managed",
-      "mode": "read-only",
-      "health": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T07:21:42Z"
-    },
-    {
-      "name": "artery-selfheal",
-      "repo": "Autonomy",
-      "schedule": "cron-managed",
-      "mode": "read-only",
-      "health": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T07:21:26Z"
-    },
-    {
-      "name": "value-scan",
-      "repo": "Autonomy",
-      "schedule": "cron-managed",
-      "mode": "write",
-      "health": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T07:21:21Z"
     },
     {
       "name": "sovereign-arming-check",
@@ -1192,60 +1435,6 @@
       "lastRun": "2026-10-23T07:21:12Z"
     },
     {
-      "name": "artery-growth",
-      "repo": "Autonomy",
-      "schedule": "cron-managed",
-      "mode": "read-only",
-      "health": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T07:07:32Z"
-    },
-    {
-      "name": "artery-desk",
-      "repo": "Autonomy",
-      "schedule": "cron-managed",
-      "mode": "read-only",
-      "health": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T07:07:31Z"
-    },
-    {
-      "name": "contract-check",
-      "repo": "Autonomy",
-      "schedule": "cron-managed",
-      "mode": "read-only",
-      "health": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T07:00:14Z"
-    },
-    {
-      "name": "artery-treasury-consolidate",
-      "repo": "Autonomy",
-      "schedule": "cron-managed",
-      "mode": "read-only",
-      "health": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T06:38:34Z"
-    },
-    {
-      "name": "artery-defi",
-      "repo": "Autonomy",
-      "schedule": "cron-managed",
-      "mode": "read-only",
-      "health": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T06:38:33Z"
-    },
-    {
-      "name": "artery-fleet",
-      "repo": "Autonomy",
-      "schedule": "cron-managed",
-      "mode": "read-only",
-      "health": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T06:28:22Z"
-    },
-    {
       "name": "sovereign-decider",
       "repo": "Autonomy",
       "schedule": "cron-managed",
@@ -1255,139 +1444,13 @@
       "lastRun": "2026-10-23T06:27:56Z"
     },
     {
-      "name": "artery-wallet",
-      "repo": "Autonomy",
+      "name": "lighthouse-pulse",
+      "repo": "sovereign-lighthouse",
       "schedule": "cron-managed",
-      "mode": "read-only",
+      "mode": "write",
       "health": "healthy",
       "lastConcl": "success",
-      "lastRun": "2026-10-23T06:01:52Z"
-    },
-    {
-      "name": "artery-treasury",
-      "repo": "Autonomy",
-      "schedule": "cron-managed",
-      "mode": "read-only",
-      "health": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T05:54:54Z"
-    },
-    {
-      "name": "artery-treasury-floor-watch",
-      "repo": "Autonomy",
-      "schedule": "cron-managed",
-      "mode": "read-only",
-      "health": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T05:54:52Z"
-    },
-    {
-      "name": "artery-autotrade-hedge-gate",
-      "repo": "Autonomy",
-      "schedule": "cron-managed",
-      "mode": "read-only",
-      "health": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T05:54:50Z"
-    },
-    {
-      "name": "directive-bus",
-      "repo": "Autonomy",
-      "schedule": "cron-managed",
-      "mode": "read-only",
-      "health": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T05:53:06Z"
-    },
-    {
-      "name": "compute-rearm",
-      "repo": "Autonomy",
-      "schedule": "cron-managed",
-      "mode": "read-only",
-      "health": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T05:42:45Z"
-    },
-    {
-      "name": "artery-fixedfloat",
-      "repo": "Autonomy",
-      "schedule": "cron-managed",
-      "mode": "read-only",
-      "health": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T05:18:35Z"
-    },
-    {
-      "name": "claims-intake",
-      "repo": "Autonomy",
-      "schedule": "cron-managed",
-      "mode": "read-only",
-      "health": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T05:17:35Z"
-    },
-    {
-      "name": "office-growth",
-      "repo": "Autonomy",
-      "schedule": "cron-managed",
-      "mode": "read-only",
-      "health": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T05:17:22Z"
-    },
-    {
-      "name": "run-score",
-      "repo": "Autonomy",
-      "schedule": "cron-managed",
-      "mode": "read-only",
-      "health": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T05:16:48Z"
-    },
-    {
-      "name": "network-self-awareness",
-      "repo": "Autonomy",
-      "schedule": "cron-managed",
-      "mode": "read-only",
-      "health": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T05:04:47Z"
-    },
-    {
-      "name": "artery-flow",
-      "repo": "Autonomy",
-      "schedule": "cron-managed",
-      "mode": "read-only",
-      "health": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T04:59:40Z"
-    },
-    {
-      "name": "artery-scribe",
-      "repo": "Autonomy",
-      "schedule": "cron-managed",
-      "mode": "read-only",
-      "health": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T04:56:34Z"
-    },
-    {
-      "name": "artery-scout",
-      "repo": "Autonomy",
-      "schedule": "cron-managed",
-      "mode": "read-only",
-      "health": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T04:56:33Z"
-    },
-    {
-      "name": "selfhood",
-      "repo": "Autonomy",
-      "schedule": "cron-managed",
-      "mode": "read-only",
-      "health": "critical",
-      "lastConcl": "cancelled",
-      "lastRun": "2026-10-23T04:39:06Z"
+      "lastRun": "2026-10-23T09:43:45Z"
     },
     {
       "name": "estate-redboard",
@@ -1396,16 +1459,7 @@
       "mode": "read-only",
       "health": "healthy",
       "lastConcl": "success",
-      "lastRun": "2026-10-23T07:30:19Z"
-    },
-    {
-      "name": "lighthouse-pulse",
-      "repo": "sovereign-lighthouse",
-      "schedule": "cron-managed",
-      "mode": "write",
-      "health": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T07:16:24Z"
+      "lastRun": "2026-10-23T08:47:48Z"
     }
   ]
 }
