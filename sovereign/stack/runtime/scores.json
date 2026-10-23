@@ -1,31 +1,32 @@
 {
   "protocol": "SAOS-RUN-SCORES/1",
-  "generatedAt": "2026-10-23T21:48:47.103Z",
-  "runUrl": "https://github.com/roshpinacare-sys/FleetHQ/actions/runs/40029286219",
-  "stateBookAgeMin": 48,
+  "generatedAt": "2026-10-23T22:39:51.893Z",
+  "runUrl": "https://github.com/roshpinacare-sys/FleetHQ/actions/runs/40034884635",
+  "stateBookAgeMin": 25,
   "counts": {
-    "unknown": 16,
-    "healthy": 160,
-    "critical": 2
+    "unknown": 18,
+    "healthy": 158,
+    "flaky": 1,
+    "critical": 1
   },
   "apiFetches": 2,
   "workflows": [
     {
       "repo": "FleetHQ",
-      "name": "sovereign-decider",
+      "name": "sovereign-selfscan",
       "cls": "unknown",
       "lastConcl": "—",
-      "lastRun": "2026-10-23T21:00:45Z",
-      "ageMin": 48,
+      "lastRun": "2026-10-23T22:14:21Z",
+      "ageMin": 26,
       "state": "active"
     },
     {
       "repo": "FleetHQ",
-      "name": "sovereign-selfscan",
-      "cls": "unknown",
-      "lastConcl": "—",
-      "lastRun": "2026-10-23T21:00:22Z",
-      "ageMin": 48,
+      "name": "sovereign-decider",
+      "cls": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T22:00:40Z",
+      "ageMin": 39,
       "state": "active"
     },
     {
@@ -33,17 +34,8 @@
       "name": "value-scan",
       "cls": "healthy",
       "lastConcl": "success",
-      "lastRun": "2026-10-23T21:00:20Z",
-      "ageMin": 48,
-      "state": "active"
-    },
-    {
-      "repo": "FleetHQ",
-      "name": "runtime-pacemaker",
-      "cls": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T21:00:05Z",
-      "ageMin": 49,
+      "lastRun": "2026-10-23T22:00:25Z",
+      "ageMin": 39,
       "state": "active"
     },
     {
@@ -51,71 +43,17 @@
       "name": "opens-closer",
       "cls": "unknown",
       "lastConcl": "—",
-      "lastRun": "2026-10-23T21:00:01Z",
-      "ageMin": 49,
+      "lastRun": "2026-10-23T22:00:01Z",
+      "ageMin": 40,
       "state": "active"
     },
     {
       "repo": "FleetHQ",
-      "name": "silence-watchdog",
+      "name": "runtime-pacemaker",
       "cls": "healthy",
       "lastConcl": "success",
-      "lastRun": "2026-10-23T20:56:50Z",
-      "ageMin": 52,
-      "state": "active"
-    },
-    {
-      "repo": "FleetHQ",
-      "name": "fresh-oracle",
-      "cls": "unknown",
-      "lastConcl": "—",
-      "lastRun": "2026-10-23T20:56:12Z",
-      "ageMin": 53,
-      "state": "active"
-    },
-    {
-      "repo": "FleetHQ",
-      "name": "claims-triage",
-      "cls": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T20:27:48Z",
-      "ageMin": 81,
-      "state": "active"
-    },
-    {
-      "repo": "FleetHQ",
-      "name": "sovereign-policy-gate",
-      "cls": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T20:26:45Z",
-      "ageMin": 82,
-      "state": "active"
-    },
-    {
-      "repo": "FleetHQ",
-      "name": "identity-patrol",
-      "cls": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T20:26:30Z",
-      "ageMin": 82,
-      "state": "active"
-    },
-    {
-      "repo": "FleetHQ",
-      "name": "sovereign-identity",
-      "cls": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T20:14:17Z",
-      "ageMin": 95,
-      "state": "active"
-    },
-    {
-      "repo": "FleetHQ",
-      "name": "self-book",
-      "cls": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T19:57:31Z",
-      "ageMin": 111,
+      "lastRun": "2026-10-23T21:48:58Z",
+      "ageMin": 51,
       "state": "active"
     },
     {
@@ -123,9 +61,77 @@
       "name": "sovereign-harness",
       "cls": "healthy",
       "lastConcl": "success",
-      "lastRun": "2026-10-23T19:32:50Z",
-      "ageMin": 136,
+      "lastRun": "2026-10-23T21:47:25Z",
+      "ageMin": 52,
       "state": "active"
+    },
+    {
+      "repo": "FleetHQ",
+      "name": "sovereign-identity",
+      "cls": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T21:43:33Z",
+      "ageMin": 56,
+      "state": "active"
+    },
+    {
+      "repo": "FleetHQ",
+      "name": "identity-patrol",
+      "cls": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T21:42:05Z",
+      "ageMin": 58,
+      "state": "active"
+    },
+    {
+      "repo": "FleetHQ",
+      "name": "sovereign-policy-gate",
+      "cls": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T21:42:04Z",
+      "ageMin": 58,
+      "state": "active"
+    },
+    {
+      "repo": "FleetHQ",
+      "name": "silence-watchdog",
+      "cls": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T21:37:36Z",
+      "ageMin": 62,
+      "state": "active"
+    },
+    {
+      "repo": "FleetHQ",
+      "name": "self-book",
+      "cls": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T21:19:23Z",
+      "ageMin": 80,
+      "state": "active"
+    },
+    {
+      "repo": "FleetHQ",
+      "name": "claims-triage",
+      "cls": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T21:18:54Z",
+      "ageMin": 81,
+      "state": "active"
+    },
+    {
+      "repo": "FleetHQ",
+      "name": "fresh-oracle",
+      "cls": "flaky",
+      "lastConcl": "failure",
+      "lastRun": "2026-10-23T20:56:12Z",
+      "ageMin": 104,
+      "state": "active",
+      "window": {
+        "runs": 20,
+        "successRate": 0.6,
+        "flakiness": 0.4
+      }
     },
     {
       "repo": "FleetHQ",
@@ -133,7 +139,7 @@
       "cls": "healthy",
       "lastConcl": "success",
       "lastRun": "2026-10-23T19:31:54Z",
-      "ageMin": 137,
+      "ageMin": 188,
       "state": "active"
     },
     {
@@ -142,7 +148,7 @@
       "cls": "healthy",
       "lastConcl": "success",
       "lastRun": "2026-10-23T18:04:07Z",
-      "ageMin": 225,
+      "ageMin": 276,
       "state": "active"
     },
     {
@@ -151,7 +157,7 @@
       "cls": "healthy",
       "lastConcl": "success",
       "lastRun": "2026-10-23T15:57:48Z",
-      "ageMin": 351,
+      "ageMin": 402,
       "state": "active"
     },
     {
@@ -160,7 +166,7 @@
       "cls": "healthy",
       "lastConcl": "success",
       "lastRun": "2026-10-23T15:57:47Z",
-      "ageMin": 351,
+      "ageMin": 402,
       "state": "active"
     },
     {
@@ -169,7 +175,7 @@
       "cls": "healthy",
       "lastConcl": "success",
       "lastRun": "2026-10-23T15:57:47Z",
-      "ageMin": 351,
+      "ageMin": 402,
       "state": "active"
     },
     {
@@ -178,16 +184,52 @@
       "cls": "healthy",
       "lastConcl": "success",
       "lastRun": "2026-10-23T15:17:39Z",
-      "ageMin": 391,
+      "ageMin": 442,
       "state": "active"
     },
     {
       "repo": "Domain",
-      "name": "dex-beat",
+      "name": "exposure-gate",
       "cls": "unknown",
       "lastConcl": "—",
-      "lastRun": "2026-10-23T21:00:25Z",
-      "ageMin": 48,
+      "lastRun": "2026-10-23T22:14:22Z",
+      "ageMin": 25,
+      "state": "active"
+    },
+    {
+      "repo": "Domain",
+      "name": "pages-deploy",
+      "cls": "unknown",
+      "lastConcl": "—",
+      "lastRun": "2026-10-23T22:14:22Z",
+      "ageMin": 25,
+      "state": "active"
+    },
+    {
+      "repo": "Domain",
+      "name": "identity-guard",
+      "cls": "unknown",
+      "lastConcl": "—",
+      "lastRun": "2026-10-23T22:14:22Z",
+      "ageMin": 25,
+      "state": "active"
+    },
+    {
+      "repo": "Domain",
+      "name": "site-link-audit",
+      "cls": "unknown",
+      "lastConcl": "—",
+      "lastRun": "2026-10-23T22:14:22Z",
+      "ageMin": 25,
+      "state": "active"
+    },
+    {
+      "repo": "Domain",
+      "name": "bidi-guardian",
+      "cls": "unknown",
+      "lastConcl": "—",
+      "lastRun": "2026-10-23T22:14:22Z",
+      "ageMin": 25,
       "state": "active"
     },
     {
@@ -195,8 +237,17 @@
       "name": "office-worldbeat",
       "cls": "unknown",
       "lastConcl": "—",
-      "lastRun": "2026-10-23T20:58:00Z",
-      "ageMin": 51,
+      "lastRun": "2026-10-23T22:14:16Z",
+      "ageMin": 26,
+      "state": "active"
+    },
+    {
+      "repo": "Domain",
+      "name": "press-bake",
+      "cls": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T22:09:30Z",
+      "ageMin": 30,
       "state": "active"
     },
     {
@@ -204,8 +255,422 @@
       "name": "dex-grid",
       "cls": "unknown",
       "lastConcl": "—",
-      "lastRun": "2026-10-23T20:54:39Z",
-      "ageMin": 54,
+      "lastRun": "2026-10-23T22:09:28Z",
+      "ageMin": 30,
+      "state": "active"
+    },
+    {
+      "repo": "Domain",
+      "name": "stale-watchdog",
+      "cls": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T22:09:01Z",
+      "ageMin": 31,
+      "state": "active"
+    },
+    {
+      "repo": "Domain",
+      "name": "dex-mirror",
+      "cls": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T22:09:01Z",
+      "ageMin": 31,
+      "state": "active"
+    },
+    {
+      "repo": "Domain",
+      "name": "dex-beat",
+      "cls": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T22:08:33Z",
+      "ageMin": 31,
+      "state": "active"
+    },
+    {
+      "repo": "Domain",
+      "name": "agent9-fleet-truth",
+      "cls": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T22:08:18Z",
+      "ageMin": 32,
+      "state": "active"
+    },
+    {
+      "repo": "Domain",
+      "name": "sovereign-pulse",
+      "cls": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T22:05:23Z",
+      "ageMin": 34,
+      "state": "active"
+    },
+    {
+      "repo": "Domain",
+      "name": "human-cadence",
+      "cls": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T22:05:22Z",
+      "ageMin": 34,
+      "state": "active"
+    },
+    {
+      "repo": "Domain",
+      "name": "hive-beat-t21",
+      "cls": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T22:05:21Z",
+      "ageMin": 35,
+      "state": "active"
+    },
+    {
+      "repo": "Domain",
+      "name": "grid-sentinel",
+      "cls": "unknown",
+      "lastConcl": "—",
+      "lastRun": "2026-10-23T22:04:01Z",
+      "ageMin": 36,
+      "state": "active"
+    },
+    {
+      "repo": "Domain",
+      "name": "moment-watch",
+      "cls": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T22:01:31Z",
+      "ageMin": 38,
+      "state": "active"
+    },
+    {
+      "repo": "Domain",
+      "name": "grid-doctor",
+      "cls": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T22:00:26Z",
+      "ageMin": 39,
+      "state": "active"
+    },
+    {
+      "repo": "Domain",
+      "name": "office-pulse",
+      "cls": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T21:56:52Z",
+      "ageMin": 43,
+      "state": "active"
+    },
+    {
+      "repo": "Domain",
+      "name": "dex-watchdog",
+      "cls": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T21:56:03Z",
+      "ageMin": 44,
+      "state": "active"
+    },
+    {
+      "repo": "Domain",
+      "name": "pages-quality-gate",
+      "cls": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T21:52:19Z",
+      "ageMin": 48,
+      "state": "active"
+    },
+    {
+      "repo": "Domain",
+      "name": "weave-mirror",
+      "cls": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T21:52:17Z",
+      "ageMin": 48,
+      "state": "active"
+    },
+    {
+      "repo": "Domain",
+      "name": "dex-core",
+      "cls": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T21:50:39Z",
+      "ageMin": 49,
+      "state": "active"
+    },
+    {
+      "repo": "Domain",
+      "name": "artery-integrity-twin",
+      "cls": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T21:50:37Z",
+      "ageMin": 49,
+      "state": "active"
+    },
+    {
+      "repo": "Domain",
+      "name": "dex-router",
+      "cls": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T21:43:18Z",
+      "ageMin": 57,
+      "state": "active"
+    },
+    {
+      "repo": "Domain",
+      "name": "sandbox-arteries",
+      "cls": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T21:41:57Z",
+      "ageMin": 58,
+      "state": "active"
+    },
+    {
+      "repo": "Domain",
+      "name": "agent9-truth-watchdog",
+      "cls": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T21:40:41Z",
+      "ageMin": 59,
+      "state": "active"
+    },
+    {
+      "repo": "Domain",
+      "name": "sovereign-decider-twin",
+      "cls": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T21:40:38Z",
+      "ageMin": 59,
+      "state": "active"
+    },
+    {
+      "repo": "Domain",
+      "name": "market-grid-cron",
+      "cls": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T21:38:35Z",
+      "ageMin": 61,
+      "state": "active"
+    },
+    {
+      "repo": "Domain",
+      "name": "soldiers-curate",
+      "cls": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T21:38:34Z",
+      "ageMin": 61,
+      "state": "active"
+    },
+    {
+      "repo": "Domain",
+      "name": "content-gate",
+      "cls": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T21:38:23Z",
+      "ageMin": 61,
+      "state": "active"
+    },
+    {
+      "repo": "Domain",
+      "name": "operator-console",
+      "cls": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T21:36:32Z",
+      "ageMin": 63,
+      "state": "active"
+    },
+    {
+      "repo": "Domain",
+      "name": "fill-ledger-cron",
+      "cls": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T21:36:10Z",
+      "ageMin": 64,
+      "state": "active"
+    },
+    {
+      "repo": "Domain",
+      "name": "audience-analyst",
+      "cls": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T21:35:08Z",
+      "ageMin": 65,
+      "state": "active"
+    },
+    {
+      "repo": "Domain",
+      "name": "cognition-beat",
+      "cls": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T21:35:06Z",
+      "ageMin": 65,
+      "state": "active"
+    },
+    {
+      "repo": "Domain",
+      "name": "public-pulse",
+      "cls": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T21:35:05Z",
+      "ageMin": 65,
+      "state": "active"
+    },
+    {
+      "repo": "Domain",
+      "name": "self-audience",
+      "cls": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T21:35:04Z",
+      "ageMin": 65,
+      "state": "active"
+    },
+    {
+      "repo": "Domain",
+      "name": "fleet-census-cron",
+      "cls": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T21:35:03Z",
+      "ageMin": 65,
+      "state": "active"
+    },
+    {
+      "repo": "Domain",
+      "name": "earn-audit-cron",
+      "cls": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T21:35:01Z",
+      "ageMin": 65,
+      "state": "active"
+    },
+    {
+      "repo": "Domain",
+      "name": "tick-keeper",
+      "cls": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T21:34:43Z",
+      "ageMin": 65,
+      "state": "active"
+    },
+    {
+      "repo": "Domain",
+      "name": "pulse-bake",
+      "cls": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T21:34:42Z",
+      "ageMin": 65,
+      "state": "active"
+    },
+    {
+      "repo": "Domain",
+      "name": "dex-xc",
+      "cls": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T21:34:41Z",
+      "ageMin": 65,
+      "state": "active"
+    },
+    {
+      "repo": "Domain",
+      "name": "network-census",
+      "cls": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T21:34:12Z",
+      "ageMin": 66,
+      "state": "active"
+    },
+    {
+      "repo": "Domain",
+      "name": "economy-engine",
+      "cls": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T21:33:49Z",
+      "ageMin": 66,
+      "state": "active"
+    },
+    {
+      "repo": "Domain",
+      "name": "public-loops-bake",
+      "cls": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T21:31:43Z",
+      "ageMin": 68,
+      "state": "active"
+    },
+    {
+      "repo": "Domain",
+      "name": "dex-activation",
+      "cls": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T21:30:38Z",
+      "ageMin": 69,
+      "state": "active"
+    },
+    {
+      "repo": "Domain",
+      "name": "office-orders-twin",
+      "cls": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T21:30:02Z",
+      "ageMin": 70,
+      "state": "active"
+    },
+    {
+      "repo": "Domain",
+      "name": "weave-anchor-lines",
+      "cls": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T21:20:42Z",
+      "ageMin": 79,
+      "state": "active"
+    },
+    {
+      "repo": "Domain",
+      "name": "weave-anchor-ping",
+      "cls": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T21:20:26Z",
+      "ageMin": 79,
+      "state": "active"
+    },
+    {
+      "repo": "Domain",
+      "name": "sovereign-tick-cron",
+      "cls": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T21:20:06Z",
+      "ageMin": 80,
+      "state": "active"
+    },
+    {
+      "repo": "Domain",
+      "name": "office-pulse-twin",
+      "cls": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T21:17:58Z",
+      "ageMin": 82,
+      "state": "active"
+    },
+    {
+      "repo": "Domain",
+      "name": "pf-artery-keeper",
+      "cls": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T21:05:34Z",
+      "ageMin": 94,
+      "state": "active"
+    },
+    {
+      "repo": "Domain",
+      "name": "office-artery",
+      "cls": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T21:05:32Z",
+      "ageMin": 94,
+      "state": "active"
+    },
+    {
+      "repo": "Domain",
+      "name": "fleet-heartbeat",
+      "cls": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T21:05:31Z",
+      "ageMin": 94,
       "state": "active"
     },
     {
@@ -214,7 +679,7 @@
       "cls": "healthy",
       "lastConcl": "success",
       "lastRun": "2026-10-23T20:50:43Z",
-      "ageMin": 58,
+      "ageMin": 109,
       "state": "active"
     },
     {
@@ -223,34 +688,7 @@
       "cls": "healthy",
       "lastConcl": "success",
       "lastRun": "2026-10-23T20:50:42Z",
-      "ageMin": 58,
-      "state": "active"
-    },
-    {
-      "repo": "Domain",
-      "name": "grid-sentinel",
-      "cls": "unknown",
-      "lastConcl": "—",
-      "lastRun": "2026-10-23T20:49:11Z",
-      "ageMin": 60,
-      "state": "active"
-    },
-    {
-      "repo": "Domain",
-      "name": "agent9-fleet-truth",
-      "cls": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T20:42:35Z",
-      "ageMin": 66,
-      "state": "active"
-    },
-    {
-      "repo": "Domain",
-      "name": "network-census",
-      "cls": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T20:40:47Z",
-      "ageMin": 68,
+      "ageMin": 109,
       "state": "active"
     },
     {
@@ -259,16 +697,7 @@
       "cls": "healthy",
       "lastConcl": "success",
       "lastRun": "2026-10-23T20:40:34Z",
-      "ageMin": 68,
-      "state": "active"
-    },
-    {
-      "repo": "Domain",
-      "name": "dex-mirror",
-      "cls": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T20:40:31Z",
-      "ageMin": 68,
+      "ageMin": 119,
       "state": "active"
     },
     {
@@ -277,7 +706,7 @@
       "cls": "healthy",
       "lastConcl": "success",
       "lastRun": "2026-10-23T20:40:31Z",
-      "ageMin": 68,
+      "ageMin": 119,
       "state": "active"
     },
     {
@@ -286,7 +715,7 @@
       "cls": "healthy",
       "lastConcl": "success",
       "lastRun": "2026-10-23T20:40:19Z",
-      "ageMin": 68,
+      "ageMin": 120,
       "state": "active"
     },
     {
@@ -295,25 +724,7 @@
       "cls": "healthy",
       "lastConcl": "success",
       "lastRun": "2026-10-23T20:39:49Z",
-      "ageMin": 69,
-      "state": "active"
-    },
-    {
-      "repo": "Domain",
-      "name": "stale-watchdog",
-      "cls": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T20:36:56Z",
-      "ageMin": 72,
-      "state": "active"
-    },
-    {
-      "repo": "Domain",
-      "name": "office-pulse",
-      "cls": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T20:36:18Z",
-      "ageMin": 72,
+      "ageMin": 120,
       "state": "active"
     },
     {
@@ -322,7 +733,7 @@
       "cls": "healthy",
       "lastConcl": "success",
       "lastRun": "2026-10-23T20:34:33Z",
-      "ageMin": 74,
+      "ageMin": 125,
       "state": "active"
     },
     {
@@ -331,142 +742,7 @@
       "cls": "healthy",
       "lastConcl": "success",
       "lastRun": "2026-10-23T20:31:21Z",
-      "ageMin": 77,
-      "state": "active"
-    },
-    {
-      "repo": "Domain",
-      "name": "human-cadence",
-      "cls": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T20:28:11Z",
-      "ageMin": 81,
-      "state": "active"
-    },
-    {
-      "repo": "Domain",
-      "name": "dex-activation",
-      "cls": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T20:27:51Z",
-      "ageMin": 81,
-      "state": "active"
-    },
-    {
-      "repo": "Domain",
-      "name": "office-pulse-twin",
-      "cls": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T20:22:39Z",
-      "ageMin": 86,
-      "state": "active"
-    },
-    {
-      "repo": "Domain",
-      "name": "sovereign-pulse",
-      "cls": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T20:21:10Z",
-      "ageMin": 88,
-      "state": "active"
-    },
-    {
-      "repo": "Domain",
-      "name": "market-grid-cron",
-      "cls": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T20:21:08Z",
-      "ageMin": 88,
-      "state": "active"
-    },
-    {
-      "repo": "Domain",
-      "name": "fill-ledger-cron",
-      "cls": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T20:21:07Z",
-      "ageMin": 88,
-      "state": "active"
-    },
-    {
-      "repo": "Domain",
-      "name": "earn-audit-cron",
-      "cls": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T20:21:06Z",
-      "ageMin": 88,
-      "state": "active"
-    },
-    {
-      "repo": "Domain",
-      "name": "dex-core",
-      "cls": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T20:21:05Z",
-      "ageMin": 88,
-      "state": "active"
-    },
-    {
-      "repo": "Domain",
-      "name": "bidi-guardian",
-      "cls": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T20:18:27Z",
-      "ageMin": 90,
-      "state": "active"
-    },
-    {
-      "repo": "Domain",
-      "name": "site-link-audit",
-      "cls": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T20:18:26Z",
-      "ageMin": 90,
-      "state": "active"
-    },
-    {
-      "repo": "Domain",
-      "name": "identity-guard",
-      "cls": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T20:18:26Z",
-      "ageMin": 90,
-      "state": "active"
-    },
-    {
-      "repo": "Domain",
-      "name": "pages-deploy",
-      "cls": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T20:18:26Z",
-      "ageMin": 90,
-      "state": "active"
-    },
-    {
-      "repo": "Domain",
-      "name": "exposure-gate",
-      "cls": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T20:18:26Z",
-      "ageMin": 90,
-      "state": "active"
-    },
-    {
-      "repo": "Domain",
-      "name": "pages-quality-gate",
-      "cls": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T20:18:16Z",
-      "ageMin": 91,
-      "state": "active"
-    },
-    {
-      "repo": "Domain",
-      "name": "weave-mirror",
-      "cls": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T20:18:15Z",
-      "ageMin": 91,
+      "ageMin": 129,
       "state": "active"
     },
     {
@@ -475,16 +751,7 @@
       "cls": "healthy",
       "lastConcl": "success",
       "lastRun": "2026-10-23T20:07:07Z",
-      "ageMin": 102,
-      "state": "active"
-    },
-    {
-      "repo": "Domain",
-      "name": "artery-integrity-twin",
-      "cls": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T20:06:08Z",
-      "ageMin": 103,
+      "ageMin": 153,
       "state": "active"
     },
     {
@@ -493,25 +760,7 @@
       "cls": "healthy",
       "lastConcl": "success",
       "lastRun": "2026-10-23T20:03:32Z",
-      "ageMin": 105,
-      "state": "active"
-    },
-    {
-      "repo": "Domain",
-      "name": "hive-beat-t21",
-      "cls": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T20:03:28Z",
-      "ageMin": 105,
-      "state": "active"
-    },
-    {
-      "repo": "Domain",
-      "name": "weave-anchor-lines",
-      "cls": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T20:00:37Z",
-      "ageMin": 108,
+      "ageMin": 156,
       "state": "active"
     },
     {
@@ -520,7 +769,7 @@
       "cls": "healthy",
       "lastConcl": "success",
       "lastRun": "2026-10-23T19:59:37Z",
-      "ageMin": 109,
+      "ageMin": 160,
       "state": "active"
     },
     {
@@ -529,7 +778,7 @@
       "cls": "healthy",
       "lastConcl": "success",
       "lastRun": "2026-10-23T19:55:53Z",
-      "ageMin": 113,
+      "ageMin": 164,
       "state": "active"
     },
     {
@@ -538,16 +787,7 @@
       "cls": "healthy",
       "lastConcl": "success",
       "lastRun": "2026-10-23T19:54:47Z",
-      "ageMin": 114,
-      "state": "active"
-    },
-    {
-      "repo": "Domain",
-      "name": "dex-xc",
-      "cls": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T19:36:57Z",
-      "ageMin": 132,
+      "ageMin": 165,
       "state": "active"
     },
     {
@@ -556,34 +796,7 @@
       "cls": "healthy",
       "lastConcl": "success",
       "lastRun": "2026-10-23T19:31:53Z",
-      "ageMin": 137,
-      "state": "active"
-    },
-    {
-      "repo": "Domain",
-      "name": "pulse-bake",
-      "cls": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T19:31:30Z",
-      "ageMin": 137,
-      "state": "active"
-    },
-    {
-      "repo": "Domain",
-      "name": "cognition-beat",
-      "cls": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T19:31:19Z",
-      "ageMin": 137,
-      "state": "active"
-    },
-    {
-      "repo": "Domain",
-      "name": "grid-doctor",
-      "cls": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T19:30:21Z",
-      "ageMin": 138,
+      "ageMin": 188,
       "state": "active"
     },
     {
@@ -592,16 +805,7 @@
       "cls": "healthy",
       "lastConcl": "success",
       "lastRun": "2026-10-23T19:23:35Z",
-      "ageMin": 145,
-      "state": "active"
-    },
-    {
-      "repo": "Domain",
-      "name": "press-bake",
-      "cls": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T19:11:58Z",
-      "ageMin": 157,
+      "ageMin": 196,
       "state": "active"
     },
     {
@@ -610,214 +814,7 @@
       "cls": "healthy",
       "lastConcl": "success",
       "lastRun": "2026-10-23T19:09:15Z",
-      "ageMin": 160,
-      "state": "active"
-    },
-    {
-      "repo": "Domain",
-      "name": "moment-watch",
-      "cls": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T19:04:21Z",
-      "ageMin": 164,
-      "state": "active"
-    },
-    {
-      "repo": "Domain",
-      "name": "tri-bridge",
-      "cls": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T18:51:35Z",
-      "ageMin": 177,
-      "state": "active"
-    },
-    {
-      "repo": "Domain",
-      "name": "dex-router",
-      "cls": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T18:44:28Z",
-      "ageMin": 184,
-      "state": "active"
-    },
-    {
-      "repo": "Domain",
-      "name": "dex-watchdog",
-      "cls": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T18:44:26Z",
-      "ageMin": 184,
-      "state": "active"
-    },
-    {
-      "repo": "Domain",
-      "name": "sandbox-arteries",
-      "cls": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T18:43:44Z",
-      "ageMin": 185,
-      "state": "active"
-    },
-    {
-      "repo": "Domain",
-      "name": "fleet-heartbeat",
-      "cls": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T18:41:56Z",
-      "ageMin": 187,
-      "state": "active"
-    },
-    {
-      "repo": "Domain",
-      "name": "office-artery",
-      "cls": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T18:41:56Z",
-      "ageMin": 187,
-      "state": "active"
-    },
-    {
-      "repo": "Domain",
-      "name": "agent9-truth-watchdog",
-      "cls": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T18:40:54Z",
-      "ageMin": 188,
-      "state": "active"
-    },
-    {
-      "repo": "Domain",
-      "name": "sovereign-decider-twin",
-      "cls": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T18:40:53Z",
-      "ageMin": 188,
-      "state": "active"
-    },
-    {
-      "repo": "Domain",
-      "name": "agent-verify",
-      "cls": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T18:39:40Z",
-      "ageMin": 189,
-      "state": "active"
-    },
-    {
-      "repo": "Domain",
-      "name": "pf-artery-keeper",
-      "cls": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T18:38:42Z",
-      "ageMin": 190,
-      "state": "active"
-    },
-    {
-      "repo": "Domain",
-      "name": "public-pulse",
-      "cls": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T18:35:28Z",
-      "ageMin": 193,
-      "state": "active"
-    },
-    {
-      "repo": "Domain",
-      "name": "fleet-census-cron",
-      "cls": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T18:35:26Z",
-      "ageMin": 193,
-      "state": "active"
-    },
-    {
-      "repo": "Domain",
-      "name": "self-audience",
-      "cls": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T18:33:09Z",
-      "ageMin": 196,
-      "state": "active"
-    },
-    {
-      "repo": "Domain",
-      "name": "autonomy-guardian",
-      "cls": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T18:31:46Z",
-      "ageMin": 197,
-      "state": "active"
-    },
-    {
-      "repo": "Domain",
-      "name": "sovereign-tick-cron",
-      "cls": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T18:28:36Z",
-      "ageMin": 200,
-      "state": "active"
-    },
-    {
-      "repo": "Domain",
-      "name": "tick-keeper",
-      "cls": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T18:27:56Z",
-      "ageMin": 201,
-      "state": "active"
-    },
-    {
-      "repo": "Domain",
-      "name": "office-orders-twin",
-      "cls": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T18:26:25Z",
-      "ageMin": 202,
-      "state": "active"
-    },
-    {
-      "repo": "Domain",
-      "name": "saos-act",
-      "cls": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T18:15:18Z",
-      "ageMin": 213,
-      "state": "active"
-    },
-    {
-      "repo": "Domain",
-      "name": "operator-console",
-      "cls": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T18:01:55Z",
-      "ageMin": 227,
-      "state": "active"
-    },
-    {
-      "repo": "Domain",
-      "name": "public-loops-bake",
-      "cls": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T17:54:32Z",
-      "ageMin": 234,
-      "state": "active"
-    },
-    {
-      "repo": "Console",
-      "name": "pages-deploy",
-      "cls": "unknown",
-      "lastConcl": "—",
-      "lastRun": "2026-10-23T21:01:01Z",
-      "ageMin": 48,
-      "state": "active"
-    },
-    {
-      "repo": "Console",
-      "name": "identity-guard",
-      "cls": "unknown",
-      "lastConcl": "—",
-      "lastRun": "2026-10-23T21:01:01Z",
-      "ageMin": 48,
+      "ageMin": 211,
       "state": "active"
     },
     {
@@ -825,8 +822,8 @@
       "name": "runtime-pacemaker",
       "cls": "healthy",
       "lastConcl": "success",
-      "lastRun": "2026-10-23T20:57:19Z",
-      "ageMin": 51,
+      "lastRun": "2026-10-23T22:11:47Z",
+      "ageMin": 28,
       "state": "active"
     },
     {
@@ -834,8 +831,80 @@
       "name": "truth-gate",
       "cls": "healthy",
       "lastConcl": "success",
-      "lastRun": "2026-10-23T20:56:01Z",
-      "ageMin": 53,
+      "lastRun": "2026-10-23T22:10:16Z",
+      "ageMin": 30,
+      "state": "active"
+    },
+    {
+      "repo": "Console",
+      "name": "pages-deploy",
+      "cls": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T22:10:06Z",
+      "ageMin": 30,
+      "state": "active"
+    },
+    {
+      "repo": "Console",
+      "name": "identity-guard",
+      "cls": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T22:10:06Z",
+      "ageMin": 30,
+      "state": "active"
+    },
+    {
+      "repo": "Console",
+      "name": "grid-pulse",
+      "cls": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T22:03:27Z",
+      "ageMin": 36,
+      "state": "active"
+    },
+    {
+      "repo": "Console",
+      "name": "giants-beat",
+      "cls": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T21:50:34Z",
+      "ageMin": 49,
+      "state": "active"
+    },
+    {
+      "repo": "Console",
+      "name": "chain-vitals",
+      "cls": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T21:43:28Z",
+      "ageMin": 56,
+      "state": "active"
+    },
+    {
+      "repo": "Console",
+      "name": "swallow-watch",
+      "cls": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T21:43:26Z",
+      "ageMin": 56,
+      "state": "active"
+    },
+    {
+      "repo": "Console",
+      "name": "estate-scrub",
+      "cls": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T21:43:05Z",
+      "ageMin": 57,
+      "state": "active"
+    },
+    {
+      "repo": "Console",
+      "name": "trigger-mesh",
+      "cls": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T21:38:43Z",
+      "ageMin": 61,
       "state": "active"
     },
     {
@@ -844,7 +913,7 @@
       "cls": "healthy",
       "lastConcl": "success",
       "lastRun": "2026-10-23T20:07:35Z",
-      "ageMin": 101,
+      "ageMin": 152,
       "state": "active"
     },
     {
@@ -853,34 +922,7 @@
       "cls": "healthy",
       "lastConcl": "success",
       "lastRun": "2026-10-23T19:44:58Z",
-      "ageMin": 124,
-      "state": "active"
-    },
-    {
-      "repo": "Console",
-      "name": "giants-beat",
-      "cls": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T19:09:03Z",
-      "ageMin": 160,
-      "state": "active"
-    },
-    {
-      "repo": "Console",
-      "name": "grid-pulse",
-      "cls": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T19:07:26Z",
-      "ageMin": 161,
-      "state": "active"
-    },
-    {
-      "repo": "Console",
-      "name": "chain-vitals",
-      "cls": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T18:45:32Z",
-      "ageMin": 183,
+      "ageMin": 175,
       "state": "active"
     },
     {
@@ -889,7 +931,7 @@
       "cls": "critical",
       "lastConcl": "cancelled",
       "lastRun": "2026-10-23T18:43:34Z",
-      "ageMin": 185,
+      "ageMin": 236,
       "state": "active",
       "window": {
         "runs": 20,
@@ -903,16 +945,7 @@
       "cls": "healthy",
       "lastConcl": "success",
       "lastRun": "2026-10-23T18:42:01Z",
-      "ageMin": 187,
-      "state": "active"
-    },
-    {
-      "repo": "Console",
-      "name": "estate-scrub",
-      "cls": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T18:40:28Z",
-      "ageMin": 188,
+      "ageMin": 238,
       "state": "active"
     },
     {
@@ -921,7 +954,7 @@
       "cls": "healthy",
       "lastConcl": "success",
       "lastRun": "2026-10-23T18:35:17Z",
-      "ageMin": 194,
+      "ageMin": 245,
       "state": "active"
     },
     {
@@ -930,7 +963,7 @@
       "cls": "healthy",
       "lastConcl": "success",
       "lastRun": "2026-10-23T18:31:35Z",
-      "ageMin": 197,
+      "ageMin": 248,
       "state": "active"
     },
     {
@@ -939,7 +972,7 @@
       "cls": "healthy",
       "lastConcl": "success",
       "lastRun": "2026-10-23T18:27:16Z",
-      "ageMin": 202,
+      "ageMin": 253,
       "state": "active"
     },
     {
@@ -948,34 +981,7 @@
       "cls": "healthy",
       "lastConcl": "success",
       "lastRun": "2026-10-23T18:14:08Z",
-      "ageMin": 215,
-      "state": "active"
-    },
-    {
-      "repo": "Console",
-      "name": "swallow-watch",
-      "cls": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T17:58:38Z",
-      "ageMin": 230,
-      "state": "active"
-    },
-    {
-      "repo": "Console",
-      "name": "trigger-mesh",
-      "cls": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T17:25:33Z",
-      "ageMin": 263,
-      "state": "active"
-    },
-    {
-      "repo": "saos-runtime",
-      "name": "dex-beat",
-      "cls": "unknown",
-      "lastConcl": "—",
-      "lastRun": "2026-10-23T20:54:31Z",
-      "ageMin": 54,
+      "ageMin": 266,
       "state": "active"
     },
     {
@@ -983,8 +989,80 @@
       "name": "sovereign-runtime",
       "cls": "unknown",
       "lastConcl": "—",
-      "lastRun": "2026-10-23T20:47:43Z",
+      "lastRun": "2026-10-23T22:10:56Z",
+      "ageMin": 29,
+      "state": "active"
+    },
+    {
+      "repo": "saos-runtime",
+      "name": "sovereign-pulse",
+      "cls": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T22:09:54Z",
+      "ageMin": 30,
+      "state": "active"
+    },
+    {
+      "repo": "saos-runtime",
+      "name": "army-ladder",
+      "cls": "unknown",
+      "lastConcl": "—",
+      "lastRun": "2026-10-23T22:04:48Z",
+      "ageMin": 35,
+      "state": "active"
+    },
+    {
+      "repo": "saos-runtime",
+      "name": "dex-beat",
+      "cls": "unknown",
+      "lastConcl": "—",
+      "lastRun": "2026-10-23T21:54:31Z",
+      "ageMin": 45,
+      "state": "active"
+    },
+    {
+      "repo": "saos-runtime",
+      "name": "organ-guardian",
+      "cls": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T21:40:38Z",
+      "ageMin": 59,
+      "state": "active"
+    },
+    {
+      "repo": "saos-runtime",
+      "name": "grid-watchdog",
+      "cls": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T21:38:34Z",
       "ageMin": 61,
+      "state": "active"
+    },
+    {
+      "repo": "saos-runtime",
+      "name": "self-memory",
+      "cls": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T21:37:51Z",
+      "ageMin": 62,
+      "state": "active"
+    },
+    {
+      "repo": "saos-runtime",
+      "name": "arsenal-sentinel",
+      "cls": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T21:35:49Z",
+      "ageMin": 64,
+      "state": "active"
+    },
+    {
+      "repo": "saos-runtime",
+      "name": "sovereign-builder",
+      "cls": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T21:27:25Z",
+      "ageMin": 72,
       "state": "active"
     },
     {
@@ -993,16 +1071,7 @@
       "cls": "healthy",
       "lastConcl": "success",
       "lastRun": "2026-10-23T20:42:23Z",
-      "ageMin": 66,
-      "state": "active"
-    },
-    {
-      "repo": "saos-runtime",
-      "name": "army-ladder",
-      "cls": "unknown",
-      "lastConcl": "—",
-      "lastRun": "2026-10-23T20:41:51Z",
-      "ageMin": 67,
+      "ageMin": 117,
       "state": "active"
     },
     {
@@ -1011,16 +1080,7 @@
       "cls": "healthy",
       "lastConcl": "success",
       "lastRun": "2026-10-23T20:40:16Z",
-      "ageMin": 69,
-      "state": "active"
-    },
-    {
-      "repo": "saos-runtime",
-      "name": "sovereign-pulse",
-      "cls": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T20:05:48Z",
-      "ageMin": 103,
+      "ageMin": 120,
       "state": "active"
     },
     {
@@ -1029,7 +1089,7 @@
       "cls": "healthy",
       "lastConcl": "success",
       "lastRun": "2026-10-23T19:58:32Z",
-      "ageMin": 110,
+      "ageMin": 161,
       "state": "active"
     },
     {
@@ -1038,7 +1098,7 @@
       "cls": "healthy",
       "lastConcl": "success",
       "lastRun": "2026-10-23T19:33:20Z",
-      "ageMin": 135,
+      "ageMin": 187,
       "state": "active"
     },
     {
@@ -1047,16 +1107,7 @@
       "cls": "healthy",
       "lastConcl": "success",
       "lastRun": "2026-10-23T19:33:08Z",
-      "ageMin": 136,
-      "state": "active"
-    },
-    {
-      "repo": "saos-runtime",
-      "name": "grid-watchdog",
-      "cls": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T18:23:07Z",
-      "ageMin": 206,
+      "ageMin": 187,
       "state": "active"
     },
     {
@@ -1065,7 +1116,7 @@
       "cls": "healthy",
       "lastConcl": "success",
       "lastRun": "2026-10-23T19:20:59Z",
-      "ageMin": 148,
+      "ageMin": 199,
       "state": "active"
     },
     {
@@ -1074,7 +1125,7 @@
       "cls": "healthy",
       "lastConcl": "success",
       "lastRun": "2026-10-23T19:20:55Z",
-      "ageMin": 148,
+      "ageMin": 199,
       "state": "active"
     },
     {
@@ -1083,7 +1134,7 @@
       "cls": "healthy",
       "lastConcl": "success",
       "lastRun": "2026-10-23T19:20:47Z",
-      "ageMin": 148,
+      "ageMin": 199,
       "state": "active"
     },
     {
@@ -1092,16 +1143,7 @@
       "cls": "healthy",
       "lastConcl": "success",
       "lastRun": "2026-10-23T18:43:06Z",
-      "ageMin": 186,
-      "state": "active"
-    },
-    {
-      "repo": "saos-runtime",
-      "name": "organ-guardian",
-      "cls": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T18:41:00Z",
-      "ageMin": 188,
+      "ageMin": 237,
       "state": "active"
     },
     {
@@ -1110,7 +1152,7 @@
       "cls": "healthy",
       "lastConcl": "success",
       "lastRun": "2026-10-23T18:32:46Z",
-      "ageMin": 196,
+      "ageMin": 247,
       "state": "active"
     },
     {
@@ -1119,34 +1161,7 @@
       "cls": "healthy",
       "lastConcl": "success",
       "lastRun": "2026-10-23T18:31:08Z",
-      "ageMin": 198,
-      "state": "active"
-    },
-    {
-      "repo": "saos-runtime",
-      "name": "self-memory",
-      "cls": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T17:24:49Z",
-      "ageMin": 264,
-      "state": "active"
-    },
-    {
-      "repo": "saos-runtime",
-      "name": "arsenal-sentinel",
-      "cls": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T17:23:13Z",
-      "ageMin": 266,
-      "state": "active"
-    },
-    {
-      "repo": "saos-runtime",
-      "name": "sovereign-builder",
-      "cls": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T17:12:16Z",
-      "ageMin": 277,
+      "ageMin": 249,
       "state": "active"
     },
     {
@@ -1155,7 +1170,7 @@
       "cls": "healthy",
       "lastConcl": "success",
       "lastRun": "2026-10-23T14:11:33Z",
-      "ageMin": 457,
+      "ageMin": 508,
       "state": "active"
     },
     {
@@ -1164,7 +1179,7 @@
       "cls": "healthy",
       "lastConcl": "success",
       "lastRun": "2026-10-23T10:22:34Z",
-      "ageMin": 686,
+      "ageMin": 737,
       "state": "active"
     },
     {
@@ -1173,7 +1188,7 @@
       "cls": "healthy",
       "lastConcl": "success",
       "lastRun": "2026-10-23T10:14:13Z",
-      "ageMin": 695,
+      "ageMin": 746,
       "state": "active"
     },
     {
@@ -1182,7 +1197,7 @@
       "cls": "healthy",
       "lastConcl": "success",
       "lastRun": "2026-10-23T08:48:38Z",
-      "ageMin": 780,
+      "ageMin": 831,
       "state": "active"
     },
     {
@@ -1191,16 +1206,52 @@
       "cls": "healthy",
       "lastConcl": "success",
       "lastRun": "2026-10-23T08:43:53Z",
-      "ageMin": 785,
+      "ageMin": 836,
       "state": "active"
     },
     {
       "repo": "Autonomy",
-      "name": "artery-pacer",
+      "name": "sovereign-state",
       "cls": "unknown",
       "lastConcl": "—",
-      "lastRun": "2026-10-23T20:57:46Z",
-      "ageMin": 51,
+      "lastRun": "2026-10-23T22:14:51Z",
+      "ageMin": 25,
+      "state": "active"
+    },
+    {
+      "repo": "Autonomy",
+      "name": "artery-builder",
+      "cls": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T22:14:11Z",
+      "ageMin": 26,
+      "state": "active"
+    },
+    {
+      "repo": "Autonomy",
+      "name": "artery-integrity",
+      "cls": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T22:12:24Z",
+      "ageMin": 27,
+      "state": "active"
+    },
+    {
+      "repo": "Autonomy",
+      "name": "artery-grid",
+      "cls": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T22:12:23Z",
+      "ageMin": 27,
+      "state": "active"
+    },
+    {
+      "repo": "Autonomy",
+      "name": "fleet-heal",
+      "cls": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T22:12:22Z",
+      "ageMin": 27,
       "state": "active"
     },
     {
@@ -1208,8 +1259,242 @@
       "name": "verifier (truth & quality)",
       "cls": "unknown",
       "lastConcl": "—",
-      "lastRun": "2026-10-23T20:51:45Z",
+      "lastRun": "2026-10-23T22:12:20Z",
+      "ageMin": 28,
+      "state": "active"
+    },
+    {
+      "repo": "Autonomy",
+      "name": "artery-watch",
+      "cls": "unknown",
+      "lastConcl": "—",
+      "lastRun": "2026-10-23T22:12:19Z",
+      "ageMin": 28,
+      "state": "active"
+    },
+    {
+      "repo": "Autonomy",
+      "name": "artery-selfheal",
+      "cls": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T22:12:08Z",
+      "ageMin": 28,
+      "state": "active"
+    },
+    {
+      "repo": "Autonomy",
+      "name": "artery-participation",
+      "cls": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T22:11:09Z",
+      "ageMin": 29,
+      "state": "active"
+    },
+    {
+      "repo": "Autonomy",
+      "name": "network-awareness",
+      "cls": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T22:09:58Z",
+      "ageMin": 30,
+      "state": "active"
+    },
+    {
+      "repo": "Autonomy",
+      "name": "sovereign-tick",
+      "cls": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T22:06:16Z",
+      "ageMin": 34,
+      "state": "active"
+    },
+    {
+      "repo": "Autonomy",
+      "name": "identity-guard",
+      "cls": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T22:06:06Z",
+      "ageMin": 34,
+      "state": "active"
+    },
+    {
+      "repo": "Autonomy",
+      "name": "artery-catchup",
+      "cls": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T22:06:06Z",
+      "ageMin": 34,
+      "state": "active"
+    },
+    {
+      "repo": "Autonomy",
+      "name": "floating-builds",
+      "cls": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T22:05:40Z",
+      "ageMin": 34,
+      "state": "active"
+    },
+    {
+      "repo": "Autonomy",
+      "name": "artery-growth",
+      "cls": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T22:05:25Z",
+      "ageMin": 34,
+      "state": "active"
+    },
+    {
+      "repo": "Autonomy",
+      "name": "artery-pacer",
+      "cls": "unknown",
+      "lastConcl": "—",
+      "lastRun": "2026-10-23T22:05:21Z",
+      "ageMin": 35,
+      "state": "active"
+    },
+    {
+      "repo": "Autonomy",
+      "name": "agent-9-clock-guard",
+      "cls": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T21:50:55Z",
+      "ageMin": 49,
+      "state": "active"
+    },
+    {
+      "repo": "Autonomy",
+      "name": "selfhood",
+      "cls": "unknown",
+      "lastConcl": "—",
+      "lastRun": "2026-10-23T21:43:19Z",
       "ageMin": 57,
+      "state": "active"
+    },
+    {
+      "repo": "Autonomy",
+      "name": "artery-wallet",
+      "cls": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T21:38:47Z",
+      "ageMin": 61,
+      "state": "active"
+    },
+    {
+      "repo": "Autonomy",
+      "name": "artery-decision-truth",
+      "cls": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T21:38:46Z",
+      "ageMin": 61,
+      "state": "active"
+    },
+    {
+      "repo": "Autonomy",
+      "name": "value-scan",
+      "cls": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T21:38:45Z",
+      "ageMin": 61,
+      "state": "active"
+    },
+    {
+      "repo": "Autonomy",
+      "name": "federation",
+      "cls": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T21:38:44Z",
+      "ageMin": 61,
+      "state": "active"
+    },
+    {
+      "repo": "Autonomy",
+      "name": "office-growth",
+      "cls": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T21:37:31Z",
+      "ageMin": 62,
+      "state": "active"
+    },
+    {
+      "repo": "Autonomy",
+      "name": "run-score",
+      "cls": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T21:37:07Z",
+      "ageMin": 63,
+      "state": "active"
+    },
+    {
+      "repo": "Autonomy",
+      "name": "network-self-awareness",
+      "cls": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T21:32:05Z",
+      "ageMin": 68,
+      "state": "active"
+    },
+    {
+      "repo": "Autonomy",
+      "name": "operator-routing",
+      "cls": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T21:31:58Z",
+      "ageMin": 68,
+      "state": "active"
+    },
+    {
+      "repo": "Autonomy",
+      "name": "contract-check",
+      "cls": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T21:31:58Z",
+      "ageMin": 68,
+      "state": "active"
+    },
+    {
+      "repo": "Autonomy",
+      "name": "artery-flow",
+      "cls": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T21:29:13Z",
+      "ageMin": 71,
+      "state": "active"
+    },
+    {
+      "repo": "Autonomy",
+      "name": "artery-defi",
+      "cls": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T21:23:54Z",
+      "ageMin": 76,
+      "state": "active"
+    },
+    {
+      "repo": "Autonomy",
+      "name": "artery-scribe",
+      "cls": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T21:20:03Z",
+      "ageMin": 80,
+      "state": "active"
+    },
+    {
+      "repo": "Autonomy",
+      "name": "fleet-yield",
+      "cls": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T21:19:04Z",
+      "ageMin": 81,
+      "state": "active"
+    },
+    {
+      "repo": "Autonomy",
+      "name": "artery-fleet",
+      "cls": "healthy",
+      "lastConcl": "success",
+      "lastRun": "2026-10-23T21:11:31Z",
+      "ageMin": 88,
       "state": "active"
     },
     {
@@ -1218,7 +1503,7 @@
       "cls": "healthy",
       "lastConcl": "success",
       "lastRun": "2026-10-23T20:50:41Z",
-      "ageMin": 58,
+      "ageMin": 109,
       "state": "active"
     },
     {
@@ -1227,7 +1512,7 @@
       "cls": "healthy",
       "lastConcl": "success",
       "lastRun": "2026-10-23T20:50:40Z",
-      "ageMin": 58,
+      "ageMin": 109,
       "state": "active"
     },
     {
@@ -1236,88 +1521,7 @@
       "cls": "healthy",
       "lastConcl": "success",
       "lastRun": "2026-10-23T20:50:38Z",
-      "ageMin": 58,
-      "state": "active"
-    },
-    {
-      "repo": "Autonomy",
-      "name": "sovereign-tick",
-      "cls": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T20:48:38Z",
-      "ageMin": 60,
-      "state": "active"
-    },
-    {
-      "repo": "Autonomy",
-      "name": "sovereign-state",
-      "cls": "unknown",
-      "lastConcl": "—",
-      "lastRun": "2026-10-23T20:48:15Z",
-      "ageMin": 61,
-      "state": "active"
-    },
-    {
-      "repo": "Autonomy",
-      "name": "fleet-heal",
-      "cls": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T20:44:55Z",
-      "ageMin": 64,
-      "state": "active"
-    },
-    {
-      "repo": "Autonomy",
-      "name": "value-scan",
-      "cls": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T20:44:54Z",
-      "ageMin": 64,
-      "state": "active"
-    },
-    {
-      "repo": "Autonomy",
-      "name": "federation",
-      "cls": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T20:44:53Z",
-      "ageMin": 64,
-      "state": "active"
-    },
-    {
-      "repo": "Autonomy",
-      "name": "artery-watch",
-      "cls": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T20:44:52Z",
-      "ageMin": 64,
-      "state": "active"
-    },
-    {
-      "repo": "Autonomy",
-      "name": "artery-catchup",
-      "cls": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T20:44:51Z",
-      "ageMin": 64,
-      "state": "active"
-    },
-    {
-      "repo": "Autonomy",
-      "name": "artery-decision-truth",
-      "cls": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T20:44:42Z",
-      "ageMin": 64,
-      "state": "active"
-    },
-    {
-      "repo": "Autonomy",
-      "name": "artery-selfheal",
-      "cls": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T20:44:41Z",
-      "ageMin": 64,
+      "ageMin": 109,
       "state": "active"
     },
     {
@@ -1326,7 +1530,7 @@
       "cls": "healthy",
       "lastConcl": "success",
       "lastRun": "2026-10-23T20:36:25Z",
-      "ageMin": 72,
+      "ageMin": 123,
       "state": "active"
     },
     {
@@ -1335,7 +1539,7 @@
       "cls": "healthy",
       "lastConcl": "success",
       "lastRun": "2026-10-23T20:36:07Z",
-      "ageMin": 73,
+      "ageMin": 124,
       "state": "active"
     },
     {
@@ -1344,7 +1548,7 @@
       "cls": "healthy",
       "lastConcl": "success",
       "lastRun": "2026-10-23T20:36:06Z",
-      "ageMin": 73,
+      "ageMin": 124,
       "state": "active"
     },
     {
@@ -1353,34 +1557,7 @@
       "cls": "healthy",
       "lastConcl": "success",
       "lastRun": "2026-10-23T20:36:04Z",
-      "ageMin": 73,
-      "state": "active"
-    },
-    {
-      "repo": "Autonomy",
-      "name": "artery-participation",
-      "cls": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T20:36:03Z",
-      "ageMin": 73,
-      "state": "active"
-    },
-    {
-      "repo": "Autonomy",
-      "name": "artery-integrity",
-      "cls": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T20:36:02Z",
-      "ageMin": 73,
-      "state": "active"
-    },
-    {
-      "repo": "Autonomy",
-      "name": "agent-9-clock-guard",
-      "cls": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T20:30:20Z",
-      "ageMin": 78,
+      "ageMin": 124,
       "state": "active"
     },
     {
@@ -1389,43 +1566,7 @@
       "cls": "healthy",
       "lastConcl": "success",
       "lastRun": "2026-10-23T20:25:01Z",
-      "ageMin": 84,
-      "state": "active"
-    },
-    {
-      "repo": "Autonomy",
-      "name": "contract-check",
-      "cls": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T20:22:12Z",
-      "ageMin": 87,
-      "state": "active"
-    },
-    {
-      "repo": "Autonomy",
-      "name": "artery-builder",
-      "cls": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T20:18:14Z",
-      "ageMin": 91,
-      "state": "active"
-    },
-    {
-      "repo": "Autonomy",
-      "name": "artery-wallet",
-      "cls": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T20:18:13Z",
-      "ageMin": 91,
-      "state": "active"
-    },
-    {
-      "repo": "Autonomy",
-      "name": "artery-grid",
-      "cls": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T20:13:05Z",
-      "ageMin": 96,
+      "ageMin": 135,
       "state": "active"
     },
     {
@@ -1434,7 +1575,7 @@
       "cls": "healthy",
       "lastConcl": "success",
       "lastRun": "2026-10-23T20:04:12Z",
-      "ageMin": 105,
+      "ageMin": 156,
       "state": "active"
     },
     {
@@ -1443,7 +1584,7 @@
       "cls": "healthy",
       "lastConcl": "success",
       "lastRun": "2026-10-23T20:03:59Z",
-      "ageMin": 105,
+      "ageMin": 156,
       "state": "active"
     },
     {
@@ -1452,94 +1593,8 @@
       "cls": "healthy",
       "lastConcl": "success",
       "lastRun": "2026-10-23T19:53:30Z",
-      "ageMin": 115,
+      "ageMin": 166,
       "state": "active"
-    },
-    {
-      "repo": "Autonomy",
-      "name": "artery-fleet",
-      "cls": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T19:51:37Z",
-      "ageMin": 117,
-      "state": "active"
-    },
-    {
-      "repo": "Autonomy",
-      "name": "artery-growth",
-      "cls": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T19:51:27Z",
-      "ageMin": 117,
-      "state": "active"
-    },
-    {
-      "repo": "Autonomy",
-      "name": "network-awareness",
-      "cls": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T19:10:16Z",
-      "ageMin": 159,
-      "state": "active"
-    },
-    {
-      "repo": "Autonomy",
-      "name": "identity-guard",
-      "cls": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T19:09:29Z",
-      "ageMin": 159,
-      "state": "active"
-    },
-    {
-      "repo": "Autonomy",
-      "name": "floating-builds",
-      "cls": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T19:08:38Z",
-      "ageMin": 160,
-      "state": "active"
-    },
-    {
-      "repo": "Autonomy",
-      "name": "artery-flow",
-      "cls": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T19:07:27Z",
-      "ageMin": 161,
-      "state": "active"
-    },
-    {
-      "repo": "Autonomy",
-      "name": "artery-scribe",
-      "cls": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T18:51:43Z",
-      "ageMin": 177,
-      "state": "active"
-    },
-    {
-      "repo": "Autonomy",
-      "name": "artery-defi",
-      "cls": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T18:51:42Z",
-      "ageMin": 177,
-      "state": "active"
-    },
-    {
-      "repo": "Autonomy",
-      "name": "selfhood",
-      "cls": "critical",
-      "lastConcl": "cancelled",
-      "lastRun": "2026-10-23T18:45:02Z",
-      "ageMin": 184,
-      "state": "active",
-      "window": {
-        "runs": 20,
-        "successRate": 0,
-        "flakiness": 1
-      }
     },
     {
       "repo": "Autonomy",
@@ -1547,61 +1602,7 @@
       "cls": "healthy",
       "lastConcl": "success",
       "lastRun": "2026-10-23T18:29:03Z",
-      "ageMin": 200,
-      "state": "active"
-    },
-    {
-      "repo": "Autonomy",
-      "name": "world-evolver",
-      "cls": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T18:21:25Z",
-      "ageMin": 207,
-      "state": "active"
-    },
-    {
-      "repo": "Autonomy",
-      "name": "fleet-yield",
-      "cls": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T18:16:07Z",
-      "ageMin": 213,
-      "state": "active"
-    },
-    {
-      "repo": "Autonomy",
-      "name": "operator-routing",
-      "cls": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T17:54:40Z",
-      "ageMin": 234,
-      "state": "active"
-    },
-    {
-      "repo": "Autonomy",
-      "name": "office-growth",
-      "cls": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T17:24:22Z",
-      "ageMin": 264,
-      "state": "active"
-    },
-    {
-      "repo": "Autonomy",
-      "name": "run-score",
-      "cls": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T17:24:08Z",
-      "ageMin": 265,
-      "state": "active"
-    },
-    {
-      "repo": "Autonomy",
-      "name": "network-self-awareness",
-      "cls": "healthy",
-      "lastConcl": "success",
-      "lastRun": "2026-10-23T17:18:43Z",
-      "ageMin": 270,
+      "ageMin": 251,
       "state": "active"
     },
     {
@@ -1609,8 +1610,8 @@
       "name": "estate-redboard",
       "cls": "healthy",
       "lastConcl": "success",
-      "lastRun": "2026-10-23T20:22:13Z",
-      "ageMin": 87,
+      "lastRun": "2026-10-23T21:23:06Z",
+      "ageMin": 77,
       "state": "active"
     },
     {
@@ -1618,8 +1619,8 @@
       "name": "lighthouse-pulse",
       "cls": "healthy",
       "lastConcl": "success",
-      "lastRun": "2026-10-23T19:56:58Z",
-      "ageMin": 112,
+      "lastRun": "2026-10-23T21:10:31Z",
+      "ageMin": 89,
       "state": "active"
     }
   ]
