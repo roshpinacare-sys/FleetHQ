@@ -1,6 +1,6 @@
 {
  "schema": "fleet.fresh-oracle/1",
- "at": "2026-10-23T16:35:04.805Z",
+ "at": "2026-10-23T20:12:45.685Z",
  "law": "FRESH only if sha256(live bytes) == sha256(committed deploy-ref bytes) AND no ops doc MISSING; DRIFT=RED (200-with-different-bytes); UNREACHABLE=UNKNOWN (network, retried once, reason kept); ops-doc age rows are honest amber (MISSING alone flips exit) — never faked green",
  "results": [
   {
@@ -12,9 +12,9 @@
    "liveError": null,
    "committedError": null,
    "liveSha16": "399f7e09f2a2babe",
-   "committedSha16": "399f7e09f2a2babe",
+   "committedSha16": "bf03bed0121dc209",
    "liveBytes": 49914,
-   "verdict": "MATCH"
+   "verdict": "DRIFT"
   },
   {
    "name": "FleetHQ potential board",
@@ -25,9 +25,9 @@
    "liveError": null,
    "committedError": null,
    "liveSha16": "cc9b53fdc755ed15",
-   "committedSha16": "cc9b53fdc755ed15",
+   "committedSha16": "4a89fbd74bbfdad7",
    "liveBytes": 16651,
-   "verdict": "MATCH"
+   "verdict": "DRIFT"
   },
   {
    "name": "FleetHQ potential data",
@@ -38,9 +38,9 @@
    "liveError": null,
    "committedError": null,
    "liveSha16": "6a6842d58d55ac90",
-   "committedSha16": "6a6842d58d55ac90",
+   "committedSha16": "641b8e914e1d3dbf",
    "liveBytes": 22796,
-   "verdict": "MATCH"
+   "verdict": "DRIFT"
   },
   {
    "name": "Domain window",
@@ -153,13 +153,13 @@
  ],
  "summary": {
   "checked": 7,
-  "match": 7,
-  "drift": 0,
+  "match": 4,
+  "drift": 3,
   "missing": 0,
   "unreachable": 0,
   "opsDocsMissing": 0,
   "opsDocsStale": 0,
-  "verdict": "FRESH"
+  "verdict": "STALE-OR-BROKEN"
  },
  "method": "https GET live URL + raw.githubusercontent deploy ref → sha256-16 byte equality"
 }
