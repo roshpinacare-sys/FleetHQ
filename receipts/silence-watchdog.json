@@ -1,42 +1,42 @@
 {
  "schema": "silence.watchdog/1",
- "at": "2026-10-23T22:20:10.782Z",
+ "at": "2026-10-23T22:40:10.653Z",
  "scope": "actions",
  "voices": [
   {
    "name": "origin/FleetHQ",
-   "lastActivity": "2026-10-23T22:19:44.000Z",
+   "lastActivity": "2026-10-23T22:39:56.000Z",
    "ageMin": 0,
    "maxSilenceMin": 240,
    "verdict": "alive",
    "detail": {
-    "subject": "pacemaker receipt: 2026-10-23T22:19:44Z"
+    "subject": "harness: scores + repair proposals + mcp edge"
    }
   },
   {
    "name": "origin/Domain",
-   "lastActivity": "2026-10-23T22:19:55.000Z",
+   "lastActivity": "2026-10-23T22:39:41.000Z",
    "ageMin": 0,
    "maxSilenceMin": 240,
    "verdict": "alive",
    "detail": {
-    "subject": "stale-watchdog: artifact ages measured, writers re-fired [skip ci]"
+    "subject": "office window: ALIVE 2026-10-23T22:39:40Z"
    }
   },
   {
    "name": "origin/Console",
-   "lastActivity": "2026-10-23T22:12:00.000Z",
-   "ageMin": 8,
+   "lastActivity": "2026-10-23T22:37:22.000Z",
+   "ageMin": 3,
    "maxSilenceMin": 240,
    "verdict": "alive",
    "detail": {
-    "subject": "pacemaker receipt: 2026-10-23T22:12:00Z"
+    "subject": "weave-console: 2026-10-23T22:37:22Z · cp#1810 · witness age 0.3h · key"
    }
   },
   {
    "name": "divergence/FleetHQ",
    "lastActivity": "2026-10-23T15:39:39.000Z",
-   "ageMin": 401,
+   "ageMin": 421,
    "maxSilenceMin": 75,
    "verdict": "SILENT-ALARM",
    "detail": {
@@ -48,7 +48,7 @@
   {
    "name": "divergence/Domain",
    "lastActivity": "2026-10-23T15:39:39.000Z",
-   "ageMin": 401,
+   "ageMin": 421,
    "maxSilenceMin": 75,
    "verdict": "SILENT-ALARM",
    "detail": {
@@ -60,7 +60,7 @@
   {
    "name": "divergence/Console",
    "lastActivity": "2026-10-23T15:39:39.000Z",
-   "ageMin": 401,
+   "ageMin": 421,
    "maxSilenceMin": 75,
    "verdict": "SILENT-ALARM",
    "detail": {
@@ -72,7 +72,7 @@
   {
    "name": "sandbox-ledger (via git)",
    "lastActivity": "2026-10-23T17:49:30.257Z",
-   "ageMin": 271,
+   "ageMin": 291,
    "maxSilenceMin": 180,
    "verdict": "SILENT-ALARM",
    "detail": {
@@ -82,9 +82,9 @@
   {
    "name": "pages/money",
    "lastActivity": "2026-10-23T18:36:45.089Z",
-   "ageMin": 223,
+   "ageMin": 243,
    "maxSilenceMin": 240,
-   "verdict": "alive",
+   "verdict": "SILENT-ALARM",
    "detail": {
     "url": "dex/money.json"
    }
@@ -92,7 +92,7 @@
   {
    "name": "pages/site-audit",
    "lastActivity": "2026-10-23T21:54:05.278Z",
-   "ageMin": 26,
+   "ageMin": 46,
    "maxSilenceMin": 360,
    "verdict": "alive",
    "detail": {
@@ -102,10 +102,11 @@
   }
  ],
  "alarms": [
-  "divergence/FleetHQ: silent 401min (limit 75)",
-  "divergence/Domain: silent 401min (limit 75)",
-  "divergence/Console: silent 401min (limit 75)",
-  "sandbox-ledger (via git): silent 271min (limit 180)"
+  "divergence/FleetHQ: silent 421min (limit 75)",
+  "divergence/Domain: silent 421min (limit 75)",
+  "divergence/Console: silent 421min (limit 75)",
+  "sandbox-ledger (via git): silent 291min (limit 180)",
+  "pages/money: silent 243min (limit 240)"
  ],
- "summary": "4 ALARM(S): divergence/FleetHQ: silent 401min (limit 75) · divergence/Domain: silent 401min (limit 75) · divergence/Console: silent 401min (limit 75) · sandbox-ledger (via git): silent 271min (limit 180)"
+ "summary": "5 ALARM(S): divergence/FleetHQ: silent 421min (limit 75) · divergence/Domain: silent 421min (limit 75) · divergence/Console: silent 421min (limit 75) · sandbox-ledger (via git): silent 291min (limit 180) · pages/money: silent 243min (limit 240)"
 }
