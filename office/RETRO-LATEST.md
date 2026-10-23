@@ -1,43 +1,43 @@
 # מחזור-השיפור-העצמי — המהדורה האחרונה (RETRO-LATEST)
 
-> 2026-10-22 08:37 UTC · office-retro (zai-11d · E1-deed zai-13c) · SAOS-OFFICE-RETRO/1 · ארבעה-שלבים: חקר → זיקוק → תכנון → ביצוע
+> 2026-10-23 14:03 UTC · office-retro (zai-11d · E1-deed zai-13c) · SAOS-OFFICE-RETRO/1 · ארבעה-שלבים: חקר → זיקוק → תכנון → ביצוע
 
 ## 1 · חקר (מה נמדד)
 
-- **רישום-האוטובוס**: live-zip — registry חי מ-private-7 raw (200, 745ms)
-- **הדיג'סט שלנו**: חי · generatedAt 2026-10-22 08:13 UTC (0.4h) · repos 39 · grid: ARMED-LIVE
+- **רישום-האוטובוס**: live-zip — registry חי מ-private-7 raw (200, 716ms)
+- **הדיג'סט שלנו**: חי · generatedAt 2026-10-22 14:38 UTC (23.4h) · repos 40 · grid: ARMED-LIVE · hive: ARMED-WAITING
 - **צווי-עבודה (work-orders)**: 2 פתוחים · 0 נפתרו · P1 פתוחים: 2 (live-sandbox-raw)
 - **רווחיות (profit-oracle, zai-14c — המשרד לומד-רווחיות)**: verdict=FLAT · delta=0% מול-המדידה-הקודמת · שווי-נקי=455.32 SBD-equiv · grid=EDGE-NEGATIVE-GRID-HOLD · at=2026-10-11 23:52 UTC
-- **ממצאי-המחקר**: לא-נמדדו — לא-נמצא קובץ-ממצאים מ-9 הימים האחרונים (2026-10-22, 2026-10-21, 2026-10-20, 2026-10-19, 2026-10-18, 2026-10-17, 2026-10-16, 2026-10-15, 2026-10-14) (כנה)
+- **ממצאי-המחקר**: לא-נמדדו — לא-נמצא קובץ-ממצאים מ-9 הימים האחרונים (2026-10-23, 2026-10-22, 2026-10-21, 2026-10-20, 2026-10-19, 2026-10-18, 2026-10-17, 2026-10-16, 2026-10-15) (כנה)
 
 ### בריאות האוטובוס (verify-bus מוטמע)
 
 | id | מצב | גיל(שע׳) | HTTP | טריות | סיבה |
 |----|-----|----------|------|-------|------|
-| fleethq-digest | 🟢 green | 0.4 | 200 | 2026-10-22T08:13:32.330Z | עודכן לפני 0h |
-| domain-dex-grid | 🟢 green | 2.2 | 200 | 2026-10-22T06:27:46.221Z | עודכן לפני 2h |
-| domain-dex-world | 🟢 green | 0.7 | 200 | 2026-10-22T07:58:08.457Z | עודכן לפני 1h |
-| domain-dex-deposits | 🟢 green | 3.5 | 200 | 2026-10-22T05:06:45.263Z | עודכן לפני 4h |
-| domain-office-feed | 🟢 green | 23.8 | 200 | 2026-10-21T08:52:06.693Z | עודכן לפני 24h |
-| domain-office-data | 🟢 green | 0.2 | 200 | 2026-10-22T08:27:12.992Z | עודכן לפני 0h |
-| domain-grid-truth | 🟢 green | 0.9 | 200 | 2026-10-22T07:44:39.554Z | עודכן לפני 1h |
-| sandbox-probe-hive | 🔴 red | — | 404 | — | לא-נמצא ב-2 תאריכים אחרונים (2026-10-22, 2026-10-21) |
-| sandbox-probe-blurt | 🔴 red | — | 404 | — | לא-נמצא ב-2 תאריכים אחרונים (2026-10-22, 2026-10-21) |
-| sandbox-research-findings | 🔴 red | — | 404 | — | לא-נמצא ב-9 תאריכים אחרונים (2026-10-22, 2026-10-21, 2026-10-20, 2026-10-19, 20… |
-| sandbox-flow-map | 🟢 green | 2.8 | 200 | 2026-10-22T05:47:47.552Z | עודכן לפני 3h |
-| sandbox-lessons-ledger | 🟢 green | 4.8 | 200 | 2026-10-22T03:46:38.105Z | עודכן לפני 5h |
-| domain-status | ⚪️ grey | — | 200 | — | 200 אך אין-מציין-טריות מזוהה — לא-ידוע |
-| console-dex-grid | 🟢 green | 0.3 | 200 | 2026-10-22T08:17:48.404Z | עודכן לפני 0h |
-| console-dex-world | 🟢 green | 0.7 | 200 | 2026-10-22T07:58:08.457Z | עודכן לפני 1h |
+| fleethq-digest | 🟢 green | 23.4 | 200 | 2026-10-22T14:38:32.863Z | עודכן לפני 23h |
+| domain-dex-grid | 🟢 green | 0.9 | 200 | 2026-10-23T13:11:24.775Z | עודכן לפני 1h |
+| domain-dex-world | 🟢 green | 0.8 | 200 | 2026-10-23T13:14:57.077Z | עודכן לפני 1h |
+| domain-dex-deposits | 🟢 green | 6.3 | 200 | 2026-10-23T07:46:51.297Z | עודכן לפני 6h |
+| domain-office-feed | 🟢 green | 5.2 | 200 | 2026-10-23T08:49:51.269Z | עודכן לפני 5h |
+| domain-office-data | 🟢 green | 1.1 | 200 | 2026-10-23T12:59:04.422Z | עודכן לפני 1h |
+| domain-grid-truth | 🟢 green | 0.9 | 200 | 2026-10-23T13:07:55.631Z | עודכן לפני 1h |
+| sandbox-probe-hive | 🔴 red | — | 404 | — | לא-נמצא ב-2 תאריכים אחרונים (2026-10-23, 2026-10-22) |
+| sandbox-probe-blurt | 🔴 red | — | 404 | — | לא-נמצא ב-2 תאריכים אחרונים (2026-10-23, 2026-10-22) |
+| sandbox-research-findings | 🔴 red | — | 404 | — | לא-נמצא ב-9 תאריכים אחרונים (2026-10-23, 2026-10-22, 2026-10-21, 2026-10-20, 20… |
+| sandbox-flow-map | 🟢 green | 3.5 | 200 | 2026-10-23T10:32:08.996Z | עודכן לפני 4h |
+| sandbox-lessons-ledger | 🟢 green | 2.2 | 200 | 2026-10-23T11:51:55.767Z | עודכן לפני 2h |
+| domain-status | 🟢 green | 1 | 200 | 2026-10-23T13:03:34.485Z | עודכן לפני 1h |
+| console-dex-grid | 🟢 green | 0.3 | 200 | 2026-10-23T13:43:34.692Z | עודכן לפני 0h |
+| console-dex-world | 🟢 green | 0.8 | 200 | 2026-10-23T13:14:57.077Z | עודכן לפני 1h |
 | console-mirror-status | ⚪️ grey | — | 404 | — | private-raw ללא-token — לא-ידוע (כנה) |
-| sandbox-profit-oracle | 🟡 amber | 248.7 | 200 | 2026-10-11T23:52:50.902Z | מיושן: 249h מעל החוק (24h) |
+| sandbox-profit-oracle | 🟡 amber | 278.2 | 200 | 2026-10-11T23:52:50.902Z | מיושן: 278h מעל החוק (24h) |
 
-ספירה: 11 green · 1 amber · 3 red · 2 grey
+ספירה: 12 green · 1 amber · 3 red · 1 grey
 
 ### E1 spread-regime — ההצעה-העצמית הראשונה הפכה מעשה (builtin-e1-spread-regime · zai-13c)
 
 ```
-SPREAD-REGIME: value=0bps · delta=-93.50 vs 93.5 · מקור-בן-2.2h · PASS (tightened) — הפיזור הצטמצם — נזילות-צד-הגריד משתפרת
+SPREAD-REGIME: value=100bps · delta=+6.50 vs 93.5 · מקור-בן-0.9h · HOLD (loosened) — הפיזור התרחב — לעקוב בלבד (verify/doc-only)
 ```
 
 - חוק-המשטר: spread < 93.5bps = tightened (PASS) · > = loosened (HOLD) · מקור מיושן >24h = STALE כנה במקום פסק-חי. הרגל-הנמדדת: book.spreadBps (STEEM) מ-dex/grid.json — אותו-פיד שהאוטובוס מודד. read-only/verify/doc-only בלבד · ההצעה שהפכה מעשה: PROPOSALS/2026-10-11-research-e1-spread-regime.md
@@ -64,12 +64,12 @@ SPREAD-REGIME: value=0bps · delta=-93.50 vs 93.5 · מקור-בן-2.2h · PASS 
 
 | # | id | מקור | כותרת | מחלקת-סיכון | ערך | מאמץ | דבר-בעלים | executableBy |
 |---|----|------|-------|-------------|-----|------|-----------|--------------|
-| 1 | `research-feed-unavailable` | sandbox-research-findings | רכבת-המחקר לא-נמדדה: לא-נמצא קובץ-ממצאים מ-9 הימים האחרונים (2026-10-22, 2026-10-21, 20… | SAFE | 3 | 1 | — | `next-retro` |
-| 2 | `bus-sandbox-probe-blurt` | bus-registry (A) | פיד אדום: sandbox-probe-blurt — לא-נמצא ב-2 תאריכים אחרונים (2026-10-22, 2026-10-21) | MACHINE-PREP | 7 | 1 | — | `next-retro` |
-| 3 | `bus-sandbox-probe-hive` | bus-registry (A) | פיד אדום: sandbox-probe-hive — לא-נמצא ב-2 תאריכים אחרונים (2026-10-22, 2026-10-21) | MACHINE-PREP | 7 | 1 | — | `next-retro` |
-| 4 | `bus-sandbox-research-findings` | bus-registry (A) | פיד אדום: sandbox-research-findings — לא-נמצא ב-9 תאריכים אחרונים (2026-10-22, 2026-10-… | MACHINE-PREP | 7 | 1 | — | `next-retro` |
+| 1 | `research-feed-unavailable` | sandbox-research-findings | רכבת-המחקר לא-נמדדה: לא-נמצא קובץ-ממצאים מ-9 הימים האחרונים (2026-10-23, 2026-10-22, 20… | SAFE | 3 | 1 | — | `next-retro` |
+| 2 | `bus-sandbox-probe-blurt` | bus-registry (A) | פיד אדום: sandbox-probe-blurt — לא-נמצא ב-2 תאריכים אחרונים (2026-10-23, 2026-10-22) | MACHINE-PREP | 7 | 1 | — | `next-retro` |
+| 3 | `bus-sandbox-probe-hive` | bus-registry (A) | פיד אדום: sandbox-probe-hive — לא-נמצא ב-2 תאריכים אחרונים (2026-10-23, 2026-10-22) | MACHINE-PREP | 7 | 1 | — | `next-retro` |
+| 4 | `bus-sandbox-research-findings` | bus-registry (A) | פיד אדום: sandbox-research-findings — לא-נמצא ב-9 תאריכים אחרונים (2026-10-23, 2026-10-… | MACHINE-PREP | 7 | 1 | — | `next-retro` |
 | 5 | `gate-04-private-16-recovery-meta` | GATE-STATUS | private-16 vault-chain/recovery-meta.json | MACHINE-PREP | 8.5 | 2 | כן | `owner-after-prep` |
-| 6 | `bus-sandbox-profit-oracle` | bus-registry (A) | פיד מיושן: sandbox-profit-oracle — מיושן: 249h מעל החוק (24h) | MACHINE-PREP | 4 | 1 | — | `next-retro` |
+| 6 | `bus-sandbox-profit-oracle` | bus-registry (A) | פיד מיושן: sandbox-profit-oracle — מיושן: 278h מעל החוק (24h) | MACHINE-PREP | 4 | 1 | — | `next-retro` |
 | 7 | `WO-Sandbox-reds` | work-orders.json (Sandbox raw) | רפא 3 ריצות-אדומות (48ש) ב-Sandbox | MACHINE-PREP | 7 | 2 | — | `owner-after-prep` |
 | 8 | `WO-saos-runtime-reds` | work-orders.json (Sandbox raw) | רפא 3 ריצות-אדומות (48ש) ב-saos-runtime | MACHINE-PREP | 7 | 2 | — | `owner-after-prep` |
 | 9 | `gate-02-actions-billing` | GATE-STATUS | חיוב-Actions | 🔒 OWNER-WORD | 9.5 | 1 | כן | `owner-only` |
@@ -83,7 +83,7 @@ SPREAD-REGIME: value=0bps · delta=-93.50 vs 93.5 · מקור-בן-2.2h · PASS 
 
 ## 3 · תכנון (ההצעה הראשית)
 
-- הפריט המדורג ראשון הלא-מבוצע: `research-feed-unavailable` (SAFE) → הצעה מלאה: [PROPOSALS/2026-10-22-research-feed-unavailable.md](PROPOSALS/2026-10-22-research-feed-unavailable.md)
+- הפריט המדורג ראשון הלא-מבוצע: `research-feed-unavailable` (SAFE) → הצעה מלאה: [PROPOSALS/2026-10-23-research-feed-unavailable.md](PROPOSALS/2026-10-23-research-feed-unavailable.md)
 
 ## 4 · ביצוע (SAFE בלבד)
 
@@ -96,4 +96,4 @@ SPREAD-REGIME: value=0bps · delta=-93.50 vs 93.5 · מקור-בן-2.2h · PASS 
 חוק: המחזור **לעולם** לא מבצע MACHINE-PREP/OWNER-WORD, לא משדר, לא חותם, לא נוגע בכסף/מפתחות/STASIS. תופעות-הלוואי שלו — קבצי-המסילה שלו בלבד.
 
 ---
-*[owner-directive] · המשרד מתאמן לחשוב, בלוח-זמנים, לנצח · ISO 2026-10-22T08:37:35.980Z*
+*[owner-directive] · המשרד מתאמן לחשוב, בלוח-זמנים, לנצח · ISO 2026-10-23T14:03:01.238Z*
