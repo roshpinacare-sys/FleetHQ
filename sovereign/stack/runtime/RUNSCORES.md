@@ -1,8 +1,8 @@
 # RUNSCORES — the harness scoring book
 
-- generatedAt: `2026-10-24T23:24:37.729Z`
-- STATE book age: 5min · api fetches: 12
-- counts: {"unknown":22,"healthy":139,"critical":8,"flaky":6}
+- generatedAt: `2026-10-24T23:44:00.775Z`
+- STATE book age: 24min · api fetches: 12
+- counts: {"unknown":22,"healthy":139,"critical":9,"flaky":5}
 
 | repo | workflow | class | lastConcl | lastRun |
 |---|---|---|---|---|
@@ -12,6 +12,7 @@
 | saos-runtime | grid-watchdog | critical | failure | 2026-10-24T22:43:38Z |
 | saos-runtime | escrow-payroll | critical | failure | 2026-10-24T22:34:53Z |
 | Autonomy | artery-grid | critical | failure | 2026-10-24T23:13:43Z |
+| Autonomy | artery-fleet | critical | failure | 2026-10-24T22:57:28Z |
 | Autonomy | fleet-yield | critical | failure | 2026-10-24T22:26:47Z |
 | Autonomy | selfhood | critical | cancelled | 2026-10-24T21:49:17Z |
 | Domain | estate-scrub | flaky | failure | 2026-10-24T23:11:09Z |
@@ -19,7 +20,6 @@
 | Domain | saos-act | flaky | failure | 2026-10-24T22:25:24Z |
 | saos-runtime | steem-hand-revival | flaky | failure | 2026-10-24T22:36:20Z |
 | saos-runtime | directive-now | flaky | failure | 2026-10-24T22:34:54Z |
-| Autonomy | artery-fleet | flaky | failure | 2026-10-24T22:57:28Z |
 | FleetHQ | self-book | healthy | success | 2026-10-24T23:17:14Z |
 | FleetHQ | silence-watchdog | healthy | success | 2026-10-24T23:07:10Z |
 | FleetHQ | value-scan | healthy | success | 2026-10-24T23:00:19Z |
