@@ -1,14 +1,14 @@
 # RUNSCORES — the harness scoring book
 
-- generatedAt: `2026-10-24T01:08:08.068Z`
-- STATE book age: 22min · api fetches: 4
-- counts: {"unknown":14,"healthy":153,"flaky":2,"critical":2}
+- generatedAt: `2026-10-24T03:22:31.906Z`
+- STATE book age: 157min · api fetches: 4
+- counts: {"unknown":14,"healthy":153,"critical":3,"flaky":1}
 
 | repo | workflow | class | lastConcl | lastRun |
 |---|---|---|---|---|
+| FleetHQ | fresh-oracle | critical | failure | 2026-10-23T23:15:41Z |
 | Console | agents-watch | critical | cancelled | 2026-10-23T23:30:29Z |
 | Autonomy | selfhood | critical | cancelled | 2026-10-24T00:04:22Z |
-| FleetHQ | fresh-oracle | flaky | failure | 2026-10-23T23:15:41Z |
 | Domain | saos-act | flaky | failure | 2026-10-23T23:04:26Z |
 | FleetHQ | sovereign-decider | healthy | success | 2026-10-24T00:45:09Z |
 | FleetHQ | value-scan | healthy | success | 2026-10-24T00:30:19Z |
