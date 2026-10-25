@@ -1,10 +1,10 @@
 {
-  "generatedAt": "2026-10-25T05:58:22.311Z",
-  "runUrl": "https://github.com/roshpinacare-sys/FleetHQ/actions/runs/40167357214",
+  "generatedAt": "2026-10-25T06:13:06.484Z",
+  "runUrl": "https://github.com/roshpinacare-sys/FleetHQ/actions/runs/40168274057",
   "repos": {
     "FleetHQ": {
-      "pushedAt": "2026-10-25T05:58:15Z",
-      "pushAgeMin": 0,
+      "pushedAt": "2026-10-25T06:11:05Z",
+      "pushAgeMin": 2,
       "fresh": true,
       "workflows": 15,
       "green": 14,
@@ -14,18 +14,18 @@
       "archived": 0
     },
     "Domain": {
-      "pushedAt": "2026-10-25T05:57:21Z",
-      "pushAgeMin": 1,
+      "pushedAt": "2026-10-25T06:09:35Z",
+      "pushAgeMin": 4,
       "fresh": true,
-      "workflows": 62,
-      "green": 57,
-      "red": 5,
+      "workflows": 65,
+      "green": 59,
+      "red": 6,
       "disabled": 0,
       "stale": 0,
       "archived": 0
     },
     "Console": {
-      "pushedAt": "2026-10-25T05:58:37Z",
+      "pushedAt": "2026-10-25T06:12:52Z",
       "pushAgeMin": 0,
       "fresh": true,
       "workflows": 18,
@@ -37,18 +37,18 @@
     },
     "saos-runtime": {
       "pushedAt": "2026-10-25T05:56:41Z",
-      "pushAgeMin": 2,
+      "pushAgeMin": 16,
       "fresh": true,
       "workflows": 23,
-      "green": 19,
-      "red": 4,
+      "green": 18,
+      "red": 5,
       "disabled": 0,
       "stale": 0,
       "archived": 0
     },
     "Autonomy": {
-      "pushedAt": "2026-10-25T05:51:39Z",
-      "pushAgeMin": 7,
+      "pushedAt": "2026-10-25T06:13:29Z",
+      "pushAgeMin": 0,
       "fresh": true,
       "workflows": 44,
       "green": 39,
@@ -58,8 +58,8 @@
       "archived": 0
     },
     "sovereign-lighthouse": {
-      "pushedAt": "2026-10-25T05:21:36Z",
-      "pushAgeMin": 37,
+      "pushedAt": "2026-10-25T06:11:13Z",
+      "pushAgeMin": 2,
       "fresh": true,
       "workflows": 2,
       "green": 2,
@@ -70,10 +70,35 @@
     }
   },
   "workflows": {
-    "FleetHQ|runtime-pacemaker": {
+    "FleetHQ|sovereign-selfscan": {
       "state": "active",
       "lastConcl": "—",
-      "lastRun": "2026-10-25T05:58:20Z"
+      "lastRun": "2026-10-25T06:12:22Z"
+    },
+    "FleetHQ|runtime-pacemaker": {
+      "state": "active",
+      "lastConcl": "success",
+      "lastRun": "2026-10-25T06:10:50Z"
+    },
+    "FleetHQ|sovereign-harness": {
+      "state": "active",
+      "lastConcl": "success",
+      "lastRun": "2026-10-25T06:10:24Z"
+    },
+    "FleetHQ|sovereign-decider": {
+      "state": "active",
+      "lastConcl": "success",
+      "lastRun": "2026-10-25T06:09:42Z"
+    },
+    "FleetHQ|value-scan": {
+      "state": "active",
+      "lastConcl": "success",
+      "lastRun": "2026-10-25T06:00:20Z"
+    },
+    "FleetHQ|opens-closer": {
+      "state": "active",
+      "lastConcl": "—",
+      "lastRun": "2026-10-25T06:00:01Z"
     },
     "FleetHQ|identity-patrol": {
       "state": "active",
@@ -90,30 +115,10 @@
       "lastConcl": "success",
       "lastRun": "2026-10-25T05:57:03Z"
     },
-    "FleetHQ|sovereign-selfscan": {
-      "state": "active",
-      "lastConcl": "—",
-      "lastRun": "2026-10-25T05:57:01Z"
-    },
     "FleetHQ|silence-watchdog": {
       "state": "active",
       "lastConcl": "success",
       "lastRun": "2026-10-25T05:56:59Z"
-    },
-    "FleetHQ|sovereign-decider": {
-      "state": "active",
-      "lastConcl": "success",
-      "lastRun": "2026-10-25T05:56:24Z"
-    },
-    "FleetHQ|opens-closer": {
-      "state": "active",
-      "lastConcl": "—",
-      "lastRun": "2026-10-25T05:56:23Z"
-    },
-    "FleetHQ|value-scan": {
-      "state": "active",
-      "lastConcl": "success",
-      "lastRun": "2026-10-25T05:30:25Z"
     },
     "FleetHQ|sovereign-identity": {
       "state": "active",
@@ -130,11 +135,6 @@
       "lastConcl": "success",
       "lastRun": "2026-10-25T04:59:32Z"
     },
-    "FleetHQ|sovereign-harness": {
-      "state": "active",
-      "lastConcl": "success",
-      "lastRun": "2026-10-25T03:54:17Z"
-    },
     "FleetHQ|fresh-oracle": {
       "state": "active",
       "lastConcl": "failure",
@@ -145,20 +145,65 @@
       "lastConcl": "success",
       "lastRun": "2026-10-24T23:33:15Z"
     },
-    "Domain|dex-activation": {
-      "state": "active",
-      "lastConcl": "success",
-      "lastRun": "2026-10-25T05:57:09Z"
-    },
-    "Domain|office-worldbeat": {
+    "Domain|stale-watchdog": {
       "state": "active",
       "lastConcl": "—",
-      "lastRun": "2026-10-25T05:56:12Z"
+      "lastRun": "2026-10-25T06:13:10Z"
     },
     "Domain|dex-grid": {
       "state": "active",
       "lastConcl": "—",
-      "lastRun": "2026-10-25T05:56:08Z"
+      "lastRun": "2026-10-25T06:10:49Z"
+    },
+    "Domain|office-worldbeat": {
+      "state": "active",
+      "lastConcl": "—",
+      "lastRun": "2026-10-25T06:09:19Z"
+    },
+    "Domain|estate-scrub": {
+      "state": "active",
+      "lastConcl": "failure",
+      "lastRun": "2026-10-25T06:05:10Z"
+    },
+    "Domain|office-pulse": {
+      "state": "active",
+      "lastConcl": "success",
+      "lastRun": "2026-10-25T06:05:09Z"
+    },
+    "Domain|agent9-fleet-truth": {
+      "state": "active",
+      "lastConcl": "success",
+      "lastRun": "2026-10-25T06:04:49Z"
+    },
+    "Domain|voice-artery": {
+      "state": "active",
+      "lastConcl": "success",
+      "lastRun": "2026-10-25T06:03:55Z"
+    },
+    "Domain|dex-xc": {
+      "state": "active",
+      "lastConcl": "success",
+      "lastRun": "2026-10-25T06:01:50Z"
+    },
+    "Domain|cloud-pulse": {
+      "state": "active",
+      "lastConcl": "success",
+      "lastRun": "2026-10-25T06:01:48Z"
+    },
+    "Domain|grid-sentinel": {
+      "state": "active",
+      "lastConcl": "—",
+      "lastRun": "2026-10-25T06:00:24Z"
+    },
+    "Domain|published-ledger": {
+      "state": "active",
+      "lastConcl": "success",
+      "lastRun": "2026-10-25T05:59:33Z"
+    },
+    "Domain|dex-activation": {
+      "state": "active",
+      "lastConcl": "success",
+      "lastRun": "2026-10-25T05:57:09Z"
     },
     "Domain|moment-watch": {
       "state": "active",
@@ -190,11 +235,6 @@
       "lastConcl": "success",
       "lastRun": "2026-10-25T05:47:18Z"
     },
-    "Domain|grid-sentinel": {
-      "state": "active",
-      "lastConcl": "—",
-      "lastRun": "2026-10-25T05:46:00Z"
-    },
     "Domain|network-census": {
       "state": "active",
       "lastConcl": "success",
@@ -204,11 +244,6 @@
       "state": "active",
       "lastConcl": "success",
       "lastRun": "2026-10-25T05:40:42Z"
-    },
-    "Domain|agent9-fleet-truth": {
-      "state": "active",
-      "lastConcl": "success",
-      "lastRun": "2026-10-25T05:38:28Z"
     },
     "Domain|human-cadence": {
       "state": "active",
@@ -250,11 +285,6 @@
       "lastConcl": "success",
       "lastRun": "2026-10-25T05:22:44Z"
     },
-    "Domain|office-pulse": {
-      "state": "active",
-      "lastConcl": "success",
-      "lastRun": "2026-10-25T05:22:34Z"
-    },
     "Domain|books-revival-t28": {
       "state": "active",
       "lastConcl": "success",
@@ -264,11 +294,6 @@
       "state": "active",
       "lastConcl": "success",
       "lastRun": "2026-10-25T05:21:27Z"
-    },
-    "Domain|stale-watchdog": {
-      "state": "active",
-      "lastConcl": "success",
-      "lastRun": "2026-10-25T05:20:20Z"
     },
     "Domain|press-bake": {
       "state": "active",
@@ -425,20 +450,10 @@
       "lastConcl": "success",
       "lastRun": "2026-10-25T04:47:39Z"
     },
-    "Domain|cloud-pulse": {
-      "state": "active",
-      "lastConcl": "success",
-      "lastRun": "2026-10-25T04:43:00Z"
-    },
     "Domain|saos-act": {
       "state": "active",
       "lastConcl": "failure",
       "lastRun": "2026-10-25T04:30:41Z"
-    },
-    "Domain|dex-xc": {
-      "state": "active",
-      "lastConcl": "success",
-      "lastRun": "2026-10-25T04:30:19Z"
     },
     "Domain|anchor-execute": {
       "state": "active",
@@ -458,27 +473,27 @@
     "Console|runtime-pacemaker": {
       "state": "active",
       "lastConcl": "—",
-      "lastRun": "2026-10-25T05:58:36Z"
+      "lastRun": "2026-10-25T06:12:34Z"
     },
     "Console|truth-gate": {
       "state": "active",
       "lastConcl": "success",
-      "lastRun": "2026-10-25T05:57:02Z"
+      "lastRun": "2026-10-25T06:11:56Z"
     },
     "Console|identity-guard": {
       "state": "active",
       "lastConcl": "success",
-      "lastRun": "2026-10-25T05:56:49Z"
+      "lastRun": "2026-10-25T06:11:21Z"
     },
     "Console|pages-deploy": {
       "state": "active",
       "lastConcl": "success",
-      "lastRun": "2026-10-25T05:56:49Z"
+      "lastRun": "2026-10-25T06:11:21Z"
     },
     "Console|giants-beat": {
       "state": "active",
       "lastConcl": "success",
-      "lastRun": "2026-10-25T05:47:20Z"
+      "lastRun": "2026-10-25T06:02:42Z"
     },
     "Console|grid-pulse": {
       "state": "active",
@@ -545,15 +560,20 @@
       "lastConcl": "success",
       "lastRun": "2026-10-25T03:38:43Z"
     },
-    "saos-runtime|grid-watchdog": {
+    "saos-runtime|sovereign-pulse": {
       "state": "active",
       "lastConcl": "failure",
-      "lastRun": "2026-10-25T05:56:26Z"
+      "lastRun": "2026-10-25T06:07:36Z"
     },
     "saos-runtime|army-ladder": {
       "state": "active",
       "lastConcl": "—",
-      "lastRun": "2026-10-25T05:55:59Z"
+      "lastRun": "2026-10-25T06:00:27Z"
+    },
+    "saos-runtime|grid-watchdog": {
+      "state": "active",
+      "lastConcl": "failure",
+      "lastRun": "2026-10-25T05:56:26Z"
     },
     "saos-runtime|sovereign-runtime": {
       "state": "active",
@@ -635,11 +655,6 @@
       "lastConcl": "success",
       "lastRun": "2026-10-25T01:18:18Z"
     },
-    "saos-runtime|sovereign-pulse": {
-      "state": "active",
-      "lastConcl": "success",
-      "lastRun": "2026-10-25T00:32:06Z"
-    },
     "saos-runtime|treasury-ladder": {
       "state": "active",
       "lastConcl": "success",
@@ -660,9 +675,69 @@
       "lastConcl": "success",
       "lastRun": "2026-10-24T21:10:24Z"
     },
-    "Autonomy|artery-watch": {
+    "Autonomy|sovereign-tick": {
       "state": "active",
       "lastConcl": "—",
+      "lastRun": "2026-10-25T06:13:30Z"
+    },
+    "Autonomy|sovereign-state": {
+      "state": "active",
+      "lastConcl": "—",
+      "lastRun": "2026-10-25T06:13:18Z"
+    },
+    "Autonomy|artery-treasury-floor-watch": {
+      "state": "active",
+      "lastConcl": "—",
+      "lastRun": "2026-10-25T06:13:15Z"
+    },
+    "Autonomy|federation": {
+      "state": "active",
+      "lastConcl": "—",
+      "lastRun": "2026-10-25T06:13:08Z"
+    },
+    "Autonomy|fleet-heal": {
+      "state": "active",
+      "lastConcl": "—",
+      "lastRun": "2026-10-25T06:13:04Z"
+    },
+    "Autonomy|identity-guard": {
+      "state": "active",
+      "lastConcl": "—",
+      "lastRun": "2026-10-25T06:12:53Z"
+    },
+    "Autonomy|artery-catchup": {
+      "state": "active",
+      "lastConcl": "success",
+      "lastRun": "2026-10-25T06:12:53Z"
+    },
+    "Autonomy|network-awareness": {
+      "state": "active",
+      "lastConcl": "success",
+      "lastRun": "2026-10-25T06:11:46Z"
+    },
+    "Autonomy|floating-builds": {
+      "state": "active",
+      "lastConcl": "success",
+      "lastRun": "2026-10-25T06:11:45Z"
+    },
+    "Autonomy|artery-treasury": {
+      "state": "active",
+      "lastConcl": "success",
+      "lastRun": "2026-10-25T06:01:52Z"
+    },
+    "Autonomy|artery-treasury-consolidate": {
+      "state": "active",
+      "lastConcl": "success",
+      "lastRun": "2026-10-25T06:01:51Z"
+    },
+    "Autonomy|artery-pacer": {
+      "state": "active",
+      "lastConcl": "—",
+      "lastRun": "2026-10-25T06:01:27Z"
+    },
+    "Autonomy|artery-watch": {
+      "state": "active",
+      "lastConcl": "success",
       "lastRun": "2026-10-25T05:58:15Z"
     },
     "Autonomy|verifier (truth & quality)": {
@@ -685,11 +760,6 @@
       "lastConcl": "failure",
       "lastRun": "2026-10-25T05:48:21Z"
     },
-    "Autonomy|artery-pacer": {
-      "state": "active",
-      "lastConcl": "—",
-      "lastRun": "2026-10-25T05:48:10Z"
-    },
     "Autonomy|artery-scribe": {
       "state": "active",
       "lastConcl": "success",
@@ -699,11 +769,6 @@
       "state": "active",
       "lastConcl": "success",
       "lastRun": "2026-10-25T05:47:15Z"
-    },
-    "Autonomy|sovereign-state": {
-      "state": "active",
-      "lastConcl": "—",
-      "lastRun": "2026-10-25T05:44:57Z"
     },
     "Autonomy|directive-bus": {
       "state": "active",
@@ -725,11 +790,6 @@
       "lastConcl": "success",
       "lastRun": "2026-10-25T05:32:51Z"
     },
-    "Autonomy|sovereign-tick": {
-      "state": "active",
-      "lastConcl": "success",
-      "lastRun": "2026-10-25T05:30:55Z"
-    },
     "Autonomy|operator-routing": {
       "state": "active",
       "lastConcl": "success",
@@ -740,30 +800,15 @@
       "lastConcl": "success",
       "lastRun": "2026-10-25T05:24:00Z"
     },
-    "Autonomy|federation": {
-      "state": "active",
-      "lastConcl": "success",
-      "lastRun": "2026-10-25T05:22:39Z"
-    },
     "Autonomy|artery-decision-truth": {
       "state": "active",
       "lastConcl": "success",
       "lastRun": "2026-10-25T05:19:32Z"
     },
-    "Autonomy|fleet-heal": {
-      "state": "active",
-      "lastConcl": "success",
-      "lastRun": "2026-10-25T05:17:44Z"
-    },
     "Autonomy|value-scan": {
       "state": "active",
       "lastConcl": "success",
       "lastRun": "2026-10-25T05:17:42Z"
-    },
-    "Autonomy|network-awareness": {
-      "state": "active",
-      "lastConcl": "success",
-      "lastRun": "2026-10-25T05:17:36Z"
     },
     "Autonomy|artery-selfheal": {
       "state": "active",
@@ -805,16 +850,6 @@
       "lastConcl": "success",
       "lastRun": "2026-10-25T05:13:07Z"
     },
-    "Autonomy|artery-catchup": {
-      "state": "active",
-      "lastConcl": "success",
-      "lastRun": "2026-10-25T05:09:57Z"
-    },
-    "Autonomy|artery-treasury-floor-watch": {
-      "state": "active",
-      "lastConcl": "success",
-      "lastRun": "2026-10-25T05:03:19Z"
-    },
     "Autonomy|selfhood": {
       "state": "active",
       "lastConcl": "cancelled",
@@ -824,16 +859,6 @@
       "state": "active",
       "lastConcl": "success",
       "lastRun": "2026-10-25T04:58:26Z"
-    },
-    "Autonomy|identity-guard": {
-      "state": "active",
-      "lastConcl": "success",
-      "lastRun": "2026-10-25T04:55:32Z"
-    },
-    "Autonomy|floating-builds": {
-      "state": "active",
-      "lastConcl": "success",
-      "lastRun": "2026-10-25T04:55:14Z"
     },
     "Autonomy|artery-flow": {
       "state": "active",
@@ -870,32 +895,24 @@
       "lastConcl": "failure",
       "lastRun": "2026-10-25T04:33:08Z"
     },
-    "Autonomy|artery-treasury": {
+    "sovereign-lighthouse|lighthouse-pulse": {
       "state": "active",
       "lastConcl": "success",
-      "lastRun": "2026-10-25T04:31:22Z"
-    },
-    "Autonomy|artery-treasury-consolidate": {
-      "state": "active",
-      "lastConcl": "success",
-      "lastRun": "2026-10-25T04:31:21Z"
+      "lastRun": "2026-10-25T06:11:05Z"
     },
     "sovereign-lighthouse|estate-redboard": {
       "state": "active",
       "lastConcl": "success",
       "lastRun": "2026-10-25T05:19:12Z"
-    },
-    "sovereign-lighthouse|lighthouse-pulse": {
-      "state": "active",
-      "lastConcl": "success",
-      "lastRun": "2026-10-25T04:57:38Z"
     }
   },
-  "newClaims": [],
+  "newClaims": [
+    "bee5a464"
+  ],
   "newCapabilities": [],
   "counts": {
-    "green": 148,
-    "red": 16,
+    "green": 149,
+    "red": 18,
     "disabled": 0,
     "stale": 0,
     "archived": 0
