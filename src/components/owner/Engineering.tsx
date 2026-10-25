@@ -422,7 +422,7 @@ export function Engineering() {
             <button
               type="button"
               disabled={askTitle.trim().length < 4 || msg.kind === 'busy'}
-              onClick={() => void cyclePost({ action: 'ask', title: askTitle, why: askWhy, kind: 'ops' }, 'decisions-cycle/ask')}
+              onClick={() => void cyclePost({ action: 'ask', title: askTitle, why: askWhy, kind: 'ops' }, 'decisions-cycle/ask', true)}
               className="min-h-[30px] w-full rounded bg-[color:var(--accent,#b88a3a)] px-2 text-[11px] font-bold text-white disabled:opacity-50"
             >
               שאל — על-הגיט
@@ -475,7 +475,7 @@ export function Engineering() {
                   <input value={answerBy} onChange={(e) => setAnswerBy(e.target.value)} placeholder="מי (שם-סוכן/בעלים)" aria-label="מי-עונה" className="w-full rounded border border-[color:var(--line)] bg-[color:var(--surface-2)] px-2 py-1.5 text-[11px] outline-none" />
                   <textarea value={answerText} onChange={(e) => setAnswerText(e.target.value)} placeholder="התשובה (חובה)" aria-label="תשובה" rows={2} className="w-full resize-none rounded border border-[color:var(--line)] bg-[color:var(--surface-2)] px-2 py-1.5 text-[11px] outline-none" />
                   <input value={answerEffect} onChange={(e) => setAnswerEffect(e.target.value)} placeholder="אפקט-שבוצע (אופציונלי)" aria-label="אפקט" className="w-full rounded border border-[color:var(--line)] bg-[color:var(--surface-2)] px-2 py-1.5 text-[11px] outline-none" />
-                  <button type="button" disabled={answerText.trim().length < 2 || msg.kind === 'busy'} onClick={() => void cyclePost({ action: 'answer', id: d.id, by: answerBy || 'owner', text: answerText, sideEffect: answerEffect }, 'decisions-cycle/answer')} className="min-h-[28px] w-full rounded bg-[color:var(--accent,#b88a3a)] text-[10.5px] font-bold text-white disabled:opacity-50">
+                  <button type="button" disabled={answerText.trim().length < 2 || msg.kind === 'busy'} onClick={() => void cyclePost({ action: 'answer', id: d.id, by: answerBy || 'owner', text: answerText, sideEffect: answerEffect }, 'decisions-cycle/answer', true)} className="min-h-[28px] w-full rounded bg-[color:var(--accent,#b88a3a)] text-[10.5px] font-bold text-white disabled:opacity-50">
                     ענה — על-הגיט
                   </button>
                 </div>
@@ -484,7 +484,7 @@ export function Engineering() {
                 <div className="mt-1.5 space-y-1.5 rounded border border-[color:var(--line)] p-2">
                   <input value={receipt} onChange={(e) => setReceipt(e.target.value)} placeholder="קבלת-אפקט (commit/receipt — מינימום 8 תווים)" aria-label="קבלת-אפקט" className="w-full rounded border border-[color:var(--line)] bg-[color:var(--surface-2)] px-2 py-1.5 text-[11px] outline-none" />
                   <input value={costUsd} onChange={(e) => setCostUsd(e.target.value)} placeholder="עלות-האפקט ב-$ (אופציונלי, A8)" aria-label="עלות" inputMode="decimal" className="w-full rounded border border-[color:var(--line)] bg-[color:var(--surface-2)] px-2 py-1.5 text-[11px] outline-none" />
-                  <button type="button" disabled={receipt.trim().length < 8 || msg.kind === 'busy'} onClick={() => void cyclePost({ action: 'settle', id: d.id, receiptRef: receipt, costUsd: costUsd.trim() && Number.isFinite(Number(costUsd)) ? Number(costUsd) : undefined }, 'decisions-cycle/settle')} className="min-h-[28px] w-full rounded bg-[color:var(--accent,#b88a3a)] text-[10.5px] font-bold text-white disabled:opacity-50">
+                  <button type="button" disabled={receipt.trim().length < 8 || msg.kind === 'busy'} onClick={() => void cyclePost({ action: 'settle', id: d.id, receiptRef: receipt, costUsd: costUsd.trim() && Number.isFinite(Number(costUsd)) ? Number(costUsd) : undefined }, 'decisions-cycle/settle', true)} className="min-h-[28px] w-full rounded bg-[color:var(--accent,#b88a3a)] text-[10.5px] font-bold text-white disabled:opacity-50">
                     יישב — אין-סגירה-בלי-ראיה
                   </button>
                 </div>

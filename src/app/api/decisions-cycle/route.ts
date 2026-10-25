@@ -7,7 +7,8 @@
  * חוקי-המעבר נאכפים בשרת; כל-כתיבה עם אופטימיות-מקבילות על הגיט (Autonomy
  * state/app/decisions-cycle.json) + readback. אין-יישוב בלי-קבלת-אפקט (A1):
  * settle חייב receiptRef של האפקט — סגירה-בלי-ראיה נדחית.
- * כתיבה: ask/answer/settle/reopen — כולם דרך שער-הכוונות (A5); reopen = בעלים-בלבד.
+ * כתיבה: ask/answer/settle/reopen — כולם דורשים כניסת-בעלים (x-owner-token; §1 lockdown
+ * directive 1a173c6ac120ccb1) + שער-הכוונות (A5) כשכבה-נוספת.
  */
 import { NextRequest, NextResponse } from 'next/server';
 import { randomBytes } from 'crypto';
@@ -119,7 +120,15 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: false, error: 'חסר-פעולה חוקית (ask|answer|settle|reopen)' }, { status: 400 });
   }
 
-  // A5: שער-הכוונות — לולאתיות + כוונה-מפורשת + קצב
+  // §1 (directive 1a173c6ac120ccb1): ask/answer/settle are STATE-MUTATING GitHub
+  // commits via the server PAT — they require owner authentication now (was:
+  // intent-gate only, which any curl passes since a missing sec-fetch-site is
+  // allowed and x-intent is a public constant). reopen was already owner-only.
+  if (!(await ownerAuthed(req.headers.get('x-owner-token') ?? undefined))) {
+    return NextResponse.json({ ok: false, error: 'owner-token-required — כל-כתיבה במחזור-ההכרעות דורשת כניסת-מנהל (x-owner-token; deny-by-default §1)' }, { status: 401 });
+  }
+
+  // A5: שער-הכוונות — לולאתיות + כוונה-מפורשת + קצב (נשאר כשכבת-הגנה נוספת)
   const gate = assertIntent(req, 'decisions-cycle', intent, 'agent');
   if (gate) return gate;
 
