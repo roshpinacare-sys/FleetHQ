@@ -1,6 +1,6 @@
 {
  "schema": "fleet.fresh-oracle/1",
- "at": "2026-10-25T07:45:51.111Z",
+ "at": "2026-10-25T12:54:45.741Z",
  "law": "FRESH only if sha256(live bytes) == sha256(committed deploy-ref bytes) AND no ops doc MISSING; DRIFT=RED (200-with-different-bytes); UNREACHABLE=UNKNOWN (network, retried once, reason kept); ops-doc age rows are honest amber (MISSING alone flips exit) — never faked green",
  "results": [
   {
@@ -12,7 +12,7 @@
    "liveError": null,
    "committedError": null,
    "liveSha16": "399f7e09f2a2babe",
-   "committedSha16": "753838569d58fa6a",
+   "committedSha16": "41843a92e34be822",
    "liveBytes": 49914,
    "verdict": "DRIFT"
   },
@@ -25,7 +25,7 @@
    "liveError": null,
    "committedError": null,
    "liveSha16": "cc9b53fdc755ed15",
-   "committedSha16": "9c63427c44964e35",
+   "committedSha16": "1cb67ba3e5f54c3d",
    "liveBytes": 16651,
    "verdict": "DRIFT"
   },
@@ -38,7 +38,7 @@
    "liveError": null,
    "committedError": null,
    "liveSha16": "6a6842d58d55ac90",
-   "committedSha16": "e3471554c9806cbf",
+   "committedSha16": "2e2fccc78ef57fa1",
    "liveBytes": 22796,
    "verdict": "DRIFT"
   },
@@ -89,8 +89,8 @@
    "committedStatus": 200,
    "liveError": null,
    "committedError": null,
-   "liveSha16": "41209d5d75b5e855",
-   "committedSha16": "41209d5d75b5e855",
+   "liveSha16": "18f6854c64add72f",
+   "committedSha16": "18f6854c64add72f",
    "liveBytes": 7678,
    "verdict": "MATCH"
   }
@@ -129,7 +129,7 @@
    "sha16": "08e151942faf95bf",
    "rawStatus": 200,
    "lastCommitAt": "2026-10-12T12:53:19Z",
-   "ageDays": 12,
+   "ageDays": 13,
    "verdict": "AGING"
   },
   {
@@ -147,7 +147,7 @@
    "sha16": "6be0baa467056fa4",
    "rawStatus": 200,
    "lastCommitAt": "2026-10-12T12:53:19Z",
-   "ageDays": 12,
+   "ageDays": 13,
    "verdict": "AGING"
   }
  ],
