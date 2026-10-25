@@ -1,6 +1,6 @@
 {
  "schema": "fleet.fresh-oracle/1",
- "at": "2026-10-25T12:54:45.741Z",
+ "at": "2026-10-25T16:59:14.820Z",
  "law": "FRESH only if sha256(live bytes) == sha256(committed deploy-ref bytes) AND no ops doc MISSING; DRIFT=RED (200-with-different-bytes); UNREACHABLE=UNKNOWN (network, retried once, reason kept); ops-doc age rows are honest amber (MISSING alone flips exit) — never faked green",
  "results": [
   {
@@ -11,10 +11,10 @@
    "committedStatus": 200,
    "liveError": null,
    "committedError": null,
-   "liveSha16": "399f7e09f2a2babe",
-   "committedSha16": "41843a92e34be822",
-   "liveBytes": 49914,
-   "verdict": "DRIFT"
+   "liveSha16": "a206623c9f844539",
+   "committedSha16": "a206623c9f844539",
+   "liveBytes": 50289,
+   "verdict": "MATCH"
   },
   {
    "name": "FleetHQ potential board",
@@ -24,10 +24,10 @@
    "committedStatus": 200,
    "liveError": null,
    "committedError": null,
-   "liveSha16": "cc9b53fdc755ed15",
-   "committedSha16": "1cb67ba3e5f54c3d",
-   "liveBytes": 16651,
-   "verdict": "DRIFT"
+   "liveSha16": "c5da424a85a9d668",
+   "committedSha16": "c5da424a85a9d668",
+   "liveBytes": 16637,
+   "verdict": "MATCH"
   },
   {
    "name": "FleetHQ potential data",
@@ -37,10 +37,10 @@
    "committedStatus": 200,
    "liveError": null,
    "committedError": null,
-   "liveSha16": "6a6842d58d55ac90",
-   "committedSha16": "2e2fccc78ef57fa1",
-   "liveBytes": 22796,
-   "verdict": "DRIFT"
+   "liveSha16": "7e947c78a5ab59d9",
+   "committedSha16": "7e947c78a5ab59d9",
+   "liveBytes": 22782,
+   "verdict": "MATCH"
   },
   {
    "name": "Domain window",
@@ -111,7 +111,7 @@
    "sha16": "19120f352c4aa28b",
    "rawStatus": 200,
    "lastCommitAt": "2026-10-12T13:00:25Z",
-   "ageDays": 12,
+   "ageDays": 13,
    "verdict": "AGING"
   },
   {
@@ -120,7 +120,7 @@
    "sha16": "65b03d355f807de7",
    "rawStatus": 200,
    "lastCommitAt": "2026-10-12T13:00:25Z",
-   "ageDays": 12,
+   "ageDays": 13,
    "verdict": "AGING"
   },
   {
@@ -153,13 +153,13 @@
  ],
  "summary": {
   "checked": 7,
-  "match": 4,
-  "drift": 3,
+  "match": 7,
+  "drift": 0,
   "missing": 0,
   "unreachable": 0,
   "opsDocsMissing": 0,
   "opsDocsStale": 0,
-  "verdict": "STALE-OR-BROKEN"
+  "verdict": "FRESH"
  },
  "method": "https GET live URL + raw.githubusercontent deploy ref → sha256-16 byte equality"
 }
