@@ -1,12 +1,12 @@
 {
- "at": "2026-10-22T02:52:53.978Z",
- "finishedAt": "2026-10-22T02:53:10.671Z",
+ "at": "2026-10-26T14:05:07.608Z",
+ "finishedAt": "2026-10-26T14:08:10.705Z",
  "checks": {
   "boot": {
    "app": {
     "wasUp": false,
     "spawned": false,
-    "note": "mem-gate: 1289140kB available < 2.5GB — spine outranks office, skipping boot"
+    "note": "mem-gate: 1411620kB available < 2.5GB — spine outranks office, skipping boot"
    },
    "foreman": {
     "wasUp": true,
@@ -21,16 +21,16 @@
   "connectivity": {
    "exit": 0,
    "verdictHe": "נמדדו 12 קבצי-קוד יתומים ו-3 ארטיפקטים ללא צרכן",
-   "sha16": "73d41dd98542813b"
+   "sha16": "6c150fdd23433b6c"
   },
   "freshOracle": {
-   "exit": 0,
-   "verdict": "FRESH"
+   "exit": 1,
+   "verdict": "STALE-OR-BROKEN"
   },
   "silence": {
    "exit": 2,
-   "summary": "4 ALARM(S): port/fleethq:3002: DOWN (:3002) · port/recruit: DOWN (:3041) · beat/grid-pulse: no data (cannot prove alive) · roster: unresolved — no FLEET_ROSTER_MAP in env/estate/.env.local and no local map file; post voices unmeasurable",
-   "alarms": 4
+   "summary": "7 ALARM(S): port/console:3000: DOWN (:3000) · beat/money-watch: no data (cannot prove alive) · beat/dex-mirror: no data (cannot prove alive) · beat/grid-pulse: no data (cannot prove alive) · beat/office-ci-lite: no data (cannot prove alive) · beat/office-heartbeat: no data (cannot prove alive) · roster: unresolved — no FLEET_ROSTER_MAP in env/estate/.env.local and no local map file; post voices unmeasurable",
+   "alarms": 7
   },
   "gitHealth": {
    "exit": 0,
@@ -39,7 +39,7 @@
      "name": "Console",
      "attached": true,
      "ahead": 0,
-     "behind": 1,
+     "behind": 3,
      "fsck": "ok"
     },
     {
@@ -53,7 +53,7 @@
      "name": "FleetHQ",
      "attached": true,
      "ahead": 0,
-     "behind": 0,
+     "behind": 2,
      "fsck": "ok"
     }
    ]
