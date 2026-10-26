@@ -1,42 +1,42 @@
 {
  "schema": "silence.watchdog/1",
- "at": "2026-10-26T01:28:11.515Z",
+ "at": "2026-10-26T02:17:15.718Z",
  "scope": "actions",
  "voices": [
   {
    "name": "origin/FleetHQ",
-   "lastActivity": "2026-10-26T01:20:37.000Z",
-   "ageMin": 8,
+   "lastActivity": "2026-10-26T02:01:05.000Z",
+   "ageMin": 16,
    "maxSilenceMin": 240,
    "verdict": "alive",
    "detail": {
-    "subject": "pacemaker receipt: 2026-10-26T01:20:37Z"
+    "subject": "pacemaker receipt: 2026-10-26T02:01:04Z"
    }
   },
   {
    "name": "origin/Domain",
-   "lastActivity": "2026-10-26T01:27:56.000Z",
-   "ageMin": 0,
+   "lastActivity": "2026-10-26T02:13:03.000Z",
+   "ageMin": 4,
    "maxSilenceMin": 240,
    "verdict": "alive",
    "detail": {
-    "subject": "agent-9/t55: fleet-truth bake [sources ok 13/13] @ 2026-10-26T01:27:56"
+    "subject": "office-worldbeat: advance the persistent world"
    }
   },
   {
    "name": "origin/Console",
-   "lastActivity": "2026-10-26T01:27:16.000Z",
-   "ageMin": 1,
+   "lastActivity": "2026-10-26T02:17:20.000Z",
+   "ageMin": 0,
    "maxSilenceMin": 240,
    "verdict": "alive",
    "detail": {
-    "subject": "pacemaker receipt: 2026-10-26T01:27:15Z"
+    "subject": "truth-gate: 2026-10-26T02:17:19Z · ALL-GREEN"
    }
   },
   {
    "name": "divergence/FleetHQ",
    "lastActivity": "2026-10-25T17:54:48.000Z",
-   "ageMin": 453,
+   "ageMin": 502,
    "maxSilenceMin": 75,
    "verdict": "SILENT-ALARM",
    "detail": {
@@ -48,7 +48,7 @@
   {
    "name": "divergence/Domain",
    "lastActivity": "2026-10-25T17:54:48.000Z",
-   "ageMin": 453,
+   "ageMin": 502,
    "maxSilenceMin": 75,
    "verdict": "SILENT-ALARM",
    "detail": {
@@ -60,7 +60,7 @@
   {
    "name": "divergence/Console",
    "lastActivity": "2026-10-25T17:54:48.000Z",
-   "ageMin": 453,
+   "ageMin": 502,
    "maxSilenceMin": 75,
    "verdict": "SILENT-ALARM",
    "detail": {
@@ -72,7 +72,7 @@
   {
    "name": "sandbox-ledger (via git)",
    "lastActivity": "2026-10-25T17:51:52.653Z",
-   "ageMin": 456,
+   "ageMin": 505,
    "maxSilenceMin": 180,
    "verdict": "SILENT-ALARM",
    "detail": {
@@ -81,33 +81,32 @@
   },
   {
    "name": "pages/money",
-   "lastActivity": "2026-10-25T21:02:40.282Z",
-   "ageMin": 266,
+   "lastActivity": "2026-10-26T00:32:08.327Z",
+   "ageMin": 105,
    "maxSilenceMin": 240,
-   "verdict": "SILENT-ALARM",
+   "verdict": "alive",
    "detail": {
     "url": "dex/money.json"
    }
   },
   {
    "name": "pages/site-audit",
-   "lastActivity": "2026-10-25T23:24:59.651Z",
-   "ageMin": 123,
+   "lastActivity": "2026-10-26T00:25:20.804Z",
+   "ageMin": 112,
    "maxSilenceMin": 360,
    "verdict": "alive",
    "detail": {
     "verdict": "findings:1",
-    "at": "2026-10-25T23:24:59.651Z"
+    "at": "2026-10-26T00:25:20.804Z"
    }
   }
  ],
  "alarms": [
-  "divergence/FleetHQ: silent 453min (limit 75)",
-  "divergence/Domain: silent 453min (limit 75)",
-  "divergence/Console: silent 453min (limit 75)",
-  "sandbox-ledger (via git): silent 456min (limit 180)",
-  "pages/money: silent 266min (limit 240)",
-  "pages/site-audit: LIVE SITE BROKEN (1 findings at 2026-10-25T23:24:59.651Z)"
+  "divergence/FleetHQ: silent 502min (limit 75)",
+  "divergence/Domain: silent 502min (limit 75)",
+  "divergence/Console: silent 502min (limit 75)",
+  "sandbox-ledger (via git): silent 505min (limit 180)",
+  "pages/site-audit: LIVE SITE BROKEN (1 findings at 2026-10-26T00:25:20.804Z)"
  ],
- "summary": "6 ALARM(S): divergence/FleetHQ: silent 453min (limit 75) · divergence/Domain: silent 453min (limit 75) · divergence/Console: silent 453min (limit 75) · sandbox-ledger (via git): silent 456min (limit 180) · pages/money: silent 266min (limit 240) · pages/site-audit: LIVE SITE BROKEN (1 findings at 2026-10-25T23:24:59.651Z)"
+ "summary": "5 ALARM(S): divergence/FleetHQ: silent 502min (limit 75) · divergence/Domain: silent 502min (limit 75) · divergence/Console: silent 502min (limit 75) · sandbox-ledger (via git): silent 505min (limit 180) · pages/site-audit: LIVE SITE BROKEN (1 findings at 2026-10-26T00:25:20.804Z)"
 }
