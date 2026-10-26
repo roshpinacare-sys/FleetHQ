@@ -1,14 +1,14 @@
 {
  "schema": "silence-watchdog.state/1",
- "at": "2026-10-26T16:39:48.750Z",
- "signature": "sig:a89984dddfd3a482",
+ "at": "2026-10-26T17:19:19.351Z",
+ "signature": "sig:4baf548ea145f398",
  "perVoice": {
   "origin/FleetHQ": "alive",
   "origin/Domain": "alive",
   "origin/Console": "alive",
-  "divergence/FleetHQ": "alive",
-  "divergence/Domain": "alive",
-  "divergence/Console": "alive",
+  "divergence/FleetHQ": "SILENT-ALARM",
+  "divergence/Domain": "SILENT-ALARM",
+  "divergence/Console": "SILENT-ALARM",
   "sandbox-ledger (via git)": "alive",
   "pages/money": "alive",
   "pages/site-audit": "alive"
@@ -89,17 +89,12 @@
   }
  },
  "issue": {
-  "number": 185,
-  "bodyHash": null,
-  "lastAction": "external-close-respected",
-  "at": "2026-10-26T16:39:48.750Z"
+  "number": 191,
+  "bodyHash": "sha256:ce2c51cb3828055f",
+  "lastAction": "created",
+  "at": "2026-10-26T17:19:19.351Z"
  },
  "runs": [
-  {
-   "at": "2026-10-26T11:29:44.179Z",
-   "alarms": 6,
-   "issueAction": "no-change"
-  },
   {
    "at": "2026-10-26T12:19:58.479Z",
    "alarms": 6,
@@ -134,6 +129,11 @@
    "at": "2026-10-26T16:39:48.750Z",
    "alarms": 1,
    "issueAction": "external-close-respected"
+  },
+  {
+   "at": "2026-10-26T17:19:19.351Z",
+   "alarms": 4,
+   "issueAction": "created"
   }
  ]
 }
