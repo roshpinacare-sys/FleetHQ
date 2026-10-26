@@ -1,42 +1,42 @@
 {
  "schema": "silence.watchdog/1",
- "at": "2026-10-26T17:38:04.058Z",
+ "at": "2026-10-26T21:12:33.158Z",
  "scope": "actions",
  "voices": [
   {
    "name": "origin/FleetHQ",
-   "lastActivity": "2026-10-26T17:35:25.000Z",
-   "ageMin": 3,
-   "maxSilenceMin": 240,
-   "verdict": "alive",
-   "detail": {
-    "subject": "pacemaker receipt: 2026-10-26T17:35:25Z"
-   }
-  },
-  {
-   "name": "origin/Domain",
-   "lastActivity": "2026-10-26T17:37:21.000Z",
+   "lastActivity": "2026-10-26T21:11:16.000Z",
    "ageMin": 1,
    "maxSilenceMin": 240,
    "verdict": "alive",
    "detail": {
-    "subject": "operator-console: on-chain directives collected 2026-10-26T17:37:21Z"
+    "subject": "office-heartbeat: office-knowledge.json refreshed (measured) [skip ci]"
+   }
+  },
+  {
+   "name": "origin/Domain",
+   "lastActivity": "2026-10-26T21:12:14.000Z",
+   "ageMin": 0,
+   "maxSilenceMin": 240,
+   "verdict": "alive",
+   "detail": {
+    "subject": "office-artery: shift 2026-10-26T21:12:13Z [skip ci]"
    }
   },
   {
    "name": "origin/Console",
-   "lastActivity": "2026-10-26T17:36:16.000Z",
-   "ageMin": 2,
+   "lastActivity": "2026-10-26T21:12:05.000Z",
+   "ageMin": 0,
    "maxSilenceMin": 240,
    "verdict": "alive",
    "detail": {
-    "subject": "pacemaker receipt: 2026-10-26T17:36:16Z"
+    "subject": "pacemaker receipt: 2026-10-26T21:12:05Z"
    }
   },
   {
    "name": "divergence/FleetHQ",
    "lastActivity": "2026-10-26T15:39:57.000Z",
-   "ageMin": 118,
+   "ageMin": 333,
    "maxSilenceMin": 75,
    "verdict": "SILENT-ALARM",
    "detail": {
@@ -48,7 +48,7 @@
   {
    "name": "divergence/Domain",
    "lastActivity": "2026-10-26T15:39:57.000Z",
-   "ageMin": 118,
+   "ageMin": 333,
    "maxSilenceMin": 75,
    "verdict": "SILENT-ALARM",
    "detail": {
@@ -60,7 +60,7 @@
   {
    "name": "divergence/Console",
    "lastActivity": "2026-10-26T15:39:57.000Z",
-   "ageMin": 118,
+   "ageMin": 333,
    "maxSilenceMin": 75,
    "verdict": "SILENT-ALARM",
    "detail": {
@@ -71,42 +71,42 @@
   },
   {
    "name": "sandbox-ledger (via git)",
-   "lastActivity": "2026-10-26T17:19:19.933Z",
-   "ageMin": 19,
+   "lastActivity": "2026-10-26T18:11:30.262Z",
+   "ageMin": 181,
    "maxSilenceMin": 180,
-   "verdict": "alive",
+   "verdict": "SILENT-ALARM",
    "detail": {
     "localSummary": ""
    }
   },
   {
    "name": "pages/money",
-   "lastActivity": "2026-10-26T13:24:56.129Z",
-   "ageMin": 253,
+   "lastActivity": "2026-10-26T20:03:28.750Z",
+   "ageMin": 69,
    "maxSilenceMin": 240,
-   "verdict": "SILENT-ALARM",
+   "verdict": "alive",
    "detail": {
     "url": "dex/money.json"
    }
   },
   {
    "name": "pages/site-audit",
-   "lastActivity": "2026-10-26T16:11:28.716Z",
-   "ageMin": 87,
+   "lastActivity": "2026-10-26T19:54:48.721Z",
+   "ageMin": 78,
    "maxSilenceMin": 360,
    "verdict": "alive",
    "detail": {
     "verdict": "findings:1",
-    "at": "2026-10-26T16:11:28.716Z"
+    "at": "2026-10-26T19:54:48.721Z"
    }
   }
  ],
  "alarms": [
-  "divergence/FleetHQ: silent 118min (limit 75)",
-  "divergence/Domain: silent 118min (limit 75)",
-  "divergence/Console: silent 118min (limit 75)",
-  "pages/money: silent 253min (limit 240)",
-  "pages/site-audit: LIVE SITE BROKEN (1 findings at 2026-10-26T16:11:28.716Z)"
+  "divergence/FleetHQ: silent 333min (limit 75)",
+  "divergence/Domain: silent 333min (limit 75)",
+  "divergence/Console: silent 333min (limit 75)",
+  "sandbox-ledger (via git): silent 181min (limit 180)",
+  "pages/site-audit: LIVE SITE BROKEN (1 findings at 2026-10-26T19:54:48.721Z)"
  ],
- "summary": "5 ALARM(S): divergence/FleetHQ: silent 118min (limit 75) · divergence/Domain: silent 118min (limit 75) · divergence/Console: silent 118min (limit 75) · pages/money: silent 253min (limit 240) · pages/site-audit: LIVE SITE BROKEN (1 findings at 2026-10-26T16:11:28.716Z)"
+ "summary": "5 ALARM(S): divergence/FleetHQ: silent 333min (limit 75) · divergence/Domain: silent 333min (limit 75) · divergence/Console: silent 333min (limit 75) · sandbox-ledger (via git): silent 181min (limit 180) · pages/site-audit: LIVE SITE BROKEN (1 findings at 2026-10-26T19:54:48.721Z)"
 }
