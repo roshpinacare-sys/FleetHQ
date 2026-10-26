@@ -1,22 +1,26 @@
 {
  "schema": "silence-watchdog.state/1",
- "at": "2026-10-26T13:44:33.346Z",
- "signature": "sig:a0ff5398a893ffec",
+ "at": "2026-10-26T14:32:29.471Z",
+ "signature": "sig:a89984dddfd3a482",
  "perVoice": {
   "origin/FleetHQ": "alive",
   "origin/Domain": "alive",
   "origin/Console": "alive",
-  "divergence/FleetHQ": "SILENT-ALARM",
-  "divergence/Domain": "SILENT-ALARM",
-  "divergence/Console": "SILENT-ALARM",
-  "sandbox-ledger (via git)": "SILENT-ALARM",
-  "pages/money": "SILENT-ALARM",
+  "divergence/FleetHQ": "alive",
+  "divergence/Domain": "alive",
+  "divergence/Console": "alive",
+  "sandbox-ledger (via git)": "alive",
+  "pages/money": "alive",
   "pages/site-audit": "alive"
  },
  "wounds": {
   "wound/1": {
    "class": "divergence-receipt-stale",
-   "voices": ["divergence/FleetHQ", "divergence/Domain", "divergence/Console"],
+   "voices": [
+    "divergence/FleetHQ",
+    "divergence/Domain",
+    "divergence/Console"
+   ],
    "status": "healed",
    "fixableInRepo": false,
    "measuredAt": "2026-10-26T14:24:30Z",
@@ -33,7 +37,9 @@
   },
   "wound/2": {
    "class": "sandbox-ledger-stale",
-   "voices": ["sandbox-ledger (via git)"],
+   "voices": [
+    "sandbox-ledger (via git)"
+   ],
    "status": "healed",
    "fixableInRepo": false,
    "measuredAt": "2026-10-26T14:24:30Z",
@@ -48,7 +54,9 @@
   },
   "wound/3": {
    "class": "pages-money-stale",
-   "voices": ["pages/money"],
+   "voices": [
+    "pages/money"
+   ],
    "status": "healed",
    "fixableInRepo": false,
    "measuredAt": "2026-10-26T14:24:30Z",
@@ -62,7 +70,9 @@
   },
   "wound/4": {
    "class": "site-audit-finding",
-   "voices": ["pages/site-audit"],
+   "voices": [
+    "pages/site-audit"
+   ],
    "status": "open",
    "fixableInRepo": false,
    "measuredAt": "2026-10-26T14:24:30Z",
@@ -80,16 +90,11 @@
  },
  "issue": {
   "number": 185,
-  "bodyHash": "sha256:81ca565608502214",
-  "lastAction": "no-change",
-  "at": "2026-10-26T13:44:33.346Z"
+  "bodyHash": "sha256:4e1f60734a47d1f6",
+  "lastAction": "edited",
+  "at": "2026-10-26T14:32:29.471Z"
  },
  "runs": [
-  {
-   "at": "2026-10-26T09:01:25.340Z",
-   "alarms": 5,
-   "issueAction": "no-change"
-  },
   {
    "at": "2026-10-26T09:48:17.497Z",
    "alarms": 6,
@@ -124,6 +129,11 @@
    "at": "2026-10-26T13:44:33.346Z",
    "alarms": 6,
    "issueAction": "no-change"
+  },
+  {
+   "at": "2026-10-26T14:32:29.471Z",
+   "alarms": 1,
+   "issueAction": "edited"
   }
  ]
 }
