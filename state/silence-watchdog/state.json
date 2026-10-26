@@ -13,6 +13,71 @@
   "pages/money": "SILENT-ALARM",
   "pages/site-audit": "alive"
  },
+ "wounds": {
+  "wound/1": {
+   "class": "divergence-receipt-stale",
+   "voices": ["divergence/FleetHQ", "divergence/Domain", "divergence/Console"],
+   "status": "healed",
+   "fixableInRepo": false,
+   "measuredAt": "2026-10-26T14:24:30Z",
+   "measuredBy": "G76-e worker lane (FleetHQ)",
+   "rootCause": "The Actions-side divergence voices measure the sandbox's receipts/push-queue.json THROUGH git — that receipt was stale from 2026-10-25T17:54:48Z (committed 18:00:45Z, 'voice-ops seal [auto]'). Its writer is the flush beat (vault-home/flush.sh) fired by mini-services/local-beats at :09/:24/:39/:54 on the sandbox host estate (/home/z/estate) — there is no in-repo Actions writer, so the alarm could not be cured from this repo; it needed the sandbox host itself. The host's outage window ended today: flush resumed ~14:09Z and the receipt re-landed on main.",
+   "evidence": {
+    "staleWindow": "2026-10-25T17:54:48Z → 2026-10-26T14:09:09Z (~20h15m)",
+    "healedReceipt": "push-queue.json at origin/main: at=2026-10-26T14:09:09Z credential=valid, all repos ahead=0 behind=0 (commit 465b39766, committed 14:20:33Z)",
+    "lastMeasurementInReceipt": "ahead=0 behind=0 on FleetHQ/Domain/Console (no unpushed commits — a receipt-staleness alarm, never a lost-work alarm)",
+    "sandboxVoiceResumed": "2026-10-26T14:10:51Z (9aadb062e)",
+    "dryRunProof": "DRY=1 tools/silence-watchdog.mjs at 2026-10-26T14:24Z: divergence/* all alive — 5 of 6 alarms cleared"
+   },
+   "remediation": "Healed at source by the sandbox host's own recovery (flush beat firing again, credential=valid). If it regresses: restart mini-services/local-beats on the sandbox host, confirm the running copy carries the flush wiring (HEAD does), and verify /tmp/local-beats.log shows flush fires at :09/:24/:39/:54 with credential=valid."
+  },
+  "wound/2": {
+   "class": "sandbox-ledger-stale",
+   "voices": ["sandbox-ledger (via git)"],
+   "status": "healed",
+   "fixableInRepo": false,
+   "measuredAt": "2026-10-26T14:24:30Z",
+   "measuredBy": "G76-e worker lane (FleetHQ)",
+   "rootCause": "The sandbox box's own outage window: receipts/silence-ledger.json at origin was stale from 2026-10-25T17:51:52Z until the sandbox voice beat resumed.",
+   "evidence": {
+    "healedAt": "2026-10-26T14:10:51.248Z",
+    "commit": "9aadb062e 'sandbox voice: ports 3/8 · engine down'",
+    "ledgerVoices": "all alive"
+   },
+   "remediation": "None — the next watchdog cycle records 'alive' and the alarm leaves the signature."
+  },
+  "wound/3": {
+   "class": "pages-money-stale",
+   "voices": ["pages/money"],
+   "status": "healed",
+   "fixableInRepo": false,
+   "measuredAt": "2026-10-26T14:24:30Z",
+   "measuredBy": "G76-e worker lane (FleetHQ)",
+   "rootCause": "dex/money.json on Domain Pages was stale from 2026-10-26T05:11:09Z; the money-watch engine (Console/agents/money-watch · R39 money path sentinel) had stopped publishing and resumed.",
+   "evidence": {
+    "healedAt": "2026-10-26T13:24:56.129Z",
+    "probe": "HTTP 200 live https://roshpinacare-sys.github.io/Domain/dex/money.json at 2026-10-26T14:16Z, publishedAt=2026-10-26T13:24:56Z"
+   },
+   "remediation": "None — the next watchdog cycle records 'alive' and the alarm leaves the signature."
+  },
+  "wound/4": {
+   "class": "site-audit-finding",
+   "voices": ["pages/site-audit"],
+   "status": "open",
+   "fixableInRepo": false,
+   "measuredAt": "2026-10-26T14:24:30Z",
+   "measuredBy": "G76-e worker lane (FleetHQ)",
+   "rootCause": "The single remaining alarm ('LIVE SITE BROKEN (1 findings)'): wallet-truth.html on Domain Pages links https://github.com/roshpinacare-sys/steem/blob/saos-cockpit/sovereign/node/wallets-public.json — measured 404. The file exists on steem@main (HTTP 200 measured); the saos-cockpit branch exists but lacks that path (404 measured). The page and its baker (tools/bake-wallet.mjs) live in the Domain repo — outside this repo's lane, so the fix is a one-line repoint there.",
+   "evidence": {
+    "finding": "404 on blob/saos-cockpit/sovereign/node/wallets-public.json, source page wallet-truth.html",
+    "steemMain200": "raw .../steem/main/sovereign/node/wallets-public.json → 200",
+    "steemSaosCockpit404": "raw .../steem/saos-cockpit/sovereign/node/wallets-public.json → 404",
+    "auditAt": "2026-10-26T13:29:50.311Z",
+    "dryRunProof": "DRY=1 tools/silence-watchdog.mjs at 2026-10-26T14:24Z: 1 ALARM(S) — pages/site-audit: LIVE SITE BROKEN (1 findings)"
+   },
+   "remediation": "Domain lane: repoint the wallets-public.json link in wallet-truth.html (or tools/bake-wallet.mjs there) from blob/saos-cockpit/… to blob/main/sovereign/node/wallets-public.json (measured 200); site-audit re-audits on its next run → findings 0 → the alarm drops and the issue auto-closes on the next signature change."
+  }
+ },
  "issue": {
   "number": 185,
   "bodyHash": "sha256:81ca565608502214",

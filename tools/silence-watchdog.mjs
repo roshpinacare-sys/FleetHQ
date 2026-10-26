@@ -189,6 +189,13 @@ writeFileSync(RECEIPT, JSON.stringify(ledger, null, 1) + "\n");
 // last-published body hash, and a bounded run history. The issue is touched
 // ONLY when the signature changes — one signature, one escalation; no repeat
 // emails for a known, still-open signature.
+// [G76-e] wounds: measured per-alarm root-cause verdicts (rootCause, evidence,
+// remediation, status). Written by the on-call worker lane after a root-cause
+// pass — the watchdog CARRIES them forward verbatim on every rewrite so the
+// verdicts survive the every-15min state commit (a state file the tool fully
+// regenerates would otherwise erase the honest per-alarm analysis each run).
+// The tool never invents or mutates wounds — it only preserves what humans/
+// worker lanes measured.
 const STATE_DIR = "state/silence-watchdog";
 const STATE_PATH = `${STATE_DIR}/state.json`;
 gitOk(["fetch", "-q", "origin", "+main:refs/wd/self"]); // freshest origin state, best-effort
@@ -215,7 +222,7 @@ console.log(`transition-dedup: signature=${signature} changed=${sigChanged} (one
 
 if (DRY) {
   console.log("DRY: lanes skipped");
-  console.log("DRY state-preview: " + JSON.stringify({ signature, sigChanged, prevSignature: prevState?.signature ?? null, prevStateAt: prevState?.at ?? null, alarms: ledger.alarms.length, perVoice }));
+  console.log("DRY state-preview: " + JSON.stringify({ signature, sigChanged, prevSignature: prevState?.signature ?? null, prevStateAt: prevState?.at ?? null, alarms: ledger.alarms.length, wounds: prevState?.wounds ? Object.keys(prevState.wounds).length : 0, perVoice }));
   process.exit(0);
 }
 
@@ -294,6 +301,7 @@ const state = {
   at: ledger.at,
   signature,
   perVoice,
+  ...(prevState?.wounds ? { wounds: prevState.wounds } : {}), // [G76-e] carried forward verbatim — never regenerated
   issue: { number: issueNumber, bodyHash: issueBodyHash, lastAction: issueAction, at: ledger.at },
   runs: [...(prevState?.runs || []), { at: ledger.at, alarms: ledger.alarms.length, issueAction }].slice(-8),
 };
