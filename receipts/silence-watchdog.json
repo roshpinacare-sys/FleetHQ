@@ -1,42 +1,42 @@
 {
  "schema": "silence.watchdog/1",
- "at": "2026-10-27T18:45:51.489Z",
+ "at": "2026-10-27T20:49:25.594Z",
  "scope": "actions",
  "voices": [
   {
    "name": "origin/FleetHQ",
-   "lastActivity": "2026-10-27T18:45:11.000Z",
-   "ageMin": 1,
+   "lastActivity": "2026-10-27T20:47:44.000Z",
+   "ageMin": 2,
    "maxSilenceMin": 240,
    "verdict": "alive",
    "detail": {
-    "subject": "decide: sovereign decision cycle (SOV-POLICY/1) — sense/decide/record,"
+    "subject": "pacemaker receipt: 2026-10-27T20:47:44Z"
    }
   },
   {
    "name": "origin/Domain",
-   "lastActivity": "2026-10-27T18:45:34.000Z",
+   "lastActivity": "2026-10-27T20:49:05.000Z",
    "ageMin": 0,
    "maxSilenceMin": 240,
    "verdict": "alive",
    "detail": {
-    "subject": "weave-mirror: 2026-10-27T18:45:34Z · weave books mirrored from the liv"
+    "subject": "orders book (twin): 5 open 2026-10-27T20:49:04Z"
    }
   },
   {
    "name": "origin/Console",
-   "lastActivity": "2026-10-27T18:45:45.000Z",
-   "ageMin": 0,
+   "lastActivity": "2026-10-27T20:47:24.000Z",
+   "ageMin": 2,
    "maxSilenceMin": 240,
    "verdict": "alive",
    "detail": {
-    "subject": "dex-flow: h1886928 · vol24=0µ · sweep-fills=0 · 2026-10-27T18:45Z"
+    "subject": "line-agreement: DIVERGE · 3 mismatches · 2026-10-27T20:47:24Z"
    }
   },
   {
    "name": "divergence/FleetHQ",
    "lastActivity": "2026-10-27T14:54:46.000Z",
-   "ageMin": 231,
+   "ageMin": 355,
    "maxSilenceMin": 75,
    "verdict": "SILENT-ALARM",
    "detail": {
@@ -48,7 +48,7 @@
   {
    "name": "divergence/Domain",
    "lastActivity": "2026-10-27T14:54:46.000Z",
-   "ageMin": 231,
+   "ageMin": 355,
    "maxSilenceMin": 75,
    "verdict": "SILENT-ALARM",
    "detail": {
@@ -60,7 +60,7 @@
   {
    "name": "divergence/Console",
    "lastActivity": "2026-10-27T14:54:46.000Z",
-   "ageMin": 231,
+   "ageMin": 355,
    "maxSilenceMin": 75,
    "verdict": "SILENT-ALARM",
    "detail": {
@@ -72,9 +72,9 @@
   {
    "name": "sandbox-ledger (via git)",
    "lastActivity": "2026-10-27T17:29:00.318Z",
-   "ageMin": 77,
+   "ageMin": 200,
    "maxSilenceMin": 180,
-   "verdict": "alive",
+   "verdict": "SILENT-ALARM",
    "detail": {
     "localSummary": ""
    }
@@ -82,7 +82,7 @@
   {
    "name": "pages/money",
    "lastActivity": "2026-10-27T14:33:45.967Z",
-   "ageMin": 252,
+   "ageMin": 376,
    "maxSilenceMin": 240,
    "verdict": "SILENT-ALARM",
    "detail": {
@@ -91,22 +91,23 @@
   },
   {
    "name": "pages/site-audit",
-   "lastActivity": "2026-10-27T16:25:23.403Z",
-   "ageMin": 140,
+   "lastActivity": "2026-10-27T18:11:42.179Z",
+   "ageMin": 158,
    "maxSilenceMin": 360,
    "verdict": "alive",
    "detail": {
     "verdict": "findings:1",
-    "at": "2026-10-27T16:25:23.403Z"
+    "at": "2026-10-27T18:11:42.179Z"
    }
   }
  ],
  "alarms": [
-  "divergence/FleetHQ: silent 231min (limit 75)",
-  "divergence/Domain: silent 231min (limit 75)",
-  "divergence/Console: silent 231min (limit 75)",
-  "pages/money: silent 252min (limit 240)",
-  "pages/site-audit: LIVE SITE BROKEN (1 findings at 2026-10-27T16:25:23.403Z)"
+  "divergence/FleetHQ: silent 355min (limit 75)",
+  "divergence/Domain: silent 355min (limit 75)",
+  "divergence/Console: silent 355min (limit 75)",
+  "sandbox-ledger (via git): silent 200min (limit 180)",
+  "pages/money: silent 376min (limit 240)",
+  "pages/site-audit: LIVE SITE BROKEN (1 findings at 2026-10-27T18:11:42.179Z)"
  ],
- "summary": "5 ALARM(S): divergence/FleetHQ: silent 231min (limit 75) · divergence/Domain: silent 231min (limit 75) · divergence/Console: silent 231min (limit 75) · pages/money: silent 252min (limit 240) · pages/site-audit: LIVE SITE BROKEN (1 findings at 2026-10-27T16:25:23.403Z)"
+ "summary": "6 ALARM(S): divergence/FleetHQ: silent 355min (limit 75) · divergence/Domain: silent 355min (limit 75) · divergence/Console: silent 355min (limit 75) · sandbox-ledger (via git): silent 200min (limit 180) · pages/money: silent 376min (limit 240) · pages/site-audit: LIVE SITE BROKEN (1 findings at 2026-10-27T18:11:42.179Z)"
 }
