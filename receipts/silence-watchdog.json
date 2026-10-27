@@ -1,42 +1,42 @@
 {
  "schema": "silence.watchdog/1",
- "at": "2026-10-27T22:14:30.733Z",
+ "at": "2026-10-27T23:26:34.356Z",
  "scope": "actions",
  "voices": [
   {
    "name": "origin/FleetHQ",
-   "lastActivity": "2026-10-27T22:01:15.000Z",
-   "ageMin": 13,
+   "lastActivity": "2026-10-27T23:25:49.000Z",
+   "ageMin": 1,
    "maxSilenceMin": 240,
    "verdict": "alive",
    "detail": {
-    "subject": "decide: sovereign decision cycle (SOV-POLICY/1) — sense/decide/record,"
+    "subject": "pacemaker receipt: 2026-10-27T23:25:49Z"
    }
   },
   {
    "name": "origin/Domain",
-   "lastActivity": "2026-10-27T22:13:06.000Z",
-   "ageMin": 1,
+   "lastActivity": "2026-10-27T23:26:18.000Z",
+   "ageMin": 0,
    "maxSilenceMin": 240,
    "verdict": "alive",
    "detail": {
-    "subject": "office window (twin): ALIVE 2026-10-27T22:13:06Z"
+    "subject": "fleet-census(ci): artifact+delta+claims 2026-10-27T23:26:18Z [skip ci]"
    }
   },
   {
    "name": "origin/Console",
-   "lastActivity": "2026-10-27T22:13:59.000Z",
-   "ageMin": 1,
+   "lastActivity": "2026-10-27T23:18:58.000Z",
+   "ageMin": 8,
    "maxSilenceMin": 240,
    "verdict": "alive",
    "detail": {
-    "subject": "pacemaker receipt: 2026-10-27T22:13:59Z"
+    "subject": "pacemaker receipt: 2026-10-27T23:18:58Z"
    }
   },
   {
    "name": "divergence/FleetHQ",
    "lastActivity": "2026-10-27T14:54:46.000Z",
-   "ageMin": 440,
+   "ageMin": 512,
    "maxSilenceMin": 75,
    "verdict": "SILENT-ALARM",
    "detail": {
@@ -48,7 +48,7 @@
   {
    "name": "divergence/Domain",
    "lastActivity": "2026-10-27T14:54:46.000Z",
-   "ageMin": 440,
+   "ageMin": 512,
    "maxSilenceMin": 75,
    "verdict": "SILENT-ALARM",
    "detail": {
@@ -60,7 +60,7 @@
   {
    "name": "divergence/Console",
    "lastActivity": "2026-10-27T14:54:46.000Z",
-   "ageMin": 440,
+   "ageMin": 512,
    "maxSilenceMin": 75,
    "verdict": "SILENT-ALARM",
    "detail": {
@@ -72,7 +72,7 @@
   {
    "name": "sandbox-ledger (via git)",
    "lastActivity": "2026-10-27T17:29:00.318Z",
-   "ageMin": 286,
+   "ageMin": 358,
    "maxSilenceMin": 180,
    "verdict": "SILENT-ALARM",
    "detail": {
@@ -81,33 +81,32 @@
   },
   {
    "name": "pages/money",
-   "lastActivity": "2026-10-27T18:12:11.435Z",
-   "ageMin": 242,
+   "lastActivity": "2026-10-27T22:28:13.627Z",
+   "ageMin": 58,
    "maxSilenceMin": 240,
-   "verdict": "SILENT-ALARM",
+   "verdict": "alive",
    "detail": {
     "url": "dex/money.json"
    }
   },
   {
    "name": "pages/site-audit",
-   "lastActivity": "2026-10-27T18:51:45.775Z",
-   "ageMin": 203,
+   "lastActivity": "2026-10-27T22:41:35.082Z",
+   "ageMin": 45,
    "maxSilenceMin": 360,
    "verdict": "alive",
    "detail": {
     "verdict": "findings:1",
-    "at": "2026-10-27T18:51:45.775Z"
+    "at": "2026-10-27T22:41:35.082Z"
    }
   }
  ],
  "alarms": [
-  "divergence/FleetHQ: silent 440min (limit 75)",
-  "divergence/Domain: silent 440min (limit 75)",
-  "divergence/Console: silent 440min (limit 75)",
-  "sandbox-ledger (via git): silent 286min (limit 180)",
-  "pages/money: silent 242min (limit 240)",
-  "pages/site-audit: LIVE SITE BROKEN (1 findings at 2026-10-27T18:51:45.775Z)"
+  "divergence/FleetHQ: silent 512min (limit 75)",
+  "divergence/Domain: silent 512min (limit 75)",
+  "divergence/Console: silent 512min (limit 75)",
+  "sandbox-ledger (via git): silent 358min (limit 180)",
+  "pages/site-audit: LIVE SITE BROKEN (1 findings at 2026-10-27T22:41:35.082Z)"
  ],
- "summary": "6 ALARM(S): divergence/FleetHQ: silent 440min (limit 75) · divergence/Domain: silent 440min (limit 75) · divergence/Console: silent 440min (limit 75) · sandbox-ledger (via git): silent 286min (limit 180) · pages/money: silent 242min (limit 240) · pages/site-audit: LIVE SITE BROKEN (1 findings at 2026-10-27T18:51:45.775Z)"
+ "summary": "5 ALARM(S): divergence/FleetHQ: silent 512min (limit 75) · divergence/Domain: silent 512min (limit 75) · divergence/Console: silent 512min (limit 75) · sandbox-ledger (via git): silent 358min (limit 180) · pages/site-audit: LIVE SITE BROKEN (1 findings at 2026-10-27T22:41:35.082Z)"
 }
