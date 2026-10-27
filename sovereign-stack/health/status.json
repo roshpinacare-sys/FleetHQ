@@ -1,5 +1,5 @@
 {
- "ts": "2026-10-27T14:35:06Z",
+ "ts": "2026-10-27T14:44:40Z",
  "timeout_ms": 90000,
  "all_ok": false,
  "accounts": {
@@ -20,37 +20,37 @@
    "name": "nextjs-control",
    "url": "http://localhost:3000/",
    "method": "GET",
-   "status": 200,
-   "latency_ms": 865,
-   "verdict": "OK",
-   "detail": "status=200 latency=865ms"
+   "status": null,
+   "latency_ms": 0,
+   "verdict": "DOWN",
+   "detail": "URLError: <urlopen error [Errno 111] Connection refused>"
   },
   {
    "name": "llm7-free",
    "url": "https://api.llm7.io/v1/models",
    "method": "GET",
    "status": 200,
-   "latency_ms": 561,
+   "latency_ms": 290,
    "verdict": "OK",
-   "detail": "status=200 latency=561ms"
+   "detail": "status=200 latency=290ms"
   },
   {
    "name": "eth-mainnet-rpc",
    "url": "https://eth.drpc.org",
    "method": "POST",
    "status": 200,
-   "latency_ms": 83,
+   "latency_ms": 80,
    "verdict": "OK",
-   "detail": "status=200 latency=83ms"
+   "detail": "status=200 latency=80ms"
   },
   {
    "name": "zero-rail-rpc",
    "url": "https://rpc.zero.tech",
    "method": "POST",
    "status": 200,
-   "latency_ms": 391,
+   "latency_ms": 382,
    "verdict": "OK",
-   "detail": "status=200 latency=391ms"
+   "detail": "status=200 latency=382ms"
   }
  ],
  "mem": {
@@ -58,5 +58,5 @@
   "mem_available_mb": 1521.7,
   "mem_total_mb": 4041.6
  },
- "sha256": "db95f810f44ab39f7d5f6d1156e911654a6470fea31a0c7f312f2309cf78fadd"
+ "sha256": "45cc92d15addfa9ddcef5c0ac63cfc81ce16a51b1bcc64d0be5f61ff1deff543"
 }
