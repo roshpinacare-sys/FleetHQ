@@ -1,6 +1,6 @@
 {
  "schema": "fleet.fresh-oracle/1",
- "at": "2026-10-27T14:59:25.547Z",
+ "at": "2026-10-27T19:08:15.103Z",
  "law": "FRESH only if sha256(live bytes) == sha256(committed deploy-ref bytes) AND no ops doc MISSING; DRIFT=RED (200-with-different-bytes); UNREACHABLE=UNKNOWN (network, retried once, reason kept); ops-doc age rows are honest amber (MISSING alone flips exit) — never faked green",
  "results": [
   {
@@ -12,9 +12,9 @@
    "liveError": null,
    "committedError": null,
    "liveSha16": "b10a318595b52d45",
-   "committedSha16": "b10a318595b52d45",
+   "committedSha16": "ecbcdf210ee82a66",
    "liveBytes": 50226,
-   "verdict": "MATCH"
+   "verdict": "DRIFT"
   },
   {
    "name": "FleetHQ potential board",
@@ -25,9 +25,9 @@
    "liveError": null,
    "committedError": null,
    "liveSha16": "ae2ceeff09e51235",
-   "committedSha16": "ae2ceeff09e51235",
+   "committedSha16": "0876ee5775a18559",
    "liveBytes": 16630,
-   "verdict": "MATCH"
+   "verdict": "DRIFT"
   },
   {
    "name": "FleetHQ potential data",
@@ -38,9 +38,9 @@
    "liveError": null,
    "committedError": null,
    "liveSha16": "d06ed09add028caa",
-   "committedSha16": "d06ed09add028caa",
+   "committedSha16": "564b4f392c8a53ae",
    "liveBytes": 22775,
-   "verdict": "MATCH"
+   "verdict": "DRIFT"
   },
   {
    "name": "Domain window",
@@ -97,20 +97,69 @@
  ],
  "opsDocs": [
   {
-   "name": "OPS-DOCS-SCAN",
-   "verdict": "UNREACHABLE",
-   "error": "contents API HTTP 403"
+   "name": "FLOW-PLAN",
+   "file": "FLOW-PLAN-2026-10-11.md",
+   "sha16": "e355a31da97053ae",
+   "rawStatus": 200,
+   "lastCommitAt": "2026-10-11T20:29:07Z",
+   "ageDays": 15,
+   "verdict": "AGING"
+  },
+  {
+   "name": "GROWTH-PLAN",
+   "file": "GROWTH-PLAN-2026-10-11.md",
+   "sha16": "19120f352c4aa28b",
+   "rawStatus": 200,
+   "lastCommitAt": "2026-10-12T13:00:25Z",
+   "ageDays": 15,
+   "verdict": "AGING"
+  },
+  {
+   "name": "OWNER-P0",
+   "file": "OWNER-P0-2026-10-11.md",
+   "sha16": "65b03d355f807de7",
+   "rawStatus": 200,
+   "lastCommitAt": "2026-10-12T13:00:25Z",
+   "ageDays": 15,
+   "verdict": "AGING"
+  },
+  {
+   "name": "RESUME-PACKET",
+   "file": "RESUME-PACKET.md",
+   "sha16": "08e151942faf95bf",
+   "rawStatus": 200,
+   "lastCommitAt": "2026-10-12T12:53:19Z",
+   "ageDays": 15,
+   "verdict": "AGING"
+  },
+  {
+   "name": "TOKEN-TRUTH",
+   "file": "TOKEN-TRUTH.md",
+   "sha16": "9b481dc448dde386",
+   "rawStatus": 200,
+   "lastCommitAt": "2026-10-11T21:40:47Z",
+   "ageDays": 15,
+   "verdict": "AGING"
+  },
+  {
+   "name": "ESTATE-TRUTH",
+   "file": "ESTATE-TRUTH-2026-10-11.md",
+   "sha16": "6be0baa467056fa4",
+   "rawStatus": 200,
+   "lastCommitAt": "2026-10-12T12:53:19Z",
+   "ageDays": 15,
+   "verdict": "AGING"
   }
  ],
  "summary": {
   "checked": 7,
-  "match": 7,
-  "drift": 0,
+  "match": 4,
+  "drift": 3,
   "missing": 0,
   "unreachable": 0,
   "opsDocsMissing": 0,
   "opsDocsStale": 0,
-  "verdict": "FRESH"
+  "verdict": "STALE-OR-BROKEN"
  },
  "method": "https GET live URL + raw.githubusercontent deploy ref → sha256-16 byte equality"
 }
