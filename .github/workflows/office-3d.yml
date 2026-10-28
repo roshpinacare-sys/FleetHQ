@@ -103,6 +103,13 @@ jobs:
             cp -a "$SNAP/receipts/office-3d/latest.json" receipts/office-3d/latest.json 2>/dev/null || true
             cat "$SNAP/receipts/office-3d/log.jsonl" >> receipts/office-3d/log.jsonl 2>/dev/null || true
             awk 'NF && !seen[$0]++' receipts/office-3d/log.jsonl > receipts/office-3d/log.jsonl.tmp && mv receipts/office-3d/log.jsonl.tmp receipts/office-3d/log.jsonl
+            # honest pointer law: a 0-byte latest.json is not a pointer — drop it
+            # so main never carries an empty "truth" file (measured 2026-10-28:
+            # failed bakes published an empty latest.json to main).
+            if [ -f receipts/office-3d/latest.json ] && [ ! -s receipts/office-3d/latest.json ]; then
+              git rm -q --cached receipts/office-3d/latest.json 2>/dev/null || true
+              rm -f receipts/office-3d/latest.json
+            fi
             # only the receipts travel — public/office-state.json is an untracked feed copy by law
             git add receipts/office-3d/
             if git diff --cached --quiet; then return 2; fi
