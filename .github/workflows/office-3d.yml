@@ -11,7 +11,8 @@ on:
     - cron: "47 6 * * *"   # daily 06:47 UTC (offset אחרי office-window 06:17 — כבישת-הקונץ)
   workflow_dispatch:
   push:
-    branches: [main]
+    branches:
+      - main
     paths:
       - "tools/office3d-static/**"
       - "tools/office-3d-bake.mjs"
