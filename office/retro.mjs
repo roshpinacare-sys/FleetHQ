@@ -176,7 +176,7 @@ function sanitizeGateTitle(title) {
 // verdicts/ids (e.g. gate-01's STEEM_ACTIVE_WIF, "ARMED-STABLE steem") is the chain,
 // not the repo; masking it would falsify public facts. Repo-steem references are
 // kept out of artifacts by gate-title sanitization instead (documented decision).
-const PRIVATE_REPOS = ['Adsmarket', 'Defi', 'Project-files', 'Saosmartwallet', 'Sdk', 'SovereignConsole', 'Zip', 'anchor-baseline', 'roshpina', 'sanbox', 'saos-control-center', 'saos-dex', 'saos-jummper', 'saos-sovereign-foundry', 'saos-sovereign-platform', 'vault-home'];
+const PRIVATE_REPOS = ['Adsmarket', 'Defi', 'Project-files', 'Saosmartwallet', 'Sdk', 'Console', 'Zip', 'anchor-baseline', 'roshpina', 'Sandbox', 'saos-control-center', 'saos-dex', 'saos-jummper', 'saos-sovereign-foundry', 'saos-sovereign-platform', 'vault-home'];
 const PRIVATE_MASK = new Map();
 {
   const sorted = [...PRIVATE_REPOS].sort();
