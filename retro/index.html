@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>מחזור-השיפור-העצמי של המשרד — FleetHQ</title>
+<style>
+:root{
+  --bg:#0b0f14; --surface:#10161d; --card:#131a22; --border:#22303f;
+  --text:#e8eef5; --muted:#93a4b4; --ok:#3fb950; --warn:#d29922; --bad:#f85149;
+  --info:#58a6ff; --violet:#bc8cff; --accent:#2dd4bf;
+}
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--bg); color:var(--text);
+  font-family:ui-sans-serif,system-ui,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans Hebrew",sans-serif;
+  line-height:1.65; -webkit-text-size-adjust:100%;
+}
+a{color:var(--info); text-decoration:none}
+a:hover{text-decoration:underline}
+.wrap{max-width:1060px; margin-inline:auto; padding:20px 16px 48px}
+header.hero{
+  background:linear-gradient(180deg,#101a24 0%,var(--bg) 100%);
+  border-bottom:1px solid var(--border); padding:40px 16px 26px; text-align:center;
+}
+.hero h1{margin:0 0 10px; font-size:clamp(1.55rem,5vw,2.4rem); letter-spacing:.01em}
+.hero h1 .accent{color:var(--accent)}
+.hero p.sub{margin:0 auto 14px; max-width:720px; color:var(--muted); font-size:clamp(.95rem,2.6vw,1.08rem)}
+.hero .chips{display:flex; flex-wrap:wrap; gap:8px; justify-content:center}
+.chip{display:inline-block; padding:2px 10px; border-radius:999px; font-size:.78rem; font-weight:600; border:1px solid transparent; white-space:nowrap}
+.chip.ok{background:rgba(63,185,80,.14); color:var(--ok); border-color:rgba(63,185,80,.4)}
+.chip.warn{background:rgba(210,153,34,.14); color:var(--warn); border-color:rgba(210,153,34,.4)}
+.chip.bad{background:rgba(248,81,73,.14); color:var(--bad); border-color:rgba(248,81,73,.4)}
+.chip.info{background:rgba(88,166,255,.14); color:var(--info); border-color:rgba(88,166,255,.4)}
+.chip.violet{background:rgba(188,140,255,.14); color:var(--violet); border-color:rgba(188,140,255,.4)}
+.chip.neutral{background:rgba(147,164,180,.12); color:var(--muted); border-color:rgba(147,164,180,.35)}
+.chip.accent{background:rgba(45,212,191,.12); color:var(--accent); border-color:rgba(45,212,191,.4)}
+section{margin-top:34px}
+.sec-head{display:flex; align-items:center; gap:12px; margin:0 0 14px}
+.sec-num{flex:none; width:34px; height:34px; display:grid; place-items:center; border-radius:9px;
+  background:rgba(45,212,191,.12); color:var(--accent); border:1px solid rgba(45,212,191,.35); font-weight:700}
+.sec-head h2{margin:0; font-size:clamp(1.2rem,3.6vw,1.5rem)}
+.sec-head .en{color:var(--muted); font-weight:400; font-size:.85rem; margin-inline-start:8px}
+.card{background:var(--card); border:1px solid var(--border); border-radius:14px; padding:16px 18px;
+  box-shadow:0 1px 0 rgba(255,255,255,.02) inset; min-width:0; max-width:100%}
+html,body{overflow-x:clip}
+.grid2>*{min-width:0}
+.tablewrap{overflow-x:auto; -webkit-overflow-scrolling:touch; max-width:100%}
+table{width:100%; border-collapse:collapse; font-size:.86rem}
+th,td{padding:7px 9px; border-bottom:1px solid var(--border); text-align:right; vertical-align:top}
+th{color:var(--muted); font-weight:600; white-space:nowrap}
+tr:last-child td{border-bottom:none}
+code{background:rgba(88,166,255,.09); color:var(--info); padding:1px 6px; border-radius:6px; font-size:.82rem; direction:ltr; unicode-bidi:embed}
+.pfoot{margin-top:12px; color:var(--muted); font-size:.8rem}
+footer{margin-top:44px; border-top:1px solid var(--border); padding-top:16px; color:var(--muted); font-size:.82rem; text-align:center}
+.law{color:var(--muted); font-size:.86rem; margin:6px 0}
+.law b{color:var(--text)}
+@media(min-width:760px){ .grid2{display:grid; gap:14px; grid-template-columns:1fr 1fr} }
+</style>
+</head>
+<body>
+<header class="hero">
+  <h1>מחזור-השיפור-העצמי <span class="accent">של המשרד</span></h1>
+  <p class="sub">חקר → זיקוק → תכנון → ביצוע — המשרד צורך את-האינטליגנציה של הצי (ממצאי-מחקר · בריאות-האוטובוס · הדיג'סט · שערי-הבעלים), מזקק תיק-עבודות מדורג, מתכנן את-הראש-ומבצע רק את-מה שבטוח-הוכח. מה שנוגע בכסף/חתימה/STASIS — דבר-בעלים בלבד, לנצח.</p>
+  <div class="chips">
+    <span class="chip accent">2026-10-22 14:01 UTC</span>
+    <span class="chip ok">אוטובוס: 12 ירוק</span>
+    <span class="chip warn">1 מיושן</span>
+    <span class="chip bad">3 אדום</span>
+    <span class="chip neutral">1 לא-ידוע</span>
+    <span class="chip violet">תור: 16 פריטים</span>
+    <span class="chip info">צווים: 2 פתוחים · P1: 2</span>
+    <span class="chip info">רווחיות: FLAT</span>
+    <span class="chip bad">8 שערים ממתינים-לבעלים</span>
+  </div>
+</header>
+<div class="wrap">
+
+<section>
+  <div class="sec-head"><div class="sec-num">1</div><h2>חקר <span class="en">— הפידים כפי-שנמדדו, עכשיו</span></h2></div>
+  <div class="card">
+    <div class="tablewrap"><table>
+      <tr><th>פיד</th><th>מצב</th><th>גיל</th><th>הערה כנה</th></tr>
+      <tr><td>fleethq-digest</td><td><span class="chip ok">green</span></td><td>1.1h</td><td>עודכן לפני 1h</td></tr>
+      <tr><td>domain-dex-grid</td><td><span class="chip ok">green</span></td><td>1.2h</td><td>עודכן לפני 1h</td></tr>
+      <tr><td>domain-dex-world</td><td><span class="chip ok">green</span></td><td>0.4h</td><td>עודכן לפני 0h</td></tr>
+      <tr><td>domain-dex-deposits</td><td><span class="chip ok">green</span></td><td>8.9h</td><td>עודכן לפני 9h</td></tr>
+      <tr><td>domain-office-feed</td><td><span class="chip ok">green</span></td><td>5.1h</td><td>עודכן לפני 5h</td></tr>
+      <tr><td>domain-office-data</td><td><span class="chip ok">green</span></td><td>0.8h</td><td>עודכן לפני 1h</td></tr>
+      <tr><td>domain-grid-truth</td><td><span class="chip ok">green</span></td><td>1.7h</td><td>עודכן לפני 2h</td></tr>
+      <tr><td>sandbox-probe-hive</td><td><span class="chip bad">red</span></td><td>—</td><td>לא-נמצא ב-2 תאריכים אחרונים (2026-10-22, 2026-10-21)</td></tr>
+      <tr><td>sandbox-probe-blurt</td><td><span class="chip bad">red</span></td><td>—</td><td>לא-נמצא ב-2 תאריכים אחרונים (2026-10-22, 2026-10-21)</td></tr>
+      <tr><td>sandbox-research-findings</td><td><span class="chip bad">red</span></td><td>—</td><td>לא-נמצא ב-9 תאריכים אחרונים (2026-10-22, 2026-10-21, 2026-10-20, 2026…</td></tr>
+      <tr><td>sandbox-flow-map</td><td><span class="chip ok">green</span></td><td>1.1h</td><td>עודכן לפני 1h</td></tr>
+      <tr><td>sandbox-lessons-ledger</td><td><span class="chip ok">green</span></td><td>3.6h</td><td>עודכן לפני 4h</td></tr>
+      <tr><td>domain-status</td><td><span class="chip ok">green</span></td><td>0.7h</td><td>עודכן לפני 1h</td></tr>
+      <tr><td>console-dex-grid</td><td><span class="chip ok">green</span></td><td>1.2h</td><td>עודכן לפני 1h</td></tr>
+      <tr><td>console-dex-world</td><td><span class="chip ok">green</span></td><td>0.4h</td><td>עודכן לפני 0h</td></tr>
+      <tr><td>console-mirror-status</td><td><span class="chip neutral">grey</span></td><td>—</td><td>private-raw — ה-token בסביבה אינו-מוסמך לריפו זה (לא-ידוע, כנה)</td></tr>
+      <tr><td>sandbox-profit-oracle</td><td><span class="chip warn">amber</span></td><td>254.2h</td><td>מיושן: 254h מעל החוק (24h)</td></tr>
+    </table></div>
+    <p class="pfoot">מקור-הרישום: live-zip — registry חי מ-private-7 raw (200, 291ms) · מדידה 2026-10-22 14:01 UTC</p>
+  </div>
+  <div class="grid2" style="margin-top:14px">
+    <div class="card">
+      <b>ממצאי-המחקר</b>
+      <p class="law">לא-נמדד — לא-נמצא קובץ-ממצאים מ-9 הימים האחרונים (2026-10-22, 2026-10-21, 2026-10-20, 2026-10-19, 2026-10-18, 2026-10-17, 2026-10-16, 2026-10-15, 2026-10-14) (כנה)</p>
+    </div>
+    <div class="card">
+      <b>הדיג'סט של המשרד עצמו</b>
+      <p class="law">חי · נוצר 2026-10-22 12:53 UTC (1.1h)</p>
+      <p class="law">ריפואים-נמדדו: 40 · grid: ARMED-LIVE · hive: ARMED-WAITING</p>
+      <b>שערי-הבעלים</b>
+      <div class="tablewrap"><table style="margin-top:8px">
+        <tr><th>שער</th><th>מצב</th></tr>
+        <tr><td>STEEM_ACTIVE_WIF בכספת-Domain</td><td><span class="chip neutral">MEASURED-NOT-IN-MACHINE · treasury-ladder ignition live (owner delivery still opens head book)</span></td></tr>
+        <tr><td>חיוב-Actions</td><td><span class="chip bad">WAITING-OWNER</span></td></tr>
+        <tr><td>סבבת-מפתות R11 + 9-חיילים tx_missing_owner_…</td><td><span class="chip bad">WAITING-OWNER</span></td></tr>
+        <tr><td>private-16 vault-chain/recovery-meta.json</td><td><span class="chip violet">MACHINE-READY</span></td></tr>
+        <tr><td>STASIS-lane convert</td><td><span class="chip bad">WAITING-OWNER</span></td></tr>
+        <tr><td>STASIS-lane transfers</td><td><span class="chip bad">WAITING-OWNER</span></td></tr>
+        <tr><td>STASIS-lane votes</td><td><span class="chip bad">WAITING-OWNER</span></td></tr>
+        <tr><td>STASIS-lane delegations</td><td><span class="chip neutral">DISSOLVED</span></td></tr>
+        <tr><td>Blurt</td><td><span class="chip bad">WAITING-OWNER</span></td></tr>
+        <tr><td>private-4</td><td><span class="chip bad">WAITING-OWNER</span></td></tr>
+        <tr><td>saos-agents</td><td><span class="chip bad">WAITING-OWNER</span></td></tr>
+      </table></div>
+      <p class="pfoot">לפי id/כותרת-מוקטנת בלבד — בלי-סיכומים ובלי-מפתחות (7-b)</p>
+    </div>
+  </div>
+  <div class="card" style="margin-top:14px">
+    <b>E1 spread-regime — ההצעה-העצמית הראשונה הפכה מעשה (built-in פעיל)</b>
+    <p class="law"><code>SPREAD-REGIME: value=0bps · delta=-93.50 vs 93.5 · מקור-בן-1.2h · PASS (tightened) — הפיזור הצטמצם — נזילות-צד-הגריד משתפרת</code></p>
+    <p class="pfoot">חוק: &lt;93.5bps = tightened/PASS · &gt; = loosened/HOLD · מקור מיושן &gt;24h = STALE כנה · read-only/verify/doc-only · deed zai-13c (trace 1a12…b86d)</p>
+    <p class="law"><b>צווי-עבודה שהמשרד רואה:</b> 2 פתוחים · 0 נפתרו · P1 פתוחים: 2 — מקור: work-orders.json (Sandbox raw)</p>
+  </div>
+  <div class="card" style="margin-top:14px">
+    <b>רווחיות — profit-oracle (המשרד לומד-רווחיות · zai-14c)</b>
+    <p class="law"><span class="chip info">FLAT</span> <code>verdict=FLAT · delta=0% מול-המדידה-הקודמת · שווי-נקי=455.32 SBD-equiv · grid=EDGE-NEGATIVE-GRID-HOLD · at=2026-10-11 23:52 UTC</code></p>
+    
+    <p class="pfoot">מקור: profit-oracle-latest.json (Sandbox raw) · צריכה-מגוננת: כשל/צורה-לא-מוכרת = "לא-זמין" כנה, אפס-נתונים-מומצאים · חוק-השומר: LOSS / delta &lt; -0.5% → פריט doc-only אחד (research-layer wiring בלבד — בלי built-in חדש, חוק-אחד-למחזור)</p>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><div class="sec-num">2</div><h2>זיקוק <span class="en">— התור המדורג (SAFE קודם · value/effort)</span></h2></div>
+  <div class="card">
+    <div class="tablewrap"><table>
+      <tr><th>#</th><th>id</th><th>כותרת</th><th>מחלקת-סיכון</th><th>דבר-בעלים</th><th>executableBy</th></tr>
+      <tr><td>1</td><td><code>research-feed-unavailable</code></td><td>רכבת-המחקר לא-נמדדה: לא-נמצא קובץ-ממצאים מ-9 הימים האחרונים (2026-10-22, 2026-1…</td><td><span class="chip ok">SAFE</span></td><td>—</td><td>next-retro</td></tr>
+      <tr><td>2</td><td><code>bus-sandbox-probe-blurt</code></td><td>פיד אדום: sandbox-probe-blurt — לא-נמצא ב-2 תאריכים אחרונים (2026-10-22, 2026-1…</td><td><span class="chip violet">MACHINE-PREP</span></td><td>—</td><td>next-retro</td></tr>
+      <tr><td>3</td><td><code>bus-sandbox-probe-hive</code></td><td>פיד אדום: sandbox-probe-hive — לא-נמצא ב-2 תאריכים אחרונים (2026-10-22, 2026-10…</td><td><span class="chip violet">MACHINE-PREP</span></td><td>—</td><td>next-retro</td></tr>
+      <tr><td>4</td><td><code>bus-sandbox-research-findings</code></td><td>פיד אדום: sandbox-research-findings — לא-נמצא ב-9 תאריכים אחרונים (2026-10-22, …</td><td><span class="chip violet">MACHINE-PREP</span></td><td>—</td><td>next-retro</td></tr>
+      <tr><td>5</td><td><code>gate-04-private-16-recovery-meta</code></td><td>private-16 vault-chain/recovery-meta.json</td><td><span class="chip violet">MACHINE-PREP</span></td><td>🔒 כן</td><td>owner-after-prep</td></tr>
+      <tr><td>6</td><td><code>bus-sandbox-profit-oracle</code></td><td>פיד מיושן: sandbox-profit-oracle — מיושן: 254h מעל החוק (24h)</td><td><span class="chip violet">MACHINE-PREP</span></td><td>—</td><td>next-retro</td></tr>
+      <tr><td>7</td><td><code>WO-Sandbox-reds</code></td><td>רפא 3 ריצות-אדומות (48ש) ב-Sandbox</td><td><span class="chip violet">MACHINE-PREP</span></td><td>—</td><td>owner-after-prep</td></tr>
+      <tr><td>8</td><td><code>WO-saos-runtime-reds</code></td><td>רפא 3 ריצות-אדומות (48ש) ב-saos-runtime</td><td><span class="chip violet">MACHINE-PREP</span></td><td>—</td><td>owner-after-prep</td></tr>
+      <tr><td>9</td><td><code>gate-02-actions-billing</code></td><td>חיוב-Actions</td><td><span class="chip bad">OWNER-WORD</span></td><td>🔒 כן</td><td>owner-only</td></tr>
+      <tr><td>10</td><td><code>gate-03-r11-rotation-9-soldiers</code></td><td>סבבת-מפתות R11 + 9-חיילים tx_missing_owner_auth (acct-01, acct-02, acct-03…</td><td><span class="chip bad">OWNER-WORD</span></td><td>🔒 כן</td><td>owner-only</td></tr>
+      <tr><td>11</td><td><code>gate-05-stasis-convert</code></td><td>STASIS-lane convert</td><td><span class="chip bad">OWNER-WORD</span></td><td>🔒 כן</td><td>owner-only</td></tr>
+      <tr><td>12</td><td><code>gate-06-stasis-transfers</code></td><td>STASIS-lane transfers</td><td><span class="chip bad">OWNER-WORD</span></td><td>🔒 כן</td><td>owner-only</td></tr>
+      <tr><td>13</td><td><code>gate-07-stasis-votes</code></td><td>STASIS-lane votes</td><td><span class="chip bad">OWNER-WORD</span></td><td>🔒 כן</td><td>owner-only</td></tr>
+      <tr><td>14</td><td><code>gate-09-blurt-ignition</code></td><td>Blurt</td><td><span class="chip bad">OWNER-WORD</span></td><td>🔒 כן</td><td>owner-only</td></tr>
+      <tr><td>15</td><td><code>gate-10-private-4-vault-db</code></td><td>private-4</td><td><span class="chip bad">OWNER-WORD</span></td><td>🔒 כן</td><td>owner-only</td></tr>
+      <tr><td>16</td><td><code>gate-11-saos-agents-distribution</code></td><td>saos-agents</td><td><span class="chip bad">OWNER-WORD</span></td><td>🔒 כן</td><td>owner-only</td></tr>
+    </table></div>
+    <p class="pfoot">SAFE = רענון/אימות/תיעוד בלבד · MACHINE-PREP = הכנת-ארטיפקטים לבעלים · OWNER-WORD = כסף/חתימה/מפתחות/STASIS — לעולם לא מבוצע-מכונה.</p>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><div class="sec-num">3</div><h2>תכנון <span class="en">— ההצעה הראשית של המחזור</span></h2></div>
+  <div class="card">
+    <p><b>רכבת-המחקר לא-נמדדה: לא-נמצא קובץ-ממצאים מ-9 הימים האחרונים (2026-10-22, 2026-10-21, 2026-10-20, 20…</b></p>
+    <p class="law">הצעה מלאה (הקשר · תוכנית · פקודות-אימות · rollback · גבול-דבר-בעלים): <a href="PROPOSALS-latest.md">PROPOSALS/2026-10-22-research-feed-unavailable.md</a></p>
+    <p class="law">מקור: <code>research-feed-unavailable</code> · מחלקה: <span class="chip ok">SAFE</span></p>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><div class="sec-num">4</div><h2>ביצוע <span class="en">— רק SAFE built-ins, אף-פעם לא יותר</span></h2></div>
+  <div class="card">
+    <div class="tablewrap"><table>
+      <tr><th>id</th><th>פעולה</th></tr>
+      <tr><td><code>builtin-refresh-lane</code></td><td>רענון קבצי-המסילה: BACKLOG + RETRO-LATEST + retro-state (SAFE: כתיבה למסילה-שלו בלבד)</td></tr>
+      <tr><td><code>builtin-verify-bus</code></td><td>אימות-אוטובוס: מדידת כל-הפידים הרשומים + טבלת-בריאות מוטמעת (SAFE: קריאה-בלבד)</td></tr>
+      <tr><td><code>builtin-e1-spread-regime</code></td><td>אימות-משטר-הפיזור (E1): grid.json חי מול חוק-93.5bps — פסק-כנה לתיק (SAFE: קריאה-בלבד)</td></tr>
+    </table></div>
+    <p class="law"><b>חוק-המחזור:</b> לא משדר · לא חותם · לא כסף · לא מפתחות · לא STASIS · תופעות-הלוואי שלו — קבצי-המסילה שלו בלבד. פריטי-SAFE חדשים מתורגשים כ-<code>executableBy: next-retro</code> — הרפרטואר-הבטוח צומח built-in אחד לכל-מחזור, בכנות.</p>
+  </div>
+</section>
+
+<footer>
+  נוצר אוטומטית על-ידי המשרד · office-retro (zai-11d · E1-deed zai-13c) · SAOS-OFFICE-RETRO/1 · [owner-directive] · ISO 2026-10-22T14:01:55.123Z ·
+  <a href="../index.html">החלון היומי</a> · <a href="BACKLOG.md">BACKLOG</a> · <a href="RETRO-LATEST.md">RETRO-LATEST</a> · <a href="../digest.json">digest.json</a>
+</footer>
+</div>
+</body>
+</html>
