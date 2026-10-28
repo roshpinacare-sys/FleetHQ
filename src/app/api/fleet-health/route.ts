@@ -19,7 +19,7 @@ import { execFile } from 'node:child_process';
 
 export const dynamic = 'force-dynamic';
 
-const ROOT = '/home/z/my-project';
+const ROOT = process.env.FLEETHQ_ROOT ?? process.cwd();
 const STACK = path.join(ROOT, 'sovereign-stack');
 const RECEIPTS = path.join(ROOT, 'receipts');
 
@@ -41,7 +41,7 @@ function verifyMemoryChain(
   try {
     lines = fs.readFileSync(manifestPath, 'utf8').split('\n');
   } catch {
-    return { ok: true, records: 0, detail: 'absent' };
+    return { ok: false, records: 0, detail: 'absent' };
   }
   let expectedLink: string | null = null;
   let n = 0;
@@ -96,7 +96,7 @@ function verifyStagedRails(): {
   try {
     lines = fs.readFileSync(man, 'utf8').split('\n');
   } catch {
-    return { ok: true, files: 0, superseded: 0, bad: [] };
+    return { ok: false, files: 0, superseded: 0, bad: [] };
   }
   const latest = new Map<string, { rail: string; date: string; slug: string; sha: string }>();
   const order: string[] = [];

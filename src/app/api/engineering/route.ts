@@ -235,7 +235,14 @@ async function runSimSelftest(): Promise<{ checks: SimCheck[]; pass: boolean; re
 export async function POST(req: NextRequest) {
   const gate = assertIntent(req, 'engineering', 'engineering/selftest', 'agent');
   if (gate) return gate;
-  if (!(await ownerAuthed(req.headers.get('x-owner-token') ?? undefined))) {
+  // fail-closed: DB unreachable → cannot verify → honest 503, never a raw 500
+  let ownerOk = false;
+  try {
+    ownerOk = await ownerAuthed(req.headers.get('x-owner-token') ?? undefined);
+  } catch {
+    return NextResponse.json({ ok: false, error: 'auth-unavailable — database unreachable' }, { status: 503 });
+  }
+  if (!ownerOk) {
     return NextResponse.json({ ok: false, error: 'הרצת-בדיקות מנגנון מותרת לבעלים בלבד' }, { status: 401 });
   }
 
