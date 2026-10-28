@@ -206,7 +206,7 @@ export async function POST(req: NextRequest) {
           ],
           thinking: { type: 'disabled' },
         });
-        const lines = (distill.choices[0]?.message?.content ?? '').split('\n').map((l) => l.replace(/^[-•\d.\s]+/, '').trim()).filter((l) => l.length > 6).slice(0, 4);
+        const lines = (distill.choices[0]?.message?.content ?? '').split('\n').map((l: string) => l.replace(/^[-•\d.\s]+/, '').trim()).filter((l: string) => l.length > 6).slice(0, 4);
         const existing = new Set(facts.map((f) => f.fact));
         for (const fact of lines) {
           if (!existing.has(fact)) await db.clerkFact.create({ data: { sessionId: session.id, fact: fact.slice(0, 300) } });

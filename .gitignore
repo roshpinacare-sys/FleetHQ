@@ -1,7 +1,11 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+# ─────────────────────────────────────────────────────────────
+# FleetHQ .gitignore — P0 remediation
+# Principle: code is truth. Agent runtime emissions, build
+# artifacts and local state NEVER travel in git.
+# ─────────────────────────────────────────────────────────────
 
 # dependencies
-node_modules
+node_modules/
 /.pnp
 .pnp.*
 .yarn/*
@@ -10,103 +14,92 @@ node_modules
 !.yarn/releases
 !.yarn/versions
 
+# next.js / builds
+/.next/
+/out/
+/build
+dist/
+dist-office3d/
+
 # testing
 /coverage
 
-# next.js
-/.next/
-/out/
-
-# production
-/build
-
-# misc
-.DS_Store
-*.pem
-
-# debug
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-.pnpm-debug.log*
-
-# env files (can opt-in for committing if needed)
+# env & secrets — never track
 .env*
-
-# vercel
-.vercel
-
-
-# typescript
-*.tsbuildinfo
-next-env.d.ts
-local-*
-# T32: local-brain is a sovereign organ (air-gap OpenAI-compatible heartbeat
-# stub, drill Task-55) — it must travel with the repo, not die with the box.
-!mini-services/local-brain/
-.claude
-.z-ai-config
-*.log
-dev.log
-dev.out.log
-test
-prompt
-
-server.log
-# Skills directory
-/skills/
-# ── SECRETS & STATE — never track (T-audit fix) ──
+!.env.example
+*.pem
 upload/
-*.db
-*.db-journal
-tool-results/
-dev.log
-server.log
-t24/agentcraft/
-daemon.out
-# ── cloud sovereign hygiene (union from FleetHQ cloud main) ──
-!mini-services/local-beats/
-/upload/
-*.rar
-/tool-results/
-/.tmp-tools/
-/db/
-/fleethq/
-/Domain/
-/Console/
-/v*-*.png
-/.env
-foreman/data/
 vault/keys.env
 vault/.passphrase
-*.zip
-mini-services/agent-hq/data
-*.pid
-/.backups/
 vault/ssh/
 vault/.ssh-installed
 vault/.session-pass
 vault/wraps/
 sovereign-agent.env
 .vault-private-repo/
+*.secret
+
+# logs & debug
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+daemon.out
+*.pid
+
+# OS / editor junk
+.DS_Store
+Thumbs.db
+*.rar
+*.zip
+
+# python artifacts
+__pycache__/
+*.pyc
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+local-*
+# local-brain / local-beats are sovereign organs — they travel with the repo
+!mini-services/local-brain/
+!mini-services/local-beats/
+
+# ── agent runtime emissions (code is truth; state stays host-local) ──
+tmp/
+tool-results/
+receipts/
+ops/
+pacemaker/
+t19b/
+t24/agentcraft/
+broadcast/staging/
+.shots/
+.probe/
+.roster-map.local.json
+sovereign-stack/receipts/
+mini-services/micro-work-rig/state/
+mini-services/micro-work-rig/rig.out
+mini-services/micro-work-rig/*.log
+mini-services/agent-hq/Domain/
+mini-services/agent-hq/data/
+foreman/data/
 mini-services/sovereign-gateway/airgap/models/
 mini-services/sovereign-gateway/airgap/host-capabilities.json
 mini-services/sovereign-gateway/airgap/llama-host.env
 mini-services/sovereign-gateway/airgap/download.log
 mini-services/sovereign-gateway/airgap/download-status.txt
-!**/.env.example
-receipts/gateway-telemetry-latest.json
-receipts/*.tmp-*
-broadcast/staging/
-.shots/
-.probe/
 public/office-state.json
-dist-office3d/
-.roster-map.local.json
 
-# micro-work-rig: high-frequency telemetry state rotates (16MB journals, pruned archives) — code is truth, journals are host-local evidence
-mini-services/micro-work-rig/state/
-mini-services/micro-work-rig/rig.out
-mini-services/micro-work-rig/*.log
-mini-services/agent-hq/Domain/
-receipts/runtime-supervisor-state.json
+# local scaffolding / nested clones that must never return
+.claude
+.z-ai-config
+/skills/
+/.backups/
+/.tmp-tools/
+/db/
+/fleethq/
+/Domain/
+/Console/
+/v*-*.png
