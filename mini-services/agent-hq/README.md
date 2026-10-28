@@ -53,7 +53,7 @@ bun install
 VAULT_PASSPHRASE=... bash vault/vault.sh open
 ```
 
-`vault/vault.sh` מפענח את הכספת ומפיק את קובצי ה‑`.env` במקומות הנכונים (`mini-services/agent-hq/.env` למנהל, `.env.local` בשורש לאפליקציית הווב). החוזה המלא של הכספת — שימוש, פורמט, סבב מפתחות — מתועד ב‑**`vault/README.md`** (נבנה במקביל; אם הקבצים עדיין לא קיימים בשכפול שלכם, התייחסו אליהם כחוזה הכספת והשתמשו בנתיב ב').
+`vault/vault.sh` מפענח את הכספת ומפיק את קובצי ה‑`.env` במקומות הנכונים (`mini-services/agent-hq/.env` למנהל, `.env.local` בשורש לאפליקציית הווב). החוזה המלא של הכספת — שימוש, פורמט, סבב מפתחות — מתועד ב‑**`vault/README.md`** (הערה כנה P1: `vault/` אינו קיים בריפו הציבורי — הכספת חיה בריפו הפרטי `fleet-vault`; התייחסו לנתיבים כחוזה והשתמשו בנתיב ב').
 
 ### נתיב ב' — ידני (`.env.example` → `.env`)
 
@@ -139,18 +139,18 @@ socket.on('snapshot', (s: { status: { backend: string; llmProvider: string } }) 
 | `XAI_API_KEY` / `XAI_MODEL` / `XAI_BASE_URL` | — / `grok-4-fast-non-reasoning` / `https://api.x.ai/v1` | מוח 1 — xAI Grok |
 | `OPENROUTER_API_KEY` / `OPENROUTER_MODELS` | — / מאגר `:free` מאומת | מוח 2 — OpenRouter (מפתח אחד, בריכת מודלים) |
 | `KILO_API_KEY` / `KILO_MODELS` | — / `kilo-auto/free` | מוח 3 — Kilo Gateway, **עובד גם ללא מפתח** |
-| `LLM7_API_KEY` / `LLM7_MODELS` | — | מוח 4 — LLM7 (נטען רק עם טוקן; טוקן חינמי ב‑token.llm7.io) |
+| `LLM7_API_KEY` / `LLM7_MODELS` | — | מוח 4 — LLM7 (נטען **תמיד** — הטיר האנונימי נמדד חי, 200; טוקן חינמי ב‑token.llm7.io מרים את מכסת-היום) |
 | `OPENAI_API_KEY` / `OPENAI_BASE_URL` / `OPENAI_MODEL` | — | מוח 5 — כל נקודת קצה OpenAI-compatible |
 | `POLLINATIONS_TOKEN` / `POLLINATIONS_MODELS` | — / `openai-fast` | מוח 6 — Pollinations, **עובד גם ללא מפתח** |
 | (z-ai-web-dev-sdk) | מובנה | מוח סוגר — רץ בלי הגדרה בסביבות מובנות |
 
-סדר השרשרת בקוד: `xai → openrouter → kilo → llm7 → openai → pollinations` ואחריהם z-ai SDK; כל כישלון קשה (401/402/403/429/timeout) מצנן את המוח+דגם הספציפי ל‑5 דקות ועובר הלאה.
+סדר השרשרת בקוד (`src/llm.ts`): `gateway(:3011) → xai → openrouter(×3) → nvidia-nim → nvidia-nim-2 → groq → cerebras → mistral → google → github-models → together → cloudflare → kilo → llm7 → openai → pollinations → ovh` ואחריהם z-ai SDK; כל כישלון קשה (401/402/403/timeout) מצנן את המוח+דגם ל‑5 דקות, 429 ל‑45 שניות, שגיאת-רשת ל‑15 שניות — ועובר הלאה.
 
 ## 9. בטיחות בקצרה
 
 - מפתחות רק ב‑`.env*` (gitignored, `chmod 600`) או בכספת המוצפנת; לעולם לא בקוד או בלוגים.
 - הסוקט הציבורי **קריאה‑בלבד** — אין handlers של קבלת החלטות; המפעיל האוטונומי מתזמן הכול מבפנים.
-- הדוקטרינה האבטחתית המלאה: [`SECURITY.md`](./SECURITY.md). דוקטרינת הריבונות ותרגיל התחייה: [`SOVEREIGNTY.md`](../../SOVEREIGNTY.md).
+- הדוקטרינה האבטחתית המלאה: [`SECURITY.md`](../../SECURITY.md) בשורש הריפו (קובץ `SECURITY.md` מקומי בתיקייה זו אינו קיים — כל הפניה אחרת אינה מעודכנת). דוקטרינת הריבונות ותרגיל התחייה: [`SOVEREIGNTY.md`](../../SOVEREIGNTY.md).
 
 ---
 
@@ -170,4 +170,4 @@ git clone https://github.com/roshpinacare-sys/Domain   # data dir (or export AGE
 ./run-office.sh                                   # or: bun run index.ts
 ```
 
-Verify with the socket.io probe in section 7 — expect `backend: live` and the brain chain in `snapshot.status.llmProvider` (e.g. `xai→openrouter→kilo→pollinations`; a keyless clone still lives on `kilo→pollinations`). `AGENT_HQ_MODE=sim` forces the clearly-labeled demo crew on `demo-data/`. Keys live only in gitignored `.env` files or in the sealed vault (`vault/keys.env.enc` + `vault/vault.sh open`, contract in `vault/README.md`) — never in git. The public socket is read-only by law; see `SECURITY.md`. Full resurrection drill: `SOVEREIGNTY.md` at the repo root.
+Verify with the socket.io probe in section 7 — expect `backend: live` and the brain chain in `snapshot.status.llmProvider` (e.g. `xai→openrouter→kilo→pollinations`; a keyless clone still lives on `kilo→pollinations`). `AGENT_HQ_MODE=sim` forces the clearly-labeled demo crew on `demo-data/`. Keys live only in gitignored `.env` files (or the sealed vault — `vault/` itself lives in the private `fleet-vault` repo, not in this public clone; treat the vault paths as a contract) — never in git. The public socket is read-only by law; see the root [`SECURITY.md`](../../SECURITY.md). Full resurrection drill: `SOVEREIGNTY.md` at the repo root.

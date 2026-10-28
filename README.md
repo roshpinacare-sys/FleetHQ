@@ -42,7 +42,7 @@ Not a wall of terminal text. Not a fake dashboard. A place.
 
 ### ♻️ מחזור-השיפור-העצמי של המשרד (Task 11-d)
 
-פעם בשבוע (חמישי 07:43 UTC) המשרד מריץ **חקר → זיקוק → תכנון → ביצוע**: צורך את-האינטליגנציה של הצי (ממצאי-מחקר · בריאות-פידים · שערי-בעלים · הדיג'סט), מזקק תיק-עבודות מדורג לפי מחלקות-סיכון (SAFE / MACHINE-PREP / OWNER-WORD), מתכנן את-הראש כהצעה רשמית — ומבצע **רק** את-מה שבטוח-הוכח (רענון תיק-העבודות + אימות-אוטובוס). כסף/חתימה/מפתחות/STASIS — דבר-בעלים בלבד, לנצח. חי: [retro/index.html](https://roshpinacare-sys.github.io/FleetHQ/retro/index.html).
+The retro loop still runs on the host (the `local-beats` retro lane keeps `office/BACKLOG.md` / `RETRO-LATEST.md` / `PROPOSALS/` fresh), but its dedicated weekly GitHub Actions trigger was removed in the 2026-10-28 workflow consolidation (21 → 4) — re-adding a schedule is tracked backlog. חי: [retro/index.html](https://roshpinacare-sys.github.io/FleetHQ/retro/index.html).
 
 ---
 
@@ -90,16 +90,19 @@ Open **http://localhost:3002** — you'll see the office with the simulated crew
 
    Book expectations are light: any JSON file with an optional date-ish field (`at`, `asOf`, `generatedAt`, …) gets a heartbeat; optional `ok` / `verdict` top-level fields are surfaced. See `mini-services/agent-hq/src/books.ts` for the built-in registry (edit `BOOK_DEFS` to match your domain).
 
-2. **LLM — the sovereign brain chain.** The foreman walks this failover chain (`mini-services/agent-hq/src/llm.ts`), first live brain wins. Per brain+model cooldown (5 min) after a hard error, so one dead provider never slows the others. Keyless brains need NO signup. Measured caveat (P1 debt): `sovereign-gateway/` ships a second, drifting copy of this chain, and the receptionist route mounts `z-ai-web-dev-sdk` directly rather than walking it — consolidation is tracked, not done.
+2. **LLM — the sovereign brain chain.** The foreman walks this failover chain (`mini-services/agent-hq/src/llm.ts`), first live brain wins — **18 slots**: sovereign-gateway (`:3011`, brain #0) → xAI → OpenRouter (×3 keys) → NVIDIA NIM → NIM-2 → Groq → Cerebras → Mistral → Google → GitHub Models → Together → Cloudflare → Kilo → LLM7 → OpenAI-compat → Pollinations → OVH → bundled `z-ai-web-dev-sdk`. Per brain+model cooldown after a hard error (5 min; 429 → 45s, network → 15s), so one dead provider never slows the others. Keyless brains need NO signup. Measured caveat (P1 debt): `sovereign-gateway/` ships a second, drifting copy of this chain (no NVIDIA slots, adds `duckai`/`local-llm`), and the receptionist route mounts `z-ai-web-dev-sdk` directly rather than walking it — consolidation is tracked, not done.
 
-   1. **xAI Grok** — `XAI_API_KEY` (+ optional `XAI_MODEL`, `XAI_BASE_URL`)
-   2. **OpenRouter** — `OPENROUTER_API_KEY`, one key → a whole pool: 5 verified free models first (`nemotron-3.5-lightning`, `ling-3.0-flash`, `north-mini-code`, `nemotron-3-super`, `nemotron-3-ultra`), `deepseek-chat-v3.1` as the credited reserve. Configure via `OPENROUTER_MODELS` (comma-separated). Reasoning tokens are excluded and any leaked scratchpad is stripped.
-   3. **Kilo Code free auto-router** — NO KEY (`kilo-auto/free`)
-   4. **LLM7.io** — only mounted with a free `LLM7_API_KEY` (the anonymous tier is closed)
-   5. **Pollinations** — NO KEY (`openai-fast` / gpt-oss-20b)
-   6. **Any OpenAI-compatible endpoint** — `OPENAI_API_KEY` (+ `OPENAI_BASE_URL`, `OPENAI_MODEL`)
-   7. **`z-ai-web-dev-sdk`** if it is installed next to the foreman
-   8. Nothing found → the office stays in the labeled demo mode. It never fakes "live".
+   1. **Sovereign gateway** — `SOVEREIGN_GATEWAY_URL` (`:3011`, zero-auth local office endpoint)
+   2. **xAI Grok** — `XAI_API_KEY` (+ optional `XAI_MODEL`, `XAI_BASE_URL`)
+   3. **OpenRouter** — `OPENROUTER_API_KEY`, one key → a whole pool: `deepseek/deepseek-chat-v3.1` (credited) first, then 8 verified free models (`nemotron-3.5-lightning`, `ling-3.0-flash-sante`, `gemma-4-26b`, `inkling`, `north-mini-code`, `nemotron-3-super`, `nemotron-3-ultra`, `laguna-s`). Configure via `OPENROUTER_MODELS` (comma-separated). Reasoning tokens are excluded and any leaked scratchpad is stripped.
+   4. **Kilo Code free auto-router** — NO KEY (`kilo-auto/free`)
+   5. **LLM7.io** — mounted even with no key (the anonymous tier is measured live, 200); a free `LLM7_API_KEY` from token.llm7.io lifts the daily quota
+   6. **Pollinations** — NO KEY (`openai-fast`)
+   7. **Any OpenAI-compatible endpoint** — `OPENAI_API_KEY` (+ `OPENAI_BASE_URL`, `OPENAI_MODEL`)
+   8. **`z-ai-web-dev-sdk`** if it is installed next to the foreman
+   9. Nothing found → the office stays in the labeled demo mode. It never fakes "live".
+
+   (The full slot list with every provider between Groq and OVH lives in `llm.ts` and `.env.example` — `.env.example` is the accurate copy.)
 
 3. **The vault.** Keys live in gitignored env files — the template is committed:
 
@@ -156,22 +159,22 @@ flowchart LR
 
 ## Wire surface (socket.io, path `/`)
 
-Client → server (read-only): `hello(auto)`, `snapshot:request`, `book:preview {id}`, `books:refresh`. **There are no control events** — goals are scheduled by the operator, decisions resolve by policy; unknown events are simply never handled.
+Client → server (read-only): `snapshot:request`, `book:preview {id}`, `books:refresh`. **There are no control events** — goals are scheduled by the operator, decisions resolve by policy; unknown events are simply never handled.
 Server → client: `snapshot`, then granular `agent` / `log` / `task` / `decision` / `report` / `feed` / `goal` / `books` / `status` / `bubble` / `git` upserts.
 
 ## The receptionist (public chat, sandboxed by construction)
 
-The front desk of the office has a person — **עמית / Amit**, the office representative. Click him and a conversation opens. His constraints are structural, not prompt-hopeful:
+The front desk of the office has a person — **עמית / Amit**, the office representative. Click him and a conversation opens. (Measured note: the 3D figure and UI are Amit; the answering persona on the server side currently introduces itself as **נועה** — a naming mismatch tracked for unification.) His constraints are structural, not prompt-hopeful:
 
 - The API route (`src/app/api/visitor-chat/route.ts`) persists conversation state to a local SQLite database via Prisma (`visitorSession`, `visitorMsg`, `clerkFact`, `visitorRequest`). It touches no socket and never exposes office state — but it is **not** stateless, and it does call out to two public GitHub raw URLs (5s timeout) for office context.
-- Visitor messages are treated as **untrusted data** (injection-hardened system prompt, control-character sanitization, 2,000-char cap).
+- Visitor messages are treated as **untrusted data** (injection-hardened system prompt, `trim()` + 2,000-char cap; full control-character stripping lives in the foreman's socket layer, not this route — tracked gap).
 - Rate limited per-IP by an in-process token bucket (`src/lib/intent-gate.ts`: burst 20, refill 30 msgs/min) plus a cross-site `sec-fetch-site` gate. **Not yet implemented** (tracked debt): retries, a circuit breaker, and distributed rate-limit state. He cannot claim to control anything — because he cannot.
 
 ## Safety & privacy
 
 - **Keys stay in your environment.** None are read from files, logged, or shipped. See `.env.example`.
 - **The public repo contains only synthetic demo data.** Your `data/` directory is yours; keep it out of git (`.gitignore` already does).
-- **Agents are read-mostly by design.** The built-in tools read books, measure, cross-check, and write reports *into the in-memory library* (persisted reports are opt-in work — see `office.ts#addReport`). There is no shell, no network, no filesystem-write tool. Extend carefully.
+- **Agents are read-mostly by design.** The built-in tools read books, measure, cross-check, and write reports — and every report persists durably via `office.ts#persistDurable` (the "opt-in persistence" note was stale). There is no shell and no filesystem-write tool; there are **two measured network tools** — `web_search` (Tavily) and `read_page` (Jina, with an SSRF guard). Extend carefully.
 - **No public control surfaces.** The UI, the socket protocol and the HTTP API expose nothing that changes office state. See [SECURITY.md](SECURITY.md) for the full record.
 
 ## Cast

@@ -30,7 +30,9 @@ export async function proxyToGateway(req: NextRequest, path: string[]): Promise<
     if (req.method === 'POST' || req.method === 'PUT') {
       init.body = await req.text(); // size-guarded upstream (gateway caps at 512KB)
     }
-    const res = await fetch(target, init);
+    // hard ceiling: the gateway walks its own brain chain with per-brain
+    // timeouts; a hung socket must never hang this route forever (2 min cap)
+    const res = await fetch(target, { ...init, signal: AbortSignal.timeout(120_000) });
     const body = await res.text();
     return new NextResponse(body, {
       status: res.status,

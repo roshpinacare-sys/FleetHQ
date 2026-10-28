@@ -124,18 +124,26 @@ function parseReply(raw: string): { reply: string; routeToSovereignty: boolean; 
 export async function GET(req: NextRequest) {
   const sessionId = req.nextUrl.searchParams.get('sessionId');
   if (!sessionId) return NextResponse.json({ ok: false, error: 'missing-session' }, { status: 400 });
-  const session = await db.visitorSession.findUnique({
-    where: { id: sessionId },
-    include: { messages: { orderBy: { createdAt: 'asc' }, take: 60 }, requests: { orderBy: { createdAt: 'desc' }, take: 10 } },
-  });
-  if (!session) return NextResponse.json({ ok: false, error: 'unknown-session' }, { status: 404 });
-  return NextResponse.json({
-    ok: true,
-    sessionId,
-    visits: session.visits,
-    messages: session.messages.map((m) => ({ role: m.role, text: m.text, createdAt: m.createdAt })),
-    requests: session.requests.map((r) => ({ id: r.id, subject: r.subject, status: r.status, createdAt: r.createdAt })),
-  });
+  // fail-closed כמו POST: DB לא זמין → 503 כנה, לא 500 גולמי
+  try {
+    const session = await db.visitorSession.findUnique({
+      where: { id: sessionId },
+      include: { messages: { orderBy: { createdAt: 'asc' }, take: 60 }, requests: { orderBy: { createdAt: 'desc' }, take: 10 } },
+    });
+    if (!session) return NextResponse.json({ ok: false, error: 'unknown-session' }, { status: 404 });
+    return NextResponse.json({
+      ok: true,
+      sessionId,
+      visits: session.visits,
+      messages: session.messages.map((m) => ({ role: m.role, text: m.text, createdAt: m.createdAt })),
+      requests: session.requests.map((r) => ({ id: r.id, subject: r.subject, status: r.status, createdAt: r.createdAt })),
+    });
+  } catch {
+    return NextResponse.json(
+      { ok: false, error: 'reception-history-unavailable', detail: 'database unreachable — the clerk keeps no history she cannot verify' },
+      { status: 503, headers: { 'cache-control': 'no-store' } },
+    );
+  }
 }
 
 // ─────────────── POST — שיחה עם הפקידה ───────────────

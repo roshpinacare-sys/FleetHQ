@@ -133,7 +133,14 @@ export async function POST(req: Request) {
   } catch {
     return NextResponse.json({ ok: false, error: 'bad-json' }, { status: 400 });
   }
-  if (!(await authed(body.token))) {
+  // fail-closed: if the DB is unreachable we cannot verify — deny honestly (503), never 500-raw
+  let authOk = false;
+  try {
+    authOk = await authed(body.token);
+  } catch {
+    return NextResponse.json({ ok: false, error: 'auth-unavailable — database unreachable' }, { status: 503 });
+  }
+  if (!authOk) {
     return NextResponse.json({ ok: false, error: 'נדרשת כניסת-מנהל' }, { status: 401 });
   }
   const text = (body.text ?? '').trim().slice(0, 600);

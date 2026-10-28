@@ -16,11 +16,14 @@
 import { NextResponse } from "next/server";
 import { readFile, writeFile, mkdir } from "node:fs/promises";
 import { createHash } from "node:crypto";
+import { join } from "node:path";
 import { verifyToken } from "@/lib/operator-session";
 
 export const dynamic = "force-dynamic";
 
-const INBOX = "/home/z/estate/FleetHQ/office/state/operator-inbox.jsonl";
+// repo-relative (process.cwd() = the Next app root) — never a host-pinned
+// absolute path: the same image must run on the estate host and anywhere else
+const INBOX = join(process.cwd(), "office", "state", "operator-inbox.jsonl");
 const MAX_TEXT = 2000;
 
 interface Directive {
@@ -90,8 +93,15 @@ export async function POST(req: Request) {
     sha16: createHash("sha256").update(text).digest("hex").slice(0, 16),
   };
 
-  await mkdir("/home/z/estate/FleetHQ/office/state", { recursive: true });
-  await writeFile(INBOX, JSON.stringify(directive) + "\n", { flag: "a", encoding: "utf8" });
+  try {
+    await mkdir(join(process.cwd(), "office", "state"), { recursive: true });
+    await writeFile(INBOX, JSON.stringify(directive) + "\n", { flag: "a", encoding: "utf8" });
+  } catch (e) {
+    return NextResponse.json(
+      { ok: false, error: "inbox-unwritable", detail: (e as Error).message },
+      { status: 500, headers: { "cache-control": "no-store" } },
+    );
+  }
 
   return NextResponse.json(
     { ok: true, receipt: { id: directive.id, at: directive.at, sha16: directive.sha16 } },

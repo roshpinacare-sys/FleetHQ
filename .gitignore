@@ -67,9 +67,18 @@ local-*
 !mini-services/local-beats/
 
 # ── agent runtime emissions (code is truth; state stays host-local) ──
+# office/state/*.json is the PUBLISHED UI data plane (read from origin by
+# /api/visitor-chat, /api/worlds-state, office-window publishers) — tracked
+# by design, NOT an emission. Everything else below stays host-local.
 tmp/
 tool-results/
-receipts/
+# receipts/ is host-local — EXCEPT three lanes whose consumers read them
+# back from origin git: CI verdicts (office-ci, office-3d) and the foreman's
+# durable task mirror (wipe-recovery + the office-3d bake anchor).
+receipts/*
+!receipts/office-ci/
+!receipts/office-3d/
+!receipts/office-state-mirror.json
 ops/
 pacemaker/
 t19b/

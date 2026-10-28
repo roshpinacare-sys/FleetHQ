@@ -124,7 +124,14 @@ export async function POST(req: NextRequest) {
   // commits via the server PAT — they require owner authentication now (was:
   // intent-gate only, which any curl passes since a missing sec-fetch-site is
   // allowed and x-intent is a public constant). reopen was already owner-only.
-  if (!(await ownerAuthed(req.headers.get('x-owner-token') ?? undefined))) {
+  // fail-closed: DB unreachable → cannot verify → honest 503, never a raw 500
+  let ownerOk = false;
+  try {
+    ownerOk = await ownerAuthed(req.headers.get('x-owner-token') ?? undefined);
+  } catch {
+    return NextResponse.json({ ok: false, error: 'auth-unavailable — database unreachable' }, { status: 503 });
+  }
+  if (!ownerOk) {
     return NextResponse.json({ ok: false, error: 'owner-token-required — כל-כתיבה במחזור-ההכרעות דורשת כניסת-מנהל (x-owner-token; deny-by-default §1)' }, { status: 401 });
   }
 
