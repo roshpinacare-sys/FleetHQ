@@ -75,13 +75,12 @@ cd mini-services/agent-hq
 bun install
 bun run dev                     # listens on :3010
 
-# terminal 2 — the office
-cd web
-npm install
-npm run dev                     # listens on :3000
+# terminal 2 — the office (Next.js app lives at the repo root, not in web/)
+bun install
+bun run dev                     # listens on :3002
 ```
 
-Open **http://localhost:3000** — you'll see the office with the simulated crew. Watch the whole loop unfold on its own: plan → wall → desks → decisions → library. Click the receptionist at the front desk — he answers questions about the platform (and nothing else).
+Open **http://localhost:3002** — you'll see the office with the simulated crew. Watch the whole loop unfold on its own: plan → wall → desks → decisions → library. Click the receptionist at the front desk — he answers questions about the platform (and nothing else).
 
 > Behind a reverse proxy? The web client connects to `/?XTransformPort=3010` on the same origin (path `/`). Keep that contract or adjust `AgentHQ.tsx`.
 
@@ -91,7 +90,7 @@ Open **http://localhost:3000** — you'll see the office with the simulated crew
 
    Book expectations are light: any JSON file with an optional date-ish field (`at`, `asOf`, `generatedAt`, …) gets a heartbeat; optional `ok` / `verdict` top-level fields are surfaced. See `mini-services/agent-hq/src/books.ts` for the built-in registry (edit `BOOK_DEFS` to match your domain).
 
-2. **LLM — the sovereign brain chain.** Both the foreman and the receptionist walk the SAME failover chain, first live brain wins. Per brain+model cooldown (5 min) after a hard error, so one dead provider never slows the others. Keyless brains need NO signup:
+2. **LLM — the sovereign brain chain.** The foreman walks this failover chain (`mini-services/agent-hq/src/llm.ts`), first live brain wins. Per brain+model cooldown (5 min) after a hard error, so one dead provider never slows the others. Keyless brains need NO signup. Measured caveat (P1 debt): `sovereign-gateway/` ships a second, drifting copy of this chain, and the receptionist route mounts `z-ai-web-dev-sdk` directly rather than walking it — consolidation is tracked, not done.
 
    1. **xAI Grok** — `XAI_API_KEY` (+ optional `XAI_MODEL`, `XAI_BASE_URL`)
    2. **OpenRouter** — `OPENROUTER_API_KEY`, one key → a whole pool: 5 verified free models first (`nemotron-3.5-lightning`, `ling-3.0-flash`, `north-mini-code`, `nemotron-3-super`, `nemotron-3-ultra`), `deepseek-chat-v3.1` as the credited reserve. Configure via `OPENROUTER_MODELS` (comma-separated). Reasoning tokens are excluded and any leaked scratchpad is stripped.
@@ -164,9 +163,9 @@ Server → client: `snapshot`, then granular `agent` / `log` / `task` / `decisio
 
 The front desk of the office has a person — **עמית / Amit**, the office representative. Click him and a conversation opens. His constraints are structural, not prompt-hopeful:
 
-- The API route (`web/src/app/api/visitor-chat/route.ts`) touches **no filesystem, no database, no socket** — it sends the model one fixed platform-knowledge prompt plus whitelisted numeric counters.
-- Visitor messages are treated as **untrusted data** (injection-hardened system prompt, control-character sanitization, 600-char cap).
-- Rate limited per-IP (8 msgs / 3 min) and globally, with timeouts, retries, a circuit breaker, and honest degradation messages. He cannot claim to control anything — because he cannot.
+- The API route (`src/app/api/visitor-chat/route.ts`) persists conversation state to a local SQLite database via Prisma (`visitorSession`, `visitorMsg`, `clerkFact`, `visitorRequest`). It touches no socket and never exposes office state — but it is **not** stateless, and it does call out to two public GitHub raw URLs (5s timeout) for office context.
+- Visitor messages are treated as **untrusted data** (injection-hardened system prompt, control-character sanitization, 2,000-char cap).
+- Rate limited per-IP by an in-process token bucket (`src/lib/intent-gate.ts`: burst 20, refill 30 msgs/min) plus a cross-site `sec-fetch-site` gate. **Not yet implemented** (tracked debt): retries, a circuit breaker, and distributed rate-limit state. He cannot claim to control anything — because he cannot.
 
 ## Safety & privacy
 
