@@ -12,9 +12,29 @@
       /* טעינה טרום-React: רקע אור-יום, אפס הבהוב שחור */
       html, body { margin: 0; background: #f3f1ec; }
     </style>
+    <script>
+      /* v5-P3⑨ — שער-WebGL כנה: בלי WebGL (או בכשל-יצירה) המבקר מנותב
+         מיד לגרסת-הטקסט המלאה (fallback.html) — לעולם לא מסך-שחור שקט.
+         הגרסה-השטוחה אינה עוד "הדף הראשי" אלא ה-fallback המקושר של החוויה. */
+      (function () {
+        try {
+          var c = document.createElement('canvas');
+          var gl = c.getContext('webgl2') || c.getContext('webgl') || c.getContext('experimental-webgl');
+          if (!gl) location.replace('./fallback.html?noWebGL=1');
+        } catch (e) {
+          location.replace('./fallback.html?noWebGL=1');
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>
+    <noscript>
+      <div style="font-family: sans-serif; padding: 24px; text-align: center" dir="rtl">
+        החדר התלת-מימדי דורש JavaScript.
+        <a href="./fallback.html" style="color: #8a6d3b">מעבר לגרסת-הטקסט המלאה</a>.
+      </div>
+    </noscript>
     <script type="module" src="./main.tsx"></script>
   </body>
 </html>

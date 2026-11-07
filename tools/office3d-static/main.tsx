@@ -20,7 +20,7 @@ import { useProgress } from '@react-three/drei';
 import { Office3D } from '@/components/hq/Office3D';
 import { CAMERA_PRESETS } from '@/lib/hq/contract';
 import { useHq } from '@/lib/hq/store';
-import { director, type PresetId } from '@/lib/hq/world';
+import { director, phaseOfJerusalem, type PresetId } from '@/lib/hq/world';
 import { computeFreshness } from '@/components/hq/GitWallData';
 import type { GitPulse, RepoFleetView } from '@/components/agent-hq/types';
 import { keyMatches, OP_SESSION_KEY } from './operator-gate';
@@ -153,24 +153,194 @@ function StaticAdapter({ onChip }: { onChip: (c: Chip) => void }) {
   return null;
 }
 
+// ─────────────── v5-P2⑦·⑥·⑤ — מקורות-החיים הציבוריים (אפס-המצאה) ───────────────
+// office-live.json (ספרים·צוות·משמרות) · office-events.jsonl (פס-פעילות) ·
+// sovereign-decisions.jsonl (הכרעה-ריבונית אחרונה). הכל raw ציבורי CORS=* —
+// מה שלא נטען מוצג ככשל/— לעולם לא ירוק-מזויף.
+const RAW_AGENTS = 'https://raw.githubusercontent.com/roshpinacare-sys/Domain/main/agents/';
+
+interface OfficeLive {
+  status?: string;
+  generatedAt?: string;
+  shifts?: { total?: number; lastShiftAt?: string };
+  crew?: { total?: number };
+  books?: { total?: number; fresh?: number; stale?: number };
+}
+interface OfficeEvent { ts?: number; type?: string; agentId?: string; text?: string }
+interface SovereignDecision { ts?: string; decision?: string; reason?: string; tier?: string }
+
+/** זנב-JSONL זול: Range 64KB מהסוף (CDN תומך) — נפילה לקריאה-מלאה כשנדחה */
+async function fetchJsonlTail(url: string, want: number): Promise<string[]> {
+  let text = '';
+  try {
+    const res = await fetch(url, { cache: 'no-store', headers: { Range: 'bytes=-131072' } });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    text = await res.text();
+    if (res.status !== 206) {
+      // ה-CDN החזיר הכל (200) — אצלנו זה בסדר, רק כבד יותר; חותכים מהסוף
+      const lines = text.split('\n').map((s) => s.trim()).filter(Boolean);
+      return lines.slice(-want);
+    }
+  } catch {
+    const res = await fetch(url, { cache: 'no-store' });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    text = await res.text();
+  }
+  const lines = text.split('\n').map((s) => s.trim()).filter(Boolean);
+  return lines.slice(-want);
+}
+
+interface LifeData {
+  live: OfficeLive | null;
+  liveErr: string | null;
+  events: OfficeEvent[];
+  eventsErr: string | null;
+  decision: SovereignDecision | null;
+  decisionErr: string | null;
+}
+
+const LIFE_EMPTY: LifeData = { live: null, liveErr: null, events: [], eventsErr: null, decision: null, decisionErr: null };
+
+function useOfficeLife(): LifeData {
+  const [data, setData] = useState<LifeData>(LIFE_EMPTY);
+  useEffect(() => {
+    let alive = true;
+    const load = async () => {
+      const next: LifeData = { ...LIFE_EMPTY };
+      try {
+        const r = await fetch(RAW_AGENTS + 'office-live.json', { cache: 'no-store' });
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        next.live = (await r.json()) as OfficeLive;
+      } catch (e) {
+        next.liveErr = String(e).slice(0, 60);
+      }
+      try {
+        const lines = await fetchJsonlTail(RAW_AGENTS + 'office-events.jsonl', 14);
+        next.events = lines
+          .map((l) => {
+            try { return JSON.parse(l) as OfficeEvent; } catch { return { text: l } as OfficeEvent; }
+          })
+          .reverse();
+      } catch (e) {
+        next.eventsErr = String(e).slice(0, 60);
+      }
+      try {
+        const lines = await fetchJsonlTail(RAW_AGENTS + 'sovereign-decisions.jsonl', 1);
+        next.decision = lines.length ? (JSON.parse(lines[0]) as SovereignDecision) : null;
+      } catch (e) {
+        next.decisionErr = String(e).slice(0, 60);
+      }
+      if (alive) setData(next);
+    };
+    void load();
+    const iv = setInterval(() => void load(), 5 * 60_000);
+    return () => { alive = false; clearInterval(iv); };
+  }, []);
+  return data;
+}
+
+// ─────────────── v5-P2⑦ — שעון-ירושלים + פאזת-משמרת (חוק-הפאזות הקנוני) ───────────────
+function Clock() {
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    const iv = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(iv);
+  }, []);
+  const time = new Intl.DateTimeFormat('he-IL', {
+    timeZone: 'Asia/Jerusalem', hour: '2-digit', minute: '2-digit', second: '2-digit',
+  }).format(now);
+  const phase = phaseOfJerusalem(now);
+  return (
+    <span className="hud-clock" title="שעון-ירושלים · פאזת-המשמרת הקנונית">
+      <b>{time}</b>
+      <span className="ph">{phase.he}</span>
+    </span>
+  );
+}
+
+// ─────────────── v5-P2⑦ — צ'יפ-אמת: ספרים חיים · אזהרות נמדדות ───────────────
+function LifeChips({ data }: { data: LifeData }) {
+  const live = data.live;
+  const books = live?.books;
+  const stale = typeof books?.stale === 'number' ? books.stale : null;
+  const fresh = typeof books?.fresh === 'number' ? books.fresh : null;
+  const total = typeof books?.total === 'number' ? books.total : null;
+  const alive = live?.status === 'ALIVE';
+  return (
+    <>
+      <span
+        className={'hud-chip tone-' + (alive ? (stale ? 'attention' : 'ok') : 'danger')}
+        title={data.liveErr ? 'office-live לא נטען — ' + data.liveErr : 'מדידה: agents/office-live.json'}
+        role="status"
+        aria-live="polite"
+      >
+        <span className="dot" aria-hidden="true" />
+        {live ? `ספרים ${fresh ?? '—'}/${total ?? '—'} חיים · צוות ${live.crew?.total ?? '—'}` : 'ספרים לא ידוע'}
+      </span>
+      {stale !== null && stale > 0 && (
+        <span className="hud-chip tone-attention" title="ספרים שעברו חלון-טריות (נמדד)">
+          <span className="dot" aria-hidden="true" />
+          {stale} ספרים ישנים
+        </span>
+      )}
+    </>
+  );
+}
+
+// ─────────────── v5-P2⑥ — פס-פעילות תחתון (יומן-האירועים האמיתי + הכרעה ריבונית) ───────────────
+function Ticker({ data }: { data: LifeData }) {
+  const segs: string[] = [];
+  const d = data.decision;
+  if (d?.decision) {
+    const t = d.ts ? new Date(d.ts).toLocaleTimeString('he-IL', { timeZone: 'Asia/Jerusalem', hour: '2-digit', minute: '2-digit' }) : '';
+    segs.push(`הכרעה ריבונית ${t} — ${d.decision}${d.reason ? ' · ' + d.reason.split(':')[0] : ''}`);
+  }
+  for (const e of data.events.slice(0, 12)) {
+    const t = e.ts ? new Date(e.ts).toLocaleTimeString('he-IL', { timeZone: 'Asia/Jerusalem', hour: '2-digit', minute: '2-digit' }) : '';
+    const who = e.agentId ?? '';
+    const txt = e.text ?? '';
+    if (txt) segs.push(`${t} · ${who} · ${txt}`);
+  }
+  if (data.eventsErr) segs.push('יומן-האירועים לא נטען — ' + data.eventsErr);
+  return (
+    <div className="hud-ticker" role="marquee" aria-label="פס-פעילות חי מיומן-האירועים">
+      <span className="hud-ticker-tag">חי</span>
+      <div className="track">
+        {segs.length === 0 ? (
+          <span className="seg">—</span>
+        ) : (
+          [...segs, ...segs].map((s, i) => (
+            <span className="seg" key={i} dir="rtl">{s}</span>
+          ))
+        )}
+      </div>
+    </div>
+  );
+}
+
 // ─────────────── HUD ───────────────
 type Chip = { tone: 'ok' | 'attention' | 'danger'; label: string } | null;
 
-function TopBar({ chip }: { chip: Chip }) {
+function TopBar({ chip, life }: { chip: Chip; life: LifeData }) {
   return (
     <div className="hud-top">
       <span className="hud-title">
         מפקדת הצי
         <span className="en">FLEET HQ · 3D</span>
       </span>
+      <Clock />
       {chip && (
         <span className={'hud-chip tone-' + chip.tone} role="status" aria-live="polite">
           <span className="dot" aria-hidden="true" />
           {chip.label}
         </span>
       )}
+      <LifeChips data={life} />
       <a className="hud-link" href="../index.html">
         מעבר לחלון-החי הדו-ממדי
+      </a>
+      <a className="hud-link" href="./fallback.html" title="גרסת-טקסט מלאה — בלי תלת-מימד (fallback כן)">
+        גרסת-טקסט
       </a>
       {/* T19-c — כניסת-המנהל המקצועית: עמוד-פקודות נפרד (noindex), כניסה מקומית בלבד */}
       <a className="hud-link" href="./operator.html" title="עמדת-מנהל — ערוץ-הפקודות" aria-label="עמדת-מנהל">
@@ -428,14 +598,16 @@ function OperatorDock() {
 
 function App() {
   const [chip, setChip] = useState<Chip>(null);
+  const life = useOfficeLife();
   return (
     <>
       <div className="stage">
         <Office3D />
       </div>
       <StaticAdapter onChip={setChip} />
-      <TopBar chip={chip} />
+      <TopBar chip={chip} life={life} />
       <PresetDeck />
+      <Ticker data={life} />
       <Loader />
     </>
   );

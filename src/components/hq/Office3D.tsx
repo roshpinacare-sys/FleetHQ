@@ -42,6 +42,10 @@ function RoomReadiness() {
       if (gl.info.render.calls > 6) {
         settled = true;
         useHq.getState().setRoomReady(true);
+        // v5 — חוזה-ה-bake המתועד (office-3d-bake.mjs · README office3d-r3f):
+        // הדגל הגלובלי הוצב בתיעוד אך לא אויש בקוד (נמדד 2026-11-07:
+        // calls=334 עם __hqRoomReady=false) — מאויש עכשיו, לרבות צילום-הבייק.
+        (window as unknown as Record<string, unknown>).__hqRoomReady = true;
         return;
       }
       raf = requestAnimationFrame(check);
@@ -70,6 +74,22 @@ function EnvReflections() {
     };
   }, [gl, scene]);
   return null;
+}
+
+/**
+ * FillLights (v5-P1① — מהשוואת grok-bot-3d-campus, רעיון-ולא-העתקה):
+ * אור-מילוי צבעוני זוגי — טורקיז מצפון-מערב + ענבר מדרום-מזרח — במקום
+ * מגנטה-הניאון של הדמו המנוי; הצבעים מהזהות שלנו (משפחת-הזהב + טורקיז
+ * מהשלטים). עדין (0.30/0.22) — עומק-צבע בלי לשרוף את אור-היום.
+ * רק מדרגה-כבדה (perfOff=false) — על מנוע-תוכנה זה בזבוז.
+ */
+function FillLights() {
+  return (
+    <>
+      <pointLight position={[-7, 3.1, -4]} intensity={0.3} color={'#54d8c0'} distance={16} decay={2} />
+      <pointLight position={[7.5, 2.9, 4.5]} intensity={0.22} color={'#ffb054'} distance={16} decay={2} />
+    </>
+  );
 }
 
 /** PostFX — Bloom ממוקד (מסכים אמיסיביים + להבה + ניאון) + Vignette.
@@ -153,6 +173,17 @@ export function Office3D() {
     }, 9_000);
     return () => clearTimeout(t);
   }, [lite]);
+  // v5-P3⑨ — webgl-context-lost → כשל-כן: החדר מודיע ונופל למסך-הכשל
+  // (Room3D מציג את מצב-הכשל עם הדרך-חזרה) — לעולם לא קנבס-שחור שקט.
+  useEffect(() => {
+    const onLost = (e: Event) => {
+      e.preventDefault();
+      console.error('[hq] webglcontextlost — scene failed honestly (v5-P3)');
+      useHq.getState().setSceneFailed(true);
+    };
+    window.addEventListener('webglcontextlost', onLost);
+    return () => window.removeEventListener('webglcontextlost', onLost);
+  }, []);
   const perfOff = lite || !heavy || panic;
   // FrameGuard — רק במדרגה-הכבדה: במדרגת-חיסכון אין מה להשיל (הכל כבר מינימלי)
   const onStarve = useMemo(() => () => {
@@ -189,7 +220,9 @@ export function Office3D() {
         antialias: !lite,
         powerPreference: 'high-performance',
         toneMapping: THREE.ACESFilmicToneMapping,
-        toneMappingExposure: 0.96,
+        // v5-P1① (נמדד ב-grok-bot-3d-campus): חשיפה 1.12 במקום 0.96 —
+        // החדר יוצא מהאפור-המאופק לחום-יום חי; ACES שומר על המסכים.
+        toneMappingExposure: 1.12,
       }}
     >
       <color attach="background" args={['#ddd6c8']} />
@@ -201,6 +234,7 @@ export function Office3D() {
             onDecline={() => setHeavy(false)}
           />
           {!perfOff && <EnvReflections />}
+          {!perfOff && <FillLights />}
           <Architecture heavy={!perfOff} />
           <Stations />
           <Interior />

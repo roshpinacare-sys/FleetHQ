@@ -121,10 +121,10 @@ html, body, #root {
   outline-offset: 2px;
 }
 
-/* ── סרגל נקודות-תצפית (תחתון) ── */
+/* ── סרגל נקודות-תצפית (תחתון — מורם מעל פס-הפעילות v5-P2⑥) ── */
 .hud-deck {
   position: fixed;
-  inset-block-end: 10px;
+  inset-block-end: 40px;
   inset-inline: 10px;
   z-index: 20;
   display: flex;
@@ -135,6 +135,84 @@ html, body, #root {
   pointer-events: none;
 }
 .hud-deck > * { pointer-events: auto; }
+
+/* ── v5-P2⑦ — שעון-ירושלים + פאזת-משמרת ── */
+.hud-clock {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 7px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-row);
+  box-shadow: var(--shadow-soft);
+  padding: 7px 12px;
+  min-height: 32px;
+  direction: ltr;
+  font-variant-numeric: tabular-nums;
+}
+.hud-clock b { font-size: 13px; font-weight: 800; color: var(--ink); }
+.hud-clock .ph {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--accent-strong);
+  direction: rtl;
+}
+
+/* ── v5-P2⑥ — פס-פעילות תחתון (יומן-אירועים אמיתי · עצירה-בריחוף ·
+     prefers-reduced-motion = פס-סטטי) ── */
+.hud-ticker {
+  position: fixed;
+  inset-block-end: 0;
+  inset-inline: 0;
+  z-index: 15;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 30px;
+  background: color-mix(in srgb, var(--surface) 88%, transparent);
+  backdrop-filter: blur(6px);
+  border-block-start: 1px solid var(--line);
+  overflow: hidden;
+  direction: ltr;
+}
+.hud-ticker-tag {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  height: 100%;
+  padding: 0 10px;
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: var(--st-ok);
+  border-inline-end: 1px solid var(--line);
+  background: rgba(20, 133, 92, 0.08);
+}
+.hud-ticker .track {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  white-space: nowrap;
+  will-change: transform;
+  animation: hud-ticker-scroll 90s linear infinite;
+}
+.hud-ticker:hover .track { animation-play-state: paused; }
+.hud-ticker .seg {
+  font-size: 11.5px;
+  color: var(--ink-2);
+  max-width: 72ch;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+@keyframes hud-ticker-scroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hud-ticker .track { animation: none; }
+  .hud-ticker { direction: rtl; }
+  .hud-ticker .track { overflow-x: auto; }
+}
 
 .hud-btn {
   min-height: 44px; /* מטרות-מגע (חוק §5: 44 במגע, 40 שולחן-עבודה) */
